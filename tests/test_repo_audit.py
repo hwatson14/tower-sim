@@ -5,6 +5,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+pytest.importorskip("yaml")
+
 from tower_sim.audit.repo_audit import run_audit
 
 

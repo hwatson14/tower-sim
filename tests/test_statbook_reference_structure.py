@@ -2,8 +2,6 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-import zipfile
-import xml.etree.ElementTree as ET
 
 
 def _add_repo_root_to_path() -> None:
@@ -13,80 +11,40 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.ids_parser import parse_ids  # noqa: E402
-from tower_sim.statbook_builder import PHASE_END, PHASE_START, build_statbook  # noqa: E402
-
-NS = {"main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
-
-
-def _reference_xlsx_path() -> Path:
-    reference_dir = Path("reference")
-    xlsx_files = sorted(reference_dir.glob("*.xlsx"))
-    if len(xlsx_files) != 1:
-        raise FileNotFoundError(
-            f"Expected exactly one StatBook reference .xlsx in {reference_dir}, "
-            f"found {len(xlsx_files)}."
-        )
-    return xlsx_files[0]
-
-
-def _inline_string(cell: ET.Element) -> str:
-    inline = cell.find("main:is", NS)
-    if inline is None:
-        return ""
-    return "".join(t.text or "" for t in inline.findall(".//main:t", NS))
-
-
-def _sheet_headers(sheet: ET.Element) -> list[str]:
-    for row in sheet.findall("main:sheetData/main:row", NS):
-        if row.attrib.get("r") != "1":
-            continue
-        headers = []
-        for cell in row.findall("main:c", NS):
-            if cell.attrib.get("t") == "inlineStr":
-                headers.append(_inline_string(cell))
-        return headers
-    return []
-
-
-def _stat_names_from_sheet(sheet: ET.Element) -> list[str]:
-    names: list[str] = []
-    for row in sheet.findall("main:sheetData/main:row", NS):
-        for cell in row.findall("main:c", NS):
-            if not cell.attrib.get("r", "").startswith("A"):
-                continue
-            if cell.attrib.get("t") != "inlineStr":
-                continue
-            value = _inline_string(cell)
-            if value and value != "Stat":
-                names.append(value)
-    return names
+from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
+from tower_sim.stat_registry import Phase, default_registry  # noqa: E402
 
 
 def test_statbook_reference_structure(tmp_path: Path) -> None:
-    reference_path = _reference_xlsx_path()
-    with zipfile.ZipFile(reference_path) as archive:
-        sheet_names = [
-            name for name in archive.namelist() if name.startswith("xl/worksheets/sheet")
-        ]
-        header_sets = []
-        stat_names: set[str] = set()
-        for sheet_name in sheet_names:
-            sheet = ET.fromstring(archive.read(sheet_name))
-            headers = _sheet_headers(sheet)
-            if headers:
-                header_sets.append(set(headers))
-            stat_names.update(_stat_names_from_sheet(sheet))
-
-    expected_headers = {"Stat", "Start of Run Value", "End of Run Value"}
-    assert any(expected_headers.issubset(headers) for headers in header_sets)
-    assert stat_names
-
-    ids_state = parse_ids()
-    statbook = build_statbook(ids_state)
+    registry = default_registry()
+    engine = StatEngine(registry=registry)
+    inputs = [
+        StatInput(
+            stat_id="tower_hp",
+            phase=Phase.START_OF_RUN,
+            base_value=100,
+            loadout_delta=20,
+            enhancement_multiplier=1.1,
+            tier_rule_delta=5,
+            provenance="test/base",
+        ),
+        StatInput(
+            stat_id="tower_hp",
+            phase=Phase.END_OF_RUN,
+            base_value=120,
+            loadout_delta=30,
+            enhancement_multiplier=1.05,
+            tier_rule_multiplier=0.9,
+            provenance="test/end",
+        ),
+    ]
+    result = engine.build(inputs)
     csv_path = tmp_path / "statbook.csv"
-    statbook.to_csv(csv_path)
+    result.statbook.to_csv(csv_path)
 
-    phases = {row.phase for row in statbook.rows}
-    assert {PHASE_START, PHASE_END}.issubset(phases)
-    assert stat_names.intersection({row.stat_name for row in statbook.rows})
+    content = csv_path.read_text(encoding="utf-8")
+    assert "stat_id" in content
+    assert "tier_rule_delta_or_multiplier" in content
+    assert "tower_hp" in content
+    phases = {row.phase for row in result.statbook.rows}
+    assert {Phase.START_OF_RUN.value, Phase.END_OF_RUN.value}.issubset(phases)

@@ -22,6 +22,7 @@ def test_imports_smoke():
         "tower_sim.modules_library",
         "tower_sim.modules",
         "tower_sim.assist_efficiency",
+        "tower_sim.stat_engine",
         "tower_sim.wiki.cards",
         "tower_sim.wiki.labs",
         "tower_sim.wiki.labs_formula",
