@@ -13,8 +13,7 @@ from tower_sim.ids_parser import parse_ids  # noqa: E402
 
 
 def test_parse_ids_fixture_sections() -> None:
-    fixture_path = Path("tests/fixtures/tower-sim-data/_IDS.csv")
-    ids_state = parse_ids(fixture_path)
+    ids_state = parse_ids()
 
     assert ids_state.labs.labs
     assert ids_state.workshop.entries

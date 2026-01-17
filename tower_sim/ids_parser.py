@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 import csv
 from pathlib import Path
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Sequence
 
 from tower_sim.ids_state import (
     BotsState,
@@ -49,6 +49,21 @@ SECTION_SPECS = [
     SectionSpec("Guardians", 72, 72, 76),
     SectionSpec("Player & Stuff", 77, 77, 82),
 ]
+
+
+DEFAULT_IDS_PATHS: Sequence[Path] = (
+    Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+    Path("tests/fixtures/_IDS.csv"),
+    Path("data/tower-sim-data/_IDS.csv"),
+)
+
+
+def resolve_ids_path(paths: Sequence[Path] = DEFAULT_IDS_PATHS) -> Path:
+    for path in paths:
+        if path.exists():
+            return path
+    candidates = ", ".join(str(path) for path in paths)
+    raise FileNotFoundError(f"Could not find _IDS.csv. Tried: {candidates}")
 
 
 def _read_csv_rows(path: Path) -> List[List[str]]:
@@ -325,10 +340,11 @@ def _parse_player_stuff(rows: List[List[str]]) -> PlayerStuffState:
     return PlayerStuffState(key_values=key_values, raw_rows=raw_rows)
 
 
-def parse_ids(path: Path) -> IdsState:
-    rows = _read_csv_rows(path)
+def parse_ids(path: Optional[Path] = None) -> IdsState:
+    ids_path = path or resolve_ids_path()
+    rows = _read_csv_rows(ids_path)
     if not rows:
-        raise ValueError(f"_IDS.csv is empty: {path}")
+        raise ValueError(f"_IDS.csv is empty: {ids_path}")
     _fail_unknown_sections(rows)
     raw_sections: Dict[str, List[List[str]]] = {}
     for spec in SECTION_SPECS:
