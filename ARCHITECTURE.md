@@ -141,3 +141,6 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement typed `_IDS.csv` parsing to `IdsState` (raw values only) + tests.
 - [x] Add StatBook skeleton/export and reference structure validation harness.
 - [x] Add wiki cache audit harness and reports for promotable lab tables.
+- [x] Add repo audit CLI for naming/registry/table/module checks.
+- [x] Add audit Markdown recommendations for failure remediation.
+- [x] Fix packaging metadata for editable installs (tower_sim package, Python 3.10+).
