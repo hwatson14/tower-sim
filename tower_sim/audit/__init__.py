@@ -1,1 +1,1 @@
-"""Audit tools for TowerSim repository integrity."""
+"""Audit utilities for data coverage and validation."""
