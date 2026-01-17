@@ -144,4 +144,5 @@ Any of the following must stop work and ask for clarification:
 - [x] Add canonical StatBook export schema with loadout delta breakdown scaffolding.
 - [x] Promote labs values v1 table from audited cache tables.
 - [x] Add stat source coverage audit for labs and workshop tables.
+- [x] Implement stat engine base composition (workshop + labs + EALS/EHLS + canonical StatBook rows).
 - [x] Implement Stat Engine skeleton + StatBook export.
