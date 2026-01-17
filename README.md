@@ -19,6 +19,19 @@ It contains:
 - `pytest`
 - `python -m tower_sim.wiki.audit_cache_tables`
 
+## Repo audit
+Run the repository audit to validate naming integrity, registry references, table presence, and module completeness:
+
+```bash
+python -m tower_sim.audit.repo_audit --json audit.json --markdown audit.md
+```
+
+Strict mode returns exit code 2 when failures are present:
+
+```bash
+python -m tower_sim.audit.repo_audit --strict
+```
+
 ## Data dependency
 This repo expects CSV snapshots from `hwatson14/tower-sim-data`.
 Recommended approach: add it as a git submodule (pinned SHA) and point the DataLoader at it.

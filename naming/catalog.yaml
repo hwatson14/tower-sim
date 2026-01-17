@@ -40,7 +40,7 @@ categories:
       aliases: ["PC", "Plasma Cannon"]
     - canonical_id: CARD_CRITICAL_COIN
       primary_name: "Critical Coin"
-      aliases: ["CC", "Critical Coin"]
+      aliases: ["Critical Coin"]
     - canonical_id: CARD_WAVE_SKIP
       primary_name: "Wave Skip"
       aliases: ["WS", "Wave Skip"]
@@ -614,13 +614,13 @@ categories:
       aliases: ["EHLS", "Enemy Health Level Skip"]
     - canonical_id: WS_FREE_UPGRADES_ATTACK
       primary_name: "Free Upgrades - Attack"
-      aliases: ["FU", "Free Upgrades", "Free-Upgrades", "Free Upgrades - Attack"]
+      aliases: ["Free Upgrades - Attack"]
     - canonical_id: WS_FREE_UPGRADES_DEFENSE
       primary_name: "Free Upgrades - Defense"
-      aliases: ["FU", "Free Upgrades", "Free-Upgrades", "Free Upgrades - Defense"]
+      aliases: ["Free Upgrades - Defense"]
     - canonical_id: WS_FREE_UPGRADES_UTILITY
       primary_name: "Free Upgrades - Utility"
-      aliases: ["FU", "Free Upgrades", "Free-Upgrades", "Free Upgrades - Utility"]
+      aliases: ["Free Upgrades - Utility"]
     - canonical_id: WS_KNOCKBACK
       primary_name: "Knockback"
       aliases: ["KN", "Knockback"]
