@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "towersim"
+version = "0.0.1"
+description = "Deterministic TowerSim engine (Codex baseline)"
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2.1",
+  "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools]
+packages = ["towersim"]
+
