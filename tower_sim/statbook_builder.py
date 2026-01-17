@@ -4,10 +4,13 @@ from tower_sim.ids_state import IdsState
 from tower_sim.stat_registry import StatRegistry, default_registry
 from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
+from tower_sim.stat_engine import StatEngine, StatInput
+from tower_sim.stat_registry import Phase, StatRegistry
+from tower_sim.statbook import StatBook
 
-PHASE_START = "start_of_run"
-PHASE_END = "end_of_run"
 
+PHASE_START = Phase.START_OF_RUN
+PHASE_END = Phase.END_OF_RUN
 
 def build_statbook(ids_state: IdsState) -> StatBook:
     rows: list[StatRow] = []
