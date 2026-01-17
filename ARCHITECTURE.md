@@ -132,3 +132,6 @@ Any of the following must stop work and ask for clarification:
 4. Wire workshop progression + skip mapping into per-wave stat snapshots.
 5. Implement boss-only combat model + validate vs sheets.
 
+## Checklist
+- [x] Implement typed `_IDS.csv` parsing to `IdsState` (raw values only) + tests.
+- [x] Add StatBook skeleton/export and reference structure validation harness.
