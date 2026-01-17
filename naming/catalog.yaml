@@ -83,7 +83,8 @@ categories:
     - canonical_id: CARD_BERSERKER
       primary_name: "Berserker"
       aliases: ["Zerk", "Berserker"]
-
+      
+  labs:
     # Main Research
     - canonical_id: LAB_GAME_SPEED
       primary_name: "Game Speed"
