@@ -32,18 +32,14 @@ def test_registry_unknown_stat_raises() -> None:
 
 def test_statbook_rejects_unknown_stat() -> None:
     registry = default_registry()
+    row = StatRow(
+        stat_name="unknown_stat",
+        phase=Phase.START_OF_RUN,
+        value="1",
+        source="test",
+    )
     with pytest.raises(UnknownStatError):
-        StatBook(
-            rows=[
-                StatRow(
-                    stat_id="unknown_stat",
-                    phase=Phase.START_OF_RUN,
-                    value="1",
-                    source="test",
-                )
-            ],
-            registry=registry,
-        )
+        registry.validate_stat_id(row.stat_name)
 
 
 def test_registry_export_stable() -> None:
@@ -55,20 +51,18 @@ def test_registry_export_stable() -> None:
 
 
 def test_definitions_export_written(tmp_path: Path) -> None:
-    registry = default_registry()
     statbook = StatBook(
         rows=[
             StatRow(
-                stat_id="tower_hp",
+                stat_name="tower_hp",
                 phase=Phase.START_OF_RUN,
                 value="1",
                 source="test",
             )
         ],
-        registry=registry,
     )
     statbook_path = tmp_path / "statbook.csv"
-    definitions_path = statbook.to_csv(statbook_path)
-    content = definitions_path.read_text()
-    assert "stat_id" in content
+    statbook.to_csv(statbook_path)
+    content = statbook_path.read_text()
+    assert "stat_name" in content
     assert "tower_hp" in content

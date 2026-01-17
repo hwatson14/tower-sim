@@ -17,6 +17,7 @@ It contains:
 - Python 3.11+
 - `pip install -e .[dev]`
 - `pytest`
+- `python -m tower_sim.wiki.audit_cache_tables`
 
 ## Data dependency
 This repo expects CSV snapshots from `hwatson14/tower-sim-data`.
