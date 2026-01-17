@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 from tower_sim.ids_state import IdsState
-from tower_sim.statbook import StatBook, StatRow
+from tower_sim.stat_registry import StatRegistry, default_registry
+from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
 
 PHASE_START = "start_of_run"
@@ -47,3 +48,21 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             )
         )
     return StatBook(rows=rows)
+
+
+def build_canonical_statbook(
+    rows: list[CanonicalStatRow],
+    registry: StatRegistry | None = None,
+) -> CanonicalStatBook:
+    resolved_registry = registry or default_registry()
+    for row in rows:
+        resolved_registry.validate_stat_id(row.stat_id)
+        stat_def = resolved_registry.get(row.stat_id)
+        if row.phase not in stat_def.allowed_phases:
+            raise ValueError(
+                f"Phase {row.phase.value} not allowed for stat_id {row.stat_id}."
+            )
+        if not row.provenance:
+            raise ValueError(f"Provenance required for stat_id {row.stat_id}.")
+        row.loadout_delta_total()
+    return CanonicalStatBook(rows=rows)
