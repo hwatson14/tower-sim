@@ -134,3 +134,4 @@ Any of the following must stop work and ask for clarification:
 
 ## Checklist
 - [x] Implement typed `_IDS.csv` parsing to `IdsState` (raw values only) + tests.
+- [x] Add StatBook skeleton/export and reference structure validation harness.
