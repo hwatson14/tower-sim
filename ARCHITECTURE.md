@@ -64,8 +64,13 @@ TowerSim must produce a StatBook that is both:
 - machine-consumable by the sim, and
 - human-readable for inspection.
 
+### Stat Registry (Canonical IDs + Units)
+Stat identities, units, and allowed phases are centrally defined in the StatRegistry.
+All StatBook rows must reference a registry stat_id; unknown IDs fail closed.
+The registry is also exported alongside StatBook rows for inspection.
+
 **StatBook rows** should include:
-- `stat_name`
+- `stat_id`
 - `phase` (start-of-run, end-of-run, at-wave W)
 - `base_value`
 - `loadout_delta`
@@ -132,3 +137,7 @@ Any of the following must stop work and ask for clarification:
 4. Wire workshop progression + skip mapping into per-wave stat snapshots.
 5. Implement boss-only combat model + validate vs sheets.
 
+## Checklist
+- [x] Implement typed `_IDS.csv` parsing to `IdsState` (raw values only) + tests.
+- [x] Add StatBook skeleton/export and reference structure validation harness.
+- [x] Add lookup-only mechanics libraries (workshop, labs, modules, cards, UW) + tests.
