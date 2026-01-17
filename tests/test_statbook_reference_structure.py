@@ -14,8 +14,7 @@ def _add_repo_root_to_path() -> None:
 _add_repo_root_to_path()
 
 from tower_sim.ids_parser import parse_ids  # noqa: E402
-from tower_sim.stat_registry import default_registry  # noqa: E402
-from tower_sim.statbook_builder import build_statbook  # noqa: E402
+from tower_sim.statbook_builder import PHASE_END, PHASE_START, build_statbook  # noqa: E402
 
 NS = {"main": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 
@@ -86,10 +85,8 @@ def test_statbook_reference_structure(tmp_path: Path) -> None:
     ids_state = parse_ids()
     statbook = build_statbook(ids_state)
     csv_path = tmp_path / "statbook.csv"
-    definitions_path = statbook.to_csv(csv_path)
+    statbook.to_csv(csv_path)
 
-    phases = {row.phase.value for row in statbook.rows}
-    assert {"start_of_run", "end_of_run"}.issubset(phases)
-    display_names = {definition.display_name for definition in default_registry().all_defs()}
-    assert stat_names.intersection(display_names)
-    assert definitions_path.exists()
+    phases = {row.phase for row in statbook.rows}
+    assert {PHASE_START, PHASE_END}.issubset(phases)
+    assert stat_names.intersection({row.stat_name for row in statbook.rows})
