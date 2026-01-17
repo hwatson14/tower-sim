@@ -12,22 +12,22 @@ def test_imports_smoke():
     sys.path.insert(0, str(repo_root))
 
     modules = [
-        "towersim",
-        "towersim.sources",
-        "towersim.ids",
-        "towersim.free_upgrades",
-        "towersim.workshop_progression",
-        "towersim.wave_engine",
-        "towersim.enemy_tables",
-        "towersim.modules_library",
-        "towersim.modules",
-        "towersim.assist_efficiency",
-        "towersim.wiki.cards",
-        "towersim.wiki.labs",
-        "towersim.wiki.labs_formula",
-        "towersim.wiki.perks",
-        "towersim.wiki.labs_eals_ehls",
-        "towersim.enemies.wave_damage_strict",
+        "tower_sim",
+        "tower_sim.sources",
+        "tower_sim.ids",
+        "tower_sim.free_upgrades",
+        "tower_sim.workshop_progression",
+        "tower_sim.wave_engine",
+        "tower_sim.enemy_tables",
+        "tower_sim.modules_library",
+        "tower_sim.modules",
+        "tower_sim.assist_efficiency",
+        "tower_sim.wiki.cards",
+        "tower_sim.wiki.labs",
+        "tower_sim.wiki.labs_formula",
+        "tower_sim.wiki.perks",
+        "tower_sim.wiki.labs_eals_ehls",
+        "tower_sim.enemies.wave_damage_strict",
     ]
     for m in modules:
         importlib.import_module(m)
