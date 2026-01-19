@@ -29,7 +29,7 @@ jobs:
         env:
           PYTHONUNBUFFERED: "1"
         run: |
-          python tools/wiki_ingest/extract_all_labs.py
+          python python/tools/wiki_ingest/extract_all_labs.py
 
       - name: Upload consolidated extract artifact
         uses: actions/upload-artifact@v4
