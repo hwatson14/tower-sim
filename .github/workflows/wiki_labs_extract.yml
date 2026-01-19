@@ -24,12 +24,24 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install requests beautifulsoup4 lxml
-          
-      - name: Assert extractor exists
+
+      - name: Debug extractor file (prove what runner sees)
         run: |
-          pwd
+          set -euo pipefail
+          echo "PWD=$(pwd)"
+          echo "Listing tools/wiki_ingest:"
           ls -la tools/wiki_ingest
-          test -f tools/wiki_ingest/extract_all_labs.py
+          echo "First 60 lines of tools/wiki_ingest/extract_all_labs.py:"
+          sed -n '1,60p' tools/wiki_ingest/extract_all_labs.py
+          echo "Line count:"
+          wc -l tools/wiki_ingest/extract_all_labs.py
+          echo "SHA256:"
+          python - <<'PY'
+          import hashlib, pathlib
+          p = pathlib.Path("tools/wiki_ingest/extract_all_labs.py")
+          b = p.read_bytes()
+          print(hashlib.sha256(b).hexdigest())
+          PY
 
       - name: Run labs extractor
         env:
