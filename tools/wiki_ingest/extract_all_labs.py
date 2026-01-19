@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """
-Tower wiki → ALL labs (all sections) → authoritative per-level tables (Level/Time/Cost/Value) → exact compression
-→ consolidated JSON → strict verification (regen + diff)
+Tower wiki -> All Labs (all sections) authoritative per-level tables (Level/Time/Cost/Value)
+-> consolidated JSON + strict verification (regen + diff) with compression where possible.
 
 Output:
   data/wiki/extracts/labs_compact.json
 
 Fail-closed:
-- Never invents rows.
-- If a lab table can't be found/parsed or a model can't exactly reproduce, it falls back to lookup.
-- If lookup can't be produced (table missing), that lab is marked FAIL and the script exits non-zero.
+  - Never invent rows.
+  - If a lab list can't be discovered from the index page, hard fail.
+  - For each lab, if a per-level table can't be found, mark that lab FAIL and exit non-zero.
 """
 
 from __future__ import annotations
@@ -26,461 +26,576 @@ from typing import Any, Dict, List, Optional, Tuple
 import requests
 from bs4 import BeautifulSoup
 
+# --- Config ---
 WIKI_API = "https://the-tower-idle-tower-defense.fandom.com/api.php"
-LAB_UPGRADES_PAGE = "Lab_Upgrades"
+
+# IMPORTANT: use canonical title with spaces; let API resolve redirects.
+LAB_UPGRADES_PAGE = "Lab Upgrades"
+
 OUT_PATH = "data/wiki/extracts/labs_compact.json"
 
 SESSION = requests.Session()
-SESSION.headers.update({"User-Agent": "TowerSimWikiIngest/1.0 (labs extractor; contact: none)"})
+SESSION.headers.update(
+    {
+        "User-Agent": "TowerSimWikiIngest/1.1 (labs extractor; contact: none)",
+    }
+)
 
-TIME_RE = re.compile(r"^\s*(?:(\d+)\s*d)?\s*(?:(\d+)\s*h)?\s*(?:(\d+)\s*m)?\s*$", re.IGNORECASE)
+# Time parsing: canonicalize "Xd Yh Zm" etc to minutes
+TIME_RE = re.compile(
+    r"^\s*(?:(?P<d>\d+)\s*d)?\s*(?:(?P<h>\d+)\s*h)?\s*(?:(?P<m>\d+)\s*m)?\s*(?:(?P<s>\d+)\s*s)?\s*$",
+    re.IGNORECASE,
+)
+
+# Wikitext headings like == Attack Research == etc.
+HEADING_RE = re.compile(r"^(?P<eq>={2,6})\s*(?P<title>[^=]+?)\s*(?P=eq)\s*$")
+# Internal links [[Page]] or [[Page|Text]]
+LINK_RE = re.compile(r"\[\[(?P<target>[^\]|#]+)(?:#[^\]|]+)?(?:\|(?P<label>[^\]]+))?\]\]")
 
 
-def api_parse_html(page: str) -> str:
-    r = SESSION.get(
-        WIKI_API,
-        params={"action": "parse", "page": page, "prop": "text", "format": "json"},
-        timeout=60,
-    )
+@dataclass(frozen=True)
+class TableRow:
+    level: int
+    time_minutes: Optional[int]
+    cost: Optional[int]
+    value: Optional[float]
+    # original strings for strict round-trip comparators (kept for hashing / audit)
+    time_raw: Optional[str]
+    cost_raw: Optional[str]
+    value_raw: Optional[str]
+
+
+def die(msg: str) -> None:
+    print(f"[FATAL] {msg}", file=sys.stderr)
+    raise SystemExit(2)
+
+
+def _api_get(params: Dict[str, Any], timeout: int = 60) -> Dict[str, Any]:
+    r = SESSION.get(WIKI_API, params=params, timeout=timeout)
     r.raise_for_status()
     data = r.json()
     if "error" in data:
-        raise RuntimeError(f"API error for {page}: {data['error']}")
-    return data["parse"]["text"]["*"]
+        die(f"MediaWiki API error: {data['error']}")
+    return data
 
 
-def time_to_minutes(s: str) -> int:
-    s = s.strip()
+def resolve_title(title: str) -> str:
+    """
+    Resolve redirects + canonical title via action=query.
+    """
+    data = _api_get(
+        {
+            "action": "query",
+            "titles": title,
+            "redirects": 1,
+            "format": "json",
+        }
+    )
+    pages = data.get("query", {}).get("pages", {})
+    if not pages:
+        die(f"Could not resolve title: {title!r} (no pages returned)")
+    # pages is dict keyed by pageid
+    page = next(iter(pages.values()))
+    if "missing" in page:
+        die(f"Wiki page missing: {title!r}")
+    canonical = page.get("title")
+    if not canonical:
+        die(f"Could not read canonical title for: {title!r}")
+    return canonical
+
+
+def api_parse_wikitext(page: str) -> str:
+    """
+    Get rendered wikitext for stable structural parsing (headings + internal links).
+    """
+    data = _api_get(
+        {
+            "action": "parse",
+            "page": page,
+            "prop": "wikitext",
+            "redirects": 1,
+            "format": "json",
+        }
+    )
+    parse = data.get("parse")
+    if not parse:
+        die(f"No 'parse' in API response for page {page!r}")
+    wt = parse.get("wikitext", {}).get("*")
+    if not wt:
+        die(f"No wikitext returned for page {page!r}")
+    return wt
+
+
+def api_parse_html(page: str) -> str:
+    """
+    Get rendered HTML for table scraping.
+    """
+    data = _api_get(
+        {
+            "action": "parse",
+            "page": page,
+            "prop": "text",
+            "redirects": 1,
+            "format": "json",
+        }
+    )
+    parse = data.get("parse")
+    if not parse:
+        die(f"No 'parse' in API response for page {page!r}")
+    html = parse.get("text", {}).get("*")
+    if not html:
+        die(f"No html returned for page {page!r}")
+    return html
+
+
+def parse_duration_minutes(s: str) -> Optional[int]:
+    s = (s or "").strip()
+    if not s:
+        return None
     m = TIME_RE.match(s)
     if not m:
-        raise ValueError(f"Unparseable time string: {s!r}")
-    d = int(m.group(1) or 0)
-    h = int(m.group(2) or 0)
-    mi = int(m.group(3) or 0)
-    return d * 24 * 60 + h * 60 + mi
-
-
-def normalize_int_commas(s: str) -> int:
-    t = s.strip().replace(",", "")
-    if not re.fullmatch(r"\d+", t):
-        raise ValueError(f"Unparseable integer: {s!r}")
-    return int(t)
-
-
-def normalize_value_numeric(s: str) -> Optional[float]:
-    t = s.strip()
-    if not t:
         return None
-    if t.lower().startswith("x"):
-        try:
-            return float(t[1:])
-        except:
-            return None
-    if t.endswith("%"):
-        try:
-            return float(t[:-1])
-        except:
-            return None
-    if re.fullmatch(r"\d+(\.\d+)?", t):
-        return float(t)
+    d = int(m.group("d") or 0)
+    h = int(m.group("h") or 0)
+    mi = int(m.group("m") or 0)
+    sec = int(m.group("s") or 0)
+    return d * 24 * 60 + h * 60 + mi + (1 if sec >= 30 else 0)
+
+
+def parse_int_like(s: str) -> Optional[int]:
+    """
+    Parse integers like "1,234", "1234", "1.2k" (if present), else None.
+    Conservative: only accept plain ints with separators.
+    """
+    s = (s or "").strip()
+    if not s:
+        return None
+    s2 = s.replace(",", "")
+    if re.fullmatch(r"\d+", s2):
+        return int(s2)
+    # Optional: handle k/m suffix if wiki uses it (only if unambiguous)
+    m = re.fullmatch(r"(\d+(?:\.\d+)?)\s*([kKmM])", s)
+    if m:
+        num = float(m.group(1))
+        suf = m.group(2).lower()
+        mult = 1000 if suf == "k" else 1_000_000
+        # strict rounding: only accept if exact integer after scaling
+        val = num * mult
+        if abs(val - round(val)) < 1e-9:
+            return int(round(val))
     return None
 
 
-def sha256_canonical_rows(rows: List[Dict[str, Any]]) -> str:
-    blob = json.dumps(rows, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
-    return hashlib.sha256(blob).hexdigest()
+def parse_float_like(s: str) -> Optional[float]:
+    s = (s or "").strip()
+    if not s:
+        return None
+    # remove commas
+    s2 = s.replace(",", "")
+    # allow percent, but preserve numeric part
+    if s2.endswith("%"):
+        try:
+            return float(s2[:-1])
+        except ValueError:
+            return None
+    try:
+        return float(s2)
+    except ValueError:
+        return None
 
 
-def find_list_anchor(soup: BeautifulSoup) -> Any:
-    # Try common ids used by Fandom render
-    for pat in ["List_of_Lab_Upgrades", "List of Lab Upgrades"]:
-        el = soup.find(id=re.compile(pat))
-        if el:
-            return el
-    # Fallback: locate an h2/h3 containing the text
-    for h in soup.find_all(["h2", "h3"]):
-        if "List of Lab Upgrades" in h.get_text(" ", strip=True):
-            return h
-    raise RuntimeError("Could not locate 'List of Lab Upgrades' section on Lab_Upgrades page")
-
-
-def extract_all_sections_and_labs() -> Dict[str, List[Tuple[str, str, int]]]:
+def table_rows_hash(rows: List[TableRow]) -> str:
     """
-    Returns:
-      section_name -> list of (lab_name, page_title, max_level)
-
-    This is dynamic: it does NOT hardcode sections. It takes every section under
-    'List of Lab Upgrades' until the list clearly ends.
+    Hash original row data (including raw fields) to detect wiki changes.
     """
-    html = api_parse_html(LAB_UPGRADES_PAGE)
-    soup = BeautifulSoup(html, "html.parser")
-    anchor = find_list_anchor(soup)
+    payload = [
+        {
+            "level": r.level,
+            "time_raw": r.time_raw,
+            "cost_raw": r.cost_raw,
+            "value_raw": r.value_raw,
+        }
+        for r in rows
+    ]
+    b = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(b).hexdigest()
 
-    out: Dict[str, List[Tuple[str, str, int]]] = {}
-    cur_section: Optional[str] = None
 
-    # Start scanning from the anchor's parent block
-    start = anchor.parent if hasattr(anchor, "parent") else anchor
-
-    for el in start.find_all_next(["h2", "h3", "p", "ul", "ol"], limit=4000):
-        txt = el.get_text(" ", strip=True)
-
-        # Section headers are h3/h2, often named "Main Research", "Attack Research", etc.
-        if el.name in ("h2", "h3"):
-            section_name = txt
-            # Stop when we hit non-lab upgrade areas (wiki-dependent); conservative stops:
-            if section_name in ("Other Upgrades", "Notes", "Trivia", "Gallery", "References"):
-                break
-            cur_section = section_name
-            out.setdefault(cur_section, [])
+def discover_labs_from_index(index_title: str) -> Dict[str, List[str]]:
+    """
+    Parse Lab Upgrades page wikitext into {section -> [lab_page_titles...]}.
+    We avoid HTML because it is skin/template fragile.
+    """
+    wt = api_parse_wikitext(index_title)
+    section = None
+    out: Dict[str, List[str]] = {}
+    for line in wt.splitlines():
+        hm = HEADING_RE.match(line.strip())
+        if hm:
+            section = hm.group("title").strip()
+            # initialize section bucket
+            out.setdefault(section, [])
             continue
 
-        if cur_section is None:
+        if not section:
             continue
 
-        if "Max Lv" in txt:
-            mmax = re.search(r"Max\s+Lv\s+(\d+)", txt, re.IGNORECASE)
-            if not mmax:
+        # Collect internal links on this line.
+        for lm in LINK_RE.finditer(line):
+            target = (lm.group("target") or "").strip()
+            if not target:
                 continue
-            max_lv = int(mmax.group(1))
 
-            link = el.find("a", href=True)
-            if not link:
+            # Conservative filters: ignore obvious non-lab links
+            if target.lower() in {"lab upgrades", "the tower - idle tower defense wiki"}:
                 continue
-            lab_name = link.get_text(" ", strip=True)
-            href = link["href"]
-            mtitle = re.search(r"/wiki/([^#?]+)", href)
-            if not mtitle:
+            if target.startswith("File:") or target.startswith("Category:") or target.startswith("Help:"):
                 continue
-            page_title = mtitle.group(1)
-            out[cur_section].append((lab_name, page_title, max_lv))
 
-    # Fail-closed: must find at least one lab and at least 3 sections (practically all labs)
+            # Avoid duplicates while preserving order
+            if target not in out[section]:
+                out[section].append(target)
+
+    # Drop empty sections
+    out = {k: v for k, v in out.items() if v}
+
+    if not out:
+        die(f"Discovered zero sections/labs from index page: {index_title!r}")
+
+    # Sanity: total labs count must be > 0
     total = sum(len(v) for v in out.values())
     if total == 0:
-        raise RuntimeError("Extracted zero labs from Lab_Upgrades")
-    if len(out) < 3:
-        raise RuntimeError(f"Extracted too few sections ({len(out)}). Likely parsing failed.")
+        die(f"Discovered zero labs from index page: {index_title!r}")
+
     return out
 
 
-def extract_lab_table(page_title: str) -> List[Dict[str, Any]]:
+def extract_first_relevant_table(html: str) -> Tuple[List[str], List[List[str]]]:
     """
-    Extract first table with Level + Time + Cost columns.
-    Returns row dicts with parsed + original.
+    Find a table that looks like it contains Level/Time/Cost/Value.
+    Returns (headers, rows-as-strings). Fail-closed if none found.
     """
-    html = api_parse_html(page_title)
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
 
+    # Most fandom tables are 'wikitable'. We'll scan all tables anyway.
     tables = soup.find_all("table")
     for t in tables:
+        # get headers
         ths = t.find_all("th")
         if not ths:
             continue
-        headers = [th.get_text(" ", strip=True).strip().lower() for th in ths]
-        # Normalize common header variants
-        def is_time(h: str) -> bool:
-            return "time" in h or "duration" in h
+        headers = [th.get_text(" ", strip=True) for th in t.find_all("th")]
+        h_norm = [h.lower() for h in headers]
 
-        if ("level" in headers) and any(is_time(h) for h in headers) and ("cost" in headers):
-            level_i = next(i for i, h in enumerate(headers) if h == "level")
-            time_i = next(i for i, h in enumerate(headers) if is_time(h))
-            cost_i = next(i for i, h in enumerate(headers) if h == "cost")
+        # Must have "Level" at least
+        if not any("level" == h or h.endswith("level") or "level" in h for h in h_norm):
+            continue
 
-            # value column could be "value", "bonus", "effect" etc. If absent, keep empty string.
-            value_i = None
-            for i, h in enumerate(headers):
-                if h in ("value", "bonus", "effect"):
-                    value_i = i
-                    break
+        # Prefer those with these columns, but allow partial because some labs might omit value or time etc.
+        # We'll still parse row-by-row and allow None for missing columns.
+        if not (any("time" in h for h in h_norm) or any("duration" in h for h in h_norm) or any("cost" in h for h in h_norm) or any("value" in h for h in h_norm)):
+            continue
 
-            rows: List[Dict[str, Any]] = []
-            for tr in t.find_all("tr"):
-                tds = tr.find_all("td")
-                if not tds:
-                    continue
-                cells = [td.get_text(" ", strip=True) for td in tds]
-                if max(level_i, time_i, cost_i, value_i or 0) >= len(cells):
-                    continue
-
-                lev_s = cells[level_i].replace(",", "").strip()
-                if not re.fullmatch(r"\d+", lev_s):
-                    continue
-                level = int(lev_s)
-
-                time_text = cells[time_i].strip()
-                cost_text = cells[cost_i].strip()
-                value_text = (cells[value_i].strip() if value_i is not None else "")
-
-                row = {
-                    "level": level,
-                    "time_text": time_text,
-                    "time_min": time_to_minutes(time_text),
-                    "cost_text": cost_text,
-                    "cost_int": normalize_int_commas(cost_text),
-                    "value_text": value_text,
-                    "value_num": normalize_value_numeric(value_text),
-                }
-                rows.append(row)
-
-            if rows:
-                rows.sort(key=lambda r: r["level"])
-                levels = [r["level"] for r in rows]
-                if len(levels) != len(set(levels)):
-                    raise RuntimeError(f"Duplicate levels on {page_title}")
-                return rows
-
-    raise RuntimeError(f"No Level/Time/Cost lab table found on {page_title}")
-
-
-@dataclass
-class Model:
-    kind: str  # arithmetic | geometric | piecewise2 | lookup
-    params: Dict[str, Any]
-    rounding: Dict[str, Any]
-
-
-def fit_arithmetic(seq: List[int]) -> Optional[Model]:
-    if len(seq) < 2:
-        return Model("lookup", {"values": seq}, {"type": "int_exact"})
-    d = seq[1] - seq[0]
-    if all(seq[i] - seq[i - 1] == d for i in range(2, len(seq))):
-        return Model("arithmetic", {"a0": seq[0], "d": d}, {"type": "int_exact"})
-    return None
-
-
-def fit_geometric(seq: List[int]) -> Optional[Model]:
-    if len(seq) < 2 or seq[0] == 0:
-        return None
-    r_num, r_den = seq[1], seq[0]
-    for i in range(2, len(seq)):
-        if seq[i - 1] == 0:
-            return None
-        if seq[i] * r_den != seq[i - 1] * r_num:
-            return None
-    g = math.gcd(r_num, r_den)
-    r_num //= g
-    r_den //= g
-    return Model("geometric", {"a0": seq[0], "r_num": r_num, "r_den": r_den}, {"type": "int_exact"})
-
-
-def gen_int(model: Model, n: int) -> List[int]:
-    if model.kind == "lookup":
-        return model.params["values"][:n]
-    if model.kind == "arithmetic":
-        a0, d = model.params["a0"], model.params["d"]
-        return [a0 + i * d for i in range(n)]
-    if model.kind == "geometric":
-        a0, r_num, r_den = model.params["a0"], model.params["r_num"], model.params["r_den"]
-        out = [a0]
-        for _ in range(1, n):
-            prev = out[-1]
-            if (prev * r_num) % r_den != 0:
-                raise RuntimeError("Non-integer geometric step")
-            out.append((prev * r_num) // r_den)
-        return out
-    if model.kind == "piecewise2":
-        split = model.params["split"]
-        left = Model(**model.params["left"])
-        right = Model(**model.params["right"])
-        return gen_int(left, split) + gen_int(right, n - split)
-    raise RuntimeError(f"Unknown model kind {model.kind}")
-
-
-def fit_piecewise2(seq: List[int]) -> Optional[Model]:
-    n = len(seq)
-    if n < 6:
-        return None
-    for split in range(2, n - 2):
-        left_seq = seq[:split]
-        right_seq = seq[split:]
-        for lf in (fit_arithmetic(left_seq), fit_geometric(left_seq)):
-            if not lf:
+        # Extract rows
+        rows: List[List[str]] = []
+        for tr in t.find_all("tr"):
+            tds = tr.find_all(["td", "th"])
+            if not tds:
                 continue
-            for rf in (fit_arithmetic(right_seq), fit_geometric(right_seq)):
-                if not rf:
-                    continue
-                return Model(
-                    "piecewise2",
-                    {"split": split, "left": lf.__dict__, "right": rf.__dict__},
-                    {"type": "int_exact"},
-                )
-    return None
+            cells = [td.get_text(" ", strip=True) for td in tds]
+            # Skip header-only rows
+            if cells and any(c.lower() == "level" for c in cells):
+                continue
+            rows.append(cells)
+
+        if rows:
+            return headers, rows
+
+    die("No relevant per-level table found in lab page HTML")
 
 
-def fit_best_int(seq: List[int]) -> Model:
-    for f in (fit_arithmetic, fit_geometric, fit_piecewise2):
-        m = f(seq)
+def map_columns(headers: List[str]) -> Dict[str, Optional[int]]:
+    """
+    Return column indices for level/time/cost/value if present.
+    """
+    idx = {"level": None, "time": None, "cost": None, "value": None}
+    for i, h in enumerate(headers):
+        hn = h.strip().lower()
+        if "level" == hn or hn.endswith("level") or "level" in hn:
+            idx["level"] = i
+        elif "time" in hn or "duration" in hn:
+            idx["time"] = i
+        elif "cost" in hn:
+            idx["cost"] = i
+        elif "value" in hn or "effect" in hn:
+            idx["value"] = i
+    if idx["level"] is None:
+        die(f"Table missing Level column. headers={headers}")
+    return idx
+
+
+def build_rows(headers: List[str], raw_rows: List[List[str]]) -> List[TableRow]:
+    col = map_columns(headers)
+    out: List[TableRow] = []
+
+    for r in raw_rows:
+        # Some tables have fewer cells than headers due to rowspans. Fail-closed (don't guess).
+        if len(r) < (max(i for i in col.values() if i is not None) + 1):
+            continue  # skip malformed row rather than inventing
+
+        lvl_raw = r[col["level"]] if col["level"] is not None else ""
+        lvl = parse_int_like(lvl_raw)
+        if lvl is None:
+            # If the first column isn't numeric, it's not a data row
+            continue
+
+        time_raw = r[col["time"]] if col["time"] is not None else None
+        cost_raw = r[col["cost"]] if col["cost"] is not None else None
+        value_raw = r[col["value"]] if col["value"] is not None else None
+
+        time_min = parse_duration_minutes(time_raw) if time_raw is not None else None
+        cost = parse_int_like(cost_raw) if cost_raw is not None else None
+        value = parse_float_like(value_raw) if value_raw is not None else None
+
+        out.append(
+            TableRow(
+                level=lvl,
+                time_minutes=time_min,
+                cost=cost,
+                value=value,
+                time_raw=time_raw,
+                cost_raw=cost_raw,
+                value_raw=value_raw,
+            )
+        )
+
+    if not out:
+        die("Parsed table but produced zero data rows (no numeric levels found)")
+    # Ensure levels are strictly increasing
+    out_sorted = sorted(out, key=lambda x: x.level)
+    for i in range(1, len(out_sorted)):
+        if out_sorted[i].level <= out_sorted[i - 1].level:
+            die("Levels not strictly increasing after parse (table malformed)")
+    return out_sorted
+
+
+# ---- Compression models ----
+
+def try_arithmetic(seq: List[Optional[float]]) -> Optional[Dict[str, Any]]:
+    """
+    Exact arithmetic progression for numeric columns. None values disqualify.
+    """
+    if any(v is None for v in seq):
+        return None
+    vals = [float(v) for v in seq]  # safe
+    if len(vals) < 2:
+        return {"type": "arithmetic", "a0": vals[0], "d": 0.0, "round": "none"}
+    d = vals[1] - vals[0]
+    for i in range(2, len(vals)):
+        if vals[i] != vals[0] + d * i:
+            return None
+    return {"type": "arithmetic", "a0": vals[0], "d": d, "round": "none"}
+
+
+def try_geometric(seq: List[Optional[float]]) -> Optional[Dict[str, Any]]:
+    """
+    Exact geometric progression for numeric columns. None values disqualify.
+    Requires non-zero start.
+    """
+    if any(v is None for v in seq):
+        return None
+    vals = [float(v) for v in seq]
+    if len(vals) < 2:
+        return {"type": "geometric", "a0": vals[0], "r": 1.0, "round": "none"}
+    if vals[0] == 0:
+        return None
+    r = vals[1] / vals[0]
+    for i in range(2, len(vals)):
+        if vals[i] != vals[0] * (r ** i):
+            return None
+    return {"type": "geometric", "a0": vals[0], "r": r, "round": "none"}
+
+
+def model_or_lookup(name: str, rows: List[TableRow]) -> Dict[str, Any]:
+    """
+    For each column, try smallest exact model. Otherwise fallback to lookup.
+    We do not pretend we can fit piecewise models without explicit evidence;
+    we can add piecewise later if needed.
+    """
+    levels = [r.level for r in rows]
+
+    def col_seq(getter):
+        return [getter(r) for r in rows]
+
+    time_seq = col_seq(lambda r: r.time_minutes)
+    cost_seq = col_seq(lambda r: r.cost)
+    value_seq = col_seq(lambda r: r.value)
+
+    def fit_numeric(seq: List[Optional[float]]) -> Dict[str, Any]:
+        # Try arithmetic then geometric
+        m = try_arithmetic(seq)
         if m:
-            # verify exact match
-            if gen_int(m, len(seq)) == seq:
-                return m
-    return Model("lookup", {"values": seq}, {"type": "int_exact"})
-
-
-def fit_value_model(value_texts: List[str], value_nums: List[Optional[float]]) -> Model:
-    if not value_texts:
-        return Model("lookup", {"values": []}, {"type": "text"})
-
-    all_numeric = all(v is not None for v in value_nums)
-    if not all_numeric:
-        return Model("lookup", {"values": value_texts}, {"type": "text"})
-
-    nums = [v for v in value_nums if v is not None]  # type: ignore
-    # exact scaling to ints (try smallest scale)
-    for scale in (1, 10, 100, 1000):
-        ints = []
-        ok = True
-        for v in nums:
-            x = v * scale
-            if abs(x - round(x)) > 1e-9:
-                ok = False
-                break
-            ints.append(int(round(x)))
-        if ok:
-            m = fit_best_int(ints)
-            m.rounding = {"type": "scaled_int_exact", "scale": scale}
             return m
+        m = try_geometric(seq)
+        if m:
+            return m
+        # fallback: lookup
+        return {"type": "lookup", "values": seq, "round": "none"}
 
-    # fallback: keep exact strings
-    return Model("lookup", {"values": value_texts}, {"type": "text"})
-
-
-def regen_value(model: Model, n: int) -> Tuple[List[str], List[Optional[float]]]:
-    if model.rounding.get("type") == "text":
-        vals = model.params["values"][:n]
-        return vals, [normalize_value_numeric(v) for v in vals]
-    if model.rounding.get("type") == "scaled_int_exact":
-        scale = model.rounding["scale"]
-        ints = gen_int(model, n)
-        nums = [i / scale for i in ints]
-        # preserve as minimal strings via numeric rendering is risky; compare numerically
-        return [str(x) for x in nums], nums
-    # int_exact
-    ints = gen_int(model, n)
-    nums = [float(i) for i in ints]
-    return [str(i) for i in ints], nums
+    model = {
+        "levels": {"type": "lookup", "values": levels, "round": "none"},
+        "time_minutes": fit_numeric([float(v) if v is not None else None for v in time_seq]),
+        "cost": fit_numeric([float(v) if v is not None else None for v in cost_seq]),
+        "value": fit_numeric([float(v) if v is not None else None for v in value_seq]),
+    }
+    return model
 
 
-def build_lab_entry(section: str, lab_name: str, page_title: str, max_level: int) -> Dict[str, Any]:
-    rows = extract_lab_table(page_title)
-
-    canon_rows = [{
-        "level": r["level"],
-        "time_min": r["time_min"],
-        "cost_int": r["cost_int"],
-        "value_text": r["value_text"],
-        "value_num": r["value_num"],
-    } for r in rows]
-
-    rows_hash = sha256_canonical_rows(canon_rows)
-
-    time_seq = [r["time_min"] for r in rows]
-    cost_seq = [r["cost_int"] for r in rows]
-    value_texts = [r["value_text"] for r in rows]
-    value_nums = [r["value_num"] for r in rows]
-
-    time_model = fit_best_int(time_seq)
-    cost_model = fit_best_int(cost_seq)
-    value_model = fit_value_model(value_texts, value_nums)
-
-    # verification: regenerate and strict diff (minutes + ints + value strict)
-    n = len(rows)
-    if gen_int(time_model, n) != time_seq:
-        raise RuntimeError("time_model mismatch")
-    if gen_int(cost_model, n) != cost_seq:
-        raise RuntimeError("cost_model mismatch")
-
-    regen_value_text, regen_value_nums = regen_value(value_model, n)
-
-    # value strictness:
-    if value_model.rounding.get("type") == "text":
-        if regen_value_text != value_texts:
-            raise RuntimeError("value_text mismatch")
-    else:
-        # numeric strict
-        if any(a is None or b is None or abs(a - b) > 0 for a, b in zip(regen_value_nums, value_nums)):
-            raise RuntimeError("value_numeric mismatch")
+def regen_from_model(model: Dict[str, Any], n: int) -> Dict[str, List[Optional[float]]]:
+    def regen_col(col: Dict[str, Any]) -> List[Optional[float]]:
+        t = col["type"]
+        if t == "lookup":
+            vals = col["values"]
+            if len(vals) != n:
+                die("lookup model length mismatch during regen")
+            return vals
+        if t == "arithmetic":
+            a0 = col["a0"]
+            d = col["d"]
+            return [a0 + d * i for i in range(n)]
+        if t == "geometric":
+            a0 = col["a0"]
+            r = col["r"]
+            return [a0 * (r ** i) for i in range(n)]
+        die(f"Unknown model type: {t}")
 
     return {
-        "section": section,
-        "lab_name": lab_name,
-        "page_title": page_title,
-        "max_level": max_level,
-        "source_url": f"https://the-tower-idle-tower-defense.fandom.com/wiki/{page_title}",
-        "ground_truth": {
-            "rows_hash_sha256": rows_hash,
-            "row_count": n,
-            "columns": ["level", "time_min", "cost_int", "value_text", "value_num"],
-            "rows": canon_rows,
-        },
-        "models": {
-            "time_min": time_model.__dict__,
-            "cost_int": cost_model.__dict__,
-            "value": value_model.__dict__,
-        },
-        "verification": {
-            "status": "PASS",
-            "time_minutes_strict": True,
-            "cost_strict": True,
-            "value_strict": True,
-        },
+        "levels": regen_col(model["levels"]),
+        "time_minutes": regen_col(model["time_minutes"]),
+        "cost": regen_col(model["cost"]),
+        "value": regen_col(model["value"]),
     }
+
+
+def strict_verify(name: str, rows: List[TableRow], model: Dict[str, Any]) -> None:
+    """
+    Strict equality for numbers (after regen), and time equality on minutes.
+    """
+    n = len(rows)
+    regen = regen_from_model(model, n)
+
+    # levels: strict ints
+    for i in range(n):
+        if int(regen["levels"][i]) != rows[i].level:
+            die(f"[{name}] level mismatch at i={i}: regen={regen['levels'][i]} wiki={rows[i].level}")
+
+    # time minutes strict equality when present
+    for i in range(n):
+        r = rows[i].time_minutes
+        g = regen["time_minutes"][i]
+        if r is None and g is None:
+            continue
+        if r is None or g is None:
+            die(f"[{name}] time presence mismatch at level={rows[i].level}: regen={g} wiki={r}")
+        if float(r) != float(g):
+            die(f"[{name}] time mismatch at level={rows[i].level}: regen={g} wiki={r}")
+
+    # cost strict numeric equality when present
+    for i in range(n):
+        r = rows[i].cost
+        g = regen["cost"][i]
+        if r is None and g is None:
+            continue
+        if r is None or g is None:
+            die(f"[{name}] cost presence mismatch at level={rows[i].level}: regen={g} wiki={r}")
+        if float(r) != float(g):
+            die(f"[{name}] cost mismatch at level={rows[i].level}: regen={g} wiki={r}")
+
+    # value strict numeric equality when present
+    for i in range(n):
+        r = rows[i].value
+        g = regen["value"][i]
+        if r is None and g is None:
+            continue
+        if r is None or g is None:
+            die(f"[{name}] value presence mismatch at level={rows[i].level}: regen={g} wiki={r}")
+        if float(r) != float(g):
+            die(f"[{name}] value mismatch at level={rows[i].level}: regen={g} wiki={r}")
 
 
 def main() -> int:
-    sections = extract_all_sections_and_labs()
-
-    out: Dict[str, Any] = {
-        "source": {
-            "title": "The Tower - Idle Tower Defense Wiki (Fandom) — Labs consolidated extract",
-            "url": "https://the-tower-idle-tower-defense.fandom.com/wiki/Lab_Upgrades",
-            "snapshot": "2026-01-19",
-            "excerpt": "All lab sections and labs enumerated from Lab_Upgrades; each lab page parsed for Level/Time/Cost/Value table. Columns are compressed into exact models when possible and strictly verified.",
-        },
-        "meta": {
-            "api": WIKI_API,
-            "output_path": OUT_PATH,
-            "pipeline": [
-                "enumerate ALL lab sections + labs from Lab_Upgrades",
-                "fetch each lab page via action=parse",
-                "extract authoritative Level/Time/Cost/Value table",
-                "fit smallest exact model per column (arith, geom, piecewise2, else lookup)",
-                "hash canonical rows",
-                "regenerate + strict diff verification",
-            ],
-        },
-        "sections": {k: [{"lab_name": n, "page_title": p, "max_level": m} for (n, p, m) in v] for k, v in sections.items()},
-        "labs": [],
-    }
-
-    failures: List[Dict[str, Any]] = []
-
-    for section_name, labs in sections.items():
-        for (lab_name, page_title, max_level) in labs:
-            try:
-                entry = build_lab_entry(section_name, lab_name, page_title, max_level)
-            except Exception as e:
-                entry = {
-                    "section": section_name,
-                    "lab_name": lab_name,
-                    "page_title": page_title,
-                    "max_level": max_level,
-                    "source_url": f"https://the-tower-idle-tower-defense.fandom.com/wiki/{page_title}",
-                    "verification": {"status": "FAIL", "error": str(e)},
-                }
-                failures.append(entry)
-            out["labs"].append(entry)
-
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)
-    with open(OUT_PATH, "w", encoding="utf-8") as f:
-        json.dump(out, f, indent=2, ensure_ascii=True)
+
+    index_title = resolve_title(LAB_UPGRADES_PAGE)
+    print(f"[wiki] index canonical title: {index_title}")
+
+    sections = discover_labs_from_index(index_title)
+    total = sum(len(v) for v in sections.values())
+    print(f"[wiki] discovered sections={len(sections)} labs_total={total}")
+
+    extracted: List[Dict[str, Any]] = []
+    failures: List[str] = []
+
+    for section, labs in sections.items():
+        for lab_title in labs:
+            lab_canonical = resolve_title(lab_title)
+            print(f"[lab] {section} :: {lab_canonical}")
+            try:
+                html = api_parse_html(lab_canonical)
+                headers, raw_rows = extract_first_relevant_table(html)
+                rows = build_rows(headers, raw_rows)
+
+                model = model_or_lookup(lab_canonical, rows)
+                strict_verify(lab_canonical, rows, model)
+
+                extracted.append(
+                    {
+                        "section": section,
+                        "title": lab_canonical,
+                        "source": {
+                            "wiki": "the-tower-idle-tower-defense.fandom.com",
+                            "page": lab_canonical,
+                        },
+                        "table_hash_sha256": table_rows_hash(rows),
+                        "table_headers": headers,
+                        "table_rows_raw": [
+                            {
+                                "level": r.level,
+                                "time_raw": r.time_raw,
+                                "cost_raw": r.cost_raw,
+                                "value_raw": r.value_raw,
+                            }
+                            for r in rows
+                        ],
+                        "parsed": {
+                            "level": [r.level for r in rows],
+                            "time_minutes": [r.time_minutes for r in rows],
+                            "cost": [r.cost for r in rows],
+                            "value": [r.value for r in rows],
+                        },
+                        "model": model,
+                    }
+                )
+            except Exception as e:
+                failures.append(f"{lab_title} ({section}): {e}")
+                print(f"[FAIL] {lab_title} ({section}): {e}", file=sys.stderr)
 
     if failures:
-        print(f"[FAIL] {len(failures)} labs failed extraction/verification. Output written: {OUT_PATH}")
+        print("[FATAL] One or more labs failed extraction; failing closed.", file=sys.stderr)
+        for f in failures[:50]:
+            print(f"  - {f}", file=sys.stderr)
         return 2
 
-    print(f"[OK] All labs extracted + verified. Output written: {OUT_PATH}")
+    out_obj = {
+        "source_index_page": index_title,
+        "sections": sections,
+        "labs": extracted,
+    }
+
+    with open(OUT_PATH, "w", encoding="utf-8") as f:
+        json.dump(out_obj, f, ensure_ascii=False, indent=2, sort_keys=True)
+
+    print(f"[ok] wrote {OUT_PATH} labs={len(extracted)}")
     return 0
 
 
