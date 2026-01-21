@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-01-20T14:25:35.688Z",
+  "generated_utc": "2026-01-21T14:25:32.784Z",
   "spreadsheet_id": "1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c",
   "dest_prefix": "tests/fixtures/tower-sim-data/",
   "files": {
@@ -29,7 +29,7 @@
       "sheet": "BossSurvivabilitySim",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 343,
-      "bytes": 69328
+      "bytes": 69331
     },
     "Tiers.csv": {
       "github_path": "tests/fixtures/tower-sim-data/Tiers.csv",
@@ -43,7 +43,7 @@
       "sheet": "_IDS",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 213,
-      "bytes": 36419
+      "bytes": 36436
     },
     "Data_Val_Tables.csv": {
       "github_path": "tests/fixtures/tower-sim-data/Data_Val_Tables.csv",
