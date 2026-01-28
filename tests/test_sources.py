@@ -15,7 +15,13 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.sources import DatasetBundle, SnapshotPriority, load_snapshot_bundle  # noqa: E402
+from tower_sim.sources import (  # noqa: E402
+    DatasetBundle,
+    IdsOnlyBundle,
+    SnapshotPriority,
+    load_ids_only_bundle,
+    load_snapshot_bundle,
+)
 
 
 def _write_manifest(path: Path) -> None:
@@ -85,3 +91,14 @@ def test_load_snapshot_bundle_raises_without_snapshots(tmp_path: Path) -> None:
 
     with pytest.raises(FileNotFoundError):
         load_snapshot_bundle([empty_cache], git_dir=None, priority=SnapshotPriority())
+
+
+def test_load_ids_only_bundle_resolves_fixture(tmp_path: Path) -> None:
+    ids_path = tmp_path / "_IDS.csv"
+    ids_path.write_text("stub")
+
+    bundle = load_ids_only_bundle([ids_path])
+
+    assert isinstance(bundle, IdsOnlyBundle)
+    assert bundle.ids_path == ids_path
+    assert bundle.resolved_from == "ids_only"
