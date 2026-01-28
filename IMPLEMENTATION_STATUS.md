@@ -14,12 +14,14 @@ Explicitly NOT included:
 - older `codebase_wip_v6/v7/v8` (superseded by the baseline)
 
 ## What is Implemented (High Confidence)
-### Data + Snapshot Loading
-- `towersim/sources.py` provides snapshot unzip + CSV loading helpers (local snapshot directory model).
+### Data + Input Loading
+- `_IDS.csv` is the only external input; the rest of the tables ship with the repo.
+- `tower_sim/sources.py` provides an IDS-only resolver (`load_ids_only_bundle`) for `_IDS.csv`.
+- Snapshot helpers remain available for legacy workflows.
 
 ### IDS Parsing
 - `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
-- **Missing:** typed parsing into a structured `IdsState`.
+- Typed `IdsState` parsing exists for raw values.
 
 ### Workshop Progression (Deterministic)
 - `towersim/free_upgrades.py` implements deterministic expected free upgrades.
@@ -46,22 +48,24 @@ Explicitly NOT included:
 
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
-- Typed `_IDS.csv` → `IdsState` with all required raw fields.
-- DataLoader priority order implementation:
-  - <24h cache → Git → older snapshot.
-  - Git integration is not implemented in the bundled baseline.
+- Legacy snapshot loader does not fetch/pull remotes (local git dir only).
 
 ### Stat Engine + StatBook
-- No unified stat engine that composes:
-  Base → Loadout → Enhancements → Tier rules → Derived.
-- No StatBook export (`statbook.csv` / `.xlsx`).
+- Stat engine scaffolding and StatBook export exist, but composition is incomplete.
+- `statbook_builder.py` API mismatch remains a known gap.
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired.
+- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
+### Missing (Explicit)
+- Tier battle condition loader (Tier BCs not yet applied).
+- Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
+- Boss combat model (boss-only survivability and death wave estimation).
+- Validation harness against Harry’s reference sheets.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.
+- Fail-closed boss combat engine scaffold exists in `tower_sim/combat/boss_engine.py`.
 - No root-find / binary search to find death wave.
 
 ### Validation Harness
@@ -71,8 +75,8 @@ Explicitly NOT included:
 - Loadout optimiser and stone spending optimiser not implemented.
 
 ## Immediate Next Steps (Codex PR sequence)
-1. Implement typed `IdsState` parsing (raw values only) + unit tests.
-2. Implement DataLoader priority order (cache/Git/older) + tests.
-3. Implement Stat Engine skeleton + StatBook export (no combat) + tests.
-4. Wire progression + skip mapping to produce per-wave stats.
-5. Implement boss-only combat model and validate against reference sheets.
+1. Resolve `statbook_builder.py` API mismatch + tests.
+2. Implement tier battle condition loader (Tier BCs applied in frozen order).
+3. Wire progression + skip mapping to produce per-wave stats.
+4. Implement boss-only combat model and validate against reference sheets.
+5. Add validation harness against Harry’s reference sheets.
