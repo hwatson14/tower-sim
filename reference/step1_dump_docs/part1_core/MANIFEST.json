@@ -1,0 +1,5 @@
+{
+  "version": "v20.0.0",
+  "purpose": "full authoritative handover",
+  "notes": "single-input, fail-closed"
+}

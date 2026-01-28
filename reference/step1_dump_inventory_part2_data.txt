@@ -1,0 +1,25 @@
+Archive:  reference/tower-sim-step1_part2_data.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-01-28 01:38   data/
+    17587  2026-01-28 01:30   data/PROVENANCE_V13.json
+       29  2026-01-28 01:30   data/battle_condition_magnitudes.csv
+      127  2026-01-28 01:30   data/dag.json
+    91382  2026-01-28 01:30   data/heat_wave_scalar.csv
+     9802  2026-01-28 01:30   data/tier14_21_battle_conditions.csv
+     5947  2026-01-28 01:30   data/tier_wave_damage.csv
+ 11099557  2026-01-28 01:30   data/tournament_bc_magnitudes_from_player_and_stuff.csv
+       83  2026-01-28 01:30   data/tournament_more_bosses_static.csv
+     1965  2026-01-28 01:30   data/tournament_wave_damage.csv
+       43  2026-01-28 01:30   data/econ_cc.yaml
+        0  2026-01-28 01:38   data/battle_conditions/
+      262  2026-01-28 01:30   data/battle_conditions/scenario_set_placeholder.yaml
+        0  2026-01-28 01:38   data/battle_conditions/tiers_14_17/
+       26  2026-01-28 01:30   data/battle_conditions/tiers_14_17/README.md
+        0  2026-01-28 01:38   data/battle_conditions/tiers_18_21/
+       26  2026-01-28 01:30   data/battle_conditions/tiers_18_21/README.md
+        0  2026-01-28 01:38   data/heat/
+       61  2026-01-28 01:30   data/heat/README_HEAT.md
+       48  2026-01-28 01:30   data/heat/heat_schema.json
+---------                     -------
+ 11226945                     20 files
