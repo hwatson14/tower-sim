@@ -58,6 +58,7 @@ Explicitly NOT included:
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
 - `tower_sim/tier_battle_conditions.py` loads tier battle conditions from the step1 dump CSV, but is not yet wired into stat composition.
+- `tower_sim/tier_rules.py` builds tier-rule context with loaded battle conditions, but does not yet apply stat deltas.
 - Tournament run rules (perks disabled, permanent BCs) not fully wired; run context derives `perks_enabled` and calls the fail-closed perks gate.
 
 ### Boss Survivability Model (v1 objective)

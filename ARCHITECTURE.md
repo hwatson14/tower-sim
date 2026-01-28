@@ -152,3 +152,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add fail-closed tournament perks gate helper.
 - [x] Add run-context helper that derives perks_enabled by run mode.
 - [x] Add tier battle-conditions loader for step1 dump CSV.
+- [x] Add tier rules builder that requires tier battle conditions.
