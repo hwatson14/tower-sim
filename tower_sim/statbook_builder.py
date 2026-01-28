@@ -1,53 +1,73 @@
 from __future__ import annotations
 
 from tower_sim.ids_state import IdsState
-from tower_sim.stat_registry import StatRegistry, default_registry
+from tower_sim.stat_registry import Phase, StatRegistry, default_registry
 from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
-from tower_sim.stat_engine import StatEngine, StatInput
-from tower_sim.stat_registry import Phase, StatRegistry
-from tower_sim.statbook import StatBook
+
+PHASE_START = Phase.START_OF_RUN.value
+PHASE_END = Phase.END_OF_RUN.value
 
 
-PHASE_START = Phase.START_OF_RUN
-PHASE_END = Phase.END_OF_RUN
+def _optional_str(value: object | None) -> str | None:
+    if value is None:
+        return None
+    return str(value)
+
 
 def build_statbook(ids_state: IdsState) -> StatBook:
     rows: list[StatRow] = []
     for name, level in ids_state.labs.labs.items():
+        level_value = _optional_str(level)
         rows.append(
             StatRow(
-                stat_name=name,
+                stat_id=name,
                 phase=PHASE_START,
-                value=level,
-                source="labs",
+                base_value=level_value,
+                loadout_delta=None,
+                enhancement_multiplier=None,
+                tier_rule_delta_or_multiplier=None,
+                final_value=level_value,
+                provenance="ids:labs",
             )
         )
         rows.append(
             StatRow(
-                stat_name=name,
+                stat_id=name,
                 phase=PHASE_END,
-                value=level,
-                source="labs",
-                notes="Raw lab level duplicated for end-of-run placeholder.",
+                base_value=level_value,
+                loadout_delta=None,
+                enhancement_multiplier=None,
+                tier_rule_delta_or_multiplier=None,
+                final_value=level_value,
+                provenance="ids:labs (end-of-run placeholder)",
             )
         )
     for entry in ids_state.workshop.entries.values():
+        coin_level_value = _optional_str(entry.coin_level)
+        max_value = _optional_str(entry.max_level) or coin_level_value
         rows.append(
             StatRow(
-                stat_name=entry.name,
+                stat_id=entry.name,
                 phase=PHASE_START,
-                value=entry.coin_level,
-                source="workshop",
+                base_value=coin_level_value,
+                loadout_delta=None,
+                enhancement_multiplier=None,
+                tier_rule_delta_or_multiplier=None,
+                final_value=coin_level_value,
+                provenance="ids:workshop",
             )
         )
         rows.append(
             StatRow(
-                stat_name=entry.name,
+                stat_id=entry.name,
                 phase=PHASE_END,
-                value=entry.max_level or entry.coin_level,
-                source="workshop",
-                notes="Uses raw max level when present; otherwise coin level.",
+                base_value=coin_level_value,
+                loadout_delta=None,
+                enhancement_multiplier=None,
+                tier_rule_delta_or_multiplier=None,
+                final_value=max_value,
+                provenance="ids:workshop (max level fallback)",
             )
         )
     return StatBook(rows=rows)

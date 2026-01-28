@@ -37,6 +37,9 @@ Explicitly NOT included:
 ### Modules
 - `towersim/modules_library.py`, `towersim/modules.py`, `towersim/assist_efficiency.py` implement module unique effects, substats, and assist efficiency logic.
 
+### Tier Battle Conditions
+- `tower_sim/tier_bc_loader.py` loads tier 14–21 farming BC magnitudes from `tower_sim/tables/tier14_21_battle_conditions.csv`.
+
 ### Wiki Caches + Ingest
 - `towersim/wiki/cards.py` reads cached card tables.
 - `towersim/wiki/labs.py` + `labs_ingest_all.py` + `labs_formula.py` implement lab value retrieval with formula-first and cache fallback.
@@ -52,13 +55,12 @@ Explicitly NOT included:
 
 ### Stat Engine + StatBook
 - Stat engine scaffolding and StatBook export exist, but composition is incomplete.
-- `statbook_builder.py` API mismatch remains a known gap.
 
 ### Tier Rules / Battle Conditions
-- `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
+- `towersim/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
 - Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
 ### Missing (Explicit)
-- Tier battle condition loader (Tier BCs not yet applied).
+- Tier BC application in per-wave stat composition (loader exists but is not yet integrated).
 - Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
 - Boss combat model (boss-only survivability and death wave estimation).
 - Validation harness against Harry’s reference sheets.
@@ -75,8 +77,6 @@ Explicitly NOT included:
 - Loadout optimiser and stone spending optimiser not implemented.
 
 ## Immediate Next Steps (Codex PR sequence)
-1. Resolve `statbook_builder.py` API mismatch + tests.
-2. Implement tier battle condition loader (Tier BCs applied in frozen order).
-3. Wire progression + skip mapping to produce per-wave stats.
-4. Implement boss-only combat model and validate against reference sheets.
-5. Add validation harness against Harry’s reference sheets.
+1. Wire progression + skip mapping to produce per-wave stats.
+2. Implement boss-only combat model and validate against reference sheets.
+3. Add validation harness against Harry’s reference sheets.
