@@ -158,5 +158,65 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.AT_WAVE},
             description="Derived health wave index (placeholder).",
         ),
+        StatDef(
+            stat_id="orb_damage_mult",
+            display_name="Orb Damage Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.BASE,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Tier BC: orb resistance multiplier from step1 dump "
+                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+            ),
+        ),
+        StatDef(
+            stat_id="death_ray_damage_mult",
+            display_name="Death Ray Damage Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.BASE,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Tier BC: death ray resistance multiplier from step1 dump "
+                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+            ),
+        ),
+        StatDef(
+            stat_id="thorns_damage_mult",
+            display_name="Thorns Damage Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.BASE,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Tier BC: thorns resistance multiplier from step1 dump "
+                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+            ),
+        ),
+        StatDef(
+            stat_id="plasma_cannon_damage_mult",
+            display_name="Plasma Cannon Damage Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.BASE,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Tier BC: plasma cannon resistance multiplier from step1 dump "
+                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+            ),
+        ),
+        StatDef(
+            stat_id="knockback_mult",
+            display_name="Knockback Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.BASE,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Tier BC: knockback resistance multiplier from step1 dump "
+                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+            ),
+        ),
     ]
     return StatRegistry(defs)
