@@ -127,6 +127,54 @@ Export formats:
 - Compares outputs vs Harry’s reference sheets (authoritative).
 - Wiki used secondarily with citations.
 
+## Missing Mechanics Cross-Check (Step1 Parts 1–4)
+The current sim is still missing these mechanics. The Step1 `/reference` bundle
+contains the authoritative recovery details; each item below lists where the
+mechanic details live in parts 1–4:
+
+### Combat Engines (boss + nonboss)
+- **Missing mechanic:** combat resolution engines (boss survivability + nonboss
+  combat loop).
+- **Reference location:** `reference/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
+  (explicitly notes `sim/engines/combat_engine.py` and
+  `sim/engines/nonboss_combat_engine.py` are missing).
+
+### Tier Battle Conditions + Heat
+- **Missing mechanic:** tier BC application in frozen order + heat scaling.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (expects
+    `battle_conditions.csv` + `heat.csv` runtime inputs).
+  - `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
+    and `BC_HEAT_PROVENANCE.md` (source + gaps).
+  - `reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
+    (BC base magnitude table).
+  - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv` (league,wave heat).
+  - `reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`
+    (partial Tier 14–21 farming BC magnitudes).
+
+### Tournament Battle Conditions
+- **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
+  boss frequency.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
+    (per-wave BC magnitudes).
+  - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
+    (boss frequency by league).
+
+### Wave Damage Curves
+- **Missing mechanic:** authoritative wave damage curves for tier + tournament.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part2_data/tier_wave_damage.csv`
+  - `reference/step1_dump_docs/part2_data/tournament_wave_damage.csv`
+
+### Runtime DAG / Derived Pipeline Inputs
+- **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
+  binding).
+- **Reference locations:**
+  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (expects `tiers.csv`
+    + `dag.json` at runtime).
+  - `reference/step1_dump_docs/part2_data/dag.json` (DAG snapshot).
+
 ## “Stop the Line” Conditions
 Any of the following must stop work and ask for clarification:
 - A mechanic is required but not specified by sheet/wiki.
@@ -155,10 +203,11 @@ Any of the following must stop work and ask for clarification:
 - [x] Add run context with tournament perk gating.
 - [x] Thread RunContext through battle condition filtering and perk-gated stat composition.
 - [x] Implement perk engine (perk bonus application with gating).
-- [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [x] Implement tier battle condition loader (Tier BCs applied in frozen order).
+- [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [ ] Implement boss combat model (boss-only survivability + death wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [ ] Add validation harness against Harry’s reference sheets.
+- [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.

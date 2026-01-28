@@ -5,14 +5,6 @@ from tower_sim.stat_registry import Phase, StatRegistry, default_registry
 from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
 
-PHASE_START = Phase.START_OF_RUN.value
-PHASE_END = Phase.END_OF_RUN.value
-
-
-def _optional_str(value: object | None) -> str | None:
-    if value is None:
-        return None
-    return str(value)
 
 
 def build_statbook(ids_state: IdsState) -> StatBook:
@@ -20,54 +12,38 @@ def build_statbook(ids_state: IdsState) -> StatBook:
     for name, level in ids_state.labs.labs.items():
         level_value = _optional_str(level)
         rows.append(
-            StatRow(
+            _make_row(
                 stat_id=name,
                 phase=PHASE_START,
-                base_value=level_value,
-                loadout_delta=None,
-                enhancement_multiplier=None,
-                tier_rule_delta_or_multiplier=None,
-                final_value=level_value,
+                value=level,
                 provenance="ids:labs",
             )
         )
         rows.append(
-            StatRow(
+            _make_row(
                 stat_id=name,
                 phase=PHASE_END,
-                base_value=level_value,
-                loadout_delta=None,
-                enhancement_multiplier=None,
-                tier_rule_delta_or_multiplier=None,
-                final_value=level_value,
-                provenance="ids:labs (end-of-run placeholder)",
+                value=level,
+                provenance="ids:labs",
             )
         )
     for entry in ids_state.workshop.entries.values():
         coin_level_value = _optional_str(entry.coin_level)
         max_value = _optional_str(entry.max_level) or coin_level_value
         rows.append(
-            StatRow(
+            _make_row(
                 stat_id=entry.name,
                 phase=PHASE_START,
-                base_value=coin_level_value,
-                loadout_delta=None,
-                enhancement_multiplier=None,
-                tier_rule_delta_or_multiplier=None,
-                final_value=coin_level_value,
+                value=entry.coin_level,
                 provenance="ids:workshop",
             )
         )
         rows.append(
-            StatRow(
+            _make_row(
                 stat_id=entry.name,
                 phase=PHASE_END,
-                base_value=coin_level_value,
-                loadout_delta=None,
-                enhancement_multiplier=None,
-                tier_rule_delta_or_multiplier=None,
-                final_value=max_value,
-                provenance="ids:workshop (max level fallback)",
+                value=entry.max_level or entry.coin_level,
+                provenance="ids:workshop",
             )
         )
     return StatBook(rows=rows)
@@ -89,3 +65,21 @@ def build_canonical_statbook(
             raise ValueError(f"Provenance required for stat_id {row.stat_id}.")
         row.loadout_delta_total()
     return CanonicalStatBook(rows=rows)
+
+
+def _make_row(
+    stat_id: str,
+    phase: Phase,
+    value: str | None,
+    provenance: str,
+) -> StatRow:
+    return StatRow(
+        stat_id=stat_id,
+        phase=phase.value,
+        base_value=value,
+        loadout_delta=None,
+        enhancement_multiplier=None,
+        tier_rule_delta_or_multiplier=None,
+        final_value=value,
+        provenance=provenance,
+    )
