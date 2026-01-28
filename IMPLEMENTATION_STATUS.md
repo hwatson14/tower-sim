@@ -20,7 +20,7 @@ Explicitly NOT included:
 
 ### IDS Parsing
 - `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
-- **Missing:** typed parsing into a structured `IdsState`.
+- Typed `IdsState` parsing exists for raw values.
 
 ### Workshop Progression (Deterministic)
 - `towersim/free_upgrades.py` implements deterministic expected free upgrades.
@@ -47,17 +47,20 @@ Explicitly NOT included:
 
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
-- Typed `_IDS.csv` → `IdsState` with all required raw fields.
 - DataLoader Git integration does not fetch/pull remotes (local git dir only).
 
 ### Stat Engine + StatBook
-- No unified stat engine that composes:
-  Base → Loadout → Enhancements → Tier rules → Derived.
-- No StatBook export (`statbook.csv` / `.xlsx`).
+- Stat engine scaffolding and StatBook export exist, but composition is incomplete.
+- `statbook_builder.py` API mismatch remains a known gap.
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
 - Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
+### Missing (Explicit)
+- Tier battle condition loader (Tier BCs not yet applied).
+- Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
+- Boss combat model (boss-only survivability and death wave estimation).
+- Validation harness against Harry’s reference sheets.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.
