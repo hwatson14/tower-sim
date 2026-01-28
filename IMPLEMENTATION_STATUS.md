@@ -65,6 +65,7 @@ Explicitly NOT included:
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.
+- Fail-closed boss combat engine scaffold exists in `tower_sim/combat/boss_engine.py`.
 - No root-find / binary search to find death wave.
 
 ### Validation Harness
