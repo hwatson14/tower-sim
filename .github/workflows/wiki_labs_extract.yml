@@ -1,0 +1,62 @@
+name: Wiki Labs Extract (Consolidated)
+
+on:
+  workflow_dispatch: {}
+  schedule:
+    - cron: "0 18 * * 1" # weekly Monday 18:00 UTC (edit if you want)
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4 lxml
+
+      - name: Debug extractor file (prove what runner sees)
+        run: |
+          set -euo pipefail
+          echo "PWD=$(pwd)"
+          echo "Listing tools/wiki_ingest:"
+          ls -la tools/wiki_ingest
+          echo "First 60 lines of tools/wiki_ingest/extract_all_labs.py:"
+          sed -n '1,60p' tools/wiki_ingest/extract_all_labs.py
+          echo "Line count:"
+          wc -l tools/wiki_ingest/extract_all_labs.py
+          echo "SHA256:"
+          python - <<'PY'
+          import hashlib, pathlib
+          p = pathlib.Path("tools/wiki_ingest/extract_all_labs.py")
+          b = p.read_bytes()
+          print(hashlib.sha256(b).hexdigest())
+          PY
+
+      - name: Run labs extractor
+        env:
+          PYTHONUNBUFFERED: "1"
+        run: |
+          python tools/wiki_ingest/extract_all_labs.py
+
+      - name: Upload consolidated extract artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: labs_compact_json
+          path: data/wiki/extracts/labs_compact.json
+          if-no-files-found: error
+
+      - name: Show quick diff (if changed)
+        run: |
+          git status --porcelain
+          git diff --stat || true

@@ -1,0 +1,786 @@
+categories:
+  uws:
+    - canonical_id: UW_BLACK_HOLE
+      primary_name: "Black Hole"
+      aliases: ["BH", "Black Hole"]
+    - canonical_id: UW_CHRONO_FIELD
+      primary_name: "Chrono Field"
+      aliases: ["CF", "Chrono Field"]
+    - canonical_id: UW_CHAIN_LIGHTNING
+      primary_name: "Chain Lightning"
+      aliases: ["CL", "Chain Lightning"]
+    - canonical_id: UW_DEATH_WAVE
+      primary_name: "Death Wave"
+      aliases: ["DW", "Death Wave"]
+    - canonical_id: UW_GOLDEN_TOWER
+      primary_name: "Golden Tower"
+      aliases: ["GT", "Golden Tower"]
+    - canonical_id: UW_INNER_LAND_MINES
+      primary_name: "Inner Land Mines"
+      aliases: ["ILM", "Inner Land Mines"]
+    - canonical_id: UW_POISON_SWAMP
+      primary_name: "Poison Swamp"
+      aliases: ["PS", "Poison Swamp"]
+    - canonical_id: UW_SPOTLIGHT
+      primary_name: "Spotlight"
+      aliases: ["SL", "Spotlight"]
+    - canonical_id: UW_SMART_MISSILES
+      primary_name: "Smart Missiles"
+      aliases: ["SM", "Smart Missiles"]
+
+  cards:
+    - canonical_id: CARD_CRITICAL_CHANCE
+      primary_name: "Critical Chance"
+      aliases: ["CC", "Critical Chance"]
+    - canonical_id: CARD_ENEMY_BALANCE
+      primary_name: "Enemy Balance"
+      aliases: ["EB", "Enemy Balance"]
+    - canonical_id: CARD_PLASMA_CANNON
+      primary_name: "Plasma Cannon"
+      aliases: ["PC", "Plasma Cannon"]
+    - canonical_id: CARD_CRITICAL_COIN
+      primary_name: "Critical Coin"
+      aliases: ["Critical Coin"]
+    - canonical_id: CARD_WAVE_SKIP
+      primary_name: "Wave Skip"
+      aliases: ["WS", "Wave Skip"]
+    - canonical_id: CARD_INTRO_SPRINT
+      primary_name: "Intro Sprint"
+      aliases: ["IS", "Intro Sprint"]
+    - canonical_id: CARD_DEATH_RAY
+      primary_name: "Death Ray"
+      aliases: ["DR", "Death Ray"]
+    - canonical_id: CARD_ENERGY_NET
+      primary_name: "Energy Net"
+      aliases: ["EN", "Energy Net"]
+    - canonical_id: CARD_EXTRA_ORBS
+      primary_name: "Extra Orbs"
+      aliases: ["EO", "Extra Orbs"]
+    - canonical_id: CARD_RECOVERY_PACKAGE_CHANCE
+      primary_name: "Recovery Package Chance"
+      aliases: ["RPC", "Recovery Package Chance"]
+    - canonical_id: CARD_SLOW_AURA
+      primary_name: "Slow Aura"
+      aliases: ["SA", "Slow Aura"]
+    - canonical_id: CARD_SUPER_TOWER
+      primary_name: "Super Tower"
+      aliases: ["ST", "Super tower"]
+    - canonical_id: CARD_SECOND_WIND
+      primary_name: "Second Wind"
+      aliases: ["SW", "Second Wind"]
+    - canonical_id: CARD_DEMON_MODE
+      primary_name: "Demon Mode"
+      aliases: ["DM", "Demon Mode"]
+    - canonical_id: CARD_ENERGY_SHIELD
+      primary_name: "Energy Shield"
+      aliases: ["ES", "Energy Shield"]
+    - canonical_id: CARD_ULTIMATE_CRIT
+      primary_name: "Ultimate Crit"
+      aliases: ["UW Crit", "Ultimate Crit"]
+    - canonical_id: CARD_WAVE_ACCELERATOR
+      primary_name: "Wave Accelerator"
+      aliases: ["WA", "Wave Accelerator"]
+    - canonical_id: CARD_BERSERKER
+      primary_name: "Berserker"
+      aliases: ["Zerk", "Berserker"]
+      
+  labs:
+    # Main Research
+    - canonical_id: LAB_GAME_SPEED
+      primary_name: "Game Speed"
+      aliases: ["Game Speed"]
+    - canonical_id: LAB_STARTING_CASH
+      primary_name: "Starting Cash"
+      aliases: ["Starting Cash"]
+    - canonical_id: LAB_WORKSHOP_ATTACK_DISCOUNT
+      primary_name: "Workshop Attack Discount"
+      aliases: ["Workshop Attack Discount"]
+    - canonical_id: LAB_WORKSHOP_DEFENSE_DISCOUNT
+      primary_name: "Workshop Defense Discount"
+      aliases: ["Workshop Defense Discount"]
+    - canonical_id: LAB_WORKSHOP_UTILITY_DISCOUNT
+      primary_name: "Workshop Utility Discount"
+      aliases: ["Workshop Utility Discount"]
+    - canonical_id: LAB_LABS_COIN_DISCOUNT
+      primary_name: "Labs Coin Discount"
+      aliases: ["Labs Coin Discount"]
+    - canonical_id: LAB_LABS_SPEED
+      primary_name: "Labs Speed"
+      aliases: ["Labs Speed"]
+    - canonical_id: LAB_BUY_MULTIPLIER
+      primary_name: "Buy Multiplier"
+      aliases: ["Buy multiplier"]
+    - canonical_id: LAB_MORE_ROUND_STATS
+      primary_name: "More Round Stats"
+      aliases: ["More Round Stats"]
+    - canonical_id: LAB_TARGET_PRIORITY
+      primary_name: "Target Priority"
+      aliases: ["Target Priority"]
+    - canonical_id: LAB_CARD_PRESETS
+      primary_name: "Card Presets"
+      aliases: ["Card Presets"]
+    - canonical_id: LAB_WORKSHOP_RESPEC
+      primary_name: "Workshop Respec"
+      aliases: ["Workshop Respec"]
+    - canonical_id: LAB_REROLL_DAILY_MISSIONS
+      primary_name: "Reroll Daily Missions"
+      aliases: ["Reroll Daily Missions"]
+    - canonical_id: LAB_WORKSHOP_ENHANCEMENT
+      primary_name: "Workshop Enhancement"
+      aliases: ["Workshop Enhancement"]
+    - canonical_id: LAB_ENHANCEMENT_COIN_DISCOUNT
+      primary_name: "Enhancement Coin Discount"
+      aliases: ["Enhancment Coin Discount"]
+
+    # Attack Research
+    - canonical_id: LAB_DAMAGE
+      primary_name: "Damage"
+      aliases: ["Damage"]
+    - canonical_id: LAB_ATTACK_SPEED
+      primary_name: "Attack Speed"
+      aliases: ["Attack Speed"]
+    - canonical_id: LAB_CRITICAL_FACTOR
+      primary_name: "Critical Factor"
+      aliases: ["Critical Factor"]
+    - canonical_id: LAB_RANGE
+      primary_name: "Range"
+      aliases: ["Range"]
+    - canonical_id: LAB_DAMAGE_PER_METER
+      primary_name: "Damage Per Meter"
+      aliases: ["Damage/Meter"]
+    - canonical_id: LAB_SUPER_CRIT_CHANCE
+      primary_name: "Super Crit Chance"
+      aliases: ["Super Crit Chance"]
+    - canonical_id: LAB_SUPER_CRIT_MULT
+      primary_name: "Super Crit Mult"
+      aliases: ["Super Crit Mult"]
+    - canonical_id: LAB_MAX_REND_ARMOR_MULTIPLIER
+      primary_name: "Max Rend Armor Multiplier"
+      aliases: ["Max Rend Armor Multiplier"]
+    - canonical_id: LAB_LIGHT_SPEED_SHOTS
+      primary_name: "Light Speed Shots"
+      aliases: ["Light Speed Shots"]
+
+    # Defense Research
+    - canonical_id: LAB_HEALTH
+      primary_name: "Health"
+      aliases: ["Health"]
+    - canonical_id: LAB_HEALTH_REGEN
+      primary_name: "Health Regen"
+      aliases: ["Health Regen"]
+    - canonical_id: LAB_DEFENSE_ABSOLUTE
+      primary_name: "Defense Absolute"
+      aliases: ["Defense Absolute"]
+    - canonical_id: LAB_DEFENSE_PERCENT
+      primary_name: "Defense %"
+      aliases: ["Defense %"]
+    - canonical_id: LAB_ORB_SPEED
+      primary_name: "Orb Speed"
+      aliases: ["Orb Speed"]
+    - canonical_id: LAB_LAND_MINE_DAMAGE
+      primary_name: "Land Mine Damage"
+      aliases: ["Land Mine Damage"]
+    - canonical_id: LAB_LAND_MINE_DECAY
+      primary_name: "Land Mine Decay"
+      aliases: ["Land Mine Decay"]
+    - canonical_id: LAB_SHOCKWAVE_SIZE
+      primary_name: "Shockwave Size"
+      aliases: ["Shockwave Size"]
+    - canonical_id: LAB_ORB_BOSS_HIT
+      primary_name: "Orb Boss Hit"
+      aliases: ["Orb Boss Hit"]
+    - canonical_id: LAB_WALL_HEALTH
+      primary_name: "Wall Health"
+      aliases: ["Wall Health"]
+    - canonical_id: LAB_WALL_REBUILD
+      primary_name: "Wall Rebuild"
+      aliases: ["Wall Rebuild"]
+    - canonical_id: LAB_WALL_REGEN
+      primary_name: "Wall Regen"
+      aliases: ["Wall Regen"]
+    - canonical_id: LAB_WALL_THORN
+      primary_name: "Wall Thorn"
+      aliases: ["Wall Thorn"]
+    - canonical_id: LAB_WALL_INVINCIBILITY
+      primary_name: "Wall Invincibility"
+      aliases: ["Wall Invincibility"]
+    - canonical_id: LAB_WALL_FORTIFICATION
+      primary_name: "Wall Fortification"
+      aliases: ["Wall Fortification"]
+    - canonical_id: LAB_GARLIC_THORNS
+      primary_name: "Garlic Thorns"
+      aliases: ["Garlic Thorns"]
+
+    # Utility Research
+    - canonical_id: LAB_CASH_BONUS
+      primary_name: "Cash Bonus"
+      aliases: ["Cash Bonus"]
+    - canonical_id: LAB_CASH_PER_WAVE
+      primary_name: "Cash Per Wave"
+      aliases: ["Cash / Wave"]
+    - canonical_id: LAB_COINS_PER_KILL_BONUS
+      primary_name: "Coins Per Kill Bonus"
+      aliases: ["Coins / Kill Bonus"]
+    - canonical_id: LAB_COINS_PER_WAVE
+      primary_name: "Coins Per Wave"
+      aliases: ["Coins/wave"]
+    - canonical_id: LAB_INTEREST
+      primary_name: "Interest"
+      aliases: ["Interest"]
+    - canonical_id: LAB_MAX_INTEREST
+      primary_name: "Max Interest"
+      aliases: ["Max Interest"]
+    - canonical_id: LAB_PACKAGE_AFTER_BOSS
+      primary_name: "Package After Boss"
+      aliases: ["Package After Boss"]
+    - canonical_id: LAB_RECOVERY_PACKAGE_AMOUNT
+      primary_name: "Recovery Package Amount"
+      aliases: ["Recovery Package Amount"]
+    - canonical_id: LAB_RECOVERY_PACKAGE_MAX
+      primary_name: "Recovery Package Max"
+      aliases: ["Recovery Package Max"]
+    - canonical_id: LAB_RECOVERY_PACKAGE_CHANCE
+      primary_name: "Recovery Package Chance"
+      aliases: ["Recovery Package Chance"]
+    - canonical_id: LAB_ENEMY_ATTACK_LEVEL_SKIP
+      primary_name: "Enemy Attack Level Skip"
+      aliases: ["Enemy Attack Level Skip"]
+    - canonical_id: LAB_ENEMY_HEALTH_LEVEL_SKIP
+      primary_name: "Enemy Health Level Skip"
+      aliases: ["Enemy Health Level Skip"]
+
+    # Ultimate Weapon Research
+    - canonical_id: LAB_MISSILES_DESPAWN_TIME
+      primary_name: "Missiles Despawn Time"
+      aliases: ["Missiles Despawn Time"]
+    - canonical_id: LAB_MISSILES_EXPLOSION
+      primary_name: "Missiles Explosion"
+      aliases: ["Missiles Explosion"]
+    - canonical_id: LAB_MISSILES_RADIUS
+      primary_name: "Missiles Radius"
+      aliases: ["Missiles Radius"]
+    - canonical_id: LAB_CHRONO_FIELD_DURATION
+      primary_name: "Chrono Field Duration"
+      aliases: ["Chrono Field Duration"]
+    - canonical_id: LAB_CHRONO_FIELD_REDUCTION_PERCENT
+      primary_name: "Chrono Field Reduction %"
+      aliases: ["Chrono Field Reduction %"]
+    - canonical_id: LAB_SWAMP_RADIUS
+      primary_name: "Swamp Radius"
+      aliases: ["Swamp Radius"]
+    - canonical_id: LAB_SWAMP_STUN
+      primary_name: "Swamp Stun"
+      aliases: ["Swamp Stun"]
+    - canonical_id: LAB_SWAMP_STUN_CHANCE
+      primary_name: "Swamp Stun Chance"
+      aliases: ["Swamp Stun Chance"]
+    - canonical_id: LAB_SWAMP_STUN_TIME
+      primary_name: "Swamp Stun Time"
+      aliases: ["Swamp Stun Time"]
+    - canonical_id: LAB_GOLDEN_TOWER_BONUS
+      primary_name: "Golden Tower Bonus"
+      aliases: ["Golden Tower Bonus"]
+    - canonical_id: LAB_GOLDEN_TOWER_DURATION
+      primary_name: "Golden Tower Duration"
+      aliases: ["Golden Tower Duration"]
+    - canonical_id: LAB_CHAIN_LIGHTNING_SHOCK
+      primary_name: "Chain Lightning Shock"
+      aliases: ["Chain Lightning Shock"]
+    - canonical_id: LAB_SHOCK_CHANCE
+      primary_name: "Shock Chance"
+      aliases: ["Shock Chance"]
+    - canonical_id: LAB_SHOCK_MULTIPLIER
+      primary_name: "Shock Multiplier"
+      aliases: ["Shock Multiplier"]
+    - canonical_id: LAB_DEATH_WAVE_HEALTH
+      primary_name: "Death Wave Health"
+      aliases: ["Death Wave Health"]
+    - canonical_id: LAB_DEATH_WAVE_COIN_BONUS
+      primary_name: "Death Wave Coin Bonus"
+      aliases: ["Death Wave Coin Bonus"]
+    - canonical_id: LAB_INNER_MINE_BLAST_RADIUS
+      primary_name: "Inner Mine Blast Radius"
+      aliases: ["Inner Mine Blast Radius"]
+    - canonical_id: LAB_INNER_MINE_ROTATION_SPEED
+      primary_name: "Inner Mine Rotation Speed"
+      aliases: ["Inner Mine Rotation Speed"]
+    - canonical_id: LAB_CHRONO_FIELD_RANGE
+      primary_name: "Chrono Field Range"
+      aliases: ["Chrono Field Range"]
+    - canonical_id: LAB_MISSILE_AMPLIFIER
+      primary_name: "Missile Amplifier"
+      aliases: ["Missle Amplifier"]
+    - canonical_id: LAB_MISSILE_BARRAGE
+      primary_name: "Missile Barrage"
+      aliases: ["Missile Barrage"]
+    - canonical_id: LAB_MISSILE_BARRAGE_QUANTITY
+      primary_name: "Missile Barrage Quantity"
+      aliases: ["Missile Barrage Quantity"]
+    - canonical_id: LAB_INNER_MINE_STUN
+      primary_name: "Inner Mine Stun"
+      aliases: ["Inner Mine Stun"]
+    - canonical_id: LAB_BLACK_HOLE_DAMAGE
+      primary_name: "Black Hole Damage"
+      aliases: ["Black Hole Damage"]
+    - canonical_id: LAB_EXTRA_BLACK_HOLE
+      primary_name: "Extra Black Hole"
+      aliases: ["Extra Black Hole"]
+    - canonical_id: LAB_BLACK_HOLE_COINS_BONUS
+      primary_name: "Black Hole Coins Bonus"
+      aliases: ["Black Hole Coins Bonus"]
+    - canonical_id: LAB_SPOTLIGHT_COIN_BONUS
+      primary_name: "Spotlight Coin Bonus"
+      aliases: ["Spotlight Coin Bonus"]
+    - canonical_id: LAB_SPOTLIGHT_MISSILES
+      primary_name: "Spotlight Missiles"
+      aliases: ["Spotlight Missiles", "Spotlight Missile"]
+    - canonical_id: LAB_BLACK_HOLE_DISABLE_RANGED_ENEMIES
+      primary_name: "Black Hole Disable Ranged Enemies"
+      aliases: ["Black Hole Disable Ranged Enemies"]
+    - canonical_id: LAB_RECHARGE_MISSILE_BARRAGE
+      primary_name: "Recharge Missile Barrage"
+      aliases: ["Recharge Missile Barrage"]
+    - canonical_id: LAB_SWAMP_REND_BASIC_ENEMIES
+      primary_name: "Swamp Rend - Basic Enemies"
+      aliases: ["Swamp Rend - Basic Enemies"]
+    - canonical_id: LAB_SWAMP_REND_ADDITIONAL_ENEMIES
+      primary_name: "Swamp Rend - Additional Enemies"
+      aliases: ["Swamp Rend - Additional Enemies"]
+    - canonical_id: LAB_CHAIN_THUNDER
+      primary_name: "Chain Thunder"
+      aliases: ["Chain Thunder"]
+    - canonical_id: LAB_LIGHTNING_AMPLIFIER
+      primary_name: "Lightning Amplifier"
+      aliases: ["Lightning Amplifier"]
+    - canonical_id: LAB_DEATH_WAVE_CELL_BONUS
+      primary_name: "Death Wave Cell Bonus"
+      aliases: ["Death Wave Cell Bonus"]
+    - canonical_id: LAB_DEATH_WAVE_DAMAGE_AMPLIFIER
+      primary_name: "Death Wave Damage Amplifier"
+      aliases: ["Death Wave Damage Amplifier"]
+    - canonical_id: LAB_DEATH_WAVE_ARMOR_STRIPPING
+      primary_name: "Death Wave Armor Stripping"
+      aliases: ["Death Wave Armor Stripping"]
+    - canonical_id: LAB_INNER_LAND_MINE_CHRONO_JUMP
+      primary_name: "Inner Land Mine - Chrono Jump"
+      aliases: ["Inner Land Mine - Chrono Jump"]
+
+    # Card Research
+    - canonical_id: LAB_SECOND_WIND_BLAST
+      primary_name: "Second Wind Blast"
+      aliases: ["Second Wind Blast"]
+    - canonical_id: LAB_EXTRA_ORB_ADJUSTER
+      primary_name: "Extra Orb Adjuster"
+      aliases: ["Extra Orb Adjuster"]
+    - canonical_id: LAB_EXTRA_EXTRA_ORBS
+      primary_name: "Extra Extra Orbs"
+      aliases: ["Extra Extra Orbs"]
+    - canonical_id: LAB_ENERGY_SHIELD_EXTRA_HIT
+      primary_name: "Energy Shield Extra Hit"
+      aliases: ["Energy Shield Extra Hit"]
+    - canonical_id: LAB_SUPER_TOWER_BONUS
+      primary_name: "Super Tower Bonus"
+      aliases: ["Super Tower Bonus"]
+    - canonical_id: LAB_RECHARGE_SECOND_WIND
+      primary_name: "Recharge Second Wind"
+      aliases: ["Recharge Second Wind"]
+    - canonical_id: LAB_RECHARGE_DEMON_MODE
+      primary_name: "Recharge Demon Mode"
+      aliases: ["Recharge Demon Mode"]
+    - canonical_id: LAB_RECHARGE_NUKE
+      primary_name: "Recharge Nuke"
+      aliases: ["Recharge Nuke"]
+    - canonical_id: LAB_CARD_MASTERY
+      primary_name: "Card Mastery"
+      aliases: ["Card Mastery"]
+
+    # Perk Research
+    - canonical_id: LAB_UNLOCK_PERKS
+      primary_name: "Unlock Perks"
+      aliases: ["Unlock Perks"]
+    - canonical_id: LAB_WAVES_REQUIRED
+      primary_name: "Waves Required"
+      aliases: ["Waves Required"]
+    - canonical_id: LAB_AUTO_PICK_PERKS
+      primary_name: "Auto Pick Perks"
+      aliases: ["Auto Pick Perks"]
+    - canonical_id: LAB_STANDARD_PERKS_BONUS
+      primary_name: "Standard Perks Bonus"
+      aliases: ["Standard Perks Bonus", "Standard Perk Bonus"]
+    - canonical_id: LAB_PERK_OPTION_QUANTITY
+      primary_name: "Perk Option Quantity"
+      aliases: ["Perk Option Quantity"]
+    - canonical_id: LAB_FIRST_PERK_CHOICE
+      primary_name: "First Perk Choice"
+      aliases: ["First Perk Choice"]
+    - canonical_id: LAB_BAN_PERKS
+      primary_name: "Ban Perks"
+      aliases: ["Ban Perks"]
+    - canonical_id: LAB_IMPROVE_TRADE_OFF_PERKS
+      primary_name: "Improve Trade-Off Perks"
+      aliases: ["Improve Trade-Off Perks"]
+    - canonical_id: LAB_AUTO_PICK_RANKING
+      primary_name: "Auto Pick Ranking"
+      aliases: ["Auto Pick Ranking"]
+
+    # Bot Research
+    - canonical_id: LAB_FLAME_BOT_COOLDOWN
+      primary_name: "Flame Bot Cooldown"
+      aliases: ["Flame Bot Cooldown"]
+    - canonical_id: LAB_THUNDER_BOT_COOLDOWN
+      primary_name: "Thunder Bot Cooldown"
+      aliases: ["Thunder Bot Cooldown"]
+    - canonical_id: LAB_GOLDEN_BOT_COOLDOWN
+      primary_name: "Golden Bot Cooldown"
+      aliases: ["Golden Bot Cooldown"]
+    - canonical_id: LAB_AMPLIFY_BOT_COOLDOWN
+      primary_name: "Amplify Bot Cooldown"
+      aliases: ["Amplify Bot Cooldown"]
+    - canonical_id: LAB_FLAME_BOT_BURN_STACKS
+      primary_name: "Flame Bot - Burn Stacks"
+      aliases: ["Flame Bot - Burn Stacks"]
+    - canonical_id: LAB_THUNDER_BOT_LINGER_TIME
+      primary_name: "Thunder Bot - Linger Time"
+      aliases: ["Thunder Bot - Linger Time"]
+    - canonical_id: LAB_GOLDEN_BOT_DURATION
+      primary_name: "Golden Bot - Duration"
+      aliases: ["Golden Bot - Duration"]
+    - canonical_id: LAB_AMPLIFY_BOT_DURATION
+      primary_name: "Amplify Bot - Duration"
+      aliases: ["Amplify Bot - Duration"]
+
+    # Enemies Research
+    - canonical_id: LAB_COMMON_ENEMY_HEALTH
+      primary_name: "Common Enemy Health"
+      aliases: ["Common Enemy Health"]
+    - canonical_id: LAB_COMMON_ENEMY_ATTACK
+      primary_name: "Common Enemy Attack"
+      aliases: ["Common Enemy Attack"]
+    - canonical_id: LAB_FAST_ENEMY_HEALTH
+      primary_name: "Fast Enemy Health"
+      aliases: ["Fast Enemy Health"]
+    - canonical_id: LAB_FAST_ENEMY_ATTACK
+      primary_name: "Fast Enemy Attack"
+      aliases: ["Fast Enemy Attack"]
+    - canonical_id: LAB_FAST_ENEMY_SPEED
+      primary_name: "Fast Enemy Speed"
+      aliases: ["Fast Enemy Speed"]
+    - canonical_id: LAB_TANK_ENEMY_HEALTH
+      primary_name: "Tank Enemy Health"
+      aliases: ["Tank Enemy Health"]
+    - canonical_id: LAB_TANK_ENEMY_ATTACK
+      primary_name: "Tank Enemy Attack"
+      aliases: ["Tank Enemy Attack"]
+    - canonical_id: LAB_RANGED_ENEMY_HEALTH
+      primary_name: "Ranged Enemy Health"
+      aliases: ["Ranged Enemy Health"]
+    - canonical_id: LAB_RANGED_ENEMY_ATTACK
+      primary_name: "Ranged Enemy Attack"
+      aliases: ["Ranged Enemy Attack"]
+    - canonical_id: LAB_RANGED_ENEMY_RANGE
+      primary_name: "Ranged Enemy Range"
+      aliases: ["Ranged Enemy Range"]
+    - canonical_id: LAB_BOSS_HEALTH
+      primary_name: "Boss Health"
+      aliases: ["Boss Health"]
+    - canonical_id: LAB_BOSS_ATTACK
+      primary_name: "Boss Attack"
+      aliases: ["Boss Attack"]
+    - canonical_id: LAB_PROTECTOR_HEALTH
+      primary_name: "Protector Health"
+      aliases: ["Protector Health"]
+    - canonical_id: LAB_PROTECTOR_RADIUS
+      primary_name: "Protector Radius"
+      aliases: ["Protector Radius"]
+    - canonical_id: LAB_PROTECTOR_DAMAGE_REDUCTION
+      primary_name: "Protector Damage Reduction"
+      aliases: ["Protector Damage Reduction"]
+    - canonical_id: LAB_VAMPIRE_ENEMY_ATTACK
+      primary_name: "Vampire Enemy Attack"
+      aliases: ["Vampire Enemy Attack"]
+    - canonical_id: LAB_VAMPIRE_ENEMY_HEALTH
+      primary_name: "Vampire Enemy Health"
+      aliases: ["Vampire Enemy Health"]
+    - canonical_id: LAB_RAY_ENEMY_ATTACK
+      primary_name: "Ray Enemy Attack"
+      aliases: ["Ray Enemy Attack"]
+    - canonical_id: LAB_RAY_ENEMY_HEALTH
+      primary_name: "Ray Enemy Health"
+      aliases: ["Ray Enemy Health"]
+    - canonical_id: LAB_SCATTER_ENEMY_ATTACK
+      primary_name: "Scatter Enemy Attack"
+      aliases: ["Scatter Enemy Attack"]
+    - canonical_id: LAB_SCATTER_ENEMY_HEALTH
+      primary_name: "Scatter Enemy Health"
+      aliases: ["Scatter Enemy Health"]
+
+    # Module Research
+    - canonical_id: LAB_COMMON_DROP_CHANCE
+      primary_name: "Common Drop Chance"
+      aliases: ["Common Drop Chance"]
+    - canonical_id: LAB_REROLL_SHARDS
+      primary_name: "Reroll Shards"
+      aliases: ["Reroll Shards"]
+    - canonical_id: LAB_DAILY_MISSION_SHARDS
+      primary_name: "Daily Mission Shards"
+      aliases: ["Daily Mission Shards"]
+    - canonical_id: LAB_MODULE_SHARD_COSTS
+      primary_name: "Module Shard Costs"
+      aliases: ["Module Shard Costs"]
+    - canonical_id: LAB_MODULE_COIN_COST
+      primary_name: "Module Coin Cost"
+      aliases: ["Module Coin Cost"]
+    - canonical_id: LAB_RARE_DROP_CHANCE
+      primary_name: "Rare Drop Chance"
+      aliases: ["Rare Drop Chance"]
+    - canonical_id: LAB_UNMERGE_MODULE
+      primary_name: "Unmerge Module"
+      aliases: ["Unmerge Module"]
+    - canonical_id: LAB_SHATTER_SHARDS
+      primary_name: "Shatter Shards"
+      aliases: ["Shatter Shards"]
+    - canonical_id: LAB_CANNON_EFFECT_BANS
+      primary_name: "Cannon Effect Bans"
+      aliases: ["Cannon Effect Bans"]
+    - canonical_id: LAB_ARMOR_EFFECT_BANS
+      primary_name: "Armor Effect Bans"
+      aliases: ["Armor Effect Bans"]
+    - canonical_id: LAB_GENERATOR_EFFECT_BANS
+      primary_name: "Generator Effect Bans"
+      aliases: ["Generator Effect Bans"]
+    - canonical_id: LAB_CORE_EFFECT_BANS
+      primary_name: "Core Effect Bans"
+      aliases: ["Core Effect Bans"]
+    - canonical_id: LAB_ASSIST_MODULE_SUBSTATS
+      primary_name: "Assist Module Substats"
+      aliases: ["Assist Module Substats"]
+    - canonical_id: LAB_ASSIST_MODULE_BONUS
+      primary_name: "Assist Module Bonus"
+      aliases: ["Assist Module Bonus"]
+
+    # Battle Condition Research
+    - canonical_id: LAB_BATTLE_CONDITION_REDUCTION
+      primary_name: "Battle Condition Reduction"
+      aliases: ["Battle Condition Reduction"]
+    - canonical_id: LAB_BATTLE_CONDITION_REDUCTION_GROUP_1
+      primary_name: "Battle Condition Reduction Group 1"
+      aliases: ["Battle Condition Reduction Group 1"]
+    - canonical_id: LAB_BATTLE_CONDITION_REDUCTION_GROUP_2
+      primary_name: "Battle Condition Reduction Group 2"
+      aliases: ["Battle Condition Reduction Group 2"]
+    - canonical_id: LAB_BATTLE_CONDITION_REDUCTION_GROUP_3
+      primary_name: "Battle Condition Reduction Group 3"
+      aliases: ["Battle Condition Reduction Group 3"]
+    - canonical_id: LAB_BATTLE_CONDITION_REDUCTION_GROUP_4
+      primary_name: "Battle Condition Reduction Group 4"
+      aliases: ["Battle Condition Reduction Group 4"]
+
+  workshop:
+    - canonical_id: WS_ATTACK_SPEED
+      primary_name: "Attack Speed"
+      aliases: ["ASPD", "Attack Speed"]
+    - canonical_id: WS_BOUNCE_SHOT_CHANCE
+      primary_name: "Bounce Shot Chance"
+      aliases: ["BSC", "Bounce Shot Chance"]
+    - canonical_id: WS_BOUNCE_SHOT_RANGE
+      primary_name: "Bounce Shot Range"
+      aliases: ["BSR", "Bounce Shot range", "Bounce Shot Range"]
+    - canonical_id: WS_BOUNCE_SHOT_TARGET
+      primary_name: "Bounce Shot Target"
+      aliases: ["BST", "Bounce Shot Target"]
+    - canonical_id: WS_COINS_PER_KILL
+      primary_name: "Coins per Kill"
+      aliases: ["CPK", "Coins per Kill"]
+    - canonical_id: WS_CRITICAL_CHANCE
+      primary_name: "Critical Chance"
+      aliases: ["C%/Crit Chance", "Critical Chance"]
+    - canonical_id: WS_CRITICAL_FACTOR
+      primary_name: "Critical Factor"
+      aliases: ["CritF", "Critical Factor"]
+    - canonical_id: WS_DEATH_DEFY
+      primary_name: "Death Defy"
+      aliases: ["DD", "Death Defy"]
+    - canonical_id: WS_DEFENSE_PERCENT
+      primary_name: "Defense %"
+      aliases: ["DEF%", "Defense $", "Defense %"]
+    - canonical_id: WS_DAMAGE_PER_METER
+      primary_name: "Damage Per Meter"
+      aliases: ["DPM (D/M)", "Damage Per Meter"]
+    - canonical_id: WS_ENEMY_ATTACK_LEVEL_SKIP
+      primary_name: "Enemy Attack Level Skip"
+      aliases: ["EALS", "Enemy Attack Level Skip"]
+    - canonical_id: WS_ENEMY_HEALTH_LEVEL_SKIP
+      primary_name: "Enemy Health Level Skip"
+      aliases: ["EHLS", "Enemy Health Level Skip"]
+    - canonical_id: WS_FREE_UPGRADES_ATTACK
+      primary_name: "Free Upgrades - Attack"
+      aliases: ["Free Upgrades - Attack"]
+    - canonical_id: WS_FREE_UPGRADES_DEFENSE
+      primary_name: "Free Upgrades - Defense"
+      aliases: ["Free Upgrades - Defense"]
+    - canonical_id: WS_FREE_UPGRADES_UTILITY
+      primary_name: "Free Upgrades - Utility"
+      aliases: ["Free Upgrades - Utility"]
+    - canonical_id: WS_KNOCKBACK
+      primary_name: "Knockback"
+      aliases: ["KN", "Knockback"]
+    - canonical_id: WS_LAND_MINE_CHANCE
+      primary_name: "Land Mine Chance"
+      aliases: ["LMC", "Land Mine Chance"]
+    - canonical_id: WS_LAND_MINE_DAMAGE
+      primary_name: "Land Mine Damage"
+      aliases: ["LMD", "Land Mine Damage"]
+    - canonical_id: WS_LAND_MINE_RADIUS
+      primary_name: "Land Mine Radius"
+      aliases: ["LMR", "Land Mine Radius"]
+    - canonical_id: WS_MULTISHOT_CHANCE
+      primary_name: "Multishot Chance"
+      aliases: ["MSC", "Multishot Chance"]
+    - canonical_id: WS_MULTISHOT_TARGETS
+      primary_name: "Multishot Targets"
+      aliases: ["MST", "Multishot Targets"]
+    - canonical_id: WS_RAPID_FIRE_CHANCE
+      primary_name: "Rapid Fire Chance"
+      aliases: ["RFC", "Rapid Fire Chance"]
+    - canonical_id: WS_SUPER_CRITICAL_CHANCE
+      primary_name: "Super Critical Chance"
+      aliases: ["SCC", "Super Critical Chance"]
+    - canonical_id: WS_SUPER_CRITICAL_MULTIPLIER
+      primary_name: "Super Critical Multiplier"
+      aliases: ["SCM", "Super Critical Multiplier"]
+    - canonical_id: WS_SHOCK_WAVE
+      primary_name: "Shock Wave"
+      aliases: ["SW", "Shock Wave"]
+    - canonical_id: WS_SHOCKWAVE_SIZE
+      primary_name: "Shockwave Size"
+      aliases: ["SWs", "ShockWave size", "Shockwave Size"]
+    - canonical_id: WS_SHOCKWAVE_FREQUENCY
+      primary_name: "Shockwave Frequency"
+      aliases: ["SWf", "Shockwave frequecy", "Shockwave frequency"]
+
+  modules:
+    - canonical_id: MOD_ANTI_CUBE_PORTAL
+      primary_name: "Anti-Cube Portal"
+      aliases: ["ACP", "Anti-Cube Portal"]
+    - canonical_id: MOD_ASTRAL_DELIVERANCE
+      primary_name: "Astral Deliverance"
+      aliases: ["AD", "Astral Deliverance"]
+    - canonical_id: MOD_AMPLIFYING_STRIKE
+      primary_name: "Amplifying Strike"
+      aliases: ["AS", "Amplifying Strike"]
+    - canonical_id: MOD_BEING_ANNIHILATOR
+      primary_name: "Being Annihilator"
+      aliases: ["BA", "Being Annihilator"]
+    - canonical_id: MOD_BLACK_HOLE_DIGESTOR
+      primary_name: "Black Hole Digestor"
+      aliases: ["BHD", "Black Hole Digestor"]
+    - canonical_id: MOD_DIMENSION_CORE
+      primary_name: "Dimension Core"
+      aliases: ["DC", "Dimension Core"]
+    - canonical_id: MOD_DEATH_PENALTY
+      primary_name: "Death Penalty"
+      aliases: ["DP", "Death Penalty"]
+    - canonical_id: MOD_GALAXY_COMPRESSOR
+      primary_name: "Galaxy Compressor"
+      aliases: ["GComp", "Galaxy Compressor"]
+    - canonical_id: MOD_HAVOC_BRINGER
+      primary_name: "Havoc Bringer"
+      aliases: ["HB", "Havoc Bringer"]
+    - canonical_id: MOD_HARMONY_CONDUCTOR
+      primary_name: "Harmony Conductor"
+      aliases: ["HC", "Harmony Conductor"]
+    - canonical_id: MOD_MAGNETIC_HOOK
+      primary_name: "Magnetic Hook"
+      aliases: ["MH", "Magnetic Hook"]
+    - canonical_id: MOD_MULTIVERSE_NEXUS
+      primary_name: "Multiverse Nexus"
+      aliases: ["MVN/MN", "Multiverse Nexus"]
+    - canonical_id: MOD_NEGATIVE_MASS_PROJECTOR
+      primary_name: "Negative Mass Projector"
+      aliases: ["NMP", "Negative Mass Projector"]
+    - canonical_id: MOD_OM_CHIP
+      primary_name: "Om Chip"
+      aliases: ["OC/Om", "Om Chip"]
+    - canonical_id: MOD_PRIMORDIAL_COLLAPSE
+      primary_name: "Primordial Collapse"
+      aliases: ["PC", "Primordial Collapse"]
+    - canonical_id: MOD_PROJECT_FUNDING
+      primary_name: "Project Funding"
+      aliases: ["PF", "Project Funding"]
+    - canonical_id: MOD_PULSAR_HARVESTER
+      primary_name: "Pulsar Harvester"
+      aliases: ["PH", "Pulsar Harvester"]
+    - canonical_id: MOD_SPACE_DISPLACER
+      primary_name: "Space Displacer"
+      aliases: ["SD", "Space Displacer"]
+    - canonical_id: MOD_SHARP_FORTITUDE
+      primary_name: "Sharp Fortitude"
+      aliases: ["SF", "Sharp Fortitude"]
+    - canonical_id: MOD_SINGULARITY_HARNESS
+      primary_name: "Singularity Harness"
+      aliases: ["SH", "Singularity Harness"]
+    - canonical_id: MOD_SHRINK_RAY
+      primary_name: "Shrink Ray"
+      aliases: ["SR", "Shrink Ray"]
+    - canonical_id: MOD_WORMHOLE_REDIRECTOR
+      primary_name: "Wormhole Redirector"
+      aliases: ["WR/WHR", "Wormhole Redirector"]
+
+  lazy_talk:
+    - canonical_id: LAZY_BATTLE_CONDITION
+      primary_name: "Battle Condition"
+      aliases: ["BC", "Battle Condition"]
+    - canonical_id: LAZY_BOUNCE_WEB
+      primary_name: "Bounce Web"
+      aliases: ["BW", "Bounce Web"]
+    - canonical_id: LAZY_COIN_BONUS
+      primary_name: "Coin Bonus"
+      aliases: ["CB", "Coin Bonus"]
+    - canonical_id: LAZY_CROWD_CONTROL
+      primary_name: "Crowd Control"
+      aliases: ["CC", "Crowd Control"]
+    - canonical_id: LAZY_COINS_PER_MINUTE
+      primary_name: "Coins per Minute"
+      aliases: ["CPM", "Coins per Minute"]
+    - canonical_id: LAZY_COINS_PER_HOUR
+      primary_name: "Coins per Hour"
+      aliases: ["CPH", "Coins per Hour"]
+    - canonical_id: LAZY_DEVO
+      primary_name: "Devo"
+      aliases: ["Devo", "Devo"]
+    - canonical_id: LAZY_DEATH_WAVE_EFFECTIVE_WAVE
+      primary_name: "Death Wave Effective Wave"
+      aliases: ["DWEW", "Death Wave Effective Wave"]
+    - canonical_id: LAZY_EHP
+      primary_name: "eHP"
+      aliases: ["eHP", "eHP"]
+    - canonical_id: LAZY_EPATHS
+      primary_name: "ePaths"
+      aliases: ["ePaths", "ePaths"]
+    - canonical_id: LAZY_FREE_TO_PLAY
+      primary_name: "Free to Play"
+      aliases: ["F2P", "Free to Play"]
+    - canonical_id: LAZY_GLASS_CANNON
+      primary_name: "Glass Cannon"
+      aliases: ["GC", "Glass Cannon"]
+    - canonical_id: LAZY_LIFE_TIME_COINS
+      primary_name: "Life Time Coins"
+      aliases: ["LTC", "Life Time Coins"]
+    - canonical_id: LAZY_LIFE_TIME_STONES
+      primary_name: "Life Time Stones"
+      aliases: ["LTS", "Life Time Stones"]
+    - canonical_id: LAZY_PAY_TO_PLAY
+      primary_name: "Pay to Play"
+      aliases: ["P2P", "Pay to Play"]
+    - canonical_id: LAZY_PERSONAL_BEST
+      primary_name: "Personal Best"
+      aliases: ["pb", "Personal Best"]
+    - canonical_id: LAZY_PERK_WAVE_REQUIREMENT
+      primary_name: "Perk Wave Requirement"
+      aliases: ["PWR", "Perk Wave Requirement"]
+    - canonical_id: LAZY_RANDOM_NUMBER_GENERATOR
+      primary_name: "Random Number Generator"
+      aliases: ["RNG", "Random Number Generator"]
+    - canonical_id: LAZY_RETURN_ON_INVESTMENT
+      primary_name: "Return on Investment"
+      aliases: ["ROI", "Return on Investment"]
