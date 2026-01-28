@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.run_context import RunContext  # noqa: E402
+from tower_sim.run_context import PerksDisabledError, RunContext  # noqa: E402
 from tower_sim.wiki.perks import (  # noqa: E402
     apply_standard_perk_bonus_multiplicative_checked,
 )
@@ -26,7 +26,7 @@ def test_run_context_defaults_perks_by_run_type() -> None:
 
 def test_perks_checked_fail_closed_in_tournament() -> None:
     context = RunContext.tournament("T1")
-    with pytest.raises(ValueError, match="Perks are disabled"):
+    with pytest.raises(PerksDisabledError, match="Perks are disabled"):
         apply_standard_perk_bonus_multiplicative_checked(context, 0.2, 1, 0.25)
 
 
