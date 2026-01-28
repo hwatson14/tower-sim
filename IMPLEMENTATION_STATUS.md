@@ -16,6 +16,7 @@ Explicitly NOT included:
 ## What is Implemented (High Confidence)
 ### Data + Snapshot Loading
 - `towersim/sources.py` provides snapshot unzip + CSV loading helpers (local snapshot directory model).
+- `towersim/sources.py` selects snapshots by priority (fresh cache → git dir → stale cache) and returns a bundle of manifest + file paths.
 
 ### IDS Parsing
 - `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
@@ -47,9 +48,7 @@ Explicitly NOT included:
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
 - Typed `_IDS.csv` → `IdsState` with all required raw fields.
-- DataLoader priority order implementation:
-  - <24h cache → Git → older snapshot.
-  - Git integration is not implemented in the bundled baseline.
+- DataLoader Git integration does not fetch/pull remotes (local git dir only).
 
 ### Stat Engine + StatBook
 - No unified stat engine that composes:
@@ -58,7 +57,7 @@ Explicitly NOT included:
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired.
+- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.

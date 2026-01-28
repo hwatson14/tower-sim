@@ -5,7 +5,7 @@ from enum import Enum
 
 
 class RunType(str, Enum):
-    TIER = "tier"
+    FARMING = "farming"
     TOURNAMENT = "tournament"
 
 
@@ -13,20 +13,17 @@ class RunType(str, Enum):
 class RunContext:
     tier: str
     run_type: RunType
-    perks_enabled: bool | None = None
-
-    def __post_init__(self) -> None:
-        if self.perks_enabled is None:
-            default = self.run_type == RunType.TIER
-            object.__setattr__(self, "perks_enabled", default)
+    perks_enabled: bool
 
     @classmethod
-    def for_tier(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
-        return cls(tier=tier, run_type=RunType.TIER, perks_enabled=perks_enabled)
+    def farming(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
+        resolved = True if perks_enabled is None else perks_enabled
+        return cls(tier=tier, run_type=RunType.FARMING, perks_enabled=resolved)
 
     @classmethod
     def tournament(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
-        return cls(tier=tier, run_type=RunType.TOURNAMENT, perks_enabled=perks_enabled)
+        resolved = False if perks_enabled is None else perks_enabled
+        return cls(tier=tier, run_type=RunType.TOURNAMENT, perks_enabled=resolved)
 
 
 def assert_perks_enabled(context: RunContext) -> None:
