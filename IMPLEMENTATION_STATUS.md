@@ -14,9 +14,10 @@ Explicitly NOT included:
 - older `codebase_wip_v6/v7/v8` (superseded by the baseline)
 
 ## What is Implemented (High Confidence)
-### Data + Snapshot Loading
-- `towersim/sources.py` provides snapshot unzip + CSV loading helpers (local snapshot directory model).
-- `towersim/sources.py` selects snapshots by priority (fresh cache → git dir → stale cache) and returns a bundle of manifest + file paths.
+### Data + Input Loading
+- `_IDS.csv` is the only external input; the rest of the tables ship with the repo.
+- `tower_sim/sources.py` provides an IDS-only resolver (`load_ids_only_bundle`) for `_IDS.csv`.
+- Snapshot helpers remain available for legacy workflows.
 
 ### IDS Parsing
 - `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
@@ -47,7 +48,7 @@ Explicitly NOT included:
 
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
-- DataLoader Git integration does not fetch/pull remotes (local git dir only).
+- Legacy snapshot loader does not fetch/pull remotes (local git dir only).
 
 ### Stat Engine + StatBook
 - Stat engine scaffolding and StatBook export exist, but composition is incomplete.
@@ -73,8 +74,8 @@ Explicitly NOT included:
 - Loadout optimiser and stone spending optimiser not implemented.
 
 ## Immediate Next Steps (Codex PR sequence)
-1. Implement typed `IdsState` parsing (raw values only) + unit tests.
-2. Implement DataLoader priority order (cache/Git/older) + tests.
-3. Implement Stat Engine skeleton + StatBook export (no combat) + tests.
-4. Wire progression + skip mapping to produce per-wave stats.
-5. Implement boss-only combat model and validate against reference sheets.
+1. Resolve `statbook_builder.py` API mismatch + tests.
+2. Implement tier battle condition loader (Tier BCs applied in frozen order).
+3. Wire progression + skip mapping to produce per-wave stats.
+4. Implement boss-only combat model and validate against reference sheets.
+5. Add validation harness against Harry’s reference sheets.

@@ -17,7 +17,7 @@ Design note:
 
 from dataclasses import dataclass
 from enum import Enum
-from typing import Dict, List, Tuple, Callable, Optional
+from typing import Dict, List, Callable, Optional
 
 from .free_upgrades import FreeUpgradeChances, expected_upgrades_per_wave
 
@@ -46,10 +46,15 @@ class WorkshopStat:
 AllocationPolicy = Callable[[List[WorkshopStat], float], Dict[str, float]]
 
 
+class AllocationPolicyError(ValueError):
+    pass
+
+
 def uniform_allocation(available: List[WorkshopStat], upgrades: float) -> Dict[str, float]:
     """Allocate expected upgrades uniformly across available, non-maxed stats.
 
-    This is a *policy* (assumption) until confirmed by wiki.
+    This helper is not used by default. Callers must provide a policy with
+    authoritative provenance (sheet/wiki).
     """
     if upgrades <= 0 or not available:
         return {}
@@ -69,7 +74,7 @@ def simulate_workshop_progression(
     stats: List[WorkshopStat],
     chances: FreeUpgradeChances,
     max_waves: int = 20000,
-    allocation_policy: AllocationPolicy = uniform_allocation,
+    allocation_policy: AllocationPolicy | None = None,
     waves_skipped_per_wave: float = 0.0,
 ) -> WorkshopProgressionResult:
     """Deterministic expected-value workshop progression.
@@ -81,8 +86,13 @@ def simulate_workshop_progression(
 
     Not yet implemented:
     - wave skip extra triggers (plumbed as waves_skipped_per_wave, but set 0 by default)
-    - non-uniform selection rules (requires wiki verification)
+    - selection rules (requires wiki or sheet verification)
     """
+    if allocation_policy is None:
+        raise AllocationPolicyError(
+            "Workshop allocation policy required (fail-closed). "
+            "Provide a policy backed by authoritative source."
+        )
 
     # initialise level tracks
     level_map: Dict[str, float] = {}
@@ -125,6 +135,7 @@ def simulate_workshop_progression(
                 and level_map[s.name] < targets[s.name]
             ]
             alloc = allocation_policy(avail, upgrades)
+            _validate_allocation(alloc, avail, upgrades)
             for name, inc in alloc.items():
                 if inc <= 0:
                     continue
@@ -137,3 +148,23 @@ def simulate_workshop_progression(
                 waves_to_end[name] = w
 
     return WorkshopProgressionResult(levels=tracks, waves_to_end=waves_to_end)
+
+
+def _validate_allocation(
+    allocation: Dict[str, float],
+    available: List[WorkshopStat],
+    upgrades: float,
+) -> None:
+    available_names = {stat.name for stat in available}
+    if not allocation:
+        return
+    if any(name not in available_names for name in allocation):
+        unknown = sorted(set(allocation).difference(available_names))
+        raise AllocationPolicyError(f"Allocation includes unknown stats: {unknown}")
+    if any(value < 0 for value in allocation.values()):
+        raise AllocationPolicyError("Allocation cannot include negative upgrades.")
+    total = sum(allocation.values())
+    if total - upgrades > 1e-6:
+        raise AllocationPolicyError(
+            f"Allocation exceeds upgrades: allocated {total} > available {upgrades}."
+        )
