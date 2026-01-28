@@ -5,6 +5,8 @@ from typing import Dict, Iterable, Optional
 
 from tower_sim.stat_registry import Phase, StatKind, StatRegistry
 from tower_sim.statbook import StatBook, StatRow
+from tower_sim.tier_rule_apply import apply_tier_rules_to_inputs
+from tower_sim.tier_rules import TierRulesResult
 
 
 @dataclass(frozen=True)
@@ -56,6 +58,14 @@ class StatEngine:
             for phase, values in phase_values.items()
         }
         return StatEngineResult(statbook=StatBook(rows=rows), run_stats=run_stats)
+
+    def build_with_tier_rules(
+        self,
+        inputs: Iterable[StatInput],
+        tier_rules: TierRulesResult,
+    ) -> StatEngineResult:
+        adjusted = apply_tier_rules_to_inputs(inputs, tier_rules)
+        return self.build(adjusted)
 
     def _build_row(self, stat_input: StatInput, stat_kind: StatKind) -> StatRow:
         tier_rule = _format_tier_rule(

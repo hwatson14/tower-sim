@@ -16,6 +16,7 @@ Explicitly NOT included:
 ## What is Implemented (High Confidence)
 ### Data + Snapshot Loading
 - `towersim/sources.py` provides snapshot unzip + CSV loading helpers (local snapshot directory model).
+- `towersim/sources.py` selects snapshots by priority (fresh cache → git dir → stale cache) and returns a bundle of manifest + file paths.
 
 ### IDS Parsing
 - `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
@@ -47,9 +48,7 @@ Explicitly NOT included:
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
 - Typed `_IDS.csv` → `IdsState` with all required raw fields.
-- DataLoader priority order implementation:
-  - <24h cache → Git → older snapshot.
-  - Git integration is not implemented in the bundled baseline.
+- DataLoader Git integration does not fetch/pull remotes (local git dir only).
 
 ### Stat Engine + StatBook
 - No unified stat engine that composes:
@@ -58,7 +57,11 @@ Explicitly NOT included:
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired.
+- `tower_sim/tier_battle_conditions.py` loads tier battle conditions from the step1 dump CSV, but is not yet wired into stat composition.
+- `tower_sim/tier_rules.py` builds tier-rule context with loaded battle conditions, but does not yet apply stat deltas.
+- `tower_sim/tier_rule_apply.py` translates skip-reduction tier rules into stat inputs and fail-closed on unsupported conditions.
+- `tower_sim/stat_engine.py` can apply tier rules to stat inputs via `build_with_tier_rules`, covering skip reduction and select resistance multipliers.
+- Tournament run rules (perks disabled, permanent BCs) not fully wired; run context derives `perks_enabled` and calls the fail-closed perks gate.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.

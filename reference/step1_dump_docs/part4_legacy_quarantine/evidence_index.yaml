@@ -1,0 +1,16 @@
+evidence:
+  spec/run_context_schema.yaml:
+    source: 'User instruction: perks not applied during tournaments'
+    date: '2026-01-27'
+  src/perks/perks_gate.py:
+    derived_from:
+    - spec/run_context_schema.yaml
+    - spec/perks_policy.yaml
+    date: '2026-01-27'
+  spec/optimizer_scenarios.yaml:
+    source: 'Derived requirement from user instruction: tournament BC varies; optimizer must support conditional/robust modes'
+    date: '2026-01-27'
+  src/optimizer/scenario_runner.py:
+    derived_from:
+    - spec/optimizer_scenarios.yaml
+    date: '2026-01-27'

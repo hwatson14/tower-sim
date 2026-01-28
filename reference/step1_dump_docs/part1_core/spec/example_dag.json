@@ -1,0 +1,10 @@
+{
+  "nodes": {
+    "attack": {
+      "deps": [
+        "base_attack"
+      ],
+      "fn_name": "double_base_attack"
+    }
+  }
+}
