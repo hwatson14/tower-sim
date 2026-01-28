@@ -1,0 +1,7 @@
+files:
+- spec/optimizer_scenarios.yaml
+- data/battle_conditions/scenario_set_placeholder.yaml
+- src/optimizer/scenario_runner.py
+- tests/test_optimizer_scenarios.py
+- docs/OPTIMIZER_SCENARIOS.md
+- audit/v1.6.53_optimizer_scenario_runner_audit.yaml
