@@ -17,7 +17,11 @@ def apply_standard_perk_bonus_multiplicative(perk_base: float, quantity: int, st
     # Wiki: (1 + perk base × quantity) × (1 + standard perk bonus)
     return (1.0 + perk_base * quantity) * (1.0 + standard_perk_bonus)
 
-def apply_standard_perk_bonus_additive(perk_base: float, quantity: int, standard_perk_bonus: float) -> float:
+def _apply_standard_perk_bonus_additive(
+    perk_base: float,
+    quantity: int,
+    standard_perk_bonus: float,
+) -> float:
     """Compute additive perk result per fandom formula.
 
     Wiki: Perk Base × quantity × (1 + standard perk bonus)
