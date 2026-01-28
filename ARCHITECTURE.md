@@ -149,3 +149,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Add helper to assemble split FULLREPO archive.
 - [x] Add run context with tournament perk gating.
 - [x] Thread RunContext through battle condition filtering and perk-gated stat composition.
+- [ ] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
+- [ ] Implement tier battle condition loader (Tier BCs applied in frozen order).
+- [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
+- [ ] Implement boss combat model (boss-only survivability + death wave).
+- [ ] Add validation harness against Harry’s reference sheets.
