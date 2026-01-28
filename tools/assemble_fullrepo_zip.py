@@ -32,11 +32,6 @@ def find_parts(parts_dir: Path, prefix: str) -> list[Path]:
     return [part for _, part in indexed]
 
 
-def find_final_zip(parts_dir: Path, prefix: str) -> Path | None:
-    final_path = parts_dir / f"{prefix}.zip"
-    return final_path if final_path.exists() else None
-
-
 def validate_part_sequence(parts: list[Path], prefix: str) -> None:
     indexes = [_parse_part_index(part, prefix) for part in parts]
     if not indexes:
@@ -99,21 +94,15 @@ def main() -> None:
         )
 
     validate_part_sequence(parts, args.prefix)
-    final_zip = find_final_zip(args.parts_dir, args.prefix)
-    combined_parts = parts + ([final_zip] if final_zip else [])
-    write_combined(combined_parts, args.output)
+    write_combined(parts, args.output)
 
     if not has_eocd(args.output):
         raise SystemExit(
             "Combined archive is missing the ZIP end-of-central-directory record. "
-            "The split set is likely incomplete or corrupted (missing final .zip "
-            "segment or damaged parts)."
+            "The split set is likely incomplete or corrupted."
         )
 
-    extra = " and final .zip segment" if final_zip else ""
-    print(
-        f"Wrote combined archive to {args.output} from {len(parts)} parts{extra}."
-    )
+    print(f"Wrote combined archive to {args.output} from {len(parts)} parts.")
 
 
 if __name__ == "__main__":

@@ -55,28 +55,6 @@ def test_combines_parts_and_detects_eocd(tmp_path: Path) -> None:
     assert module.has_eocd(output_path) is True
 
 
-def test_combines_parts_with_final_zip_segment(tmp_path: Path) -> None:
-    module = load_module()
-    zip_bytes = make_zip_bytes()
-    midpoint = len(zip_bytes) // 2
-    head = zip_bytes[:midpoint]
-    tail = zip_bytes[midpoint:]
-
-    write_parts(tmp_path, "tower-sim-step1_FULLREPO", [head])
-    final_zip = tmp_path / "tower-sim-step1_FULLREPO.zip"
-    final_zip.write_bytes(tail)
-
-    parts = module.find_parts(tmp_path, "tower-sim-step1_FULLREPO")
-    module.validate_part_sequence(parts, "tower-sim-step1_FULLREPO")
-    combined = parts + [final_zip]
-
-    output_path = tmp_path / "combined.zip"
-    module.write_combined(combined, output_path)
-
-    assert output_path.read_bytes() == zip_bytes
-    assert module.has_eocd(output_path) is True
-
-
 def test_validate_part_sequence_detects_gap(tmp_path: Path) -> None:
     module = load_module()
     prefix = "tower-sim-step1_FULLREPO"
