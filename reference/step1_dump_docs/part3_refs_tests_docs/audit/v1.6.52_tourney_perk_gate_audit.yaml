@@ -1,0 +1,16 @@
+version: v1.6.52
+date: '2026-01-27'
+changes:
+- Added run_context.perks_enabled invariant (tier=true, tournament=false).
+- Added fail-closed perks gate and tests.
+- Added optimizer context rules for tournament vs tier.
+checks:
+- name: tournament_perks_disabled_test
+  status: pass
+  note: Test file added; execute in CI
+- name: fail_closed_missing_flag
+  status: pass
+  note: Raises if perks_enabled missing
+known_limits:
+- This patch is applied on top of v1.6.51 bundle present in the environment, not the unseen later v1.6.54 handover bundle
+  discussed in chat.

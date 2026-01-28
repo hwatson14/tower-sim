@@ -1,0 +1,279 @@
+Archive:  reference/tower-sim-step1_part3_refs_tests_docs.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  2026-01-28 01:38   refs/
+   792219  2026-01-28 01:30   refs/Copy of Bots v2.2.xlsx
+   526815  2026-01-28 01:30   refs/Copy of Cards v2.1.6.xlsx
+  6429573  2026-01-28 01:30   refs/Copy of Effective Paths v5.00.01.xlsx
+   839931  2026-01-28 01:30   refs/Copy of Guardians v2.2.5.xlsx
+  3314556  2026-01-28 01:30   refs/Copy of Modules v5.9.xlsx
+   619489  2026-01-28 01:30   refs/Copy of Player & Stuff v3.5.2.xlsx
+   620172  2026-01-28 01:30   refs/Copy of Relics v2.2.3.xlsx
+   644182  2026-01-28 01:30   refs/Copy of Themes & Songs v2.1.12.xlsx
+   807133  2026-01-28 01:30   refs/Copy of UWs v2.1.2.xlsx
+  1250612  2026-01-28 01:30   refs/Copy of Workshop v2.2.8.xlsx
+    36420  2026-01-28 01:30   refs/_IDS.csv
+     1658  2026-01-28 01:30   refs/ids_contract.yaml
+      236  2026-01-28 01:30   refs/ids_parse_map.yaml
+     7156  2026-01-28 01:30   refs/IDS_ABI_LOCK_v1.0.0.json
+      176  2026-01-28 01:30   refs/league_map.json
+        0  2026-01-28 01:38   refs/ids_abi_lock/
+     1107  2026-01-28 01:30   refs/ids_abi_lock/IDS_ABI_LOCKED_RAW_v1.csv
+     1860  2026-01-28 01:30   refs/ids_abi_lock/IDS_ABI_LOCKED_CANON_v1.csv
+    36420  2026-01-28 01:30   refs/ids_abi_lock/IDS_VALUES_SNAPSHOT_v1.csv
+     8104  2026-01-28 01:30   refs/ids_abi_lock/IDS_ABI_COLUMN_MAP_v1.json
+      895  2026-01-28 01:30   refs/ids_abi_lock/README.txt
+        0  2026-01-28 02:19   tests/
+        0  2026-01-28 01:30   tests/__init__.py
+      595  2026-01-28 01:30   tests/test_account.py
+      678  2026-01-28 01:30   tests/test_cc_sources.py
+      629  2026-01-28 01:30   tests/test_derive.py
+      386  2026-01-28 01:30   tests/test_econ_engine.py
+     1005  2026-01-28 01:30   tests/test_end_to_end.py
+      481  2026-01-28 01:30   tests/test_heat.py
+       39  2026-01-28 01:30   tests/test_imports.py
+      764  2026-01-28 01:30   tests/test_loadout.py
+     1262  2026-01-28 02:21   tests/test_run_sim.py
+      750  2026-01-28 01:30   tests/test_tier_bc.py
+      352  2026-01-28 01:30   tests/test_timing_primitives.py
+     1036  2026-01-28 01:30   tests/test_tournament_bc_selection.py
+      534  2026-01-28 01:30   tests/test_tournament_perks_disabled.py
+      657  2026-01-28 01:30   tests/test_optimizer_scenarios.py
+      842  2026-01-28 01:30   tests/test_command_parser.py
+        0  2026-01-28 02:21   tests/__pycache__/
+      171  2026-01-28 01:43   tests/__pycache__/__init__.cpython-311.pyc
+    13012  2026-01-28 01:43   tests/__pycache__/test_ids_presets.cpython-311-pytest-8.2.2.pyc
+     2748  2026-01-28 02:18   tests/__pycache__/test_account.cpython-311-pytest-8.2.2.pyc
+     6841  2026-01-28 02:18   tests/__pycache__/test_cc_sources.cpython-311-pytest-8.2.2.pyc
+     6623  2026-01-28 02:18   tests/__pycache__/test_command_parser.cpython-311-pytest-8.2.2.pyc
+     2448  2026-01-28 02:18   tests/__pycache__/test_derive.cpython-311-pytest-8.2.2.pyc
+     2259  2026-01-28 02:18   tests/__pycache__/test_econ_engine.cpython-311-pytest-8.2.2.pyc
+     2826  2026-01-28 02:18   tests/__pycache__/test_end_to_end.cpython-311-pytest-8.2.2.pyc
+     2462  2026-01-28 02:18   tests/__pycache__/test_heat.cpython-311-pytest-8.2.2.pyc
+      460  2026-01-28 02:18   tests/__pycache__/test_imports.cpython-311-pytest-8.2.2.pyc
+     3439  2026-01-28 02:18   tests/__pycache__/test_loadout.cpython-311-pytest-8.2.2.pyc
+     3895  2026-01-28 02:18   tests/__pycache__/test_optimizer_scenarios.cpython-311-pytest-8.2.2.pyc
+     3052  2026-01-28 02:18   tests/__pycache__/test_scenarios.cpython-311-pytest-8.2.2.pyc
+     2587  2026-01-28 02:18   tests/__pycache__/test_tier_bc.cpython-311-pytest-8.2.2.pyc
+     5028  2026-01-28 02:18   tests/__pycache__/test_timing_primitives.cpython-311-pytest-8.2.2.pyc
+     6650  2026-01-28 02:18   tests/__pycache__/test_tournament_bc_selection.cpython-311-pytest-8.2.2.pyc
+     1647  2026-01-28 02:18   tests/__pycache__/test_tournament_perks_disabled.cpython-311-pytest-8.2.2.pyc
+     2294  2026-01-28 02:21   tests/__pycache__/test_run_sim.cpython-311-pytest-8.2.2.pyc
+     6994  2026-01-28 02:21   tests/__pycache__/test_step1_smoke.cpython-311-pytest-8.2.2.pyc
+     2038  2026-01-28 01:43   tests/test_ids_presets.py
+      931  2026-01-28 02:21   tests/test_step1_smoke.py
+        0  2026-01-28 01:38   docs/
+     1565  2026-01-28 01:30   docs/BC_HEAT_EVIDENCE_AND_GAPS.md
+     1140  2026-01-28 01:30   docs/BC_HEAT_PROVENANCE.md
+     1247  2026-01-28 01:30   docs/BC_HEAT_SOURCE.md
+      895  2026-01-28 01:30   docs/RECOVERY_GAPS.md
+      689  2026-01-28 01:30   docs/TOURNAMENT_PERKS_DISABLED.md
+      407  2026-01-28 01:30   docs/OPTIMIZER_SCENARIOS.md
+        0  2026-01-28 01:38   audit/
+       41  2026-01-28 01:30   audit/audit.yaml
+      564  2026-01-28 01:30   audit/v1.6.52_tourney_perk_gate_audit.yaml
+      681  2026-01-28 01:30   audit/v1.6.53_optimizer_scenario_runner_audit.yaml
+        0  2026-01-28 01:38   evidence/
+      562  2026-01-28 01:30   evidence/evidence_index.yaml
+        0  2026-01-28 01:38   quarantine/
+        0  2026-01-28 01:38   quarantine/recovered_data/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.2/
+      503  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.2/README.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.2/spec/
+   118000  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.2/spec/unified_dag_nodes.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/
+      943  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/MANIFEST.yaml
+      390  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/README.md
+      822  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/manifest.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/audit/
+     4337  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/audit/confidence_sweep.yaml
+      359  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/audit/occurrence_scan_README.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/audit/occurrence_scan/
+      350  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/audit/occurrence_scan/coverage_audit.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/evidence/
+      454  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/evidence/tournament_heat_wiki_notes.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/evidence/occurrence_scan/
+   855190  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/evidence/occurrence_scan/evidence_index_full_occurrence.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/evidence/semantic_candidates/
+   338756  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/evidence/semantic_candidates/evidence_index_semantic_candidates.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/provenance/
+    15149  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/provenance/towersim_spec_pack_v1.6.12_defined_name_expansion.zip
+  3678094  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/provenance/towersim_spec_pack_v1.6.21_compiled_full.zip
+    63912  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/provenance/towersim_spec_pack_v1.6.22_full_occurrence_scan.zip
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/ref/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/ref/content/
+   792219  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/ref/content/Copy of Bots v2.2.xlsx
+   526815  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/ref/content/Copy of Cards v2.1.6.xlsx
+  3314556  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/ref/content/Copy of Modules v5.9.xlsx
+   807133  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/ref/content/Copy of UWs v2.1.2.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/ref/effective_paths/
+  6337495  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/ref/effective_paths/Copy of Effective Paths v5.00.01.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/spec/
+     1300  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/expected_data_tables.yaml
+     1537  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/ids_contract.yaml
+      236  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/ids_parse_map.yaml
+     1636  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/run_context_schema.yaml
+      477  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/tier_rules_engine.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/spec/curation/
+    63369  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/curation/curation_ledger.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/spec/mechanics/
+   277848  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/mechanics/mechanics_library.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/
+      658  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/cycle_report.yaml
+  2946673  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/dag_edges.yaml
+  2335187  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/dag_nodes.yaml
+    97933  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/defined_name_nodes.yaml
+ 11120782  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/formula_nodes_edamage.yaml
+  4877007  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/formula_nodes_eecon.yaml
+  3090180  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/formula_nodes_ehp.yaml
+    82421  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/spec/structural/formula_nodes_master_sheet.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/tools/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.30/tools/repo_data/
+      596  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/tools/repo_data/HOW_TO_EXPORT_DATA_FOLDER.md
+     1509  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/tools/repo_data/download_data_from_github.py
+     2011  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.30/tools/repo_data/parse_ids_wide.py
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/
+     1300  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/MANIFEST.yaml
+      390  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/README.md
+      822  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/manifest.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/audit/
+     4337  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/audit/confidence_sweep.yaml
+      359  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/audit/occurrence_scan_README.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/audit/occurrence_scan/
+      350  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/audit/occurrence_scan/coverage_audit.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/data/
+    25510  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/enemy_scaling_wave_damage_from_tiers_csv.full.yaml
+    15821  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/enemy_scaling_wave_damage_from_tiers_csv.yaml
+     1497  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/tier_battle_conditions.yaml
+    11892  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/tier_wave_damage_tables.yaml
+     1379  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/tournament_league_base_conditions.yaml
+     3641  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/data/tournament_league_wave_damage_tables.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/evidence/
+      454  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/evidence/tournament_heat_wiki_notes.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/evidence/occurrence_scan/
+   855190  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/evidence/occurrence_scan/evidence_index_full_occurrence.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/evidence/semantic_candidates/
+   338756  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/evidence/semantic_candidates/evidence_index_semantic_candidates.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/provenance/
+    15149  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/provenance/towersim_spec_pack_v1.6.12_defined_name_expansion.zip
+  3678094  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/provenance/towersim_spec_pack_v1.6.21_compiled_full.zip
+    63912  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/provenance/towersim_spec_pack_v1.6.22_full_occurrence_scan.zip
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/ref/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/ref/content/
+   792219  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/ref/content/Copy of Bots v2.2.xlsx
+   526815  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/ref/content/Copy of Cards v2.1.6.xlsx
+  3314556  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/ref/content/Copy of Modules v5.9.xlsx
+   807133  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/ref/content/Copy of UWs v2.1.2.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/ref/effective_paths/
+  6337495  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/ref/effective_paths/Copy of Effective Paths v5.00.01.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/spec/
+     2214  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/expected_data_tables.yaml
+     1537  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/ids_contract.yaml
+      236  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/ids_parse_map.yaml
+     1636  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/run_context_schema.yaml
+      787  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/tier_rules_engine.yaml
+     1288  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/tiers_csv_header_map.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/spec/curation/
+    63369  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/curation/curation_ledger.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/spec/mechanics/
+   277848  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/mechanics/mechanics_library.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/
+      658  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/cycle_report.yaml
+  2946673  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/dag_edges.yaml
+  2335187  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/dag_nodes.yaml
+    97933  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/defined_name_nodes.yaml
+ 11120782  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/formula_nodes_edamage.yaml
+  4877007  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/formula_nodes_eecon.yaml
+  3090180  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/formula_nodes_ehp.yaml
+    82421  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/spec/structural/formula_nodes_master_sheet.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/tools/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.32/tools/repo_data/
+      596  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/tools/repo_data/HOW_TO_EXPORT_DATA_FOLDER.md
+     1509  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/tools/repo_data/download_data_from_github.py
+     2011  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.32/tools/repo_data/parse_ids_wide.py
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/
+     1479  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/MANIFEST.yaml
+      390  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/README.md
+      822  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/manifest.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/audit/
+     4337  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/audit/confidence_sweep.yaml
+      359  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/audit/occurrence_scan_README.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/audit/occurrence_scan/
+      350  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/audit/occurrence_scan/coverage_audit.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/data/
+    25510  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/enemy_scaling_wave_damage_from_tiers_csv.full.yaml
+    15821  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/enemy_scaling_wave_damage_from_tiers_csv.yaml
+     1497  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/tier_battle_conditions.yaml
+    11892  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/tier_wave_damage_tables.yaml
+     1379  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/tournament_league_base_conditions.yaml
+     3641  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/data/tournament_league_wave_damage_tables.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/docs/
+      737  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/docs/PARTIAL_COVERAGE_NOTE.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/evidence/
+      416  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/evidence/battle_conditions_wiki_evidence.yaml
+      454  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/evidence/tournament_heat_wiki_notes.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/evidence/occurrence_scan/
+   855190  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/evidence/occurrence_scan/evidence_index_full_occurrence.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/evidence/semantic_candidates/
+   338756  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/evidence/semantic_candidates/evidence_index_semantic_candidates.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/provenance/
+    15149  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/provenance/towersim_spec_pack_v1.6.12_defined_name_expansion.zip
+  3678094  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/provenance/towersim_spec_pack_v1.6.21_compiled_full.zip
+    63912  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/provenance/towersim_spec_pack_v1.6.22_full_occurrence_scan.zip
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/ref/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/ref/content/
+   792219  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/ref/content/Copy of Bots v2.2.xlsx
+   526815  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/ref/content/Copy of Cards v2.1.6.xlsx
+  3314556  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/ref/content/Copy of Modules v5.9.xlsx
+   807133  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/ref/content/Copy of UWs v2.1.2.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/ref/effective_paths/
+  6337495  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/ref/effective_paths/Copy of Effective Paths v5.00.01.xlsx
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/spec/
+    14618  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/battle_condition_definitions.yaml
+      611  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/coverage_gates.yaml
+     2551  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/expected_data_tables.yaml
+     1658  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/ids_contract.yaml
+      236  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/ids_parse_map.yaml
+     1689  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/run_context_schema.yaml
+      467  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/run_context_validation.yaml
+     1204  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/tier_rules_engine.yaml
+     1288  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/tiers_csv_header_map.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/spec/curation/
+    63369  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/curation/curation_ledger.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/spec/mechanics/
+   277848  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/mechanics/mechanics_library.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/
+      658  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/cycle_report.yaml
+  2946673  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/dag_edges.yaml
+  2335187  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/dag_nodes.yaml
+    97933  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/defined_name_nodes.yaml
+ 11120782  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/formula_nodes_edamage.yaml
+  4877007  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/formula_nodes_eecon.yaml
+  3090180  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/formula_nodes_ehp.yaml
+    82421  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/spec/structural/formula_nodes_master_sheet.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/tools/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.34/tools/repo_data/
+      596  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/tools/repo_data/HOW_TO_EXPORT_DATA_FOLDER.md
+     1509  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/tools/repo_data/download_data_from_github.py
+     2011  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.34/tools/repo_data/parse_ids_wide.py
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/data/
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/data/battle_conditions/
+     3083  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.54/data/battle_conditions/catalog.yaml
+     3275  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.54/data/battle_conditions/reduction_labs_groups.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/data/tournaments/
+     1529  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.54/data/tournaments/leagues_and_heat.yaml
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/docs/
+     1136  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.54/docs/README.md
+        0  2026-01-28 01:38   quarantine/recovered_data/_recovered_v1.6.54/engines/
+     3540  2026-01-28 01:30   quarantine/recovered_data/_recovered_v1.6.54/engines/dag_ref_interpreter.py
+        0  2026-01-28 01:38   recovery/
+        0  2026-01-28 01:38   recovery/docs_part_A/
+      352  2026-01-28 01:30   recovery/docs_part_A/README.md
+      604  2026-01-28 01:30   recovery/docs_part_A/RUNBOOK.md
+      907  2026-01-28 01:30   recovery/docs_part_A/FREEZE_CHECKLIST.md
+      747  2026-01-28 01:30   recovery/docs_part_A/HOW_TO_CONTINUE.md
+    23262  2026-01-28 01:30   recovery/docs_part_A/MANIFEST.json
+     1410  2026-01-28 02:29   RUNBOOK.md
+---------                     -------
+141251444                     274 files
