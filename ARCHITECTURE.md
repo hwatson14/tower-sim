@@ -158,5 +158,6 @@ Any of the following must stop work and ask for clarification:
 - [ ] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [ ] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
+- [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [ ] Implement boss combat model (boss-only survivability + death wave).
 - [ ] Add validation harness against Harry’s reference sheets.
