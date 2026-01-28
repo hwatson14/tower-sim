@@ -64,6 +64,10 @@ Explicitly NOT included:
 - Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
 - Boss combat model (boss-only survivability and death wave estimation).
 - Validation harness against Harry’s reference sheets.
+- Deterministic intent compiler (user intent → ProblemSpec) and evaluator layer (objective metrics).
+- Optimisers that consume evaluators only (loadout, perk policy, stone spend).
+- Deterministic perk-offer model (current interim uses no-perks/all-perks bounds only).
+- Economy model tables for deterministic farming metrics (coins/hr, cells/hr).
 
 ### Missing Mechanics Cross-Check (Step1 Parts 1–4)
 The Step1 `/reference` bundle contains the missing mechanics and their data
