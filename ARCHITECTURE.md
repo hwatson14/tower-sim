@@ -149,3 +149,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add helper to assemble split FULLREPO archive.
 - [x] Add run context with tournament perk gating.
 - [x] Thread RunContext through battle condition filtering and perk-gated stat composition.
+- [x] Port tournament BC selection enumerator with league rules table + tests.
