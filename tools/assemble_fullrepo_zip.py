@@ -10,10 +10,42 @@ import argparse
 from pathlib import Path
 
 EOCD_SIGNATURE = b"PK\x05\x06"
+PART_PREFIX = ".part"
+
+
+def _parse_part_index(path: Path, prefix: str) -> int:
+    name = path.name
+    expected_prefix = f"{prefix}{PART_PREFIX}"
+    if not name.startswith(expected_prefix):
+        raise SystemExit(f"Unexpected part filename: {name}")
+    suffix = name[len(expected_prefix) :]
+    if not suffix.isdigit():
+        raise SystemExit(
+            f"Part filename suffix must be digits after '{expected_prefix}': {name}"
+        )
+    return int(suffix)
 
 
 def find_parts(parts_dir: Path, prefix: str) -> list[Path]:
-    return sorted(parts_dir.glob(f"{prefix}.part*"))
+    parts = list(parts_dir.glob(f"{prefix}{PART_PREFIX}*"))
+    indexed = sorted(((_parse_part_index(part, prefix), part) for part in parts))
+    return [part for _, part in indexed]
+
+
+def validate_part_sequence(parts: list[Path], prefix: str) -> None:
+    indexes = [_parse_part_index(part, prefix) for part in parts]
+    if not indexes:
+        return
+    min_index = min(indexes)
+    max_index = max(indexes)
+    expected = set(range(min_index, max_index + 1))
+    missing = sorted(expected - set(indexes))
+    if min_index != 0:
+        raise SystemExit(
+            f"Part sequence must start at 0; found minimum index {min_index}."
+        )
+    if missing:
+        raise SystemExit(f"Missing part indexes: {missing}")
 
 
 def write_combined(parts: list[Path], output_path: Path) -> None:
@@ -61,15 +93,16 @@ def main() -> None:
             f"No parts found in {args.parts_dir} for prefix '{args.prefix}'."
         )
 
+    validate_part_sequence(parts, args.prefix)
     write_combined(parts, args.output)
 
     if not has_eocd(args.output):
         raise SystemExit(
             "Combined archive is missing the ZIP end-of-central-directory record. "
-            "The split set is likely incomplete."
+            "The split set is likely incomplete or corrupted."
         )
 
-    print(f"Wrote combined archive to {args.output}")
+    print(f"Wrote combined archive to {args.output} from {len(parts)} parts.")
 
 
 if __name__ == "__main__":
