@@ -1,0 +1,86 @@
+{
+  "summary": {
+    "passes": 11,
+    "warnings": 0,
+    "failures": 0
+  },
+  "passes": [
+    {
+      "code": "A_NAMING_OK",
+      "message": "Loaded 251 canonical IDs from naming YAML.",
+      "paths": [
+        "/workspace/tower-sim/naming/catalog.yaml"
+      ]
+    },
+    {
+      "code": "B_REGISTRY_OK",
+      "message": "No unknown canonical ID references detected.",
+      "paths": []
+    },
+    {
+      "code": "C_TABLES_PRESENT",
+      "message": "Found 2 CSV table(s).",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/tables"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/stat_registry.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/stat_registry.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/statbook.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/statbook.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/libs/workshop_lib.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/libs/workshop_lib.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/libs/labs_lib.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/libs/labs_lib.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/libs/modules_lib.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/libs/modules_lib.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/libs/uw_lib.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/libs/uw_lib.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/libs/cards_lib.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/libs/cards_lib.py"
+      ]
+    },
+    {
+      "code": "D_MODULE_IMPLEMENTED",
+      "message": "Key module implemented: tower_sim/modules_library.py",
+      "paths": [
+        "/workspace/tower-sim/tower_sim/modules_library.py"
+      ]
+    }
+  ],
+  "warnings": [],
+  "failures": []
+}

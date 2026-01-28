@@ -154,6 +154,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add helper to assemble split FULLREPO archive.
 - [x] Add run context with tournament perk gating.
 - [x] Thread RunContext through battle condition filtering and perk-gated stat composition.
+- [x] Implement perk engine (perk bonus application with gating).
 - [ ] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [ ] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
