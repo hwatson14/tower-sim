@@ -5,13 +5,12 @@ from tower_sim.stat_registry import Phase, StatRegistry, default_registry
 from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
 
-PHASE_START = Phase.START_OF_RUN
-PHASE_END = Phase.END_OF_RUN
 
 
 def build_statbook(ids_state: IdsState) -> StatBook:
     rows: list[StatRow] = []
     for name, level in ids_state.labs.labs.items():
+        level_value = _optional_str(level)
         rows.append(
             _make_row(
                 stat_id=name,
@@ -29,6 +28,8 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             )
         )
     for entry in ids_state.workshop.entries.values():
+        coin_level_value = _optional_str(entry.coin_level)
+        max_value = _optional_str(entry.max_level) or coin_level_value
         rows.append(
             _make_row(
                 stat_id=entry.name,

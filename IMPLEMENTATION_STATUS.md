@@ -55,7 +55,6 @@ Explicitly NOT included:
 
 ### Stat Engine + StatBook
 - Stat engine scaffolding and StatBook export exist, but composition is incomplete.
-- `statbook_builder.py` API mismatch remains a known gap.
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
