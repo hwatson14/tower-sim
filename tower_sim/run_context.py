@@ -1,23 +1,39 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from enum import Enum
 
-from tower_sim.perks_gate import assert_perks_enabled
+
+class RunType(str, Enum):
+    FARMING = "farming"
+    TOURNAMENT = "tournament"
 
 
 @dataclass(frozen=True)
 class RunContext:
-    mode: str
+    tier: str
+    run_type: RunType
     perks_enabled: bool
 
     @classmethod
-    def from_mode(cls, mode: str) -> "RunContext":
-        normalized = mode.strip().lower()
-        if normalized in {"tourney", "tournament"}:
-            return cls(mode="tournament", perks_enabled=False)
-        if normalized in {"tier", "farming", "milestone"}:
-            return cls(mode=normalized, perks_enabled=True)
-        raise ValueError(f"Unknown run mode: {mode!r}")
+    def farming(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
+        resolved = True if perks_enabled is None else perks_enabled
+        return cls(tier=tier, run_type=RunType.FARMING, perks_enabled=resolved)
 
-    def require_perks_enabled(self) -> None:
-        assert_perks_enabled({"perks_enabled": self.perks_enabled})
+    @classmethod
+    def tournament(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
+        resolved = False if perks_enabled is None else perks_enabled
+        return cls(tier=tier, run_type=RunType.TOURNAMENT, perks_enabled=resolved)
+
+
+class PerksDisabledError(RuntimeError):
+    pass
+
+
+def assert_perks_enabled(context: RunContext) -> None:
+    if context is None:
+        raise PerksDisabledError("RunContext missing (fail-closed)")
+    if not context.perks_enabled:
+        raise PerksDisabledError(
+            f"Perks are disabled for run_type={context.run_type.value} tier={context.tier}."
+        )

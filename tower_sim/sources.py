@@ -8,6 +8,7 @@ from typing import Dict, Iterable, Optional
 import zipfile
 
 import pandas as pd
+from tower_sim.ids_parser import DEFAULT_IDS_PATHS, resolve_ids_path
 
 DATA_DIR = Path(__file__).resolve().parent.parent / "data"
 DATA_DIR.mkdir(exist_ok=True)
@@ -31,6 +32,12 @@ class DatasetBundle:
     manifest_path: Path
     manifest: Dict[str, object]
     files: Dict[str, Path]
+    resolved_from: str
+
+
+@dataclass(frozen=True)
+class IdsOnlyBundle:
+    ids_path: Path
     resolved_from: str
 
 def is_fresh(path: Path, hours: int) -> bool:
@@ -107,6 +114,13 @@ def load_snapshot_bundle(
         files=files,
         resolved_from=resolved_from,
     )
+
+
+def load_ids_only_bundle(
+    paths: Iterable[Path] = DEFAULT_IDS_PATHS,
+) -> IdsOnlyBundle:
+    ids_path = resolve_ids_path(tuple(paths))
+    return IdsOnlyBundle(ids_path=ids_path, resolved_from="ids_only")
 
 def ensure_snapshot_unzipped(snapshot_zip: Path, out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
