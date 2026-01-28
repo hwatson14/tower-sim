@@ -26,8 +26,14 @@ class RunContext:
         return cls(tier=tier, run_type=RunType.TOURNAMENT, perks_enabled=resolved)
 
 
+class PerksDisabledError(RuntimeError):
+    pass
+
+
 def assert_perks_enabled(context: RunContext) -> None:
+    if context is None:
+        raise PerksDisabledError("RunContext missing (fail-closed)")
     if not context.perks_enabled:
-        raise ValueError(
+        raise PerksDisabledError(
             f"Perks are disabled for run_type={context.run_type.value} tier={context.tier}."
         )
