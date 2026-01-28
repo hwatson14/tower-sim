@@ -1,6 +1,8 @@
 
 from __future__ import annotations
 
+from tower_sim.run_context import RunContext, assert_perks_enabled
+
 def apply_standard_perk_bonus_multiplicative(perk_base: float, quantity: int, standard_perk_bonus: float) -> float:
     """Compute multiplicative perk result per fandom formula.
 
@@ -22,3 +24,23 @@ def apply_standard_perk_bonus_additive(perk_base: float, quantity: int, standard
     Returns the additive amount (decimal), not 1+amount.
     """
     return perk_base * quantity * (1.0 + standard_perk_bonus)
+
+
+def apply_standard_perk_bonus_multiplicative_checked(
+    context: RunContext,
+    perk_base: float,
+    quantity: int,
+    standard_perk_bonus: float,
+) -> float:
+    assert_perks_enabled(context)
+    return apply_standard_perk_bonus_multiplicative(perk_base, quantity, standard_perk_bonus)
+
+
+def apply_standard_perk_bonus_additive_checked(
+    context: RunContext,
+    perk_base: float,
+    quantity: int,
+    standard_perk_bonus: float,
+) -> float:
+    assert_perks_enabled(context)
+    return apply_standard_perk_bonus_additive(perk_base, quantity, standard_perk_bonus)
