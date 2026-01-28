@@ -22,6 +22,11 @@ Primary external input is `_IDS.csv` (player inventory + levels + equipped prese
 All other tables are shipped with the repo under `tower_sim/tables` or `tower_sim/wiki/cache`,
 and are treated as authoritative library data (with provenance).
 
+### Snapshot Priority Order
+1. **Local cache < 24 hours old**
+2. **Git (tower-sim-data main)**
+3. **Older cached snapshot(s)**
+
 ### IDS Path Resolution
 Default `_IDS.csv` resolution order:
 1. `tests/fixtures/tower-sim-data/_IDS.csv`
@@ -83,7 +88,8 @@ Export formats:
 
 ## Engines
 ### 1) DataLoader
-- Resolves `_IDS.csv` path using the IDS resolution order.
+- Resolves snapshot folder using priority order.
+- Returns a DatasetBundle: file paths + timestamps + hashes.
 - Repository tables are treated as local libraries (no snapshot dependency).
 
 ### 2) IDS Parser
