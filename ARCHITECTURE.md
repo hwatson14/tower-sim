@@ -18,17 +18,15 @@ Data sources → Parse → Build baseline account state → Apply run loadout �
 - **Milestone run:** uses tier rules; output includes milestone targets.
 
 ## Data Sources (Authoritative)
-Primary inputs are CSV snapshots (via `tower-sim-data`):
-- `_IDS.csv` (player inventory + levels + equipped preset)
-- `DVT_Workshop.csv` / `WSValues.csv` (workshop value tables)
-- `Tiers.csv` (tier metadata + BC fields if present)
-- `Data_Val_Tables.csv` (enums/validation lists)
-- `manifest.json` (snapshot integrity)
+Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
+All other tables are shipped with the repo under `tower_sim/tables` or `tower_sim/wiki/cache`,
+and are treated as authoritative library data (with provenance).
 
-### Snapshot Priority Order
-1. **Local cache < 24 hours old**
-2. **Git (tower-sim-data main)**
-3. **Older cached snapshot(s)**
+### IDS Path Resolution
+Default `_IDS.csv` resolution order:
+1. `tests/fixtures/tower-sim-data/_IDS.csv`
+2. `tests/fixtures/_IDS.csv`
+3. `data/tower-sim-data/_IDS.csv`
 
 ## State Model
 ### A) Account Baseline (unchanged during a run)
@@ -85,8 +83,8 @@ Export formats:
 
 ## Engines
 ### 1) DataLoader
-- Resolves snapshot folder using priority order.
-- Returns a DatasetBundle: file paths + timestamps + hashes.
+- Resolves `_IDS.csv` path using the IDS resolution order.
+- Repository tables are treated as local libraries (no snapshot dependency).
 
 ### 2) IDS Parser
 - Parses `_IDS.csv` into a typed `IdsState` (raw values only, no mechanics).
@@ -139,6 +137,7 @@ Any of the following must stop work and ask for clarification:
 
 ## Checklist
 - [x] Implement typed `_IDS.csv` parsing to `IdsState` (raw values only) + tests.
+- [x] Restrict external inputs to `_IDS.csv` (repo tables serve as libraries).
 - [x] Add StatBook skeleton/export and reference structure validation harness.
 - [x] Add wiki cache audit harness and reports for promotable lab tables.
 - [x] Add canonical StatBook export schema with loadout delta breakdown scaffolding.
