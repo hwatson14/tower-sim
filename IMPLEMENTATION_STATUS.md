@@ -57,7 +57,7 @@ Explicitly NOT included:
 
 ### Tier Rules / Battle Conditions
 - `towersim/battle_conditions.py` exists, but there is no canonical TierLib applying BCs in the frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired.
+- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.
