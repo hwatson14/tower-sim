@@ -63,6 +63,52 @@ Explicitly NOT included:
 - Boss combat model (boss-only survivability and death wave estimation).
 - Validation harness against Harry’s reference sheets.
 
+### Missing Mechanics Cross-Check (Step1 Parts 1–4)
+The Step1 `/reference` bundle contains the missing mechanics and their data
+sources. This list maps each missing mechanic in the current sim to the
+corresponding Step1 part file(s):
+
+#### Combat Engines (boss + nonboss)
+- **Missing mechanic:** combat resolution engines (boss survivability + nonboss
+  combat loop).
+- **Reference location:** `reference/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
+  (explicit missing `sim/engines/combat_engine.py` and
+  `sim/engines/nonboss_combat_engine.py`).
+
+#### Tier Battle Conditions + Heat
+- **Missing mechanic:** tier BC application in frozen order + heat scaling.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (`battle_conditions.csv`,
+    `heat.csv` runtime inputs).
+  - `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
+    and `BC_HEAT_PROVENANCE.md` (source + gaps).
+  - `reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
+    (BC base magnitude table).
+  - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv`
+    (league,wave heat).
+  - `reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`
+    (partial Tier 14–21 farming BC magnitudes).
+
+#### Tournament Battle Conditions
+- **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
+  boss frequency.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
+  - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
+
+#### Wave Damage Curves
+- **Missing mechanic:** authoritative wave damage curves for tier + tournament.
+- **Reference locations:**
+  - `reference/step1_dump_docs/part2_data/tier_wave_damage.csv`
+  - `reference/step1_dump_docs/part2_data/tournament_wave_damage.csv`
+
+#### Runtime DAG / Derived Pipeline Inputs
+- **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
+  binding).
+- **Reference locations:**
+  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (`tiers.csv` + `dag.json`).
+  - `reference/step1_dump_docs/part2_data/dag.json`.
+
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) not implemented.
 - Fail-closed boss combat engine scaffold exists in `tower_sim/combat/boss_engine.py`.
