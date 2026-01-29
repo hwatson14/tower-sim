@@ -29,6 +29,8 @@ def test_boss_engine_requires_inputs() -> None:
         tower_regen=0.0,
         defense_pct=0.0,
         thorns_pct=None,
+        pc_frac=None,
+        pc_boss_mult=None,
         package_chance=None,
         package_heal=None,
         damage_reduction=None,
@@ -39,7 +41,7 @@ def test_boss_engine_requires_inputs() -> None:
         engine.evaluate(inputs)
 
 
-def test_boss_engine_fail_closed_without_mechanics() -> None:
+def test_boss_engine_returns_minimal_survivability() -> None:
     engine = BossCombatEngine()
     inputs = BossCombatInputs(
         wave=100,
@@ -48,11 +50,17 @@ def test_boss_engine_fail_closed_without_mechanics() -> None:
         tower_regen=100.0,
         defense_pct=0.2,
         thorns_pct=0.1,
+        pc_frac=0.2,
+        pc_boss_mult=1.5,
         package_chance=0.05,
         package_heal=0.2,
-        damage_reduction=0.0,
+        damage_reduction=0.1,
         provenance="sheet:boss_model",
     )
 
-    with pytest.raises(MissingMechanicError):
-        engine.evaluate(inputs)
+    result = engine.evaluate(inputs)
+    assert result.effective_damage_per_sec == pytest.approx(720.0)
+    assert result.effective_regen_per_sec == pytest.approx(100.01)
+    assert result.net_damage_per_sec == pytest.approx(619.99)
+    assert result.time_to_death_sec == pytest.approx(10_000.0 / 619.99)
+    assert result.boss_hp_frac_damage_per_hit == pytest.approx(0.4)

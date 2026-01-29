@@ -245,6 +245,8 @@ def _probe_boss_combat(
             tower_regen=start_stats.values.get("tower_regen", 0.0),
             defense_pct=start_stats.values.get("def_pct", 0.0),
             thorns_pct=start_stats.values.get("thorns_damage_mult"),
+            pc_frac=None,
+            pc_boss_mult=None,
             package_chance=None,
             package_heal=None,
             damage_reduction=None,
