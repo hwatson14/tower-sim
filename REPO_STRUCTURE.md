@@ -10,16 +10,19 @@
 - `scripts/`: thin command-line helpers.
 
 ## Package layout (`tower_sim/`)
-The importable package maps to the architecture planes and contains Python-only modules:
+The importable package maps to the architecture planes and contains Python-only modules.
 
-- `run/`: orchestration (ProblemSpec, wiring, evaluators)
-- `registry/`: canonical IDs, stat registry, enums, validation
-- `loaders/`: IO + parsing only
-- `libs/`: deterministic table interpreters
+### Ownership map (canonical planes)
+- `loaders/`: IO + parsing only (source ingestion, CSV readers)
+- `libs/`: deterministic table interpreters and reference tables
 - `engines/`: mechanics engines (no IO)
 - `evaluators/`: objective evaluators
-- `audit/`: audit tooling code only (no outputs)
+- `run/`: orchestration (ProblemSpec, wiring, run context)
+
+### Supporting packages
+- `registry/`: canonical IDs, stat registry, enums, validation (shared by all planes)
 - `util/`: shared helpers (types, errors, validation)
+- `audit/`: audit tooling code only (no outputs)
 
 ## Root documents
 - `README.md`, `ARCHITECTURE.md`, `TESTING.md`, `CONTRIBUTING.md`

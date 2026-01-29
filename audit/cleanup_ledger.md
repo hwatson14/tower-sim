@@ -67,6 +67,10 @@
 - reference/tower-sim-step1_part3_refs_tests_docs.zip -> reference/tower_sim_step1_part3_refs_tests_docs.zip
 - reference/tower-sim-step1_part4_legacy_quarantine.zip -> reference/tower_sim_step1_part4_legacy_quarantine.zip
 
+## Consolidated
+- tower_sim/loaders/tier_bc_loader.py -> shim to tower_sim/loaders/tier_battle_conditions.py + tower_sim/libs/step1_tables.py (duplicate parser removed)
+- tower_sim/loaders/tier_battle_conditions.py -> uses tower_sim/libs/step1_tables.py as canonical tier BC table parser
+
 ## Deleted
 - data/ (legacy cache directory; empty after moves)
 - docs/ (migrated to root docs)
