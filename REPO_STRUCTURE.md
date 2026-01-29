@@ -36,3 +36,4 @@ check generated markdown/json/yaml into `tower_sim/`.
 ## Enforcement
 Structure and naming rules are enforced by `scripts/check_repo_map.py` and covered by
 `tests/test_repo_map.py`. Update `REPO_MAP.yaml` intentionally when adding new files.
+See `CONTRIBUTING.md` → "File creation policy (Edit existing first)" for governance.

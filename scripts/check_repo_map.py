@@ -2,7 +2,9 @@
 """Validate repository structure against REPO_MAP.yaml."""
 from __future__ import annotations
 
+import argparse
 import re
+import subprocess
 from pathlib import Path, PurePosixPath
 
 import yaml
@@ -205,7 +207,145 @@ def check_file_count_caps(repo_root: Path, config: dict, errors: list[str]) -> N
             )
 
 
+def check_forbidden_dump_files(
+    repo_root: Path,
+    config: dict,
+    exceptions: list[str],
+    errors: list[str],
+) -> None:
+    forbidden = config.get("forbidden_dump_file_globs", [])
+    if not forbidden:
+        return
+
+    for path in repo_root.rglob("*.py"):
+        if is_ignored(path):
+            continue
+        rel_path = path.relative_to(repo_root)
+        if is_exception(rel_path, exceptions):
+            continue
+        rel_posix = to_posix(rel_path)
+        if matches_any(rel_posix, forbidden):
+            errors.append(f"Forbidden dump filename: {rel_posix}")
+
+
+def check_duplicate_module_stems(
+    repo_root: Path,
+    exceptions: list[str],
+    errors: list[str],
+) -> None:
+    tower_sim_dir = repo_root / "tower_sim"
+    stems: dict[str, list[str]] = {}
+    for path in tower_sim_dir.rglob("*.py"):
+        if is_ignored(path):
+            continue
+        if path.name == "__init__.py":
+            continue
+        rel_path = path.relative_to(repo_root)
+        if is_exception(rel_path, exceptions):
+            continue
+        stem = path.stem
+        stems.setdefault(stem, []).append(to_posix(rel_path))
+
+    for stem, paths in sorted(stems.items()):
+        if len(paths) > 1:
+            details = ", ".join(sorted(paths))
+            errors.append(f"Duplicate module stem '{stem}': {details}")
+
+
+def check_new_files_ledger(
+    repo_root: Path,
+    diff_base: str,
+    errors: list[str],
+) -> None:
+    command = ["git", "diff", "--name-status", f"{diff_base}...HEAD"]
+    result = subprocess.run(
+        command,
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        errors.append(
+            "Failed to compute git diff for new files check:\n"
+            f"stdout:\n{result.stdout}\n"
+            f"stderr:\n{result.stderr}"
+        )
+        return
+
+    added_files: list[str] = []
+    for line in result.stdout.splitlines():
+        if not line.strip():
+            continue
+        parts = line.split("\t")
+        if not parts:
+            continue
+        status = parts[0]
+        if not status.startswith("A"):
+            continue
+        if len(parts) < 2:
+            continue
+        path = parts[1]
+        if path.startswith("tower_sim/") and path.endswith(".py"):
+            added_files.append(path)
+
+    if not added_files:
+        return
+
+    ledger_path = repo_root / "audit" / "cleanup_ledger.md"
+    if not ledger_path.exists():
+        errors.append(
+            "New tower_sim/*.py files detected, but audit/cleanup_ledger.md is missing."
+        )
+        return
+
+    ledger_text = ledger_path.read_text(encoding="utf-8")
+    heading = "## New files"
+    if heading not in ledger_text:
+        errors.append(
+            "New tower_sim/*.py files detected; add a '## New files' section to "
+            "audit/cleanup_ledger.md with justifications."
+        )
+        return
+
+    section = ledger_text.split(heading, 1)[1]
+    section_lines = section.splitlines()
+    content_lines: list[str] = []
+    for line in section_lines[1:]:
+        if line.startswith("## "):
+            break
+        content_lines.append(line)
+
+    for path in sorted(set(added_files)):
+        matched = False
+        for line in content_lines:
+            if path in line:
+                tail = line.split(path, 1)[1]
+                if tail.strip():
+                    matched = True
+                    break
+        if not matched:
+            errors.append(
+                f"New file {path} missing justification under '## New files' in "
+                "audit/cleanup_ledger.md."
+            )
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--diff-base",
+        default=None,
+        help=(
+            "Optional git diff base (e.g., origin/main). When set, new "
+            "tower_sim/*.py additions must be recorded in audit/cleanup_ledger.md."
+        ),
+    )
+    return parser.parse_args()
+
+
 def main() -> None:
+    args = parse_args()
     repo_root = Path(__file__).resolve().parents[1]
     config = load_repo_map(repo_root)
     errors: list[str] = []
@@ -224,6 +364,10 @@ def main() -> None:
     check_naming_rules(repo_root, config, exceptions, errors)
     check_generated_artifacts(repo_root, config, exceptions, errors)
     check_file_count_caps(repo_root, config, errors)
+    check_forbidden_dump_files(repo_root, config, exceptions, errors)
+    check_duplicate_module_stems(repo_root, exceptions, errors)
+    if args.diff_base:
+        check_new_files_ledger(repo_root, args.diff_base, errors)
 
     if errors:
         error_text = "\n".join(f"- {error}" for error in sorted(errors))
