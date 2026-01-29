@@ -66,7 +66,7 @@ Explicitly NOT included:
 - Validation harness against Harry’s reference sheets.
 - Deterministic intent compiler (user intent → ProblemSpec) and evaluator layer (objective metrics).
 - Optimisers that consume evaluators only (loadout, perk policy, stone spend).
-- Deterministic perk-offer model (current interim uses no-perks/all-perks bounds only).
+- Deterministic perk-offer model (explicit envelope cases driven by policy; no sampling).
 - Economy model tables for deterministic farming metrics (coins/hr, cells/hr).
 
 ### Missing Mechanics Cross-Check (Step1 Parts 1–4)

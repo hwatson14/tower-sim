@@ -27,10 +27,16 @@ These planes describe where responsibilities live without changing the frozen st
 3) **Models / Simulation (mechanics)**
    - Mechanics-only engines (e.g., wave mapping, combat models) that evaluate outcomes for a fully specified scenario.
    - May use internal wave search, but external API must accept scenario parameters, not explicit wave queries.
+   - CellModel is a first-class mechanics engine when authoritative tables exist; it must consume
+     survivability outputs, wave time, elite presence, and kill rate rather than relying on a static lookup.
+   - Uptime/overlap modeling must be steady-state (no timeline from wave 1) using explicit deterministic
+     cases (e.g., no overlap / partial overlap / full overlap) derived from inputs or tables.
+     If authoritative overlap rules are missing, mark the model incomplete rather than assuming probabilities.
 
 4) **Evaluation (objectives)**
    - Converts model outputs into objective-aligned metrics (e.g., max wave).
-   - Outputs are deterministic; stochastic/quantile reporting is disallowed unless an authoritative deterministic model is provided.
+   - Outputs are deterministic and may return explicit envelope cases (best / worst / nominal) derived from
+     enumerated inputs. Stochastic sampling and invented distributions are not allowed.
 
 5) **Planning + Optimisation**
    - Translates user intents into optimisation problems.
@@ -38,16 +44,13 @@ These planes describe where responsibilities live without changing the frozen st
 
 ### Run Types
 - **Farming run:** perks enabled, normal tier battle conditions.
-- **Tournament run:** tournament BC set; perks disabled unless explicitly enabled.
+- **Tournament run:** tournament BC set; perk enablement is scenario-driven per tournament rules.
 - **Milestone run:** uses tier rules; output includes milestone targets.
 
-### Perk Handling (Deterministic Interim)
-Perk offering is currently treated deterministically. For farming and milestone runs, the
-sim must support both:
-- **No perks** (start-of-run baseline), and
-- **All perks enabled** (upper-bound scenario),
-until an authoritative, deterministic perk-offer model is added to the reference libraries.
-Any stochastic perk offering model is **not allowed** and must fail closed.
+### Perk Handling (Deterministic Envelope)
+Perk auto-pick priority order is a deterministic input. Evaluators must compute explicit,
+enumerated perk-outcome cases consistent with that policy (best / worst / nominal), without sampling.
+If authoritative perk-offer rules are missing, the perk engine must be marked incomplete or fail closed.
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
@@ -106,18 +109,20 @@ Resolved tournament scenarios must include the explicit tournament BC set as inp
 do not infer tournament BCs per league unless a table is provided in the reference libraries.
 
 ## Determinism and Unknown Variability
-Randomness is not permitted in this architecture. If a requested feature depends on stochastic mechanics
-(e.g., perk offering RNG or active phase uncertainty), the sim must fail closed until an authoritative,
-deterministic model is specified and added to the libraries.
+Randomness is not permitted in this architecture. Determinism means identical declared inputs produce
+identical outputs, including explicit envelope cases. Stochastic sampling and invented probability
+distributions are not allowed. If a requested feature depends on stochastic mechanics without an
+authoritative deterministic model, the sim must fail closed.
 
 ## Evaluator Contracts (Deterministic v1)
 Evaluators are first-class and must remain deterministic under current rules. Any distribution/quantile
 outputs require authoritative deterministic models and must be documented as missing until provided.
 
 Canonical evaluators (contract definitions; implementations may be pending):
-- **MaxWaveEvaluator**: returns max wave and diagnostics for a resolved scenario.
+- **MaxWaveEvaluator**: returns max wave and diagnostics for a resolved scenario, plus any explicit
+  envelope cases derived from deterministic inputs.
 - **FarmRateEvaluator**: returns deterministic farm metrics and diagnostics *once* authoritative
-  economy tables/models are present in the reference libraries.
+  economy tables/models are present in the reference libraries, and may include explicit envelope cases.
 
 ## StatBook (First-Class Artifact)
 TowerSim must produce a StatBook that is both:
