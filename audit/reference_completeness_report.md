@@ -11,32 +11,32 @@ This report inventories required runtime tables and classifies them as:
 required_tables:
   bc_heat:
     status: missing
-    runtime_paths: []
-    step1_only_paths:
-      - reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv
-      - reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv
+    runtime_paths:
+    - tower_sim/tables/battle_condition_magnitudes.csv
+    - tower_sim/tables/tier14_21_battle_conditions.csv
+    step1_only_paths: []
     missing_paths:
-      - battle_conditions.csv
-      - heat.csv
-      - reference/step1_dump_docs/part2_data/heat_wave_scalar.csv
+    - battle_conditions.csv
+    - heat.csv
+    - heat_wave_scalar.csv
   wave_damage:
-    status: step1-only
-    runtime_paths: []
-    step1_only_paths:
-      - reference/step1_dump_docs/part2_data/tier_wave_damage.csv
-      - reference/step1_dump_docs/part2_data/tournament_wave_damage.csv
+    status: runtime
+    runtime_paths:
+    - tower_sim/tables/tier_wave_damage.csv
+    - tower_sim/tables/tournament_wave_damage.csv
+    step1_only_paths: []
     missing_paths: []
   tournament_boss_freq:
-    status: step1-only
-    runtime_paths: []
-    step1_only_paths:
-      - reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv
+    status: runtime
+    runtime_paths:
+    - tower_sim/tables/tournament_more_bosses_static.csv
+    step1_only_paths: []
     missing_paths: []
   dag_inputs:
     status: missing
-    runtime_paths: []
-    step1_only_paths:
-      - reference/step1_dump_docs/part2_data/dag.json
+    runtime_paths:
+    - tower_sim/tables/dag.json
+    step1_only_paths: []
     missing_paths:
-      - tiers.csv
+    - tiers.csv
 ```
