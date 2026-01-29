@@ -303,3 +303,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
+- [x] Add reference completeness report and runtime table guardrail test.
