@@ -78,7 +78,7 @@ def audit_stat_coverage(
     registry: StatRegistry,
 ) -> CoverageReport:
     repo_root = Path(__file__).resolve().parents[2]
-    audit_path = repo_root / "audit" / "wiki_cache_audit.json"
+    audit_path = repo_root / "tower_sim" / "audit" / "wiki_cache_audit.json"
     cache_dir = repo_root / "tower_sim" / "wiki" / "cache"
     audit_index = _load_audit_index(audit_path)
 
