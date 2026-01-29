@@ -138,6 +138,13 @@ naming_rules:
     - notes
     - draft
 
+forbidden_dump_file_globs:
+  - "**/misc.py"
+  - "**/helpers.py"
+  - "**/tmp.py"
+  - "**/old_*.py"
+  - "**/scratch*.py"
+
 file_count_caps:
   enabled: true
   caps:
@@ -149,6 +156,8 @@ file_count_caps:
     "tower_sim/evaluators": 40
     "tower_sim/audit": 40
     "tower_sim/util": 50
+    "scripts": 50
+    "audit": 200
     "tests": 300
     "tables": 600
 
