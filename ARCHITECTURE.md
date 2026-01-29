@@ -290,3 +290,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Extract bot upgrade tables (DVT_Bot) into CSV + loader + tests.
 - [x] Extract guardian upgrade tables (DVT_Guardians) into CSV + loader + tests.
 - [x] Add token source mapping audit (token map, report, and validation script).
+- [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
