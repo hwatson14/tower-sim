@@ -10,3 +10,4 @@ tables have not yet been added.
 - `tier14_21_battle_conditions.csv`: Tier 14–21 farming battle condition magnitudes
   from the user-provided Notion extract documented in
   `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_PROVENANCE.md`.
+- `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/Effective Paths/Copy of Bots v2.2.xlsx`.
