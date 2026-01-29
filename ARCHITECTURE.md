@@ -1,6 +1,6 @@
 # TowerSim Architecture (Codex Contract)
 
-**Goal:** Deterministically compute the maximum reachable wave (boss-only survivability in v1) under different run contexts (farming, tournament, milestone), and later support optimisation (loadouts and future spending).
+**Goal:** Deterministically evaluate run objectives (v1 focuses on boss-only Wmax) across farming/tournament/milestone contexts, and support optimisation (loadouts, perk policy, future spending, and respec mode).
 
 ## Core Principles
 - **Library-driven:** mechanics and enemy tables live in libraries (CSV-backed or code tables with provenance), not embedded in calculators.
@@ -40,16 +40,18 @@ These planes describe where responsibilities live without changing the frozen st
 
 5) **Planning + Optimisation**
    - Translates user intents into optimisation problems.
+   - Optimisation has two tiers: (1) loadout optimisation (frequent) and (2) workshop respec optimisation (reallocate levels only; high-friction due to gem cost and limited frequency; treated as a separate mode).
    - Optimisers consume evaluators only, not low-level engines directly.
 
 ### Run Types
-- **Farming run:** perks enabled, normal tier battle conditions.
-- **Tournament run:** tournament BC set; perk enablement is scenario-driven per tournament rules.
-- **Milestone run:** uses tier rules; output includes milestone targets.
+- **Farming run:** perks enabled; normal tier battle conditions.
+- **Tournament run:** tournament BC set; perks disabled.
+- **Milestone run:** perks enabled; uses tier rules; output includes milestone targets.
 
 ### Perk Handling (Deterministic Envelope)
 Perk auto-pick priority order is a deterministic input. Evaluators must compute explicit,
 enumerated perk-outcome cases consistent with that policy (best / worst / nominal), without sampling.
+Perk envelopes may only use authoritative constraints present in the repo (perk pool, gating, max picks, etc.); if those are insufficient to define feasible envelopes, fail closed rather than invent an offer model.
 If authoritative perk-offer rules are missing, the perk engine must be marked incomplete or fail closed.
 
 ## Data Sources (Authoritative)
