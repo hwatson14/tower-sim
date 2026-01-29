@@ -293,7 +293,7 @@ Any of the following must stop work and ask for clarification:
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
-- [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
+- [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
