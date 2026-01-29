@@ -50,12 +50,19 @@ class MaxWaveEvaluator:
         tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
         if tier_rule_missing:
             diagnostics["missing_tier_rules"] = tier_rule_missing
+        wave_state = _maybe_build_wave_state(problem_spec, missing)
+        if wave_state is not None:
+            diagnostics["wave_state"] = asdict(wave_state)
+
+        tier_rules = _load_tier_rules(problem_spec, run_context, missing)
         engine = StatEngine(registry=default_registry())
         try:
             if tier_rules is None:
-                engine_result = engine.build(stat_inputs)
+                engine_result = engine.build(stat_inputs, wave_state=wave_state)
             else:
-                engine_result = engine.build_with_tier_rules(stat_inputs, tier_rules)
+                engine_result = engine.build_with_tier_rules(
+                    stat_inputs, tier_rules, wave_state=wave_state
+                )
             diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
@@ -72,6 +79,7 @@ class MaxWaveEvaluator:
         )
         if wave_damage_missing:
             diagnostics["missing_wave_damage"] = wave_damage_missing
+        wave_damage = _resolve_wave_damage(problem_spec, wave_state, missing, diagnostics)
 
         w_max, trace, search_diagnostics, search_missing = _search_wmax(problem_spec)
         if search_missing:
@@ -185,7 +193,7 @@ def _resolve_wave_damage(
         missing.append("wave_damage_tier")
         return None, missing
 
-    lib = EnemyWaveDamageLib.from_pasted_default()
+    lib = EnemyWaveDamageLib.from_repo_tables()
     wave = scenario.wave if wave_state is None else wave_state.W_attack
     try:
         damage = lib.wave_damage_exact(wave_tier, wave)
