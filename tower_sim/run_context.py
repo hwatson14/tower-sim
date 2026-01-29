@@ -16,6 +16,17 @@ class RunContext:
     perks_enabled: bool
 
     @classmethod
+    def from_mode(cls, mode: str, tier: str | None = None) -> "RunContext":
+        resolved_tier = tier or mode
+        if mode == "tier":
+            return cls.farming(resolved_tier)
+        if mode == RunType.FARMING.value:
+            return cls.farming(resolved_tier)
+        if mode == RunType.TOURNAMENT.value:
+            return cls.tournament(resolved_tier)
+        raise ValueError(f"Unsupported run mode: {mode}")
+
+    @classmethod
     def farming(cls, tier: str, perks_enabled: bool | None = None) -> "RunContext":
         resolved = True if perks_enabled is None else perks_enabled
         return cls(tier=tier, run_type=RunType.FARMING, perks_enabled=resolved)

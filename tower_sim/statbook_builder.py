@@ -4,7 +4,8 @@ from tower_sim.ids_state import IdsState
 from tower_sim.stat_registry import Phase, StatRegistry, default_registry
 from tower_sim.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
-
+PHASE_START = Phase.START_OF_RUN
+PHASE_END = Phase.END_OF_RUN
 
 
 def build_statbook(ids_state: IdsState) -> StatBook:
@@ -15,7 +16,7 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             _make_row(
                 stat_id=name,
                 phase=PHASE_START,
-                value=level,
+                value=level_value,
                 provenance="ids:labs",
             )
         )
@@ -23,7 +24,7 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             _make_row(
                 stat_id=name,
                 phase=PHASE_END,
-                value=level,
+                value=level_value,
                 provenance="ids:labs",
             )
         )
@@ -34,7 +35,7 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             _make_row(
                 stat_id=entry.name,
                 phase=PHASE_START,
-                value=entry.coin_level,
+                value=coin_level_value,
                 provenance="ids:workshop",
             )
         )
@@ -42,7 +43,7 @@ def build_statbook(ids_state: IdsState) -> StatBook:
             _make_row(
                 stat_id=entry.name,
                 phase=PHASE_END,
-                value=entry.max_level or entry.coin_level,
+                value=max_value,
                 provenance="ids:workshop",
             )
         )
@@ -83,3 +84,9 @@ def _make_row(
         final_value=value,
         provenance=provenance,
     )
+
+
+def _optional_str(value: str | None) -> str | None:
+    if value is None:
+        return None
+    return str(value)
