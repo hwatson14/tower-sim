@@ -18,14 +18,11 @@ from tower_sim.spec_loader import load_problem_spec  # noqa: E402
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "specs"
 
 
-def test_run_api_fail_closed_with_missing_mechanics() -> None:
+def test_run_api_returns_wmax() -> None:
     spec = load_problem_spec(FIXTURES / "sample_spec.yaml")
     result = run(spec)
 
-    assert result["fail_closed"] is True
-    assert result["missing"] == [
-        "boss_combat_inputs",
-        "tier_battle_conditions_unsupported",
-    ]
-    assert result["w_max"] is None
+    assert result["fail_closed"] is False
+    assert result["missing"] == []
+    assert result["w_max"] == 0
     assert "resolved_from" in result

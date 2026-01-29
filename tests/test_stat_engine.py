@@ -13,6 +13,7 @@ _add_repo_root_to_path()
 
 from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
 from tower_sim.stat_registry import Phase, UnknownStatError, default_registry  # noqa: E402
+from tower_sim.wave_engine import SkipRamp, make_wave_state  # noqa: E402
 
 
 def test_stat_engine_composition_order() -> None:
@@ -96,3 +97,23 @@ def test_stat_engine_derived_requires_exclusive_inputs() -> None:
     ]
     with pytest.raises(ValueError):
         engine.build(inputs)
+
+
+def test_stat_engine_wave_state_derivation() -> None:
+    registry = default_registry()
+    engine = StatEngine(registry=registry)
+    ramp = SkipRamp(start=0.0, end=1.0, ramp_waves=3)
+    wave_state = make_wave_state(4, eals=ramp, ehls=ramp)
+
+    result = engine.build([], wave_state=wave_state)
+
+    assert wave_state.W_actual == 4
+    assert wave_state.W_attack == 1
+    assert wave_state.W_health == 1
+
+    at_wave = result.run_stats[Phase.AT_WAVE].values
+    assert at_wave["wave_attack_index"] == 1.0
+    assert at_wave["wave_health_index"] == 1.0
+
+    phases = {row.phase for row in result.statbook.rows}
+    assert Phase.AT_WAVE.value in phases

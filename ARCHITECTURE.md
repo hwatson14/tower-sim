@@ -288,13 +288,16 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement perk engine (perk bonus application with gating).
 - [x] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
+- [x] Load tier/tournament wave damage tables from Step1 data dumps (strict lookup).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
+- [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [x] Implement boss combat mechanics (PC/thorns/regen/DR) in boss_engine (v1 minimal).
 - [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
+- [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
-- [ ] Add validation harness against Harry’s reference sheets.
+- [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
 - [x] Ingest Effective Paths reference sheets into an audit report.
 - [x] Add Effective Paths formula token inventory and mechanics comparison report.
@@ -304,3 +307,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
+- [x] Add reference completeness report and runtime table guardrail test.
