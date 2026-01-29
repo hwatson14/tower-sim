@@ -185,7 +185,18 @@ Export formats:
 ### 8) Boss Combat Model (v1)
 - Boss-only survivability.
 - Inputs: wave_damage(tier, W_attack), stats at wave, tier BCs.
-- Outputs: alive/dead margin, TTK, death wave estimate.
+- Outputs: alive/dead margin, TTK, W_max (last survivable wave) + diagnostics.
+- Contracts: use `failure_wave`/`w_fail` and `estimate_failure_wave()` or `find_w_max()` for wave naming.
+- Search semantics: predicate `can_survive(w)`; return max `w` where `can_survive(w) == true`.
+- Diagnostics/JSON output example:
+  ```json
+  {
+    "w_max": 4478,
+    "failure_wave": 4479,
+    "limiting_factor": "boss_dps > regen",
+    "notes": "Death Wave (UW) not involved"
+  }
+  ```
 
 ### 9) Validation Harness
 - Compares outputs vs Harry’s reference sheets (authoritative).
@@ -280,7 +291,7 @@ Any of the following must stop work and ask for clarification:
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
-- [ ] Implement boss combat model (boss-only survivability + death wave).
+- [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [ ] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
