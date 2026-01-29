@@ -20,6 +20,7 @@ top_level:
     - pyproject.toml
     - pytest.ini
     - .gitignore
+    - .gitmodules
 
   forbidden_dirs:
     - docs
