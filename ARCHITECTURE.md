@@ -288,6 +288,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement perk engine (perk bonus application with gating).
 - [x] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
+- [x] Apply BC/heat in frozen stat order for at-wave snapshots consumed by combat.
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).

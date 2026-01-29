@@ -74,6 +74,9 @@ class StatRegistry:
     def all_defs(self) -> List[StatDef]:
         return sorted(self._defs.values(), key=lambda item: item.stat_id)
 
+    def stat_ids_in_order(self) -> List[str]:
+        return list(self._defs.keys())
+
 
 def default_registry() -> StatRegistry:
     defs: Sequence[StatDef] = [
