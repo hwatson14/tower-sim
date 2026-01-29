@@ -4,7 +4,7 @@
 
 ## Core Principles
 - **Library-driven:** mechanics and enemy tables live in libraries (CSV-backed or code tables with provenance), not embedded in calculators.
-- **Deterministic by default:** expected-value simulation only; no randomness.
+- **Deterministic only:** no hidden randomness. Deterministic envelope evaluation (explicit best/worst/nominal cases) is allowed.
 - **Traceable composition:** every final stat is a composition of named sources in a fixed order.
 - **Separation of concerns:** data loading, parsing, stat derivation, wave mapping, uptime, combat models, and optimisers are separate engines.
 - **Fail-closed on missing inputs:** unknown mechanics or missing tables must raise explicit errors.
@@ -177,8 +177,8 @@ Export formats:
 - Outputs mapping from W_actual to W_attack and W_health (expected floor mapping).
 
 ### 7) Uptime Engine (later for v1.5)
-- Uses wave time model and package chance.
-- Outputs average uptime multipliers that combat model consumes.
+- Computes deterministic uptime fractions and overlap fractions (explicit cases) consumed by economy and survivability models;
+  no continuous timeline simulation.
 
 ### 8) Boss Combat Model (v1)
 - Boss-only survivability.
