@@ -2,7 +2,7 @@
 
 ## Scope & sources
 - Source sheets: `reference/Effective Paths/*.xlsx`.
-- Formula token inventory: `audit/effective_paths_formula_comparison.md`.
+- Formula token inventory: `tower_sim/audit/effective_paths_formula_comparison.md`.
 - Existing TowerSim mechanics and tables referenced below are in `tower_sim/` and `tests/fixtures/tower-sim-data/`.
 
 ## Current extraction status
@@ -104,7 +104,7 @@ The formula token inventory captures all custom tokens (IDS/DVT/EP*/STAT_* etc.)
 
 ## Full ingestion & comparison plan
 1. **Formalize custom function mapping**
-   - For each token in `audit/effective_paths_formula_comparison.md`, map to an authoritative table or formula source.
+   - For each token in `tower_sim/audit/effective_paths_formula_comparison.md`, map to an authoritative table or formula source.
    - If a token has no explicit formula/table, halt (fail-closed) and request clarification.
 
 2. **Extract tables from Effective Paths**
@@ -122,4 +122,3 @@ The formula token inventory captures all custom tokens (IDS/DVT/EP*/STAT_* etc.)
 5. **Validation & audit**
    - Update `ARCHITECTURE.md` checklist entries for new ingestion and validation.
    - Add end-to-end checks comparing computed outputs against sheet snapshots.
-

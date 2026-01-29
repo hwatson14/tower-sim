@@ -4,9 +4,9 @@
 Consolidate mechanics and missing ingestion work from the Effective Paths audits into a single, actionable list.
 
 ## Source audits
-- `audit/effective_paths_mechanics_comparison.md`
-- `audit/effective_paths_formula_comparison.md`
-- `audit/effective_paths_ingest.md`
+- `tower_sim/audit/effective_paths_mechanics_comparison.md`
+- `tower_sim/audit/effective_paths_formula_comparison.md`
+- `tower_sim/audit/effective_paths_ingest.md`
 
 ## Consolidated mechanics inventory (by subsystem)
 
@@ -52,7 +52,7 @@ Consolidate mechanics and missing ingestion work from the Effective Paths audits
 
 ## Action list (one-step increments)
 1. **Map custom functions to authoritative sources.**
-   - For each token in `audit/effective_paths_formula_comparison.md`, link to a sheet/table or reference. Fail-closed if any token lacks a source.
+   - For each token in `tower_sim/audit/effective_paths_formula_comparison.md`, link to a sheet/table or reference. Fail-closed if any token lacks a source.
 2. **Extract DVT/IDS tables for bots.**
    - Snapshot `DVT_Bot` + related bot path tables to CSV with provenance notes; add loaders + unit tests.
 3. **Extract DVT/IDS tables for guardians.** ✅

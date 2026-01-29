@@ -174,7 +174,7 @@ def _get_provenance(
 def build_labs_values_v1(output_path: Path | None = None) -> Path:
     repo_root = Path(__file__).resolve().parents[2]
     catalog_path = repo_root / "naming" / "catalog.yaml"
-    audit_path = repo_root / "audit" / "wiki_cache_audit.json"
+    audit_path = repo_root / "tower_sim" / "audit" / "wiki_cache_audit.json"
     labs_catalog = _load_labs_catalog(catalog_path)
     audit_index = _load_audit_report(audit_path)
 

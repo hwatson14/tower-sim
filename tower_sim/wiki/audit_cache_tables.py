@@ -14,7 +14,7 @@ from tower_sim.wiki.cache_audit import (
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[2]
     cache_dir = repo_root / "tower_sim" / "wiki" / "cache"
-    audit_dir = repo_root / "audit"
+    audit_dir = repo_root / "tower_sim" / "audit"
 
     results = audit_cache_dir(cache_dir)
     write_json_report(results, audit_dir / "wiki_cache_audit.json")

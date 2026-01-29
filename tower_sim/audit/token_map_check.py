@@ -8,9 +8,9 @@ from typing import Dict, Iterable, List, Tuple
 
 import yaml
 
-TOKEN_INVENTORY_PATH = Path("audit/effective_paths_formula_comparison.md")
-TOKEN_SOURCE_MAP_PATH = Path("audit/token_source_map.yaml")
-TOKEN_SOURCE_REPORT_PATH = Path("audit/token_source_report.md")
+TOKEN_INVENTORY_PATH = Path("tower_sim/audit/effective_paths_formula_comparison.md")
+TOKEN_SOURCE_MAP_PATH = Path("tower_sim/audit/token_source_map.yaml")
+TOKEN_SOURCE_REPORT_PATH = Path("tower_sim/audit/token_source_report.md")
 
 
 @dataclass(frozen=True)
