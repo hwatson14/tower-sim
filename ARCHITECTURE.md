@@ -309,3 +309,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add reference completeness report and runtime table guardrail test.
+- [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.

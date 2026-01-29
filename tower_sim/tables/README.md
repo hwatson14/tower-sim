@@ -8,8 +8,20 @@ tables have not yet been added.
 ## Table provenance
 - `labs_values_v1.csv`: Promoted from audited wiki cache tables (see `tower_sim/wiki/promote_labs_tables.py`).
 - `tier14_21_battle_conditions.csv`: Tier 14–21 farming battle condition magnitudes
-  from the user-provided Notion extract documented in
+  promoted from the Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`), with the
+  original Notion extract provenance documented in
   `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_PROVENANCE.md`.
+- `battle_condition_magnitudes.csv`: Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`).
+- `tier_wave_damage.csv`: Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/tier_wave_damage.csv`).
+- `tournament_wave_damage.csv`: Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/tournament_wave_damage.csv`).
+- `tournament_more_bosses_static.csv`: Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`).
+- `dag.json`: Step1 part2 data dump
+  (`reference/step1_dump_docs/part2_data/dag.json`).
 - `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/Effective Paths/Copy of Bots v2.2.xlsx`.
 - `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
   `reference/Effective Paths/Copy of Guardians v2.2.5.xlsx`.
