@@ -1,6 +1,7 @@
 # Cleanup ledger
 
 ## Moved
+- .github/ -> reference/legacy/github/
 - docs/testing.md -> TESTING.md
 - naming/catalog.yaml -> tables/registry/catalog.yaml
 - tools/assemble_fullrepo_zip.py -> scripts/assemble_fullrepo_zip.py
@@ -46,6 +47,25 @@
 - tower_sim/engines/combat/combat_params.schema.json -> tables/schemas/combat_params.schema.json
 - tests/test_max_wave_evaluator.py -> tests_quarantine/test_max_wave_evaluator.py
 - tests/test_run_api.py -> tests_quarantine/test_run_api.py
+- reference/Effective Paths/ -> reference/effective_paths/
+- reference/Effective Paths/Copy of Bots v2.2.xlsx -> reference/effective_paths/copy_of_bots_v2_2.xlsx
+- reference/Effective Paths/Copy of Cards v2.2.3.xlsx -> reference/effective_paths/copy_of_cards_v2_2_3.xlsx
+- reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx -> reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
+- reference/Effective Paths/Copy of Guardians v2.2.5.xlsx -> reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
+- reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx -> reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
+- reference/Effective Paths/Copy of Modules v5.12.xlsx -> reference/effective_paths/copy_of_modules_v5_12.xlsx
+- reference/Effective Paths/Copy of Player & Stuff v3.5.2.xlsx -> reference/effective_paths/copy_of_player_and_stuff_v3_5_2.xlsx
+- reference/Effective Paths/Copy of Relics v2.2.6.xlsx -> reference/effective_paths/copy_of_relics_v2_2_6.xlsx
+- reference/Effective Paths/Copy of Themes & Songs v2.1.13.xlsx -> reference/effective_paths/copy_of_themes_and_songs_v2_1_13.xlsx
+- reference/Effective Paths/Copy of UWs v2.1.2.xlsx -> reference/effective_paths/copy_of_uws_v2_1_2.xlsx
+- reference/Effective Paths/Copy of Workshop v2.2.8.xlsx -> reference/effective_paths/copy_of_workshop_v2_2_8.xlsx
+- reference/README_FULLREPO.md -> reference/readme_fullrepo.md
+- reference/STEP1_DUMP_RECOMBINE.md -> reference/step1_dump_recombine.md
+- reference/StatBook_v6_REFERENCE.xlsx -> reference/statbook_v6_reference.xlsx
+- reference/tower-sim-step1_part1_core.zip -> reference/tower_sim_step1_part1_core.zip
+- reference/tower-sim-step1_part2_data.zip -> reference/tower_sim_step1_part2_data.zip
+- reference/tower-sim-step1_part3_refs_tests_docs.zip -> reference/tower_sim_step1_part3_refs_tests_docs.zip
+- reference/tower-sim-step1_part4_legacy_quarantine.zip -> reference/tower_sim_step1_part4_legacy_quarantine.zip
 
 ## Deleted
 - data/ (legacy cache directory; empty after moves)
@@ -54,6 +74,7 @@
 - tools/ (migrated to scripts/)
 - tower_sim/wiki/ (migrated to tower_sim/loaders/wiki)
 - tower_sim/tables/ (migrated to tables/)
+- .gitmodules (stale submodule reference removed)
 
 ## Kept (relocated)
 - reference/legacy/boss/boss_bc.schema.json (schema/template not referenced by code; kept for provenance)

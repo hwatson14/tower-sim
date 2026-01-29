@@ -1,6 +1,6 @@
 # Effective Paths custom formula extraction (token inventory)
 
-Source: `reference/Effective Paths/*.xlsx`
+Source: `reference/effective_paths/*.xlsx`
 
 This report inventories custom tokens (IDS/DVT/etc) used in formulas.
 Token counts are based on unique formulas per sheet.

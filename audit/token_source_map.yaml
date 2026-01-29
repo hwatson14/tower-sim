@@ -1,553 +1,553 @@
 - token: AB_SPEED_TOTAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Planner (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Planner.'
 - token: ARRAY_CONSTRAIN
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Short Lab Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Short Lab Path.'
 - token: AUW_BH_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_BH_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_BH_CD_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_BH_DUR_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_BH_DUR_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_BH_DUR_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_BH_SIZE_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_BH_SIZE_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_CL_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_CL_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_DUR_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_DUR_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_SR_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CF_SR_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_DMG_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_DMG_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_CL_QTY_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_QTY_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_QTY_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_CL_SMITE_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_CL_SMITE_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_CD_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone; Copy of Effective Paths v5.00.01.xlsx / eEcon.'
 - token: AUW_DW_DMG_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_DMG_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_DW_PLUS_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_PLUS_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_QTY_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_QTY_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_DW_QTY_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone; Copy of Effective Paths v5.00.01.xlsx / eEcon.'
 - token: AUW_GT_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_GT_CD_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_GT_DUR_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_GT_DUR_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_GT_GC_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_GT_GC_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_GT_MULT_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_GT_MULT_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_GT_MULT_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: AUW_ILM_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_ILM_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_ILM_DMG_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_ILM_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_ILM_QTY_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_ILM_QTY_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_PS_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_PS_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_PS_CD_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_PS_DMG_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_PS_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_PS_DMG_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_PS_DUR_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SL_ANGLE_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SL_ANGLE_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone; Copy of Effective Paths v5.00.01.xlsx / eEcon.'
 - token: AUW_SL_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SL_DMG_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SL_LR_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SL_QTY_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SL_QTY_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone; Copy of Effective Paths v5.00.01.xlsx / eEcon.'
 - token: AUW_SM_CD_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_CD_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_CD_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SM_CF_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_CF_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_CF_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SM_DMG_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_DMG_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_DMG_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: AUW_SM_QTY_ARRAY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_QTY_CST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: UW Cost Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     UW Cost Calculator v3.'
 - token: AUW_SM_QTY_VAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: BULLET_PER_SECOND
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -556,28 +556,28 @@
 - token: B_SPEED_TOTAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Planner (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Planner.'
 - token: CAP_MOD_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Inventory (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Inventory; Copy of Modules v5.12.xlsx / Planner.'
 - token: CARD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: COMPUTED_VALUE
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Home Page (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Home
     Page; Copy of Bots v2.2.xlsx / _IDS; Copy of Cards v2.2.3.xlsx / Home Page; Copy
@@ -817,63 +817,63 @@
 - token: DVT_HAS_
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Short Lab Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Short Lab Path.'
 - token: DVT_MODULE_COINS_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Module Costs (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Module Costs.'
 - token: DVT_MODULE_SHARDS_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Module Costs (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Module Costs.'
 - token: DVT_MODULE_SHARDS_COST_CUMMULATIVE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: RPC Mastery (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / RPC Mastery.'
 - token: DVT_PS_DAILYM_SHARDS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: RPC Mastery (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / RPC Mastery.'
 - token: DVT_PS_TIER_LIST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Player & Stuff v3.5.2.xlsx
+  source_path: reference/effective_paths/copy_of_player_and_stuff_v3_5_2.xlsx
   source_locator: 'Sheet: DVT_PlayerAndStuff (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Player & Stuff v3.5.2.xlsx
     / DVT_PlayerAndStuff.'
 - token: DVT_UW_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: WIP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     WIP.'
 - token: DVT_UW_STAT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of UWs v2.1.2.xlsx
+  source_path: reference/effective_paths/copy_of_uws_v2_1_2.xlsx
   source_locator: 'Sheet: WIP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of UWs v2.1.2.xlsx /
     WIP.'
 - token: DVT_WS_VALUE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP.'
@@ -892,7 +892,7 @@
 - token: ELS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Tier List (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Tier List; Copy of Workshop v2.2.8.xlsx / Home Page; Copy of Workshop v2.2.8.xlsx
@@ -901,14 +901,14 @@
 - token: EPC_BHCB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: EPC_BHCD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -916,7 +916,7 @@
 - token: EPC_BHD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -924,21 +924,21 @@
 - token: EPC_CARD_COINS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Coins.'
 - token: EPC_CARD_EOM
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Coins.'
 - token: EPC_CARD_WS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -946,7 +946,7 @@
 - token: EPC_CPK
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -954,14 +954,14 @@
 - token: EPC_DWCB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: EPC_FUP
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -969,7 +969,7 @@
 - token: EPC_GCOMP
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -977,7 +977,7 @@
 - token: EPC_GTB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -985,7 +985,7 @@
 - token: EPC_GTCD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -993,7 +993,7 @@
 - token: EPC_GTD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1001,7 +1001,7 @@
 - token: EPC_GTGC
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1009,7 +1009,7 @@
 - token: EPC_SLA
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1017,14 +1017,14 @@
 - token: EPC_SLCB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: EPC_SLQ
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1032,7 +1032,7 @@
 - token: EPC_SYNC
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1040,7 +1040,7 @@
 - token: EPD_ASPD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1049,7 +1049,7 @@
 - token: EPD_BOUNCESHOT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1058,7 +1058,7 @@
 - token: EPD_BSC
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1067,7 +1067,7 @@
 - token: EPD_BST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Stone; Copy of Effective
@@ -1075,7 +1075,7 @@
 - token: EPD_CRITICAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1084,7 +1084,7 @@
 - token: EPD_CRIT_CHANCE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1093,7 +1093,7 @@
 - token: EPD_DPM
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1102,14 +1102,14 @@
 - token: EPD_MAXREND
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage.'
 - token: EPD_MSC
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1118,7 +1118,7 @@
 - token: EPD_MST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1127,7 +1127,7 @@
 - token: EPD_MULTISHOT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1136,7 +1136,7 @@
 - token: EPD_RANGE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Stone; Copy of Effective
@@ -1144,7 +1144,7 @@
 - token: EPD_RANGEDPM
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1153,7 +1153,7 @@
 - token: EPD_RAPIDFIRE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1162,7 +1162,7 @@
 - token: EPD_RFC
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1171,7 +1171,7 @@
 - token: EPD_RFD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1180,42 +1180,42 @@
 - token: EPD_SPB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage.'
 - token: EPD_SUPERTOWER_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EPD_SUPERTOWER_COOLDOWN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EPD_SUPERTOWER_EFFECTIVE_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EPD_SUPERTOWER_EFFECTIVE_UWBONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EPD_UWCRITICAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1224,7 +1224,7 @@
 - token: EPG_ASSIST_SUB_CAP
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Stone; Copy of Effective
@@ -1232,7 +1232,7 @@
 - token: EPG_MODULE_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Stone; Copy of Effective
@@ -1242,84 +1242,84 @@
 - token: EPG_MODULE_LEVEL_LIMIT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Coins.'
 - token: EPG_SPB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage.'
 - token: EPH_ARMOR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_DABS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_DEF_PCT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_HEALTH
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_MAX_RCVR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_REGEN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen.'
 - token: EPH_WALL_HEALTH
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins.'
 - token: EPH_WALL_REGEN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen.'
 - token: EPP_COIN_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP Coins; Copy of Effective Paths v5.00.01.xlsx / eEcon Coins.'
 - token: EPP_COIN_CUMUL_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP Coins; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Effective
@@ -1327,7 +1327,7 @@
 - token: EPP_ITEM_EVALUE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins; Copy of Effective Paths
@@ -1338,7 +1338,7 @@
 - token: EPP_ITEM_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins; Copy of Effective Paths
@@ -1349,7 +1349,7 @@
 - token: EPP_ITEM_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins; Copy of Effective Paths
@@ -1361,7 +1361,7 @@
 - token: EPP_ITEM_ROI
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins; Copy of Effective Paths
@@ -1373,7 +1373,7 @@
 - token: EPP_LAB_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1381,7 +1381,7 @@
 - token: EPP_LAB_CPX
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1389,7 +1389,7 @@
 - token: EPP_LAB_DUR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1398,7 +1398,7 @@
 - token: EPP_LAB_DUR_NON_FORMAT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1407,7 +1407,7 @@
 - token: EPP_LAB_RUNNING_TIME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1416,7 +1416,7 @@
 - token: EPU_DWCD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1424,7 +1424,7 @@
 - token: EPU_DWQ
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Stones; Copy of Effective
@@ -1432,7 +1432,7 @@
 - token: EP_CL_DPS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1440,35 +1440,35 @@
 - token: EP_DW_DPS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EP_NEXT_UWP_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: All UWs (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / All UWs.'
 - token: EP_NEXT_UWP_COST_OFFSET
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Stone (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Stone.'
 - token: EP_SLM_DPS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EP_SL_FINAL_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1476,14 +1476,14 @@
 - token: EP_SM_DPS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: EP_UW_SL_COVERAGE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1491,14 +1491,14 @@
 - token: EP_UW_SM_HEATUP
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage.'
 - token: EP_UW_TOTAL_DAMAGE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -1507,7 +1507,7 @@
 - token: FORMAT_TIME
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Calculator (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Calculator; Copy of Laboratory v2.3.2.xlsx / Lab Planner; Copy of Laboratory
@@ -1515,7 +1515,7 @@
 - token: FORMAT_TIME_YEAR
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -1524,21 +1524,21 @@
 - token: IDS_BOT_CUMMULATED_COST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet.'
 - token: IDS_BOT_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet.'
 - token: IDS_BOT_OWN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Laboratory v2.3.2.xlsx / Tier List; Copy of Laboratory
@@ -1546,7 +1546,7 @@
 - token: IDS_CARDS_IN_PRESET
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: RPC Mastery (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / RPC Mastery; Copy of Modules v5.12.xlsx / Shard Path; Copy of Workshop v2.2.8.xlsx
@@ -1554,7 +1554,7 @@
 - token: IDS_CARD_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / eHP; Copy of Effective
@@ -1564,7 +1564,7 @@
 - token: IDS_CARD_MASTERY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: RPC Mastery (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / RPC Mastery; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of Effective
@@ -1575,7 +1575,7 @@
 - token: IDS_CARD_PRESET
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Workshop
@@ -1583,112 +1583,112 @@
 - token: IDS_GUARDIAN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Home Page (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Home Page.'
 - token: IDS_GUARDIAN_ALLY_COOLDOWN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Ally Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Ally Path.'
 - token: IDS_GUARDIAN_ALLY_MAX_RECOVERY_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Ally Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Ally Path.'
 - token: IDS_GUARDIAN_ALLY_RECOVERY_AMOUNT_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Ally Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Ally Path.'
 - token: IDS_GUARDIAN_ATTACK_COOLDOWN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Attack Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Attack Path.'
 - token: IDS_GUARDIAN_ATTACK_PERCENTAGE_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Attack Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Attack Path.'
 - token: IDS_GUARDIAN_ATTACK_TARGETS_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Attack Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Attack Path.'
 - token: IDS_GUARDIAN_BOUNTY_COOLDOWN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Bounty Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Bounty Path.'
 - token: IDS_GUARDIAN_BOUNTY_MULTIPLIER_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Bounty Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Bounty Path.'
 - token: IDS_GUARDIAN_BOUNTY_TARGETS_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Bounty Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Bounty Path.'
 - token: IDS_GUARDIAN_FETCH_COOLDOWN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Fetch Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Fetch Path.'
 - token: IDS_GUARDIAN_FETCH_DOUBLE_FIND_CHANCE_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Fetch Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Fetch Path.'
 - token: IDS_GUARDIAN_FETCH_FIND_CHANCE_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Guardians v2.2.5.xlsx
+  source_path: reference/effective_paths/copy_of_guardians_v2_2_5.xlsx
   source_locator: 'Sheet: Fetch Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Guardians v2.2.5.xlsx
     / Fetch Path.'
 - token: IDS_GUARDIAN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of UWs v2.1.2.xlsx / GT+  GT dur.'
 - token: IDS_GUARDIAN_OWN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet.'
 - token: IDS_LAB_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Bots v2.2.xlsx / GB Cooldowns; Copy of Cards v2.2.3.xlsx / Master
@@ -1702,7 +1702,7 @@
 - token: IDS_LAB_TARGET
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / eHP; Copy of Effective
@@ -1710,7 +1710,7 @@
 - token: IDS_MOD_ARMOR_ASSIST_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1718,7 +1718,7 @@
 - token: IDS_MOD_ARMOR_ASSIST_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1726,7 +1726,7 @@
 - token: IDS_MOD_ARMOR_ASSIST_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1734,14 +1734,14 @@
 - token: IDS_MOD_ARMOR_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney.'
 - token: IDS_MOD_ARMOR_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1749,7 +1749,7 @@
 - token: IDS_MOD_ARMOR_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1757,7 +1757,7 @@
 - token: IDS_MOD_ARMOR_RARITY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Modules
@@ -1766,14 +1766,14 @@
 - token: IDS_MOD_ARMOR_SUBSTAT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Interactive Thorns (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Interactive Thorns.'
 - token: IDS_MOD_ARMOR_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1781,7 +1781,7 @@
 - token: IDS_MOD_CANNON_ASSIST_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1789,7 +1789,7 @@
 - token: IDS_MOD_CANNON_ASSIST_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1797,7 +1797,7 @@
 - token: IDS_MOD_CANNON_ASSIST_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1805,14 +1805,14 @@
 - token: IDS_MOD_CANNON_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney.'
 - token: IDS_MOD_CANNON_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1820,7 +1820,7 @@
 - token: IDS_MOD_CANNON_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1828,7 +1828,7 @@
 - token: IDS_MOD_CANNON_RARITY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Modules
@@ -1837,7 +1837,7 @@
 - token: IDS_MOD_CANNON_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1845,7 +1845,7 @@
 - token: IDS_MOD_CORE_ASSIST_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Player
@@ -1854,7 +1854,7 @@
 - token: IDS_MOD_CORE_ASSIST_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Player
@@ -1863,7 +1863,7 @@
 - token: IDS_MOD_CORE_ASSIST_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of UWs
@@ -1871,14 +1871,14 @@
 - token: IDS_MOD_CORE_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney.'
 - token: IDS_MOD_CORE_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Player
@@ -1887,7 +1887,7 @@
 - token: IDS_MOD_CORE_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Player
@@ -1897,7 +1897,7 @@
 - token: IDS_MOD_CORE_RARITY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Modules
@@ -1907,7 +1907,7 @@
 - token: IDS_MOD_CORE_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney; Copy of Player
@@ -1917,7 +1917,7 @@
 - token: IDS_MOD_GENERATOR_ASSIST_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -1927,7 +1927,7 @@
 - token: IDS_MOD_GENERATOR_ASSIST_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -1937,7 +1937,7 @@
 - token: IDS_MOD_GENERATOR_ASSIST_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of
@@ -1945,14 +1945,14 @@
 - token: IDS_MOD_GENERATOR_BONUS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney.'
 - token: IDS_MOD_GENERATOR_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -1962,7 +1962,7 @@
 - token: IDS_MOD_GENERATOR_NAME
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -1972,7 +1972,7 @@
 - token: IDS_MOD_GENERATOR_RARITY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -1983,7 +1983,7 @@
 - token: IDS_MOD_GENERATOR_SUBSTATS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of
@@ -1994,21 +1994,21 @@
 - token: IDS_PS_COIN_MULTIPLIER
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: IDS_PS_FARMING_TIER
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / eEcon.'
 - token: IDS_RELIC_STAT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of Laboratory
@@ -2017,14 +2017,14 @@
 - token: IDS_UW_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet.'
 - token: IDS_UW_OWN
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / eHP; Copy of Laboratory
@@ -2033,14 +2033,14 @@
 - token: IDS_UW_VALUE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Reroll Calculator v3 (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Reroll Calculator v3.'
 - token: IDS_VAULT_STAT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / Master
     Sheet; Copy of Cards v2.2.3.xlsx / Master Sheet; Copy of Effective Paths v5.00.01.xlsx
@@ -2049,28 +2049,28 @@
 - token: IDS_WSE_PRESET_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / MS Tourney.'
 - token: IDS_WS_CASH_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Master Sheet.'
 - token: IDS_WS_COIN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Master Sheet; Copy of Player & Stuff v3.5.2.xlsx / Master Sheet.'
 - token: IDS_WS_PRESET_CASH_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of
@@ -2078,7 +2078,7 @@
 - token: IDS_WS_PRESET_COIN_LEVEL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: Master Sheet (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / Master Sheet; Copy of Effective Paths v5.00.01.xlsx / Master Sheet; Copy of
@@ -2086,14 +2086,14 @@
 - token: LAB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: LABCOST_SINGLE_ADJUSTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP Coins; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Effective
@@ -2103,7 +2103,7 @@
 - token: LABDURATION_SINGLE_ADJUSTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eRegen; Copy of Effective Paths
@@ -2114,21 +2114,21 @@
 - token: LAB_COIN_DISCOUNT
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Planner (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Planner.'
 - token: LAB_SPEED_TO
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Planner (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Planner.'
 - token: LAB_SPEED_TOTAL
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Calculator (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Calculator; Copy of Laboratory v2.3.2.xlsx / Lab Planner; Copy of Laboratory
@@ -2136,14 +2136,14 @@
 - token: LAB_UNLOCKED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Short Lab Path (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Short Lab Path.'
 - token: MODSTAT_ARMOR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eHP Coins; Copy of Modules v5.12.xlsx
@@ -2152,7 +2152,7 @@
 - token: MODSTAT_CANNON
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Modules
@@ -2161,7 +2161,7 @@
 - token: MODSTAT_CORE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Modules
@@ -2170,7 +2170,7 @@
 - token: MODSTAT_GENERATOR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon; Copy of Effective Paths v5.00.01.xlsx / eEcon Coins; Copy of Modules
@@ -2179,35 +2179,35 @@
 - token: MOD_ARMORS_LIST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Tracker (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Tracker.'
 - token: MOD_CANNONS_LIST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Tracker (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Tracker.'
 - token: MOD_CORES_LIST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Tracker (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Tracker.'
 - token: MOD_GENERATORS_LIST
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Tracker (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Tracker.'
 - token: MOD_SUBSTAT_LOOKUP
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Modules v5.12.xlsx
+  source_path: reference/effective_paths/copy_of_modules_v5_12.xlsx
   source_locator: 'Sheet: Inventory (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Modules v5.12.xlsx
     / Inventory; Copy of Modules v5.12.xlsx / Planner; Copy of Modules v5.12.xlsx
@@ -2215,56 +2215,56 @@
 - token: MOD_TOTAL_COINS_INVESTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eEcon (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eEcon.'
 - token: STAT_UW_CL_FINAL_CH
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_CL_FINAL_DMG
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_CL_FINAL_QTY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_DW_FINAL_CD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_DW_FINAL_DMG
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_DW_FINAL_QTY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_SL_FINAL_ANGLE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -2272,7 +2272,7 @@
 - token: STAT_UW_SL_FINAL_DMG
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -2280,7 +2280,7 @@
 - token: STAT_UW_SL_FINAL_LR
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -2288,21 +2288,21 @@
 - token: STAT_UW_SM_FINAL_CD
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_SM_FINAL_CF
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: STAT_UW_SM_FINAL_DMG
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -2310,42 +2310,42 @@
 - token: STAT_UW_SM_FINAL_QTY
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins.'
 - token: ST_SLB
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Keys (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Keys.'
 - token: TIER
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Cards v2.2.3.xlsx
+  source_path: reference/effective_paths/copy_of_cards_v2_2_3.xlsx
   source_locator: 'Sheet: RPC Mastery (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Cards v2.2.3.xlsx
     / RPC Mastery.'
 - token: TIME_TO_RUSH_GEMS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Calculator (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Calculator; Copy of Laboratory v2.3.2.xlsx / Lab Planner.'
 - token: TO_PURE_NUMBE
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Laboratory v2.3.2.xlsx
+  source_path: reference/effective_paths/copy_of_laboratory_v2_3_2.xlsx
   source_locator: 'Sheet: Lab Calculator (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Laboratory v2.3.2.xlsx
     / Lab Calculator.'
 - token: UNFORMAT_NUMBER
   gate: B
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP; Copy of Effective Paths v5.00.01.xlsx / eDamage; Copy of Workshop v2.2.8.xlsx
@@ -2353,7 +2353,7 @@
 - token: UW
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: _IDS (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / _IDS;
     Copy of Cards v2.2.3.xlsx / _IDS; Copy of Effective Paths v5.00.01.xlsx / Master
@@ -2370,7 +2370,7 @@
 - token: UWDMG
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage; Copy of Effective Paths v5.00.01.xlsx / eDamage Keys; Copy of Effective
@@ -2379,7 +2379,7 @@
 - token: WS
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Bots v2.2.xlsx
+  source_path: reference/effective_paths/copy_of_bots_v2_2.xlsx
   source_locator: 'Sheet: _IDS (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Bots v2.2.xlsx / _IDS;
     Copy of Cards v2.2.3.xlsx / _IDS; Copy of Cards v2.2.3.xlsx / RPC Mastery; Copy
@@ -2394,7 +2394,7 @@
 - token: WSPATTACK_TOTAL_COINS_INVESTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Coins; Copy of Effective Paths v5.00.01.xlsx / eEcon; Copy of Workshop
@@ -2402,7 +2402,7 @@
 - token: WSPCOST_SINGLE_ADJUSTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP Coins; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Effective
@@ -2410,7 +2410,7 @@
 - token: WSPCOST_SINGLE_ADJUSTED_CUMULATIVE
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eHP Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eHP Coins; Copy of Effective Paths v5.00.01.xlsx / eDamage Coins; Copy of Effective
@@ -2418,7 +2418,7 @@
 - token: WSPDEFENSE_TOTAL_COINS_INVESTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Coins; Copy of Effective Paths v5.00.01.xlsx / eEcon; Copy of Workshop
@@ -2426,7 +2426,7 @@
 - token: WSPUTILITY_TOTAL_COINS_INVESTED
   gate: A
   source_type: effective_paths_sheet
-  source_path: reference/Effective Paths/Copy of Effective Paths v5.00.01.xlsx
+  source_path: reference/effective_paths/copy_of_effective_paths_v5_00_01.xlsx
   source_locator: 'Sheet: eDamage Coins (formula tokens)'
   notes: 'Appears in Effective Paths formula inventory: Copy of Effective Paths v5.00.01.xlsx
     / eDamage Coins; Copy of Effective Paths v5.00.01.xlsx / eEcon; Copy of Workshop
