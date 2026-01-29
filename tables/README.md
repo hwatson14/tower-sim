@@ -13,7 +13,9 @@ tables have not yet been added.
   original Notion extract provenance documented in
   `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_PROVENANCE.md`.
 - `battle_condition_magnitudes.csv`: Step1 part2 data dump
-  (`reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`).
+  (`reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`)
+  plus tournament heat magnitudes from the Player & Stuff spreadsheet
+  (Battle Conditions sheet, provided by user in prompt).
 - `tier_wave_damage.csv`: Step1 part2 data dump
   (`reference/step1_dump_docs/part2_data/tier_wave_damage.csv`).
 - `tournament_wave_damage.csv`: Step1 part2 data dump
