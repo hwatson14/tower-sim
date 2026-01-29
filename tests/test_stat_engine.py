@@ -11,9 +11,9 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
-from tower_sim.stat_registry import Phase, UnknownStatError, default_registry  # noqa: E402
-from tower_sim.wave_engine import SkipRamp, make_wave_state  # noqa: E402
+from tower_sim.engines.stat_engine import StatEngine, StatInput  # noqa: E402
+from tower_sim.registry.stat_registry import Phase, UnknownStatError, default_registry  # noqa: E402
+from tower_sim.engines.wave_engine import SkipRamp, make_wave_state  # noqa: E402
 
 
 def test_stat_engine_composition_order() -> None:

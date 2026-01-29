@@ -44,7 +44,7 @@ REQUIRED_HEADERS = {
 
 def _default_table_path() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tower_sim" / "tables" / "bot_upgrades_v1.csv"
+    return repo_root / "tables" / "bot_upgrades_v1.csv"
 
 
 def _parse_level(value: str) -> int:

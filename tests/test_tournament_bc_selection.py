@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.tournament_bc_selection import enumerate_tournament_bc_sets  # noqa: E402
+from tower_sim.loaders.tournament_bc_selection import enumerate_tournament_bc_sets  # noqa: E402
 
 
 def test_copper_has_only_more_bosses() -> None:

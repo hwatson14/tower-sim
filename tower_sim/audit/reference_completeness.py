@@ -141,7 +141,7 @@ def main(argv: Iterable[str] | None = None) -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("tower_sim/audit/reference_completeness_report.md"),
+        default=Path("audit/reference_completeness_report.md"),
         help="Output path for the report.",
     )
     args = parser.parse_args(list(argv) if argv is not None else None)

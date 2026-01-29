@@ -13,13 +13,13 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.perk_engine import (  # noqa: E402
+from tower_sim.engines.perk_engine import (  # noqa: E402
     InvalidPerkError,
     PerkEngine,
     PerkInput,
     PerkMode,
 )
-from tower_sim.run_context import PerksDisabledError, RunContext  # noqa: E402
+from tower_sim.run.context import PerksDisabledError, RunContext  # noqa: E402
 
 
 def test_perk_engine_applies_multiplicative() -> None:

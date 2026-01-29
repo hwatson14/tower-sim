@@ -7,7 +7,7 @@ from typing import Iterable, Sequence
 DEFAULT_DATA_DIRS: Sequence[Path] = (
     Path("tests/fixtures/tower-sim-data"),
     Path("tests/fixtures"),
-    Path("data/tower-sim-data"),
+    Path("reference/tower-sim-data"),
 )
 
 

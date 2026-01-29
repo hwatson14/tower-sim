@@ -10,7 +10,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.tier_battle_conditions import load_tier_battle_conditions  # noqa: E402
+from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions  # noqa: E402
 
 
 def _load_snapshot_rows(path: Path) -> list[list[str]]:

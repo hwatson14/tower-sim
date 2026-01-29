@@ -17,6 +17,6 @@ from tower_sim.audit import status  # noqa: E402
 
 def test_status_report_matches_file() -> None:
     repo_root = Path(__file__).resolve().parents[1]
-    report_path = repo_root / "tower_sim" / "audit" / "implementation_status_report.md"
+    report_path = repo_root / "audit" / "implementation_status_report.md"
     expected = report_path.read_text(encoding="utf-8")
     assert status.generate_report() == expected

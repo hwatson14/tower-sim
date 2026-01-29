@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.ids_state import (  # noqa: E402
+from tower_sim.util.ids_state import (  # noqa: E402
     BotsState,
     CardsState,
     GuardiansState,
@@ -27,7 +27,7 @@ from tower_sim.ids_state import (  # noqa: E402
     WorkshopPlusState,
     WorkshopState,
 )
-from tower_sim.statbook_builder import build_statbook  # noqa: E402
+from tower_sim.engines.statbook_builder import build_statbook  # noqa: E402
 
 
 def _ids_state_with_levels() -> IdsState:

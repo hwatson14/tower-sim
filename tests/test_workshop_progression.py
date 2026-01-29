@@ -13,8 +13,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.free_upgrades import FreeUpgradeChances  # noqa: E402
-from tower_sim.workshop_progression import (  # noqa: E402
+from tower_sim.engines.free_upgrades import FreeUpgradeChances  # noqa: E402
+from tower_sim.engines.workshop_progression import (  # noqa: E402
     AllocationPolicyError,
     WSCategory,
     WorkshopStat,

@@ -13,7 +13,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.combat.combat_engine import (  # noqa: E402
+from tower_sim.engines.combat.combat_engine import (  # noqa: E402
     CombatContext,
     CombatDataError,
     apply_damage_reduction,
