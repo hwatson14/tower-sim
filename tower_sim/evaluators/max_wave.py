@@ -44,22 +44,24 @@ class MaxWaveEvaluator:
         stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
         missing.extend(_missing_required_stat_inputs(stat_inputs))
 
+        wave_state = _maybe_build_wave_state(problem_spec, missing)
+        if wave_state is not None:
+            diagnostics["wave_state"] = asdict(wave_state)
+
         tier_rules = _load_tier_rules(problem_spec, run_context, missing)
         engine = StatEngine(registry=default_registry())
         try:
             if tier_rules is None:
-                engine_result = engine.build(stat_inputs)
+                engine_result = engine.build(stat_inputs, wave_state=wave_state)
             else:
-                engine_result = engine.build_with_tier_rules(stat_inputs, tier_rules)
+                engine_result = engine.build_with_tier_rules(
+                    stat_inputs, tier_rules, wave_state=wave_state
+                )
             diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
         except Exception as exc:  # noqa: BLE001
             missing.append("stat_engine")
             diagnostics["stat_engine_error"] = str(exc)
             engine_result = None
-
-        wave_state = _maybe_build_wave_state(problem_spec, missing)
-        if wave_state is not None:
-            diagnostics["wave_state"] = asdict(wave_state)
 
         wave_damage = _resolve_wave_damage(problem_spec, wave_state, missing, diagnostics)
 

@@ -7,6 +7,7 @@ from tower_sim.stat_registry import Phase, StatKind, StatRegistry
 from tower_sim.statbook import StatBook, StatRow
 from tower_sim.tier_rule_apply import apply_tier_rules_to_inputs
 from tower_sim.tier_rules import TierRulesResult
+from tower_sim.wave_engine import RunWaveState
 
 
 @dataclass(frozen=True)
@@ -38,10 +39,19 @@ class StatEngine:
     def __init__(self, registry: StatRegistry) -> None:
         self._registry = registry
 
-    def build(self, inputs: Iterable[StatInput]) -> StatEngineResult:
+    def build(
+        self,
+        inputs: Iterable[StatInput],
+        wave_state: RunWaveState | None = None,
+    ) -> StatEngineResult:
         rows: list[StatRow] = []
         phase_values: Dict[Phase, Dict[str, float]] = {}
-        for stat_input in inputs:
+        resolved_inputs = list(inputs)
+        if wave_state is not None:
+            resolved_inputs = self._append_wave_state_inputs(
+                resolved_inputs, wave_state
+            )
+        for stat_input in resolved_inputs:
             stat_def = self._registry.get(stat_input.stat_id)
             if stat_input.phase not in stat_def.allowed_phases:
                 raise ValueError(
@@ -63,9 +73,10 @@ class StatEngine:
         self,
         inputs: Iterable[StatInput],
         tier_rules: TierRulesResult,
+        wave_state: RunWaveState | None = None,
     ) -> StatEngineResult:
         adjusted = apply_tier_rules_to_inputs(inputs, tier_rules)
-        return self.build(adjusted)
+        return self.build(adjusted, wave_state=wave_state)
 
     def _build_row(self, stat_input: StatInput, stat_kind: StatKind) -> StatRow:
         tier_rule = _format_tier_rule(
@@ -116,6 +127,40 @@ class StatEngine:
             final_value=_format_optional(tiered),
             provenance=stat_input.provenance,
         )
+
+    def _append_wave_state_inputs(
+        self,
+        inputs: list[StatInput],
+        wave_state: RunWaveState,
+    ) -> list[StatInput]:
+        reserved = {
+            ("wave_attack_index", Phase.AT_WAVE),
+            ("wave_health_index", Phase.AT_WAVE),
+        }
+        duplicates = [
+            f"{item.stat_id}:{item.phase.value}"
+            for item in inputs
+            if (item.stat_id, item.phase) in reserved
+        ]
+        if duplicates:
+            raise ValueError(
+                "Wave-state-derived stat inputs already provided: "
+                + ", ".join(sorted(duplicates))
+            )
+        return inputs + [
+            StatInput(
+                stat_id="wave_attack_index",
+                phase=Phase.AT_WAVE,
+                derived_value=float(wave_state.W_attack),
+                provenance="derived:wave_engine",
+            ),
+            StatInput(
+                stat_id="wave_health_index",
+                phase=Phase.AT_WAVE,
+                derived_value=float(wave_state.W_health),
+                provenance="derived:wave_engine",
+            ),
+        ]
 
 
 def _format_optional(value: Optional[float]) -> Optional[str]:
