@@ -11,3 +11,5 @@ tables have not yet been added.
   from the user-provided Notion extract documented in
   `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_PROVENANCE.md`.
 - `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/Effective Paths/Copy of Bots v2.2.xlsx`.
+- `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
+  `reference/Effective Paths/Copy of Guardians v2.2.5.xlsx`.

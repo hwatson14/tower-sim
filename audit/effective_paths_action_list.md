@@ -55,7 +55,7 @@ Consolidate mechanics and missing ingestion work from the Effective Paths audits
    - For each token in `audit/effective_paths_formula_comparison.md`, link to a sheet/table or reference. Fail-closed if any token lacks a source.
 2. **Extract DVT/IDS tables for bots.**
    - Snapshot `DVT_Bot` + related bot path tables to CSV with provenance notes; add loaders + unit tests.
-3. **Extract DVT/IDS tables for guardians.**
+3. **Extract DVT/IDS tables for guardians.** ✅
    - Snapshot guardian stat/cost tables to CSV with provenance notes; add loaders + unit tests.
 4. **Extract UW tables and implement UW stat pipeline.**
    - Snapshot UW ladders to CSV; implement stat composition + derived UW formulas with provenance notes.
