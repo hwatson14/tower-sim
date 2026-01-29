@@ -41,8 +41,6 @@ These planes describe where responsibilities live without changing the frozen st
 5) **Planning + Optimisation**
    - Translates user intents into optimisation problems.
    - Optimisers consume evaluators only, not low-level engines directly.
-   - Optimisation has two tiers: (1) loadout optimisation (frequent) and (2) workshop respec optimisation
-     (reallocate levels only; high-friction due to gem cost and limited frequency; treated as a separate mode).
 
 ### Run Types
 - **Farming run:** perks enabled, normal tier battle conditions.
@@ -53,8 +51,6 @@ These planes describe where responsibilities live without changing the frozen st
 Perk auto-pick priority order is a deterministic input. Evaluators must compute explicit,
 enumerated perk-outcome cases consistent with that policy (best / worst / nominal), without sampling.
 If authoritative perk-offer rules are missing, the perk engine must be marked incomplete or fail closed.
-Perk envelopes may only use authoritative constraints present in the repo (perk pool, gating, max picks, etc.);
-if those are insufficient to define feasible envelopes, fail closed rather than invent an offer model.
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
@@ -286,3 +282,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [ ] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
+- [x] Ingest Effective Paths reference sheets into an audit report.
