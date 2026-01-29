@@ -288,3 +288,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add Effective Paths formula token inventory and mechanics comparison report.
 - [x] Add Effective Paths mechanics consolidation action list.
 - [x] Extract bot upgrade tables (DVT_Bot) into CSV + loader + tests.
+- [x] Extract guardian upgrade tables (DVT_Guardians) into CSV + loader + tests.
