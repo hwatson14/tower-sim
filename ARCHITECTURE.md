@@ -313,3 +313,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Consolidate audit report outputs under repo-root `audit/` (remove `tower_sim/audit` artifacts).
 - [x] Add repo governance enforcement (REPO_MAP.yaml + validation script + tests).
 - [x] Allow root .gitmodules in REPO_MAP allowed files.
+- [x] Consolidate tier battle condition loaders onto step1 table parser + shim legacy loader.
