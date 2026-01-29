@@ -1,0 +1,155 @@
+top_level:
+  allowed_dirs:
+    - tower_sim
+    - tables
+    - reference
+    - audit
+    - tests
+    - tests_quarantine
+    - scripts
+
+  allowed_files:
+    - README.md
+    - ARCHITECTURE.md
+    - REPO_STRUCTURE.md
+    - TESTING.md
+    - CONTRIBUTING.md
+    - REPO_MAP.yaml
+    - IMPLEMENTATION_STATUS.md
+    - AGENTS.md
+    - pyproject.toml
+    - pytest.ini
+    - .gitignore
+
+  forbidden_dirs:
+    - docs
+    - tools
+    - naming
+    - data
+    - outputs
+    - scratch
+
+tower_sim:
+  allowed_subdirs:
+    - run
+    - registry
+    - loaders
+    - libs
+    - engines
+    - evaluators
+    - audit
+    - util
+
+  allowed_file_globs:
+    - "**/*.py"
+
+  forbidden_file_globs:
+    - "**/*.md"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "**/*.json"
+    - "**/*.csv"
+    - "**/*.tsv"
+    - "**/*.txt"
+    - "**/*.png"
+    - "**/*.jpg"
+    - "**/*.svg"
+    - "**/*.zip"
+
+tables:
+  # Authoritative immutable inputs
+  allowed_file_globs:
+    - "**/*.csv"
+    - "**/*.tsv"
+    - "**/*.json"
+    - "README.md"
+    - "PROVENANCE.md"
+
+    # Explicitly allowed authoritative subtrees
+    - "wiki_cache/**/*.csv"
+    - "wiki_cache/**/*.tsv"
+    - "wiki_cache/**/*.json"
+
+    - "schemas/**/*.json"
+
+    - "registry/**/*.yaml"
+    - "registry/**/*.yml"
+
+  forbidden_file_globs:
+    - "**/*.py"
+
+reference:
+  allowed_file_globs:
+    - "**/*"
+
+audit:
+  allowed_file_globs:
+    - "**/*.md"
+    - "**/*.json"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "**/*.csv"
+    - "**/*.tsv"
+
+tests:
+  allowed_file_globs:
+    - "**/*.py"
+    - "**/*.json"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "**/*.csv"
+    - "**/*.tsv"
+
+tests_quarantine:
+  allowed_file_globs:
+    - "**/*.py"
+    - "README.md"
+
+scripts:
+  allowed_file_globs:
+    - "**/*.py"
+    - "**/*.md"
+
+generated_artifacts:
+  forbidden_name_globs:
+    - "**/*report*.md"
+    - "**/*report*.json"
+    - "**/*generated*.md"
+    - "**/*generated*.json"
+    - "**/outputs/**"
+    - "**/dist/**"
+    - "**/build/**"
+
+  allowed_paths_for_generated:
+    - "audit/**"
+
+naming_rules:
+  require_snake_case_filenames: true
+
+  forbidden_base_filenames:
+    - misc
+    - helpers
+    - helper
+    - utils
+    - utility
+    - tmp
+    - temp
+    - notes
+    - draft
+
+file_count_caps:
+  enabled: true
+  caps:
+    "tower_sim/run": 30
+    "tower_sim/registry": 30
+    "tower_sim/loaders": 60
+    "tower_sim/libs": 80
+    "tower_sim/engines": 80
+    "tower_sim/evaluators": 40
+    "tower_sim/audit": 40
+    "tower_sim/util": 50
+    "tests": 300
+    "tables": 600
+
+exceptions:
+  allow_paths: []

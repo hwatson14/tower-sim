@@ -32,7 +32,7 @@ def _sample_row(**overrides: object) -> CanonicalStatRow:
         "enhancement_multiplier": Decimal("1.0"),
         "tier_rule_delta_or_multiplier": Decimal("0"),
         "final_value": Decimal("25"),
-        "provenance": "reference:StatBook_v6_REFERENCE.xlsx",
+        "provenance": "reference:statbook_v6_reference.xlsx",
     }
     data.update(overrides)
     return CanonicalStatRow(**data)

@@ -22,6 +22,6 @@ tables have not yet been added.
   (`reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`).
 - `dag.json`: Step1 part2 data dump
   (`reference/step1_dump_docs/part2_data/dag.json`).
-- `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/Effective Paths/Copy of Bots v2.2.xlsx`.
+- `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/effective_paths/copy_of_bots_v2_2.xlsx`.
 - `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
-  `reference/Effective Paths/Copy of Guardians v2.2.5.xlsx`.
+  `reference/effective_paths/copy_of_guardians_v2_2_5.xlsx`.

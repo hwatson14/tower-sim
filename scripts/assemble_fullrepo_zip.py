@@ -76,13 +76,13 @@ def main() -> None:
     )
     parser.add_argument(
         "--prefix",
-        default="tower-sim-step1_FULLREPO",
+        default="tower_sim_step1_fullrepo",
         help="Prefix used for the split parts.",
     )
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("reference/tower-sim-step1_FULLREPO.zip"),
+        default=Path("reference/tower_sim_step1_fullrepo.zip"),
         help="Output path for the combined zip file.",
     )
     args = parser.parse_args()

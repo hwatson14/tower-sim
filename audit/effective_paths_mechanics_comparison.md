@@ -1,7 +1,7 @@
 # Effective Paths mechanics comparison & ingestion plan
 
 ## Scope & sources
-- Source sheets: `reference/Effective Paths/*.xlsx`.
+- Source sheets: `reference/effective_paths/*.xlsx`.
 - Formula token inventory: `tower_sim/audit/effective_paths_formula_comparison.md`.
 - Existing TowerSim mechanics and tables referenced below are in `tower_sim/` and `tests/fixtures/tower-sim-data/`.
 
