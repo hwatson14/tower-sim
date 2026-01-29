@@ -1,14 +1,14 @@
 """
 Enemy wave-damage library (wave damage only, enemy types deferred).
 
-Source (embedded default):
-- Parsed from the user-pasted tables in this chat (Tier 13/14/15 + Champion/Legend).
-- These tables are *sparse anchor points* (not per-wave). By default, this library is STRICT:
-  it only returns values for waves explicitly present in the table.
+Source (default runtime tables):
+- `tower_sim/tables/tier_wave_damage.csv`
+- `tower_sim/tables/tournament_wave_damage.csv`
+These tables are the Step1 data dumps for tier and tournament wave damage.
 
 Important:
 - No interpolation is performed (to avoid approximations).
-- When you later provide the full Skye per-wave table CSV, load it with from_csv(...).
+- Missing values raise (strict mode).
 
 Numeric suffixes:
 K=1e3, M=1e6, B=1e9, T=1e12, q=1e15, Q=1e18, s=1e21, S=1e24, O=1e27.
@@ -16,6 +16,8 @@ K=1e3, M=1e6, B=1e9, T=1e12, q=1e15, Q=1e18, s=1e21, S=1e24, O=1e27.
 
 from __future__ import annotations
 from dataclasses import dataclass
+from pathlib import Path
+import csv
 import re
 from typing import Dict, Mapping, Optional
 
@@ -226,6 +228,11 @@ Wave	Tier 13
 9,500	11.89s
 10,000	26.61s"""
 
+_TIER_WAVE_DAMAGE_CSV = Path(__file__).resolve().parents[1] / "tables" / "tier_wave_damage.csv"
+_TOURNAMENT_WAVE_DAMAGE_CSV = (
+    Path(__file__).resolve().parents[1] / "tables" / "tournament_wave_damage.csv"
+)
+
 def parse_compact_number(s: str) -> float:
     s = s.strip().replace(",", "")
     m = re.fullmatch(r"([0-9]*\.?[0-9]+)([A-Za-z]?)", s)
@@ -272,6 +279,57 @@ def parse_pasted_wave_tables(txt: str) -> Dict[str, Dict[int, float]]:
         sections[current][wave] = dmg
     return sections
 
+
+def _read_csv_rows(path: Path) -> list[dict]:
+    if not path.exists():
+        raise FileNotFoundError(f"Missing wave damage table: {path}")
+    with path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        return list(reader)
+
+
+def load_tier_wave_damage_tables(path: Path = _TIER_WAVE_DAMAGE_CSV) -> Dict[str, Dict[int, float]]:
+    rows = _read_csv_rows(path)
+    required = {"tier", "wave", "wave_damage"}
+    if not rows:
+        raise ValueError(f"Tier wave damage table is empty: {path}")
+    missing = required - set(rows[0].keys())
+    if missing:
+        raise ValueError(f"Tier wave damage table missing columns {sorted(missing)}: {path}")
+
+    tables: Dict[str, Dict[int, float]] = {}
+    for row in rows:
+        tier_raw = str(row["tier"]).strip()
+        tier_value = float(tier_raw)
+        tier_label = f"Tier {int(tier_value)}" if tier_value.is_integer() else f"Tier {tier_raw}"
+        wave = int(float(row["wave"]))
+        damage = float(row["wave_damage"])
+        tables.setdefault(tier_label, {})[wave] = damage
+    return tables
+
+
+def load_tournament_wave_damage_tables(
+    path: Path = _TOURNAMENT_WAVE_DAMAGE_CSV,
+) -> Dict[str, Dict[int, float]]:
+    rows = _read_csv_rows(path)
+    required = {"tournament_league", "wave", "wave_damage"}
+    if not rows:
+        raise ValueError(f"Tournament wave damage table is empty: {path}")
+    missing = required - set(rows[0].keys())
+    if missing:
+        raise ValueError(
+            f"Tournament wave damage table missing columns {sorted(missing)}: {path}"
+        )
+
+    tables: Dict[str, Dict[int, float]] = {}
+    for row in rows:
+        league = str(row["tournament_league"]).strip()
+        wave = int(float(row["wave"]))
+        damage = float(row["wave_damage"])
+        tables.setdefault(league, {})[wave] = damage
+    return tables
+
+
 @dataclass(frozen=True)
 class EnemyWaveDamageLib:
     """Strict wave-damage lookup. No interpolation."""
@@ -280,6 +338,13 @@ class EnemyWaveDamageLib:
     @staticmethod
     def from_pasted_default() -> "EnemyWaveDamageLib":
         return EnemyWaveDamageLib(parse_pasted_wave_tables(_DEFAULT_PASTED_TABLES))
+
+    @staticmethod
+    def from_repo_tables() -> "EnemyWaveDamageLib":
+        tables: Dict[str, Dict[int, float]] = {}
+        tables.update(load_tier_wave_damage_tables())
+        tables.update(load_tournament_wave_damage_tables())
+        return EnemyWaveDamageLib(tables)
 
     def available_tiers(self):
         return sorted(self.tables.keys())

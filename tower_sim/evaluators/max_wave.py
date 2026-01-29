@@ -173,7 +173,7 @@ def _resolve_wave_damage(
         missing.append("wave_damage_tier")
         return None
 
-    lib = EnemyWaveDamageLib.from_pasted_default()
+    lib = EnemyWaveDamageLib.from_repo_tables()
     wave = scenario.wave if wave_state is None else wave_state.W_attack
     try:
         damage = lib.wave_damage_exact(wave_tier, wave)
