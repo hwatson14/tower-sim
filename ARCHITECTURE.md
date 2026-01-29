@@ -295,7 +295,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
-- [ ] Add validation harness against Harry’s reference sheets.
+- [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
 - [x] Ingest Effective Paths reference sheets into an audit report.
 - [x] Add Effective Paths formula token inventory and mechanics comparison report.
