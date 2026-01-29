@@ -4,18 +4,57 @@
 
 ## Core Principles
 - **Library-driven:** mechanics and enemy tables live in libraries (CSV-backed or code tables with provenance), not embedded in calculators.
-- **Deterministic by default:** expected-value simulation only; no randomness.
+- **Deterministic only:** no hidden randomness. Deterministic envelope evaluation (explicit best/worst/nominal cases) is allowed.
 - **Traceable composition:** every final stat is a composition of named sources in a fixed order.
 - **Separation of concerns:** data loading, parsing, stat derivation, wave mapping, uptime, combat models, and optimisers are separate engines.
 - **Fail-closed on missing inputs:** unknown mechanics or missing tables must raise explicit errors.
 
 ## System Pipeline (High Level)
-Data sources → Parse → Build baseline account state → Apply run loadout → Apply tier rules → Wave progression engines → Combat model (boss) → Outputs (max wave, margins) → Optimisers (later)
+Data sources → Parse → Build baseline account state → Apply run loadout → Apply tier rules → Wave progression engines → Combat model (boss) → Evaluators (objectives) → Outputs (metrics, margins) → Optimisers (later)
+
+## v2 Additions: Architecture Planes (Preserve Existing Pipeline)
+These planes describe where responsibilities live without changing the frozen stat pipeline.
+
+1) **Reference (immutable)**
+   - Authoritative libraries, tables, and canonical IDs.
+   - Sources are the repo tables under `tower_sim/tables` and the cached wiki tables under `tower_sim/wiki/cache`.
+   - If a required table is missing or ambiguous, fail closed (see “Stop the Line”).
+
+2) **Derivation (pure, side-effect-free)**
+   - Inputs: `_IDS.csv` + run context (scenario definition) + loadout + account baseline.
+   - Output: deterministic stat snapshots produced via the frozen composition order.
+
+3) **Models / Simulation (mechanics)**
+   - Mechanics-only engines (e.g., wave mapping, combat models) that evaluate outcomes for a fully specified scenario.
+   - May use internal wave search, but external API must accept scenario parameters, not explicit wave queries.
+   - CellModel is a first-class mechanics engine when authoritative tables exist; it must consume
+     survivability outputs, wave time, elite presence, and kill rate rather than relying on a static lookup.
+   - Uptime/overlap modeling must be steady-state (no timeline from wave 1) using explicit deterministic
+     cases (e.g., no overlap / partial overlap / full overlap) derived from inputs or tables.
+     If authoritative overlap rules are missing, mark the model incomplete rather than assuming probabilities.
+
+4) **Evaluation (objectives)**
+   - Converts model outputs into objective-aligned metrics (e.g., max wave).
+   - Outputs are deterministic and may return explicit envelope cases (best / worst / nominal) derived from
+     enumerated inputs. Stochastic sampling and invented distributions are not allowed.
+
+5) **Planning + Optimisation**
+   - Translates user intents into optimisation problems.
+   - Optimisers consume evaluators only, not low-level engines directly.
+   - Optimisation has two tiers: (1) loadout optimisation (frequent) and (2) workshop respec optimisation
+     (reallocate levels only; high-friction due to gem cost and limited frequency; treated as a separate mode).
 
 ### Run Types
 - **Farming run:** perks enabled, normal tier battle conditions.
-- **Tournament run:** tournament BC set; perks disabled unless explicitly enabled.
+- **Tournament run:** tournament BC set; perk enablement is scenario-driven per tournament rules.
 - **Milestone run:** uses tier rules; output includes milestone targets.
+
+### Perk Handling (Deterministic Envelope)
+Perk auto-pick priority order is a deterministic input. Evaluators must compute explicit,
+enumerated perk-outcome cases consistent with that policy (best / worst / nominal), without sampling.
+If authoritative perk-offer rules are missing, the perk engine must be marked incomplete or fail closed.
+Perk envelopes may only use authoritative constraints present in the repo (perk pool, gating, max picks, etc.);
+if those are insufficient to define feasible envelopes, fail closed rather than invent an offer model.
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
@@ -61,6 +100,33 @@ All stat values must be composed in this exact order:
 3. **Enhancements** (multiplicative on the final combined stat)
 4. **Tier rules** (battle conditions, tournament perk-disable, tier adjustments)
 5. **Derived** (convert % to absolute, compute caps, convenience derived stats)
+
+## Intent → ProblemSpec (Deterministic Compilation)
+User intent (e.g., farming tier, tournament league, milestone push) must be compiled into a deterministic `ProblemSpec` that includes:
+- Resolved scenario (tier/league/mode + BC/heat/wave rules sources)
+- Objective (which evaluator to run and what metrics to return)
+- Decision space (what can be changed: loadout, perk policy, future spend)
+- Constraints (inventory, budget)
+This compiled spec must be logged/printed before optimisation runs. Any missing or ambiguous inputs must fail closed.
+
+Resolved tournament scenarios must include the explicit tournament BC set as input;
+do not infer tournament BCs per league unless a table is provided in the reference libraries.
+
+## Determinism and Unknown Variability
+Randomness is not permitted in this architecture. Determinism means identical declared inputs produce
+identical outputs, including explicit envelope cases. Stochastic sampling and invented probability
+distributions are not allowed. If a requested feature depends on stochastic mechanics without an
+authoritative deterministic model, the sim must fail closed.
+
+## Evaluator Contracts (Deterministic v1)
+Evaluators are first-class and must remain deterministic under current rules. Any distribution/quantile
+outputs require authoritative deterministic models and must be documented as missing until provided.
+
+Canonical evaluators (contract definitions; implementations may be pending):
+- **MaxWaveEvaluator**: returns max wave and diagnostics for a resolved scenario, plus any explicit
+  envelope cases derived from deterministic inputs.
+- **FarmRateEvaluator**: returns deterministic farm metrics and diagnostics *once* authoritative
+  economy tables/models are present in the reference libraries, and may include explicit envelope cases.
 
 ## StatBook (First-Class Artifact)
 TowerSim must produce a StatBook that is both:
@@ -115,8 +181,8 @@ Export formats:
 - Outputs mapping from W_actual to W_attack and W_health (expected floor mapping).
 
 ### 7) Uptime Engine (later for v1.5)
-- Uses wave time model and package chance.
-- Outputs average uptime multipliers that combat model consumes.
+- Computes deterministic uptime fractions and overlap fractions (explicit cases) consumed by economy and survivability models;
+  no continuous timeline simulation.
 
 ### 8) Boss Combat Model (v1)
 - Boss-only survivability.
@@ -126,6 +192,14 @@ Export formats:
 ### 9) Validation Harness
 - Compares outputs vs Harry’s reference sheets (authoritative).
 - Wiki used secondarily with citations.
+
+## Glossary (Concise)
+- **Scenario:** A fully specified run context (tier/league/mode, battle conditions, heat rules, and wave damage sources).
+- **Stat Snapshot:** A deterministic stat state at a specific phase (start-of-run, end-of-run, or at-wave W).
+- **Run State:** The combination of baseline account state, loadout, in-run growth, and scenario.
+- **Evaluator:** An objective-aligned function that turns model outputs into metrics for optimisation.
+- **Optimiser:** A planner that searches a decision space using evaluators, not engine internals.
+- **Perk Policy:** A deterministic rule for selecting perks when applicable (no RNG).
 
 ## Missing Mechanics Cross-Check (Step1 Parts 1–4)
 The current sim is still missing these mechanics. The Step1 `/reference` bundle
@@ -205,6 +279,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement perk engine (perk bonus application with gating).
 - [x] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
+- [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [ ] Implement boss combat model (boss-only survivability + death wave).
