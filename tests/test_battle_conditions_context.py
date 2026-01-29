@@ -11,8 +11,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.battle_conditions import BCRow, BattleConditions  # noqa: E402
-from tower_sim.run_context import RunContext  # noqa: E402
+from tower_sim.engines.battle_conditions import BCRow, BattleConditions  # noqa: E402
+from tower_sim.run.context import RunContext  # noqa: E402
 
 
 def test_battle_conditions_filter_by_run_context_and_tier() -> None:

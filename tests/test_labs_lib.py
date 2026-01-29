@@ -12,11 +12,11 @@ from tower_sim.libs.labs_lib import (
     list_labs,
     max_level,
 )
-from tower_sim.stat_registry import default_registry
+from tower_sim.registry.stat_registry import default_registry
 
 
 def _load_expected_value(lab_name: str, level: int) -> float:
-    table_path = Path(__file__).resolve().parents[1] / "tower_sim" / "tables" / "labs_values_v1.csv"
+    table_path = Path(__file__).resolve().parents[1] / "tables" / "labs_values_v1.csv"
     with table_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:

@@ -11,8 +11,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.perks_gate import PerksDisabledError, assert_perks_enabled  # noqa: E402
-from tower_sim.run_context import RunContext  # noqa: E402
+from tower_sim.engines.perks_gate import PerksDisabledError, assert_perks_enabled  # noqa: E402
+from tower_sim.run.context import RunContext  # noqa: E402
 
 
 def test_perks_gate_missing_context_raises() -> None:

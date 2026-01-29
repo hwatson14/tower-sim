@@ -10,7 +10,7 @@ import pytest
 
 def load_module() -> object:
     repo_root = Path(__file__).resolve().parents[1]
-    module_path = repo_root / "tools" / "assemble_fullrepo_zip.py"
+    module_path = repo_root / "scripts" / "assemble_fullrepo_zip.py"
     spec = importlib.util.spec_from_file_location("assemble_fullrepo_zip", module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("Failed to load assemble_fullrepo_zip module")

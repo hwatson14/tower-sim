@@ -17,7 +17,7 @@ These planes describe where responsibilities live without changing the frozen st
 
 1) **Reference (immutable)**
    - Authoritative libraries, tables, and canonical IDs.
-   - Sources are the repo tables under `tower_sim/tables` and the cached wiki tables under `tower_sim/wiki/cache`.
+   - Sources are the repo tables under `tables/` and the cached wiki tables under `tables/wiki_cache/`.
    - If a required table is missing or ambiguous, fail closed (see “Stop the Line”).
 
 2) **Derivation (pure, side-effect-free)**
@@ -56,7 +56,7 @@ If authoritative perk-offer rules are missing, the perk engine must be marked in
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
-All other tables are shipped with the repo under `tower_sim/tables` or `tower_sim/wiki/cache`,
+All other tables are shipped with the repo under `tables/` or `tables/wiki_cache/`,
 and are treated as authoritative library data (with provenance).
 
 ### Snapshot Priority Order
@@ -68,7 +68,7 @@ and are treated as authoritative library data (with provenance).
 Default `_IDS.csv` resolution order:
 1. `tests/fixtures/tower-sim-data/_IDS.csv`
 2. `tests/fixtures/_IDS.csv`
-3. `data/tower-sim-data/_IDS.csv`
+3. `reference/tower-sim-data/_IDS.csv`
 
 ## State Model
 ### A) Account Baseline (unchanged during a run)
@@ -310,4 +310,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
-- [x] Consolidate audit report outputs under `tower_sim/audit` (remove top-level `audit/` duplication).
+- [x] Consolidate audit report outputs under repo-root `audit/` (remove `tower_sim/audit` artifacts).

@@ -9,7 +9,7 @@ from tower_sim.libs import step1_tables
 
 
 ROOT = Path(__file__).resolve().parents[1]
-TABLES_DIR = ROOT / "tower_sim" / "tables"
+TABLES_DIR = ROOT / "tables"
 REFERENCE_STEP1_DIR = ROOT / "reference" / "step1_dump_docs"
 
 

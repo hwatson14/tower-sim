@@ -11,12 +11,12 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.run_context import RunContext  # noqa: E402
-from tower_sim.stat_engine import StatInput  # noqa: E402
-from tower_sim.stat_registry import Phase  # noqa: E402
-from tower_sim.tier_battle_conditions import TierBattleCondition  # noqa: E402
-from tower_sim.tier_rule_apply import apply_tier_rules_to_inputs  # noqa: E402
-from tower_sim.tier_rules import TierRulesResult  # noqa: E402
+from tower_sim.run.context import RunContext  # noqa: E402
+from tower_sim.engines.stat_engine import StatInput  # noqa: E402
+from tower_sim.registry.stat_registry import Phase  # noqa: E402
+from tower_sim.loaders.tier_battle_conditions import TierBattleCondition  # noqa: E402
+from tower_sim.engines.tier_rule_apply import apply_tier_rules_to_inputs  # noqa: E402
+from tower_sim.engines.tier_rules import TierRulesResult  # noqa: E402
 
 
 def _base_inputs() -> list[StatInput]:

@@ -15,7 +15,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.sources import (  # noqa: E402
+from tower_sim.loaders.sources import (  # noqa: E402
     DatasetBundle,
     IdsOnlyBundle,
     SnapshotPriority,

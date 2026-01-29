@@ -11,8 +11,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.run_context import PerksDisabledError, RunContext  # noqa: E402
-from tower_sim.wiki.perks import (  # noqa: E402
+from tower_sim.run.context import PerksDisabledError, RunContext  # noqa: E402
+from tower_sim.loaders.wiki.perks import (  # noqa: E402
     apply_standard_perk_bonus_multiplicative_checked,
 )
 

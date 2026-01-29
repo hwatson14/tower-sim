@@ -6,9 +6,9 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Sequence
 
-from tower_sim.ids_state import IdsState
-from tower_sim.stat_registry import StatRegistry, UnknownStatError
-from tower_sim.wiki.labs import _LEGACY_LAB_FILES
+from tower_sim.util.ids_state import IdsState
+from tower_sim.registry.stat_registry import StatRegistry, UnknownStatError
+from tower_sim.loaders.wiki.labs import _LEGACY_LAB_FILES
 
 
 class CoverageStatus:

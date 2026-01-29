@@ -5,26 +5,26 @@ from pathlib import Path
 from math import isfinite
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
-from tower_sim.combat.boss_engine import BossCombatEngine, BossCombatInputs, MissingMechanicError
-from tower_sim.combat.boss_survivability import (
+from tower_sim.engines.combat.boss_engine import BossCombatEngine, BossCombatInputs, MissingMechanicError
+from tower_sim.engines.combat.boss_survivability import (
     BossContext,
     BossDataError,
     BossStats,
     TowerDefense,
     resolve_boss_fight,
 )
-from tower_sim.enemies.wave_damage_strict import EnemyWaveDamageLib
-from tower_sim.bc_heat_loader import HeatDataError, load_heat_bundle
-from tower_sim.ids_state import IdsState
-from tower_sim.problem_spec import ProblemSpec
-from tower_sim.run_context import RunContext
-from tower_sim.stat_engine import StatEngine
-from tower_sim.stat_registry import Phase, default_registry
-from tower_sim.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
-from tower_sim.tier_battle_conditions import load_tier_battle_conditions
-from tower_sim.tier_rule_apply import SUPPORTED_BC
-from tower_sim.tier_rules import build_tier_rules
-from tower_sim.wave_engine import SkipRamp, make_wave_state
+from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle
+from tower_sim.util.ids_state import IdsState
+from tower_sim.run.problem_spec import ProblemSpec
+from tower_sim.run.context import RunContext
+from tower_sim.engines.stat_engine import StatEngine
+from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
+from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
+from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
+from tower_sim.engines.tier_rules import build_tier_rules
+from tower_sim.engines.wave_engine import SkipRamp, make_wave_state
 
 
 class MaxWaveEvaluator:
@@ -175,7 +175,7 @@ def _load_tier_rules(
 
 
 def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
-    return Path(__file__).resolve().parents[1] / "tables" / "tier14_21_battle_conditions.csv"
+    return Path(__file__).resolve().parents[2] / "tables" / "tier14_21_battle_conditions.csv"
 
 
 def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:
@@ -370,9 +370,11 @@ def _resolve_heat_magnitudes(
     if scenario.league is None:
         missing.append("heat_league")
         return None
-    heat_path = Path(__file__).resolve().parents[1] / "tables" / "heat_wave_scalar.csv"
+    heat_path = Path(__file__).resolve().parents[2] / "tables" / "heat_wave_scalar.csv"
     magnitudes_path = (
-        Path(__file__).resolve().parents[1] / "tables" / "battle_condition_magnitudes.csv"
+        Path(__file__).resolve().parents[2]
+        / "tables"
+        / "battle_condition_magnitudes.csv"
     )
     try:
         bundle = load_heat_bundle(heat_path, magnitudes_path)

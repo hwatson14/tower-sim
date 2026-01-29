@@ -38,7 +38,7 @@ ALLOWED_UNITS = {"percent_points", "percent", "raw_number"}
 
 def _default_table_path() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tower_sim" / "tables" / "labs_values_v1.csv"
+    return repo_root / "tables" / "labs_values_v1.csv"
 
 
 def _parse_level(value: str) -> int:

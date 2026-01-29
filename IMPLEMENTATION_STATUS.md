@@ -20,34 +20,34 @@ Explicitly NOT included:
 - Snapshot helpers remain available for legacy workflows.
 
 ### IDS Parsing
-- `towersim/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
+- `tower_sim/loaders/ids.py` implements **section splitting** of `_IDS.csv` into named sections.
 - Typed `IdsState` parsing exists for raw values.
 
 ### Workshop Progression (Deterministic)
-- `towersim/free_upgrades.py` implements deterministic expected free upgrades.
-- `towersim/workshop_progression.py` implements expected-value workshop progression over waves.
+- `tower_sim/engines/free_upgrades.py` implements deterministic expected free upgrades.
+- `tower_sim/engines/workshop_progression.py` implements expected-value workshop progression over waves.
 
 ### Skip Mapping (Deterministic)
-- `towersim/wave_engine.py` implements EALS/EHLS ramp and expected mapping from `W_actual` → `W_attack` / `W_health`.
+- `tower_sim/engines/wave_engine.py` implements EALS/EHLS ramp and expected mapping from `W_actual` → `W_attack` / `W_health`.
 
 ### Enemy Tables
-- `towersim/enemy_tables.py` provides wave damage CSV loader with compact-number parsing.
-- `towersim/enemies/wave_damage_strict.py` provides strict lookup tables for selected tiers/modes.
+- `tower_sim/libs/enemy_tables.py` provides wave damage CSV loader with compact-number parsing.
+- `tower_sim/libs/wave_damage_strict.py` provides strict lookup tables for selected tiers/modes.
 
 ### Modules
-- `towersim/modules_library.py`, `towersim/modules.py`, `towersim/assist_efficiency.py` implement module unique effects, substats, and assist efficiency logic.
+- `tower_sim/libs/modules_library.py`, `tower_sim/engines/modules.py`, `tower_sim/libs/assist_efficiency.py` implement module unique effects, substats, and assist efficiency logic.
 
 ### Tier Battle Conditions
-- `tower_sim/tier_bc_loader.py` loads tier 14–21 farming BC magnitudes from `tower_sim/tables/tier14_21_battle_conditions.csv`.
+- `tower_sim/loaders/tier_bc_loader.py` loads tier 14–21 farming BC magnitudes from `tables/tier14_21_battle_conditions.csv`.
 
 ### Wiki Caches + Ingest
-- `towersim/wiki/cards.py` reads cached card tables.
-- `towersim/wiki/labs.py` + `labs_ingest_all.py` + `labs_formula.py` implement lab value retrieval with formula-first and cache fallback.
-- `towersim/wiki/perks.py` provides perk effectiveness helpers.
-- `towersim/wiki/labs_eals_ehls.py` provides helpers for EALS/EHLS lab tables.
+- `tower_sim/loaders/wiki/cards.py` reads cached card tables.
+- `tower_sim/loaders/wiki/labs.py` + `labs_ingest_all.py` + `labs_formula.py` implement lab value retrieval with formula-first and cache fallback.
+- `tower_sim/loaders/wiki/perks.py` provides perk effectiveness helpers.
+- `tower_sim/loaders/wiki/labs_eals_ehls.py` provides helpers for EALS/EHLS lab tables.
 
 ### Uptime / Wave Time (Partial)
-- `towersim/wave_time.py` and `towersim/uptime.py` exist but are not yet validated against authoritative references.
+- `tower_sim/engines/wave_time.py` and `tower_sim/engines/uptime.py` exist but are not yet validated against authoritative references.
 
 ## What is NOT Implemented (Known Gaps)
 ### Core Architecture Gaps
@@ -57,7 +57,7 @@ Explicitly NOT included:
 - Stat engine scaffolding and StatBook export exist, but composition is incomplete.
 
 ### Tier Rules / Battle Conditions
-- `towersim/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
+- `tower_sim/engines/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
 - Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
 ### Missing (Explicit)
 - Tier BC application in per-wave stat composition (loader exists but is not yet integrated).

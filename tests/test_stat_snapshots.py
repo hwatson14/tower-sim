@@ -9,12 +9,12 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.battle_conditions import BCRow, BattleConditions  # noqa: E402
-from tower_sim.run_context import RunContext  # noqa: E402
-from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
-from tower_sim.stat_registry import Phase, default_registry  # noqa: E402
-from tower_sim.stat_snapshots import build_at_wave_snapshot  # noqa: E402
-from tower_sim.wave_engine import RunWaveState  # noqa: E402
+from tower_sim.engines.battle_conditions import BCRow, BattleConditions  # noqa: E402
+from tower_sim.run.context import RunContext  # noqa: E402
+from tower_sim.engines.stat_engine import StatEngine, StatInput  # noqa: E402
+from tower_sim.registry.stat_registry import Phase, default_registry  # noqa: E402
+from tower_sim.engines.stat_snapshots import build_at_wave_snapshot  # noqa: E402
+from tower_sim.engines.wave_engine import RunWaveState  # noqa: E402
 
 
 def test_build_at_wave_snapshot_applies_bc_then_heat() -> None:

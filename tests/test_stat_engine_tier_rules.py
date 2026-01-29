@@ -9,11 +9,11 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.run_context import RunContext  # noqa: E402
-from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
-from tower_sim.stat_registry import Phase, default_registry  # noqa: E402
-from tower_sim.tier_battle_conditions import TierBattleCondition  # noqa: E402
-from tower_sim.tier_rules import TierRulesResult  # noqa: E402
+from tower_sim.run.context import RunContext  # noqa: E402
+from tower_sim.engines.stat_engine import StatEngine, StatInput  # noqa: E402
+from tower_sim.registry.stat_registry import Phase, default_registry  # noqa: E402
+from tower_sim.loaders.tier_battle_conditions import TierBattleCondition  # noqa: E402
+from tower_sim.engines.tier_rules import TierRulesResult  # noqa: E402
 
 
 def test_build_with_tier_rules_applies_skip_reduction() -> None:

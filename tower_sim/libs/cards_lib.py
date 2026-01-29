@@ -18,7 +18,7 @@ def _read_csv(path: Path) -> list[list[str]]:
         return list(csv.reader(handle))
 
 
-def load_cards_tables(cache_dir: Path = Path("tower_sim/wiki/cache")) -> Dict[str, CardTable]:
+def load_cards_tables(cache_dir: Path = Path("tables/wiki_cache")) -> Dict[str, CardTable]:
     tables: Dict[str, CardTable] = {}
     for path in sorted(cache_dir.glob("cards_*.csv")):
         rows = _read_csv(path)

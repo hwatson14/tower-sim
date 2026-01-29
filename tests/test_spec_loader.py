@@ -13,8 +13,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.problem_spec import ProblemSpec  # noqa: E402
-from tower_sim.spec_loader import load_problem_spec  # noqa: E402
+from tower_sim.run.problem_spec import ProblemSpec  # noqa: E402
+from tower_sim.run.spec_loader import load_problem_spec  # noqa: E402
 
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "specs"
