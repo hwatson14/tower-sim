@@ -116,7 +116,9 @@ corresponding Step1 part file(s):
   - `reference/step1_dump_docs/part2_data/dag.json`.
 
 ### Boss Survivability Model (v1 objective)
-- Boss-only combat model (PC + thorns + regen + DR) not implemented.
+- Boss-only combat model (PC + thorns + regen + DR) implemented in
+  `tower_sim/combat/boss_engine.py` with v1 minimal mechanics (percent-current
+  PC + thorns, defense/DR mitigation, regen + package heal expectation).
 - Fail-closed boss combat engine scaffold exists in `tower_sim/combat/boss_engine.py`.
 - No root-find / binary search to find death wave.
 

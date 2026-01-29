@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, Optional
+from math import isfinite
+from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.combat.boss_engine import BossCombatEngine, BossCombatInputs, MissingMechanicError
 from tower_sim.combat.boss_survivability import (
@@ -44,26 +45,43 @@ class MaxWaveEvaluator:
         )
 
         stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
-        missing.extend(_missing_required_stat_inputs(stat_inputs))
+        missing_stat_inputs = _missing_required_stat_inputs(stat_inputs)
+        if missing_stat_inputs:
+            diagnostics["missing_stat_inputs"] = missing_stat_inputs
+
+        tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+        if tier_rule_missing:
+            diagnostics["missing_tier_rules"] = tier_rule_missing
+        wave_state = _maybe_build_wave_state(problem_spec, missing)
+        if wave_state is not None:
+            diagnostics["wave_state"] = asdict(wave_state)
 
         registry = default_registry()
         tier_rules = _load_tier_rules(problem_spec, run_context, missing)
         engine = StatEngine(registry=registry)
         try:
             if tier_rules is None:
-                engine_result = engine.build(stat_inputs)
+                engine_result = engine.build(stat_inputs, wave_state=wave_state)
             else:
-                engine_result = engine.build_with_tier_rules(stat_inputs, tier_rules)
+                engine_result = engine.build_with_tier_rules(
+                    stat_inputs, tier_rules, wave_state=wave_state
+                )
             diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
         except Exception as exc:  # noqa: BLE001
-            missing.append("stat_engine")
             diagnostics["stat_engine_error"] = str(exc)
             engine_result = None
 
-        wave_state = _maybe_build_wave_state(problem_spec, missing)
+        wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
         if wave_state is not None:
             diagnostics["wave_state"] = asdict(wave_state)
+        if wave_state_missing:
+            diagnostics["missing_wave_state"] = wave_state_missing
 
+        wave_damage, wave_damage_missing = _resolve_wave_damage(
+            problem_spec, wave_state, diagnostics
+        )
+        if wave_damage_missing:
+            diagnostics["missing_wave_damage"] = wave_damage_missing
         wave_damage = _resolve_wave_damage(problem_spec, wave_state, missing, diagnostics)
         wave_snapshot = _resolve_wave_snapshot(
             problem_spec,
@@ -83,28 +101,31 @@ class MaxWaveEvaluator:
                 "applied_heat": wave_snapshot.applied_heat,
             }
 
-        if problem_spec.scenario.boss_survivability is None:
-            missing.append("boss_survivability_inputs")
+        w_max, trace, search_diagnostics, search_missing = _search_wmax(problem_spec)
+        if search_missing:
+            missing.extend(search_missing)
+            if search_diagnostics:
+                diagnostics["w_max_search"] = search_diagnostics
         else:
-            diagnostics["boss_survivability"] = _resolve_boss_survivability(
-                problem_spec, wave_state
-            )
+            diagnostics["w_max_search"] = search_diagnostics
+            diagnostics["margin_trace"] = trace
+            diagnostics["boss_survivability"] = search_diagnostics["last_wave_result"]
 
-        _probe_boss_combat(
+        boss_combat_error = _probe_boss_combat(
             problem_spec,
             engine_result,
             wave_snapshot,
             wave_damage,
-            missing,
-            diagnostics,
         )
+        if boss_combat_error is not None:
+            diagnostics["boss_combat_error"] = boss_combat_error
 
         missing = sorted(set(missing))
         return {
             "evaluator": problem_spec.evaluator,
             "fail_closed": bool(missing),
             "missing": missing,
-            "w_max": None,
+            "w_max": w_max if not missing else None,
             "diagnostics": diagnostics,
         }
 
@@ -129,19 +150,19 @@ def _missing_required_stat_inputs(stat_inputs: Iterable) -> List[str]:
 def _load_tier_rules(
     problem_spec: ProblemSpec,
     run_context: RunContext,
-    missing: List[str],
-):
+) -> Tuple[Optional[Any], List[str]]:
+    missing: List[str] = []
     bc_path = _resolve_bc_path(problem_spec)
     try:
         catalog = load_tier_battle_conditions(bc_path, allow_incomplete=True)
     except FileNotFoundError:
         missing.append("tier_battle_conditions_table")
-        return None
+        return None, missing
     try:
         rules = build_tier_rules(problem_spec.scenario.tier, run_context, catalog)
     except ValueError:
         missing.append("tier_battle_conditions")
-        return None
+        return None, missing
     unsupported = [
         condition
         for condition in rules.conditions
@@ -149,22 +170,23 @@ def _load_tier_rules(
     ]
     if unsupported:
         missing.append("tier_battle_conditions_unsupported")
-        return None
-    return rules
+        return None, missing
+    return rules, missing
 
 
 def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
     return Path(__file__).resolve().parents[1] / "tables" / "tier14_21_battle_conditions.csv"
 
 
-def _maybe_build_wave_state(problem_spec: ProblemSpec, missing: List[str]):
+def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:
+    missing: List[str] = []
     scenario = problem_spec.scenario
     if scenario.eals_ramp is None:
         missing.append("skip_ramp:eals")
     if scenario.ehls_ramp is None:
         missing.append("skip_ramp:ehls")
     if scenario.eals_ramp is None or scenario.ehls_ramp is None:
-        return None
+        return None, missing
     eals = SkipRamp(
         start=scenario.eals_ramp.start,
         end=scenario.eals_ramp.end,
@@ -175,35 +197,35 @@ def _maybe_build_wave_state(problem_spec: ProblemSpec, missing: List[str]):
         end=scenario.ehls_ramp.end,
         ramp_waves=scenario.ehls_ramp.ramp_waves,
     )
-    return make_wave_state(scenario.wave, eals, ehls)
+    return make_wave_state(scenario.wave, eals, ehls), missing
 
 
 def _resolve_wave_damage(
     problem_spec: ProblemSpec,
     wave_state,
-    missing: List[str],
     diagnostics: Dict[str, Any],
-) -> Optional[float]:
+) -> Tuple[Optional[float], List[str]]:
+    missing: List[str] = []
     scenario = problem_spec.scenario
     wave_tier = scenario.wave_damage_tier
     if wave_tier is None:
         wave_tier = _default_wave_damage_tier(scenario)
     if wave_tier is None:
         missing.append("wave_damage_tier")
-        return None
+        return None, missing
 
-    lib = EnemyWaveDamageLib.from_pasted_default()
+    lib = EnemyWaveDamageLib.from_repo_tables()
     wave = scenario.wave if wave_state is None else wave_state.W_attack
     try:
         damage = lib.wave_damage_exact(wave_tier, wave)
     except KeyError as exc:
         missing.append("wave_damage_table")
         diagnostics["wave_damage_error"] = str(exc)
-        return None
+        return None, missing
     diagnostics["wave_damage_tier"] = wave_tier
     diagnostics["wave_damage_wave"] = wave
     diagnostics["wave_damage"] = damage
-    return damage
+    return damage, missing
 
 
 def _default_wave_damage_tier(scenario) -> Optional[str]:
@@ -214,7 +236,7 @@ def _default_wave_damage_tier(scenario) -> Optional[str]:
     return None
 
 
-def _resolve_boss_survivability(problem_spec: ProblemSpec, wave_state) -> Dict[str, Any]:
+def _resolve_boss_survivability(problem_spec: ProblemSpec, wave: int) -> Dict[str, Any]:
     spec = problem_spec.scenario.boss_survivability
     if spec is None:
         return {}
@@ -231,7 +253,7 @@ def _resolve_boss_survivability(problem_spec: ProblemSpec, wave_state) -> Dict[s
             shields=spec.tower.shields,
         )
         ctx = BossContext(
-            wave=problem_spec.scenario.wave,
+            wave=wave,
             tier=problem_spec.scenario.tier,
             league=problem_spec.scenario.league or "",
             boss=boss,
@@ -249,12 +271,9 @@ def _probe_boss_combat(
     engine_result,
     wave_snapshot: Optional[AtWaveSnapshot],
     wave_damage: Optional[float],
-    missing: List[str],
-    diagnostics: Dict[str, Any],
-) -> None:
+) -> Optional[str]:
     if engine_result is None or wave_damage is None:
-        missing.append("boss_combat_inputs")
-        return
+        return "boss_combat_inputs"
     try:
         start_stats = engine_result.run_stats.get(Phase.START_OF_RUN)
         if start_stats is None:
@@ -276,6 +295,16 @@ def _probe_boss_combat(
             tower_regen=tower_regen,
             defense_pct=defense_pct,
             thorns_pct=thorns_pct,
+            return "boss_combat_inputs"
+        inputs = BossCombatInputs(
+            wave=problem_spec.scenario.wave,
+            wave_damage=wave_damage,
+            tower_hp=start_stats.values.get("tower_hp", 0.0),
+            tower_regen=start_stats.values.get("tower_regen", 0.0),
+            defense_pct=start_stats.values.get("def_pct", 0.0),
+            thorns_pct=start_stats.values.get("thorns_damage_mult"),
+            pc_frac=None,
+            pc_boss_mult=None,
             package_chance=None,
             package_heal=None,
             damage_reduction=None,
@@ -393,3 +422,60 @@ def _resolve_heat_magnitudes(
         diagnostics["bc_magnitudes_unmapped"] = sorted(unmapped)
         return None
     return mapped
+        return str(exc)
+    return None
+
+
+def _search_wmax(
+    problem_spec: ProblemSpec,
+    trace_depth: int = 5,
+) -> Tuple[Optional[int], List[Dict[str, Any]], Dict[str, Any], List[str]]:
+    missing: List[str] = []
+    scenario = problem_spec.scenario
+    if scenario.boss_survivability is None:
+        return None, [], {}, ["boss_survivability_inputs"]
+    max_wave = int(scenario.wave)
+    if max_wave <= 0:
+        return None, [], {}, ["wave_limit"]
+
+    results: List[Dict[str, Any]] = []
+    w_max = 0
+    last_result: Dict[str, Any] = {}
+    for wave in range(1, max_wave + 1):
+        result = _resolve_boss_survivability(problem_spec, wave)
+        if "error" in result:
+            missing.append("boss_survivability_params")
+            diagnostics = {"error": result["error"]}
+            return None, [], diagnostics, missing
+        margin = _margin_from_outcome(result)
+        outcome = result.get("outcome", "unknown")
+        entry = {
+            "wave": wave,
+            "outcome": outcome,
+            "ttk_seconds": result.get("ttk_seconds"),
+            "ttd_seconds": result.get("ttd_seconds"),
+            "margin_seconds": margin,
+        }
+        results.append(entry)
+        last_result = result
+        if outcome == "tower_kills_boss":
+            w_max = wave
+
+    trace = results[-trace_depth:] if results else []
+    diagnostics = {
+        "max_wave": max_wave,
+        "evaluated_waves": max_wave,
+        "trace_depth": trace_depth,
+        "last_wave_result": last_result,
+    }
+    return w_max, trace, diagnostics, missing
+
+
+def _margin_from_outcome(result: Dict[str, Any]) -> Optional[float]:
+    ttk = result.get("ttk_seconds")
+    ttd = result.get("ttd_seconds")
+    if ttk is None or ttd is None:
+        return None
+    if not (isfinite(ttk) or isfinite(ttd)):
+        return None
+    return ttd - ttk
