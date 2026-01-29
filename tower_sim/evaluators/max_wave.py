@@ -14,11 +14,13 @@ from tower_sim.combat.boss_survivability import (
     resolve_boss_fight,
 )
 from tower_sim.enemies.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.bc_heat_loader import HeatDataError, load_heat_bundle
 from tower_sim.ids_state import IdsState
 from tower_sim.problem_spec import ProblemSpec
 from tower_sim.run_context import RunContext
 from tower_sim.stat_engine import StatEngine
 from tower_sim.stat_registry import Phase, default_registry
+from tower_sim.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.tier_rule_apply import SUPPORTED_BC
 from tower_sim.tier_rules import build_tier_rules
@@ -54,8 +56,9 @@ class MaxWaveEvaluator:
         if wave_state is not None:
             diagnostics["wave_state"] = asdict(wave_state)
 
+        registry = default_registry()
         tier_rules = _load_tier_rules(problem_spec, run_context, missing)
-        engine = StatEngine(registry=default_registry())
+        engine = StatEngine(registry=registry)
         try:
             if tier_rules is None:
                 engine_result = engine.build(stat_inputs, wave_state=wave_state)
@@ -80,6 +83,23 @@ class MaxWaveEvaluator:
         if wave_damage_missing:
             diagnostics["missing_wave_damage"] = wave_damage_missing
         wave_damage = _resolve_wave_damage(problem_spec, wave_state, missing, diagnostics)
+        wave_snapshot = _resolve_wave_snapshot(
+            problem_spec,
+            stat_inputs,
+            engine_result,
+            registry,
+            tier_rules,
+            run_context,
+            wave_state,
+            missing,
+            diagnostics,
+        )
+        if wave_snapshot is not None:
+            diagnostics["at_wave_snapshot"] = {
+                "wave": wave_snapshot.wave,
+                "applied_bc": wave_snapshot.applied_bc,
+                "applied_heat": wave_snapshot.applied_heat,
+            }
 
         w_max, trace, search_diagnostics, search_missing = _search_wmax(problem_spec)
         if search_missing:
@@ -94,6 +114,7 @@ class MaxWaveEvaluator:
         boss_combat_error = _probe_boss_combat(
             problem_spec,
             engine_result,
+            wave_snapshot,
             wave_damage,
         )
         if boss_combat_error is not None:
@@ -248,6 +269,7 @@ def _resolve_boss_survivability(problem_spec: ProblemSpec, wave: int) -> Dict[st
 def _probe_boss_combat(
     problem_spec: ProblemSpec,
     engine_result,
+    wave_snapshot: Optional[AtWaveSnapshot],
     wave_damage: Optional[float],
 ) -> Optional[str]:
     if engine_result is None or wave_damage is None:
@@ -255,6 +277,24 @@ def _probe_boss_combat(
     try:
         start_stats = engine_result.run_stats.get(Phase.START_OF_RUN)
         if start_stats is None:
+            missing.append("boss_combat_inputs")
+            return
+        snapshot_values = wave_snapshot.values if wave_snapshot is not None else {}
+        tower_hp = snapshot_values.get("tower_hp", start_stats.values.get("tower_hp", 0.0))
+        tower_regen = snapshot_values.get(
+            "tower_regen", start_stats.values.get("tower_regen", 0.0)
+        )
+        defense_pct = snapshot_values.get("def_pct", start_stats.values.get("def_pct", 0.0))
+        thorns_pct = snapshot_values.get(
+            "thorns_damage_mult", start_stats.values.get("thorns_damage_mult")
+        )
+        inputs = BossCombatInputs(
+            wave=problem_spec.scenario.wave,
+            wave_damage=wave_damage,
+            tower_hp=tower_hp,
+            tower_regen=tower_regen,
+            defense_pct=defense_pct,
+            thorns_pct=thorns_pct,
             return "boss_combat_inputs"
         inputs = BossCombatInputs(
             wave=problem_spec.scenario.wave,
@@ -272,6 +312,116 @@ def _probe_boss_combat(
         )
         BossCombatEngine().evaluate(inputs)
     except MissingMechanicError as exc:
+        message = str(exc)
+        if "Missing required boss combat inputs" in message:
+            missing.append("boss_combat_inputs")
+        else:
+            missing.append("boss_combat_mechanics")
+        diagnostics["boss_combat_error"] = message
+
+
+def _resolve_wave_snapshot(
+    problem_spec: ProblemSpec,
+    stat_inputs: List,
+    engine_result,
+    registry,
+    tier_rules,
+    run_context: RunContext,
+    wave_state,
+    missing: List[str],
+    diagnostics: Dict[str, Any],
+) -> Optional[AtWaveSnapshot]:
+    if engine_result is None:
+        missing.append("wave_snapshot_inputs")
+        return None
+    heat_magnitudes = _resolve_heat_magnitudes(
+        problem_spec,
+        registry,
+        missing,
+        diagnostics,
+    )
+    try:
+        return build_at_wave_snapshot(
+            stat_inputs=stat_inputs,
+            engine_result=engine_result,
+            registry=registry,
+            tier_rules=tier_rules,
+            battle_conditions=None,
+            wave_state=wave_state,
+            wave=problem_spec.scenario.wave,
+            run_context=run_context,
+            heat_magnitudes=heat_magnitudes,
+        )
+    except StatSnapshotError as exc:
+        missing.append("wave_snapshot")
+        diagnostics["wave_snapshot_error"] = str(exc)
+        return None
+
+
+def _resolve_heat_magnitudes(
+    problem_spec: ProblemSpec,
+    registry,
+    missing: List[str],
+    diagnostics: Dict[str, Any],
+) -> Optional[Dict[str, float]]:
+    scenario = problem_spec.scenario
+    if scenario.mode != "tournament":
+        return None
+    if scenario.league is None:
+        missing.append("heat_league")
+        return None
+    heat_path = Path(__file__).resolve().parents[1] / "tables" / "heat_wave_scalar.csv"
+    magnitudes_path = (
+        Path(__file__).resolve().parents[1] / "tables" / "battle_condition_magnitudes.csv"
+    )
+    try:
+        bundle = load_heat_bundle(heat_path, magnitudes_path)
+    except (HeatDataError, FileNotFoundError) as exc:
+        missing.append("heat_tables")
+        diagnostics["heat_tables_error"] = str(exc)
+        return None
+
+    league = scenario.league.lower()
+    wave = scenario.wave
+    scalars = [row for row in bundle.heat_scalars if row.league == league and row.wave == wave]
+    if not scalars:
+        missing.append("heat_scalar")
+        return None
+    if any(row.scalar != 1.0 for row in scalars):
+        missing.append("heat_scalar_mapping")
+        diagnostics["heat_scalar_error"] = (
+            "Heat scalar mapping to BC magnitudes is not implemented."
+        )
+        return None
+
+    magnitudes = [
+        row
+        for row in bundle.magnitudes
+        if row.league == league and row.wave == wave
+    ]
+    if not magnitudes:
+        missing.append("bc_magnitudes")
+        return None
+
+    mapped: Dict[str, float] = {}
+    unmapped: List[str] = []
+    for row in magnitudes:
+        if row.bc_id in mapped:
+            missing.append("bc_magnitudes_duplicate")
+            diagnostics["bc_magnitudes_error"] = f"Duplicate bc_id: {row.bc_id}"
+            return None
+        try:
+            registry.validate_stat_id(row.bc_id)
+        except Exception:  # noqa: BLE001
+            unmapped.append(row.bc_id)
+            continue
+        mapped[row.bc_id] = row.magnitude
+
+    if unmapped:
+        missing.append("bc_magnitudes_unmapped")
+        diagnostics["bc_magnitudes_unmapped"] = sorted(unmapped)
+        return None
+    return mapped
         return str(exc)
     return None
 
