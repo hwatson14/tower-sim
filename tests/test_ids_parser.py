@@ -9,7 +9,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.ids_parser import parse_ids  # noqa: E402
+from tower_sim.loaders.ids_parser import parse_ids  # noqa: E402
 
 
 def test_parse_ids_fixture_sections() -> None:

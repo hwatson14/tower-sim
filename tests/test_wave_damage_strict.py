@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.enemies.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 
 
 def test_wave_damage_strict_tier_samples():

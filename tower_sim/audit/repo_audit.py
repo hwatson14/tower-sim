@@ -113,8 +113,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 def _find_naming_yaml_files(repo_root: Path) -> List[Path]:
     candidates: List[Path] = []
-    naming_dir = repo_root / "naming"
-    wiki_dir = repo_root / "tower_sim" / "wiki"
+    naming_dir = repo_root / "tables" / "registry"
+    wiki_dir = repo_root / "tower_sim" / "loaders" / "wiki"
     for base in (naming_dir, wiki_dir):
         if base.exists():
             candidates.extend(sorted(base.rglob("*.yaml")))
@@ -249,7 +249,7 @@ def _check_naming_yaml(report: AuditReport, yaml_files: List[Path]) -> NamingCat
 
 
 def _parse_stat_registry_ids(repo_root: Path) -> Set[str]:
-    stat_registry_path = repo_root / "tower_sim" / "stat_registry.py"
+    stat_registry_path = repo_root / "tower_sim" / "registry" / "stat_registry.py"
     if not stat_registry_path.exists():
         return set()
     content = stat_registry_path.read_text(encoding="utf-8")
@@ -269,8 +269,8 @@ def _iter_reference_files(repo_root: Path) -> List[Path]:
             if path.suffix in exts and path.is_file():
                 files.append(path)
     for extra in (
-        repo_root / "tower_sim" / "modules.py",
-        repo_root / "tower_sim" / "modules_library.py",
+        repo_root / "tower_sim" / "engines" / "modules.py",
+        repo_root / "tower_sim" / "libs" / "modules_library.py",
     ):
         if extra.exists() and extra.suffix in exts:
             files.append(extra)
@@ -315,11 +315,11 @@ def _check_registry_references(
 
 
 def _check_tables(report: AuditReport, repo_root: Path, strict: bool) -> None:
-    tables_dir = repo_root / "tower_sim" / "tables"
+    tables_dir = repo_root / "tables"
     if not tables_dir.exists():
         report.add_failure(
             "C_TABLES_MISSING",
-            "Expected tower_sim/tables directory is missing.",
+            "Expected tables directory is missing.",
             paths=[tables_dir],
         )
         return
@@ -362,14 +362,14 @@ def _architecture_labs_complete(repo_root: Path) -> bool:
 
 def _check_modules(report: AuditReport, repo_root: Path) -> None:
     key_modules = [
-        "tower_sim/stat_registry.py",
-        "tower_sim/statbook.py",
+        "tower_sim/registry/stat_registry.py",
+        "tower_sim/util/statbook.py",
         "tower_sim/libs/workshop_lib.py",
         "tower_sim/libs/labs_lib.py",
         "tower_sim/libs/modules_lib.py",
         "tower_sim/libs/uw_lib.py",
         "tower_sim/libs/cards_lib.py",
-        "tower_sim/modules_library.py",
+        "tower_sim/libs/modules_library.py",
     ]
 
     tests_root = repo_root / "tests"
@@ -555,12 +555,12 @@ def _failure_recommendation(item: AuditItem) -> Optional[str]:
         "A_CANONICAL_ID_MISSING": "Add canonical_id fields to each naming catalog entry.",
         "A_CATEGORY_SCHEMA": "Ensure category entries are YAML lists of mappings.",
         "A_ENTRY_SCHEMA": "Ensure each category entry is a mapping with canonical_id and names.",
-        "A_NAMING_MISSING": "Add a naming YAML (e.g., naming/catalog.yaml) or restore it.",
+        "A_NAMING_MISSING": "Add a naming YAML (e.g., tables/registry/catalog.yaml) or restore it.",
         "A_YAML_PARSE_ERROR": "Fix YAML syntax errors in the naming catalog.",
         "A_YAML_SCHEMA": "Add a top-level 'categories' mapping in naming YAML.",
         "A_ALIAS_SCHEMA": "Ensure aliases is a list of strings (or omit for none).",
         "B_UNKNOWN_CANONICAL_ID": "Add missing canonical IDs to naming YAML or stat registry, or fix typos.",
-        "C_TABLES_MISSING": "Create tower_sim/tables/ and add the canonical CSV tables.",
+        "C_TABLES_MISSING": "Create tables/ and add the canonical CSV tables.",
         "C_LABS_VALUES_MISSING": "Add labs_values_v1.csv with provenance or update architecture status.",
         "D_MODULE_MISSING": "Add the missing key module file or remove it from the audit list.",
         "D_MODULE_STUB": "Implement the module beyond imports/docstrings/passes.",

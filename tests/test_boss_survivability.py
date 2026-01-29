@@ -7,8 +7,8 @@ import pytest
 repo_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(repo_root))
 
-from tower_sim.combat.boss_params_loader import load_bc_params
-from tower_sim.combat.boss_survivability import (
+from tower_sim.engines.combat.boss_params_loader import load_bc_params
+from tower_sim.engines.combat.boss_survivability import (
     BossContext,
     BossDataError,
     BossStats,

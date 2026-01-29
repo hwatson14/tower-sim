@@ -3,7 +3,7 @@ from __future__ import annotations
 import csv
 from pathlib import Path
 
-from tower_sim.wiki.promote_labs_tables import build_labs_values_v1
+from tower_sim.loaders.wiki.promote_labs_tables import build_labs_values_v1
 
 
 def _load_rows(path: Path) -> list[dict[str, str]]:

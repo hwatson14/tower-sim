@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Iterable, Mapping
 
 
-_DEFAULT_TABLES_DIR = Path(__file__).resolve().parents[1] / "tables"
+_DEFAULT_TABLES_DIR = Path(__file__).resolve().parents[2] / "tables"
 
 
 @dataclass(frozen=True)

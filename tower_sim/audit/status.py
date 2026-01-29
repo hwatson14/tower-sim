@@ -59,7 +59,7 @@ def _components() -> list[ComponentStatus]:
             known_gaps=[
                 "Derived stat composition/DPS formulas are incomplete; see "
                 "[Effective Paths mechanics comparison]"
-                "(tower_sim/audit/effective_paths_mechanics_comparison.md#effective-paths-v50001-master-workbook).",
+                "(audit/effective_paths_mechanics_comparison.md#effective-paths-v50001-master-workbook).",
             ],
         ),
         ComponentStatus(
@@ -85,7 +85,7 @@ def _components() -> list[ComponentStatus]:
             known_gaps=[
                 "Free Upgrade allocation policy is fail-closed; see "
                 "[Workshop / WS+ / Free upgrades]"
-                "(tower_sim/audit/effective_paths_mechanics_comparison.md#workshop--ws---free-upgrades).",
+                "(audit/effective_paths_mechanics_comparison.md#workshop--ws---free-upgrades).",
             ],
         ),
         ComponentStatus(
@@ -169,7 +169,7 @@ def _components() -> list[ComponentStatus]:
             evidence=[
                 "`tower_sim/audit/repo_audit.py`: repo audit CLI",
                 "`tower_sim/audit/stat_source_coverage.py`: stat source coverage",
-                "`tower_sim/wiki/cache_audit.py`: wiki cache audit",
+                "`tower_sim/loaders/wiki/cache_audit.py`: wiki cache audit",
             ],
             tests=[
                 "`tests/test_repo_audit.py`",
@@ -256,7 +256,7 @@ def main(argv: Sequence[str] | None = None) -> int:
         "--output",
         type=Path,
         default=None,
-        help="Output path for the report (default: tower_sim/audit/implementation_status_report.md).",
+        help="Output path for the report (default: audit/implementation_status_report.md).",
     )
     parser.add_argument(
         "--check",
@@ -266,7 +266,7 @@ def main(argv: Sequence[str] | None = None) -> int:
     args = parser.parse_args(argv)
 
     repo_root = _resolve_repo_root()
-    output_path = args.output or repo_root / "tower_sim" / "audit" / "implementation_status_report.md"
+    output_path = args.output or repo_root / "audit" / "implementation_status_report.md"
     content = generate_report()
 
     if args.check:

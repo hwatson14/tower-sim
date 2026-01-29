@@ -19,10 +19,10 @@ def _write(path: Path, content: str) -> None:
 
 def _build_repo(tmp_path: Path, naming_yaml: str, stub_module: str | None = None) -> Path:
     repo_root = tmp_path
-    _write(repo_root / "naming" / "catalog.yaml", naming_yaml)
+    _write(repo_root / "tables" / "registry" / "catalog.yaml", naming_yaml)
 
     _write(
-        repo_root / "tower_sim" / "stat_registry.py",
+        repo_root / "tower_sim" / "registry" / "stat_registry.py",
         """
 from dataclasses import dataclass
 
@@ -37,14 +37,14 @@ def default_registry():
     )
 
     key_modules = [
-        "tower_sim/stat_registry.py",
-        "tower_sim/statbook.py",
+        "tower_sim/registry/stat_registry.py",
+        "tower_sim/util/statbook.py",
         "tower_sim/libs/workshop_lib.py",
         "tower_sim/libs/labs_lib.py",
         "tower_sim/libs/modules_lib.py",
         "tower_sim/libs/uw_lib.py",
         "tower_sim/libs/cards_lib.py",
-        "tower_sim/modules_library.py",
+        "tower_sim/libs/modules_library.py",
     ]
 
     for rel_path in key_modules:
@@ -59,7 +59,7 @@ def default_registry():
     _write(
         repo_root / "tests" / "test_placeholder.py",
         """
-from tower_sim import stat_registry
+from tower_sim.registry import stat_registry
 """.lstrip(),
     )
 
@@ -112,7 +112,7 @@ categories:
       primary_name: "Test"
       aliases: ["Test"]
 """.lstrip(),
-        stub_module="tower_sim/statbook.py",
+        stub_module="tower_sim/util/statbook.py",
     )
     report = run_audit(repo_root, strict=False)
     assert any(item.code == "D_MODULE_STUB" for item in report.failures)
@@ -128,7 +128,7 @@ categories:
       primary_name: "Test"
       aliases: ["Test"]
 """.lstrip(),
-        stub_module="tower_sim/statbook.py",
+        stub_module="tower_sim/util/statbook.py",
     )
 
     env = dict(os.environ)
@@ -156,7 +156,7 @@ categories:
       aliases: ["Test"]
 """.lstrip(),
     )
-    _write(repo_root / "tower_sim" / "tables" / ".keep", "")
+    _write(repo_root / "tables" / ".keep", "")
     _write(
         repo_root / "tower_sim" / "libs" / "mapping.py",
         """

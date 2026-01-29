@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from tower_sim.audit.stat_source_coverage import CoverageStatus, audit_stat_coverage
-from tower_sim.ids_parser import parse_ids
+from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.libs import labs_lib, workshop_lib
-from tower_sim.stat_registry import default_registry
+from tower_sim.registry.stat_registry import default_registry
 
 
 def test_stat_source_coverage_lab_presence() -> None:

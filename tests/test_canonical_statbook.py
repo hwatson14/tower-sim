@@ -14,9 +14,9 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.stat_registry import Phase, default_registry  # noqa: E402
-from tower_sim.statbook import CanonicalStatRow  # noqa: E402
-from tower_sim.statbook_builder import build_canonical_statbook  # noqa: E402
+from tower_sim.registry.stat_registry import Phase, default_registry  # noqa: E402
+from tower_sim.util.statbook import CanonicalStatRow  # noqa: E402
+from tower_sim.engines.statbook_builder import build_canonical_statbook  # noqa: E402
 
 
 def _sample_row(**overrides: object) -> CanonicalStatRow:

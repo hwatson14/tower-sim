@@ -9,7 +9,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.tier_bc_loader import (  # noqa: E402
+from tower_sim.loaders.tier_bc_loader import (  # noqa: E402
     load_tier_battle_conditions,
     tier_battle_conditions_for_tier,
 )

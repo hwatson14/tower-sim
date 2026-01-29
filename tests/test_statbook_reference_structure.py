@@ -11,8 +11,8 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.stat_engine import StatEngine, StatInput  # noqa: E402
-from tower_sim.stat_registry import Phase, default_registry  # noqa: E402
+from tower_sim.engines.stat_engine import StatEngine, StatInput  # noqa: E402
+from tower_sim.registry.stat_registry import Phase, default_registry  # noqa: E402
 
 
 def test_statbook_reference_structure(tmp_path: Path) -> None:

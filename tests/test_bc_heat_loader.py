@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.bc_heat_loader import HeatDataError, load_heat_bundle  # noqa: E402
+from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle  # noqa: E402
 
 
 def _write_csv(path: Path, text: str) -> None:

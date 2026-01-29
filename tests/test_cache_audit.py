@@ -5,7 +5,7 @@ import sys
 
 def _load_cache_audit_module() -> object:
     repo_root = Path(__file__).resolve().parents[1]
-    module_path = repo_root / "tower_sim" / "wiki" / "cache_audit.py"
+    module_path = repo_root / "tower_sim" / "loaders" / "wiki" / "cache_audit.py"
     spec = spec_from_file_location("cache_audit", module_path)
     if spec is None or spec.loader is None:
         raise RuntimeError("Failed to load cache_audit module.")
@@ -21,7 +21,7 @@ audit_cache_file = _CACHE_AUDIT.audit_cache_file
 
 def test_cache_audit_promotable() -> None:
     repo_root = Path(__file__).resolve().parents[1]
-    cache_file = repo_root / "tower_sim" / "wiki" / "cache" / "lab_health.csv"
+    cache_file = repo_root / "tables" / "wiki_cache" / "lab_health.csv"
     result = audit_cache_file(cache_file)
     assert result.status in {"PROMOTABLE", "PROMOTABLE_WITH_GAPS"}
     assert result.level_column is not None

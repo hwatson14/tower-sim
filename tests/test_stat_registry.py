@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.stat_registry import (  # noqa: E402
+from tower_sim.registry.stat_registry import (  # noqa: E402
     Phase,
     StatDef,
     StatKind,
@@ -21,7 +21,7 @@ from tower_sim.stat_registry import (  # noqa: E402
     UnknownStatError,
     default_registry,
 )
-from tower_sim.statbook import StatBook, StatRow  # noqa: E402
+from tower_sim.util.statbook import StatBook, StatRow  # noqa: E402
 
 
 def test_registry_unknown_stat_raises() -> None:

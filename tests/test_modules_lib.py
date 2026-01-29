@@ -16,7 +16,7 @@ from tower_sim.libs.modules_lib import (  # noqa: E402
     substat_definitions,
     unique_effect_value,
 )
-from tower_sim.modules_library import Rarity  # noqa: E402
+from tower_sim.libs.modules_library import Rarity  # noqa: E402
 
 
 def test_modules_lookup() -> None:

@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict
 
-from tower_sim.modules_library import (
+from tower_sim.libs.modules_library import (
     Rarity,
     SUBSTATS_BY_SLOT,
     UNIQUE_EFFECTS,

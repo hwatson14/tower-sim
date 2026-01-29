@@ -11,7 +11,7 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.wave_engine import (  # noqa: E402
+from tower_sim.engines.wave_engine import (  # noqa: E402
     SkipRamp,
     enemy_wave_index,
     expected_skipped_waves,
