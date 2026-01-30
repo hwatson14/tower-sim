@@ -1,44 +1,94 @@
-# TowerSim Codex Baseline
+# TowerSim
 
-This ZIP is a **clean baseline** for moving TowerSim into Codex.
+TowerSim is a **deterministic simulator** for the mobile game  
+**The Tower — Idle Tower Defense**.
 
-It contains:
-- `ARCHITECTURE.md`: frozen architecture contract and build plan
-- `IMPLEMENTATION_STATUS.md`: truthful audit of what exists vs what is missing
-- `AGENTS.md`: rules for Codex/agents (deterministic, fail-closed, no invented mechanics)
-- `REPO_STRUCTURE.md`: allowed top-level folders and usage rules
-- `tower_sim/`: Python package (library code only)
-- `tables/`: authoritative tables + cached wiki tables
-- `audit/`: audit reports and cleanup ledgers
-- `tests/` and `tests_quarantine/`: test suites
+Its purpose is to compute **objective, defensible outcomes** (v1: *maximum reachable wave, Wmax*) for a fully specified player scenario, using **authoritative data only** and **fail-closed correctness rules**.
 
-## What this is (and isn't)
-- This is **not yet a full simulator** (no typed `_IDS` → `IdsState`, no StatBook, no boss model).
-- It is the most coherent salvage base we found and is intended to be extended via PRs in Codex.
+TowerSim prioritises:
+- determinism over realism
+- correctness over speed
+- explicit assumptions over hidden defaults
 
-## Recommended environment
-- Python 3.11+
-- `pip install -e .[dev]`
-- `PYTHONPATH=. pytest`
-- `python -m tower_sim.loaders.wiki.audit_cache_tables`
+It is designed for long-term maintainability and explainable results, not UI polish or probabilistic modelling.
 
-## Repo audit
-Run the repository audit to validate naming integrity, registry references, table presence, and module completeness:
+---
 
-```bash
-python -m tower_sim.audit.repo_audit --json audit.json --markdown audit.md
-```
+## What TowerSim is (and is not)
 
-Strict mode returns exit code 2 when failures are present:
+**TowerSim is:**
+- a mathematical model driven by frozen tables and explicit rules
+- deterministic and reproducible
+- strict about missing or ambiguous data (it fails instead of guessing)
 
-```bash
-python -m tower_sim.audit.repo_audit --strict
-```
+**TowerSim is not:**
+- a frame-by-frame game simulator
+- a Monte Carlo or RNG-based model
+- an economy or farming calculator (deferred to later versions)
 
-## Data dependency
-This repo expects CSV snapshots from `hwatson14/tower-sim-data`.
-Recommended approach: add it as a git submodule (pinned SHA) under `reference/tower-sim-data`.
+---
 
-## First Codex task
-Implement typed `_IDS.csv` parsing to `IdsState` (raw values only), with unit tests.
-See `ARCHITECTURE.md` for full contract.
+## Documentation overview
+
+This repository separates **intent**, **game context**, **architecture**, and **governance** to avoid ambiguity and duplication.
+
+If you are new here, read these in order:
+
+- **PROJECT_INTENT.md**  
+  Why TowerSim exists, what problem it solves, its core philosophy, and the locked v1 scope.
+
+- **GAME_OVERVIEW.md**  
+  A high-level explanation of *The Tower — Idle Tower Defense* and its major systems, for readers unfamiliar with the game.
+
+- **ARCHITECTURE.md**  
+  How TowerSim is structured internally: architecture planes, data flow, determinism boundaries, and failure rules.
+
+For repo layout and enforcement rules:
+
+- **REPO_STRUCTURE.md**  
+  Defines the allowed folder structure and what belongs where.
+
+- **REPO_MAP.yaml**  
+  The machine-enforced contract that prevents file sprawl.
+
+- **CONTRIBUTING.md**  
+  Contribution rules for humans and automated agents.
+
+- **TESTING.md**  
+  How tests and governance checks are run.
+
+- **AGENTS.md**  
+  Rules and constraints for AI agents (Codex, GPT, etc.) working in this repository.
+
+This separation is intentional.  
+If something is unclear, it likely belongs in one of the documents above rather than being inferred or duplicated.
+
+---
+
+## Repository principles (non-negotiable)
+
+- No invented mechanics
+- No silent defaults
+- No hidden randomness
+- Explicit assumptions for every run
+- Fail-closed on missing data
+- `tower_sim/` contains **library code only**
+- Generated artefacts never live inside the library
+
+Violations of these rules are considered correctness bugs.
+
+---
+
+## Status
+
+TowerSim is under active development.
+
+v1 completion criteria are defined in **PROJECT_INTENT.md**.  
+Missing tables or mechanics are treated as blockers, not TODOs.
+
+---
+
+## License
+
+TBD (personal project; not yet licensed for redistribution).
+
