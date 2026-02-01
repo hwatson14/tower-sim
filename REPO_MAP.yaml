@@ -10,6 +10,8 @@ top_level:
 
   allowed_files:
     - README.md
+    - GAME_OVERVIEW.md
+    - PROJECT_INTENT.md
     - ARCHITECTURE.md
     - REPO_STRUCTURE.md
     - TESTING.md
