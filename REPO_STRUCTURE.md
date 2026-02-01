@@ -25,7 +25,7 @@ The importable package maps to the architecture planes and contains Python-only 
 - `audit/`: audit tooling code only (no outputs)
 
 ## Root documents
-- `README.md`, `ARCHITECTURE.md`, `TESTING.md`, `CONTRIBUTING.md`
+- `README.md`, `PROJECT_INTENT.md`, `GAME_OVERVIEW.md`, `ARCHITECTURE.md`, `TESTING.md`, `CONTRIBUTING.md`
 - `REPO_MAP.yaml`: authoritative repo layout rules.
 - `REPO_STRUCTURE.md`: human-readable structure overview.
 
