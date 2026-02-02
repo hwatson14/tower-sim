@@ -1,0 +1,12 @@
+{
+  "total_unresolved_tokens": 141,
+  "class_counts": {
+    "cross_sheet_cell": 32,
+    "identifier": 101,
+    "other": 8
+  },
+  "notes": [
+    "Classification is syntactic only; no resolution attempted.",
+    "cross_sheet_cell tokens can be resolved by ingesting referenced sheets."
+  ]
+}

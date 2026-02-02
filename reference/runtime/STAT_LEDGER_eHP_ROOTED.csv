@@ -1,0 +1,113 @@
+stat_key,domain,ep_cell,formula,direct_inputs,source,notes
+ep_ehp____bd8,eHP,eHP!BD8,='Master Sheet'!AN13,UNRESOLVED('MASTER SHEET'!AN13);UNRESOLVED(AN13);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp____be12,eHP,eHP!BE12,='Master Sheet'!AY23,UNRESOLVED('MASTER SHEET'!AY23);UNRESOLVED(AY23);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp____be8,eHP,eHP!BE8,='Master Sheet'!AY15,UNRESOLVED('MASTER SHEET'!AY15);UNRESOLVED(AY15);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__armor__ag4,eHP,eHP!AG4,='Master Sheet'!AR24,UNRESOLVED('MASTER SHEET'!AR24);UNRESOLVED(AR24);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__armor__ah4,eHP,eHP!AH4,"=IF($AH$5, MODSTAT_ARMOR('Master Sheet'!AR28, 'Master Sheet'!AR29), 1)",UNRESOLVED('MASTER SHEET'!AR28);UNRESOLVED('MASTER SHEET'!AR29);UNRESOLVED(AR28);UNRESOLVED(AR29);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MODSTAT_ARMOR);IDS_CANDIDATE(SHEET);ep_ehp__substat_compared_to__ah5,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__assist_module_bonus_armor__au24,eHP,eHP!AU24,=IDS_LAB_LEVEL(AT24),UNRESOLVED(AT24);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__assist_module_substats_armor__au22,eHP,eHP!AU22,=IDS_LAB_LEVEL(AT22),UNRESOLVED(AT22);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__assist_module_substats_generator__au23,eHP,eHP!AU23,=IDS_LAB_LEVEL(AT23),UNRESOLVED(AT23);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__death_wave_health__af25,eHP,eHP!AF25,"=IDS_UW_OWN(""Death Wave"")",IDS_CANDIDATE(DEATH);IDS_CANDIDATE(IDS_UW_OWN);IDS_CANDIDATE(WAVE),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__death_wave_health__au16,eHP,eHP!AU16,=IDS_LAB_LEVEL(AT16),UNRESOLVED(AT16);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense__ah19,eHP,eHP!AH19,"=EPH_DEF_PCT(AZ8, AU8, AND(AQ19, AQ26), AO26, AQ27, AN27, BC22, AU22, AG8, AH8, 0, AU13, BD8, BE8)",UNRESOLVED(AG8);UNRESOLVED(AH8);UNRESOLVED(AQ19);UNRESOLVED(BC22);IDS_CANDIDATE(EPH_DEF_PCT);ep_ehp____bd8;ep_ehp____be8;ep_ehp__assist_module_substats_armor__au22;ep_ehp__defense__au8;ep_ehp__defense__az8;ep_ehp__extra_defense__ao26;ep_ehp__extra_defense__aq26;ep_ehp__extra_defense_mastery__an27;ep_ehp__extra_defense_mastery__aq27;ep_ehp__standard_perks_bonus__au13,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense__au8,eHP,eHP!AU8,=IDS_LAB_LEVEL(AT8),UNRESOLVED(AT8);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense__ay8,eHP,eHP!AY8,=MAX('Master Sheet'!K20:L20),RANGE(K20:L20);UNRESOLVED('MASTER SHEET'!K20);UNRESOLVED(K20);UNRESOLVED(L20);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense__az8,eHP,eHP!AZ8,"=DVT_WS_VALUE(AT8, AY8)",UNRESOLVED(AT8);IDS_CANDIDATE(DVT_WS_VALUE);ep_ehp__defense__ay8,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__ah18,eHP,eHP!AH18,"=FORMAT_NUMBER(EPH_DABS(AZ7, AU7, AND(AQ19, AQ28), AO28, BC22, AU22, AG9, AH9, BA7, 0, AU13, BD7, BE7))",UNRESOLVED(AG9);UNRESOLVED(AH9);UNRESOLVED(AQ19);UNRESOLVED(BC22);IDS_CANDIDATE(EPH_DABS);IDS_CANDIDATE(FORMAT_NUMBER);ep_ehp__assist_module_substats_armor__au22;ep_ehp__defense_absolute__au7;ep_ehp__defense_absolute__az7;ep_ehp__defense_absolute__ba7;ep_ehp__defense_absolute__bd7;ep_ehp__defense_absolute__be7;ep_ehp__fortress__ao28;ep_ehp__fortress__aq28;ep_ehp__standard_perks_bonus__au13,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__au7,eHP,eHP!AU7,=IDS_LAB_LEVEL(AT7),UNRESOLVED(AT7);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__ay7,eHP,eHP!AY7,=MAX('Master Sheet'!K21:L21),RANGE(K21:L21);UNRESOLVED('MASTER SHEET'!K21);UNRESOLVED(K21);UNRESOLVED(L21);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__az7,eHP,eHP!AZ7,"=DVT_WS_VALUE(AT7, AY7)",UNRESOLVED(AT7);IDS_CANDIDATE(DVT_WS_VALUE);ep_ehp__defense_absolute__ay7,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__ba7,eHP,eHP!BA7,='Master Sheet'!Q11,UNRESOLVED('MASTER SHEET'!Q11);IDS_CANDIDATE(MASTER);UNRESOLVED(Q11);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__bd7,eHP,eHP!BD7,='Master Sheet'!AN14,UNRESOLVED('MASTER SHEET'!AN14);UNRESOLVED(AN14);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__defense_absolute__be7,eHP,eHP!BE7,='Master Sheet'!AY16,UNRESOLVED('MASTER SHEET'!AY16);UNRESOLVED(AY16);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense__an26,eHP,eHP!AN26,=IDS_CARD_LEVEL(AM26),UNRESOLVED(AM26);IDS_CANDIDATE(IDS_CARD_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense__ao26,eHP,eHP!AO26,=4%+1%*AN26,ep_ehp__extra_defense__an26,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense__aq26,eHP,eHP!AQ26,"=ISNUMBER(MATCH(AM26, 'Master Sheet'!$AD$3:$AD$29, 0))",RANGE(AD3:AD29);UNRESOLVED($AD$29);UNRESOLVED($AD$3);UNRESOLVED('MASTER SHEET'!$AD$3);UNRESOLVED(AM26);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MATCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense_mastery__an27,eHP,eHP!AN27,=AU20,ep_ehp__extra_defense_mastery__au20,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense_mastery__aq27,eHP,eHP!AQ27,"=AND(IDS_CARD_MASTERY(AM26), AQ19, AQ26)",UNRESOLVED(AM26);UNRESOLVED(AQ19);IDS_CANDIDATE(IDS_CARD_MASTERY);ep_ehp__extra_defense__aq26,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__extra_defense_mastery__au20,eHP,eHP!AU20,=IDS_LAB_LEVEL(AT20),UNRESOLVED(AT20);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__fortress__an28,eHP,eHP!AN28,=IDS_CARD_LEVEL(AM28),UNRESOLVED(AM28);IDS_CANDIDATE(IDS_CARD_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__fortress__ao28,eHP,eHP!AO28,=1.15+0.15*AN28,ep_ehp__fortress__an28,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__fortress__aq28,eHP,eHP!AQ28,"=ISNUMBER(MATCH(AM28, 'Master Sheet'!$AD$3:$AD$29, 0))",RANGE(AD3:AD29);UNRESOLVED($AD$29);UNRESOLVED($AD$3);UNRESOLVED('MASTER SHEET'!$AD$3);UNRESOLVED(AM28);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MATCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__ah16,eHP,eHP!AH16,"=FORMAT_NUMBER(EPH_HEALTH(AZ5, AU5, AND(AQ19, AQ22), AO22, AQ23, AN23, BA5, 0, AU13, 0, 0, BD5, BE5, AF25, AU16) * EPH_ARMOR(AG4, AH5, AH4, BC21, AU24))",UNRESOLVED(AQ19);UNRESOLVED(BC21);IDS_CANDIDATE(EPH_ARMOR);IDS_CANDIDATE(EPH_HEALTH);IDS_CANDIDATE(FORMAT_NUMBER);ep_ehp__armor__ag4;ep_ehp__armor__ah4;ep_ehp__assist_module_bonus_armor__au24;ep_ehp__death_wave_health__af25;ep_ehp__death_wave_health__au16;ep_ehp__health__ao22;ep_ehp__health__aq22;ep_ehp__health__au5;ep_ehp__health__az5;ep_ehp__health__ba5;ep_ehp__health__bd5;ep_ehp__health__be5;ep_ehp__health_mastery__an23;ep_ehp__health_mastery__aq23;ep_ehp__standard_perks_bonus__au13;ep_ehp__substat_compared_to__ah5,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__an22,eHP,eHP!AN22,=IDS_CARD_LEVEL(AM22),UNRESOLVED(AM22);IDS_CANDIDATE(IDS_CARD_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__ao22,eHP,eHP!AO22,"=SWITCH(AN22,
+  1, 1.5,
+  2, 2,
+  3, 2.4,
+  4, 2.8,
+  5, 3.2,
+  6, 3.6,
+  7, 4,
+ 1)",IDS_CANDIDATE(SWITCH);ep_ehp__health__an22,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__aq22,eHP,eHP!AQ22,"=ISNUMBER(MATCH(AM22, 'Master Sheet'!$AD$3:$AD$29, 0))",RANGE(AD3:AD29);UNRESOLVED($AD$29);UNRESOLVED($AD$3);UNRESOLVED('MASTER SHEET'!$AD$3);UNRESOLVED(AM22);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MATCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__au5,eHP,eHP!AU5,=IDS_LAB_LEVEL(AT5),UNRESOLVED(AT5);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__ay5,eHP,eHP!AY5,=MAX('Master Sheet'!K18:L18),RANGE(K18:L18);UNRESOLVED('MASTER SHEET'!K18);UNRESOLVED(K18);UNRESOLVED(L18);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__az5,eHP,eHP!AZ5,"=DVT_WS_VALUE(AT5, AY5)",UNRESOLVED(AT5);IDS_CANDIDATE(DVT_WS_VALUE);ep_ehp__health__ay5,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__ba5,eHP,eHP!BA5,='Master Sheet'!Q9,UNRESOLVED('MASTER SHEET'!Q9);IDS_CANDIDATE(MASTER);UNRESOLVED(Q9);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__bd5,eHP,eHP!BD5,='Master Sheet'!AN11,UNRESOLVED('MASTER SHEET'!AN11);UNRESOLVED(AN11);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health__be5,eHP,eHP!BE5,='Master Sheet'!AY13,UNRESOLVED('MASTER SHEET'!AY13);UNRESOLVED(AY13);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_mastery__an23,eHP,eHP!AN23,=AU18,ep_ehp__health_mastery__au18,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_mastery__aq23,eHP,eHP!AQ23,"=AND(IDS_CARD_MASTERY(AM22), AQ19, AQ22)",UNRESOLVED(AM22);UNRESOLVED(AQ19);IDS_CANDIDATE(IDS_CARD_MASTERY);ep_ehp__health__aq22,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_mastery__au18,eHP,eHP!AU18,=IDS_LAB_LEVEL(AT18),UNRESOLVED(AT18);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__ah17,eHP,eHP!AH17,"=FORMAT_NUMBER(EPH_REGEN(AZ6, AU6, AND(AQ19, AQ24), AO24, AQ25, AN25, BC22, AU22, AG7, AH7, BA6, 0, AU13, 0, 0, AU14, BD6, BE6, AQ29, AN29))",UNRESOLVED(AG7);UNRESOLVED(AH7);UNRESOLVED(AQ19);UNRESOLVED(BC22);IDS_CANDIDATE(EPH_REGEN);IDS_CANDIDATE(FORMAT_NUMBER);ep_ehp__assist_module_substats_armor__au22;ep_ehp__health_regen__ao24;ep_ehp__health_regen__aq24;ep_ehp__health_regen__au6;ep_ehp__health_regen__az6;ep_ehp__health_regen__ba6;ep_ehp__health_regen__bd6;ep_ehp__health_regen__be6;ep_ehp__health_regen_mastery__an25;ep_ehp__health_regen_mastery__aq25;ep_ehp__improve_trade_off_perks__au14;ep_ehp__second_wind_mastery__an29;ep_ehp__second_wind_mastery__aq29;ep_ehp__standard_perks_bonus__au13,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__an24,eHP,eHP!AN24,=IDS_CARD_LEVEL(AM24),UNRESOLVED(AM24);IDS_CANDIDATE(IDS_CARD_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__ao24,eHP,eHP!AO24,=1.2+0.2*AN24,ep_ehp__health_regen__an24,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__aq24,eHP,eHP!AQ24,"=ISNUMBER(MATCH(AM24, 'Master Sheet'!$AD$3:$AD$29, 0))",RANGE(AD3:AD29);UNRESOLVED($AD$29);UNRESOLVED($AD$3);UNRESOLVED('MASTER SHEET'!$AD$3);UNRESOLVED(AM24);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MATCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__au6,eHP,eHP!AU6,=IDS_LAB_LEVEL(AT6),UNRESOLVED(AT6);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__ay6,eHP,eHP!AY6,=MAX('Master Sheet'!K19:L19),RANGE(K19:L19);UNRESOLVED('MASTER SHEET'!K19);UNRESOLVED(K19);UNRESOLVED(L19);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__az6,eHP,eHP!AZ6,"=DVT_WS_VALUE(AT6, AY6)",UNRESOLVED(AT6);IDS_CANDIDATE(DVT_WS_VALUE);ep_ehp__health_regen__ay6,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__ba6,eHP,eHP!BA6,='Master Sheet'!Q10,UNRESOLVED('MASTER SHEET'!Q10);IDS_CANDIDATE(MASTER);UNRESOLVED(Q10);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__bd6,eHP,eHP!BD6,='Master Sheet'!AN12,UNRESOLVED('MASTER SHEET'!AN12);UNRESOLVED(AN12);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen__be6,eHP,eHP!BE6,='Master Sheet'!AY14,UNRESOLVED('MASTER SHEET'!AY14);UNRESOLVED(AY14);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen_mastery__an25,eHP,eHP!AN25,=AU19,ep_ehp__health_regen_mastery__au19,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen_mastery__aq25,eHP,eHP!AQ25,"=AND(IDS_CARD_MASTERY(AM24), AQ19, AQ24)",UNRESOLVED(AM24);UNRESOLVED(AQ19);IDS_CANDIDATE(IDS_CARD_MASTERY);ep_ehp__health_regen__aq24,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__health_regen_mastery__au19,eHP,eHP!AU19,=IDS_LAB_LEVEL(AT19),UNRESOLVED(AT19);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__improve_trade_off_perks__au14,eHP,eHP!AU14,=IDS_LAB_LEVEL(AT14),UNRESOLVED(AT14);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__max_recovery__ah23,eHP,eHP!AH23,"=IF(AF23, FORMAT_NUMBER(EPH_MAX_RCVR(AZ12, AU12, BC24, AU23, AG13, AH13, BA12, BE12)*UNFORMAT_NUMBER(AH16)), )",UNRESOLVED(AF23);UNRESOLVED(AG13);UNRESOLVED(AH13);UNRESOLVED(BC24);IDS_CANDIDATE(EPH_MAX_RCVR);IDS_CANDIDATE(FORMAT_NUMBER);IDS_CANDIDATE(UNFORMAT_NUMBER);ep_ehp____be12;ep_ehp__assist_module_substats_generator__au23;ep_ehp__health__ah16;ep_ehp__recovery_package_max__au12;ep_ehp__recovery_package_max__az12;ep_ehp__recovery_package_max__ba12,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__recovery_package_max__au12,eHP,eHP!AU12,=IDS_LAB_LEVEL(AT12),UNRESOLVED(AT12);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__recovery_package_max__ay12,eHP,eHP!AY12,=MAX('Master Sheet'!K29:L29),RANGE(K29:L29);UNRESOLVED('MASTER SHEET'!K29);UNRESOLVED(K29);UNRESOLVED(L29);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__recovery_package_max__az12,eHP,eHP!AZ12,"=DVT_WS_VALUE(""Max Recovery"", AY12)",IDS_CANDIDATE(DVT_WS_VALUE);IDS_CANDIDATE(RECOVERY);ep_ehp__recovery_package_max__ay12,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__recovery_package_max__ba12,eHP,eHP!BA12,='Master Sheet'!Q19,UNRESOLVED('MASTER SHEET'!Q19);IDS_CANDIDATE(MASTER);UNRESOLVED(Q19);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__second_wind_mastery__an29,eHP,eHP!AN29,=AU21,ep_ehp__second_wind_mastery__au21,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__second_wind_mastery__aq29,eHP,eHP!AQ29,"=AND(IDS_CARD_MASTERY(""Second Wind""), AQ19)",UNRESOLVED(AQ19);IDS_CANDIDATE(IDS_CARD_MASTERY);IDS_CANDIDATE(SECOND);IDS_CANDIDATE(WIND),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__second_wind_mastery__au21,eHP,eHP!AU21,=IDS_LAB_LEVEL(AT21),UNRESOLVED(AT21);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__sharp_fortitude__ag6,eHP,eHP!AG6,"=IFERROR(__xludf.DUMMYFUNCTION(""LET(
+  ModName, 'Master Sheet'!AR21,
+  ModRarity, 'Master Sheet'!AR22,
+  IF(ISNUMBER(SEARCH(AE6, ModName)), 
+    IFS(
+      REGEXMATCH(ModRarity, """"Epic""""), 1.25, 
+      REGEXMATCH(ModRarity, """"Legendary""""), 1.5, 
+      REGEXMATCH(ModRarity, """"Mythic""""), ""&""2, 
+      REGEXMATCH(ModRarity, """"Ancestral""""), 2.5,
+      TRUE, 0
+    ),
+  0)
+)
+""),0.0)",UNRESOLVED('MASTER SHEET'!AR21);UNRESOLVED('MASTER SHEET'!AR22);UNRESOLVED(AE6);IDS_CANDIDATE(ANCESTRAL);UNRESOLVED(AR21);UNRESOLVED(AR22);IDS_CANDIDATE(DUMMYFUNCTION);IDS_CANDIDATE(EPIC);IDS_CANDIDATE(IFERROR);IDS_CANDIDATE(IFS);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(LEGENDARY);IDS_CANDIDATE(LET);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MODNAME);IDS_CANDIDATE(MODRARITY);IDS_CANDIDATE(MYTHIC);IDS_CANDIDATE(REGEXMATCH);IDS_CANDIDATE(SEARCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__sharp_fortitude__ak6,eHP,eHP!AK6,"=IFERROR(__xludf.DUMMYFUNCTION(""LET(
+  ModName, 'Master Sheet'!AR27,
+  ModRarity, 'Master Sheet'!AR30,
+  IF(ISNUMBER(SEARCH(AE6, ModName)), 
+    IFS(
+      REGEXMATCH(ModRarity, """"Epic""""), 1.25, 
+      REGEXMATCH(ModRarity, """"Legendary""""), 1.5, 
+      REGEXMATCH(ModRarity, """"Mythic""""), ""&""2, 
+      REGEXMATCH(ModRarity, """"Ancestral""""), 2.5,
+      TRUE, 0
+    ),
+  0)
+)
+""),0.0)",UNRESOLVED('MASTER SHEET'!AR27);UNRESOLVED('MASTER SHEET'!AR30);UNRESOLVED(AE6);IDS_CANDIDATE(ANCESTRAL);UNRESOLVED(AR27);UNRESOLVED(AR30);IDS_CANDIDATE(DUMMYFUNCTION);IDS_CANDIDATE(EPIC);IDS_CANDIDATE(IFERROR);IDS_CANDIDATE(IFS);IDS_CANDIDATE(ISNUMBER);IDS_CANDIDATE(LEGENDARY);IDS_CANDIDATE(LET);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(MODNAME);IDS_CANDIDATE(MODRARITY);IDS_CANDIDATE(MYTHIC);IDS_CANDIDATE(REGEXMATCH);IDS_CANDIDATE(SEARCH);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__standard_perks_bonus__au13,eHP,eHP!AU13,=IDS_LAB_LEVEL(AT13),UNRESOLVED(AT13);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__substat_compared_to__ah5,eHP,eHP!AH5,='_IDS'!BH2,UNRESOLVED('_IDS'!BH2);UNRESOLVED(BH2),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_fortification__ah21,eHP,eHP!AH21,"=IF(AF20, FORMAT_NUMBER(EPH_WALL_HEALTH(AZ9, AU9, BC22, AU22, AG10, AH10, BA9, AG6, AK6, AU11)*UNFORMAT_NUMBER(AH16)), )",UNRESOLVED(AF20);UNRESOLVED(AG10);UNRESOLVED(AH10);UNRESOLVED(BC22);IDS_CANDIDATE(EPH_WALL_HEALTH);IDS_CANDIDATE(FORMAT_NUMBER);IDS_CANDIDATE(UNFORMAT_NUMBER);ep_ehp__assist_module_substats_armor__au22;ep_ehp__health__ah16;ep_ehp__sharp_fortitude__ag6;ep_ehp__sharp_fortitude__ak6;ep_ehp__wall_fortification__au11;ep_ehp__wall_health__au9;ep_ehp__wall_health__az9;ep_ehp__wall_health__ba9,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_fortification__au11,eHP,eHP!AU11,=IDS_LAB_LEVEL(AT11),UNRESOLVED(AT11);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_health__ah20,eHP,eHP!AH20,"=IF(AF20, FORMAT_NUMBER(EPH_WALL_HEALTH(AZ9, AU9, BC22, AU22, AG10, AH10, BA9, AG6, AK6, 0)*UNFORMAT_NUMBER(AH16)), )",UNRESOLVED(AF20);UNRESOLVED(AG10);UNRESOLVED(AH10);UNRESOLVED(BC22);IDS_CANDIDATE(EPH_WALL_HEALTH);IDS_CANDIDATE(FORMAT_NUMBER);IDS_CANDIDATE(UNFORMAT_NUMBER);ep_ehp__assist_module_substats_armor__au22;ep_ehp__health__ah16;ep_ehp__sharp_fortitude__ag6;ep_ehp__sharp_fortitude__ak6;ep_ehp__wall_health__au9;ep_ehp__wall_health__az9;ep_ehp__wall_health__ba9,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_health__au9,eHP,eHP!AU9,=IDS_LAB_LEVEL(AT9),UNRESOLVED(AT9);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_health__ay9,eHP,eHP!AY9,=MAX('Master Sheet'!K24:L24),RANGE(K24:L24);UNRESOLVED('MASTER SHEET'!K24);UNRESOLVED(K24);UNRESOLVED(L24);IDS_CANDIDATE(MASTER);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_health__az9,eHP,eHP!AZ9,"=DVT_WS_VALUE(AT9, AY9)",UNRESOLVED(AT9);IDS_CANDIDATE(DVT_WS_VALUE);ep_ehp__wall_health__ay9,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_health__ba9,eHP,eHP!BA9,='Master Sheet'!Q13,UNRESOLVED('MASTER SHEET'!Q13);IDS_CANDIDATE(MASTER);UNRESOLVED(Q13);IDS_CANDIDATE(SHEET),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_regen__ah22,eHP,eHP!AH22,"=IF(AF20, FORMAT_NUMBER(EPH_WALL_REGEN(AU10, AG6, AK6)*UNFORMAT_NUMBER(AH17)), )",UNRESOLVED(AF20);IDS_CANDIDATE(EPH_WALL_REGEN);IDS_CANDIDATE(FORMAT_NUMBER);IDS_CANDIDATE(UNFORMAT_NUMBER);ep_ehp__health_regen__ah17;ep_ehp__sharp_fortitude__ag6;ep_ehp__sharp_fortitude__ak6;ep_ehp__wall_regen__au10,EP,Included via back-prop from explicit eHP roots (AH16..AH23).
+ep_ehp__wall_regen__au10,eHP,eHP!AU10,=IDS_LAB_LEVEL(AT10),UNRESOLVED(AT10);IDS_CANDIDATE(IDS_LAB_LEVEL),EP,Included via back-prop from explicit eHP roots (AH16..AH23).
