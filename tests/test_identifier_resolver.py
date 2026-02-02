@@ -1,44 +1,31 @@
 from __future__ import annotations
 
 from pathlib import Path
+import sys
 
+REPO_ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO_ROOT))
+
+import pandas as pd
 import pytest
 
-from tower_sim.registry.identifier_resolver import list_remaining_unresolved
-
-
-def test_list_remaining_unresolved_from_temp_files(tmp_path: Path) -> None:
-    registry_path = tmp_path / "IDENTIFIER_REGISTRY.csv"
-    ledger_path = tmp_path / "STAT_LEDGER_eHP_ROOTED.csv"
-
-    registry_path.write_text(
-        "identifier,canonical_id\n"
-        "HP,STAT_TOWER_HP\n"
-        "REGEN,STAT_TOWER_REGEN\n",
-        encoding="utf-8",
-    )
-    ledger_path.write_text(
-        "identifier\n"
-        "HP\n"
-        "REGEN\n"
-        "DEF_PCT\n",
-        encoding="utf-8",
-    )
-
-    remaining = list_remaining_unresolved(
-        ledger_path=ledger_path,
-        registry_path=registry_path,
-    )
-
-    assert remaining == ["DEF_PCT"]
-
-
-@pytest.mark.skip(
-    reason=(
-        "Requires complete runtime identifier registry and eHP ledger "
-        "in reference/runtime to validate closure success."
-    )
+from tower_sim.registry.identifier_resolver import (
+    IdentifierResolver,
+    UnresolvedIdentifierError,
 )
-def test_ehp_closure_succeeds_when_registry_complete() -> None:
-    remaining = list_remaining_unresolved()
-    assert remaining == []
+
+
+def test_ehp_identifier_resolution_closure() -> None:
+    runtime_dir = REPO_ROOT / "reference" / "runtime"
+    registry_path = runtime_dir / "IDENTIFIER_REGISTRY.csv"
+    ledger_path = runtime_dir / "STAT_LEDGER_eHP_ROOTED.csv"
+
+    resolver = IdentifierResolver(registry_path)
+    ledger = pd.read_csv(ledger_path)
+
+    with pytest.raises(UnresolvedIdentifierError) as exc:
+        resolver.resolve_ledger(ledger, fail_on_unresolved=True)
+
+    report = exc.value.report
+    assert report.unresolved_after > 0
+    assert report.unresolved_tokens

@@ -1,0 +1,707 @@
+[
+  {
+    "stat_key": "ep_ehp____bd8",
+    "token": "UNRESOLVED('MASTER SHEET'!AN13)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp____bd8",
+    "token": "UNRESOLVED(AN13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp____be12",
+    "token": "UNRESOLVED('MASTER SHEET'!AY23)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp____be12",
+    "token": "UNRESOLVED(AY23)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp____be8",
+    "token": "UNRESOLVED('MASTER SHEET'!AY15)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp____be8",
+    "token": "UNRESOLVED(AY15)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ag4",
+    "token": "UNRESOLVED('MASTER SHEET'!AR24)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ag4",
+    "token": "UNRESOLVED(AR24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ah4",
+    "token": "UNRESOLVED('MASTER SHEET'!AR28)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ah4",
+    "token": "UNRESOLVED('MASTER SHEET'!AR29)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ah4",
+    "token": "UNRESOLVED(AR28)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__armor__ah4",
+    "token": "UNRESOLVED(AR29)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__assist_module_bonus_armor__au24",
+    "token": "UNRESOLVED(AT24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__assist_module_substats_armor__au22",
+    "token": "UNRESOLVED(AT22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__assist_module_substats_generator__au23",
+    "token": "UNRESOLVED(AT23)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__death_wave_health__au16",
+    "token": "UNRESOLVED(AT16)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ah19",
+    "token": "UNRESOLVED(AG8)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ah19",
+    "token": "UNRESOLVED(AH8)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ah19",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ah19",
+    "token": "UNRESOLVED(BC22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__au8",
+    "token": "UNRESOLVED(AT8)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ay8",
+    "token": "UNRESOLVED('MASTER SHEET'!K20)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ay8",
+    "token": "UNRESOLVED(K20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__ay8",
+    "token": "UNRESOLVED(L20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense__az8",
+    "token": "UNRESOLVED(AT8)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ah18",
+    "token": "UNRESOLVED(AG9)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ah18",
+    "token": "UNRESOLVED(AH9)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ah18",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ah18",
+    "token": "UNRESOLVED(BC22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__au7",
+    "token": "UNRESOLVED(AT7)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ay7",
+    "token": "UNRESOLVED('MASTER SHEET'!K21)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ay7",
+    "token": "UNRESOLVED(K21)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ay7",
+    "token": "UNRESOLVED(L21)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__az7",
+    "token": "UNRESOLVED(AT7)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ba7",
+    "token": "UNRESOLVED('MASTER SHEET'!Q11)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__ba7",
+    "token": "UNRESOLVED(Q11)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__bd7",
+    "token": "UNRESOLVED('MASTER SHEET'!AN14)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__bd7",
+    "token": "UNRESOLVED(AN14)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__be7",
+    "token": "UNRESOLVED('MASTER SHEET'!AY16)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__defense_absolute__be7",
+    "token": "UNRESOLVED(AY16)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense__an26",
+    "token": "UNRESOLVED(AM26)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense__aq26",
+    "token": "UNRESOLVED($AD$29)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense__aq26",
+    "token": "UNRESOLVED($AD$3)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense__aq26",
+    "token": "UNRESOLVED('MASTER SHEET'!$AD$3)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense__aq26",
+    "token": "UNRESOLVED(AM26)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense_mastery__aq27",
+    "token": "UNRESOLVED(AM26)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense_mastery__aq27",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__extra_defense_mastery__au20",
+    "token": "UNRESOLVED(AT20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__fortress__an28",
+    "token": "UNRESOLVED(AM28)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__fortress__aq28",
+    "token": "UNRESOLVED($AD$29)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__fortress__aq28",
+    "token": "UNRESOLVED($AD$3)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__fortress__aq28",
+    "token": "UNRESOLVED('MASTER SHEET'!$AD$3)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__fortress__aq28",
+    "token": "UNRESOLVED(AM28)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__ah16",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__ah16",
+    "token": "UNRESOLVED(BC21)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__an22",
+    "token": "UNRESOLVED(AM22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__aq22",
+    "token": "UNRESOLVED($AD$29)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__health__aq22",
+    "token": "UNRESOLVED($AD$3)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__health__aq22",
+    "token": "UNRESOLVED('MASTER SHEET'!$AD$3)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health__aq22",
+    "token": "UNRESOLVED(AM22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__au5",
+    "token": "UNRESOLVED(AT5)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__ay5",
+    "token": "UNRESOLVED('MASTER SHEET'!K18)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health__ay5",
+    "token": "UNRESOLVED(K18)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__ay5",
+    "token": "UNRESOLVED(L18)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__az5",
+    "token": "UNRESOLVED(AT5)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__ba5",
+    "token": "UNRESOLVED('MASTER SHEET'!Q9)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health__ba5",
+    "token": "UNRESOLVED(Q9)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__bd5",
+    "token": "UNRESOLVED('MASTER SHEET'!AN11)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health__bd5",
+    "token": "UNRESOLVED(AN11)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health__be5",
+    "token": "UNRESOLVED('MASTER SHEET'!AY13)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health__be5",
+    "token": "UNRESOLVED(AY13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_mastery__aq23",
+    "token": "UNRESOLVED(AM22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_mastery__aq23",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_mastery__au18",
+    "token": "UNRESOLVED(AT18)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ah17",
+    "token": "UNRESOLVED(AG7)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ah17",
+    "token": "UNRESOLVED(AH7)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ah17",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ah17",
+    "token": "UNRESOLVED(BC22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__an24",
+    "token": "UNRESOLVED(AM24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__aq24",
+    "token": "UNRESOLVED($AD$29)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__aq24",
+    "token": "UNRESOLVED($AD$3)",
+    "class": "other"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__aq24",
+    "token": "UNRESOLVED('MASTER SHEET'!$AD$3)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__aq24",
+    "token": "UNRESOLVED(AM24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__au6",
+    "token": "UNRESOLVED(AT6)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ay6",
+    "token": "UNRESOLVED('MASTER SHEET'!K19)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ay6",
+    "token": "UNRESOLVED(K19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ay6",
+    "token": "UNRESOLVED(L19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__az6",
+    "token": "UNRESOLVED(AT6)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ba6",
+    "token": "UNRESOLVED('MASTER SHEET'!Q10)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__ba6",
+    "token": "UNRESOLVED(Q10)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__bd6",
+    "token": "UNRESOLVED('MASTER SHEET'!AN12)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__bd6",
+    "token": "UNRESOLVED(AN12)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__be6",
+    "token": "UNRESOLVED('MASTER SHEET'!AY14)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen__be6",
+    "token": "UNRESOLVED(AY14)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen_mastery__aq25",
+    "token": "UNRESOLVED(AM24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen_mastery__aq25",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__health_regen_mastery__au19",
+    "token": "UNRESOLVED(AT19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__improve_trade_off_perks__au14",
+    "token": "UNRESOLVED(AT14)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__max_recovery__ah23",
+    "token": "UNRESOLVED(AF23)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__max_recovery__ah23",
+    "token": "UNRESOLVED(AG13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__max_recovery__ah23",
+    "token": "UNRESOLVED(AH13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__max_recovery__ah23",
+    "token": "UNRESOLVED(BC24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__au12",
+    "token": "UNRESOLVED(AT12)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__ay12",
+    "token": "UNRESOLVED('MASTER SHEET'!K29)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__ay12",
+    "token": "UNRESOLVED(K29)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__ay12",
+    "token": "UNRESOLVED(L29)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__ba12",
+    "token": "UNRESOLVED('MASTER SHEET'!Q19)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__recovery_package_max__ba12",
+    "token": "UNRESOLVED(Q19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__second_wind_mastery__aq29",
+    "token": "UNRESOLVED(AQ19)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__second_wind_mastery__au21",
+    "token": "UNRESOLVED(AT21)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ag6",
+    "token": "UNRESOLVED('MASTER SHEET'!AR21)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ag6",
+    "token": "UNRESOLVED('MASTER SHEET'!AR22)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ag6",
+    "token": "UNRESOLVED(AE6)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ag6",
+    "token": "UNRESOLVED(AR21)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ag6",
+    "token": "UNRESOLVED(AR22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ak6",
+    "token": "UNRESOLVED('MASTER SHEET'!AR27)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ak6",
+    "token": "UNRESOLVED('MASTER SHEET'!AR30)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ak6",
+    "token": "UNRESOLVED(AE6)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ak6",
+    "token": "UNRESOLVED(AR27)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__sharp_fortitude__ak6",
+    "token": "UNRESOLVED(AR30)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__standard_perks_bonus__au13",
+    "token": "UNRESOLVED(AT13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__substat_compared_to__ah5",
+    "token": "UNRESOLVED('_IDS'!BH2)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__substat_compared_to__ah5",
+    "token": "UNRESOLVED(BH2)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_fortification__ah21",
+    "token": "UNRESOLVED(AF20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_fortification__ah21",
+    "token": "UNRESOLVED(AG10)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_fortification__ah21",
+    "token": "UNRESOLVED(AH10)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_fortification__ah21",
+    "token": "UNRESOLVED(BC22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_fortification__au11",
+    "token": "UNRESOLVED(AT11)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ah20",
+    "token": "UNRESOLVED(AF20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ah20",
+    "token": "UNRESOLVED(AG10)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ah20",
+    "token": "UNRESOLVED(AH10)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ah20",
+    "token": "UNRESOLVED(BC22)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__au9",
+    "token": "UNRESOLVED(AT9)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ay9",
+    "token": "UNRESOLVED('MASTER SHEET'!K24)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ay9",
+    "token": "UNRESOLVED(K24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ay9",
+    "token": "UNRESOLVED(L24)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__az9",
+    "token": "UNRESOLVED(AT9)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ba9",
+    "token": "UNRESOLVED('MASTER SHEET'!Q13)",
+    "class": "cross_sheet_cell"
+  },
+  {
+    "stat_key": "ep_ehp__wall_health__ba9",
+    "token": "UNRESOLVED(Q13)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_regen__ah22",
+    "token": "UNRESOLVED(AF20)",
+    "class": "identifier"
+  },
+  {
+    "stat_key": "ep_ehp__wall_regen__au10",
+    "token": "UNRESOLVED(AT10)",
+    "class": "identifier"
+  }
+]

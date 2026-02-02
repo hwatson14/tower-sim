@@ -1,0 +1,25 @@
+{
+  "sheet": "eHP",
+  "root_ep_cells": [
+    "eHP!AH16",
+    "eHP!AH17",
+    "eHP!AH18",
+    "eHP!AH19",
+    "eHP!AH20",
+    "eHP!AH21",
+    "eHP!AH22",
+    "eHP!AH23"
+  ],
+  "root_stat_keys": [
+    "ep_ehp__health__ah16",
+    "ep_ehp__health_regen__ah17",
+    "ep_ehp__defense_absolute__ah18",
+    "ep_ehp__defense__ah19",
+    "ep_ehp__wall_health__ah20",
+    "ep_ehp__wall_fortification__ah21",
+    "ep_ehp__wall_regen__ah22",
+    "ep_ehp__max_recovery__ah23"
+  ],
+  "missing_root_cells": [],
+  "intent": "Boss-only v1 survivability stat snapshot roots (pre-engine)."
+}
