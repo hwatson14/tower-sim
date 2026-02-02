@@ -1,0 +1,10 @@
+name = "tower-runner"
+main = "src/index.js"
+compatibility_date = "2025-02-01"
+
+[vars]
+GITHUB_OWNER = "hwatson14"
+GITHUB_REPO  = "tower-sim"
+WORKFLOW_FILE = "ehp_slice.yml"
+OUTPUT_BRANCH = "bot-outputs"
+OUTPUT_PATH   = "outputs/ehp/latest.json"
