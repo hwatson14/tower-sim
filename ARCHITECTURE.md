@@ -2,6 +2,8 @@
 
 **Goal:** Deterministically evaluate run objectives (v1 focuses on boss-only Wmax) across farming/tournament/milestone contexts, and support optimisation (loadouts, perk policy, future spending, and respec mode).
 
+**Authority override:** In case of conflict, `PROJECT_INTENT.md` overrides all documents.
+
 ## Core Principles
 - **Library-driven:** mechanics and enemy tables live in libraries (CSV-backed or code tables with provenance), not embedded in calculators.
 - **Deterministic only:** no hidden randomness. Deterministic envelope evaluation (explicit best/worst/nominal cases) is allowed.
