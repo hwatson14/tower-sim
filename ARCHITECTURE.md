@@ -284,6 +284,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add stat source coverage audit for labs and workshop tables.
 - [x] Implement stat engine base composition (workshop + labs + EALS/EHLS + canonical StatBook rows).
 - [x] Implement Stat Engine skeleton + StatBook export.
+- [x] Add minimal eHP stat evaluator (mechanics YAML + IDS) for tower/wall HP slice.
 - [x] Add helper to assemble split FULLREPO archive.
 - [x] Add run context with tournament perk gating.
 - [x] Thread RunContext through battle condition filtering and perk-gated stat composition.

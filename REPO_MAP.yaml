@@ -164,4 +164,5 @@ file_count_caps:
     "tables": 600
 
 exceptions:
-  allow_paths: []
+  allow_paths:
+    - "tables/registry/ep_formulas/STATUS.md"
