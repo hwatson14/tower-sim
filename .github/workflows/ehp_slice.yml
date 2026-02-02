@@ -2,6 +2,19 @@ name: EHP slice
 
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref to run on (branch/tag/sha). Typically: main"
+        required: false
+        default: "main"
+      allow_out_of_scope:
+        description: "If true, skip out-of-scope sources (cards/perks) instead of failing"
+        required: false
+        default: "true"
+
+# Important: allow pushing results to bot-outputs branch
+permissions:
+  contents: write
 
 jobs:
   run-ehp:
@@ -10,62 +23,78 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
 
-      - name: Set up Python
+      - name: Set up Python (pip cached)
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
           cache: "pip"
 
-      - name: Install deps (cached)
+      - name: Install package
         run: |
-          python -m pip install -r .github/requirements-ci.txt
-      
-      - name: Install tower-sim (no deps)
-        run: |
-          pip install . --no-deps
+          python -m pip install --disable-pip-version-check -q -U pip
+          pip install . -q
 
-      - name: Evaluate EHP slice
-        shell: bash
+      - name: Compute EHP slice JSON
+        env:
+          ALLOW_OUT_OF_SCOPE: ${{ inputs.allow_out_of_scope }}
         run: |
           python - << 'PY'
-          import json
+          import json, os
           from pathlib import Path
 
           from tower_sim.loaders.ids_parser import parse_ids
           from tower_sim.evaluators import evaluate_stats
 
-          IDS_PATH = Path("tests/fixtures/tower-sim-data/_IDS.csv")
-          if not IDS_PATH.exists():
-              raise FileNotFoundError(f"IDS file not found: {IDS_PATH}")
+          ids_path = Path("tests/fixtures/tower-sim-data/_IDS.csv")
+          ids_state = parse_ids(ids_path)
 
-          ids_state = parse_ids(IDS_PATH)
+          enabled = ["tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen"]
 
-          enabled = [
-              "tower_hp",
-              "tower_regen",
-              "def_pct",
-              "wall_hp",
-              "wall_regen",
-          ]
+          allow = os.environ.get("ALLOW_OUT_OF_SCOPE", "true").lower() == "true"
+          stats = evaluate_stats(ids_state, enabled, allow_out_of_scope=allow)
 
-          stats = evaluate_stats(
-              ids_state,
-              enabled,
-              allow_out_of_scope=True,  # flip to False later
-          )
+          out = {
+            "meta": {
+              "enabled": enabled,
+              "allow_out_of_scope": allow,
+              "ids_path": str(ids_path),
+              "git_sha": os.environ.get("GITHUB_SHA", ""),
+              "ref": os.environ.get("GITHUB_REF_NAME", ""),
+            },
+            "ehp": stats,
+          }
 
-          print("EHP_SLICE_JSON=" + json.dumps(stats, indent=2, sort_keys=True))
-
-          Path("ehp_slice.json").write_text(
-              json.dumps(stats, indent=2, sort_keys=True),
-              encoding="utf-8",
-          )
+          Path("outputs/ehp").mkdir(parents=True, exist_ok=True)
+          Path("outputs/ehp/latest.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
+          print(json.dumps(out, indent=2))
           PY
 
-      - name: Upload artifact (ehp_slice.json)
-        uses: actions/upload-artifact@v4
-        with:
-          name: ehp-slice
-          path: ehp_slice.json
-          if-no-files-found: error
+      - name: Publish result to bot-outputs branch
+        run: |
+          set -euo pipefail
+
+          # Create/replace a dedicated branch containing only outputs/
+          git fetch origin bot-outputs || true
+          if git show-ref --verify --quiet refs/remotes/origin/bot-outputs; then
+            git switch bot-outputs
+          else
+            git switch --orphan bot-outputs
+          fi
+
+          # Clear working tree and keep only outputs/
+          git rm -rf . >/dev/null 2>&1 || true
+          mkdir -p outputs/ehp
+          cp -f "${GITHUB_WORKSPACE}/outputs/ehp/latest.json" outputs/ehp/latest.json
+
+          # Optional timestamped snapshot
+          ts="$(date -u +'%Y%m%dT%H%M%SZ')"
+          cp -f outputs/ehp/latest.json "outputs/ehp/${ts}.json"
+
+          git add outputs/ehp/*.json
+          git -c user.name="tower-sim-bot" -c user.email="tower-sim-bot@users.noreply.github.com" \
+            commit -m "ehp: ${ts} (sha ${GITHUB_SHA})" || echo "No changes to commit"
+
+          git push -f origin bot-outputs
