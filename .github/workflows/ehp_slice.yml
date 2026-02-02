@@ -1,0 +1,90 @@
+name: EHP slice
+
+on:
+  workflow_dispatch:
+    inputs:
+      ids_source:
+        description: "fixture or paste"
+        required: true
+        default: "fixture"
+        type: choice
+        options:
+          - fixture
+          - paste
+      ids_csv:
+        description: "Paste full _IDS.csv content if ids_source=paste"
+        required: false
+        type: string
+      allow_out_of_scope:
+        description: "Allow cards/perks etc to be skipped (minimal slice)"
+        required: true
+        default: "true"
+        type: choice
+        options:
+          - "true"
+          - "false"
+
+jobs:
+  run-ehp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      - name: Prepare IDS file
+        shell: bash
+        run: |
+          mkdir -p /tmp/tower_sim
+          if [ "${{ inputs.ids_source }}" = "fixture" ]; then
+            cp tests/fixtures/tower-sim-data/_IDS.csv /tmp/tower_sim/_IDS.csv
+          else
+            python - << 'PY'
+            import os, sys
+            ids = os.environ.get("IDS_CSV", "")
+            if not ids.strip():
+              raise SystemExit("ids_csv was empty but ids_source=paste")
+            with open("/tmp/tower_sim/_IDS.csv", "w", encoding="utf-8") as f:
+              f.write(ids)
+            PY
+          fi
+        env:
+          IDS_CSV: ${{ inputs.ids_csv }}
+
+      - name: Evaluate EHP stats
+        shell: bash
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          from tower_sim.loaders.ids_parser import parse_ids
+          from tower_sim.evaluators import evaluate_stats
+
+          ids_state = parse_ids(Path("/tmp/tower_sim/_IDS.csv"))
+          enabled = ["tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen"]
+
+          allow = "${{ inputs.allow_out_of_scope }}".lower() == "true"
+          stats = evaluate_stats(ids_state, enabled, allow_out_of_scope=allow)
+
+          print("EHP_SLICE_JSON=" + json.dumps(stats, indent=2, sort_keys=True))
+          Path("/tmp/tower_sim/ehp_slice.json").write_text(
+            json.dumps(stats, indent=2, sort_keys=True),
+            encoding="utf-8"
+          )
+          PY
+
+      - name: Upload artifact (ehp_slice.json)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ehp-slice
+          path: /tmp/tower_sim/ehp_slice.json
+          if-no-files-found: error
