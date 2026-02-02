@@ -1,0 +1,37 @@
+{
+  "name": "IdentifierResolverContract",
+  "purpose": "Replace UNRESOLVED(identifier) tokens in stat ledgers with explicit sources; fail-closed if any remain.",
+  "inputs": {
+    "identifier_registry_csv": "runtime/IDENTIFIER_REGISTRY.csv",
+    "stat_ledger_csv": "runtime/STAT_LEDGER_eHP_ROOTED.csv"
+  },
+  "allowed_definition_type": [
+    "alias",
+    "IDS",
+    "CONST",
+    "TABLE",
+    "DERIVED",
+    "REF",
+    "RANGE",
+    "UNKNOWN"
+  ],
+  "output": {
+    "token_rewrite_map": "identifier -> replacement_token",
+    "resolved_ledger_csv": "same schema + direct_inputs_resolved",
+    "closure_report_json": "counts before/after + remaining unresolved identifiers"
+  },
+  "replacement_token_grammar": {
+    "IDS": "IDS(field_key)",
+    "CONST": "CONST(value)",
+    "REF": "REF(sheet!A1)",
+    "RANGE": "RANGE(sheet!A1:B2)",
+    "TABLE": "TABLE(table_key, lookup_spec)",
+    "DERIVED": "DERIVED(stat_key)",
+    "ALIAS": "ALIAS(stat_key)"
+  },
+  "rules": [
+    "No silent defaults; UNKNOWN is not allowed at runtime.",
+    "Any UNRESOLVED remaining after rewrite => raise explicit error.",
+    "Every filled registry row must include provenance: defined_by_ep_cell and formula_or_rule (unless IDS/CONST)."
+  ]
+}
