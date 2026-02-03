@@ -27,3 +27,5 @@ tables have not yet been added.
 - `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/effective_paths/copy_of_bots_v2_2.xlsx`.
 - `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
   `reference/effective_paths/copy_of_guardians_v2_2_5.xlsx`.
+- `card_masteries_v1.csv`: Card mastery table pasted from the Tower wiki by the user
+  in the prompt (wiki-exact names + level 0–9 values).
