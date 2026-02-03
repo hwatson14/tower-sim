@@ -237,6 +237,50 @@ issues:
   status: partial
   note: Health/regen labs and card curves exist in tables/wiki_cache; workshop base curves exist in tests/fixtures/WSValues.csv;
     defense% lab/curve and wall fortification curve not found in tables/ or wiki_cache.
+eHP_mechanics:
+  version: ep_v5.00.01_extract_2026-02-02
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  mechanics:
+  - id: ep_lambda_eph_max_rcvr
+    name: EPH_MAX_RCVR
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1% * lab_lvl,\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  VAULT, 1 + vault_pct,\n\n(WS + LAB + SUBSTAT) * WSE * VAULT))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
+  - id: ep_lambda_eph_health
+    name: EPH_HEALTH
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, wse_lvl, has_perk, spb_lvl, has_cto, has_rto, relic_pct, vault_pct, has_dwhp, dwhp_lvl, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val * IF(has_mastery, 1 + 0.2 * (1 + mastery_lvl), 1), 1),\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKHP, IF(has_perk, (1 + 0.2 * 5) * (1 + 1% * spb_lvl), 1),\n  CTO, IF(has_cto, 0.3, 1),\n  RTO, IF(has_rto, 0.4, 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n  DWHP, IF(has_dwhp, 500% + 25% * dwhp_lvl, 1),\n\nWS * LAB * CARD * WSE * PERKHP * CTO * RTO * RELIC * VAULT * DWHP))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/perks_v1.csv (x1.20 Max Health, x1.80 coins but Tower Max Health -70%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
+  - id: ep_lambda_eph_regen
+    name: EPH_REGEN
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, has_rgnto, has_rto, ito_lvl, relic_pct, vault_pct, has_swm, swm_lvl, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val * IF(has_mastery, 1 + 0.4 * (1 + mastery_lvl), 1), 1),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, 1 + prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKREGEN, IF(has_perk, (1 + 0.75 * 5) * (1 + 1% * spb_lvl), 1),\n  RGNTO, IF(has_rgnto, 0.1, 1),\n  RTO, IF(has_rto, 8 * (1 + 1% * ito_lvl), 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n  SWM, IF(has_swm, 1 + 0.9 * (1 + swm_lvl), 1),\n\nWS * LAB * CARD * SUBSTAT * WSE * PERKREGEN * RGNTO * RTO * RELIC * VAULT * SWM))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/perks_v1.csv (x1.75 Health Regen, Enemies Have -50% Health but Tower Health Regen and Lifesteal -90%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
+  - id: ep_lambda_eph_def_pct
+    name: EPH_DEF_PCT
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub, ass_sub, has_perk, spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 0.2% * lab_lvl,\n  CARD, IF(has_card, card_val + IF(has_mastery, 0.7% * (1 + mastery_lvl), 0), 0),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  PERKDEF, IF(has_perk, (4% * 5) * (1 + 1% * spb_lvl), 0),\n  RELIC, relic_pct,\n  VAULT, vault_pct,\n\nMIN(98%, WS + LAB + CARD + SUBSTAT + PERKDEF + RELIC + VAULT)))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/perks_v1.csv (Defense Percent +4.00).
+  - id: ep_lambda_eph_dabs
+    name: EPH_DABS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val, 1),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, 1 + prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKDABS, IF(has_perk, (1 + 0.15 * 5) * (1 + 1% * spb_lvl), 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n\nWS * LAB * CARD * SUBSTAT * WSE * PERKDABS * RELIC * VAULT))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/perks_v1.csv (x1.15 Defense Absolute).
+  - id: ep_lambda_eph_armor
+    name: EPH_ARMOR
+    type: excel_named_formula
+    excel_definition: "LAMBDA(prim_bonus, has_ass, ass_bonus, stone_bac, lab_bac, prim_bonus * IF(has_ass, (((ass_bonus - 1) * (1 + stone_bac + lab_bac) * 0.01) + 1), 1))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
+  - id: ep_lambda_eph_wall_health
+    name: EPH_WALL_HEALTH
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, prim_effect, ass_effect, fort_lvl, LET(\n  LAB, 2% * lab_lvl,\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  SF, IF(prim_effect + ass_effect <> 0, prim_effect + ass_effect, 1),\n  WALLHP, (ws_val + LAB + SUBSTAT) * WSE * SF,\n  FORT, 1 + 0.2 * fort_lvl,\n\nWALLHP * FORT))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
+  - id: ep_lambda_eph_wall_regen
+    name: EPH_WALL_REGEN
+    type: excel_named_formula
+    excel_definition: "LAMBDA(lab_lvl, prim_effect, ass_effect, LET(\n  SF, IF(prim_effect + ass_effect <> 0, prim_effect + ass_effect, 1),\n\n(10% * lab_lvl) * SF))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
 stat_definitions:
   version: '0.6'
   notes: Aligned stat IDs with tower_sim.registry.stat_registry.default_registry() where available (tower_hp, tower_regen,
@@ -319,9 +363,8 @@ stat_definitions:
             level:
               type: IDS_PATH
               path: ids.cards.cards['Extra Defense'].level
-            canonical_id: null
-            catalog_missing: true
-            note: Card present in IDS, missing from catalog.yaml; update catalog then link to card table.
+            canonical_id: CARD_EXTRA_DEFENSE
+            note: Card present in IDS; catalog entry required for lookup.
         - op: CAP_MAX
           value: 0.98
     wall_hp:
@@ -344,6 +387,17 @@ stat_definitions:
           inputs:
           - tower_regen
           - helper: wall_regen_ratio
+    recovery_package_max:
+      display_name: Recovery Package Max
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_base * max_recovery_wse_mult * max_recovery_vault_mult
+          inputs:
+          - helper: max_recovery_base
+          - helper: max_recovery_wse_mult
+          - helper: max_recovery_vault_mult
   helpers:
     standard_perks_bonus_mult:
       unit: multiplier
@@ -420,3 +474,153 @@ stat_definitions:
             max: 12.0
             note: User-provided ladder 20% per level to level 60 (1200%). Promote into tables/wiki_cache.
       note: Fortification semantics beyond 'regen beyond max' remain blocked until sourced.
+    max_recovery_ws:
+      unit: hp
+      definition:
+        op_chain:
+        - op: APPLY_WORKSHOP_BASE
+          level:
+            type: IDS_PATH
+            path: ids.workshop.entries['Recovery Package Max'].coin_level
+          base_curve: DVT_Workshop/Max Recovery
+          note: Base curve uses DVT_Workshop Max Recovery (EPH_MAX_RCVR ws_val). Fail-closed until authoritative table is present.
+    max_recovery_lab:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Recovery Package Max']
+            add_per_level: 0.01
+            note: LAB = 1% * lab_lvl (EPH_MAX_RCVR).
+    max_recovery_stone_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/assist_stone_levels_v1.csv
+            key:
+              stone_level:
+                type: MISSING_IDS_PATH
+                expected: ids.stones.assist_level
+            value_col: assist_efficiency_frac
+            note: stone_sac from assist_stone_levels_v1.csv (linear +1% per level); fail-closed until IDS path is provided.
+    max_recovery_lab_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Assist Module Substats - Generator']
+            add_per_level: 1.0
+            note: lab_sac from Assist Module Substats - Generator (raw lab level).
+    max_recovery_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: (1 + max_recovery_stone_sac + max_recovery_lab_sac) * 0.01
+          inputs:
+          - helper: max_recovery_stone_sac
+          - helper: max_recovery_lab_sac
+    max_recovery_primary_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/module_substats_v1.csv
+            key:
+              key: primary_max_recovery
+            value_col: value
+            note: prim_sub from module substat tables; max_recovery entries still missing, so fail-closed until populated.
+    max_recovery_assist_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/module_substats_v1.csv
+            key:
+              key: assist_max_recovery
+            value_col: value
+            note: ass_sub from module substat tables; max_recovery entries still missing, so fail-closed until populated.
+    max_recovery_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_primary_substat + (max_recovery_assist_substat * max_recovery_sac)
+          inputs:
+          - helper: max_recovery_primary_substat
+          - helper: max_recovery_assist_substat
+          - helper: max_recovery_sac
+    max_recovery_base:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_ws + max_recovery_lab + max_recovery_substat
+          inputs:
+          - helper: max_recovery_ws
+          - helper: max_recovery_lab
+          - helper: max_recovery_substat
+    max_recovery_wse_level:
+      unit: level
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/wse_presets_v1.csv
+            key:
+              preset_id:
+                type: MISSING_IDS_PATH
+                expected: ids.wse.preset_id
+              stat: max_recovery
+            value_col: wse_level
+            note: WSE preset mapping required for max_recovery; wse_level contributes +1% per level.
+    max_recovery_wse_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: 1 + (0.01 * max_recovery_wse_level)
+          inputs:
+          - helper: max_recovery_wse_level
+    max_recovery_vault_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 1.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/vault_stats_v1.csv
+            key:
+              stat: max_recovery
+            value_col: vault_pct
+            note: vault_pct from vault_stats_v1.csv; fail-closed until max_recovery entry is provided.
