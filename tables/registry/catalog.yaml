@@ -77,12 +77,12 @@ categories:
     - canonical_id: CARD_ENERGY_NET
       primary_name: "Energy Net"
       aliases: ["EN", "Energy Net"]
+    - canonical_id: CARD_EXTRA_ORBS
+      primary_name: "Extra Orbs"
+      aliases: ["EO", "Extra Orbs"]
     - canonical_id: CARD_EXTRA_DEFENSE
       primary_name: "Extra Defense"
       aliases: ["Extra Defense"]
-    - canonical_id: CARD_EXTRA_ORB
-      primary_name: "Extra Orb"
-      aliases: ["EO", "Extra Orb", "Extra Orbs"]
     - canonical_id: CARD_RECOVERY_PACKAGE_CHANCE
       primary_name: "Recovery Package Chance"
       aliases: ["RPC", "Recovery Package Chance", "Package Chance"]

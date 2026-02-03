@@ -31,6 +31,8 @@ tables have not yet been added.
 - `perk_pool_weights_v1.csv`: User-provided wiki excerpt in prompt (perk pool weighting).
 - `assist_stone_levels_v1.csv`: User-provided wiki excerpt in prompt (assist stone efficiency is linear: level 0 = 1% and +1% per level).
 - `module_substats_v1.csv`: User-provided wiki excerpt in prompt (full sub-module caps by slot/rarity).
+- `module_main_effect_bases_v1.csv`: Module Base Stat sheet (user-provided in prompt).
+- `module_main_effect_bands_v1.csv`: Module Base Stat sheet (user-provided in prompt).
 - `vault_stats_v1.csv`: Table shell for vault stat multipliers (Max Recovery entry still missing from prompt; fail-closed until populated).
 - `wse_presets_v1.csv`: Table shell for WSE preset mappings (Max Recovery preset values still missing from prompt; fail-closed until populated).
 - `card_masteries_v1.csv`: Card mastery table pasted from the Tower wiki by the user

@@ -312,6 +312,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Add perk effect and pool-weight tables from wiki excerpt (perks_v1.csv, perk_pool_weights_v1.csv).
 - [x] Add assist stone efficiency table from wiki excerpt (assist_stone_levels_v1.csv).
 - [x] Add recovery package module substat caps table from wiki excerpt (module_substats_v1.csv).
+- [x] Add module main-effect base/step tables from Module Base Stat sheet (module_main_effect_bases_v1.csv, module_main_effect_bands_v1.csv).
+- [x] Implement module main-effect multiplier formula (MODSTAT_*).
 - [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
 - [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).
