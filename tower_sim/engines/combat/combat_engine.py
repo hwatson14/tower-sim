@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
+from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
+
 
 class CombatDataError(RuntimeError):
     pass
@@ -40,6 +42,32 @@ def percent_current_damage(enemy_hp: float, pc_frac: float, boss_mult: float) ->
     if pc_frac < 0:
         raise CombatDataError("PC fraction must be >= 0")
     return enemy_hp * pc_frac * boss_mult
+
+
+def resolve_wave_damage(tier: str, wave: int) -> float:
+    """Resolve enemy base attack damage from wave damage tables."""
+    lib = EnemyWaveDamageLib.from_repo_tables()
+    return lib.wave_damage_exact(tier, wave)
+
+
+def build_context_with_wave_damage(
+    *,
+    tier: str,
+    wave: int,
+    enemy_hp: float,
+    is_boss: bool,
+    stats: Dict[str, float],
+    params: Dict[str, Any],
+) -> CombatContext:
+    """Convenience helper that wires wave damage tables into combat context."""
+    return CombatContext(
+        wave=wave,
+        enemy_hp=enemy_hp,
+        enemy_attack=resolve_wave_damage(tier, wave),
+        is_boss=is_boss,
+        stats=stats,
+        params=params,
+    )
 
 
 def resolve_combat(ctx: CombatContext) -> Dict[str, float]:
