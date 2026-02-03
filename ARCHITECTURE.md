@@ -321,6 +321,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Wire Effective Paths eDamage LAMBDAs into derived stat pipeline (tower DPS/crit/ASPD).
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
+- [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Add reference completeness report and runtime table guardrail test.
