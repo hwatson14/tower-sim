@@ -26,7 +26,7 @@ def test_loads_yaml_spec() -> None:
     assert spec.scenario.mode == "farming"
     assert spec.scenario.tier == 14
     assert spec.scenario.wave == 100
-    assert len(spec.stat_inputs) == 10
+    assert len(spec.stat_inputs) == 12
 
 
 def test_loads_json_spec() -> None:
