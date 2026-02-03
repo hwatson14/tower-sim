@@ -1,5 +1,10 @@
 export default {
   async fetch(request, env) {
+    
+    console.log("host:", request.headers.get("host"));
+    console.log("has_x_api_key:", request.headers.has("x-api-key"));
+    console.log("x_api_key_prefix:", (request.headers.get("x-api-key") || "").slice(0, 8));
+
     // Simple API key auth (you set ACTIONS_API_KEY as a secret)
     const apiKey = request.headers.get("x-api-key");
     if (!apiKey || apiKey !== env.ACTIONS_API_KEY) {
