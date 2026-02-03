@@ -50,11 +50,19 @@ class MaxWaveEvaluator:
         if missing_stat_inputs:
             diagnostics["missing_stat_inputs"] = missing_stat_inputs
 
+        wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
+        if wave_state is not None:
+            diagnostics["wave_state"] = asdict(wave_state)
+        if wave_state_missing:
+            diagnostics["missing_wave_state"] = wave_state_missing
+            missing.extend(wave_state_missing)
+
         tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
         if tier_rule_missing:
             diagnostics["missing_tier_rules"] = tier_rule_missing
+            missing.extend(tier_rule_missing)
+
         registry = default_registry()
-        tier_rules = _load_tier_rules(problem_spec, run_context, missing)
         engine = StatEngine(registry=registry)
         try:
             if tier_rules is None:
@@ -67,13 +75,6 @@ class MaxWaveEvaluator:
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
             engine_result = None
-
-        wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
-        if wave_state is not None:
-            diagnostics["wave_state"] = asdict(wave_state)
-        if wave_state_missing:
-            diagnostics["missing_wave_state"] = wave_state_missing
-            missing.extend(wave_state_missing)
 
         wave_damage, wave_damage_missing = _resolve_wave_damage(
             problem_spec, wave_state, diagnostics
