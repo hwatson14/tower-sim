@@ -33,7 +33,10 @@ jobs:
 
       - name: Run MaxWaveEvaluator runner
         run: |
-          python -m tower_sim.run.runner > runner_output.json
+          python -m tower_sim.run.runner | tee runner_output.json
+
+      - name: Validate runner output schema
+        run: |
           python - <<'PY'
           import json
           from pathlib import Path
