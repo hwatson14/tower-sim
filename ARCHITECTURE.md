@@ -334,3 +334,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add identifier resolver with fail-closed eHP ledger closure guard.
 - [x] Add card mastery table + loader with tests for sim access.
 - [x] Sync Effective Paths eDamage mechanics to canonical extract (crit/ASPD/multishot/range/rapid fire/super tower).
+- [x] Implement Effective Paths econ_current formulas + tests (Harry reference sheet).
