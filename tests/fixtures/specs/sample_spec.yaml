@@ -22,7 +22,13 @@ scenario:
       regen_per_sec: 10
       shields: 500
     combat_params:
-      boss_dps: 50
+      hit_interval_id: default
+      defense_abs: 0.0
+      damage_reduction: 0.0
+      pc_frac: 0.0
+      pc_boss_mult: 1.0
+      orb_damage_frac: 0.0
+      electrons_damage_frac: 0.0
     bc_params:
       boss_hp_mult: 1.0
       boss_attack_mult: 1.0
@@ -34,6 +40,14 @@ stat_inputs:
   - stat_id: tower_regen
     phase: start_of_run
     base_value: 50
+    provenance: fixture
+  - stat_id: wall_hp
+    phase: start_of_run
+    base_value: 500
+    provenance: fixture
+  - stat_id: wall_regen
+    phase: start_of_run
+    base_value: 5
     provenance: fixture
   - stat_id: def_pct
     phase: start_of_run

@@ -8,10 +8,13 @@ Defines full boss combat resolution used for milestone/tournament:
 - Per-wave stat composition
 - Time-to-kill (TTK) vs time-to-death (TTD)
 
-No numeric values are hardcoded.
+v1 note: boss survival uses percent-based boss damage sources only and does not
+require boss HP values (TTK is derived from fractional damage per hit). Heat-up
+rate is specified by v1 requirements.
 """
 
 from dataclasses import dataclass
+import math
 from typing import Any, Dict
 
 
@@ -21,7 +24,7 @@ class BossDataError(RuntimeError):
 
 @dataclass(frozen=True)
 class BossStats:
-    hp: float
+    hp: float | None
     attack: float
     attack_interval: float
     enrage_mult: float
@@ -51,27 +54,85 @@ def require(d: Dict[str, Any], *keys: str) -> None:
             raise BossDataError(f"Missing boss parameter: {k}")
 
 
+HEAT_UP_PER_HIT = 0.04  # Provenance: v1 requirement (boss hit damage +4% each hit).
+
+
 def resolve_boss_fight(ctx: BossContext) -> Dict[str, float]:
-    require(ctx.bc_params, "boss_hp_mult", "boss_attack_mult")
-    require(ctx.combat_params, "boss_dps")
+    require(
+        ctx.combat_params,
+        "tower_hp",
+        "tower_regen",
+        "defense_pct",
+        "defense_abs",
+        "wall_hp",
+        "wall_regen",
+        "damage_reduction",
+        "thorns_frac",
+        "pc_frac",
+        "pc_boss_mult",
+        "orb_damage_frac",
+        "electrons_damage_frac",
+    )
 
-    boss_hp = ctx.boss.hp * ctx.bc_params["boss_hp_mult"]
-    boss_attack = ctx.boss.attack * ctx.bc_params["boss_attack_mult"]
+    boss_attack = ctx.boss.attack
+    if boss_attack < 0:
+        raise BossDataError(f"Boss attack must be >= 0, got {boss_attack}")
+    hit_interval = ctx.boss.attack_interval
+    if hit_interval <= 0:
+        raise BossDataError(f"Boss hit interval must be > 0, got {hit_interval}")
 
-    # Tower death time
-    incoming_dps = boss_attack / ctx.boss.attack_interval
-    eff_dps = incoming_dps * (1.0 - ctx.tower.dr_frac)
-    if eff_dps <= ctx.tower.regen_per_sec:
-        ttd = float("inf")
-    else:
-        ttd = ctx.tower.shields / (eff_dps - ctx.tower.regen_per_sec)
+    tower_hp = float(ctx.combat_params["tower_hp"])
+    tower_regen = float(ctx.combat_params["tower_regen"])
+    defense_pct = float(ctx.combat_params["defense_pct"])
+    defense_abs = float(ctx.combat_params["defense_abs"])
+    wall_hp = float(ctx.combat_params["wall_hp"])
+    wall_regen = float(ctx.combat_params["wall_regen"])
+    damage_reduction = float(ctx.combat_params["damage_reduction"])
 
-    # Boss death time
-    boss_dps_taken = ctx.combat_params["boss_dps"]
-    if boss_dps_taken <= 0:
+    thorns_frac = float(ctx.combat_params["thorns_frac"])
+    pc_frac = float(ctx.combat_params["pc_frac"])
+    pc_boss_mult = float(ctx.combat_params["pc_boss_mult"])
+    orb_damage_frac = float(ctx.combat_params["orb_damage_frac"])
+    electrons_damage_frac = float(ctx.combat_params["electrons_damage_frac"])
+
+    _validate_fraction("defense_pct", defense_pct)
+    _validate_fraction("damage_reduction", damage_reduction)
+    _validate_fraction("thorns_frac", thorns_frac)
+    _validate_fraction("pc_frac", pc_frac)
+    _validate_fraction("orb_damage_frac", orb_damage_frac)
+    _validate_fraction("electrons_damage_frac", electrons_damage_frac)
+    _validate_non_negative("pc_boss_mult", pc_boss_mult)
+    if defense_abs < 0:
+        raise BossDataError(f"defense_abs must be >= 0, got {defense_abs}")
+    if tower_hp < 0 or wall_hp < 0:
+        raise BossDataError("tower_hp and wall_hp must be >= 0")
+    if tower_regen < 0 or wall_regen < 0:
+        raise BossDataError("tower_regen and wall_regen must be >= 0")
+
+    # Boss death time (fractional damage applied immediately post-hit).
+    # Percent-based boss damage is applied immediately after each boss hit.
+    per_hit_boss_frac = (
+        thorns_frac + (pc_frac * pc_boss_mult) + orb_damage_frac + electrons_damage_frac
+    )
+    if per_hit_boss_frac <= 0:
         ttk = float("inf")
+        hits_to_kill = math.inf
     else:
-        ttk = boss_hp / boss_dps_taken
+        hits_to_kill = math.ceil(1.0 / per_hit_boss_frac)
+        ttk = hits_to_kill * hit_interval
+
+    # Tower death time with heat-up (+4% per hit).
+    ttd, hits_to_death = _time_to_death(
+        boss_attack=boss_attack,
+        hit_interval=hit_interval,
+        tower_hp=tower_hp,
+        tower_regen=tower_regen,
+        defense_pct=defense_pct,
+        defense_abs=defense_abs,
+        wall_hp=wall_hp,
+        wall_regen=wall_regen,
+        damage_reduction=damage_reduction,
+    )
 
     outcome = "tower_kills_boss" if ttk < ttd else "boss_kills_tower"
 
@@ -79,4 +140,68 @@ def resolve_boss_fight(ctx: BossContext) -> Dict[str, float]:
         "ttk_seconds": ttk,
         "ttd_seconds": ttd,
         "outcome": outcome,
+        "hits_to_kill": hits_to_kill,
+        "hits_to_death": hits_to_death,
     }
+
+
+def _validate_fraction(name: str, value: float) -> None:
+    if not 0.0 <= value <= 1.0:
+        raise BossDataError(f"{name} must be in [0,1], got {value}")
+
+
+def _validate_non_negative(name: str, value: float) -> None:
+    if value < 0:
+        raise BossDataError(f"{name} must be >= 0, got {value}")
+
+
+def _time_to_death(
+    *,
+    boss_attack: float,
+    hit_interval: float,
+    tower_hp: float,
+    tower_regen: float,
+    defense_pct: float,
+    defense_abs: float,
+    wall_hp: float,
+    wall_regen: float,
+    damage_reduction: float,
+) -> tuple[float, float]:
+    if boss_attack <= 0:
+        return float("inf"), math.inf
+
+    tower_max = tower_hp
+    wall_max = wall_hp
+    tower_current = tower_hp
+    wall_current = wall_hp
+
+    regen_per_hit = tower_regen * hit_interval
+    wall_regen_per_hit = wall_regen * hit_interval
+
+    max_hits = 1_000_000
+    for hit in range(1, max_hits + 1):
+        heat_mult = 1.0 + (HEAT_UP_PER_HIT * (hit - 1))
+        raw_damage = boss_attack * heat_mult
+        reduced = raw_damage * (1.0 - defense_pct)
+        reduced = max(0.0, reduced - defense_abs)
+        reduced *= (1.0 - damage_reduction)
+
+        damage_remaining = reduced
+        if wall_current > 0:
+            if damage_remaining >= wall_current:
+                damage_remaining -= wall_current
+                wall_current = 0.0
+            else:
+                wall_current -= damage_remaining
+                damage_remaining = 0.0
+
+        if damage_remaining > 0:
+            tower_current -= damage_remaining
+
+        if tower_current <= 0:
+            return hit * hit_interval, float(hit)
+
+        wall_current = min(wall_max, wall_current + wall_regen_per_hit)
+        tower_current = min(tower_max, tower_current + regen_per_hit)
+
+    return float("inf"), math.inf
