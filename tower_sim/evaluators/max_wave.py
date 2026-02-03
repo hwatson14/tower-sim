@@ -49,24 +49,7 @@ class MaxWaveEvaluator:
         missing_stat_inputs = _missing_required_stat_inputs(stat_inputs)
         if missing_stat_inputs:
             diagnostics["missing_stat_inputs"] = missing_stat_inputs
-
-        tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
-        if tier_rule_missing:
-            diagnostics["missing_tier_rules"] = tier_rule_missing
-        registry = default_registry()
-        tier_rules = _load_tier_rules(problem_spec, run_context, missing)
-        engine = StatEngine(registry=registry)
-        try:
-            if tier_rules is None:
-                engine_result = engine.build(stat_inputs, wave_state=wave_state)
-            else:
-                engine_result = engine.build_with_tier_rules(
-                    stat_inputs, tier_rules, wave_state=wave_state
-                )
-            diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
-        except Exception as exc:  # noqa: BLE001
-            diagnostics["stat_engine_error"] = str(exc)
-            engine_result = None
+            missing.extend(missing_stat_inputs)
 
         wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
         if wave_state is not None:
@@ -75,16 +58,62 @@ class MaxWaveEvaluator:
             diagnostics["missing_wave_state"] = wave_state_missing
             missing.extend(wave_state_missing)
 
+        tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+        if tier_rule_missing:
+            diagnostics["missing_tier_rules"] = tier_rule_missing
+            missing.extend(tier_rule_missing)
+        registry = default_registry()
+
         wave_damage, wave_damage_missing = _resolve_wave_damage(
             problem_spec, wave_state, diagnostics
         )
         if wave_damage_missing:
             diagnostics["missing_wave_damage"] = wave_damage_missing
             missing.extend(wave_damage_missing)
+        boss_missing, boss_diagnostics = _validate_boss_survivability_inputs(problem_spec)
+        if boss_missing:
+            diagnostics["missing_boss_survivability"] = boss_missing
+            missing.extend(boss_missing)
+        if boss_diagnostics:
+            diagnostics["boss_survivability_validation"] = boss_diagnostics
+        _resolve_heat_magnitudes(
+            problem_spec,
+            registry,
+            wave=problem_spec.scenario.wave,
+            missing=missing,
+            diagnostics=diagnostics,
+        )
+
+        missing = sorted(set(missing))
+        if missing:
+            return {
+                "evaluator": problem_spec.evaluator,
+                "fail_closed": True,
+                "missing": missing,
+                "w_max": None,
+                "diagnostics": diagnostics,
+            }
+
+        engine = StatEngine(registry=registry)
+        engine_result = None
+        engine_result_base = None
+        try:
+            if tier_rules is None:
+                engine_result = engine.build(stat_inputs, wave_state=wave_state)
+                engine_result_base = engine.build(stat_inputs)
+            else:
+                engine_result = engine.build_with_tier_rules(
+                    stat_inputs, tier_rules, wave_state=wave_state
+                )
+                engine_result_base = engine.build_with_tier_rules(stat_inputs, tier_rules)
+            diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
+        except Exception as exc:  # noqa: BLE001
+            diagnostics["stat_engine_error"] = str(exc)
+            missing.append("stat_engine")
         wave_snapshot = _resolve_wave_snapshot(
             problem_spec,
             stat_inputs,
-            engine_result,
+            engine_result_base,
             registry,
             tier_rules,
             run_context,
@@ -100,14 +129,29 @@ class MaxWaveEvaluator:
             }
 
         survivability_stats, survivability_missing = _resolve_survivability_stats(
-            engine_result, wave_snapshot
+            engine_result_base, wave_snapshot
         )
         if survivability_missing:
             diagnostics["missing_survivability_stats"] = survivability_missing
             missing.extend(survivability_missing)
 
+        missing = sorted(set(missing))
+        if missing:
+            return {
+                "evaluator": problem_spec.evaluator,
+                "fail_closed": True,
+                "missing": missing,
+                "w_max": None,
+                "diagnostics": diagnostics,
+            }
+
         w_max, trace, search_diagnostics, search_missing = _search_wmax(
-            problem_spec, survivability_stats
+            problem_spec=problem_spec,
+            stat_inputs=stat_inputs,
+            engine_result=engine_result_base,
+            registry=registry,
+            tier_rules=tier_rules,
+            run_context=run_context,
         )
         if search_missing:
             missing.extend(search_missing)
@@ -120,7 +164,7 @@ class MaxWaveEvaluator:
 
         boss_combat_error = _probe_boss_combat(
             problem_spec,
-            engine_result,
+            engine_result_base,
             wave_snapshot,
             wave_damage,
         )
@@ -307,8 +351,9 @@ def _resolve_wave_snapshot(
     heat_magnitudes = _resolve_heat_magnitudes(
         problem_spec,
         registry,
-        missing,
-        diagnostics,
+        wave=problem_spec.scenario.wave,
+        missing=missing,
+        diagnostics=diagnostics,
     )
     try:
         return build_at_wave_snapshot(
@@ -331,6 +376,8 @@ def _resolve_wave_snapshot(
 def _resolve_heat_magnitudes(
     problem_spec: ProblemSpec,
     registry,
+    *,
+    wave: int,
     missing: List[str],
     diagnostics: Dict[str, Any],
 ) -> Optional[Dict[str, float]]:
@@ -354,7 +401,6 @@ def _resolve_heat_magnitudes(
         return None
 
     league = scenario.league.lower()
-    wave = scenario.wave
     scalars = [row for row in bundle.heat_scalars if row.league == league and row.wave == wave]
     if not scalars:
         missing.append("heat_scalar")
@@ -394,47 +440,144 @@ def _resolve_heat_magnitudes(
         diagnostics["bc_magnitudes_unmapped"] = sorted(unmapped)
         return None
     return mapped
-        return str(exc)
-    return None
+
+
+def _validate_boss_survivability_inputs(
+    problem_spec: ProblemSpec,
+) -> Tuple[List[str], Dict[str, Any]]:
+    missing: List[str] = []
+    diagnostics: Dict[str, Any] = {}
+    spec = problem_spec.scenario.boss_survivability
+    if spec is None:
+        missing.append("boss_survivability_inputs")
+        return missing, diagnostics
+    hit_interval_id = spec.combat_params.get("hit_interval_id", "default")
+    try:
+        boss_hit_interval_seconds(str(hit_interval_id))
+    except BossHitIntervalError as exc:
+        missing.append("boss_hit_interval")
+        diagnostics["boss_hit_interval_error"] = str(exc)
+    return missing, diagnostics
+
+
+def snapshot_at_wave(
+    wave: int,
+    *,
+    base_engine_result,
+    registry,
+    stat_inputs: List,
+    scenario,
+    tier_rules,
+    run_context: RunContext,
+    tables: Dict[str, Any],
+) -> AtWaveSnapshot:
+    if scenario.eals_ramp is None or scenario.ehls_ramp is None:
+        raise StatSnapshotError("Wave ramps are required for random-access snapshots.")
+    wave_state = make_wave_state(
+        wave,
+        SkipRamp(
+            start=scenario.eals_ramp.start,
+            end=scenario.eals_ramp.end,
+            ramp_waves=scenario.eals_ramp.ramp_waves,
+        ),
+        SkipRamp(
+            start=scenario.ehls_ramp.start,
+            end=scenario.ehls_ramp.end,
+            ramp_waves=scenario.ehls_ramp.ramp_waves,
+        ),
+    )
+    return build_at_wave_snapshot(
+        stat_inputs=stat_inputs,
+        engine_result=base_engine_result,
+        registry=registry,
+        tier_rules=tier_rules,
+        battle_conditions=None,
+        wave_state=wave_state,
+        wave=wave,
+        run_context=run_context,
+        heat_magnitudes=tables.get("heat_magnitudes"),
+    )
 
 
 def _search_wmax(
+    *,
     problem_spec: ProblemSpec,
-    survivability_stats: Optional[Dict[str, float]],
+    stat_inputs: List,
+    engine_result,
+    registry,
+    tier_rules,
+    run_context: RunContext,
     trace_depth: int = 5,
 ) -> Tuple[Optional[int], List[Dict[str, Any]], Dict[str, Any], List[str]]:
-    missing: List[str] = []
     scenario = problem_spec.scenario
+    missing: List[str] = []
+    diagnostics: Dict[str, Any] = {}
+
     if scenario.boss_survivability is None:
         return None, [], {}, ["boss_survivability_inputs"]
-    if survivability_stats is None:
-        return None, [], {}, ["boss_survivability_stats"]
+    if engine_result is None:
+        return None, [], {}, ["stat_engine"]
     max_wave = int(scenario.wave)
     if max_wave <= 0:
         return None, [], {}, ["wave_limit"]
 
-    results: List[Dict[str, Any]] = []
-    w_max = 0
-    last_result: Dict[str, Any] = {}
-    for wave in range(1, max_wave + 1):
+    cache: Dict[int, Tuple[Dict[str, Any], bool, Dict[str, Any]]] = {}
+    history: List[Dict[str, Any]] = []
+
+    def evaluate_wave(wave: int) -> Tuple[Optional[Dict[str, Any]], Optional[bool], List[str]]:
+        if wave in cache:
+            entry, success, _result = cache[wave]
+            return entry, success, []
+
         wave_state, wave_state_missing = _resolve_wave_state_for_wave(scenario, wave)
         if wave_state_missing:
-            missing.extend(wave_state_missing)
-            return None, [], {"error": "missing_wave_state"}, missing
+            return None, None, wave_state_missing
+
+        heat_missing: List[str] = []
+        heat_magnitudes = _resolve_heat_magnitudes(
+            problem_spec,
+            registry,
+            wave=wave,
+            missing=heat_missing,
+            diagnostics=diagnostics,
+        )
+        if heat_missing:
+            return None, None, heat_missing
+
+        try:
+            wave_snapshot = snapshot_at_wave(
+                wave,
+                base_engine_result=engine_result,
+                registry=registry,
+                stat_inputs=stat_inputs,
+                scenario=scenario,
+                tier_rules=tier_rules,
+                run_context=run_context,
+                tables={"heat_magnitudes": heat_magnitudes},
+            )
+        except StatSnapshotError as exc:
+            diagnostics["wave_snapshot_error"] = str(exc)
+            return None, None, ["wave_snapshot"]
+
+        survivability_stats, survivability_missing = _resolve_survivability_stats(
+            engine_result, wave_snapshot
+        )
+        if survivability_missing:
+            return None, None, survivability_missing
+
         wave_damage, wave_damage_missing = _resolve_wave_damage_for_wave(
             problem_spec, wave_state
         )
         if wave_damage_missing:
-            missing.extend(wave_damage_missing)
-            diagnostics = {"error": "missing_wave_damage", "details": wave_damage_missing}
-            return None, [], diagnostics, missing
+            return None, None, wave_damage_missing
+
         result = _resolve_boss_survivability(
             problem_spec, wave, wave_damage, survivability_stats
         )
         if "error" in result:
-            missing.append("boss_survivability_params")
-            diagnostics = {"error": result["error"]}
-            return None, [], diagnostics, missing
+            diagnostics["boss_survivability_error"] = result["error"]
+            return None, None, ["boss_survivability_params"]
+
         margin = _margin_from_outcome(result)
         outcome = result.get("outcome", "unknown")
         entry = {
@@ -444,18 +587,118 @@ def _search_wmax(
             "ttd_seconds": result.get("ttd_seconds"),
             "margin_seconds": margin,
         }
-        results.append(entry)
-        last_result = result
-        if outcome == "tower_kills_boss":
-            w_max = wave
+        success = outcome == "tower_kills_boss"
+        cache[wave] = (entry, success, result)
+        history.append(entry)
+        return entry, success, []
 
-    trace = results[-trace_depth:] if results else []
-    diagnostics = {
-        "max_wave": max_wave,
-        "evaluated_waves": max_wave,
-        "trace_depth": trace_depth,
-        "last_wave_result": last_result,
-    }
+    def check_monotonicity() -> Tuple[Optional[bool], List[str]]:
+        samples = max(3, min(7, max_wave))
+        step = max(1, (max_wave - 1) // (samples - 1)) if max_wave > 1 else 1
+        sample_waves = sorted(
+            {
+                wave
+                for wave in ({1, max_wave} | {1 + step * i for i in range(samples)})
+                if 1 <= wave <= max_wave
+            }
+        )
+        seen_fail = False
+        for wave in sample_waves:
+            _, success, sample_missing = evaluate_wave(wave)
+            if sample_missing:
+                return None, sample_missing
+            if success is False:
+                seen_fail = True
+            if success is True and seen_fail:
+                diagnostics["monotonicity_inversion"] = {"at_wave": wave}
+                return False, []
+        return True, []
+
+    monotonic, mono_missing = check_monotonicity()
+    if mono_missing:
+        return None, [], diagnostics, mono_missing
+    diagnostics["monotonic"] = monotonic
+
+    last_result: Dict[str, Any] = {}
+    evaluated: set[int] = set(cache.keys())
+    w_max = 0
+
+    if monotonic:
+        diagnostics["search_strategy"] = "exponential_binary"
+        low = 0
+        high = 1
+        while high <= max_wave:
+            entry, success, eval_missing = evaluate_wave(high)
+            if eval_missing:
+                return None, [], diagnostics, eval_missing
+            evaluated.add(high)
+            if entry is not None:
+                last_result = cache[high][2]
+            if success:
+                low = high
+                high *= 2
+            else:
+                break
+        if high > max_wave:
+            w_max = max_wave if low <= max_wave else 0
+        else:
+            left = low + 1
+            right = min(high - 1, max_wave)
+            w_max = low
+            while left <= right:
+                mid = (left + right) // 2
+                entry, success, eval_missing = evaluate_wave(mid)
+                if eval_missing:
+                    return None, [], diagnostics, eval_missing
+                evaluated.add(mid)
+                if entry is not None:
+                    last_result = cache[mid][2]
+                if success:
+                    w_max = mid
+                    left = mid + 1
+                else:
+                    right = mid - 1
+    else:
+        diagnostics["search_strategy"] = "grid_refine"
+        step = max(50, max_wave // 20) if max_wave > 0 else 1
+        sampled = list(range(1, max_wave + 1, step))
+        if sampled[-1] != max_wave:
+            sampled.append(max_wave)
+        last_success = 0
+        for idx, wave in enumerate(sampled):
+            entry, success, eval_missing = evaluate_wave(wave)
+            if eval_missing:
+                return None, [], diagnostics, eval_missing
+            evaluated.add(wave)
+            if entry is not None:
+                last_result = cache[wave][2]
+            if success:
+                last_success = max(last_success, wave)
+            if idx == 0:
+                continue
+            prev_wave = sampled[idx - 1]
+            if prev_wave + 1 > wave:
+                continue
+            for inner_wave in range(prev_wave + 1, wave):
+                inner_entry, inner_success, inner_missing = evaluate_wave(inner_wave)
+                if inner_missing:
+                    return None, [], diagnostics, inner_missing
+                evaluated.add(inner_wave)
+                if inner_entry is not None:
+                    last_result = cache[inner_wave][2]
+                if inner_success:
+                    last_success = max(last_success, inner_wave)
+        w_max = last_success
+
+    trace = history[-trace_depth:] if history else []
+    diagnostics.update(
+        {
+            "max_wave": max_wave,
+            "evaluated_waves": len(evaluated),
+            "trace_depth": trace_depth,
+            "last_wave_result": last_result,
+        }
+    )
     return w_max, trace, diagnostics, missing
 
 
