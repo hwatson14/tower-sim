@@ -20,19 +20,25 @@ def epd_aspd(
     has_mastery: bool,
     mastery_level: float,
 ) -> float:
-    """EPD_ASPD from Effective Paths mechanics registry."""
-    ws = 1 + 0.05 * ws_level
-    ws_plus = 1 + 0.01 * wsp_level
-    lab = 1 + 0.02 * lab_level
-    card_aspd = (
-        (1.1 + card_level * 0.15)
-        * (1 + 0.03 * (1 + mastery_level) if has_mastery else 1)
-        if has_card
-        else 1
+    """EPD_ASPD from Effective Paths eDamage extract (DJ5 -> EPD_ASPD)."""
+    ws = 1 / (1 + ws_level * 0.02)
+    ws_plus = 1 / (1 + wsp_level * 0.01)
+    lab = 1 / (1 + lab_level * 0.02)
+    card_aspd = 1 / (1 + card_level * 0.02) if has_card else 1
+    substat_value = 1 / (1 + substat)
+    mastery = 1 / (1 + (0.005 * (1 + mastery_level))) if has_mastery else 1
+    relic_bonus = 1 / (1 + relic)
+    vault_bonus = 1 / (1 + vault)
+    return (
+        ws
+        * ws_plus
+        * lab
+        * card_aspd
+        * substat_value
+        * mastery
+        * relic_bonus
+        * vault_bonus
     )
-    relic_bonus = 1 + relic
-    vault_bonus = 1 + vault
-    return (ws * lab * card_aspd + substat) * ws_plus * relic_bonus * vault_bonus
 
 
 def epd_crit_chance(
@@ -45,16 +51,11 @@ def epd_crit_chance(
     has_mastery: bool,
     mastery_level: float,
 ) -> float:
-    """EPD_CRIT_CHANCE from Effective Paths mechanics registry."""
-    ws = 0.01 + (0.01 * ws_level)
-    card_cc = (
-        0.04
-        + 0.01 * card_level
-        + (0.01 * (1 + mastery_level) if has_mastery else 0)
-        if has_card
-        else 0
-    )
-    return ws + relic + vault + substat + card_cc
+    """EPD_CRIT_CHANCE from Effective Paths eDamage extract (CZ5 -> EPD_CRIT_CHANCE)."""
+    ws = ws_level * 0.003
+    card_cc = card_level * 0.0015 if has_card else 0.0
+    mastery = 0.001 * (1 + mastery_level) if has_mastery else 0.0
+    return ws + card_cc + substat + relic + vault + mastery
 
 
 def epd_critical(
@@ -64,18 +65,12 @@ def epd_critical(
     super_crit_mult: float,
     being_annihilator: float,
 ) -> float:
-    """EPD_CRITICAL from Effective Paths mechanics registry."""
+    """EPD_CRITICAL from Effective Paths eDamage extract (DD5 -> EPD_CRITICAL)."""
     cc = min(1.0, crit_chance)
-    normal_crit = (1 - cc) + (cc * crit_factor * (1 - super_crit_chance)) + (
-        cc * crit_factor * super_crit_chance * super_crit_mult
-    )
-    streak = being_annihilator
-    streak_chance = cc * super_crit_chance
-    denom = 1 + (streak * streak_chance)
-    pi_zero = 1 / denom
-    pi_streak = (streak * streak_chance) / denom
-    ba_crit_factor = crit_factor * super_crit_mult
-    return (pi_zero * normal_crit) + (pi_streak * ba_crit_factor)
+    normal_crit = 1 + cc * (crit_factor - 1)
+    super_crit_chance = min(cc, super_crit_chance)
+    super_crit = 1 + super_crit_chance * (super_crit_mult - crit_factor)
+    return normal_crit * super_crit + being_annihilator
 
 
 __all__ = [
