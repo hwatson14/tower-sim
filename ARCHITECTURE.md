@@ -313,6 +313,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add assist stone efficiency table from wiki excerpt (assist_stone_levels_v1.csv).
 - [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
 - [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
+- [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
