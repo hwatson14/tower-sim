@@ -29,6 +29,27 @@ categories:
       aliases: ["SM", "Smart Missiles"]
 
   cards:
+    - canonical_id: CARD_DAMAGE
+      primary_name: "Damage"
+      aliases: ["Damage"]
+    - canonical_id: CARD_ATTACK_SPEED
+      primary_name: "Attack Speed"
+      aliases: ["Attack Speed"]
+    - canonical_id: CARD_HEALTH
+      primary_name: "Health"
+      aliases: ["Health"]
+    - canonical_id: CARD_HEALTH_REGEN
+      primary_name: "Health Regen"
+      aliases: ["Health Regen"]
+    - canonical_id: CARD_RANGE
+      primary_name: "Range"
+      aliases: ["Range"]
+    - canonical_id: CARD_CASH
+      primary_name: "Cash"
+      aliases: ["Cash"]
+    - canonical_id: CARD_COINS
+      primary_name: "Coins"
+      aliases: ["Coins"]
     - canonical_id: CARD_CRITICAL_CHANCE
       primary_name: "Critical Chance"
       aliases: ["CC", "Critical Chance"]
@@ -47,21 +68,33 @@ categories:
     - canonical_id: CARD_INTRO_SPRINT
       primary_name: "Intro Sprint"
       aliases: ["IS", "Intro Sprint"]
+    - canonical_id: CARD_LAND_MINE_STUN
+      primary_name: "Land Mine Stun"
+      aliases: ["Land Mine Stun"]
     - canonical_id: CARD_DEATH_RAY
       primary_name: "Death Ray"
       aliases: ["DR", "Death Ray"]
     - canonical_id: CARD_ENERGY_NET
       primary_name: "Energy Net"
       aliases: ["EN", "Energy Net"]
-    - canonical_id: CARD_EXTRA_ORBS
-      primary_name: "Extra Orbs"
-      aliases: ["EO", "Extra Orbs"]
+    - canonical_id: CARD_EXTRA_ORB
+      primary_name: "Extra Orb"
+      aliases: ["EO", "Extra Orb", "Extra Orbs"]
     - canonical_id: CARD_RECOVERY_PACKAGE_CHANCE
       primary_name: "Recovery Package Chance"
-      aliases: ["RPC", "Recovery Package Chance"]
+      aliases: ["RPC", "Recovery Package Chance", "Package Chance"]
     - canonical_id: CARD_SLOW_AURA
       primary_name: "Slow Aura"
       aliases: ["SA", "Slow Aura"]
+    - canonical_id: CARD_EXTRA_DEFENSE
+      primary_name: "Extra Defense"
+      aliases: ["Extra Defense"]
+    - canonical_id: CARD_FORTRESS
+      primary_name: "Fortress"
+      aliases: ["Fortress"]
+    - canonical_id: CARD_FREE_UPGRADES
+      primary_name: "Free Upgrades"
+      aliases: ["Free Upgrades"]
     - canonical_id: CARD_SUPER_TOWER
       primary_name: "Super Tower"
       aliases: ["ST", "Super tower"]
@@ -77,12 +110,18 @@ categories:
     - canonical_id: CARD_ULTIMATE_CRIT
       primary_name: "Ultimate Crit"
       aliases: ["UW Crit", "Ultimate Crit"]
+    - canonical_id: CARD_NUKE
+      primary_name: "Nuke"
+      aliases: ["Nuke"]
     - canonical_id: CARD_WAVE_ACCELERATOR
       primary_name: "Wave Accelerator"
       aliases: ["WA", "Wave Accelerator"]
     - canonical_id: CARD_BERSERKER
       primary_name: "Berserker"
       aliases: ["Zerk", "Berserker"]
+    - canonical_id: CARD_AREA_OF_EFFECT
+      primary_name: "Area of Effect"
+      aliases: ["Area of Effect"]
       
   labs:
     # Main Research
