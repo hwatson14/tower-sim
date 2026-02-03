@@ -508,11 +508,13 @@ stat_definitions:
         - op: ADD
           term:
             type: TABLE_LOOKUP
-            table: tables/data_val_tables_v1.csv
+            table: tables/assist_stone_levels_v1.csv
             key:
-              key: assist_stone_scalar
-            value_col: value
-            note: stone_sac from Data_Val_Tables (missing in repo); fail-closed until table is provided.
+              stone_level:
+                type: MISSING_IDS_PATH
+                expected: ids.stones.assist_level
+            value_col: assist_efficiency_frac
+            note: stone_sac from assist_stone_levels_v1.csv (linear +1% per level); fail-closed until IDS path is provided.
     max_recovery_lab_sac:
       unit: scalar
       definition:
@@ -584,20 +586,31 @@ stat_definitions:
           - helper: max_recovery_ws
           - helper: max_recovery_lab
           - helper: max_recovery_substat
+    max_recovery_wse_level:
+      unit: level
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/wse_presets_v1.csv
+            key:
+              preset_id:
+                type: MISSING_IDS_PATH
+                expected: ids.wse.preset_id
+              stat: max_recovery
+            value_col: wse_level
+            note: WSE preset mapping required for max_recovery; wse_level contributes +1% per level.
     max_recovery_wse_mult:
       unit: multiplier
       definition:
         op_chain:
-        - op: BASE
-          value: 1.0
-        - op: ADD
-          term:
-            type: WORKSHOP_RULE
-            level:
-              type: MISSING_IDS_PATH
-              expected: ids.workshop.entries['Max Recovery +'].coin_level
-            add_per_level: 0.01
-            note: WSE = 1 + 0.01 * wse_lvl; WSE preset mapping missing in IDS schema.
+        - op: DERIVE
+          expr: 1 + (0.01 * max_recovery_wse_level)
+          inputs:
+          - helper: max_recovery_wse_level
     max_recovery_vault_mult:
       unit: multiplier
       definition:
@@ -609,6 +622,6 @@ stat_definitions:
             type: TABLE_LOOKUP
             table: tables/vault_stats_v1.csv
             key:
-              key: max_recovery
-            value_col: value
-            note: vault_pct from vault stats table (missing in repo); fail-closed until table is provided.
+              stat: max_recovery
+            value_col: vault_pct
+            note: vault_pct from vault_stats_v1.csv; fail-closed until max_recovery entry is provided.
