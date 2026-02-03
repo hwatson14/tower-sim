@@ -11,50 +11,49 @@ eDamage_mechanics:
     name: EPD_ASPD
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_level, wsp_level, lab_level, has_card, card_level, substat, relic, vault, has_mastery, mastery_level,\
-      \ LET(\n  WS, 1 + 0.05 * ws_level,\n  WSPlus, 1 + 0.01 * wsp_level,\n  Lab, 1 + 0.02 * lab_level,\n  CardASPD, IF(has_card,\
-      \ (1.1 + card_level * 0.15) * IF(has_mastery, 1+0.03*(1+mastery_level), 1), 1),\n  RelicBonus, 1 + relic,\n  VaultBonus,\
-      \ 1 + vault,\n\n(WS * Lab * CardASPD + Substat) * WSPlus * RelicBonus * VaultBonus))"
-    notes: From workbook defined name.
+      \ LET(\n  WS, 1 / (1 + ws_level * 0.02),\n  WSP, 1 / (1 + wsp_level * 0.01),\n  Lab, 1 / (1 + lab_level * 0.02),\n  Card,\
+      \ IF(has_card, 1 / (1 + card_level * 0.02), 1),\n  Substat, 1 / (1 + substat),\n  Mastery, IF(has_mastery, 1 / (1 + (0.5%\
+      \ * (1+mastery_level))), 1),\n  Relics, 1 / (1 + relic),\n  Vault, 1 / (1 + vault),\n\nWS * WSP * Lab * Card * Substat *\
+      \ Mastery * Relics * Vault))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DJ5 -> EPD_ASPD).
   - id: ep_lambda_epd_bounceshot
     name: EPD_BOUNCESHOT
     type: excel_named_formula
-    excel_definition: LAMBDA(bsc, bst, astral_delivrance, (1 + SUM(ARRAYFORMULA(BSC^(SEQUENCE(BST)) * (1+Astral_Delivrance)^SEQUENCE(BST)))))
-    notes: From workbook defined name.
+    excel_definition: LAMBDA(bsc, bst, being_annihilator, bsc * bst + being_annihilator)
+    notes: Updated per user-provided Effective Paths eDamage extract (DG5/DH5 -> EPD_BOUNCESHOT).
   - id: ep_lambda_epd_bsc
     name: EPD_BSC
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.8%,\n  VaultBonus, 1 + vault,\n\n(WS + Substat)\
-      \ * VaultBonus))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.8%,\n  VaultBonus, 1 + vault,\n\n(1 + WS +\
+      \ substat) * VaultBonus))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DG5/DH5 -> EPD_BSC).
   - id: ep_lambda_epd_bst
     name: EPD_BST
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, perk, substat, LET(\n  WS, 1 + ws_level,\n  VaultBonus, 1 + vault,\n\nWS + Perk +\
-      \ FLOOR(Substat)))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, lab_level, substat, LET(\n  WS, ws_level * 1%,\n  Lab, lab_level * 1%,\n\n1 + WS +\
+      \ Lab + substat))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DG5/DH5 -> EPD_BST).
   - id: ep_lambda_epd_critical
     name: EPD_CRITICAL
     type: excel_named_formula
-    excel_definition: "LAMBDA(cc, cf, scc, scm, being_annihilator, LET(\n  CCm, MIN(1, CC),\n  normalCrit, (1-CCm) + (CCm*CF*(1-SCC)\
-      \ + CCm*CF*SCC*SCM),\n\n  Streak, being_annihilator,\n  StreakChance, CCm * SCC,\n  piZero, 1 / (1 + Streak * StreakChance),\n\
-      \  pistreak, (Streak * StreakChance) / (1 + Streak * StreakChance),\n  BACritF, CF * SCM,\n\npiZero * normalCrit + pistreak\
-      \ * BACritF))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(cc, cf, scc, scm, being_annihilator, LET(\n  CCm, MIN(1, CC),\n  normalCrit, 1 + CCm * (cf -\
+      \ 1),\n  superCritChance, MIN(CCm, scc),\n  superCrit, 1 + superCritChance * (scm - cf),\n\n  normalCrit * superCrit + being_annihilator\
+      \ ))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DD5 -> EPD_CRITICAL).
   - id: ep_lambda_epd_crit_chance
     name: EPD_CRIT_CHANCE
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_level, has_card, card_level, relic, vault, substat, has_mastery, mastery_level, LET(\n  WS,\
-      \ (1%+(1%*ws_level)),\n  CardCC, IF(has_card, 4%+ 1% * card_level+IF(has_mastery, 1% * (1+mastery_level), 0), 0),\n\n\
-      WS + relic + vault + Substat + CardCC))"
-    notes: From workbook defined name.
+      \ ws_level * 0.3%,\n  Card, IF(has_card, card_level * 0.15%, 0),\n  Relics, relic,\n  Vault, vault,\n  Mastery, IF(has_mastery,\
+      \ 0.1%*(1+mastery_level), 0),\n  WS + Card + substat + Relics + Vault + Mastery))"
+    notes: Updated per user-provided Effective Paths eDamage extract (CZ5 -> EPD_CRIT_CHANCE).
   - id: ep_lambda_epd_dpm
     name: EPD_DPM
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, wsp_level, lab_level, substat, relic, vault, has_mastery, mastery_level, LET(\n  WS,\
-      \ VLOOKUP(ws_level, WSValues!$I:$J, 2, FALSE)/1000,\n  Lab, 1 + 2% * lab_level,\n  WSPlus, 1 + 0.01 * wsp_level,\n \
-      \ RelicBonus, 1 + relic,\n  VaultBonus, 1 + vault,\n  CardRNGMastery, IF(has_mastery, 1 + 0.2 * (1+mastery_level), 1),\n\
-      \n(WS * Lab + Substat) * WSPlus * RelicBonus * VaultBonus * CardRNGMastery))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, wsp_level, range_dpm, substat, relic, vault, has_rend, rend_mult, LET(\n  WS, 1 +\
+      \ (0.03 * ws_level),\n  WSP, 1 + (0.01 * wsp_level),\n  Relics, 1 + relic,\n  Vault, 1 + vault,\n  Rend, IF(has_rend,\
+      \ rend_mult, 1),\n  range_dpm * WS * WSP * (1 + substat) * Relics * Vault * Rend))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DL5 -> EPD_DPM).
   - id: ep_lambda_epd_maxrend
     name: EPD_MAXREND
     type: excel_named_formula
@@ -64,51 +63,68 @@ eDamage_mechanics:
   - id: ep_lambda_epd_msc
     name: EPD_MSC
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.5%,\n  VaultBonus, 1 + vault,\n(WS + Substat)\
-      \ * VaultBonus))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.5%,\n  VaultBonus, 1 + vault,\n(1 + WS +\
+      \ substat) * VaultBonus))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DF5 -> EPD_MSC).
   - id: ep_lambda_epd_mst
     name: EPD_MST
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, substat, LET(\n  WS, 2 + ws_level,\nWS + FLOOR(Substat)))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 1%,\n  VaultBonus, 1 + vault,\n(1 + WS + substat)\
+      \ * VaultBonus))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DF5 -> EPD_MST).
   - id: ep_lambda_epd_multishot
     name: EPD_MULTISHOT
     type: excel_named_formula
-    excel_definition: LAMBDA(msc, mst, 1 + MSC * (MST-1))
-    notes: From workbook defined name.
+    excel_definition: LAMBDA(msc, mst, msc * mst)
+    notes: Updated per user-provided Effective Paths eDamage extract (DF5 -> EPD_MULTISHOT).
   - id: ep_lambda_epd_range
     name: EPD_RANGE
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, has_card, card_level, lab_level, substat, LET(\n  WS, 30 + 0.5 * ws_level,\n  CardRNG,\
-      \ IF(has_card, 1.1 + 0.05 * card_level, 1),\n  Lab, 1 + 2% * lab_level,\n\nFUDDSMATH_RANGE(WS * CardRNG * Lab + Substat)))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, has_card, card_level, lab_level, substat, LET(\n  WS, 30 + 0.5 * ws_level,\n  Card,\
+      \ IF(has_card, card_level, 0),\n  Lab, lab_level,\n  WS + Card + Lab + substat))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DK5 -> EPD_RANGE).
   - id: ep_lambda_epd_rangedpm
     name: EPD_RANGEDPM
     type: excel_named_formula
-    excel_definition: LAMBDA(range, dpm, kill_at_range, 1 + range * dpm * kill_at_range)
-    notes: From workbook defined name.
+    excel_definition: LAMBDA(range, dpm, range_multiplier, dpm / range * range_multiplier)
+    notes: Updated per user-provided Effective Paths eDamage extract (DM5 -> EPD_RANGEDPM).
   - id: ep_lambda_epd_rapidfire
     name: EPD_RAPIDFIRE
     type: excel_named_formula
-    excel_definition: LAMBDA(rfc, rfd, bps, (1 + 4 * RFC*RFD*BPS) / (1 + RFC*RFD*BPS))
-    notes: From workbook defined name.
+    excel_definition: LAMBDA(rfc, rfd, bps, rfc * rfd * bps)
+    notes: Updated per user-provided Effective Paths eDamage extract (DI5 -> EPD_RAPIDFIRE).
   - id: ep_lambda_epd_rfc
     name: EPD_RFC
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.4%,\n  VaultBonus, 1 + vault,\n(WS + Substat)\
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.4%,\n  VaultBonus, 1 + vault,\n(1 + WS + substat)\
       \ * VaultBonus))"
-    notes: From workbook defined name.
+    notes: Updated per user-provided Effective Paths eDamage extract (DI5 -> EPD_RFC).
   - id: ep_lambda_epd_rfd
     name: EPD_RFD
     type: excel_named_formula
-    excel_definition: "LAMBDA(ws_level, substat, LET(\n  WS, 0.6 + ws_level * 0.05,\nWS + Substat))"
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(ws_level, substat, LET(\n  WS, 0.6 + ws_level * 0.05,\nWS + substat))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DI5 -> EPD_RFD).
   - id: ep_lambda_epd_uwcritical
     name: EPD_UWCRITICAL
     type: excel_named_formula
-    excel_definition: LAMBDA(cc, cf, scc, scm, (1+CC*CF)*(1+CC*SCC*SCM))
-    notes: From workbook defined name.
+    excel_definition: "LAMBDA(cc, cf, scc, scm, LET(\n  CCm, MIN(1, cc),\n  normalCrit, 1 + CCm * (cf - 1),\n  superCritChance,\
+      \ MIN(CCm, scc),\n  superCrit, 1 + superCritChance * (scm - cf),\n\n  normalCrit * superCrit))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DE5 -> EPD_UWCRITICAL).
+  - id: ep_lambda_epd_supertower_bonus
+    name: EPD_SUPERTOWER_BONUS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stlvl, st_bonus, IF(stlvl=\" \", 1, 1+st_bonus))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DN5 -> EPD_SUPERTOWER_BONUS).
+  - id: ep_lambda_epd_supertower_cooldown
+    name: EPD_SUPERTOWER_COOLDOWN
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_mastery, st_mastery, IF(has_mastery, st_mastery, 1))
+    notes: Updated per user-provided Effective Paths eDamage extract (DN5 -> EPD_SUPERTOWER_COOLDOWN).
+  - id: ep_lambda_epd_supertower_effective_bonus
+    name: EPD_SUPERTOWER_EFFECTIVE_BONUS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_st, has_mastery, st_bonus, st_cd, sl_dur, sl_qty, sl_angle, LET(\n  ST, IF(has_st, st_bonus, 1),\n  uptime, IF(has_st, sl_dur / st_cd, 0),\n  effective, 1 + uptime * (ST - 1),\n  effective))"
+    notes: Updated per user-provided Effective Paths eDamage extract (DN5 -> EPD_SUPERTOWER_EFFECTIVE_BONUS).
   - id: ep_lambda_epg_assist_sub_cap
     name: EPG_ASSIST_SUB_CAP
     type: excel_named_formula
@@ -270,10 +286,3 @@ ids_helpers:
   status: complete
 stacking_rules:
   status: complete
-issues:
-- id: ep_defined_name_missing_param
-  name: EPD_BST uses vault without parameter
-  workbook: Copy of Effective Paths v5.00.01.xlsx
-  defined_name: EPD_BST
-  detail: Defined name text contains 'VaultBonus, 1 + vault' but lambda params are (ws_level, perk, substat).
-  policy: fail_closed_or_explicit_patch_only

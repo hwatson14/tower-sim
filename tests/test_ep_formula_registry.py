@@ -16,7 +16,7 @@ def test_ep_registry_loads_without_validation() -> None:
     assert "ep_edamage_ef5" in registry.formulas
 
     bst = registry.mechanics["EPD_BST"]
-    assert bst.implicit_globals == ("vault",)
+    assert bst.implicit_globals == ()
 
     dd5 = registry.formulas["ep_edamage_dd5"]
     deps = set(dd5.depends_on)
@@ -33,4 +33,4 @@ def test_ep_registry_strict_missing_symbols() -> None:
         load_ep_formula_registry()
 
     missing = set(excinfo.value.missing_symbols)
-    assert {"EPD_SPB", "EPG_MODULE_BONUS", "FUDDSMATH_RANGE"}.issubset(missing)
+    assert {"EPD_SPB", "EPG_MODULE_BONUS"}.issubset(missing)

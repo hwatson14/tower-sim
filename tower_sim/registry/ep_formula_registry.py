@@ -60,12 +60,7 @@ BUILTIN_FUNCTIONS: Set[str] = {
     "LAMBDA",
 }
 
-KNOWN_IMPLICIT_GLOBALS: Mapping[str, Set[str]] = {
-    # STATUS.md (formula_registry_combined pack) notes EPD_BST references vault
-    # without declaring it as a LAMBDA parameter. We treat vault as a required
-    # implicit global input and do not invent a replacement.
-    "EPD_BST": {"vault"},
-}
+KNOWN_IMPLICIT_GLOBALS: Mapping[str, Set[str]] = {}
 
 
 class RegistryValidationError(ValueError):

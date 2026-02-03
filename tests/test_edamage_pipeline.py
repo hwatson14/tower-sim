@@ -34,8 +34,8 @@ def test_edamage_baseline_outputs() -> None:
     outputs = compute_edamage_outputs(inputs)
 
     expected_attack_speed = 1.0
-    expected_crit_chance = 0.01
-    expected_crit_multiplier = 1.01
+    expected_crit_chance = 0.0
+    expected_crit_multiplier = 1.0
     expected_bps = ((0.01413 * expected_attack_speed**2) + (4.01278 * expected_attack_speed) + 92.8885) * 1.3
     expected_dps = 10.0 * expected_crit_multiplier * expected_bps
 
@@ -78,7 +78,7 @@ def test_edamage_with_cards_perks_and_substats() -> None:
     )
     outputs = compute_edamage_outputs(inputs)
 
-    expected_attack_speed = 1.253
+    expected_attack_speed = 0.9774597775301548
     expected_damage = 10.0 * 1.5 * 1.15
 
     assert outputs.attack_speed == expected_attack_speed
