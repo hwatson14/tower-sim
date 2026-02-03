@@ -550,7 +550,7 @@ stat_definitions:
             key:
               key: primary_max_recovery
             value_col: value
-            note: prim_sub from module substat tables; max_recovery entries still missing, so fail-closed until populated.
+            note: prim_sub from module substat tables (missing in repo); fail-closed until table is provided.
     max_recovery_assist_substat:
       unit: hp
       definition:
@@ -564,7 +564,7 @@ stat_definitions:
             key:
               key: assist_max_recovery
             value_col: value
-            note: ass_sub from module substat tables; max_recovery entries still missing, so fail-closed until populated.
+            note: ass_sub from module substat tables (missing in repo); fail-closed until table is provided.
     max_recovery_substat:
       unit: hp
       definition:
