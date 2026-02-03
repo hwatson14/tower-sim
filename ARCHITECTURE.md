@@ -317,6 +317,7 @@ Any of the following must stop work and ask for clarification:
 - [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
 - [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).
+- [x] Wire Effective Paths eDamage LAMBDAs into derived stat pipeline (tower DPS/crit/ASPD).
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.

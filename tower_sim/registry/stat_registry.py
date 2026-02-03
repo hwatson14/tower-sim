@@ -221,5 +221,52 @@ def default_registry() -> StatRegistry:
                 "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
             ),
         ),
+        StatDef(
+            stat_id="tower_damage",
+            display_name="Tower Damage",
+            unit=Unit.NONE,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Effective Paths eDamage output: composed tower damage multiplier stack."
+            ),
+        ),
+        StatDef(
+            stat_id="tower_attack_speed",
+            display_name="Tower Attack Speed",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="Effective Paths eDamage output: attack speed multiplier.",
+        ),
+        StatDef(
+            stat_id="tower_crit_chance",
+            display_name="Tower Crit Chance",
+            unit=Unit.PERCENT,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="Effective Paths eDamage output: critical chance.",
+        ),
+        StatDef(
+            stat_id="tower_crit_multiplier",
+            display_name="Tower Crit Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="Effective Paths eDamage output: expected crit multiplier.",
+        ),
+        StatDef(
+            stat_id="tower_dps",
+            display_name="Tower DPS",
+            unit=Unit.NONE,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="Effective Paths eDamage output: tower DPS estimate.",
+        ),
     ]
     return StatRegistry(defs)
