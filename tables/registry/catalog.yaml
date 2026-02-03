@@ -56,6 +56,9 @@ categories:
     - canonical_id: CARD_EXTRA_ORBS
       primary_name: "Extra Orbs"
       aliases: ["EO", "Extra Orbs"]
+    - canonical_id: CARD_EXTRA_DEFENSE
+      primary_name: "Extra Defense"
+      aliases: ["Extra Defense"]
     - canonical_id: CARD_RECOVERY_PACKAGE_CHANCE
       primary_name: "Recovery Package Chance"
       aliases: ["RPC", "Recovery Package Chance"]
@@ -725,6 +728,110 @@ categories:
     - canonical_id: MOD_WORMHOLE_REDIRECTOR
       primary_name: "Wormhole Redirector"
       aliases: ["WR/WHR", "Wormhole Redirector"]
+
+  perks:
+    - canonical_id: PERK_X1_20_MAX_HEALTH
+      primary_name: "x1.20 Max Health"
+      aliases: ["x1.20 Max Health"]
+    - canonical_id: PERK_X1_15_DAMAGE
+      primary_name: "x1.15 Damage"
+      aliases: ["x1.15 Damage"]
+    - canonical_id: PERK_X1_15_ALL_COIN_BONUSES
+      primary_name: "x1.15 All Coin Bonuses"
+      aliases: ["x1.15 All Coin Bonuses"]
+    - canonical_id: PERK_X1_15_DEFENSE_ABSOLUTE
+      primary_name: "x1.15 Defense Absolute"
+      aliases: ["x1.15 Defense Absolute"]
+    - canonical_id: PERK_X1_15_CASH_BONUS
+      primary_name: "x1.15 Cash Bonus"
+      aliases: ["x1.15 Cash Bonus"]
+    - canonical_id: PERK_X1_75_HEALTH_REGEN
+      primary_name: "x1.75 Health Regen"
+      aliases: ["x1.75 Health Regen"]
+    - canonical_id: PERK_INTEREST_X1_50
+      primary_name: "Interest x1.50"
+      aliases: ["Interest x1.50"]
+    - canonical_id: PERK_LAND_MINE_DAMAGE_X3_50
+      primary_name: "Land Mine Damage x3.50"
+      aliases: ["Land Mine Damage x3.50"]
+    - canonical_id: PERK_FREE_UPGRADE_CHANCE_ALL_PLUS_5
+      primary_name: "Free Upgrade Chance for All +5.0%"
+      aliases: ["Free Upgrade Chance for All +5.0%"]
+    - canonical_id: PERK_DEFENSE_PERCENT_PLUS_4
+      primary_name: "Defense Percent +4.00"
+      aliases: ["Defense Percent +4.00"]
+    - canonical_id: PERK_BOUNCE_SHOT_PLUS_2
+      primary_name: "Bounce Shot +2"
+      aliases: ["Bounce Shot +2"]
+    - canonical_id: PERK_WAVE_REQUIREMENT_MINUS_20
+      primary_name: "Perk Wave Requirement -20.00%"
+      aliases: ["Perk Wave Requirement -20.00%"]
+    - canonical_id: PERK_ORBS_PLUS_1
+      primary_name: "Orbs +1"
+      aliases: ["Orbs +1"]
+    - canonical_id: PERK_UNLOCK_RANDOM_UW
+      primary_name: "Unlock a Random Ultimate Weapon"
+      aliases: ["Unlock a Random Ultimate Weapon"]
+    - canonical_id: PERK_MAX_GAME_SPEED_PLUS_1
+      primary_name: "Increase Max Game Speed by +1.00"
+      aliases: ["Increase Max Game Speed by +1.00"]
+    - canonical_id: PERK_SMART_MISSILES_PLUS_4
+      primary_name: "4 More Smart Missiles"
+      aliases: ["4 More Smart Missiles"]
+    - canonical_id: PERK_SWAMP_RADIUS_X1_5
+      primary_name: "Swamp Radius x1.5"
+      aliases: ["Swamp Radius x1.5"]
+    - canonical_id: PERK_DEATH_WAVE_PLUS_1_WAVE
+      primary_name: "+1 Wave on Death Wave"
+      aliases: ["+1 Wave on Death Wave"]
+    - canonical_id: PERK_INNER_MINES_EXTRA_SET
+      primary_name: "Extra Set of Inner Mines"
+      aliases: ["Extra Set of Inner Mines"]
+    - canonical_id: PERK_GOLDEN_TOWER_BONUS_X1_5
+      primary_name: "Golden Tower Bonus x1.5"
+      aliases: ["Golden Tower Bonus x1.5"]
+    - canonical_id: PERK_CHAIN_LIGHTNING_DAMAGE_X2
+      primary_name: "Chain Lightning Damage x2"
+      aliases: ["Chain Lightning Damage x2"]
+    - canonical_id: PERK_CHRONO_FIELD_DURATION_PLUS_5S
+      primary_name: "Chrono Field Duration +5s"
+      aliases: ["Chrono Field Duration +5s"]
+    - canonical_id: PERK_BLACK_HOLE_DURATION_PLUS_12S
+      primary_name: "Black Hole Duration +12.0s"
+      aliases: ["Black Hole Duration +12.0s"]
+    - canonical_id: PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5
+      primary_name: "Spotlight Damage Bonus x1.5"
+      aliases: ["Spotlight Damage Bonus x1.5"]
+    - canonical_id: PERK_TOWER_DAMAGE_BOSS_HEALTH_TRADEOFF
+      primary_name: "x1.50 Tower Damage, but Bosses Have 8x Health"
+      aliases: ["x1.50 Tower Damage, but Bosses Have 8x Health"]
+    - canonical_id: PERK_COINS_TOWER_HEALTH_TRADEOFF
+      primary_name: "x1.80 coins, but Tower Max Health -70%"
+      aliases: ["x1.80 coins, but Tower Max Health -70%"]
+    - canonical_id: PERK_ENEMY_HEALTH_TOWER_REGEN_TRADEOFF
+      primary_name: "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"
+      aliases: ["Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%"]
+    - canonical_id: PERK_ENEMY_DAMAGE_TOWER_DAMAGE_TRADEOFF
+      primary_name: "Enemies Damage -50%, but Tower Damage -50%"
+      aliases: ["Enemies Damage -50%, but Tower Damage -50%"]
+    - canonical_id: PERK_RANGED_DISTANCE_TOWER_RANGED_DAMAGE_TRADEOFF
+      primary_name: "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3"
+      aliases: ["Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3"]
+    - canonical_id: PERK_ENEMY_SPEED_ENEMY_DAMAGE_TRADEOFF
+      primary_name: "Enemies Speed -40%, But Enemies Damage x2.5"
+      aliases: ["Enemies Speed -40%, But Enemies Damage x2.5"]
+    - canonical_id: PERK_CASH_PER_WAVE_TRADEOFF
+      primary_name: "x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash"
+      aliases: ["x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash"]
+    - canonical_id: PERK_TOWER_REGEN_TOWER_HEALTH_TRADEOFF
+      primary_name: "Tower Health Regen x8.00, But Tower Max Max Health -60%"
+      aliases: ["Tower Health Regen x8.00, But Tower Max Max Health -60%"]
+    - canonical_id: PERK_BOSS_HEALTH_BOSS_SPEED_TRADEOFF
+      primary_name: "Boss Health -70%, But Boss Speed +50%"
+      aliases: ["Boss Health -70%, But Boss Speed +50%"]
+    - canonical_id: PERK_LIFESTEAL_KNOCKBACK_TRADEOFF
+      primary_name: "Lifesteal x2.50, But Knockback force -70%"
+      aliases: ["Lifesteal x2.50, But Knockback force -70%"]
 
   lazy_talk:
     - canonical_id: LAZY_BATTLE_CONDITION

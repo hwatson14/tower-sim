@@ -1,0 +1,4 @@
+category,weight_percent,notes,source
+standard,65,"Wiki perk pool weighting.","Wiki excerpt provided in prompt."
+ultimate_weapon,20,"Wiki perk pool weighting.","Wiki excerpt provided in prompt."
+trade_off,15,"Wiki perk pool weighting.","Wiki excerpt provided in prompt."

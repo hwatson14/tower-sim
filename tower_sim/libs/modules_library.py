@@ -17,6 +17,10 @@ source the main-effect curve from the IDS / Data tables (or an explicit main-eff
 then apply it consistently for both primary and assist modules.
 
 All values below are direct transcription of the wiki tables (no interpolation).
+
+Guardrail: the wiki explicitly notes assist sub-module effects do not bypass hard caps
+(e.g., 98% defense, 40% death defy). Any simulation should apply caps after assist
+effects are combined.
 """
 from __future__ import annotations
 
@@ -57,20 +61,32 @@ class UniqueEffect:
     module_name: str
     slot: Literal["Cannon", "Armor", "Generator", "Core"]
     effect_name: str
+    ability_text: Optional[str]
     # values per rarity, keyed by Rarity
     value: Dict[Rarity, float]
 
 
 # ---- Unique effects (Epic Module Unique Effect table) ----
+# Note: Ability text is populated from the wiki excerpt provided in the prompt.
 
 UNIQUE_EFFECTS: Dict[str, UniqueEffect] = {}
 
-def _add_unique(module_name: str, slot: str, effect_name: str,
-                epic: float, legendary: float, mythic: float, ancestral: float) -> None:
+def _add_unique(
+    module_name: str,
+    slot: str,
+    effect_name: str,
+    epic: float,
+    legendary: float,
+    mythic: float,
+    ancestral: float,
+    *,
+    ability_text: Optional[str] = None,
+) -> None:
     UNIQUE_EFFECTS[module_name] = UniqueEffect(
         module_name=module_name,
         slot=slot,  # type: ignore[arg-type]
         effect_name=effect_name,
+        ability_text=ability_text,
         value={
             Rarity.EPIC: float(epic),
             Rarity.LEGENDARY: float(legendary),
@@ -80,36 +96,282 @@ def _add_unique(module_name: str, slot: str, effect_name: str,
     )
 
 # Cannons
-_add_unique("Astral Deliverance", "Cannon", "bounce_damage_per_bounce_pct", 20, 40, 60, 80)
-_add_unique("Being Annihilator", "Cannon", "guaranteed_supercrits_after_supercrit_attacks", 3, 4, 5, 6)
-_add_unique("Death Penalty", "Cannon", "mark_for_death_spawn_chance_pct", 5, 8, 11, 15)
-_add_unique("Havoc Bringer", "Cannon", "rend_armor_instant_max_chance_pct", 10, 13, 15, 20)
-_add_unique("Shrink Ray", "Cannon", "enemy_mass_reduction_pct", 10, 20, 30, 40)
-_add_unique("Amplifying Strike", "Cannon", "tower_damage_5x_duration_s", 5, 11, 18, 26)
+_add_unique(
+    "Astral Deliverance",
+    "Cannon",
+    "bounce_damage_per_bounce_pct",
+    20,
+    40,
+    60,
+    80,
+    ability_text=(
+        "Bounce shot range increased by 3% of tower range; each bounce increases "
+        "projectile damage by 20 / 40 / 60 / 80 (E/L/M/A)."
+    ),
+)
+_add_unique(
+    "Being Annihilator",
+    "Cannon",
+    "guaranteed_supercrits_after_supercrit_attacks",
+    3,
+    4,
+    5,
+    6,
+    ability_text=(
+        "On super crit, next attacks guaranteed super crits: 3 / 4 / 5 / 6."
+    ),
+)
+_add_unique(
+    "Death Penalty",
+    "Cannon",
+    "mark_for_death_spawn_chance_pct",
+    5,
+    8,
+    11,
+    15,
+    ability_text="Mark-on-spawn chance; first hit destroys: 5% / 8% / 11% / 15%.",
+)
+_add_unique(
+    "Havoc Bringer",
+    "Cannon",
+    "rend_armor_instant_max_chance_pct",
+    10,
+    13,
+    15,
+    20,
+    ability_text="Rend Armor instantly to max chance: 10% / 13% / 15% / 20%.",
+)
+_add_unique(
+    "Shrink Ray",
+    "Cannon",
+    "enemy_mass_reduction_pct",
+    10,
+    20,
+    30,
+    40,
+    ability_text="1% chance to apply non-stacking mass reduction: 10% / 20% / 30% / 40%.",
+)
+_add_unique(
+    "Amplifying Strike",
+    "Cannon",
+    "tower_damage_5x_duration_s",
+    5,
+    11,
+    18,
+    26,
+    ability_text="Killing boss/elite → Tower Damage 5x for 5s / 11s / 18s / 26s.",
+)
 
 # Armor
-_add_unique("Anti-Cube Portal", "Armor", "shockwave_damage_taken_mult_x", 10, 15, 20, 25)
-_add_unique("Negative Mass Projector", "Armor", "orb_nonkill_debuff_pct_per_hit", 1.0, 1.5, 2.0, 2.5)
-_add_unique("Wormhole Redirector", "Armor", "regen_heal_cap_pct_of_package_max_recovery", 25, 50, 75, 100)
-_add_unique("Space Displacer", "Armor", "landmine_spawn_as_ilm_chance_pct", 15, 20, 25, 30)
-_add_unique("Sharp Fortitude", "Armor", "wall_health_regen_mult_x", 1.25, 1.5, 2.0, 2.5)
-_add_unique("Orbital Augment", "Armor", "electrons_count", 2, 4, 6, 8)
+_add_unique(
+    "Anti-Cube Portal",
+    "Armor",
+    "shockwave_damage_taken_mult_x",
+    10,
+    15,
+    20,
+    25,
+    ability_text="After shockwave hit: enemies take 10x / 15x / 20x / 25x damage for 7s.",
+)
+_add_unique(
+    "Negative Mass Projector",
+    "Armor",
+    "orb_nonkill_debuff_pct_per_hit",
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    ability_text=(
+        "Orb hit applies stacking debuff reducing enemy damage & speed by "
+        "1.0% / 1.5% / 2.0% / 2.5% per hit (max 50%)."
+    ),
+)
+_add_unique(
+    "Wormhole Redirector",
+    "Armor",
+    "regen_heal_cap_pct_of_package_max_recovery",
+    25,
+    50,
+    75,
+    100,
+    ability_text="Health Regen can heal up to 25% / 50% / 75% / 100% of Package Max Recovery.",
+)
+_add_unique(
+    "Space Displacer",
+    "Armor",
+    "landmine_spawn_as_ilm_chance_pct",
+    15,
+    20,
+    25,
+    30,
+    ability_text="Landmines spawn as ILM chance: 15% / 20% / 25% / 30% (20 max).",
+)
+_add_unique(
+    "Sharp Fortitude",
+    "Armor",
+    "wall_health_regen_mult_x",
+    1.25,
+    1.5,
+    2.0,
+    2.5,
+    ability_text=(
+        "Wall health+regen multiplier: 1.25 / 1.5 / 2.0 / 2.5; plus "
+        "+1% increased damage from wall thorns per subsequent hit."
+    ),
+)
+_add_unique(
+    "Orbital Augment",
+    "Armor",
+    "electrons_count",
+    2,
+    4,
+    6,
+    8,
+    ability_text=(
+        "Adds [x] orbiting Electrons around the tower. Each Electron deals damage equal "
+        "to 15% of the enemy's remaining health (quarter effective against Bosses and Fleets)."
+    ),
+)
 
 # Generators
-_add_unique("Singularity Harness", "Generator", "bot_range_bonus_m", 5, 8, 11, 15)
-_add_unique("Galaxy Compressor", "Generator", "uw_cooldown_reduction_per_package_s", 10, 13, 17, 20)
-_add_unique("Pulsar Harvester", "Generator", "proj_hit_reduce_enemy_levels_chance_pct", 1.0, 1.5, 2.0, 2.5)
-_add_unique("Black Hole Digestor", "Generator", "coins_kill_bonus_pct_per_free_upgrade_current_wave", 3, 5, 7, 10)
-_add_unique("Project Funding", "Generator", "tower_damage_mult_pct_per_cash_digit", 12.5, 25, 50, 100)
-_add_unique("Restorative Bonus", "Generator", "package_attack_speed_boost_duration_s", 15, 20, 25, 30)
+_add_unique(
+    "Singularity Harness",
+    "Generator",
+    "bot_range_bonus_m",
+    5,
+    8,
+    11,
+    15,
+    ability_text="Bot range +5 / 8 / 11 / 15 m; Flame Bot hits cause double damage.",
+)
+_add_unique(
+    "Galaxy Compressor",
+    "Generator",
+    "uw_cooldown_reduction_per_package_s",
+    10,
+    13,
+    17,
+    20,
+    ability_text="Recovery package reduces UW cooldown (except Poison Swamp) by 10 / 13 / 17 / 20 s.",
+)
+_add_unique(
+    "Pulsar Harvester",
+    "Generator",
+    "proj_hit_reduce_enemy_levels_chance_pct",
+    1.0,
+    1.5,
+    2.0,
+    2.5,
+    ability_text=(
+        "Projectile hit chance to reduce enemy health+attack level by 1: "
+        "1.0% / 1.5% / 2.0% / 2.5% (diminishing returns after 100 reductions)."
+    ),
+)
+_add_unique(
+    "Black Hole Digestor",
+    "Generator",
+    "coins_kill_bonus_pct_per_free_upgrade_current_wave",
+    3,
+    5,
+    7,
+    10,
+    ability_text=(
+        "Per free-upgrade trigger: temporary extra Coins/Kill Bonus "
+        "3% / 5% / 7% / 10%."
+    ),
+)
+_add_unique(
+    "Project Funding",
+    "Generator",
+    "tower_damage_mult_pct_per_cash_digit",
+    12.5,
+    25,
+    50,
+    100,
+    ability_text=(
+        "Tower damage multiplied by 12.5% / 25% / 50% / 100% of number of digits in current cash."
+    ),
+)
+_add_unique(
+    "Restorative Bonus",
+    "Generator",
+    "package_attack_speed_boost_duration_s",
+    15,
+    20,
+    25,
+    30,
+    ability_text=(
+        "Packages grant a 50% attack speed boost for [x]s, decaying for 60 seconds. "
+        "Effect refreshes on another Recovery Package; duration does not stack."
+    ),
+)
 
 # Cores
-_add_unique("Om Chip", "Core", "spotlight_boss_reflection_increase", 2, 4, 7, 15)
-_add_unique("Harmony Conductor", "Core", "poisoned_enemy_miss_attack_chance_pct", 15, 20, 25, 30)
-_add_unique("Dimension Core", "Core", "shock_max_stacks", 5, 10, 15, 20)
-_add_unique("Multiverse Nexus", "Core", "dw_gt_bh_cooldown_avg_offset_s", 20, 10, 1, -10)
-_add_unique("Magnetic Hook", "Core", "ilm_fired_at_bosses_count", 1, 2, 3, 4)
-_add_unique("Primordial Collapse", "Core", "enemy_damage_reduction_inside_bh_pct", 50, 55, 65, 80)
+_add_unique(
+    "Om Chip",
+    "Core",
+    "spotlight_boss_reflection_increase",
+    2,
+    4,
+    7,
+    15,
+    ability_text=(
+        "Spotlight focuses a Boss; boss reflects light to nearby enemies, increasing by "
+        "2 / 4 / 7 / 15."
+    ),
+)
+_add_unique(
+    "Harmony Conductor",
+    "Core",
+    "poisoned_enemy_miss_attack_chance_pct",
+    15,
+    20,
+    25,
+    30,
+    ability_text="Poisoned enemies miss-attack chance: 15% / 20% / 25% / 30% (boss chance halved).",
+)
+_add_unique(
+    "Dimension Core",
+    "Core",
+    "shock_max_stacks",
+    5,
+    10,
+    15,
+    20,
+    ability_text="Chain lightning + shock modifications; max stack 5 / 10 / 15 / 20.",
+)
+_add_unique(
+    "Multiverse Nexus",
+    "Core",
+    "dw_gt_bh_cooldown_avg_offset_s",
+    20,
+    10,
+    1,
+    -10,
+    ability_text=(
+        "DW/GT/BH always activate together; cooldown becomes average +/- 20s / 10s / 1s / -10s."
+    ),
+)
+_add_unique(
+    "Magnetic Hook",
+    "Core",
+    "ilm_fired_at_bosses_count",
+    1,
+    2,
+    3,
+    4,
+    ability_text="ILM fired at bosses entering range: 1 / 2 / 3 / 4; and 25% of elites get ILM fired similarly.",
+)
+_add_unique(
+    "Primordial Collapse",
+    "Core",
+    "enemy_damage_reduction_inside_bh_pct",
+    50,
+    55,
+    65,
+    80,
+    ability_text="+1 Black Hole; enemy damage within BH reduced by 50% / 55% / 65% / 80%.",
+)
 
 
 def unique_effect_value(module_name: str, rarity: Rarity) -> float:
