@@ -237,6 +237,15 @@ issues:
   status: partial
   note: Health/regen labs and card curves exist in tables/wiki_cache; workshop base curves exist in tests/fixtures/WSValues.csv;
     defense% lab/curve and wall fortification curve not found in tables/ or wiki_cache.
+eHP_mechanics:
+  version: ep_v5.00.01_extract_2026-02-02
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  mechanics:
+  - id: ep_lambda_eph_max_rcvr
+    name: EPH_MAX_RCVR
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1% * lab_lvl,\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  VAULT, 1 + vault_pct,\n\n(WS + LAB + SUBSTAT) * WSE * VAULT))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
 stat_definitions:
   version: '0.6'
   notes: Aligned stat IDs with tower_sim.registry.stat_registry.default_registry() where available (tower_hp, tower_regen,
@@ -344,6 +353,17 @@ stat_definitions:
           inputs:
           - tower_regen
           - helper: wall_regen_ratio
+    recovery_package_max:
+      display_name: Recovery Package Max
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_base * max_recovery_wse_mult * max_recovery_vault_mult
+          inputs:
+          - helper: max_recovery_base
+          - helper: max_recovery_wse_mult
+          - helper: max_recovery_vault_mult
   helpers:
     standard_perks_bonus_mult:
       unit: multiplier
@@ -420,3 +440,140 @@ stat_definitions:
             max: 12.0
             note: User-provided ladder 20% per level to level 60 (1200%). Promote into tables/wiki_cache.
       note: Fortification semantics beyond 'regen beyond max' remain blocked until sourced.
+    max_recovery_ws:
+      unit: hp
+      definition:
+        op_chain:
+        - op: APPLY_WORKSHOP_BASE
+          level:
+            type: IDS_PATH
+            path: ids.workshop.entries['Recovery Package Max'].coin_level
+          base_curve: DVT_Workshop/Max Recovery
+          note: Base curve uses DVT_Workshop Max Recovery (EPH_MAX_RCVR ws_val). Fail-closed until authoritative table is present.
+    max_recovery_lab:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Recovery Package Max']
+            add_per_level: 0.01
+            note: LAB = 1% * lab_lvl (EPH_MAX_RCVR).
+    max_recovery_stone_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/data_val_tables_v1.csv
+            key:
+              key: assist_stone_scalar
+            value_col: value
+            note: stone_sac from Data_Val_Tables (missing in repo); fail-closed until table is provided.
+    max_recovery_lab_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Assist Module Substats - Generator']
+            add_per_level: 1.0
+            note: lab_sac from Assist Module Substats - Generator (raw lab level).
+    max_recovery_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: (1 + max_recovery_stone_sac + max_recovery_lab_sac) * 0.01
+          inputs:
+          - helper: max_recovery_stone_sac
+          - helper: max_recovery_lab_sac
+    max_recovery_primary_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/module_substats_v1.csv
+            key:
+              key: primary_max_recovery
+            value_col: value
+            note: prim_sub from module substat tables (missing in repo); fail-closed until table is provided.
+    max_recovery_assist_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/module_substats_v1.csv
+            key:
+              key: assist_max_recovery
+            value_col: value
+            note: ass_sub from module substat tables (missing in repo); fail-closed until table is provided.
+    max_recovery_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_primary_substat + (max_recovery_assist_substat * max_recovery_sac)
+          inputs:
+          - helper: max_recovery_primary_substat
+          - helper: max_recovery_assist_substat
+          - helper: max_recovery_sac
+    max_recovery_base:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_ws + max_recovery_lab + max_recovery_substat
+          inputs:
+          - helper: max_recovery_ws
+          - helper: max_recovery_lab
+          - helper: max_recovery_substat
+    max_recovery_wse_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 1.0
+        - op: ADD
+          term:
+            type: WORKSHOP_RULE
+            level:
+              type: MISSING_IDS_PATH
+              expected: ids.workshop.entries['Max Recovery +'].coin_level
+            add_per_level: 0.01
+            note: WSE = 1 + 0.01 * wse_lvl; WSE preset mapping missing in IDS schema.
+    max_recovery_vault_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 1.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/vault_stats_v1.csv
+            key:
+              key: max_recovery
+            value_col: value
+            note: vault_pct from vault stats table (missing in repo); fail-closed until table is provided.

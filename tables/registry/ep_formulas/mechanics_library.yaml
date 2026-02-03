@@ -222,6 +222,15 @@ eDamage_mechanics:
     type: excel_named_formula
     excel_definition: LAMBDA(base, substat, has_perk, FLOOR((base+substat) + IF(has_perk, 4, 0)))
     notes: From workbook defined name.
+eHP_mechanics:
+  version: ep_v5.00.01_extract_2026-02-02
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  mechanics:
+  - id: ep_lambda_eph_max_rcvr
+    name: EPH_MAX_RCVR
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1% * lab_lvl,\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  VAULT, 1 + vault_pct,\n\n(WS + LAB + SUBSTAT) * WSE * VAULT))"
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
 ids_helpers:
   status: complete
 stacking_rules:
