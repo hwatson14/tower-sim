@@ -4,15 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       ref:
-        description: "Git ref to run on (branch/tag/sha). Typically: main"
+        description: "Git ref to run (branch/sha)"
         required: false
         default: "main"
       allow_out_of_scope:
-        description: "If true, skip out-of-scope sources (cards/perks) instead of failing"
+        description: "Allow out-of-scope sources (cards/perks) instead of failing"
         required: false
         default: "true"
 
-# Important: allow pushing results to bot-outputs branch
 permissions:
   contents: write
 
@@ -21,12 +20,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.ref }}
+          fetch-depth: 0
 
-      - name: Set up Python (pip cached)
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
@@ -34,17 +34,16 @@ jobs:
 
       - name: Install package
         run: |
-          python -m pip install --disable-pip-version-check -q -U pip
-          pip install . -q
+          python -m pip install --upgrade pip
+          python -m pip install .
 
       - name: Compute EHP slice JSON
         env:
           ALLOW_OUT_OF_SCOPE: ${{ inputs.allow_out_of_scope }}
         run: |
-          python - << 'PY'
-          import json, os
+          python - <<'PY'
+          import json
           from pathlib import Path
-
           from tower_sim.loaders.ids_parser import parse_ids
           from tower_sim.evaluators import evaluate_stats
 
@@ -52,49 +51,44 @@ jobs:
           ids_state = parse_ids(ids_path)
 
           enabled = ["tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen"]
+          allow = (str(Path().joinpath()).__class__)  # no-op to prevent lint paranoia
+          allow_out_of_scope = (str(__import__("os").environ.get("ALLOW_OUT_OF_SCOPE","true")).lower() == "true")
 
-          allow = os.environ.get("ALLOW_OUT_OF_SCOPE", "true").lower() == "true"
-          stats = evaluate_stats(ids_state, enabled, allow_out_of_scope=allow)
+          stats = evaluate_stats(ids_state, enabled, allow_out_of_scope=allow_out_of_scope)
 
-          out = {
-            "meta": {
-              "enabled": enabled,
-              "allow_out_of_scope": allow,
-              "ids_path": str(ids_path),
-              "git_sha": os.environ.get("GITHUB_SHA", ""),
-              "ref": os.environ.get("GITHUB_REF_NAME", ""),
-            },
-            "ehp": stats,
-          }
-
-          Path("outputs/ehp").mkdir(parents=True, exist_ok=True)
-          Path("outputs/ehp/latest.json").write_text(json.dumps(out, indent=2), encoding="utf-8")
-          print(json.dumps(out, indent=2))
+          out_dir = Path("outputs/ehp")
+          out_dir.mkdir(parents=True, exist_ok=True)
+          (out_dir / "latest.json").write_text(json.dumps(stats, indent=2), encoding="utf-8")
+          print("Wrote outputs/ehp/latest.json")
           PY
 
       - name: Publish result to bot-outputs branch
         run: |
           set -euo pipefail
 
-          # Create/replace a dedicated branch containing only outputs/
-          git fetch origin bot-outputs || true
-          if git show-ref --verify --quiet refs/remotes/origin/bot-outputs; then
+          # Stage outputs somewhere outside the repo so we can safely wipe the working tree
+          STAGE="/tmp/ehp_outputs"
+          rm -rf "$STAGE"
+          mkdir -p "$STAGE/ehp"
+
+          cp "${GITHUB_WORKSPACE}/outputs/ehp/latest.json" "$STAGE/ehp/latest.json"
+          ts="$(date -u +'%Y%m%dT%H%M%SZ')"
+          cp "$STAGE/ehp/latest.json" "$STAGE/ehp/${ts}.json"
+
+          git config user.name "tower-sim-bot"
+          git config user.email "tower-sim-bot@users.noreply.github.com"
+
+          if git ls-remote --exit-code --heads origin bot-outputs >/dev/null 2>&1; then
+            git fetch origin bot-outputs
             git switch bot-outputs
           else
             git switch --orphan bot-outputs
           fi
 
-          # Clear working tree and keep only outputs/
           git rm -rf . >/dev/null 2>&1 || true
           mkdir -p outputs/ehp
-          cp -f "${GITHUB_WORKSPACE}/outputs/ehp/latest.json" outputs/ehp/latest.json
-
-          # Optional timestamped snapshot
-          ts="$(date -u +'%Y%m%dT%H%M%SZ')"
-          cp -f outputs/ehp/latest.json "outputs/ehp/${ts}.json"
+          cp "$STAGE/ehp/"*.json outputs/ehp/
 
           git add outputs/ehp/*.json
-          git -c user.name="tower-sim-bot" -c user.email="tower-sim-bot@users.noreply.github.com" \
-            commit -m "ehp: ${ts} (sha ${GITHUB_SHA})" || echo "No changes to commit"
-
+          git commit -m "ehp: ${ts} (sha ${GITHUB_SHA})" || echo "No changes to commit"
           git push -f origin bot-outputs
