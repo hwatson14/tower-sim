@@ -65,7 +65,7 @@ def test_reference_sheet_tier_bc_snapshot() -> None:
     }
 
     catalog = load_tier_battle_conditions(
-        Path("reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv"),
+        Path("reference/step1_dump_docs/part2_data/tier_battle_conditions.csv"),
         allow_incomplete=True,
     )
 

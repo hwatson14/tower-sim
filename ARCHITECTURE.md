@@ -234,8 +234,8 @@ mechanic details live in parts 1–4:
   - `reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
     (BC base magnitude table).
   - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv` (league,wave heat).
-  - `reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`
-    (partial Tier 14–21 farming BC magnitudes).
+  - `reference/step1_dump_docs/part2_data/tier_battle_conditions.csv`
+    (partial Tier 14–21 farming BC magnitudes; tiers 1–13 have none).
 
 ### Tournament Battle Conditions
 - **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
@@ -326,6 +326,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
 - [x] Add tournament heat BC magnitudes from Player & Stuff Battle Conditions sheet (user-provided table).
+- [x] Document tiers 1–13 as having no battle conditions (user-provided clarification).
 - [x] Consolidate audit report outputs under repo-root `audit/` (remove `tower_sim/audit` artifacts).
 - [x] Add repo governance enforcement (REPO_MAP.yaml + validation script + tests).
 - [x] Allow root .gitmodules in REPO_MAP allowed files.

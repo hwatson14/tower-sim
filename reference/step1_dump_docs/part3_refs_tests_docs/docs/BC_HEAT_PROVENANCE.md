@@ -1,7 +1,7 @@
 # Battle Conditions + Heat: provenance and gaps (v19.0.2)
 
 ## What was populated
-- `data/tier14_21_battle_conditions.csv`: Tier 14–21 *farming* battle condition magnitudes where explicitly present in the user-provided Notion extract.
+- `data/tier_battle_conditions.csv`: Tier 14–21 *farming* battle condition magnitudes where explicitly present in the user-provided Notion extract (tiers 1–13 have no battle conditions per user clarification).
 
 ## Evidence sources
 - Primary for this patch: user-provided Notion extract (assumed derived from Fandom tier pages).

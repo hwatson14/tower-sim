@@ -5,7 +5,7 @@ from tower_sim.libs.step1_tables import load_tier_battle_condition_rows
 from tower_sim.loaders.tier_battle_conditions import TierBattleCondition
 
 
-_DEFAULT_TIER_BC_PATH = Path(__file__).resolve().parents[2] / "tables" / "tier14_21_battle_conditions.csv"
+_DEFAULT_TIER_BC_PATH = Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
 
 
 def load_tier_battle_conditions(

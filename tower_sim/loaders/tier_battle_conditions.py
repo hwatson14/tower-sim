@@ -25,8 +25,11 @@ class TierBattleConditions:
     """
     Tier battle-conditions catalog.
 
-    Source: reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv
+    Source: reference/step1_dump_docs/part2_data/tier_battle_conditions.csv
     (Effective Paths recovery, authoritative per user-supplied dump).
+
+    Note: User-provided clarification confirms tiers 1–13 have no battle
+    conditions; the catalog therefore begins at tier 14.
     """
 
     def __init__(self, rows: Iterable[TierBattleCondition]) -> None:

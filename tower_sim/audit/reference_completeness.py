@@ -17,7 +17,7 @@ REQUIRED_TABLES: Dict[str, list[str]] = {
         "battle_conditions.csv",
         "heat.csv",
         "battle_condition_magnitudes.csv",
-        "tier14_21_battle_conditions.csv",
+        "tier_battle_conditions.csv",
         "heat_wave_scalar.csv",
     ],
     "wave_damage": ["tier_wave_damage.csv", "tournament_wave_damage.csv"],

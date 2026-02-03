@@ -13,7 +13,7 @@ required_tables:
     status: missing
     runtime_paths:
     - tower_sim/tables/battle_condition_magnitudes.csv
-    - tower_sim/tables/tier14_21_battle_conditions.csv
+    - tower_sim/tables/tier_battle_conditions.csv
     step1_only_paths: []
     missing_paths:
     - battle_conditions.csv
