@@ -170,7 +170,7 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description=(
                 "Tier BC: orb resistance multiplier from step1 dump "
-                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+                "(reference/step1_dump_docs/part2_data/tier_battle_conditions.csv)."
             ),
         ),
         StatDef(
@@ -182,7 +182,7 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description=(
                 "Tier BC: death ray resistance multiplier from step1 dump "
-                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+                "(reference/step1_dump_docs/part2_data/tier_battle_conditions.csv)."
             ),
         ),
         StatDef(
@@ -194,7 +194,7 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description=(
                 "Tier BC: thorns resistance multiplier from step1 dump "
-                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+                "(reference/step1_dump_docs/part2_data/tier_battle_conditions.csv)."
             ),
         ),
         StatDef(
@@ -206,7 +206,7 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description=(
                 "Tier BC: plasma cannon resistance multiplier from step1 dump "
-                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+                "(reference/step1_dump_docs/part2_data/tier_battle_conditions.csv)."
             ),
         ),
         StatDef(
@@ -218,7 +218,7 @@ def default_registry() -> StatRegistry:
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description=(
                 "Tier BC: knockback resistance multiplier from step1 dump "
-                "(reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv)."
+                "(reference/step1_dump_docs/part2_data/tier_battle_conditions.csv)."
             ),
         ),
         StatDef(

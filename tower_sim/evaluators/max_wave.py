@@ -228,7 +228,7 @@ def _load_tier_rules(
 
 
 def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
-    return Path(__file__).resolve().parents[2] / "tables" / "tier14_21_battle_conditions.csv"
+    return Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
 
 
 def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:

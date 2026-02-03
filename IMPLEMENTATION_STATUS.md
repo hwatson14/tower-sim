@@ -38,7 +38,8 @@ Explicitly NOT included:
 - `tower_sim/libs/modules_library.py`, `tower_sim/engines/modules.py`, `tower_sim/libs/assist_efficiency.py` implement module unique effects, substats, and assist efficiency logic.
 
 ### Tier Battle Conditions
-- `tower_sim/loaders/tier_bc_loader.py` loads tier 14–21 farming BC magnitudes from `tables/tier14_21_battle_conditions.csv`.
+- `tower_sim/loaders/tier_bc_loader.py` loads tier 14–21 farming BC magnitudes from `tables/tier_battle_conditions.csv`.
+- Tiers 1–13 have no battle conditions (user-provided clarification).
 
 ### Wiki Caches + Ingest
 - `tower_sim/loaders/wiki/cards.py` reads cached card tables.
@@ -92,8 +93,8 @@ corresponding Step1 part file(s):
     (BC base magnitude table).
   - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv`
     (league,wave heat).
-  - `reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`
-    (partial Tier 14–21 farming BC magnitudes).
+  - `reference/step1_dump_docs/part2_data/tier_battle_conditions.csv`
+    (partial Tier 14–21 farming BC magnitudes; tiers 1–13 have none).
 
 #### Tournament Battle Conditions
 - **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
