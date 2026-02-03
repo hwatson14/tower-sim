@@ -363,9 +363,8 @@ stat_definitions:
             level:
               type: IDS_PATH
               path: ids.cards.cards['Extra Defense'].level
-            canonical_id: null
-            catalog_missing: true
-            note: Card present in IDS, missing from catalog.yaml; update catalog then link to card table.
+            canonical_id: CARD_EXTRA_DEFENSE
+            note: Card present in IDS; catalog entry required for lookup.
         - op: CAP_MAX
           value: 0.98
     wall_hp:

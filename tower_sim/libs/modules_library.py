@@ -17,6 +17,10 @@ source the main-effect curve from the IDS / Data tables (or an explicit main-eff
 then apply it consistently for both primary and assist modules.
 
 All values below are direct transcription of the wiki tables (no interpolation).
+
+Guardrail: the wiki explicitly notes assist sub-module effects do not bypass hard caps
+(e.g., 98% defense, 40% death defy). Any simulation should apply caps after assist
+effects are combined.
 """
 from __future__ import annotations
 
