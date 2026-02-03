@@ -151,8 +151,8 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("runner_output.json"),
-        help="Output JSON path (default: runner_output.json).",
+        default=Path(__file__).resolve().parents[1] / "out" / "runner_output.json",
+        help="Output JSON path (default: out/runner_output.json).",
     )
     parser.add_argument(
         "--include-raw",

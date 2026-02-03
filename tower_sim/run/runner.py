@@ -27,6 +27,11 @@ def _parse_args() -> argparse.Namespace:
         action="store_true",
         help="Exit non-zero if fail_closed=true.",
     )
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Output JSON path (default: out/runner_output.json).",
+    )
     return parser.parse_args()
 
 
@@ -34,6 +39,11 @@ def main() -> None:
     args = _parse_args()
     strict = args.strict or os.environ.get("STRICT") == "1"
     result = run()
+    repo_root = Path(__file__).resolve().parents[2]
+    output_path = args.output or (repo_root / "out" / "runner_output.json")
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    output_path.write_text(json.dumps(result, indent=2, sort_keys=True))
+    print(f"Wrote {output_path}")
     print(json.dumps(result, indent=2, sort_keys=True))
     if strict and result.get("fail_closed"):
         raise SystemExit(1)
