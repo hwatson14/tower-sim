@@ -27,3 +27,5 @@ tables have not yet been added.
 - `bot_upgrades_v1.csv`: DVT_Bot sheet from `reference/effective_paths/copy_of_bots_v2_2.xlsx`.
 - `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
   `reference/effective_paths/copy_of_guardians_v2_2_5.xlsx`.
+- `perks_v1.csv`: User-provided wiki excerpt in prompt (perk list, effects, max picks, stacking notes).
+- `perk_pool_weights_v1.csv`: User-provided wiki excerpt in prompt (perk pool weighting).
