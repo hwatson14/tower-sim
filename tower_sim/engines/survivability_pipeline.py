@@ -93,6 +93,7 @@ STAT_IDS_SURVIVABILITY = (
     "wall_hp",
     "wall_regen",
     "thorns_damage_mult",
+    "plasma_cannon_damage_mult",
 )
 
 _RELEVANT_SUBSTATS = {
@@ -103,6 +104,11 @@ _RELEVANT_SUBSTATS = {
     "Enemy Attack Level Skip",
     "Enemy Health Level Skip",
 }
+
+_WORKSHOP_THORNS_MAX_LEVEL = 99  # Wiki excerpt in prompt: 99 upgrades at +1% each.
+_WORKSHOP_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: +1% per workshop level.
+_WALL_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: lab % shown is applied directly.
+_BOSS_THORNS_MULT = 0.5  # Wiki excerpt in prompt: bosses take 50% thorns damage.
 
 
 SLOT_ORDER = {
@@ -347,6 +353,9 @@ def _compile_base_stat_inputs(
 
     eals_pct = _resolve_skip_stat(ids_snapshot, "Enemy Attack Level Skip")
     ehls_pct = _resolve_skip_stat(ids_snapshot, "Enemy Health Level Skip")
+    thorns_base, thorns_mult, thorns_provenance = _resolve_thorns_inputs(
+        ids_snapshot
+    )
 
     inputs.extend(
         [
@@ -365,10 +374,9 @@ def _compile_base_stat_inputs(
             StatInput(
                 stat_id="thorns_damage_mult",
                 phase=Phase.START_OF_RUN,
-                base_value=_thorns_base(
-                    ids_snapshot, allow_provisional=allow_provisional
-                ),
-                provenance="base:provisional_zero" if allow_provisional else "base:ids",
+                base_value=thorns_base,
+                enhancement_multiplier=thorns_mult,
+                provenance=thorns_provenance,
             ),
             StatInput(
                 stat_id="orb_damage_mult",
@@ -385,8 +393,8 @@ def _compile_base_stat_inputs(
             StatInput(
                 stat_id="plasma_cannon_damage_mult",
                 phase=Phase.START_OF_RUN,
-                base_value=1.0,
-                provenance="base:identity",
+                base_value=0.0,
+                provenance="base:cards:plasma_cannon",
             ),
             StatInput(
                 stat_id="knockback_mult",
@@ -555,13 +563,71 @@ def _wall_regen_ratio(
     )
 
 
-def _thorns_base(ids_snapshot: AccountSnapshot, *, allow_provisional: bool) -> float:
-    if not allow_provisional:
+def _resolve_thorns_inputs(
+    ids_snapshot: AccountSnapshot,
+) -> tuple[float, float, str]:
+    workshop_entry = ids_snapshot.workshop.get("Thorn Damage")
+    if workshop_entry is None or workshop_entry.coin_level is None:
         raise SurvivabilityPipelineError(
-            "Thorns base fraction missing from authoritative tables. "
-            "Set allow_provisional=True to assume 0."
+            "Missing workshop level for 'Thorn Damage' in IDS."
         )
-    return 0.0
+    workshop_level = workshop_entry.coin_level
+    if workshop_level < 0:
+        raise SurvivabilityPipelineError(
+            f"Invalid workshop level for Thorn Damage: {workshop_level}."
+        )
+    if workshop_level > _WORKSHOP_THORNS_MAX_LEVEL:
+        raise SurvivabilityPipelineError(
+            "Thorn Damage workshop level exceeds max "
+            f"{_WORKSHOP_THORNS_MAX_LEVEL}: {workshop_level}."
+        )
+    workshop_thorns = workshop_level * _WORKSHOP_THORNS_PER_LEVEL
+
+    wall_thorns_level = ids_snapshot.labs.get("Wall Thorns")
+    if wall_thorns_level is None:
+        raise SurvivabilityPipelineError("Missing lab level for 'Wall Thorns' in IDS.")
+    if wall_thorns_level < 0:
+        raise SurvivabilityPipelineError(
+            f"Invalid lab level for Wall Thorns: {wall_thorns_level}."
+        )
+    wall_thorns_pct = wall_thorns_level * _WALL_THORNS_PER_LEVEL
+
+    relic_bonus = _sum_relic_bonus(ids_snapshot, ("Thorns", "Thorn Damage"))
+    relic_multiplier = 1.0 + relic_bonus
+
+    multiplier = relic_multiplier * wall_thorns_pct * _BOSS_THORNS_MULT
+    provenance = (
+        "workshop:Thorn Damage + labs:Wall Thorns + relics:Thorns "
+        "(wiki excerpt in prompt)"
+    )
+    return workshop_thorns, multiplier, provenance
+
+
+def _sum_relic_bonus(
+    ids_snapshot: AccountSnapshot, keys: Iterable[str]
+) -> float:
+    relics = ids_snapshot.relics
+    total = 0.0
+    for key in keys:
+        if key not in relics:
+            continue
+        value = relics.get(key)
+        if value is None:
+            raise SurvivabilityPipelineError(
+                f"Missing relic value for {key!r} in IDS."
+            )
+        try:
+            numeric = float(value)
+        except ValueError as exc:
+            raise SurvivabilityPipelineError(
+                f"Invalid relic value for {key!r}: {value!r}"
+            ) from exc
+        total += numeric
+    if total < 0:
+        raise SurvivabilityPipelineError(
+            f"Relic bonus must be non-negative, got {total}."
+        )
+    return total
 
 
 def _compile_loadout_stat_inputs(
@@ -584,7 +650,7 @@ def _compile_loadout_stat_inputs(
         assist_enabled = loadout.assist_enabled
         assist_level = loadout.assist_stone_level
         assist_cap = loadout.assist_cap_rarity
-        allocation = resolved_loadout.allocation_levels.get(loadout.slot)
+        allocation = ids_snapshot.allocation_levels.get(loadout.slot)
         if allocation is not None:
             assist_level = allocation.assist_level
 
@@ -818,6 +884,7 @@ def _resolve_survivability_verdict(
                 f"Missing survivability stat {stat_id!r} in snapshot."
             )
     thorns_frac = values["thorns_damage_mult"]
+    pc_frac = values["plasma_cannon_damage_mult"]
     combat_params.update(
         {
             "tower_hp": values["tower_hp"],
@@ -826,6 +893,7 @@ def _resolve_survivability_verdict(
             "wall_hp": values["wall_hp"],
             "wall_regen": values["wall_regen"],
             "thorns_frac": thorns_frac,
+            "pc_frac": pc_frac,
         }
     )
     ctx = BossContext(
@@ -873,7 +941,7 @@ def _build_inventory_summary(
     for slot, block in module_blocks.items():
         loadout = block.loadout_by_context.get(module_context)
         override = (module_overrides or {}).get(slot, {})
-        allocation = resolved_loadout.allocation_levels.get(slot)
+        allocation = ids_snapshot.allocation_levels.get(slot)
         module_summary[slot] = {
             "loadout": {
                 "primary": override.get("primary", loadout.primary if loadout else None),
@@ -1386,6 +1454,14 @@ def _apply_card_effects(
                     f"Extra Defense card has unsupported unit {effect.unit!r}."
                 )
             accumulator.add("def_pct", effect.value, "cards:extra_defense")
+        elif effect.card in ("Plasma Canon", "Plasma Cannon"):
+            if effect.unit != "percent":
+                raise SurvivabilityPipelineError(
+                    f"Plasma Cannon card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add(
+                "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
+            )
         else:
             raise SurvivabilityPipelineError(
                 f"Unsupported card for survivability pipeline: {card_name!r}."

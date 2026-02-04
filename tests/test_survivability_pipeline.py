@@ -82,3 +82,28 @@ def test_base_only_matches_effective_paths_fixture() -> None:
     assert base_only["def_pct"] == pytest.approx(0.551, rel=1e-9)
     assert base_only["wall_hp"] == pytest.approx(28740096282.04574, rel=1e-9)
     assert base_only["wall_regen"] == pytest.approx(64930740713.43503, rel=1e-9)
+
+
+def test_thorns_and_plasma_cannon_inputs() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
+
+    report = build_survivability_report(
+        ids_snapshot, spec, module_context="Testing", allow_provisional=True
+    )
+    base_only = report["snapshots"]["base_only"]
+    assert base_only["thorns_damage_mult"] == pytest.approx(0.06435, rel=1e-9)
+
+    plasma_report = build_survivability_report(
+        ids_snapshot,
+        spec,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+    start_snapshot = plasma_report["snapshots"]["start_of_run"]
+    assert start_snapshot["plasma_cannon_damage_mult"] == pytest.approx(
+        0.54, rel=1e-9
+    )

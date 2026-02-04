@@ -53,3 +53,33 @@ def test_load_bc_params_missing_key(tmp_path: Path):
     path.write_text(json.dumps({"boss_hp_mult": 1.0}))
     with pytest.raises(BossDataError, match="Missing BC param"):
         load_bc_params(path)
+
+
+def test_plasma_cannon_applies_immediately() -> None:
+    boss = BossStats(None, 10, 2.0, 1.0)
+    tower = TowerDefense(0.0, 0.0, 0.0)
+    ctx = BossContext(
+        wave=100,
+        tier=14,
+        league="Test",
+        boss=boss,
+        tower=tower,
+        combat_params={
+            "tower_hp": 100.0,
+            "tower_regen": 0.0,
+            "defense_pct": 0.0,
+            "defense_abs": 0.0,
+            "wall_hp": 0.0,
+            "wall_regen": 0.0,
+            "damage_reduction": 0.0,
+            "thorns_frac": 0.1,
+            "pc_frac": 0.2,
+            "pc_boss_mult": 1.0,
+            "orb_damage_frac": 0.0,
+            "electrons_damage_frac": 0.0,
+        },
+        bc_params={"boss_hp_mult": 1, "boss_attack_mult": 1},
+    )
+    out = resolve_boss_fight(ctx)
+    assert out["hits_to_kill"] == 8
+    assert out["ttk_seconds"] == pytest.approx(16.0)

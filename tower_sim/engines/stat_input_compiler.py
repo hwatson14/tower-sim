@@ -7,7 +7,6 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
 from tower_sim.libs.uw_lib import load_uw_table
-from tower_sim.libs.data_paths import resolve_data_file
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot
 
@@ -37,7 +36,7 @@ _UW_LEVEL_RE = re.compile(r"^(\d+)")
 
 
 _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
-    "Damage": WorkshopStatSpec(stat_id="workshop_damage", wsvalues_key="Damage"),
+    "Damage": WorkshopStatSpec(stat_id="workshop_damage_mult", wsvalues_key="Damage"),
     "Health": WorkshopStatSpec(stat_id="workshop_health", wsvalues_key="Health"),
     "Health Regen": WorkshopStatSpec(
         stat_id="workshop_health_regen",
@@ -76,21 +75,14 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
     "Wall Fortification": WorkshopStatSpec(stat_id="workshop_wall_fortification"),
     "Cash / Wave": WorkshopStatSpec(stat_id="workshop_cash_per_wave"),
     "Coin / Wave": WorkshopStatSpec(stat_id="workshop_coins_per_wave"),
-    "Coin / Kill Bonus": WorkshopStatSpec(stat_id="workshop_coins_per_kill_bonus"),
     "Interest / Wave": WorkshopStatSpec(stat_id="workshop_interest"),
     "Max Recovery": WorkshopStatSpec(stat_id="workshop_max_recovery"),
     "Recovery Package Chance": WorkshopStatSpec(stat_id="workshop_recovery_packages"),
-    "Package Chance": WorkshopStatSpec(stat_id="workshop_package_chance"),
     "Land Mine Damage": WorkshopStatSpec(
         stat_id="workshop_land_mine_damage", dvt_keys=("Land Mine Damage",)
     ),
-    "Land Mine Chance": WorkshopStatSpec(stat_id="workshop_land_mine_chance"),
-    "Land Mine Radius": WorkshopStatSpec(stat_id="workshop_land_mine_radius"),
     "Wall Health": WorkshopStatSpec(stat_id="workshop_wall_health", dvt_keys=("Wall Health",)),
-    "Wall Rebuild": WorkshopStatSpec(stat_id="workshop_wall_rebuild"),
     "Orb Size": WorkshopStatSpec(stat_id="workshop_orb_size", dvt_keys=("Orb Size",)),
-    "Orbs": WorkshopStatSpec(stat_id="workshop_orbs"),
-    "Orb Speed": WorkshopStatSpec(stat_id="workshop_orb_speed"),
     "Cash Bonus": WorkshopStatSpec(stat_id="workshop_cash_bonus", dvt_keys=("Cash Bonus",)),
     "Coin Bonus": WorkshopStatSpec(
         stat_id="workshop_coins_per_kill_bonus", dvt_keys=("Coin Bonus",)

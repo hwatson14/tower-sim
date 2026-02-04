@@ -101,7 +101,9 @@ def get_card_effect(card_name: str, level: int) -> CardEffect:
     (e.g., it won't compute package-chance-per-wave; that happens elsewhere).
     """
     df = _cards_df()
-    rows = df[df["Name"].str.lower() == card_name.strip().lower()]
+    aliases = {"Plasma Cannon": "Plasma Canon"}
+    lookup_name = aliases.get(card_name.strip(), card_name).strip()
+    rows = df[df["Name"].str.lower() == lookup_name.lower()]
     if rows.empty:
         raise KeyError(f"Unknown card: {card_name!r}")
     if level < 1 or level > 7:

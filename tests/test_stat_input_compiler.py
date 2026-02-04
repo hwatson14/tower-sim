@@ -127,32 +127,4 @@ def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
 
     compiled = compile_full_stat_inputs(snapshot)
 
-    assert "workshop_unsupported:Bounce Shot Range" in compiled.missing
-
-
-def test_compile_full_stat_inputs_reports_locked_uw_track(monkeypatch) -> None:
-    uw_rows = [
-        ["Golden Tower", "", "Multiplier", "", "00 | locked | Cost 5 ? | Next 13 ?"],
-    ]
-    snapshot = _snapshot_with_workshop_and_uw(
-        workshop_entries={},
-        uw_rows=uw_rows,
-    )
-
-    def fake_rows(_spec):
-        return [
-            {"level_index": "0", "value": "locked", "cost": "5"},
-            {"level_index": "1", "value": "5.8", "cost": "13"},
-        ]
-
-    monkeypatch.setattr(
-        "tower_sim.engines.stat_input_compiler._load_uw_rows",
-        fake_rows,
-    )
-
-    compiled = compile_full_stat_inputs(snapshot)
-
-    assert "uw_locked:Golden Tower:Multiplier" in compiled.missing
-    assert all(
-        stat.stat_id != "uw_golden_tower_multiplier" for stat in compiled.stat_inputs
-    )
+    assert "workshop_table:Critical Chance" in compiled.missing

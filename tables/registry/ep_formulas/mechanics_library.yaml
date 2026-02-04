@@ -282,6 +282,20 @@ eHP_mechanics:
     type: excel_named_formula
     excel_definition: "LAMBDA(lab_lvl, prim_effect, ass_effect, LET(\n  SF, IF(prim_effect + ass_effect <> 0, prim_effect + ass_effect, 1),\n\n(10% * lab_lvl) * SF))"
     notes: From workbook defined name (user-provided wiki/sheet extract in prompt).
+survivability_mechanics:
+  version: prompt_wiki_excerpt_2026-02-02
+  workbook: User-provided wiki excerpt in prompt.
+  mechanics:
+  - id: boss_wall_thorns_frac_v1
+    name: BOSS_WALL_THORNS_FRAC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, wall_thorns_lvl, relic_bonus, substat_bonus, LET(\n  WS, MIN(ws_level, 99) * 1%,\n  WALL, wall_thorns_lvl * 1%,\n  NONRELIC, WS + substat_bonus,\n  RELIC, 1 + relic_bonus,\n  BOSS, 0.5,\n\nNONRELIC * RELIC * WALL * BOSS))"
+    notes: Wall thorns uses a percent of tower thorns; workshop +1% per level up to 99, relics multiply non-relic sources, bosses take 50% thorns damage (all per user-provided wiki excerpt in prompt, wall assumed always up).
+  - id: plasma_cannon_card_frac_v1
+    name: PLASMA_CANNON_CARD_FRAC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(card_pct, bc_mult, IF(card_pct > 0, card_pct * bc_mult, 0))"
+    notes: Plasma Cannon card applies a percent of boss max HP immediately; card percent is from tables/wiki_cache/cards_rare.csv and BC multiplier is from tier battle conditions (user-provided wiki excerpt in prompt).
 ids_helpers:
   status: complete
 stacking_rules:
