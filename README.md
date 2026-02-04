@@ -65,6 +65,43 @@ If something is unclear, it likely belongs in one of the documents above rather 
 
 ---
 
+## Agent quickstart: base stats, inventory, loadout
+
+If you are wiring a ChatGPT agent (or any tool runner) to pull deterministic player
+data, use the IDS diagnostics helper. It emits a single JSON payload containing
+`base_stats`, `inventory`, and the resolved `loadout` (default preset). The output
+is stable and fail-closed when required sections are missing.
+
+```bash
+PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
+  --ids-path /path/to/_IDS.csv \
+  --output-dir ./audit
+```
+
+The payload is written to `audit/account_snapshot.json`. Key fields:
+
+- `base_stats`: statbook rows (base/final/provenance) for labs + workshop.
+- `inventory`: card/module/uw/bot/vault/etc inventory snapshots.
+- `loadout`: resolved preset name, card list, module selections, and allocation
+  levels for the active preset.
+
+If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
+`--include-raw`.
+
+**How does my agent know what to call?**  
+In short: your agent should call the `dump_ids_diagnostics.py` script (or an
+equivalent wrapper around it) and then read the resulting JSON file. The single
+call above produces everything it needs for base stats, inventory, and loadout
+in one deterministic payload. The fields to consume are:
+
+- `base_stats` → list of stat rows with `stat_id`, `phase`, `base_value`,
+  `final_value`, and provenance.
+- `inventory` → full inventory sections (cards/modules/uw/bots/etc).
+- `loadout` → resolved preset name, equipped card list, module selections,
+  and allocation levels.
+
+---
+
 ## Repository principles (non-negotiable)
 
 - No invented mechanics
@@ -91,4 +128,3 @@ Missing tables or mechanics are treated as blockers, not TODOs.
 ## License
 
 TBD (personal project; not yet licensed for redistribution).
-

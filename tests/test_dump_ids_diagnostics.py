@@ -36,7 +36,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert summary_path.exists()
     assert not diff_path.exists()
     payload = json.loads(output_path.read_text())
-    assert payload["schema_version"] == 3
+    assert payload["schema_version"] == 4
     assert isinstance(payload["created_utc"], str)
     assert payload["created_utc"]
     assert "git_sha" in payload
@@ -45,6 +45,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert isinstance(payload["missing_sections"], list)
     assert "base_stats" in payload
     assert "inventory" in payload
+    assert "loadout" in payload
     assert "snapshot" in payload
     assert isinstance(payload["base_stats"], list)
     assert payload["base_stats"]
@@ -58,6 +59,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert payload["inventory"]["themes_songs"] is None
     assert payload["inventory"]["guardians"] is None
     assert payload["inventory"]["player_stuff"] is None
+    assert payload["loadout"]["preset_name"]
     assert "themes_songs" not in payload["missing_sections"]
     assert "guardians" not in payload["missing_sections"]
     assert "player_stuff" not in payload["missing_sections"]

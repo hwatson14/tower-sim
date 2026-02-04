@@ -10,7 +10,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict
 
 from tower_sim.engines.statbook_builder import build_statbook
-from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.account_snapshot_compiler import (
+    compile_account_snapshot,
+    resolve_loadout,
+)
 from tower_sim.loaders.ids_parser import parse_ids, resolve_ids_path
 from tower_sim.util.account_snapshot import PRESET_NAMES
 
@@ -34,7 +37,7 @@ def _safe_get(
 ) -> Any:
     try:
         return getter()
-    except (AttributeError, KeyError):
+    except (AttributeError, KeyError, ValueError):
         missing_sections.append(path_label)
         return None
 
@@ -106,6 +109,13 @@ def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
         "guardians": None,
         "player_stuff": None,
     }
+    loadout = _to_jsonable(
+        _safe_get(
+            "loadout",
+            lambda: resolve_loadout(snapshot),
+            missing_sections,
+        )
+    )
     if include_raw:
         inventory["themes_songs"] = _to_jsonable(
             _safe_get(
@@ -130,12 +140,13 @@ def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
         )
 
     return {
-        "schema_version": 3,
+        "schema_version": 4,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "git_sha": _resolve_git_sha(),
         "ids_path": str(ids_path),
         "base_stats": base_stats,
         "inventory": inventory,
+        "loadout": loadout,
         "snapshot": _to_jsonable(snapshot),
         "missing_sections": sorted(set(missing_sections)),
     }
