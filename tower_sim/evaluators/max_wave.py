@@ -91,9 +91,6 @@ class MaxWaveEvaluator:
                 "fail_closed": True,
                 "missing": missing,
                 "w_max": None,
-                "failure_wave": None,
-                "failure_reason": None,
-                "at_failure_snapshot": None,
                 "diagnostics": diagnostics,
             }
 
@@ -113,7 +110,6 @@ class MaxWaveEvaluator:
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
             missing.append("stat_engine")
-
         wave_snapshot = _resolve_wave_snapshot(
             problem_spec,
             stat_inputs,
@@ -146,21 +142,10 @@ class MaxWaveEvaluator:
                 "fail_closed": True,
                 "missing": missing,
                 "w_max": None,
-                "failure_wave": None,
-                "failure_reason": None,
-                "at_failure_snapshot": None,
                 "diagnostics": diagnostics,
             }
 
-        (
-            w_max,
-            failure_wave,
-            failure_reason,
-            failure_snapshot,
-            trace,
-            search_diagnostics,
-            search_missing,
-        ) = _search_wmax(
+        w_max, trace, search_diagnostics, search_missing = _search_wmax(
             problem_spec=problem_spec,
             stat_inputs=stat_inputs,
             engine_result=engine_result_base,
@@ -249,7 +234,7 @@ def _load_tier_rules(
 
 
 def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
-    return Path(__file__).resolve().parents[2] / "tables" / "tier14_21_battle_conditions.csv"
+    return Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
 
 
 def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:
@@ -529,23 +514,15 @@ def _search_wmax(
     tier_rules,
     run_context: RunContext,
     trace_depth: int = 5,
-) -> Tuple[
-    Optional[int],
-    Optional[int],
-    Optional[str],
-    Optional[Dict[str, Any]],
-    List[Dict[str, Any]],
-    Dict[str, Any],
-    List[str],
-]:
+) -> Tuple[Optional[int], List[Dict[str, Any]], Dict[str, Any], List[str]]:
     scenario = problem_spec.scenario
     missing: List[str] = []
     diagnostics: Dict[str, Any] = {}
 
     if scenario.boss_survivability is None:
-        return None, None, None, None, [], {}, ["boss_survivability_inputs"]
+        return None, [], {}, ["boss_survivability_inputs"]
     if engine_result is None:
-        return None, None, None, None, [], {}, ["stat_engine"]
+        return None, [], {}, ["stat_engine"]
     max_wave = int(scenario.wave)
     if max_wave <= 0:
         return None, None, None, None, [], {}, ["wave_limit"]
@@ -558,6 +535,14 @@ def _search_wmax(
 
     def evaluate_wave(wave: int) -> Tuple[Optional[Dict[str, Any]], Optional[bool], List[str]]:
         nonlocal failure_wave, failure_reason, failure_snapshot
+        if wave in cache:
+            entry, success, _result = cache[wave]
+            return entry, success, []
+
+    cache: Dict[int, Tuple[Dict[str, Any], bool, Dict[str, Any]]] = {}
+    history: List[Dict[str, Any]] = []
+
+    def evaluate_wave(wave: int) -> Tuple[Optional[Dict[str, Any]], Optional[bool], List[str]]:
         if wave in cache:
             entry, success, _result = cache[wave]
             return entry, success, []
@@ -623,16 +608,6 @@ def _search_wmax(
         success = outcome == "tower_kills_boss"
         cache[wave] = (entry, success, result)
         history.append(entry)
-        if not success and failure_wave is None:
-            failure_wave = wave
-            failure_reason = outcome
-            failure_snapshot = _build_failure_snapshot(
-                problem_spec,
-                survivability_stats,
-                wave,
-                wave_damage,
-                result,
-            )
         return entry, success, []
 
     def check_monotonicity() -> Tuple[Optional[bool], List[str]]:
@@ -659,7 +634,7 @@ def _search_wmax(
 
     monotonic, mono_missing = check_monotonicity()
     if mono_missing:
-        return None, None, None, None, [], diagnostics, mono_missing
+        return None, [], diagnostics, mono_missing
     diagnostics["monotonic"] = monotonic
 
     last_result: Dict[str, Any] = {}
@@ -673,7 +648,7 @@ def _search_wmax(
         while high <= max_wave:
             entry, success, eval_missing = evaluate_wave(high)
             if eval_missing:
-                return None, None, None, None, [], diagnostics, eval_missing
+                return None, [], diagnostics, eval_missing
             evaluated.add(high)
             if entry is not None:
                 last_result = cache[high][2]
@@ -692,7 +667,7 @@ def _search_wmax(
                 mid = (left + right) // 2
                 entry, success, eval_missing = evaluate_wave(mid)
                 if eval_missing:
-                    return None, None, None, None, [], diagnostics, eval_missing
+                    return None, [], diagnostics, eval_missing
                 evaluated.add(mid)
                 if entry is not None:
                     last_result = cache[mid][2]
@@ -711,7 +686,7 @@ def _search_wmax(
         for idx, wave in enumerate(sampled):
             entry, success, eval_missing = evaluate_wave(wave)
             if eval_missing:
-                return None, None, None, None, [], diagnostics, eval_missing
+                return None, [], diagnostics, eval_missing
             evaluated.add(wave)
             if entry is not None:
                 last_result = cache[wave][2]
@@ -725,7 +700,7 @@ def _search_wmax(
             for inner_wave in range(prev_wave + 1, wave):
                 inner_entry, inner_success, inner_missing = evaluate_wave(inner_wave)
                 if inner_missing:
-                    return None, None, None, None, [], diagnostics, inner_missing
+                    return None, [], diagnostics, inner_missing
                 evaluated.add(inner_wave)
                 if inner_entry is not None:
                     last_result = cache[inner_wave][2]
@@ -742,15 +717,7 @@ def _search_wmax(
             "last_wave_result": last_result,
         }
     )
-    return (
-        w_max,
-        failure_wave,
-        failure_reason,
-        failure_snapshot,
-        trace,
-        diagnostics,
-        missing,
-    )
+    return w_max, trace, diagnostics, missing
 
 
 def _margin_from_outcome(result: Dict[str, Any]) -> Optional[float]:

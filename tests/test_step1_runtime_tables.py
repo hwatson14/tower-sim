@@ -32,7 +32,7 @@ def test_step1_tables_present() -> None:
         "tournament_more_bosses_static.csv",
         "tier_wave_damage.csv",
         "tournament_wave_damage.csv",
-        "tier14_21_battle_conditions.csv",
+        "tier_battle_conditions.csv",
         "dag.json",
     ]
     for filename in required:
@@ -78,7 +78,7 @@ def test_tournament_wave_damage_schema_and_keys() -> None:
 
 
 def test_tier_battle_conditions_schema_and_keys() -> None:
-    path = TABLES_DIR / "tier14_21_battle_conditions.csv"
+    path = TABLES_DIR / "tier_battle_conditions.csv"
     assert _read_fieldnames(path) == ["tier", "bc", "kind", "value", "unit", "notes"]
     rows = _read_rows(path)
     keys = {(row["tier"], row["bc"], row["kind"]) for row in rows}

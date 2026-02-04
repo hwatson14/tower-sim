@@ -175,7 +175,7 @@ def load_tournament_wave_damage_rows(
 def load_tier_battle_condition_rows(
     path: Path | None = None,
 ) -> list[TierBattleConditionRow]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "tier14_21_battle_conditions.csv")
+    csv_path = path or (_DEFAULT_TABLES_DIR / "tier_battle_conditions.csv")
     rows = _read_csv_rows(
         csv_path, {"tier", "bc", "kind", "value", "unit", "notes"}
     )

@@ -17,6 +17,7 @@ IGNORED_NAMES = {
     ".tox",
     ".venv",
     "__pycache__",
+    "towersim.egg-info",
 }
 
 

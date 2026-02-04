@@ -6,7 +6,7 @@ Archive:  reference/tower_sim_step1_part2_data.zip
        29  2026-01-28 01:30   data/battle_condition_magnitudes.csv
       127  2026-01-28 01:30   data/dag.json
     91382  2026-01-28 01:30   data/heat_wave_scalar.csv
-     9802  2026-01-28 01:30   data/tier14_21_battle_conditions.csv
+     9802  2026-01-28 01:30   data/tier_battle_conditions.csv
      5947  2026-01-28 01:30   data/tier_wave_damage.csv
  11099557  2026-01-28 01:30   data/tournament_bc_magnitudes_from_player_and_stuff.csv
        83  2026-01-28 01:30   data/tournament_more_bosses_static.csv

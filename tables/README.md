@@ -7,9 +7,10 @@ tables have not yet been added.
 
 ## Table provenance
 - `labs_values_v1.csv`: Promoted from audited wiki cache tables (see `tower_sim/loaders/wiki/promote_labs_tables.py`).
-- `tier14_21_battle_conditions.csv`: Tier 14–21 farming battle condition magnitudes
+- `tier_battle_conditions.csv`: Tier 14–21 farming battle condition magnitudes
+  (tiers 1–13 have no battle conditions per user-provided clarification),
   promoted from the Step1 part2 data dump
-  (`reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv`), with the
+  (`reference/step1_dump_docs/part2_data/tier_battle_conditions.csv`), with the
   original Notion extract provenance documented in
   `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_PROVENANCE.md`.
 - `battle_condition_magnitudes.csv`: Step1 part2 data dump

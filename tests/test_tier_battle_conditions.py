@@ -13,7 +13,7 @@ from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 
 
 def test_load_tier_battle_conditions_rejects_incomplete_rows() -> None:
-    path = Path("reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv")
+    path = Path("reference/step1_dump_docs/part2_data/tier_battle_conditions.csv")
     try:
         load_tier_battle_conditions(path)
     except ValueError as exc:
@@ -21,8 +21,9 @@ def test_load_tier_battle_conditions_rejects_incomplete_rows() -> None:
     else:
         raise AssertionError("Expected ValueError for incomplete rows")
 
+
 def test_load_tier_battle_conditions_allows_skip_incomplete() -> None:
-    path = Path("reference/step1_dump_docs/part2_data/tier14_21_battle_conditions.csv")
+    path = Path("reference/step1_dump_docs/part2_data/tier_battle_conditions.csv")
     catalog = load_tier_battle_conditions(path, allow_incomplete=True)
 
     assert catalog.rows

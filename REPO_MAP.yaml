@@ -7,6 +7,8 @@ top_level:
     - tests
     - tests_quarantine
     - scripts
+    - .github
+    - worker
 
   allowed_files:
     - README.md
@@ -166,3 +168,5 @@ file_count_caps:
 exceptions:
   allow_paths:
     - "tables/registry/ep_formulas/STATUS.md"
+    - ".github/requirements-ci.txt"
+    - "worker/New Text Document.txt"
