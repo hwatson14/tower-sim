@@ -17,6 +17,7 @@ from tower_sim.loaders.account_snapshot_compiler import (
 )
 from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot, ResolvedLoadout
 from tower_sim.run.problem_spec import ProblemSpec
+from tower_sim.run.optimizer_runner import OPTIMIZER_TASKS, run_optimizer_task
 from tower_sim.loaders.sources import DatasetBundle, IdsOnlyBundle, load_ids_only_bundle, load_snapshot_bundle
 from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
 
@@ -28,6 +29,12 @@ TASK_INVENTORY = "INVENTORY"
 TASK_LOADOUT = "LOADOUT"
 TASK_EHP_SLICE = "EHP_SLICE"
 TASK_MAX_WAVE = "MAX_WAVE"
+TASK_OPTIMIZE_LOADOUT = "OPTIMIZE_LOADOUT"
+TASK_OPTIMIZE_MODULE_SUBSTATS = "OPTIMIZE_MODULE_SUBSTATS"
+TASK_OPTIMIZE_STONES = "OPTIMIZE_STONES"
+TASK_OPTIMIZE_COINS = "OPTIMIZE_COINS"
+TASK_OPTIMIZE_LABS = "OPTIMIZE_LABS"
+TASK_SENSITIVITY_REPORT = "SENSITIVITY_REPORT"
 
 TASKS_REQUIRING_IDS = {
     TASK_BASE_STATS,
@@ -62,6 +69,8 @@ def run_task(
     _validate_task_name(task)
     resolved_args = args or {}
     _validate_task_args(task, resolved_args)
+    if task in OPTIMIZER_TASKS:
+        return run_optimizer_task(task, resolved_args)
     bundle = _resolve_bundle()
     resolved_ids_snapshot = _resolve_ids_snapshot(bundle, ids_path, ids_snapshot)
     missing: list[str] = []
@@ -173,7 +182,7 @@ def _validate_task_name(task: str) -> None:
         TASK_EHP_SLICE,
         TASK_MAX_WAVE,
     }
-    if task not in allowed:
+    if task not in allowed and task not in OPTIMIZER_TASKS:
         raise ValueError(f"Unknown task: {task!r}")
 
 
@@ -199,6 +208,8 @@ def _validate_task_args(task: str, args: Dict[str, Any]) -> None:
         _require_keys(args, required={"problem_spec"}, optional=set())
         if not isinstance(args["problem_spec"], dict):
             raise ValueError("problem_spec must be a mapping.")
+        return
+    if task in OPTIMIZER_TASKS:
         return
     raise ValueError(f"Unknown task: {task!r}")
 
