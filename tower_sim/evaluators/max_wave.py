@@ -172,11 +172,15 @@ class MaxWaveEvaluator:
             diagnostics["boss_combat_error"] = boss_combat_error
 
         missing = sorted(set(missing))
+        fail_closed = bool(missing)
         return {
             "evaluator": problem_spec.evaluator,
-            "fail_closed": bool(missing),
+            "fail_closed": fail_closed,
             "missing": missing,
-            "w_max": w_max if not missing else None,
+            "w_max": w_max if not fail_closed else None,
+            "failure_wave": None if fail_closed else failure_wave,
+            "failure_reason": None if fail_closed else failure_reason,
+            "at_failure_snapshot": None if fail_closed else failure_snapshot,
             "diagnostics": diagnostics,
         }
 
@@ -205,6 +209,8 @@ def _load_tier_rules(
     run_context: RunContext,
 ) -> Tuple[Optional[Any], List[str]]:
     missing: List[str] = []
+    if problem_spec.scenario.tier < 14:
+        return None, missing
     bc_path = _resolve_bc_path(problem_spec)
     try:
         catalog = load_tier_battle_conditions(bc_path, allow_incomplete=True)
@@ -519,7 +525,19 @@ def _search_wmax(
         return None, [], {}, ["stat_engine"]
     max_wave = int(scenario.wave)
     if max_wave <= 0:
-        return None, [], {}, ["wave_limit"]
+        return None, None, None, None, [], {}, ["wave_limit"]
+
+    cache: Dict[int, Tuple[Dict[str, Any], bool, Dict[str, Any]]] = {}
+    history: List[Dict[str, Any]] = []
+    failure_wave: Optional[int] = None
+    failure_reason: Optional[str] = None
+    failure_snapshot: Optional[Dict[str, Any]] = None
+
+    def evaluate_wave(wave: int) -> Tuple[Optional[Dict[str, Any]], Optional[bool], List[str]]:
+        nonlocal failure_wave, failure_reason, failure_snapshot
+        if wave in cache:
+            entry, success, _result = cache[wave]
+            return entry, success, []
 
     cache: Dict[int, Tuple[Dict[str, Any], bool, Dict[str, Any]]] = {}
     history: List[Dict[str, Any]] = []
@@ -710,6 +728,60 @@ def _margin_from_outcome(result: Dict[str, Any]) -> Optional[float]:
     if not (isfinite(ttk) or isfinite(ttd)):
         return None
     return ttd - ttk
+
+
+def _build_failure_snapshot(
+    problem_spec: ProblemSpec,
+    survivability_stats: Dict[str, float],
+    wave: int,
+    wave_damage: float,
+    result: Dict[str, Any],
+) -> Dict[str, Any]:
+    spec = problem_spec.scenario.boss_survivability
+    if spec is None:
+        return {}
+    hit_interval_id = spec.combat_params.get("hit_interval_id", "default")
+    hit_interval = boss_hit_interval_seconds(str(hit_interval_id))
+    combat_params = dict(spec.combat_params)
+    combat_params.update(
+        {
+            "tower_hp": survivability_stats["tower_hp"],
+            "tower_regen": survivability_stats["tower_regen"],
+            "defense_pct": survivability_stats["def_pct"],
+            "wall_hp": survivability_stats["wall_hp"],
+            "wall_regen": survivability_stats["wall_regen"],
+            "thorns_frac": survivability_stats["thorns_damage_mult"],
+        }
+    )
+    used_keys = [
+        "tower_hp",
+        "tower_regen",
+        "defense_pct",
+        "wall_hp",
+        "wall_regen",
+        "defense_abs",
+        "damage_reduction",
+        "thorns_frac",
+        "pc_frac",
+        "pc_boss_mult",
+        "orb_damage_frac",
+        "electrons_damage_frac",
+    ]
+    tower_stats = {key: combat_params.get(key) for key in used_keys if key in combat_params}
+    return {
+        "wave": wave,
+        "tower_stats": tower_stats,
+        "boss_stats": {
+            "attack": wave_damage,
+            "attack_interval": hit_interval,
+            "enrage_mult": spec.boss.enrage_mult or 1.0,
+        },
+        "margins": {
+            "ttk_seconds": result.get("ttk_seconds"),
+            "ttd_seconds": result.get("ttd_seconds"),
+            "margin_seconds": _margin_from_outcome(result),
+        },
+    }
 
 
 def _resolve_boss_survivability(
