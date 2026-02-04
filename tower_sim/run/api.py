@@ -10,8 +10,11 @@ from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.evaluators.ehp_stat_evaluator import evaluate_stats
 from tower_sim.engines.statbook_builder import build_statbook
 from tower_sim.loaders.ids_parser import parse_ids
-from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
-from tower_sim.util.account_snapshot import AccountSnapshot
+from tower_sim.loaders.account_snapshot_compiler import (
+    compile_account_snapshot,
+    resolve_loadout,
+)
+from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot, ResolvedLoadout
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.loaders.sources import DatasetBundle, IdsOnlyBundle, load_ids_only_bundle, load_snapshot_bundle
 from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
@@ -42,7 +45,7 @@ def run(
         TASK_MAX_WAVE,
         {"problem_spec": spec_as_dict(problem_spec)},
         ids_path=ids_path,
-        ids_state=ids_state,
+        ids_snapshot=ids_snapshot,
     )
 
 
@@ -51,28 +54,57 @@ def run_task(
     args: Optional[Dict[str, Any]] = None,
     *,
     ids_path: Optional[Path] = None,
-    ids_state: Optional[IdsState] = None,
+    ids_snapshot: Optional[AccountSnapshot] = None,
 ) -> Dict[str, Any]:
     _validate_task_name(task)
     resolved_args = args or {}
     _validate_task_args(task, resolved_args)
     bundle = _resolve_bundle()
     resolved_ids_snapshot = _resolve_ids_snapshot(bundle, ids_path, ids_snapshot)
+    missing: list[str] = []
     if resolved_ids_snapshot is None:
-        return {
-            "evaluator": problem_spec.evaluator,
-            "fail_closed": True,
-            "missing": ["ids_snapshot"],
-            "w_max": None,
-        }
-
-    if missing:
+        missing.append("ids_snapshot")
         return _fail_closed(task, missing=missing, resolved_from=bundle.resolved_from)
 
-    evaluator = MaxWaveEvaluator()
-    result = evaluator.evaluate(problem_spec, resolved_ids_snapshot)
-    result["resolved_from"] = bundle.resolved_from
-    return result
+    if task == TASK_BASE_STATS:
+        statbook = build_statbook(resolved_ids_snapshot)
+        return _ok(
+            task,
+            {"statbook": asdict(statbook)},
+            resolved_from=bundle.resolved_from,
+        )
+    if task == TASK_INVENTORY:
+        return _ok(
+            task,
+            _serialize_inventory(resolved_ids_snapshot),
+            resolved_from=bundle.resolved_from,
+        )
+    if task == TASK_LOADOUT:
+        return _ok(
+            task,
+            _serialize_loadout(resolved_ids_snapshot),
+            resolved_from=bundle.resolved_from,
+        )
+    if task == TASK_EHP_SLICE:
+        enabled_stats = resolved_args["enabled_stats"]
+        allow_out_of_scope = resolved_args.get("allow_out_of_scope", False)
+        stats = evaluate_stats(
+            resolved_ids_snapshot,
+            enabled_stats,
+            allow_out_of_scope=allow_out_of_scope,
+        )
+        return _ok(
+            task,
+            {"stats": stats},
+            resolved_from=bundle.resolved_from,
+        )
+    if task == TASK_MAX_WAVE:
+        problem_spec = parse_problem_spec_data(resolved_args["problem_spec"])
+        _log_problem_spec(problem_spec)
+        evaluator = MaxWaveEvaluator()
+        result = evaluator.evaluate(problem_spec, resolved_ids_snapshot)
+        return _ok(task, result, resolved_from=bundle.resolved_from)
+    raise ValueError(f"Unknown task: {task!r}")
 
 
 def _resolve_bundle() -> DatasetBundle | IdsOnlyBundle:
@@ -193,58 +225,75 @@ def _ok(task: str, result: Dict[str, Any], *, resolved_from: str) -> Dict[str, A
     }
 
 
-def _serialize_inventory(ids_state: IdsState) -> Dict[str, Any]:
+def _serialize_inventory(ids_snapshot: AccountSnapshot) -> Dict[str, Any]:
     return {
-        "labs": dict(ids_state.labs.labs),
+        "labs": dict(ids_snapshot.labs),
         "workshop": {
             name: _serialize_workshop_entry(entry)
-            for name, entry in ids_state.workshop.entries.items()
+            for name, entry in ids_snapshot.workshop.items()
         },
-        "workshop_plus": list(ids_state.workshop_plus.raw_rows),
         "ultimate_weapons": {
             name: _serialize_uw_entry(entry)
-            for name, entry in ids_state.ultimate_weapons.entries.items()
+            for name, entry in ids_snapshot.ultimate_weapons.items()
         },
-        "ultimate_weapons_plus_placeholder": ids_state.ultimate_weapons.uw_plus_placeholder,
         "cards": {
             name: _serialize_card_entry(entry)
-            for name, entry in ids_state.cards.cards.items()
+            for name, entry in ids_snapshot.cards_inventory.items()
         },
-        "relics": dict(ids_state.relics.relics),
-        "vault": dict(ids_state.vault.vault),
-        "bots": {
-            name: _serialize_bot_entry(entry) for name, entry in ids_state.bots.bots.items()
+        "relics": dict(ids_snapshot.relics),
+        "vault": dict(ids_snapshot.vault),
+        "bots": list(ids_snapshot.bots),
+        "modules": {
+            name: _serialize_module_entry(entry)
+            for name, entry in ids_snapshot.modules_inventory.items()
         },
-        "themes_songs": list(ids_state.themes_songs.raw_rows),
-        "modules": [
-            _serialize_module_slot(slot) for slot in ids_state.modules.slots
-        ],
-        "guardians": list(ids_state.guardians.raw_rows),
-        "player_stuff": dict(ids_state.player_stuff.key_values),
+        "guardians": list(ids_snapshot.guardians.rows),
     }
 
 
-def _serialize_loadout(ids_state: IdsState) -> Dict[str, Any]:
+def _serialize_loadout(
+    ids_snapshot: AccountSnapshot, preset_name: str | None = None
+) -> Dict[str, Any]:
+    resolved = _resolve_preset(ids_snapshot, preset_name)
     equipped_cards = [
-        _serialize_card_entry(entry)
-        for entry in ids_state.cards.cards.values()
-        if _is_card_equipped(entry.equipped_flags)
+        _serialize_card_entry(ids_snapshot.cards_inventory[card_name])
+        for card_name in resolved.card_names
+        if card_name in ids_snapshot.cards_inventory
     ]
+    modules = {}
+    for slot, selection in resolved.modules_by_slot.items():
+        primary = (
+            _serialize_module_entry(ids_snapshot.modules_inventory[selection.primary])
+            if selection.primary and selection.primary in ids_snapshot.modules_inventory
+            else None
+        )
+        assist = (
+            _serialize_module_entry(ids_snapshot.modules_inventory[selection.assist])
+            if selection.assist and selection.assist in ids_snapshot.modules_inventory
+            else None
+        )
+        allocation = resolved.allocation_levels.get(slot)
+        modules[slot] = {
+            "primary": primary,
+            "assist": assist,
+            "allocation": _serialize_module_allocation(allocation) if allocation else None,
+        }
     return {
+        "preset_name": resolved.preset_name,
         "cards": equipped_cards,
-        "modules": [
-            _serialize_module_slot(slot) for slot in ids_state.modules.slots
-        ],
-        "bots": [
-            _serialize_bot_entry(entry) for entry in ids_state.bots.bots.values()
-        ],
-        "guardians": list(ids_state.guardians.raw_rows),
-        "phase": Phase.START_OF_RUN.value,
+        "modules": modules,
+        "bots": list(ids_snapshot.bots),
+        "guardians": list(ids_snapshot.guardians.rows),
     }
 
 
-def _is_card_equipped(flags: list[str]) -> bool:
-    return any(flag == "1" for flag in flags)
+def _resolve_preset(
+    ids_snapshot: AccountSnapshot, preset_name: str | None
+) -> ResolvedLoadout:
+    try:
+        return resolve_loadout(ids_snapshot, preset_name)
+    except ValueError as exc:
+        raise ValueError(f"Invalid loadout preset: {exc}") from exc
 
 
 def _serialize_workshop_entry(entry: Any) -> Dict[str, Any]:
@@ -254,7 +303,6 @@ def _serialize_workshop_entry(entry: Any) -> Dict[str, Any]:
         "coin_level": entry.coin_level,
         "max_level": entry.max_level,
         "category": entry.category,
-        "raw_row": list(entry.raw_row),
     }
 
 
@@ -263,7 +311,6 @@ def _serialize_uw_entry(entry: Any) -> Dict[str, Any]:
         "name": entry.name,
         "unlocked": entry.unlocked,
         "track_levels": list(entry.track_levels),
-        "raw_row": list(entry.raw_row),
     }
 
 
@@ -271,27 +318,32 @@ def _serialize_card_entry(entry: Any) -> Dict[str, Any]:
     return {
         "name": entry.name,
         "level": entry.level,
-        "equipped_flags": list(entry.equipped_flags),
-        "raw_row": list(entry.raw_row),
+        "mastery_unlocked": entry.mastery_unlocked,
+        "mastery_lab_level": entry.mastery_lab_level,
     }
 
 
-def _serialize_bot_entry(entry: Any) -> Dict[str, Any]:
+def _serialize_module_entry(entry: ModuleSnapshot) -> Dict[str, Any]:
     return {
         "name": entry.name,
-        "raw_row": list(entry.raw_row),
-    }
-
-
-def _serialize_module_slot(entry: Any) -> Dict[str, Any]:
-    return {
-        "slot_index": entry.slot_index,
-        "context": entry.context,
         "slot_type": entry.slot_type,
-        "module_name": entry.module_name,
         "rarity": entry.rarity,
         "level": entry.level,
         "stat": entry.stat,
-        "substats": list(entry.substats),
-        "raw_rows": [list(row) for row in entry.raw_rows],
+        "substats": [
+            {
+                "stat_name": substat.stat_name,
+                "rarity": substat.rarity,
+                "value_display": substat.value_display,
+                "value_num": substat.value_num,
+            }
+            for substat in entry.substats
+        ],
+    }
+
+
+def _serialize_module_allocation(entry: Any) -> Dict[str, Any]:
+    return {
+        "primary_level": entry.primary_level,
+        "assist_level": entry.assist_level,
     }
