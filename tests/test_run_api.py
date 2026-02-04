@@ -8,6 +8,7 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.api import (
     TASK_BASE_STATS,
+    TASK_STAT_INPUTS,
     TASK_EHP_SLICE,
     TASK_INVENTORY,
     TASK_LOADOUT,
@@ -35,6 +36,13 @@ def test_run_task_inventory() -> None:
     result = run_task(TASK_INVENTORY, ids_snapshot=ids_snapshot)
     assert result["ok"] is True
     assert "workshop" in result["result"]
+
+
+def test_run_task_stat_inputs() -> None:
+    ids_snapshot = _fixture_ids_snapshot()
+    result = run_task(TASK_STAT_INPUTS, ids_snapshot=ids_snapshot)
+    assert result["ok"] is True
+    assert "stat_inputs" in result["result"]
 
 
 def test_run_task_loadout() -> None:
