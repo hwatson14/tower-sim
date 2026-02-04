@@ -346,3 +346,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Define task schemas + fail-closed validation for run dispatcher inputs.
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
+- [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
