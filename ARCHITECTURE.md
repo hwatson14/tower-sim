@@ -316,6 +316,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add module main-effect base/step tables from Module Base Stat sheet (module_main_effect_bases_v1.csv, module_main_effect_bands_v1.csv).
 - [x] Implement module main-effect multiplier formula (MODSTAT_*).
 - [x] Add boss hit-interval table for survivability (boss_hit_interval_v1.csv).
+- [x] Document run API task routing for agent usage.
 - [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
 - [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).

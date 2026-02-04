@@ -105,6 +105,23 @@ in one deterministic payload. The fields to consume are:
 
 ---
 
+## Agent routing: run API tasks
+
+If you want a single agent that can route to different deterministic runs based
+on your request (inventory, base stats, loadout, or max wave), use the run API
+task names. The run API resolves IDS into an AccountSnapshot and then executes
+the task, so your agent only needs to choose which task to call.
+
+- `BASE_STATS` → returns the StatBook for labs + workshop.
+- `INVENTORY` → returns inventory snapshots (cards/modules/uw/bots/etc).
+- `LOADOUT` → returns resolved preset name + equipped cards + modules.
+- `MAX_WAVE` → runs deterministic max-wave evaluation.
+
+If IDS input is missing, the API fails closed and returns missing sections, so
+always pass IDS input when you call the run API.
+
+---
+
 ## Repository principles (non-negotiable)
 
 - No invented mechanics
