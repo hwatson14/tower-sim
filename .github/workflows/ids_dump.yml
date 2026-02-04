@@ -15,6 +15,9 @@ on:
     paths:
       - "**/_IDS.csv"
 
+permissions:
+  contents: write
+
 jobs:
   dump-ids:
     runs-on: ubuntu-latest
@@ -43,6 +46,9 @@ jobs:
             --ids-path "${IDS_PATH}" \
             --output-dir audit
           cp audit/account_snapshot.json audit/ids_dump_latest.json
+          cp audit/base_stats.json audit/base_stats_latest.json
+          cp audit/inventory.json audit/inventory_latest.json
+          cp audit/loadout.json audit/loadout_latest.json
           echo "Wrote audit/ids_dump_latest.json"
         env:
           IDS_PATH: ${{ inputs.ids_path || 'tests/fixtures/tower-sim-data/_IDS.csv' }}
@@ -51,5 +57,30 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ids-dump
-          path: audit/ids_dump_latest.json
+          path: |
+            audit/ids_dump_latest.json
+            audit/base_stats_latest.json
+            audit/inventory_latest.json
+            audit/loadout_latest.json
           if-no-files-found: error
+
+      - name: Publish latest IDS dump artifacts branch
+        run: |
+          set -euo pipefail
+          tmp_dir="$(mktemp -d)"
+          cp audit/ids_dump_latest.json "$tmp_dir/ids_dump_latest.json"
+          cp audit/base_stats_latest.json "$tmp_dir/base_stats_latest.json"
+          cp audit/inventory_latest.json "$tmp_dir/inventory_latest.json"
+          cp audit/loadout_latest.json "$tmp_dir/loadout_latest.json"
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git checkout --orphan ids-dump-latest
+          git rm -rf .
+          mkdir -p audit
+          cp "$tmp_dir/ids_dump_latest.json" audit/ids_dump_latest.json
+          cp "$tmp_dir/base_stats_latest.json" audit/base_stats_latest.json
+          cp "$tmp_dir/inventory_latest.json" audit/inventory_latest.json
+          cp "$tmp_dir/loadout_latest.json" audit/loadout_latest.json
+          git add audit/*.json
+          git commit -m "Update latest IDS dump artifacts"
+          git push --force origin ids-dump-latest

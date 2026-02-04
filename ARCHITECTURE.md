@@ -326,6 +326,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
 - [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
+- [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
 - [x] Update run API inventory/loadout outputs to use AccountSnapshot snapshots.
@@ -351,3 +352,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
 - [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
+- [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).

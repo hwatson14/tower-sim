@@ -154,7 +154,10 @@ def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Compile IDS snapshot and write audit JSON artifacts."
+        description=(
+            "Compile an IDS account snapshot and write IDS dump artifacts "
+            "(snapshot + extracts)."
+        )
     )
     parser.add_argument(
         "--ids-path",
@@ -182,16 +185,31 @@ def main() -> None:
     snapshot_path = output_dir / "account_snapshot.json"
     summary_path = output_dir / "account_snapshot.summary.json"
     diff_path = output_dir / "account_snapshot.diff.json"
+    base_stats_path = output_dir / "base_stats.json"
+    inventory_path = output_dir / "inventory.json"
+    loadout_path = output_dir / "loadout.json"
 
     previous = _read_json(snapshot_path)
     snapshot_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
     summary_path.write_text(json.dumps(_build_summary(payload), indent=2, sort_keys=True))
+    base_stats_path.write_text(
+        json.dumps(payload.get("base_stats", []), indent=2, sort_keys=True)
+    )
+    inventory_path.write_text(
+        json.dumps(payload.get("inventory", {}), indent=2, sort_keys=True)
+    )
+    loadout_path.write_text(
+        json.dumps(payload.get("loadout", {}), indent=2, sort_keys=True)
+    )
     if previous is not None:
         diff_path.write_text(
             json.dumps(_build_diff(previous, payload), indent=2, sort_keys=True)
         )
     print(f"Wrote {snapshot_path}")
     print(f"Wrote {summary_path}")
+    print(f"Wrote {base_stats_path}")
+    print(f"Wrote {inventory_path}")
+    print(f"Wrote {loadout_path}")
     if diff_path.exists():
         print(f"Wrote {diff_path}")
 
