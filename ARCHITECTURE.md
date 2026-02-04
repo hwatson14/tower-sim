@@ -118,6 +118,136 @@ identical outputs, including explicit envelope cases. Stochastic sampling and in
 distributions are not allowed. If a requested feature depends on stochastic mechanics without an
 authoritative deterministic model, the sim must fail closed.
 
+## Optimiser Runner Interface (Snapshot-First)
+Optimiser tasks must consume account snapshots rather than `_IDS.csv`. The canonical source for
+runner inputs is the published `ids_dump_latest.json` artifact (see README agent quickstart).
+Runner tasks may still be invoked by an agent, but only with snapshot payloads and explicit deltas.
+
+### Runner Input Schema (Draft)
+```json
+{
+  "task": "OPTIMIZE_LOADOUT",
+  "objective": "MAX_WAVE",
+  "account_snapshot": { "...": "snapshot payload from ids_dump_latest.json" },
+  "loadout_override": { "...": "optional explicit loadout to evaluate" },
+  "snapshot_patch": { "...": "optional patch for spend/time changes" },
+  "loadout_patch": { "...": "optional patch for card/module changes" },
+  "constraints": {
+    "battle_conditions": { "...": "explicit BC set or named scenario" },
+    "budgets": { "stones": 0, "coins": 0, "lab_time_seconds": 0 },
+    "search_limits": { "max_candidates": 500, "max_runtime_seconds": 300 }
+  },
+  "debug": {
+    "allow_partial_results": true,
+    "return_candidate_trace": false
+  }
+}
+```
+
+**Task identifiers (v1):**
+- `MAX_WAVE`
+- `OPTIMIZE_LOADOUT`
+- `OPTIMIZE_MODULE_SUBSTATS` (module substat changes only)
+- `OPTIMIZE_STONES`
+- `OPTIMIZE_COINS`
+- `OPTIMIZE_LABS`
+- `SENSITIVITY_REPORT` (deterministic stat deltas; no sampling)
+
+**Objective identifiers:**
+- `MAX_WAVE` (v1 default)
+- `ECON_PER_HOUR` (v2 farming mode target)
+
+### Patch Grammar (Draft)
+Optimiser deltas must be explicit and deterministic. Two patch styles are supported, with **typed
+deltas preferred** to keep domain rules visible.
+
+**A) Typed deltas (preferred)**
+```json
+{
+  "type": "snapshot_patch",
+  "labs": [{ "stat_id": "LAB_ATTACK", "delta_levels": 1 }],
+  "workshop": [{ "stat_id": "WS_HEALTH", "delta_levels": 5 }],
+  "stones": [{ "target": "MODULE_SUBSTAT", "id": "MOD_SUBSTAT_X", "delta_levels": 2 }],
+  "coins": [{ "target": "WORKSHOP", "stat_id": "WS_DAMAGE", "delta_levels": 10 }],
+  "lab_time": [{ "stat_id": "LAB_ATTACK", "delta_seconds": 3600 }]
+}
+```
+
+```json
+{
+  "type": "loadout_patch",
+  "cards": [
+    { "action": "swap", "from": "CARD_A", "to": "CARD_B" },
+    { "action": "set_level", "card_id": "CARD_C", "level": 3 }
+  ],
+  "modules": [
+    { "action": "assign", "slot": "primary", "module_id": "MOD_X" },
+    { "action": "assign", "slot": "assist", "module_id": "MOD_Y" }
+  ]
+}
+```
+
+**B) Operation-based deltas (JSON Patch style)**
+```json
+[
+  { "op": "replace", "path": "/loadout/cards/2/id", "value": "CARD_B" },
+  { "op": "replace", "path": "/loadout/modules/primary/id", "value": "MOD_X" }
+]
+```
+
+Typed deltas are preferred because they allow stricter validation (e.g., inventory ownership,
+budget checks, and slot constraints) and make optimisation traces easier to audit.
+
+### Precompute Workflow (Outline)
+To keep the fast path viable, publish optimiser outputs as artifacts alongside IDS dumps.
+
+1. **Trigger:** scheduled workflow or IDS dump completion.
+2. **Fetch:** load `ids_dump_latest.json` from the `ids-dump-latest` branch.
+3. **Evaluate:** run optimiser tasks in deterministic order with fixed budgets and constraints.
+4. **Publish:** write results to `audit/` as `*_latest.json` artifacts (examples below).
+5. **Push:** force-update a branch (e.g., `optimizer-latest`) or extend `ids-dump-latest`.
+
+Suggested artifacts:
+- `audit/optimal_loadout_latest_<bc>.json`
+- `audit/optimal_module_substats_latest.json`
+- `audit/optimal_stone_spend_latest.json`
+- `audit/optimal_coin_spend_latest.json`
+- `audit/optimal_lab_time_latest.json`
+- `audit/sensitivity_report_latest.json`
+
+### First Optimiser Spec (Loadout + BC)
+**Goal:** determine the best loadout (cards + modules, primary/assist slots) for a given BC set.
+
+**Inputs:**
+- `account_snapshot` (from `ids_dump_latest.json`)
+- `constraints.battle_conditions` (explicit BC set or scenario)
+- `constraints.search_limits` (max candidates, runtime)
+- Optional `loadout_patch` (for seeded candidate changes)
+
+**Outputs (draft):**
+```json
+{
+  "objective": "MAX_WAVE",
+  "battle_conditions": { "...": "explicit BC set" },
+  "status": "ok",
+  "best_candidate": {
+    "loadout": { "...": "cards + modules + slots" },
+    "score": { "max_wave": 1234 }
+  },
+  "candidates": [
+    { "loadout": { "...": "candidate" }, "score": { "max_wave": 1200 } }
+  ],
+  "partials": {
+    "completed_candidates": 42,
+    "missing_data": []
+  }
+}
+```
+
+**Notes:**
+- Module optimisation in this v1 spec is **substat changes only**.
+- Partial results are permitted when `debug.allow_partial_results` is true.
+
 ## Evaluator Contracts (Deterministic v1)
 Evaluators are first-class and must remain deterministic under current rules. Any distribution/quantile
 outputs require authoritative deterministic models and must be documented as missing until provided.
@@ -389,3 +519,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
 - [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
+- [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
