@@ -78,7 +78,10 @@ PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
   --output-dir ./audit
 ```
 
-The payload is written to `audit/account_snapshot.json`. Key fields:
+After running the command, confirm the IDS dump artifacts land under the exact
+path `audit/account_snapshot.json` (same folder for the summary/diff JSON). The
+script does not delete the file at the end of the job, so it should remain on
+disk until you remove it. Key fields:
 
 - `base_stats`: statbook rows (base/final/provenance) for labs + workshop.
 - `inventory`: card/module/uw/bot/vault/etc inventory snapshots.
