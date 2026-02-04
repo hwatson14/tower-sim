@@ -238,19 +238,54 @@ def _safe_build_trace(
     missing: List[str],
     errors: List[Dict[str, str]],
 ) -> Optional[List[Dict[str, Any]]]:
-    survivability_stats, stats_missing = _resolve_survivability_stats_for_report(problem_spec)
-    if stats_missing:
-        for item in stats_missing:
-            _record_report_error(item, ValueError("Missing survivability stats."), missing, errors)
+    run_context = RunContext.from_mode(
+        problem_spec.scenario.mode,
+        tier=str(problem_spec.scenario.tier),
+    )
+    stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+    missing.extend(_missing_required_stat_inputs(stat_inputs))
+
+    wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
+    missing.extend(wave_state_missing)
+
+    tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+    missing.extend(tier_rule_missing)
+
+    if missing:
+        for item in sorted(set(missing)):
+            errors.append({"id": item, "error": "Missing trace prerequisites."})
         return None
+
+    registry = default_registry()
+    engine = StatEngine(registry=registry)
+    try:
+        if tier_rules is None:
+            engine_result = engine.build(stat_inputs, wave_state=wave_state)
+        else:
+            engine_result = engine.build_with_tier_rules(
+                stat_inputs, tier_rules, wave_state=wave_state
+            )
+    except Exception as exc:  # noqa: BLE001
+        _record_report_error("stat_engine", exc, missing, errors)
+        return None
+
     (
         _w_max,
         _failure_wave,
         _failure_reason,
         _failure_snapshot,
         trace,
+        _search_diagnostics,
         search_missing,
-    ) = _search_wmax(problem_spec, survivability_stats, trace_depth=trace_depth)
+    ) = _search_wmax(
+        problem_spec=problem_spec,
+        stat_inputs=stat_inputs,
+        engine_result=engine_result,
+        registry=registry,
+        tier_rules=tier_rules,
+        run_context=run_context,
+        trace_depth=trace_depth,
+    )
     if search_missing:
         for item in search_missing:
             _record_report_error(item, ValueError("Missing search inputs."), missing, errors)
@@ -288,7 +323,8 @@ def _resolve_survivability_stats_for_report(
         missing.append("stat_engine")
         return None, missing
 
-    wave_snapshot, snapshot_missing = _resolve_wave_snapshot(
+    diagnostics: Dict[str, Any] = {}
+    wave_snapshot = _resolve_wave_snapshot(
         problem_spec,
         stat_inputs,
         engine_result,
@@ -296,8 +332,9 @@ def _resolve_survivability_stats_for_report(
         tier_rules,
         run_context,
         wave_state,
+        missing,
+        diagnostics,
     )
-    missing.extend(snapshot_missing)
 
     survivability_stats, survivability_missing = _resolve_survivability_stats(
         engine_result, wave_snapshot
