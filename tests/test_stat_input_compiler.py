@@ -95,7 +95,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     next_cost = float(uw_table.columns["cost"][2])
 
     damage_input = next(
-        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_damage_mult"
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_damage"
     )
     assert damage_input.base_value == expected_damage
 
@@ -110,10 +110,10 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     assert uw_cost_input.base_value == next_cost
 
 
-def test_compile_full_stat_inputs_reports_missing_workshop_mapping() -> None:
+def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
     workshop_entries = {
-        "Critical Chance": WorkshopEntrySnapshot(
-            name="Critical Chance",
+        "Bounce Shot Range": WorkshopEntrySnapshot(
+            name="Bounce Shot Range",
             unlocked=None,
             coin_level=1,
             max_level=1,

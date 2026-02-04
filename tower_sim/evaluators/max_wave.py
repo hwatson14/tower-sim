@@ -19,7 +19,8 @@ from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
-from tower_sim.engines.stat_engine import StatEngine
+from tower_sim.engines.stat_engine import StatEngine, StatInput
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
@@ -45,7 +46,10 @@ class MaxWaveEvaluator:
             tier=str(problem_spec.scenario.tier),
         )
 
-        stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+        spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+        compiled = compile_full_stat_inputs(ids_snapshot)
+        stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
+        missing.extend(compiled.missing)
         missing_stat_inputs = _missing_required_stat_inputs(stat_inputs)
         if missing_stat_inputs:
             diagnostics["missing_stat_inputs"] = missing_stat_inputs
@@ -202,6 +206,19 @@ def _missing_required_stat_inputs(stat_inputs: Iterable) -> List[str]:
     }
     present = {stat_input.stat_id for stat_input in stat_inputs}
     return [f"stat_input:{stat_id}" for stat_id in sorted(required - present)]
+
+
+def _merge_stat_inputs(
+    spec_inputs: List[StatInput],
+    compiled_inputs: List[StatInput],
+) -> List[StatInput]:
+    existing = {(item.stat_id, item.phase) for item in spec_inputs}
+    merged = list(spec_inputs)
+    for item in compiled_inputs:
+        if (item.stat_id, item.phase) in existing:
+            continue
+        merged.append(item)
+    return merged
 
 
 def _load_tier_rules(

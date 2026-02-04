@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatEngine, StatInput
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.engines.survivability_pipeline import (
     SurvivabilityPipelineError,
     _build_inventory_summary,
@@ -90,6 +91,7 @@ def build_max_wave_report(
     if include_trace:
         trace = _safe_build_trace(
             problem_spec,
+            ids_snapshot=ids_snapshot,
             trace_depth=trace_depth,
             missing=missing,
             errors=errors,
@@ -167,7 +169,17 @@ def _safe_build_loadout_breakdown(
         _record_report_error("loadout_compilation", exc, missing, errors)
         return None
 
+    compiled = compile_full_stat_inputs(ids_snapshot)
+    if compiled.missing:
+        _record_report_error(
+            "stat_inputs",
+            ValueError("Missing workshop/UW stat inputs."),
+            missing,
+            errors,
+        )
+        return None
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
+    stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
     registry = default_registry()
     engine = StatEngine(registry=registry)
     try:
@@ -179,6 +191,7 @@ def _safe_build_loadout_breakdown(
     return {
         "base_stat_inputs": [_serialize_stat_input(row) for row in base_inputs],
         "loadout_stat_inputs": [_serialize_stat_input(row) for row in loadout_inputs],
+        "compiled_stat_inputs": [_serialize_stat_input(row) for row in compiled.stat_inputs],
         "statbook_rows": [_serialize_statbook_row(row) for row in engine_result.statbook.rows],
     }
 
@@ -234,6 +247,7 @@ def _build_wave_mapping_report(
 def _safe_build_trace(
     problem_spec: ProblemSpec,
     *,
+    ids_snapshot: AccountSnapshot,
     trace_depth: int,
     missing: List[str],
     errors: List[Dict[str, str]],
@@ -242,7 +256,10 @@ def _safe_build_trace(
         problem_spec.scenario.mode,
         tier=str(problem_spec.scenario.tier),
     )
-    stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+    spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+    compiled = compile_full_stat_inputs(ids_snapshot)
+    stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
+    missing.extend(compiled.missing)
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
     wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
@@ -295,13 +312,18 @@ def _safe_build_trace(
 
 def _resolve_survivability_stats_for_report(
     problem_spec: ProblemSpec,
+    *,
+    ids_snapshot: AccountSnapshot,
 ) -> Tuple[Optional[Dict[str, float]], List[str]]:
     missing: List[str] = []
     run_context = RunContext.from_mode(
         problem_spec.scenario.mode,
         tier=str(problem_spec.scenario.tier),
     )
-    stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+    spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+    compiled = compile_full_stat_inputs(ids_snapshot)
+    stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
+    missing.extend(compiled.missing)
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
     wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)

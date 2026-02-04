@@ -11,6 +11,7 @@ from tower_sim.engines.combat.boss_survivability import (
     resolve_boss_fight,
 )
 from tower_sim.engines.stat_engine import StatEngine, StatInput
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, build_at_wave_snapshot
 from tower_sim.engines.tier_rules import TierRulesResult, build_tier_rules
 from tower_sim.engines.wave_engine import SkipRamp, make_wave_state
@@ -153,7 +154,13 @@ def build_survivability_report(
         selected_cards=selected_cards,
         allow_provisional=allow_provisional,
     )
+    compiled = compile_full_stat_inputs(ids_snapshot)
+    if compiled.missing:
+        raise SurvivabilityPipelineError(
+            "Missing workshop/UW stat inputs: " + ", ".join(compiled.missing)
+        )
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
+    stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
 
     registry = default_registry()
     engine = StatEngine(registry=registry)
