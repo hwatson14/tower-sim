@@ -325,6 +325,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
 - [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
+- [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
