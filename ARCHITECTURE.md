@@ -334,6 +334,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Add reference completeness report and runtime table guardrail test.
+- [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
 - [x] Add tournament heat BC magnitudes from Player & Stuff Battle Conditions sheet (user-provided table).
 - [x] Document tiers 1–13 as having no battle conditions (user-provided clarification).

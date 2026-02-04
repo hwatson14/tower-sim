@@ -9,6 +9,7 @@ from typing import Any, Dict, Optional
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.evaluators.ehp_stat_evaluator import evaluate_stats
 from tower_sim.engines.statbook_builder import build_statbook
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.loaders.account_snapshot_compiler import (
     compile_account_snapshot,
@@ -22,6 +23,7 @@ from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
 LOGGER = logging.getLogger(__name__)
 
 TASK_BASE_STATS = "BASE_STATS"
+TASK_STAT_INPUTS = "STAT_INPUTS"
 TASK_INVENTORY = "INVENTORY"
 TASK_LOADOUT = "LOADOUT"
 TASK_EHP_SLICE = "EHP_SLICE"
@@ -29,6 +31,7 @@ TASK_MAX_WAVE = "MAX_WAVE"
 
 TASKS_REQUIRING_IDS = {
     TASK_BASE_STATS,
+    TASK_STAT_INPUTS,
     TASK_INVENTORY,
     TASK_LOADOUT,
     TASK_EHP_SLICE,
@@ -71,6 +74,17 @@ def run_task(
         return _ok(
             task,
             {"statbook": asdict(statbook)},
+            resolved_from=bundle.resolved_from,
+        )
+    if task == TASK_STAT_INPUTS:
+        compiled = compile_full_stat_inputs(resolved_ids_snapshot)
+        return _ok(
+            task,
+            {
+                "stat_inputs": [_serialize_stat_input(item) for item in compiled.stat_inputs],
+                "missing": compiled.missing,
+                "fail_closed": bool(compiled.missing),
+            },
             resolved_from=bundle.resolved_from,
         )
     if task == TASK_INVENTORY:
@@ -153,6 +167,7 @@ def _log_problem_spec(problem_spec: ProblemSpec) -> None:
 def _validate_task_name(task: str) -> None:
     allowed = {
         TASK_BASE_STATS,
+        TASK_STAT_INPUTS,
         TASK_INVENTORY,
         TASK_LOADOUT,
         TASK_EHP_SLICE,
@@ -165,7 +180,7 @@ def _validate_task_name(task: str) -> None:
 def _validate_task_args(task: str, args: Dict[str, Any]) -> None:
     if not isinstance(args, dict):
         raise ValueError("Task args must be a mapping.")
-    if task in {TASK_BASE_STATS, TASK_INVENTORY, TASK_LOADOUT}:
+    if task in {TASK_BASE_STATS, TASK_STAT_INPUTS, TASK_INVENTORY, TASK_LOADOUT}:
         if args:
             raise ValueError(f"Task {task} does not accept args.")
         return
@@ -311,6 +326,20 @@ def _serialize_uw_entry(entry: Any) -> Dict[str, Any]:
         "name": entry.name,
         "unlocked": entry.unlocked,
         "track_levels": list(entry.track_levels),
+    }
+
+
+def _serialize_stat_input(stat_input: Any) -> Dict[str, Any]:
+    return {
+        "stat_id": stat_input.stat_id,
+        "phase": stat_input.phase.value,
+        "base_value": stat_input.base_value,
+        "loadout_delta": stat_input.loadout_delta,
+        "enhancement_multiplier": stat_input.enhancement_multiplier,
+        "tier_rule_delta": stat_input.tier_rule_delta,
+        "tier_rule_multiplier": stat_input.tier_rule_multiplier,
+        "derived_value": stat_input.derived_value,
+        "provenance": stat_input.provenance,
     }
 
 
