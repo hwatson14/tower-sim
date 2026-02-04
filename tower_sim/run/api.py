@@ -7,7 +7,8 @@ from typing import Any, Dict, Optional
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.loaders.ids_parser import parse_ids
-from tower_sim.util.ids_state import IdsState
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.loaders.sources import DatasetBundle, IdsOnlyBundle, load_ids_only_bundle, load_snapshot_bundle
 from tower_sim.run.spec_loader import spec_as_dict
@@ -18,22 +19,22 @@ LOGGER = logging.getLogger(__name__)
 def run(
     problem_spec: ProblemSpec,
     ids_path: Optional[Path] = None,
-    ids_state: Optional[IdsState] = None,
+    ids_snapshot: Optional[AccountSnapshot] = None,
 ) -> Dict[str, Any]:
     bundle = _resolve_bundle()
-    resolved_ids_state = _resolve_ids_state(bundle, ids_path, ids_state)
-    if resolved_ids_state is None:
+    resolved_ids_snapshot = _resolve_ids_snapshot(bundle, ids_path, ids_snapshot)
+    if resolved_ids_snapshot is None:
         return {
             "evaluator": problem_spec.evaluator,
             "fail_closed": True,
-            "missing": ["ids_state"],
+            "missing": ["ids_snapshot"],
             "w_max": None,
         }
 
     _log_problem_spec(problem_spec)
 
     evaluator = MaxWaveEvaluator()
-    result = evaluator.evaluate(problem_spec, resolved_ids_state)
+    result = evaluator.evaluate(problem_spec, resolved_ids_snapshot)
     result["resolved_from"] = bundle.resolved_from
     return result
 
@@ -57,20 +58,20 @@ def _default_ids_paths():
     return list(DEFAULT_IDS_PATHS)
 
 
-def _resolve_ids_state(
+def _resolve_ids_snapshot(
     bundle: DatasetBundle | IdsOnlyBundle,
     ids_path: Optional[Path],
-    ids_state: Optional[IdsState],
-) -> Optional[IdsState]:
-    if ids_state is not None:
-        return ids_state
+    ids_snapshot: Optional[AccountSnapshot],
+) -> Optional[AccountSnapshot]:
+    if ids_snapshot is not None:
+        return ids_snapshot
     try:
         if ids_path is not None:
-            return parse_ids(ids_path)
+            return compile_account_snapshot(parse_ids(ids_path))
         if isinstance(bundle, DatasetBundle) and "_IDS.csv" in bundle.files:
-            return parse_ids(bundle.files["_IDS.csv"])
+            return compile_account_snapshot(parse_ids(bundle.files["_IDS.csv"]))
         if isinstance(bundle, IdsOnlyBundle):
-            return parse_ids(bundle.ids_path)
+            return compile_account_snapshot(parse_ids(bundle.ids_path))
     except (FileNotFoundError, ValueError):
         return None
     return None

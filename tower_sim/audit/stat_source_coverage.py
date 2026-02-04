@@ -6,7 +6,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Sequence
 
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.registry.stat_registry import StatRegistry, UnknownStatError
 from tower_sim.loaders.wiki.labs import _LEGACY_LAB_FILES
 
@@ -72,7 +72,7 @@ def _validate_registry_ids(stat_ids: Iterable[str], registry: StatRegistry) -> N
 
 
 def audit_stat_coverage(
-    ids: IdsState,
+    ids: AccountSnapshot,
     workshop_lib: object,
     labs_lib: object,
     registry: StatRegistry,
@@ -86,14 +86,14 @@ def audit_stat_coverage(
     lab_names: Sequence[str] = labs_lib.list_labs()
 
     workshop_items: List[CoverageItem] = []
-    for name in sorted(ids.workshop.entries.keys()):
+    for name in sorted(ids.workshop.keys()):
         if name in workshop_tables.wsvalues:
             workshop_items.append(CoverageItem(name=name, status=CoverageStatus.COVERED))
         else:
             workshop_items.append(CoverageItem(name=name, status=CoverageStatus.MISSING_TABLE))
 
     lab_items: List[CoverageItem] = []
-    for name in sorted(ids.labs.labs.keys()):
+    for name in sorted(ids.labs.keys()):
         if name in lab_names:
             lab_items.append(CoverageItem(name=name, status=CoverageStatus.COVERED))
             continue

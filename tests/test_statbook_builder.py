@@ -11,70 +11,84 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
-from tower_sim.util.ids_state import (  # noqa: E402
-    BotsState,
-    CardsState,
-    GuardiansState,
-    IdsState,
-    LabsState,
-    ModulesState,
-    PlayerStuffState,
-    RelicsState,
-    ThemesSongsState,
-    UltimateWeaponsState,
-    VaultState,
-    WorkshopEntry,
-    WorkshopPlusState,
-    WorkshopState,
+from tower_sim.util.account_snapshot import (  # noqa: E402
+    AccountSnapshot,
+    ModuleAllocation,
+    ModulePresetSelection,
+    ModuleSystemState,
+    PRESET_NAMES,
+    SLOT_TYPES,
+    TableSnapshot,
+    WorkshopEntrySnapshot,
 )
 from tower_sim.engines.statbook_builder import build_statbook  # noqa: E402
 
 
-def _ids_state_with_levels() -> IdsState:
-    labs = LabsState(labs={"LabA": "5", "LabB": None}, raw_rows=[])
+def _snapshot_with_levels() -> AccountSnapshot:
     workshop_entries = {
-        "Attack": WorkshopEntry(
+        "Attack": WorkshopEntrySnapshot(
             name="Attack",
             unlocked=None,
-            coin_level="3",
-            max_level="7",
+            coin_level=3,
+            max_level=7,
             category=None,
-            raw_row=[],
         ),
-        "Defense": WorkshopEntry(
+        "Defense": WorkshopEntrySnapshot(
             name="Defense",
             unlocked=None,
             coin_level=None,
             max_level=None,
             category=None,
-            raw_row=[],
         ),
     }
-    workshop = WorkshopState(entries=workshop_entries, raw_rows=[])
-    return IdsState(
-        labs=labs,
-        workshop=workshop,
-        workshop_plus=WorkshopPlusState(raw_rows=[]),
-        ultimate_weapons=UltimateWeaponsState(
-            entries={},
-            uw_plus_placeholder=None,
-            raw_rows=[],
-        ),
-        cards=CardsState(cards={}, equipped_preset_only=[], raw_rows=[]),
-        relics=RelicsState(relics={}, raw_rows=[]),
-        vault=VaultState(vault={}, raw_rows=[]),
-        bots=BotsState(bots={}, raw_rows=[]),
-        themes_songs=ThemesSongsState(raw_rows=[]),
-        modules=ModulesState(slots=[], raw_rows=[]),
-        guardians=GuardiansState(raw_rows=[]),
-        player_stuff=PlayerStuffState(key_values={}, raw_rows=[]),
+    module_presets = {
+        preset: {
+            slot: ModulePresetSelection(primary=None, assist=None)
+            for slot in SLOT_TYPES
+        }
+        for preset in PRESET_NAMES
+    }
+    module_system_state = {
+        slot: ModuleSystemState(
+            slot_type=slot,
+            assist_unlocked=False,
+            assist_level=0,
+            rarity_cap=None,
+            multiplier_cap=None,
+            substat_cap=None,
+        )
+        for slot in SLOT_TYPES
+    }
+    allocation_levels = {
+        slot: ModuleAllocation(primary_level=0, assist_level=0) for slot in SLOT_TYPES
+    }
+    inferred_shards = {slot: 0 for slot in SLOT_TYPES}
+    return AccountSnapshot(
+        ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+        labs={"LabA": 5, "LabB": None},
+        workshop=workshop_entries,
+        workshop_enhancements=TableSnapshot(header=[], rows=[]),
+        ultimate_weapons={},
+        relics={},
+        vault={},
+        bots=[],
+        guardians=TableSnapshot(header=[], rows=[]),
+        player_meta={},
+        cards_inventory={},
+        card_presets={},
+        module_system_state=module_system_state,
+        module_presets=module_presets,
+        modules_inventory={},
+        allocation_levels=allocation_levels,
+        inferred_shard_budgets=inferred_shards,
+        default_preset="Farming",
         raw_sections={},
     )
 
 
 def test_build_statbook_outputs_rows() -> None:
-    ids_state = _ids_state_with_levels()
-    statbook = build_statbook(ids_state)
+    snapshot = _snapshot_with_levels()
+    statbook = build_statbook(snapshot)
     assert len(statbook.rows) == 8
 
     lab_start = next(row for row in statbook.rows if row.stat_id == "LabA" and row.phase == "start_of_run")

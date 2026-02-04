@@ -10,7 +10,7 @@ python -m tower_sim.audit.status
 
 | Component | Status | Evidence | Tests | Known gaps |
 | --- | --- | --- | --- | --- |
-| Ids parsing | implemented | `tower_sim/ids_parser.py`: `parse_ids`, section parsing<br>`tower_sim/ids_state.py`: typed `IdsState` | `tests/test_ids_parser.py` | — |
+| Ids parsing | implemented | `tower_sim/ids_parser.py`: `parse_ids`, section parsing<br>`tower_sim/ids_raw.py`: raw `_IDS.csv` ingest | `tests/test_ids_parser.py` | — |
 | DataLoader | partial | `tower_sim/sources.py`: `load_snapshot_bundle`, `load_ids_only_bundle` | `tests/test_sources.py` | No spec-driven loader or snapshot selection wired into a run entrypoint. |
 | Stat engine | partial | `tower_sim/stat_engine.py`: `StatEngine`, `StatInput`<br>`tower_sim/stat_registry.py`: `default_registry` | `tests/test_stat_engine.py`<br>`tests/test_stat_engine_tier_rules.py` | Derived stat composition/DPS formulas are incomplete; see [Effective Paths mechanics comparison](audit/effective_paths_mechanics_comparison.md#effective-paths-v50001-master-workbook). |
 | Statbook builder | implemented | `tower_sim/statbook.py`: StatBook schema<br>`tower_sim/statbook_builder.py`: `build_statbook`, `build_canonical_statbook` | `tests/test_statbook_builder.py`<br>`tests/test_statbook_reference_structure.py` | — |

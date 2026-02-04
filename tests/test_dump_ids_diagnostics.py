@@ -10,7 +10,10 @@ from pathlib import Path
 def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[1]
     ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
-    output_path = tmp_path / "runner_output.json"
+    output_dir = tmp_path / "audit"
+    output_path = output_dir / "account_snapshot.json"
+    summary_path = output_dir / "account_snapshot.summary.json"
+    diff_path = output_dir / "account_snapshot.diff.json"
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(repo_root)
@@ -20,8 +23,8 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
             str(repo_root / "scripts" / "dump_ids_diagnostics.py"),
             "--ids-path",
             str(ids_path),
-            "--output",
-            str(output_path),
+            "--output-dir",
+            str(output_dir),
         ],
         check=True,
         capture_output=True,
@@ -30,8 +33,10 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     )
 
     assert output_path.exists()
+    assert summary_path.exists()
+    assert not diff_path.exists()
     payload = json.loads(output_path.read_text())
-    assert payload["schema_version"] == 1
+    assert payload["schema_version"] == 3
     assert isinstance(payload["created_utc"], str)
     assert payload["created_utc"]
     assert "git_sha" in payload
@@ -40,6 +45,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert isinstance(payload["missing_sections"], list)
     assert "base_stats" in payload
     assert "inventory" in payload
+    assert "snapshot" in payload
     assert isinstance(payload["base_stats"], list)
     assert payload["base_stats"]
     assert "cards" in payload["inventory"]
@@ -63,15 +69,20 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
         assert "provenance" in row
     assert "Wrote" in result.stdout
 
-    output_path_raw = tmp_path / "runner_output_raw.json"
+    summary = json.loads(summary_path.read_text())
+    assert summary["ids_path"] == str(ids_path)
+    assert summary["labs_count"] >= 1
+
+    output_dir_raw = tmp_path / "audit_raw"
+    output_path_raw = output_dir_raw / "account_snapshot.json"
     result_raw = subprocess.run(
         [
             sys.executable,
             str(repo_root / "scripts" / "dump_ids_diagnostics.py"),
             "--ids-path",
             str(ids_path),
-            "--output",
-            str(output_path_raw),
+            "--output-dir",
+            str(output_dir_raw),
             "--include-raw",
         ],
         check=True,

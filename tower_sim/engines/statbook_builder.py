@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.registry.stat_registry import Phase, StatRegistry, default_registry
 from tower_sim.util.statbook import CanonicalStatBook, CanonicalStatRow, StatBook, StatRow
 
@@ -8,9 +8,9 @@ PHASE_START = Phase.START_OF_RUN
 PHASE_END = Phase.END_OF_RUN
 
 
-def build_statbook(ids_state: IdsState) -> StatBook:
+def build_statbook(snapshot: AccountSnapshot) -> StatBook:
     rows: list[StatRow] = []
-    for name, level in ids_state.labs.labs.items():
+    for name, level in snapshot.labs.items():
         level_value = _optional_str(level)
         rows.append(
             _make_row(
@@ -28,7 +28,7 @@ def build_statbook(ids_state: IdsState) -> StatBook:
                 provenance="ids:labs",
             )
         )
-    for entry in ids_state.workshop.entries.values():
+    for entry in snapshot.workshop.values():
         coin_level_value = _optional_str(entry.coin_level)
         max_value = _optional_str(entry.max_level) or coin_level_value
         rows.append(

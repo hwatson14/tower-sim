@@ -16,7 +16,7 @@ from tower_sim.engines.combat.boss_survivability import (
 from tower_sim.libs.boss_hit_interval import BossHitIntervalError, boss_hit_interval_seconds
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
 from tower_sim.engines.stat_engine import StatEngine
@@ -35,7 +35,7 @@ class MaxWaveEvaluator:
     def evaluate(
         self,
         problem_spec: ProblemSpec,
-        ids_state: IdsState,
+        ids_snapshot: AccountSnapshot,
     ) -> Dict[str, Any]:
         missing: List[str] = []
         diagnostics: Dict[str, Any] = {}
