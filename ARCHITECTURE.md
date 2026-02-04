@@ -302,6 +302,7 @@ Any of the following must stop work and ask for clarification:
 - [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
+- [x] Wire wall thorns + plasma cannon card fractions into survivability pipeline + mechanics registry (wiki excerpt in prompt).
 - [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
 - [x] Ingest Effective Paths reference sheets into an audit report.
