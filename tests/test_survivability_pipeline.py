@@ -8,16 +8,19 @@ from tower_sim.engines.survivability_pipeline import (
     _parse_module_blocks,
     build_survivability_report,
 )
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
 
 
 def test_survivability_pipeline_snapshots() -> None:
-    ids_state = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
 
     report = build_survivability_report(
-        ids_state, spec, module_context="Testing", allow_provisional=True
+        ids_snapshot, spec, module_context="Testing", allow_provisional=True
     )
 
     snapshots = report["snapshots"]
@@ -33,9 +36,11 @@ def test_survivability_pipeline_snapshots() -> None:
 
 
 def test_module_override_changes_armor_effects() -> None:
-    ids_state = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
-    armor_block = _parse_module_blocks(ids_state)["Armor"]
+    armor_block = _parse_module_blocks(ids_snapshot)["Armor"]
     modules = list(armor_block.inventory.values())
     primary = modules[0]
     alternate = next(
@@ -43,14 +48,14 @@ def test_module_override_changes_armor_effects() -> None:
     )
 
     base_report = build_survivability_report(
-        ids_state,
+        ids_snapshot,
         spec,
         module_context="Testing",
         module_overrides={"Armor": {"primary": primary.name}},
         allow_provisional=True,
     )
     alt_report = build_survivability_report(
-        ids_state,
+        ids_snapshot,
         spec,
         module_context="Testing",
         module_overrides={"Armor": {"primary": alternate.name}},
@@ -63,11 +68,13 @@ def test_module_override_changes_armor_effects() -> None:
 
 
 def test_base_only_matches_effective_paths_fixture() -> None:
-    ids_state = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
 
     report = build_survivability_report(
-        ids_state, spec, module_context="Testing", allow_provisional=True
+        ids_snapshot, spec, module_context="Testing", allow_provisional=True
     )
     base_only = report["snapshots"]["base_only"]
     assert base_only["tower_hp"] == pytest.approx(11314998536.23848, rel=1e-9)

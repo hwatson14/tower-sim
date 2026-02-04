@@ -4,6 +4,7 @@ from pathlib import Path
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.evaluators.max_wave_report import build_max_wave_report
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.run.problem_spec import (
@@ -78,7 +79,10 @@ def test_max_wave_returns_failure_snapshot() -> None:
     problem = _build_problem_spec()
 
     evaluator = MaxWaveEvaluator()
-    result = evaluator.evaluate(problem, parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    result = evaluator.evaluate(problem, ids_snapshot)
 
     assert result["fail_closed"] is False
     assert result["w_max"] == 0
@@ -92,14 +96,16 @@ def test_max_wave_returns_failure_snapshot() -> None:
 
 
 def test_max_wave_report_includes_debug_sections() -> None:
-    ids_state = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
     evaluator = MaxWaveEvaluator()
     problem = _build_problem_spec()
-    result = evaluator.evaluate(problem, ids_state)
+    result = evaluator.evaluate(problem, ids_snapshot)
 
     report = build_max_wave_report(
         problem,
-        ids_state,
+        ids_snapshot,
         result,
         module_context="Testing",
         allow_provisional=True,

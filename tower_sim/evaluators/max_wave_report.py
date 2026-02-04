@@ -13,7 +13,7 @@ from tower_sim.engines.survivability_pipeline import (
 from tower_sim.registry.stat_registry import default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import ProblemSpec
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.evaluators.max_wave import (
     _default_wave_damage_tier,
     _load_tier_rules,
@@ -29,7 +29,7 @@ from tower_sim.evaluators.max_wave import (
 
 def build_max_wave_report(
     problem_spec: ProblemSpec,
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     max_wave_result: Dict[str, Any],
     *,
     module_context: str = "Testing",
@@ -54,10 +54,10 @@ def build_max_wave_report(
         },
     }
 
-    report["base_state"] = _extract_base_state(ids_state)
+    report["base_state"] = _extract_base_state(ids_snapshot)
 
     inventory = _safe_build_inventory(
-        ids_state,
+        ids_snapshot,
         module_context=module_context,
         module_overrides=module_overrides,
         missing=missing,
@@ -67,7 +67,7 @@ def build_max_wave_report(
         report["inventory"] = inventory
 
     loadout_breakdown = _safe_build_loadout_breakdown(
-        ids_state,
+        ids_snapshot,
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
@@ -104,9 +104,9 @@ def build_max_wave_report(
     return report
 
 
-def _extract_base_state(ids_state: IdsState) -> Dict[str, Any]:
+def _extract_base_state(ids_snapshot: AccountSnapshot) -> Dict[str, Any]:
     workshop_entries = {}
-    for name, entry in ids_state.workshop.entries.items():
+    for name, entry in ids_snapshot.workshop.items():
         workshop_entries[name] = {
             "unlocked": entry.unlocked,
             "coin_level": entry.coin_level,
@@ -114,21 +114,21 @@ def _extract_base_state(ids_state: IdsState) -> Dict[str, Any]:
             "category": entry.category,
         }
     ultimate_weapons = {}
-    for name, entry in ids_state.ultimate_weapons.entries.items():
+    for name, entry in ids_snapshot.ultimate_weapons.items():
         ultimate_weapons[name] = {
             "unlocked": entry.unlocked,
             "track_levels": entry.track_levels,
         }
     return {
-        "labs": dict(ids_state.labs.labs),
+        "labs": dict(ids_snapshot.labs),
         "workshop": workshop_entries,
-        "relics": dict(ids_state.relics.relics),
+        "relics": dict(ids_snapshot.relics),
         "ultimate_weapons": ultimate_weapons,
     }
 
 
 def _safe_build_inventory(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     *,
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
@@ -136,14 +136,14 @@ def _safe_build_inventory(
     errors: List[Dict[str, str]],
 ) -> Optional[Dict[str, Any]]:
     try:
-        return _build_inventory_summary(ids_state, module_context, module_overrides)
+        return _build_inventory_summary(ids_snapshot, module_context, module_overrides)
     except SurvivabilityPipelineError as exc:
         _record_report_error("inventory", exc, missing, errors)
         return None
 
 
 def _safe_build_loadout_breakdown(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     *,
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
@@ -154,10 +154,10 @@ def _safe_build_loadout_breakdown(
 ) -> Optional[Dict[str, Any]]:
     try:
         base_inputs = _compile_base_stat_inputs(
-            ids_state, allow_provisional=allow_provisional
+            ids_snapshot, allow_provisional=allow_provisional
         )
         loadout_inputs = _compile_loadout_stat_inputs(
-            ids_state,
+            ids_snapshot,
             module_context=module_context,
             module_overrides=module_overrides,
             selected_cards=selected_cards,

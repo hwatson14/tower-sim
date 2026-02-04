@@ -26,7 +26,7 @@ from tower_sim.loaders.bc_heat_loader import load_heat_bundle
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import BossSurvivabilitySpec, ProblemSpec, ScenarioSpec
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot
 from tower_sim.libs.assist_efficiency import compute_efficiencies
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
@@ -127,7 +127,7 @@ _RESERVED_ROWS = {
 
 
 def build_survivability_report(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     problem_spec: ProblemSpec,
     *,
     module_context: str = "Testing",
@@ -136,10 +136,12 @@ def build_survivability_report(
     allow_provisional: bool = False,
 ) -> Dict[str, object]:
     warnings: Dict[str, object] = {}
-    inventory = _build_inventory_summary(ids_state, module_context, module_overrides)
-    base_inputs = _compile_base_stat_inputs(ids_state, allow_provisional=allow_provisional)
+    inventory = _build_inventory_summary(ids_snapshot, module_context, module_overrides)
+    base_inputs = _compile_base_stat_inputs(
+        ids_snapshot, allow_provisional=allow_provisional
+    )
     loadout_inputs = _compile_loadout_stat_inputs(
-        ids_state,
+        ids_snapshot,
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
@@ -275,27 +277,31 @@ def _mul_optional(left: Optional[float], right: Optional[float]) -> Optional[flo
 
 
 def _compile_base_stat_inputs(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     *,
     allow_provisional: bool,
 ) -> List[StatInput]:
-    _assert_vault_zero(ids_state)
+    _assert_vault_zero(ids_snapshot)
     workshop_tables = load_workshop_tables()
     labs = load_labs_values()
 
-    tower_hp = _workshop_value(ids_state, "Health", workshop_tables, "WSValues")
-    tower_hp *= _lab_multiplier(labs, "Health", ids_state)
+    tower_hp = _workshop_value(ids_snapshot, "Health", workshop_tables, "WSValues")
+    tower_hp *= _lab_multiplier(labs, "Health", ids_snapshot)
 
-    tower_regen = _workshop_value(ids_state, "Health Regen", workshop_tables, "WSValues")
-    tower_regen *= _lab_multiplier(labs, "Health Regen", ids_state)
+    tower_regen = _workshop_value(
+        ids_snapshot, "Health Regen", workshop_tables, "WSValues"
+    )
+    tower_regen *= _lab_multiplier(labs, "Health Regen", ids_snapshot)
 
-    def_pct = _defense_percent(ids_state, allow_provisional=allow_provisional)
+    def_pct = _defense_percent(ids_snapshot, allow_provisional=allow_provisional)
 
-    wall_ratio = _wall_health_ratio(ids_state, labs, allow_provisional=allow_provisional)
+    wall_ratio = _wall_health_ratio(
+        ids_snapshot, labs, allow_provisional=allow_provisional
+    )
     wall_hp = tower_hp * wall_ratio
 
     wall_regen_ratio = _wall_regen_ratio(
-        ids_state, labs, allow_provisional=allow_provisional
+        ids_snapshot, labs, allow_provisional=allow_provisional
     )
     wall_regen = tower_regen * wall_regen_ratio
 
@@ -332,8 +338,8 @@ def _compile_base_stat_inputs(
         ),
     ]
 
-    eals_pct = _resolve_skip_stat(ids_state, "Enemy Attack Level Skip")
-    ehls_pct = _resolve_skip_stat(ids_state, "Enemy Health Level Skip")
+    eals_pct = _resolve_skip_stat(ids_snapshot, "Enemy Attack Level Skip")
+    ehls_pct = _resolve_skip_stat(ids_snapshot, "Enemy Health Level Skip")
 
     inputs.extend(
         [
@@ -352,7 +358,9 @@ def _compile_base_stat_inputs(
             StatInput(
                 stat_id="thorns_damage_mult",
                 phase=Phase.START_OF_RUN,
-                base_value=_thorns_base(ids_state, allow_provisional=allow_provisional),
+                base_value=_thorns_base(
+                    ids_snapshot, allow_provisional=allow_provisional
+                ),
                 provenance="base:provisional_zero" if allow_provisional else "base:ids",
             ),
             StatInput(
@@ -384,8 +392,8 @@ def _compile_base_stat_inputs(
     return inputs
 
 
-def _assert_vault_zero(ids_state: IdsState) -> None:
-    vault = ids_state.vault.vault
+def _assert_vault_zero(ids_snapshot: AccountSnapshot) -> None:
+    vault = ids_snapshot.vault
     if not vault:
         return
     check_keys = [
@@ -413,36 +421,28 @@ def _assert_vault_zero(ids_state: IdsState) -> None:
 
 
 def _workshop_value(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     stat_name: str,
     workshop_tables,
     section: str,
 ) -> float:
-    entry = ids_state.workshop.entries.get(stat_name)
+    entry = ids_snapshot.workshop.get(stat_name)
     if entry is None or entry.coin_level is None:
         raise SurvivabilityPipelineError(
             f"Missing workshop level for {stat_name!r} in IDS."
         )
-    level = _parse_optional_int(entry.coin_level)
-    if level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid workshop level for {stat_name!r}: {entry.coin_level!r}"
-        )
+    level = entry.coin_level
     table_stat = stat_name
     if stat_name == "Health Regen":
         table_stat = "HPregen"
     return float(workshop_value(table_stat, level, workshop_tables, section=section))
 
 
-def _lab_multiplier(labs, lab_name: str, ids_state: IdsState) -> float:
-    lab_level_raw = ids_state.labs.labs.get(lab_name)
+def _lab_multiplier(labs, lab_name: str, ids_snapshot: AccountSnapshot) -> float:
+    lab_level_raw = ids_snapshot.labs.get(lab_name)
     if lab_level_raw is None:
         raise SurvivabilityPipelineError(f"Missing lab level for {lab_name!r} in IDS.")
-    lab_level = _parse_optional_int(lab_level_raw)
-    if lab_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab level for {lab_name!r}: {lab_level_raw!r}"
-        )
+    lab_level = lab_level_raw
     if lab_name not in labs:
         raise SurvivabilityPipelineError(f"Missing lab table for {lab_name!r}.")
     lab = labs[lab_name]
@@ -459,28 +459,20 @@ def _lab_multiplier(labs, lab_name: str, ids_state: IdsState) -> float:
     )
 
 
-def _defense_percent(ids_state: IdsState, *, allow_provisional: bool) -> float:
+def _defense_percent(ids_snapshot: AccountSnapshot, *, allow_provisional: bool) -> float:
     if not allow_provisional:
         raise SurvivabilityPipelineError(
             "Defense % ladder lacks an authoritative table. "
             "Set allow_provisional=True to use EP constants."
         )
-    workshop_entry = ids_state.workshop.entries.get("Defense %")
+    workshop_entry = ids_snapshot.workshop.get("Defense %")
     if workshop_entry is None or workshop_entry.coin_level is None:
         raise SurvivabilityPipelineError("Missing workshop Defense % level in IDS.")
-    workshop_level = _parse_optional_int(workshop_entry.coin_level)
-    if workshop_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid workshop Defense % level: {workshop_entry.coin_level!r}"
-        )
-    lab_level_raw = ids_state.labs.labs.get("Defense %")
+    workshop_level = workshop_entry.coin_level
+    lab_level_raw = ids_snapshot.labs.get("Defense %")
     if lab_level_raw is None:
         raise SurvivabilityPipelineError("Missing lab Defense % level in IDS.")
-    lab_level = _parse_optional_int(lab_level_raw)
-    if lab_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab Defense % level: {lab_level_raw!r}"
-        )
+    lab_level = lab_level_raw
     ws_pp = workshop_level * 0.5
     lab_pp = min(lab_level * 0.2, 10.0)
     value = (ws_pp + lab_pp) / 100.0
@@ -488,7 +480,7 @@ def _defense_percent(ids_state: IdsState, *, allow_provisional: bool) -> float:
 
 
 def _wall_health_ratio(
-    ids_state: IdsState, labs, *, allow_provisional: bool
+    ids_snapshot: AccountSnapshot, labs, *, allow_provisional: bool
 ) -> float:
     if not allow_provisional:
         raise SurvivabilityPipelineError(
@@ -496,24 +488,16 @@ def _wall_health_ratio(
             "Set allow_provisional=True to use EP constants."
         )
     base_ratio = 0.2
-    workshop_entry = ids_state.workshop.entries.get("Wall Health")
+    workshop_entry = ids_snapshot.workshop.get("Wall Health")
     if workshop_entry is None or workshop_entry.coin_level is None:
         raise SurvivabilityPipelineError("Missing workshop Wall Health level in IDS.")
-    workshop_level = _parse_optional_int(workshop_entry.coin_level)
-    if workshop_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid workshop Wall Health level: {workshop_entry.coin_level!r}"
-        )
+    workshop_level = workshop_entry.coin_level
     ratio = base_ratio + min(workshop_level * 0.001, 2.0)
 
-    lab_level_raw = ids_state.labs.labs.get("Wall Health")
+    lab_level_raw = ids_snapshot.labs.get("Wall Health")
     if lab_level_raw is None:
         raise SurvivabilityPipelineError("Missing lab Wall Health level in IDS.")
-    lab_level = _parse_optional_int(lab_level_raw)
-    if lab_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab Wall Health level: {lab_level_raw!r}"
-        )
+    lab_level = lab_level_raw
     if lab_level > 0:
         if "Wall Health" not in labs:
             raise SurvivabilityPipelineError("Missing Wall Health lab table.")
@@ -535,21 +519,17 @@ def _wall_health_ratio(
 
 
 def _wall_regen_ratio(
-    ids_state: IdsState, labs, *, allow_provisional: bool
+    ids_snapshot: AccountSnapshot, labs, *, allow_provisional: bool
 ) -> float:
     if not allow_provisional:
         raise SurvivabilityPipelineError(
             "Wall Regen ratio ladder lacks an authoritative table. "
             "Set allow_provisional=True to use EP constants."
         )
-    lab_level_raw = ids_state.labs.labs.get("Wall Regen")
+    lab_level_raw = ids_snapshot.labs.get("Wall Regen")
     if lab_level_raw is None:
         raise SurvivabilityPipelineError("Missing lab Wall Regen level in IDS.")
-    lab_level = _parse_optional_int(lab_level_raw)
-    if lab_level is None:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab Wall Regen level: {lab_level_raw!r}"
-        )
+    lab_level = lab_level_raw
     if lab_level == 0:
         return 0.0
     if "Wall Regen" not in labs:
@@ -568,7 +548,7 @@ def _wall_regen_ratio(
     )
 
 
-def _thorns_base(ids_state: IdsState, *, allow_provisional: bool) -> float:
+def _thorns_base(ids_snapshot: AccountSnapshot, *, allow_provisional: bool) -> float:
     if not allow_provisional:
         raise SurvivabilityPipelineError(
             "Thorns base fraction missing from authoritative tables. "
@@ -578,7 +558,7 @@ def _thorns_base(ids_state: IdsState, *, allow_provisional: bool) -> float:
 
 
 def _compile_loadout_stat_inputs(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     *,
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
@@ -586,7 +566,7 @@ def _compile_loadout_stat_inputs(
     allow_provisional: bool,
 ) -> List[StatInput]:
     accumulator = _StatAccumulator()
-    module_blocks = _parse_module_blocks(ids_state)
+    module_blocks = _parse_module_blocks(ids_snapshot)
     for block in module_blocks.values():
         if module_context not in block.loadout_by_context:
             continue
@@ -614,37 +594,32 @@ def _compile_loadout_stat_inputs(
             assist_enabled=assist_enabled,
             assist_level=assist_level,
             assist_cap=assist_cap,
-            ids_state=ids_state,
+            ids_snapshot=ids_snapshot,
             allow_provisional=allow_provisional,
         )
 
-    _apply_card_effects(accumulator, ids_state, selected_cards)
+    _apply_card_effects(
+        accumulator,
+        ids_snapshot,
+        module_context=module_context,
+        selected_cards=selected_cards,
+    )
 
     return accumulator.to_stat_inputs()
 
 
-def _resolve_skip_stat(ids_state: IdsState, lab_name: str) -> float:
-    workshop_entry = ids_state.workshop.entries.get(lab_name)
+def _resolve_skip_stat(ids_snapshot: AccountSnapshot, lab_name: str) -> float:
+    workshop_entry = ids_snapshot.workshop.get(lab_name)
     if workshop_entry is None or workshop_entry.coin_level is None:
         raise SurvivabilityPipelineError(
             f"Missing workshop level for {lab_name!r} in IDS."
         )
-    try:
-        workshop_level = int(float(workshop_entry.coin_level))
-    except ValueError as exc:
-        raise SurvivabilityPipelineError(
-            f"Invalid workshop level for {lab_name!r}: {workshop_entry.coin_level!r}"
-        ) from exc
+    workshop_level = workshop_entry.coin_level
 
-    lab_level_raw = ids_state.labs.labs.get(lab_name)
+    lab_level_raw = ids_snapshot.labs.get(lab_name)
     if lab_level_raw is None:
         raise SurvivabilityPipelineError(f"Missing lab level for {lab_name!r} in IDS.")
-    try:
-        lab_level = int(float(lab_level_raw))
-    except ValueError as exc:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab level for {lab_name!r}: {lab_level_raw!r}"
-        ) from exc
+    lab_level = lab_level_raw
 
     from tower_sim.libs.labs_lib import load_labs_values
 
@@ -870,11 +845,11 @@ def _resolve_wave_damage(scenario: ScenarioSpec, wave_state) -> float:
 
 
 def _build_inventory_summary(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
 ) -> Dict[str, object]:
-    module_blocks = _parse_module_blocks(ids_state)
+    module_blocks = _parse_module_blocks(ids_snapshot)
     module_summary: Dict[str, object] = {}
     for slot, block in module_blocks.items():
         loadout = block.loadout_by_context.get(module_context)
@@ -906,16 +881,24 @@ def _build_inventory_summary(
             ],
         }
 
-    cards = [
-        {
-            "name": entry.name,
-            "level": entry.level,
-            "equipped_flags": entry.equipped_flags,
-        }
-        for entry in ids_state.cards.cards.values()
-    ]
-    bots = [entry.name for entry in ids_state.bots.bots.values()]
-    guardians = [row for row in ids_state.guardians.raw_rows]
+    cards = []
+    for entry in ids_snapshot.cards_inventory.values():
+        presets = [
+            preset
+            for preset, card_list in ids_snapshot.card_presets.items()
+            if entry.name in card_list
+        ]
+        cards.append(
+            {
+                "name": entry.name,
+                "level": entry.level,
+                "mastery_unlocked": entry.mastery_unlocked,
+                "mastery_lab_level": entry.mastery_lab_level,
+                "equipped_presets": presets,
+            }
+        )
+    bots = list(ids_snapshot.bots)
+    guardians = list(ids_snapshot.guardians.rows)
     return {
         "modules": module_summary,
         "cards": cards,
@@ -924,16 +907,102 @@ def _build_inventory_summary(
     }
 
 
-def _parse_module_blocks(ids_state: IdsState) -> Dict[str, ModuleBlock]:
-    rows = ids_state.raw_sections.get("Modules")
-    if rows is None:
-        raise SurvivabilityPipelineError("Missing Modules section in IDS.")
+def _parse_module_blocks(ids_snapshot: AccountSnapshot) -> Dict[str, ModuleBlock]:
     blocks: Dict[str, ModuleBlock] = {}
-    for slot_index, slot_name in SLOT_ORDER.items():
-        block_rows = [_slice_row(row, slot_index * 5, slot_index * 5 + 4) for row in rows]
-        filtered = [row for row in block_rows if any(cell.strip() for cell in row)]
-        blocks[slot_name] = _parse_module_block(filtered, slot_name)
+    for slot_name in SLOT_ORDER.values():
+        system_state = ids_snapshot.module_system_state.get(slot_name)
+        if system_state is None:
+            raise SurvivabilityPipelineError(
+                f"Missing module system state for {slot_name!r}."
+            )
+        assist_cap = None
+        if system_state.rarity_cap:
+            assist_cap = _parse_rarity(system_state.rarity_cap)
+        loadout_by_context: Dict[str, ModuleLoadout] = {}
+        for preset_name, preset in ids_snapshot.module_presets.items():
+            selection = preset.get(slot_name)
+            if selection is None:
+                raise SurvivabilityPipelineError(
+                    f"Missing module preset {preset_name} for {slot_name!r}."
+                )
+            loadout_by_context[preset_name] = ModuleLoadout(
+                slot=slot_name,
+                primary=selection.primary,
+                assist=selection.assist,
+                assist_enabled=system_state.assist_unlocked,
+                assist_stone_level=system_state.assist_level,
+                assist_cap_rarity=assist_cap,
+            )
+        inventory: Dict[str, ModuleRecord] = {}
+        for name, entry in ids_snapshot.modules_inventory.items():
+            if entry.slot_type != slot_name:
+                continue
+            inventory[name] = _module_record_from_snapshot(entry, slot_name)
+        blocks[slot_name] = ModuleBlock(
+            loadout_by_context=loadout_by_context,
+            inventory=inventory,
+        )
     return blocks
+
+
+def _module_record_from_snapshot(
+    entry: ModuleSnapshot, slot_name: str
+) -> ModuleRecord:
+    if entry.rarity is None:
+        raise SurvivabilityPipelineError(
+            f"Missing rarity for module {entry.name!r} in {slot_name}."
+        )
+    rarity = _parse_rarity(entry.rarity)
+    if rarity is None:
+        raise SurvivabilityPipelineError(
+            f"Missing rarity for module {entry.name!r} in {slot_name}."
+        )
+    if entry.level is None:
+        raise SurvivabilityPipelineError(
+            f"Missing level for module {entry.name!r} in {slot_name}."
+        )
+    if entry.stat is None:
+        raise SurvivabilityPipelineError(
+            f"Missing main effect for module {entry.name!r} in {slot_name}."
+        )
+    try:
+        main_effect = float(entry.stat)
+    except ValueError as exc:
+        raise SurvivabilityPipelineError(
+            f"Invalid main effect for module {entry.name!r}: {entry.stat!r}"
+        ) from exc
+    substats: List[ModuleSubstat] = []
+    for substat in entry.substats:
+        if not substat.stat_name:
+            continue
+        normalized = _normalize_substat_name(substat.stat_name)
+        if normalized not in _RELEVANT_SUBSTATS:
+            continue
+        if substat.rarity is None:
+            raise SurvivabilityPipelineError(
+                f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
+            )
+        rarity_value = _parse_rarity(substat.rarity)
+        if rarity_value is None:
+            raise SurvivabilityPipelineError(
+                f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
+            )
+        substat_value = _resolve_substat_value(slot_name, normalized, rarity_value)
+        substats.append(
+            ModuleSubstat(
+                name=normalized,
+                rarity=rarity_value,
+                value=substat_value,
+            )
+        )
+    return ModuleRecord(
+        name=entry.name,
+        slot=slot_name,
+        rarity=rarity,
+        level=entry.level,
+        main_effect=main_effect,
+        substats=substats,
+    )
 
 
 def _parse_module_block(rows: List[List[str]], slot_name: str) -> ModuleBlock:
@@ -1102,13 +1171,13 @@ def _apply_module_effects(
     assist_enabled: bool,
     assist_level: int,
     assist_cap: Optional[Rarity],
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     allow_provisional: bool,
 ) -> None:
     if primary is None and assist is None:
         return
     assist_eff = _resolve_assist_efficiencies(
-        ids_state=ids_state,
+        labs=ids_snapshot.labs,
         slot=primary.slot if primary else assist.slot,
         assist_level=assist_level,
     )
@@ -1116,7 +1185,7 @@ def _apply_module_effects(
 
     if primary is not None and primary.slot == "Armor":
         multiplier = _armor_module_multiplier(
-            ids_state,
+            ids_snapshot.labs,
             primary,
             assist if assist_enabled else None,
             assist_level,
@@ -1181,19 +1250,19 @@ def _apply_unique_effects(
 
 
 def _resolve_assist_efficiencies(
-    ids_state: IdsState, slot: str, assist_level: int
+    labs: Mapping[str, Optional[int]], slot: str, assist_level: int
 ) -> AssistEfficiencies:
     bonus_lab_key = f"Assist Module Bonus - {slot}"
     substat_lab_key = f"Assist Module Substats - {slot}"
-    bonus_level = ids_state.labs.labs.get(bonus_lab_key)
-    substat_level = ids_state.labs.labs.get(substat_lab_key)
+    bonus_level = labs.get(bonus_lab_key)
+    substat_level = labs.get(substat_lab_key)
     if bonus_level is None or substat_level is None:
         raise SurvivabilityPipelineError(
             f"Missing assist lab levels for {slot!r} in IDS."
         )
     labs = AssistLabLevels(
-        bonus_level=int(float(bonus_level)),
-        substat_level=int(float(substat_level)),
+        bonus_level=bonus_level,
+        substat_level=substat_level,
     )
     stone_pct = _assist_stone_percent(assist_level)
     inputs = AssistEfficiencyInputs(
@@ -1205,7 +1274,7 @@ def _resolve_assist_efficiencies(
 
 
 def _armor_module_multiplier(
-    ids_state: IdsState,
+    labs: Mapping[str, Optional[int]],
     primary: ModuleRecord,
     assist: ModuleRecord | None,
     assist_level: int,
@@ -1227,13 +1296,13 @@ def _armor_module_multiplier(
             f"Assist module {assist.name!r} is not an Armor module."
         )
     stone_pct = _assist_stone_percent(assist_level)
-    lab_level = ids_state.labs.labs.get("Assist Module Bonus - Armor")
+    lab_level = labs.get("Assist Module Bonus - Armor")
     if lab_level is None:
         raise SurvivabilityPipelineError(
             "Missing Assist Module Bonus - Armor lab level in IDS."
         )
     labs = AssistLabLevels(
-        bonus_level=int(float(lab_level)),
+        bonus_level=lab_level,
         substat_level=0,
     )
     lab_pct = labs.bonus_percent
@@ -1265,12 +1334,16 @@ def _assist_stone_percent(level: int) -> float:
 
 def _apply_card_effects(
     accumulator: "_StatAccumulator",
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
+    *,
+    module_context: str,
     selected_cards: Iterable[str] | None,
 ) -> None:
-    equipped = list(selected_cards or _resolve_equipped_cards(ids_state))
+    equipped = list(
+        selected_cards or _resolve_equipped_cards(ids_snapshot, module_context)
+    )
     for card_name in equipped:
-        effect = _resolve_card_effect(card_name, ids_state)
+        effect = _resolve_card_effect(card_name, ids_snapshot)
         if effect.card == "Health":
             if effect.unit != "mult":
                 raise SurvivabilityPipelineError(
@@ -1295,21 +1368,25 @@ def _apply_card_effects(
             )
 
 
-def _resolve_equipped_cards(ids_state: IdsState) -> List[str]:
-    equipped: List[str] = []
-    for entry in ids_state.cards.cards.values():
-        if any(flag.lower() == "true" for flag in entry.equipped_flags):
-            equipped.append(entry.name)
-    return equipped
+def _resolve_equipped_cards(
+    ids_snapshot: AccountSnapshot, module_context: str
+) -> List[str]:
+    if module_context not in ids_snapshot.card_presets:
+        raise SurvivabilityPipelineError(
+            f"Missing card preset {module_context!r} in IDS snapshot."
+        )
+    return list(ids_snapshot.card_presets[module_context])
 
 
-def _resolve_card_effect(card_name: str, ids_state: IdsState) -> CardEffect:
-    entry = ids_state.cards.cards.get(card_name)
+def _resolve_card_effect(
+    card_name: str, ids_snapshot: AccountSnapshot
+) -> CardEffect:
+    entry = ids_snapshot.cards_inventory.get(card_name)
     if entry is None or entry.level is None:
         raise SurvivabilityPipelineError(
             f"Missing card {card_name!r} or card level in IDS."
         )
-    return get_card_effect(card_name, int(float(entry.level)))
+    return get_card_effect(card_name, entry.level)
 
 
 class _StatAccumulator:

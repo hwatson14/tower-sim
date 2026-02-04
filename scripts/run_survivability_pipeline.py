@@ -9,6 +9,7 @@ from tower_sim.engines.survivability_pipeline import (
     SurvivabilityPipelineError,
     build_survivability_report,
 )
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
 
@@ -87,7 +88,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    ids_state = parse_ids(args.ids)
+    ids_snapshot = compile_account_snapshot(parse_ids(args.ids))
     spec = load_problem_spec(args.spec)
 
     module_overrides = _parse_module_overrides(args.module_primary)
@@ -97,7 +98,7 @@ def main() -> None:
 
     try:
         report = build_survivability_report(
-            ids_state,
+            ids_snapshot,
             spec,
             module_context=args.module_context,
             module_overrides=module_overrides or None,
