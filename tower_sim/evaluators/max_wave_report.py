@@ -17,6 +17,7 @@ from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.evaluators.max_wave import (
     _default_wave_damage_tier,
+    _filter_known_stat_inputs,
     _load_tier_rules,
     _maybe_build_wave_state,
     _missing_required_stat_inputs,
@@ -170,17 +171,10 @@ def _safe_build_loadout_breakdown(
         return None
 
     compiled = compile_full_stat_inputs(ids_snapshot)
-    if compiled.missing:
-        _record_report_error(
-            "stat_inputs",
-            ValueError("Missing workshop/UW stat inputs."),
-            missing,
-            errors,
-        )
-        return None
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
     stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
     registry = default_registry()
+    stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
     engine = StatEngine(registry=registry)
     try:
         engine_result = engine.build(stat_inputs)
@@ -192,6 +186,8 @@ def _safe_build_loadout_breakdown(
         "base_stat_inputs": [_serialize_stat_input(row) for row in base_inputs],
         "loadout_stat_inputs": [_serialize_stat_input(row) for row in loadout_inputs],
         "compiled_stat_inputs": [_serialize_stat_input(row) for row in compiled.stat_inputs],
+        "compiled_missing": compiled.missing,
+        "invalid_stat_inputs": invalid_stat_inputs,
         "statbook_rows": [_serialize_statbook_row(row) for row in engine_result.statbook.rows],
     }
 
@@ -259,7 +255,13 @@ def _safe_build_trace(
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = compile_full_stat_inputs(ids_snapshot)
     stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
-    missing.extend(compiled.missing)
+    registry = default_registry()
+    stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
+    if invalid_stat_inputs:
+        for stat_id in invalid_stat_inputs:
+            errors.append(
+                {"id": "stat_input_invalid", "error": f"Unknown stat_id: {stat_id}"}
+            )
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
     wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
@@ -273,7 +275,6 @@ def _safe_build_trace(
             errors.append({"id": item, "error": "Missing trace prerequisites."})
         return None
 
-    registry = default_registry()
     engine = StatEngine(registry=registry)
     try:
         if tier_rules is None:
@@ -323,7 +324,10 @@ def _resolve_survivability_stats_for_report(
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = compile_full_stat_inputs(ids_snapshot)
     stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
-    missing.extend(compiled.missing)
+    registry = default_registry()
+    stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
+    if invalid_stat_inputs:
+        return None, ["stat_inputs_invalid"]
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
     wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
@@ -332,7 +336,6 @@ def _resolve_survivability_stats_for_report(
     tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
     missing.extend(tier_rule_missing)
 
-    registry = default_registry()
     engine = StatEngine(registry=registry)
     try:
         if tier_rules is None:

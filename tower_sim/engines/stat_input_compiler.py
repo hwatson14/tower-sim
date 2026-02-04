@@ -5,6 +5,7 @@ import re
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
+from tower_sim.libs.data_paths import resolve_data_file
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
 from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.registry.stat_registry import Phase

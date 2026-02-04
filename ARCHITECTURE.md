@@ -333,6 +333,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
+- [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
