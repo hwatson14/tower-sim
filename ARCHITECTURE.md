@@ -368,6 +368,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
 - [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
+- [x] Fix max-wave runner GitHub Action to write JSON output directly.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
