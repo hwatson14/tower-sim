@@ -109,16 +109,20 @@ def resolve_boss_fight(ctx: BossContext) -> Dict[str, float]:
     if tower_regen < 0 or wall_regen < 0:
         raise BossDataError("tower_regen and wall_regen must be >= 0")
 
-    # Boss death time (fractional damage applied immediately post-hit).
-    # Percent-based boss damage is applied immediately after each boss hit.
-    per_hit_boss_frac = (
-        thorns_frac + (pc_frac * pc_boss_mult) + orb_damage_frac + electrons_damage_frac
-    )
-    if per_hit_boss_frac <= 0:
+    # Boss death time.
+    # Plasma Cannon is applied immediately on boss spawn; thorns and other
+    # percent damage trigger per boss hit.
+    immediate_pc_frac = pc_frac * pc_boss_mult
+    remaining_hp_frac = max(0.0, 1.0 - immediate_pc_frac)
+    per_hit_boss_frac = thorns_frac + orb_damage_frac + electrons_damage_frac
+    if remaining_hp_frac <= 0:
+        ttk = 0.0
+        hits_to_kill = 0
+    elif per_hit_boss_frac <= 0:
         ttk = float("inf")
         hits_to_kill = math.inf
     else:
-        hits_to_kill = math.ceil(1.0 / per_hit_boss_frac)
+        hits_to_kill = math.ceil(remaining_hp_frac / per_hit_boss_frac)
         ttk = hits_to_kill * hit_interval
 
     # Tower death time with heat-up (+4% per hit).
