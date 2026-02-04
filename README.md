@@ -79,9 +79,17 @@ PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
 ```
 
 After running the command, confirm the IDS dump artifacts land under the exact
-path `audit/account_snapshot.json` (same folder for the summary/diff JSON). The
-script does not delete the file at the end of the job, so it should remain on
-disk until you remove it. Key fields:
+path `audit/account_snapshot.json` (same folder for the summary/diff JSON). This
+snapshot is the full, canonical account state; the additional files below are
+convenience extracts so agents can fetch a single slice without parsing the full
+payload. The script writes dedicated extracts at:
+
+- `audit/base_stats.json`
+- `audit/inventory.json`
+- `audit/loadout.json`
+
+The script does not delete the files at the end of the job, so they should
+remain on disk until you remove them. Key fields:
 
 - `base_stats`: statbook rows (base/final/provenance) for labs + workshop.
 - `inventory`: card/module/uw/bot/vault/etc inventory snapshots.
@@ -95,7 +103,9 @@ If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 In short: your agent should call the `dump_ids_diagnostics.py` script (or an
 equivalent wrapper around it) and then read the resulting JSON file. The single
 call above produces everything it needs for base stats, inventory, and loadout
-in one deterministic payload. The fields to consume are:
+in one deterministic payload (and writes the dedicated extract files listed
+above). If you prefer a single artifact, you can read the sections directly from
+`account_snapshot.json`. The fields to consume are:
 
 - `base_stats` → list of stat rows with `stat_id`, `phase`, `base_value`,
   `final_value`, and provenance.
