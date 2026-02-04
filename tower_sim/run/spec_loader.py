@@ -26,6 +26,12 @@ def load_problem_spec(path: Path) -> ProblemSpec:
     return _parse_problem_spec(data)
 
 
+def parse_problem_spec_data(data: Mapping[str, Any]) -> ProblemSpec:
+    if not isinstance(data, Mapping):
+        raise ValueError("Problem spec must be a mapping at the top level.")
+    return _parse_problem_spec(data)
+
+
 def _load_raw_spec(path: Path) -> Any:
     suffix = path.suffix.lower()
     if suffix == ".json":

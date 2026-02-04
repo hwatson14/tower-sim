@@ -341,3 +341,6 @@ Any of the following must stop work and ask for clarification:
 - [x] Add card mastery table + loader with tests for sim access.
 - [x] Sync Effective Paths eDamage mechanics to canonical extract (crit/ASPD/multishot/range/rapid fire/super tower).
 - [x] Implement Effective Paths econ_current formulas + tests (Harry reference sheet).
+- [x] Add allowlisted run task dispatcher (BASE_STATS/INVENTORY/LOADOUT/EHP_SLICE/MAX_WAVE).
+- [x] Define task schemas + fail-closed validation for run dispatcher inputs.
+- [x] Add unit tests covering run task dispatcher + core tasks.
