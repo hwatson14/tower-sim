@@ -577,6 +577,9 @@ def _compile_loadout_stat_inputs(
         assist_enabled = loadout.assist_enabled
         assist_level = loadout.assist_stone_level
         assist_cap = loadout.assist_cap_rarity
+        allocation = resolved_loadout.allocation_levels.get(loadout.slot)
+        if allocation is not None:
+            assist_level = allocation.assist_level
 
         if primary_name:
             primary = _resolve_module(primary_name, loadout.slot, block.inventory)
@@ -642,6 +645,15 @@ def _resolve_skip_stat(ids_snapshot: AccountSnapshot, lab_name: str) -> float:
         )
 
     return workshop_level_to_chance(workshop_level) + float(lab_value)
+
+
+def _resolve_loadout(
+    ids_snapshot: AccountSnapshot, module_context: str
+) -> ResolvedLoadout:
+    try:
+        return resolve_loadout(ids_snapshot, module_context)
+    except ValueError as exc:
+        raise SurvivabilityPipelineError(str(exc)) from exc
 
 
 def _build_wave_state(scenario: ScenarioSpec, start_snapshot: Mapping[str, float]):
@@ -854,12 +866,17 @@ def _build_inventory_summary(
     for slot, block in module_blocks.items():
         loadout = block.loadout_by_context.get(module_context)
         override = (module_overrides or {}).get(slot, {})
+        allocation = resolved_loadout.allocation_levels.get(slot)
         module_summary[slot] = {
             "loadout": {
                 "primary": override.get("primary", loadout.primary if loadout else None),
                 "assist": override.get("assist", loadout.assist if loadout else None),
                 "assist_enabled": loadout.assist_enabled if loadout else False,
-                "assist_stone_level": loadout.assist_stone_level if loadout else 0,
+                "assist_stone_level": (
+                    allocation.assist_level
+                    if allocation
+                    else loadout.assist_stone_level if loadout else 0
+                ),
                 "assist_cap_rarity": loadout.assist_cap_rarity.name if loadout and loadout.assist_cap_rarity else None,
             },
             "inventory": [
