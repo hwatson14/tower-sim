@@ -365,6 +365,9 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
         except (IndexError, ValueError):
             missing.append(f"uw_level:{uw_name}:{track_name}")
             continue
+        if value is None:
+            missing.append(f"uw_locked:{uw_name}:{track_name}")
+            continue
 
         stat_inputs.append(
             StatInput(
@@ -471,11 +474,16 @@ def _column_letter_index(label: str) -> int:
     return total - 1
 
 
-def _resolve_uw_values(rows: List[Dict[str, str]], level_index: int) -> Tuple[float, Optional[float]]:
+def _resolve_uw_values(
+    rows: List[Dict[str, str]], level_index: int
+) -> Tuple[Optional[float], Optional[float]]:
     if level_index < 0 or level_index >= len(rows):
         raise IndexError("UW level index out of range.")
     row = rows[level_index]
-    value = float(row["value"])
+    value_raw = row["value"].strip()
+    if value_raw.lower() in {"locked", "lo"}:
+        return None, None
+    value = float(value_raw)
     next_cost = _uw_next_cost(rows, level_index)
     return value, next_cost
 
