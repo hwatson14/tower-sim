@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tower_sim.evaluators.max_wave import MaxWaveEvaluator, build_max_wave_report
+from tower_sim.evaluators.max_wave import MaxWaveEvaluator
+from tower_sim.evaluators.max_wave_report import build_max_wave_report
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.run.problem_spec import (
