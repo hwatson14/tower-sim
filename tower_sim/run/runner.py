@@ -8,6 +8,7 @@ from typing import Any, Dict
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.loaders.ids_parser import parse_ids
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.run.spec_loader import load_problem_spec
 
 
@@ -16,8 +17,9 @@ def run() -> Dict[str, Any]:
     ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
     spec_path = repo_root / "tests" / "fixtures" / "specs" / "sample_spec.yaml"
     problem_spec = load_problem_spec(spec_path)
-    ids_state = parse_ids(ids_path)
-    return MaxWaveEvaluator().evaluate(problem_spec, ids_state)
+    ids_raw = parse_ids(ids_path)
+    snapshot = compile_account_snapshot(ids_raw)
+    return MaxWaveEvaluator().evaluate(problem_spec, snapshot)
 
 
 def _parse_args() -> argparse.Namespace:

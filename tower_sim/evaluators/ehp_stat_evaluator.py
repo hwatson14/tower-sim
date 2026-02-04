@@ -10,7 +10,7 @@ import csv
 import yaml
 
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
-from tower_sim.util.ids_state import IdsState
+from tower_sim.util.account_snapshot import AccountSnapshot
 
 
 MECHANICS_FILENAME = "mechanics_library_v0_7.yaml"
@@ -54,7 +54,7 @@ class _MechanicsData:
 
 @dataclass
 class _EvalContext:
-    ids_state: IdsState
+    ids_snapshot: AccountSnapshot
     enabled_stats: Sequence[str]
     allow_out_of_scope: bool
     cache: MutableMapping[str, float]
@@ -62,7 +62,7 @@ class _EvalContext:
 
 
 def evaluate_stats(
-    ids_state: IdsState,
+    ids_snapshot: AccountSnapshot,
     enabled_stats: Sequence[str],
     *,
     allow_out_of_scope: bool = False,
@@ -71,7 +71,7 @@ def evaluate_stats(
     _validate_enabled_stats(enabled_stats, mechanics)
 
     context = _EvalContext(
-        ids_state=ids_state,
+        ids_snapshot=ids_snapshot,
         enabled_stats=enabled_stats,
         allow_out_of_scope=allow_out_of_scope,
         cache={},
@@ -321,20 +321,38 @@ def _resolve_ids_path(path: str, context: _EvalContext) -> Any:
     key = match.group("key")
     attr = match.group("attr")
 
-    if section not in {"labs", "workshop"}:
+    if section not in {"labs", "workshop", "cards"}:
         return _handle_out_of_scope(
             "<ids_path>", "IDS_PATH", section, context, {"path": path}
         )
-
-    resolved_section = getattr(context.ids_state, section)
-    resolved_collection = getattr(resolved_section, collection)
     lookup_key = WORKSHOP_ENTRY_ALIASES.get(key, key)
-    if lookup_key not in resolved_collection:
-        raise KeyError(path)
-    value = resolved_collection[lookup_key]
-    if attr is None:
-        return value
-    return getattr(value, attr)
+    if section == "labs":
+        if collection != "labs":
+            raise KeyError(path)
+        if lookup_key not in context.ids_snapshot.labs:
+            raise KeyError(path)
+        if attr is not None:
+            raise KeyError(path)
+        return context.ids_snapshot.labs[lookup_key]
+    if section == "workshop":
+        if collection != "entries":
+            raise KeyError(path)
+        if lookup_key not in context.ids_snapshot.workshop:
+            raise KeyError(path)
+        value = context.ids_snapshot.workshop[lookup_key]
+        if attr is None:
+            return value
+        return getattr(value, attr)
+    if section == "cards":
+        if collection != "cards":
+            raise KeyError(path)
+        if lookup_key not in context.ids_snapshot.cards_inventory:
+            raise KeyError(path)
+        value = context.ids_snapshot.cards_inventory[lookup_key]
+        if attr is None:
+            return value
+        return getattr(value, attr)
+    raise KeyError(path)
 
 
 def _workshop_base_value(stat_key: str, level: int, base_curve: str) -> float:

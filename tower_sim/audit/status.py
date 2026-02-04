@@ -29,7 +29,7 @@ def _components() -> list[ComponentStatus]:
             status="implemented",
             evidence=[
                 "`tower_sim/ids_parser.py`: `parse_ids`, section parsing",
-                "`tower_sim/ids_state.py`: typed `IdsState`",
+                "`tower_sim/ids_raw.py`: raw `_IDS.csv` ingest",
             ],
             tests=["`tests/test_ids_parser.py`"],
             known_gaps=[],
