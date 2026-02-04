@@ -67,6 +67,22 @@ If something is unclear, it likely belongs in one of the documents above rather 
 
 ## Agent quickstart: base stats, inventory, loadout
 
+If you want an agent to **fetch the latest inventory/loadout/base stats without
+running scripts**, use the `ids-dump-latest` branch published by the IDS dump
+workflow. The workflow writes and force-updates the following files on that
+branch, which you can fetch over HTTPS from GitHub:
+
+- `audit/ids_dump_latest.json` (canonical snapshot payload)
+- `audit/base_stats_latest.json`
+- `audit/inventory_latest.json`
+- `audit/loadout_latest.json`
+
+Example (raw file URL; replace `<org>` and `<repo>` as needed):
+
+```
+https://raw.githubusercontent.com/<org>/<repo>/ids-dump-latest/audit/inventory_latest.json
+```
+
 If you are wiring a ChatGPT agent (or any tool runner) to pull deterministic player
 data, use the IDS diagnostics helper. It emits a single JSON payload containing
 `base_stats`, `inventory`, and the resolved `loadout` (default preset). The output
@@ -100,11 +116,13 @@ If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 `--include-raw`.
 
 **How does my agent know what to call?**  
-In short: your agent should call the `dump_ids_diagnostics.py` script (or an
-equivalent wrapper around it) and then read the resulting JSON file. The single
-call above produces everything it needs for base stats, inventory, and loadout
-in one deterministic payload (and writes the dedicated extract files listed
-above). If you prefer a single artifact, you can read the sections directly from
+If you do not want the agent running scripts, have it download the latest files
+from the `ids-dump-latest` branch (examples above). If you are running locally,
+your agent can call the `dump_ids_diagnostics.py` script (or an equivalent
+wrapper around it) and then read the resulting JSON file. The single call above
+produces everything it needs for base stats, inventory, and loadout in one
+deterministic payload (and writes the dedicated extract files listed above). If
+you prefer a single artifact, you can read the sections directly from
 `account_snapshot.json`. The fields to consume are:
 
 - `base_stats` → list of stat rows with `stat_id`, `phase`, `base_value`,
