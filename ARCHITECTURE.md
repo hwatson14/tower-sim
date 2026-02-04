@@ -153,6 +153,38 @@ Export formats:
 - optional: `statbook.xlsx`
 
 ## Engines
+## Pipeline Overview (IDS → Outputs)
+This is the canonical deterministic flow. Each stage exists to separate raw input
+parsing, stat composition, and evaluator-specific logic, while keeping audit
+artifacts human-readable.
+
+1. **DataLoader**
+   - Resolves snapshot folders and table libraries.
+   - Produces a `DatasetBundle` or IDS-only bundle with file paths/hashes so
+     downstream stages can be deterministic and reproducible.
+2. **IDS Parser**
+   - Parses `_IDS.csv` into `IdsState` (raw values only).
+   - No mechanics are applied here; it is strictly input normalization.
+3. **Account Snapshot Compiler**
+   - Converts `IdsState` into `AccountSnapshot` (normalized, typed inventory and
+     loadout inputs).
+4. **Stat Inputs Compilation**
+   - Builds `StatInput` rows from `AccountSnapshot` (workshop/labs/UW/modules).
+   - Produces stat inputs plus missing/diagnostic lists for fail-closed rules.
+5. **Stat Engine**
+   - Applies mechanics and tier rules to produce `RunStats` snapshots.
+   - Produces **StatBook rows** (base/loadout/tier deltas + provenance).
+6. **StatBook (Export/Audit Artifact)**
+   - The canonical, human-readable export of stat composition.
+   - Used for `BASE_STATS` output and IDS diagnostics; required for provenance.
+7. **Engines (Wave/BC/Combat)**
+   - Wave state (EALS/EHLS), battle conditions, and combat models consume stats.
+   - These engines operate on stat snapshots produced by the Stat Engine.
+8. **Evaluators**
+   - Deterministic objective outputs (e.g., MaxWaveEvaluator).
+   - Consume stat snapshots + engine outputs (wave damage, combat results) and
+     emit JSON metrics + diagnostics.
+
 ### 1) DataLoader
 - Resolves snapshot folder using priority order.
 - Returns a DatasetBundle: file paths + timestamps + hashes.
@@ -334,6 +366,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
+- [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
