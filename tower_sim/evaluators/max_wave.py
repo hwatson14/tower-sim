@@ -51,7 +51,6 @@ class MaxWaveEvaluator:
         stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
         if compiled.missing:
             diagnostics["compiled_missing"] = compiled.missing
-            missing.extend(compiled.missing)
 
         wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
         if wave_state is not None:
