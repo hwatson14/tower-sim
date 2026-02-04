@@ -67,6 +67,7 @@ class MaxWaveEvaluator:
         stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
         if invalid_stat_inputs:
             diagnostics["invalid_stat_inputs"] = invalid_stat_inputs
+            missing.extend(invalid_stat_inputs)
         missing_stat_inputs = _missing_required_stat_inputs(stat_inputs)
         if missing_stat_inputs:
             diagnostics["missing_stat_inputs"] = missing_stat_inputs

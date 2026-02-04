@@ -208,6 +208,29 @@ validated strictly and must fail closed when required fields are missing.
 ```
 
 **Optimiser task identifiers (v1):**
+### Runner Input Schema (Draft)
+```json
+{
+  "task": "OPTIMIZE_LOADOUT",
+  "objective": "MAX_WAVE",
+  "account_snapshot": { "...": "snapshot payload from ids_dump_latest.json" },
+  "loadout_override": { "...": "optional explicit loadout to evaluate" },
+  "snapshot_patch": { "...": "optional patch for spend/time changes" },
+  "loadout_patch": { "...": "optional patch for card/module changes" },
+  "constraints": {
+    "battle_conditions": { "...": "explicit BC set or named scenario" },
+    "budgets": { "stones": 0, "coins": 0, "lab_time_seconds": 0 },
+    "search_limits": { "max_candidates": 500, "max_runtime_seconds": 300 }
+  },
+  "debug": {
+    "allow_partial_results": true,
+    "return_candidate_trace": false
+  }
+}
+```
+
+**Task identifiers (v1):**
+- `MAX_WAVE`
 - `OPTIMIZE_LOADOUT`
 - `OPTIMIZE_MODULE_SUBSTATS` (module substat changes only)
 - `OPTIMIZE_STONES`
@@ -566,6 +589,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
 - [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
+- [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
 - [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
