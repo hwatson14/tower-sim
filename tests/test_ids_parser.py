@@ -13,16 +13,16 @@ from tower_sim.loaders.ids_parser import parse_ids  # noqa: E402
 
 
 def test_parse_ids_fixture_sections() -> None:
-    ids_state = parse_ids()
+    ids_raw = parse_ids()
 
-    assert ids_state.labs.labs
-    assert ids_state.workshop.entries
-    assert ids_state.modules.slots
-    assert ids_state.ultimate_weapons.entries
-    assert ids_state.cards.cards
-    assert ids_state.bots.bots
-    assert ids_state.relics.relics
-    assert ids_state.vault.vault
-    assert ids_state.themes_songs.raw_rows
-    assert ids_state.guardians.raw_rows
-    assert ids_state.player_stuff.key_values
+    assert ids_raw.raw_sections["Labs"]
+    assert ids_raw.raw_sections["WS"]
+    assert ids_raw.raw_sections["Modules"]
+    assert ids_raw.raw_sections["UWs"]
+    assert ids_raw.raw_sections["Cards"]
+    assert ids_raw.raw_sections["Bots"]
+    assert ids_raw.raw_sections["Relics"]
+    assert ids_raw.raw_sections["Vault"]
+    assert ids_raw.raw_sections["Themes & Songs"]
+    assert ids_raw.raw_sections["Guardians"]
+    assert ids_raw.raw_sections["Player & Stuff"]

@@ -293,6 +293,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [x] Apply BC/heat in frozen stat order for at-wave snapshots consumed by combat.
 - [x] Load tier/tournament wave damage tables from Step1 data dumps (strict lookup).
+- [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
@@ -322,7 +323,9 @@ Any of the following must stop work and ask for clarification:
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
+- [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
+- [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Add reference completeness report and runtime table guardrail test.
