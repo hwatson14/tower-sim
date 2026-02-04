@@ -8,10 +8,7 @@ from tower_sim.engines.survivability_pipeline import (
     _parse_module_blocks,
     build_survivability_report,
 )
-from tower_sim.loaders.account_snapshot_compiler import (
-    compile_account_snapshot,
-    resolve_loadout,
-)
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
 
@@ -43,8 +40,7 @@ def test_module_override_changes_armor_effects() -> None:
         parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
     )
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
-    resolved = resolve_loadout(ids_snapshot, "Testing")
-    armor_block = _parse_module_blocks(ids_snapshot, resolved)["Armor"]
+    armor_block = _parse_module_blocks(ids_snapshot)["Armor"]
     modules = list(armor_block.inventory.values())
     primary = modules[0]
     alternate = next(

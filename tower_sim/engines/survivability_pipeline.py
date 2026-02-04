@@ -26,8 +26,7 @@ from tower_sim.loaders.bc_heat_loader import load_heat_bundle
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import BossSurvivabilitySpec, ProblemSpec, ScenarioSpec
-from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
-from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot, ResolvedLoadout
+from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot
 from tower_sim.libs.assist_efficiency import compute_efficiencies
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
@@ -567,8 +566,7 @@ def _compile_loadout_stat_inputs(
     allow_provisional: bool,
 ) -> List[StatInput]:
     accumulator = _StatAccumulator()
-    resolved_loadout = _resolve_loadout(ids_snapshot, module_context)
-    module_blocks = _parse_module_blocks(ids_snapshot, resolved_loadout)
+    module_blocks = _parse_module_blocks(ids_snapshot)
     for block in module_blocks.values():
         if module_context not in block.loadout_by_context:
             continue
@@ -863,8 +861,7 @@ def _build_inventory_summary(
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
 ) -> Dict[str, object]:
-    resolved_loadout = _resolve_loadout(ids_snapshot, module_context)
-    module_blocks = _parse_module_blocks(ids_snapshot, resolved_loadout)
+    module_blocks = _parse_module_blocks(ids_snapshot)
     module_summary: Dict[str, object] = {}
     for slot, block in module_blocks.items():
         loadout = block.loadout_by_context.get(module_context)
@@ -927,9 +924,7 @@ def _build_inventory_summary(
     }
 
 
-def _parse_module_blocks(
-    ids_snapshot: AccountSnapshot, resolved_loadout: ResolvedLoadout
-) -> Dict[str, ModuleBlock]:
+def _parse_module_blocks(ids_snapshot: AccountSnapshot) -> Dict[str, ModuleBlock]:
     blocks: Dict[str, ModuleBlock] = {}
     for slot_name in SLOT_ORDER.values():
         system_state = ids_snapshot.module_system_state.get(slot_name)
@@ -947,16 +942,12 @@ def _parse_module_blocks(
                 raise SurvivabilityPipelineError(
                     f"Missing module preset {preset_name} for {slot_name!r}."
                 )
-            allocation = resolved_loadout.allocation_levels.get(slot_name)
-            assist_stone_level = system_state.assist_level
-            if allocation is not None:
-                assist_stone_level = allocation.assist_level
             loadout_by_context[preset_name] = ModuleLoadout(
                 slot=slot_name,
                 primary=selection.primary,
                 assist=selection.assist,
                 assist_enabled=system_state.assist_unlocked,
-                assist_stone_level=assist_stone_level,
+                assist_stone_level=system_state.assist_level,
                 assist_cap_rarity=assist_cap,
             )
         inventory: Dict[str, ModuleRecord] = {}
