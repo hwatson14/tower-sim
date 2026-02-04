@@ -41,9 +41,9 @@ jobs:
         run: |
           PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
             --ids-path "${IDS_PATH}" \
-            --output-dir out
-          cp out/account_snapshot.json out/ids_dump_latest.json
-          echo "Wrote out/ids_dump_latest.json"
+            --output-dir audit
+          cp audit/account_snapshot.json audit/ids_dump_latest.json
+          echo "Wrote audit/ids_dump_latest.json"
         env:
           IDS_PATH: ${{ inputs.ids_path || 'tests/fixtures/tower-sim-data/_IDS.csv' }}
 
@@ -51,5 +51,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ids-dump
-          path: out/ids_dump_latest.json
+          path: audit/ids_dump_latest.json
           if-no-files-found: error
