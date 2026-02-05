@@ -558,7 +558,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Load tier/tournament wave damage tables from Step1 data dumps (strict lookup).
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
-- [ ] Wire per-wave stat composition (progression + skip mapping → stat snapshots).
+- [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [x] Implement boss combat mechanics (PC/thorns/regen/DR) in boss_engine (v1 minimal).

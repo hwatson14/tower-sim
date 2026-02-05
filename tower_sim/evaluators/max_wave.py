@@ -20,7 +20,7 @@ from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
 from tower_sim.engines.stat_engine import StatEngine, StatInput
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
@@ -127,6 +127,7 @@ class MaxWaveEvaluator:
             tier_rules,
             run_context,
             wave_state,
+            ids_snapshot,
             missing,
             diagnostics,
         )
@@ -169,6 +170,7 @@ class MaxWaveEvaluator:
             registry=registry,
             tier_rules=tier_rules,
             run_context=run_context,
+            ids_snapshot=ids_snapshot,
         )
         if search_missing:
             missing.extend(search_missing)
@@ -394,6 +396,7 @@ def _resolve_wave_snapshot(
     tier_rules,
     run_context: RunContext,
     wave_state,
+    ids_snapshot: AccountSnapshot,
     missing: List[str],
     diagnostics: Dict[str, Any],
 ) -> Optional[AtWaveSnapshot]:
@@ -407,6 +410,14 @@ def _resolve_wave_snapshot(
         missing=missing,
         diagnostics=diagnostics,
     )
+    workshop_at_wave, workshop_missing = compile_workshop_values_at_wave(
+        ids_snapshot,
+        wave=problem_spec.scenario.wave,
+    )
+    if workshop_missing:
+        missing.extend(workshop_missing)
+        return None
+
     try:
         return build_at_wave_snapshot(
             stat_inputs=stat_inputs,
@@ -418,6 +429,7 @@ def _resolve_wave_snapshot(
             wave=problem_spec.scenario.wave,
             run_context=run_context,
             heat_magnitudes=heat_magnitudes,
+            per_wave_overrides=workshop_at_wave,
         )
     except StatSnapshotError as exc:
         missing.append("wave_snapshot")
@@ -522,6 +534,7 @@ def snapshot_at_wave(
     tier_rules,
     run_context: RunContext,
     tables: Dict[str, Any],
+    ids_snapshot: AccountSnapshot,
 ) -> AtWaveSnapshot:
     if scenario.eals_ramp is None or scenario.ehls_ramp is None:
         raise StatSnapshotError("Wave ramps are required for random-access snapshots.")
@@ -538,6 +551,15 @@ def snapshot_at_wave(
             ramp_waves=scenario.ehls_ramp.ramp_waves,
         ),
     )
+    workshop_at_wave, workshop_missing = compile_workshop_values_at_wave(
+        ids_snapshot,
+        wave=wave,
+    )
+    if workshop_missing:
+        raise StatSnapshotError(
+            "Missing workshop progression inputs: " + ", ".join(sorted(set(workshop_missing)))
+        )
+
     return build_at_wave_snapshot(
         stat_inputs=stat_inputs,
         engine_result=base_engine_result,
@@ -548,6 +570,7 @@ def snapshot_at_wave(
         wave=wave,
         run_context=run_context,
         heat_magnitudes=tables.get("heat_magnitudes"),
+        per_wave_overrides=workshop_at_wave,
     )
 
 
@@ -559,6 +582,7 @@ def _search_wmax(
     registry,
     tier_rules,
     run_context: RunContext,
+    ids_snapshot: AccountSnapshot,
     trace_depth: int = 5,
 ) -> Tuple[
     Optional[int],
@@ -618,6 +642,7 @@ def _search_wmax(
                 tier_rules=tier_rules,
                 run_context=run_context,
                 tables={"heat_magnitudes": heat_magnitudes},
+                ids_snapshot=ids_snapshot,
             )
         except StatSnapshotError as exc:
             diagnostics["wave_snapshot_error"] = str(exc)

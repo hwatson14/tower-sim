@@ -19,6 +19,7 @@ class TableSnapshot:
 class WorkshopEntrySnapshot:
     name: str
     coin_level: Optional[int]
+    end_level: Optional[int]
     max_level: Optional[int]
     unlocked: Optional[str]
     category: Optional[str]

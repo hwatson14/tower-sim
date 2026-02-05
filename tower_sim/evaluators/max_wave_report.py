@@ -302,6 +302,7 @@ def _safe_build_trace(
         registry=registry,
         tier_rules=tier_rules,
         run_context=run_context,
+        ids_snapshot=ids_snapshot,
         trace_depth=trace_depth,
     )
     if search_missing:
