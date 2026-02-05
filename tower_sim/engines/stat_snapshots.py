@@ -35,11 +35,14 @@ def build_at_wave_snapshot(
     wave: int,
     run_context: RunContext,
     heat_magnitudes: Mapping[str, float] | None = None,
+    per_wave_overrides: Mapping[str, float] | None = None,
 ) -> AtWaveSnapshot:
     stat_ids = registry.stat_ids_in_order()
     stat_inputs_list = list(stat_inputs)
     at_wave_inputs: List[StatInput] = []
     for stat_id in stat_ids:
+        if Phase.AT_WAVE not in registry.get(stat_id).allowed_phases:
+            continue
         if (
             Phase.AT_WAVE in engine_result.run_stats
             and stat_id in engine_result.run_stats[Phase.AT_WAVE].values
@@ -74,6 +77,12 @@ def build_at_wave_snapshot(
     at_wave_stats = engine_result.run_stats.get(Phase.AT_WAVE)
     if at_wave_stats is not None:
         base_values.update(at_wave_stats.values)
+
+    if per_wave_overrides:
+        for stat_id, value in per_wave_overrides.items():
+            if stat_id not in base_values:
+                continue
+            base_values[stat_id] = float(value)
     bc_values: Dict[str, float] = {}
     heat_values: Dict[str, float] = {}
 
@@ -123,7 +132,25 @@ def _resolve_at_wave_value(
     for stat_input in stat_inputs:
         if stat_input.stat_id == stat_id and stat_input.phase == Phase.AT_WAVE:
             return _extract_value(stat_input, engine_result)
-    return None
+
+    start_stats = engine_result.run_stats.get(Phase.START_OF_RUN)
+    end_stats = engine_result.run_stats.get(Phase.END_OF_RUN)
+    if start_stats is None and end_stats is None:
+        return None
+    start_value = None if start_stats is None else start_stats.values.get(stat_id)
+    end_value = None if end_stats is None else end_stats.values.get(stat_id)
+    if start_value is None and end_value is None:
+        return None
+    if end_value is None:
+        return float(start_value)
+    if start_value is None:
+        return float(end_value)
+    if abs(float(end_value) - float(start_value)) > 1e-9:
+        raise StatSnapshotError(
+            "Per-wave composition missing for stat "
+            f"{stat_id}: START_OF_RUN={start_value} END_OF_RUN={end_value}."
+        )
+    return float(start_value)
 
 
 def _extract_value(stat_input: StatInput, engine_result: StatEngineResult) -> float:

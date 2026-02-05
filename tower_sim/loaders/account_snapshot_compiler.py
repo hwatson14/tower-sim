@@ -156,11 +156,13 @@ def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
             continue
         numeric_levels = _numeric_values(row[1:])
         coin_level = numeric_levels[0] if numeric_levels else None
-        max_level = numeric_levels[1] if len(numeric_levels) > 1 else None
+        end_level = numeric_levels[1] if len(numeric_levels) > 1 else None
+        max_level = numeric_levels[-1] if numeric_levels else None
         entries[name] = WorkshopEntrySnapshot(
             name=name,
             unlocked=_optional_str(_safe_cell(row, 1)),
             coin_level=coin_level,
+            end_level=end_level,
             max_level=max_level,
             category=_optional_str(_safe_cell(row, 5)),
         )

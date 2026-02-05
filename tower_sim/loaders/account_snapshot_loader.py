@@ -93,9 +93,11 @@ def _parse_workshop(data: Dict[str, Any]) -> Dict[str, WorkshopEntrySnapshot]:
     parsed = {}
     for key, value in data.items():
         _ensure_dict(value, f"workshop[{key}]")
+        end_level = _require_optional_int(value, "end_level") if "end_level" in value else _require_optional_int(value, "max_level")
         parsed[str(key)] = WorkshopEntrySnapshot(
             name=_require_str(value, "name"),
             coin_level=_require_optional_int(value, "coin_level"),
+            end_level=end_level,
             max_level=_require_optional_int(value, "max_level"),
             unlocked=_require_optional_str(value, "unlocked"),
             category=_require_optional_str(value, "category"),

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
 from tower_sim.util.account_snapshot import (
@@ -48,7 +48,10 @@ def _snapshot_with_workshop_and_uw(
         ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
         labs={},
         workshop=workshop_entries,
-        workshop_enhancements=TableSnapshot(header=[], rows=[]),
+        workshop_enhancements=TableSnapshot(
+            header=["Workshop Enhancement", "", "Farming"],
+            rows=[["Damage +", "1.56", "56"]],
+        ),
         ultimate_weapons={},
         relics={},
         vault={},
@@ -73,6 +76,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
             name="Damage",
             unlocked=None,
             coin_level=1,
+            end_level=1,
             max_level=1,
             category=None,
         )
@@ -98,6 +102,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
         stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_damage"
     )
     assert damage_input.base_value == expected_damage
+    assert damage_input.enhancement_multiplier == 1.56
 
     uw_input = next(
         stat for stat in compiled.stat_inputs if stat.stat_id == "uw_golden_tower_multiplier"
@@ -116,6 +121,7 @@ def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
             name="Bounce Shot Range",
             unlocked=None,
             coin_level=1,
+            end_level=1,
             max_level=1,
             category=None,
         )
@@ -127,4 +133,51 @@ def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
 
     compiled = compile_full_stat_inputs(snapshot)
 
-    assert "workshop_table:Critical Chance" in compiled.missing
+    assert "workshop_unsupported:Bounce Shot Range" in compiled.missing
+
+
+def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -> None:
+    workshop_entries = {
+        "Damage": WorkshopEntrySnapshot(
+            name="Damage",
+            unlocked=None,
+            coin_level=1,
+            end_level=5,
+            max_level=5,
+            category="Attack",
+        ),
+        "Free Attack Upgrade": WorkshopEntrySnapshot(
+            name="Free Attack Upgrade",
+            unlocked=None,
+            coin_level=99,
+            end_level=99,
+            max_level=99,
+            category="Utility",
+        ),
+        "Free Defense Upgrade": WorkshopEntrySnapshot(
+            name="Free Defense Upgrade",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=99,
+            category="Utility",
+        ),
+        "Free Utility Upgrade": WorkshopEntrySnapshot(
+            name="Free Utility Upgrade",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=99,
+            category="Utility",
+        ),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    at_wave_values, missing = compile_workshop_values_at_wave(snapshot, wave=4)
+
+    assert missing == []
+    assert "workshop_damage" in at_wave_values
+
+    tables = load_workshop_tables()
+    start_damage = float(workshop_value("Damage", 1, tables, section="WSValues"))
+    assert at_wave_values["workshop_damage"] > start_damage

@@ -9,7 +9,9 @@ from tower_sim.libs.data_paths import resolve_data_file
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
 from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.registry.stat_registry import Phase
-from tower_sim.util.account_snapshot import AccountSnapshot
+from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
+from tower_sim.engines.free_upgrades import FreeUpgradeChances
+from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
 
 
 @dataclass(frozen=True)
@@ -37,7 +39,7 @@ _UW_LEVEL_RE = re.compile(r"^(\d+)")
 
 
 _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
-    "Damage": WorkshopStatSpec(stat_id="workshop_damage_mult", wsvalues_key="Damage"),
+    "Damage": WorkshopStatSpec(stat_id="workshop_damage", wsvalues_key="Damage"),
     "Health": WorkshopStatSpec(stat_id="workshop_health", wsvalues_key="Health"),
     "Health Regen": WorkshopStatSpec(
         stat_id="workshop_health_regen",
@@ -268,8 +270,9 @@ def _compile_workshop_stat_inputs(
     ids_snapshot: AccountSnapshot,
 ) -> Tuple[List[StatInput], List[str]]:
     workshop_tables = load_workshop_tables()
+    enhancement_map, enhancement_missing = _parse_workshop_enhancement_multipliers(ids_snapshot)
     stat_inputs: List[StatInput] = []
-    missing: List[str] = []
+    missing: List[str] = list(enhancement_missing)
 
     for name, entry in ids_snapshot.workshop.items():
         if entry.coin_level is None:
@@ -290,6 +293,7 @@ def _compile_workshop_stat_inputs(
                     stat_id=spec.stat_id,
                     phase=Phase.START_OF_RUN,
                     base_value=float(value),
+                    enhancement_multiplier=enhancement_map.get(spec.stat_id),
                     provenance="workshop_formula:DVT_WS_VALUE",
                 )
             )
@@ -308,10 +312,43 @@ def _compile_workshop_stat_inputs(
                 stat_id=spec.stat_id,
                 phase=Phase.START_OF_RUN,
                 base_value=value,
+                enhancement_multiplier=enhancement_map.get(spec.stat_id),
                 provenance=_workshop_provenance(name),
             )
         )
     return stat_inputs, missing
+
+
+def _parse_workshop_enhancement_multipliers(
+    ids_snapshot: AccountSnapshot,
+) -> Tuple[Dict[str, float], List[str]]:
+    rows = ids_snapshot.workshop_enhancements.rows
+    if not rows:
+        return {}, []
+    multipliers: Dict[str, float] = {}
+    missing: List[str] = []
+    for row in rows:
+        raw_name = row[0].strip() if row and row[0].strip() else ""
+        if not raw_name.endswith("+"):
+            continue
+        base_name = raw_name[:-1].strip()
+        spec = _WORKSHOP_STAT_SPECS.get(base_name)
+        if spec is None:
+            continue
+        raw_multiplier = row[1].strip() if len(row) > 1 else ""
+        if not raw_multiplier:
+            missing.append(f"workshop_enhancement_value:{base_name}")
+            continue
+        try:
+            multiplier = float(raw_multiplier)
+        except ValueError:
+            missing.append(f"workshop_enhancement_value:{base_name}")
+            continue
+        if multiplier <= 0:
+            missing.append(f"workshop_enhancement_value:{base_name}")
+            continue
+        multipliers[spec.stat_id] = multiplier
+    return multipliers, missing
 
 
 def _resolve_workshop_value(
@@ -502,4 +539,152 @@ def _uw_provenance(spec: UWTrackSpec) -> str:
     return "unknown"
 
 
-__all__ = ["CompiledStatInputs", "compile_full_stat_inputs"]
+__all__ = ["CompiledStatInputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
+
+
+def compile_workshop_values_at_wave(
+    ids_snapshot: AccountSnapshot,
+    *,
+    wave: int,
+) -> Tuple[Dict[str, float], List[str]]:
+    if wave <= 0:
+        return {}, ["wave_limit"]
+
+    workshop_tables = load_workshop_tables()
+    enhancement_map, enhancement_missing = _parse_workshop_enhancement_multipliers(ids_snapshot)
+    missing: List[str] = list(enhancement_missing)
+    workshop_stats: List[WorkshopStat] = []
+    by_name: Dict[str, Tuple[WorkshopStatSpec, WorkshopEntrySnapshot]] = {}
+
+    for name, entry in ids_snapshot.workshop.items():
+        if entry.coin_level is None:
+            continue
+        spec = _WORKSHOP_STAT_SPECS.get(name)
+        if spec is None:
+            continue
+        category = _workshop_category(entry.category)
+        if category is None:
+            continue
+        target_level = entry.end_level if entry.end_level is not None else entry.max_level
+        if target_level is None:
+            continue
+        max_level = entry.max_level if entry.max_level is not None else target_level
+        stat = WorkshopStat(
+            name=name,
+            category=category,
+            start_level=int(entry.coin_level),
+            end_level=int(target_level),
+            max_level=int(max_level),
+            unlocked=True,
+        )
+        workshop_stats.append(stat)
+        by_name[name] = (spec, entry)
+
+    chances, chance_missing = _free_upgrade_chances(ids_snapshot, enhancement_map)
+    missing.extend(chance_missing)
+    if chance_missing:
+        return {}, sorted(set(missing))
+
+    result = simulate_workshop_progression(
+        workshop_stats,
+        chances,
+        max_waves=wave,
+        allocation_policy=uniform_allocation,
+        waves_skipped_per_wave=0.0,
+    )
+
+    values: Dict[str, float] = {}
+    for stat in workshop_stats:
+        spec, _entry = by_name[stat.name]
+        track = result.levels.get(stat.name)
+        if not track:
+            continue
+        idx = min(wave, len(track) - 1)
+        level = int(track[idx])
+        formula = _WORKSHOP_FORMULAS.get(stat.name)
+        if formula is not None:
+            resolved = formula(level)
+            if resolved is None:
+                missing.append(f"workshop_unsupported:{stat.name}")
+                continue
+            value = float(resolved)
+        else:
+            try:
+                value = _resolve_workshop_value(workshop_tables, spec, level=level)
+            except KeyError:
+                missing.append(f"workshop_table:{stat.name}")
+                continue
+        mult = enhancement_map.get(spec.stat_id, 1.0)
+        values[spec.stat_id] = float(value) * float(mult)
+
+    return values, sorted(set(missing))
+
+
+def _workshop_category(raw: str | None) -> WSCategory | None:
+    if raw is None:
+        return None
+    normalized = raw.strip().lower()
+    if normalized == "attack":
+        return WSCategory.OFFENSE
+    if normalized == "defense":
+        return WSCategory.DEFENSE
+    if normalized == "utility":
+        return WSCategory.UTILITY
+    return None
+
+
+def _free_upgrade_chances(
+    ids_snapshot: AccountSnapshot,
+    enhancement_map: Dict[str, float],
+) -> Tuple[FreeUpgradeChances, List[str]]:
+    missing: List[str] = []
+
+    compiled = compile_full_stat_inputs(ids_snapshot, include_workshop=True, include_uw=False)
+    start_values = _workshop_start_values(compiled.stat_inputs)
+
+    attack = start_values.get("workshop_free_attack_upgrade")
+    defense = start_values.get("workshop_free_defense_upgrade")
+    utility = start_values.get("workshop_free_utility_upgrade")
+    if attack is None:
+        missing.append("stat_input:workshop_free_attack_upgrade")
+    if defense is None:
+        missing.append("stat_input:workshop_free_defense_upgrade")
+    if utility is None:
+        missing.append("stat_input:workshop_free_utility_upgrade")
+    if missing:
+        return FreeUpgradeChances(attack=0.0, defense=0.0, utility=0.0), missing
+
+    upgrade_mult = enhancement_map.get("workshop_free_upgrades", 1.0)
+    return (
+        FreeUpgradeChances(
+            attack=float(attack) * upgrade_mult,
+            defense=float(defense) * upgrade_mult,
+            utility=float(utility) * upgrade_mult,
+        ),
+        [],
+    )
+
+
+def _workshop_start_values(stat_inputs: List[StatInput]) -> Dict[str, float]:
+    values: Dict[str, float] = {}
+    for stat_input in stat_inputs:
+        if stat_input.phase != Phase.START_OF_RUN:
+            continue
+        if not stat_input.stat_id.startswith("workshop_"):
+            continue
+        values[stat_input.stat_id] = _compose_stat_input_value(stat_input)
+    return values
+
+
+def _compose_stat_input_value(stat_input: StatInput) -> float:
+    if stat_input.derived_value is not None:
+        return float(stat_input.derived_value)
+    base_value = stat_input.base_value or 0.0
+    loadout_delta = stat_input.loadout_delta or 0.0
+    enhancement = stat_input.enhancement_multiplier or 1.0
+    tier_delta = stat_input.tier_rule_delta or 0.0
+    value = (base_value + loadout_delta) * enhancement
+    if stat_input.tier_rule_multiplier is not None:
+        value *= stat_input.tier_rule_multiplier
+    value += tier_delta
+    return float(value)
