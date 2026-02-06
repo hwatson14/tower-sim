@@ -65,6 +65,8 @@ This is the **only required output** for v1.
 
 Econ and time-based outputs are deferred to **v2** due to additional timing and currency complexities.
 
+For v1 API/tasking, evaluator tasks are in scope (Wmax); optimizer tasks are future-scope definitions only.
+
 ---
 
 ## 4. What “Wmax” means (critical definition)

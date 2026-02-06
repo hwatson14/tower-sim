@@ -169,4 +169,3 @@ exceptions:
   allow_paths:
     - "tables/registry/ep_formulas/STATUS.md"
     - ".github/requirements-ci.txt"
-    - "worker/New Text Document.txt"

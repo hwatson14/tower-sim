@@ -16,7 +16,7 @@ Explicitly NOT included:
 ## What is Implemented (High Confidence)
 ### Data + Input Loading
 - `_IDS.csv` is the only external input; the rest of the tables ship with the repo.
-- `tower_sim/sources.py` provides an IDS-only resolver (`load_ids_only_bundle`) for `_IDS.csv`.
+- `tower_sim/loaders/sources.py` provides an IDS-only resolver (`load_ids_only_bundle`) for `_IDS.csv`.
 - Snapshot helpers remain available for legacy workflows.
 
 ### IDS Parsing
@@ -59,11 +59,11 @@ Explicitly NOT included:
 
 ### Tier Rules / Battle Conditions
 - `tower_sim/engines/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/perks_gate.py`.
+- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/engines/perks_gate.py`.
 ### Missing (Explicit)
 - Tier BC application in per-wave stat composition (loader exists but is not yet integrated).
 - Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
-- Boss combat model (boss-only survivability and death wave estimation).
+- Boss combat wave-search integration (death wave root-find / binary search) is still missing.
 - Validation harness against Harry’s reference sheets.
 - Deterministic intent compiler (user intent → ProblemSpec) and evaluator layer (objective metrics).
 - Optimisers that consume evaluators only (loadout, perk policy, stone spend).
@@ -118,9 +118,9 @@ corresponding Step1 part file(s):
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) implemented in
-  `tower_sim/combat/boss_engine.py` with v1 minimal mechanics (percent-current
+  `tower_sim/engines/combat/boss_engine.py` with v1 minimal mechanics (percent-current
   PC + thorns, defense/DR mitigation, regen + package heal expectation).
-- Fail-closed boss combat engine scaffold exists in `tower_sim/combat/boss_engine.py`.
+- Fail-closed boss combat engine scaffold exists in `tower_sim/engines/combat/boss_engine.py`.
 - No root-find / binary search to find death wave.
 
 ### Validation Harness
