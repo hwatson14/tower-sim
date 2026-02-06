@@ -928,7 +928,7 @@ def _resolve_wave_damage(scenario: ScenarioSpec, wave_state) -> float:
     if wave_tier is None:
         raise SurvivabilityPipelineError("Missing wave damage tier.")
     lib = EnemyWaveDamageLib.from_repo_tables()
-    return lib.wave_damage_exact(wave_tier, wave_state.W_attack)
+    return lib.wave_damage(wave_tier, wave_state.W_attack)
 
 
 def _build_inventory_summary(

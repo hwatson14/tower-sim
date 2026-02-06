@@ -506,11 +506,11 @@ mechanic details live in parts 1–4:
   - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
     (boss frequency by league).
 
-### Wave Damage Curves
-- **Missing mechanic:** authoritative wave damage curves for tier + tournament.
-- **Reference locations:**
-  - `reference/step1_dump_docs/part2_data/tier_wave_damage.csv`
-  - `reference/step1_dump_docs/part2_data/tournament_wave_damage.csv`
+### Wave Damage / Health Curves
+- **Implemented mechanic:** canonical enemy scaling sourced from:
+  - `tables/enemy_damage_table.csv`
+  - `tables/enemy_health_table.csv`
+  with log-linear interpolation between anchor waves (linear in ln(value)).
 
 ### Runtime DAG / Derived Pipeline Inputs
 - **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
@@ -552,7 +552,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement tier battle condition loader (Tier BCs applied in frozen order).
 - [x] Resolve `statbook_builder.py` API mismatch in StatBook pipeline.
 - [x] Apply BC/heat in frozen stat order for at-wave snapshots consumed by combat.
-- [x] Load tier/tournament wave damage tables from Step1 data dumps (strict lookup).
+- [x] Load canonical enemy damage/health scaling tables (`enemy_damage_table.csv`, `enemy_health_table.csv`) with per-wave log-linear interpolation.
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).

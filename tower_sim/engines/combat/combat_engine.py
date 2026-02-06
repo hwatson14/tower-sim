@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict
 
-from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib, EnemyWaveHealthLib
 
 
 class CombatDataError(RuntimeError):
@@ -45,9 +45,16 @@ def percent_current_damage(enemy_hp: float, pc_frac: float, boss_mult: float) ->
 
 
 def resolve_wave_damage(tier: str, wave: int) -> float:
-    """Resolve enemy base attack damage from wave damage tables."""
+    """Resolve enemy base attack damage from canonical enemy damage table."""
     lib = EnemyWaveDamageLib.from_repo_tables()
-    return lib.wave_damage_exact(tier, wave)
+    return lib.wave_damage(tier, wave)
+
+
+
+def resolve_wave_health(tier: str, wave: int) -> float:
+    """Resolve enemy base health from canonical enemy health table."""
+    lib = EnemyWaveHealthLib.from_repo_tables()
+    return lib.wave_health(tier, wave)
 
 
 def build_context_with_wave_damage(

@@ -1,14 +1,15 @@
 """
 Enemy wave-damage library (wave damage only, enemy types deferred).
 
-Source (default runtime tables):
-- `tables/tier_wave_damage.csv`
-- `tables/tournament_wave_damage.csv`
-These tables are the Step1 data dumps for tier and tournament wave damage.
+Source (canonical runtime tables):
+- `tables/enemy_damage_table.csv`
+- `tables/enemy_health_table.csv`
+These tables store per-tier/per-league anchor values keyed by `wave_actual`.
 
 Important:
-- No interpolation is performed (to avoid approximations).
-- Missing values raise (strict mode).
+- Enemy HP/Damage runtime values use log-linear interpolation (linear in ln(value)) between anchor waves.
+- For waves below the minimum anchor: fail-closed (raise).
+- For waves above the maximum anchor: clamp to the max-anchor value.
 
 Numeric suffixes:
 K=1e3, M=1e6, B=1e9, T=1e12, q=1e15, Q=1e18, s=1e21, S=1e24, O=1e27.
@@ -18,7 +19,9 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 import csv
+import math
 import re
+from bisect import bisect_right
 from typing import Dict, Mapping, Optional
 
 _SUFFIX_MAP = {
@@ -228,10 +231,9 @@ Wave	Tier 13
 9,500	11.89s
 10,000	26.61s"""
 
-_TIER_WAVE_DAMAGE_CSV = Path(__file__).resolve().parents[2] / "tables" / "tier_wave_damage.csv"
-_TOURNAMENT_WAVE_DAMAGE_CSV = (
-    Path(__file__).resolve().parents[2] / "tables" / "tournament_wave_damage.csv"
-)
+_ENEMY_DAMAGE_TABLE_CSV = Path(__file__).resolve().parents[2] / "tables" / "enemy_damage_table.csv"
+_ENEMY_HEALTH_TABLE_CSV = Path(__file__).resolve().parents[2] / "tables" / "enemy_health_table.csv"
+
 
 def parse_compact_number(s: str) -> float:
     s = s.strip().replace(",", "")
@@ -245,6 +247,7 @@ def parse_compact_number(s: str) -> float:
     if suf not in _SUFFIX_MAP:
         raise ValueError(f"Unknown suffix {suf!r} in {s!r}")
     return num * _SUFFIX_MAP[suf]
+
 
 def parse_pasted_wave_tables(txt: str) -> Dict[str, Dict[int, float]]:
     """Parse pasted blocks formatted as repeated sections:
@@ -282,57 +285,139 @@ def parse_pasted_wave_tables(txt: str) -> Dict[str, Dict[int, float]]:
 
 def _read_csv_rows(path: Path) -> list[dict]:
     if not path.exists():
-        raise FileNotFoundError(f"Missing wave damage table: {path}")
+        raise FileNotFoundError(f"Missing enemy scaling table: {path}")
     with path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         return list(reader)
 
 
-def load_tier_wave_damage_tables(path: Path = _TIER_WAVE_DAMAGE_CSV) -> Dict[str, Dict[int, float]]:
+def _load_enemy_scaling_wide_table(path: Path) -> Dict[str, Dict[int, float]]:
     rows = _read_csv_rows(path)
-    required = {"tier", "wave", "wave_damage"}
     if not rows:
-        raise ValueError(f"Tier wave damage table is empty: {path}")
-    missing = required - set(rows[0].keys())
-    if missing:
-        raise ValueError(f"Tier wave damage table missing columns {sorted(missing)}: {path}")
+        raise ValueError(f"Enemy scaling table is empty: {path}")
+    headers = list(rows[0].keys())
+    if "wave_actual" not in headers:
+        raise ValueError(f"Enemy scaling table missing column ['wave_actual']: {path}")
+
+    series_columns = [h for h in headers if h != "wave_actual"]
+    if not series_columns:
+        raise ValueError(f"Enemy scaling table missing tier/league columns: {path}")
 
     tables: Dict[str, Dict[int, float]] = {}
     for row in rows:
-        tier_raw = str(row["tier"]).strip()
-        tier_value = float(tier_raw)
-        tier_label = f"Tier {int(tier_value)}" if tier_value.is_integer() else f"Tier {tier_raw}"
-        wave = int(float(row["wave"]))
-        damage = float(row["wave_damage"])
-        tables.setdefault(tier_label, {})[wave] = damage
+        wave = int(float(row["wave_actual"]))
+        for series in series_columns:
+            raw = row.get(series)
+            if raw is None or str(raw).strip() == "":
+                continue
+            value = float(raw)
+            if not math.isfinite(value) or value <= 0.0:
+                # Canonical tables include overflow tail rows (`inf`) at very high waves.
+                # Skip non-finite/non-positive anchors; interpolation/clamping uses finite coverage.
+                continue
+            tables.setdefault(series.strip(), {})[wave] = value
+
+    if not tables:
+        raise ValueError(f"Enemy scaling table had no usable rows: {path}")
+    for series, anchors in tables.items():
+        if not anchors:
+            raise ValueError(f"Enemy scaling series has no finite positive anchors: {series} ({path})")
     return tables
 
 
-def load_tournament_wave_damage_tables(
-    path: Path = _TOURNAMENT_WAVE_DAMAGE_CSV,
-) -> Dict[str, Dict[int, float]]:
-    rows = _read_csv_rows(path)
-    required = {"tournament_league", "wave", "wave_damage"}
-    if not rows:
-        raise ValueError(f"Tournament wave damage table is empty: {path}")
-    missing = required - set(rows[0].keys())
-    if missing:
+def load_enemy_damage_tables(path: Path = _ENEMY_DAMAGE_TABLE_CSV) -> Dict[str, Dict[int, float]]:
+    """Load canonical enemy damage anchor table from `tables/enemy_damage_table.csv`."""
+    return _load_enemy_scaling_wide_table(path)
+
+
+def load_enemy_health_tables(path: Path = _ENEMY_HEALTH_TABLE_CSV) -> Dict[str, Dict[int, float]]:
+    """Load canonical enemy health anchor table from `tables/enemy_health_table.csv`."""
+    return _load_enemy_scaling_wide_table(path)
+
+
+def load_tier_wave_damage_tables(path: Path = _ENEMY_DAMAGE_TABLE_CSV) -> Dict[str, Dict[int, float]]:
+    """Backward-compatible alias for canonical enemy damage table loading."""
+    return load_enemy_damage_tables(path)
+
+
+def load_tier_wave_health_tables(path: Path = _ENEMY_HEALTH_TABLE_CSV) -> Dict[str, Dict[int, float]]:
+    """Backward-compatible alias for canonical enemy health table loading."""
+    return load_enemy_health_tables(path)
+
+
+def _log_linear_interpolate(wave: int, lo_wave: int, lo_value: float, hi_wave: int, hi_value: float) -> float:
+    if lo_wave >= hi_wave:
+        raise ValueError(f"Invalid anchor wave order: lo={lo_wave}, hi={hi_wave}")
+    if not math.isfinite(lo_value) or not math.isfinite(hi_value):
         raise ValueError(
-            f"Tournament wave damage table missing columns {sorted(missing)}: {path}"
+            f"Log-linear interpolation requires finite anchor values: lo={lo_value}, hi={hi_value}"
+        )
+    if lo_value <= 0.0 or hi_value <= 0.0:
+        raise ValueError(
+            f"Log-linear interpolation requires positive anchor values: lo={lo_value}, hi={hi_value}"
         )
 
-    tables: Dict[str, Dict[int, float]] = {}
-    for row in rows:
-        league = str(row["tournament_league"]).strip()
-        wave = int(float(row["wave"]))
-        damage = float(row["wave_damage"])
-        tables.setdefault(league, {})[wave] = damage
-    return tables
+    if wave == lo_wave:
+        return lo_value
+    if wave == hi_wave:
+        return hi_value
 
+    t = (wave - lo_wave) / (hi_wave - lo_wave)
+    log_value = math.log(lo_value) + (math.log(hi_value) - math.log(lo_value)) * t
+    value = math.exp(log_value)
+    if not math.isfinite(value):
+        raise ValueError(f"Interpolated non-finite value at wave={wave}: {value}")
+
+    if lo_wave < wave < hi_wave:
+        lo_bound = min(lo_value, hi_value)
+        hi_bound = max(lo_value, hi_value)
+        eps = 1e-12
+        if not (lo_bound - eps <= value <= hi_bound + eps):
+            raise ValueError(
+                "Interpolated value is outside anchor bounds "
+                f"at wave={wave}: value={value}, lo={lo_value}, hi={hi_value}"
+            )
+    return value
+
+
+def interpolate_anchor_series(anchors: Mapping[int, float], wave: int) -> float:
+    """Piecewise log-linear interpolation with explicit edge rules.
+
+    Contract for enemy HP/Damage scaling:
+    - Interpolate linearly in ln(value)-space between surrounding anchors.
+    - For wave < min_anchor: raise KeyError (fail-closed).
+    - For wave > max_anchor: clamp to max anchor value.
+    """
+    if not anchors:
+        raise ValueError("Cannot interpolate empty anchor series")
+    wave_i = int(wave)
+    anchor_waves = sorted(int(w) for w in anchors.keys())
+
+    min_wave = anchor_waves[0]
+    max_wave = anchor_waves[-1]
+    if wave_i < min_wave:
+        raise KeyError(f"Wave {wave_i} below min anchor {min_wave}")
+    if wave_i > max_wave:
+        return float(anchors[max_wave])
+
+    if wave_i in anchors:
+        return float(anchors[wave_i])
+
+    right = bisect_right(anchor_waves, wave_i)
+    lo_wave = anchor_waves[right - 1]
+    hi_wave = anchor_waves[right]
+    return _log_linear_interpolate(
+        wave_i,
+        lo_wave,
+        float(anchors[lo_wave]),
+        hi_wave,
+        float(anchors[hi_wave]),
+    )
 
 @dataclass(frozen=True)
 class EnemyWaveDamageLib:
-    """Strict wave-damage lookup. No interpolation."""
+    """Enemy damage lookup sourced from canonical `enemy_damage_table.csv`."""
+
     tables: Mapping[str, Mapping[int, float]]
 
     @staticmethod
@@ -341,32 +426,51 @@ class EnemyWaveDamageLib:
 
     @staticmethod
     def from_repo_tables() -> "EnemyWaveDamageLib":
-        tables: Dict[str, Dict[int, float]] = {}
-        tables.update(load_tier_wave_damage_tables())
-        tables.update(load_tournament_wave_damage_tables())
-        return EnemyWaveDamageLib(tables)
+        return EnemyWaveDamageLib(load_enemy_damage_tables())
 
     def available_tiers(self):
         return sorted(self.tables.keys())
 
     def wave_damage_exact(self, tier: str, wave: int) -> float:
-        """Return wave damage for exact (tier, wave).
-        Raises KeyError if tier or wave is missing.
-        """
+        """Return enemy damage anchor value for exact (tier/league, wave)."""
         if tier not in self.tables:
-            raise KeyError(f"Tier {tier!r} not found. Available: {self.available_tiers()}")
+            raise KeyError(f"Tier/league {tier!r} not found. Available: {self.available_tiers()}")
         t = self.tables[tier]
         if wave not in t:
-            # Provide a helpful message that still enforces strictness.
             waves = sorted(t.keys())
             lo = max([w for w in waves if w < wave], default=None)
             hi = min([w for w in waves if w > wave], default=None)
             raise KeyError(
-                f"Wave {wave} not present for tier {tier!r} (strict mode). "
-                f"Nearest anchors: lo={lo}, hi={hi}. "
-                f"Provide full per-wave table CSV to enable complete lookups."
+                f"Wave {wave} not present for tier/league {tier!r}. "
+                f"Nearest anchors: lo={lo}, hi={hi}."
             )
         return float(t[wave])
 
+    def wave_damage(self, tier: str, wave: int) -> float:
+        """Return enemy damage at any wave using piecewise log-linear interpolation."""
+        if tier not in self.tables:
+            raise KeyError(f"Tier/league {tier!r} not found. Available: {self.available_tiers()}")
+        return interpolate_anchor_series(self.tables[tier], int(wave))
+
     def to_dict(self) -> Dict[str, Dict[int, float]]:
         return {k: dict(v) for k, v in self.tables.items()}
+
+
+@dataclass(frozen=True)
+class EnemyWaveHealthLib:
+    """Enemy health lookup sourced from canonical `enemy_health_table.csv`."""
+
+    tables: Mapping[str, Mapping[int, float]]
+
+    @staticmethod
+    def from_repo_tables() -> "EnemyWaveHealthLib":
+        return EnemyWaveHealthLib(load_enemy_health_tables())
+
+    def available_tiers(self):
+        return sorted(self.tables.keys())
+
+    def wave_health(self, tier: str, wave: int) -> float:
+        """Return enemy health at any wave using piecewise log-linear interpolation."""
+        if tier not in self.tables:
+            raise KeyError(f"Tier/league {tier!r} not found. Available: {self.available_tiers()}")
+        return interpolate_anchor_series(self.tables[tier], int(wave))
