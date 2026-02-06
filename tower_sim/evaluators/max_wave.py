@@ -16,6 +16,7 @@ from tower_sim.engines.combat.boss_survivability import (
 from tower_sim.libs.boss_hit_interval import BossHitIntervalError, boss_hit_interval_seconds
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle
+from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
@@ -119,9 +120,17 @@ class MaxWaveEvaluator:
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
             missing.append("stat_engine")
+        stat_inputs_for_scenario_wave, perk_diag = apply_perk_timeline_to_inputs(
+            registry=registry,
+            stat_inputs=stat_inputs,
+            perk_timeline_path=getattr(problem_spec.scenario, "perk_timeline_path", None),
+            current_wave=problem_spec.scenario.wave,
+        )
+        diagnostics["perk_timeline_scenario_wave"] = perk_diag
+
         wave_snapshot = _resolve_wave_snapshot(
             problem_spec,
-            stat_inputs,
+            stat_inputs_for_scenario_wave,
             engine_result_base,
             registry,
             tier_rules,
@@ -631,6 +640,15 @@ def _search_wmax(
         )
         if heat_missing:
             return None, None, heat_missing
+
+        # Apply perk timeline up to this wave (one-way fetch; no path => no-op)
+        stat_inputs_at_wave, perk_diag = apply_perk_timeline_to_inputs(
+            registry=registry,
+            stat_inputs=stat_inputs_at_wave,
+            perk_timeline_path=getattr(scenario, "perk_timeline_path", None),
+            current_wave=wave,
+        )
+        diagnostics.setdefault("perk_timeline", {})[str(wave)] = perk_diag
 
         try:
             wave_snapshot = snapshot_at_wave(

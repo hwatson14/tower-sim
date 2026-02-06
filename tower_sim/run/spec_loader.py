@@ -46,7 +46,8 @@ def _parse_problem_spec(data: Mapping[str, Any]) -> ProblemSpec:
     scenario = _parse_scenario(data["scenario"])
     stat_inputs = _parse_stat_inputs(data["stat_inputs"])
     evaluator = str(data.get("evaluator", "max_wave"))
-    return ProblemSpec(scenario=scenario, stat_inputs=stat_inputs, evaluator=evaluator)
+    perk_timeline_path = data.get("perk_timeline_path")
+    return ProblemSpec(scenario=scenario, stat_inputs=stat_inputs, evaluator=evaluator, perk_timeline_path=perk_timeline_path)
 
 
 def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:

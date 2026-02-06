@@ -73,6 +73,8 @@ class ScenarioSpec:
     eals_ramp: Optional[SkipRampSpec] = None
     ehls_ramp: Optional[SkipRampSpec] = None
     boss_survivability: Optional[BossSurvivabilitySpec] = None
+    perk_timeline_path: Optional[str] = None
+
 
 
 @dataclass(frozen=True)
