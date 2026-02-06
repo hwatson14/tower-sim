@@ -32,7 +32,7 @@ Explicitly NOT included:
 
 ### Enemy Tables
 - `tower_sim/libs/enemy_tables.py` provides wave damage CSV loader with compact-number parsing.
-- `tower_sim/libs/wave_damage_strict.py` provides strict lookup tables for selected tiers/modes.
+- `tower_sim/libs/wave_damage_strict.py` provides canonical enemy HP/Damage table loading from `tables/enemy_health_table.csv` and `tables/enemy_damage_table.csv`, with log-linear per-wave interpolation (linear in ln(value)).
 
 ### Modules
 - `tower_sim/libs/modules_library.py`, `tower_sim/engines/modules.py`, `tower_sim/libs/assist_efficiency.py` implement module unique effects, substats, and assist efficiency logic.
@@ -103,11 +103,11 @@ corresponding Step1 part file(s):
   - `reference/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
   - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
 
-#### Wave Damage Curves
-- **Missing mechanic:** authoritative wave damage curves for tier + tournament.
-- **Reference locations:**
-  - `reference/step1_dump_docs/part2_data/tier_wave_damage.csv`
-  - `reference/step1_dump_docs/part2_data/tournament_wave_damage.csv`
+#### Wave Damage / Health Curves
+- **Implemented mechanic:** canonical enemy scaling sourced from:
+  - `tables/enemy_damage_table.csv`
+  - `tables/enemy_health_table.csv`
+  with log-linear interpolation between anchor waves.
 
 #### Runtime DAG / Derived Pipeline Inputs
 - **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json

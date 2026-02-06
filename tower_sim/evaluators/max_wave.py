@@ -324,7 +324,7 @@ def _resolve_wave_damage(
     lib = EnemyWaveDamageLib.from_repo_tables()
     wave = scenario.wave if wave_state is None else wave_state.W_attack
     try:
-        damage = lib.wave_damage_exact(wave_tier, wave)
+        damage = lib.wave_damage(wave_tier, wave)
     except KeyError as exc:
         missing.append("wave_damage_table")
         diagnostics["wave_damage_error"] = str(exc)
@@ -973,7 +973,7 @@ def _resolve_wave_damage_for_wave(
     lib = EnemyWaveDamageLib.from_repo_tables()
     wave = wave_state.W_attack
     try:
-        damage = lib.wave_damage_exact(wave_tier, wave)
+        damage = lib.wave_damage(wave_tier, wave)
     except KeyError:
         missing.append("wave_damage_table")
         return None, missing

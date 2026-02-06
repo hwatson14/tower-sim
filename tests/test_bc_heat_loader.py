@@ -77,6 +77,9 @@ def test_tournament_heat_value_at_stepwise_and_bounds_per_league(tmp_path: Path)
 
     assert table.value_at(league="champion", wave_actual=19, bc_id="enemy_speed:").value_num == 0.2
     assert table.value_at(league="legend", wave_actual=19, bc_id="enemy_speed:").value_num == 0.3
+    # Regression: BC/heat remain stepwise (no interpolation between wave 0 and 20).
+    assert table.value_at(league="champion", wave_actual=10, bc_id="enemy_speed:").value_num == 0.2
+    assert table.value_at(league="legend", wave_actual=10, bc_id="enemy_speed:").value_num == 0.3
 
     with pytest.raises(HeatDataError, match="outside coverage"):
         table.value_at(league="champion", wave_actual=-1, bc_id="enemy_speed:")
