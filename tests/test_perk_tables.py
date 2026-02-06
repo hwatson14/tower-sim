@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 from pathlib import Path
+import pytest
 
 from tower_sim.loaders.perk_tables import (
+    PerkTableError,
     load_perk_definitions,
     load_perk_pool_weights,
 )
@@ -25,3 +27,15 @@ def test_load_perk_pool_weights() -> None:
     assert weights
     total = sum(weight.weight_percent for weight in weights)
     assert total == 100
+
+
+def test_load_perk_pool_weights_rejects_non_100_total(tmp_path: Path) -> None:
+    bad_weights = tmp_path / "perk_pool_weights_bad.csv"
+    bad_weights.write_text(
+        "category,weight_percent,notes,source\n"
+        "Common,40,,test\n"
+        "Rare,40,,test\n",
+        encoding="utf-8",
+    )
+    with pytest.raises(PerkTableError, match="must sum to 100.0"):
+        load_perk_pool_weights(bad_weights)
