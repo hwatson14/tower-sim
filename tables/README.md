@@ -38,3 +38,15 @@ tables have not yet been added.
 - `wse_presets_v1.csv`: Table shell for WSE preset mappings (Max Recovery preset values still missing from prompt; fail-closed until populated).
 - `card_masteries_v1.csv`: Card mastery table pasted from the Tower wiki by the user
   in the prompt (wiki-exact names + level 0–9 values).
+
+
+## Tournament heat/BC tables (v2 canonical)
+- `heat_scale_long.csv`: canonical stepwise heat values keyed by `league` + `wave_actual` and BC key/variant (`bc_id = "{bc_key}:{bc_variant}"`).
+- `heat_bc_registry.csv`: canonical BC registry (includes `applies_champion`/`applies_legend`) consumed by tournament BC set enumeration.
+- `tournament_league_rules.csv`: v2 league scope is Champion + Legend only.
+
+## Deprecated (pending removal after MAX_WAVE rewire)
+- `battle_condition_magnitudes.csv`
+- `heat_wave_scalar.csv` (if present)
+
+These legacy heat-scalar model artifacts remain for compatibility only; new tournament work should use v2 tables and loader paths.

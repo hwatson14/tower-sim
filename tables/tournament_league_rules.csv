@@ -1,21 +1,11 @@
-# Tournament league battle-condition selection rules.
+# Tournament league battle-condition selection rules (v2).
+#
+# Scope in this table is intentionally limited to Champion and Legend only.
+# Lower leagues are out-of-scope for v2 and must fail closed if requested.
 #
 # Provenance:
-# - Recovered table: reference/step1_dump_docs/part4_legacy_quarantine/\
-#   quarantine/recovered_data/_recovered_v1.6.54/data/tournaments/leagues_and_heat.yaml
-# - Wiki evidence summary: reference/step1_dump_docs/part4_legacy_quarantine/\
-#   quarantine/recovered_data/_recovered_v1.6.34/evidence/tournament_heat_wiki_notes.yaml
-#   (wiki URL: https://the-tower-idle-tower-defense.fandom.com/wiki/Tournaments)
-#
-# Columns:
-# - league: normalized league key (lowercase).
-# - random_bc_count: number of additional random BCs per tournament.
-# - has_dd_or_es: whether the league forces either Death Defy Down or Energy Shields Down.
-# - has_more_bosses: whether More Bosses is always included.
+# - Battle Conditions sheet supplied by user prompt (tournament_heat_tables_patch v2)
+# - Tournament wiki context: https://the-tower-idle-tower-defense.fandom.com/wiki/Tournaments
 league,random_bc_count,has_dd_or_es,has_more_bosses
-copper,0,false,true
-silver,1,false,true
-gold,2,false,true
-platinum,3,true,true
 champion,4,true,true
 legend,5,true,true
