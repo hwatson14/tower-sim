@@ -95,6 +95,11 @@ def load_perk_pool_weights(path: Path | None = None) -> List[PerkPoolWeight]:
                 source=row["source"].strip(),
             )
         )
+    total_weight = sum(weight.weight_percent for weight in weights)
+    if total_weight != 100.0:
+        raise PerkTableError(
+            f"Perk pool weight table must sum to 100.0; got {total_weight} in {resolved}."
+        )
     return weights
 
 
@@ -120,7 +125,7 @@ def _read_rows(path: Path, required_columns: Iterable[str]) -> List[Dict[str, st
 
 def _parse_int(raw: str, path: Path, perk_name: str) -> int:
     try:
-        return int(float(raw))
+        return int(raw)
     except ValueError as exc:
         raise PerkTableError(
             f"Invalid integer value {raw!r} for perk {perk_name} in {path}."
