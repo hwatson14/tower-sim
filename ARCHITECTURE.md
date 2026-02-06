@@ -50,11 +50,10 @@ These planes describe where responsibilities live without changing the frozen st
 - **Tournament run:** tournament BC set; perks disabled.
 - **Milestone run:** perks enabled; uses tier rules; output includes milestone targets.
 
-### Perk Handling (Deterministic Envelope)
-Perk auto-pick priority order is a deterministic input. Evaluators must compute explicit,
-enumerated perk-outcome cases consistent with that policy (best / worst / nominal), without sampling.
-Perk envelopes may only use authoritative constraints present in the repo (perk pool, gating, max picks, etc.); if those are insufficient to define feasible envelopes, fail closed rather than invent an offer model.
-If authoritative perk-offer rules are missing, the perk engine must be marked incomplete or fail closed.
+### Perk Handling (External Artifact, Deterministic)
+Perk randomness is not resolved in the core simulator. The simulator consumes a deterministic,
+versioned perk timeline artifact produced by an offline resolver (best / median / worst cases).
+If a run requires perks and no valid timeline artifact is supplied, the run must fail closed.
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
@@ -207,8 +206,10 @@ validated strictly and must fail closed when required fields are missing.
 }
 ```
 
-**Optimiser task identifiers (v1):**
-### Runner Input Schema (Draft)
+### Evaluator Task Identifiers (v1)
+- `MAX_WAVE` (single-candidate evaluator task; not an optimiser)
+
+### Optimizer Runner Input Schema (Future, v2+)
 ```json
 {
   "task": "OPTIMIZE_LOADOUT",
@@ -229,8 +230,7 @@ validated strictly and must fail closed when required fields are missing.
 }
 ```
 
-**Task identifiers (v1):**
-- `MAX_WAVE`
+**Optimizer task identifiers (future, v2+):**
 - `OPTIMIZE_LOADOUT`
 - `OPTIMIZE_MODULE_SUBSTATS` (module substat changes only)
 - `OPTIMIZE_STONES`
@@ -238,18 +238,15 @@ validated strictly and must fail closed when required fields are missing.
 - `OPTIMIZE_LABS`
 - `SENSITIVITY_REPORT` (deterministic stat deltas; no sampling)
 
-**Evaluator task identifiers (v1):**
-- `MAX_WAVE` (single-candidate evaluator task; not an optimiser)
-
-**Objective identifiers:**
+**Objective identifiers (future, v2+):**
 - `MAX_WAVE` (v1 default)
 - `ECON_PER_HOUR` (v2 farming mode target)
 
-### Patch Grammar (Exact v1)
+### Patch Grammar (Future, v2+)
 Optimiser deltas must be explicit and deterministic. Two patch styles are supported, with **typed
 deltas preferred** to keep domain rules visible.
 
-**A) Typed deltas (preferred, required for v1 runner tasks)**
+**A) Typed deltas (preferred, required for optimizer runner tasks)**
 ```json
 {
   "type": "snapshot_patch",
@@ -275,7 +272,7 @@ deltas preferred** to keep domain rules visible.
 }
 ```
 
-**B) Operation-based deltas (JSON Patch style, allowed for tooling but not for v1 runner tasks)**
+**B) Operation-based deltas (JSON Patch style, allowed for tooling but not for optimizer runner tasks)**
 ```json
 [
   { "op": "replace", "path": "/loadout/cards/2/id", "value": "CARD_B" },
@@ -283,10 +280,10 @@ deltas preferred** to keep domain rules visible.
 ]
 ```
 
-Typed deltas are required in v1 because they allow stricter validation (e.g., inventory ownership,
+Typed deltas are required for optimizer runner tasks because they allow stricter validation (e.g., inventory ownership,
 budget checks, and slot constraints) and make optimisation traces easier to audit.
 
-### Precompute Workflow (Outline v1)
+### Precompute Workflow (Future, v2+)
 To keep the fast path viable, publish optimiser outputs as artifacts alongside IDS dumps.
 
 1. **Trigger:** scheduled workflow or IDS dump completion.
@@ -305,7 +302,7 @@ Suggested artifacts:
 - `audit/optimal_lab_time_latest.json`
 - `audit/sensitivity_report_latest.json`
 
-### First Optimiser Spec (Loadout + BC, v1)
+### First Optimiser Spec (Loadout + BC, future v2+)
 **Goal:** determine the best loadout (cards + modules, primary/assist slots) for a given BC set.
 
 **Inputs (required unless noted):**

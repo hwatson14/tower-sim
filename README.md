@@ -145,6 +145,8 @@ the task, so your agent only needs to choose which task to call.
 - `LOADOUT` → returns resolved preset name + equipped cards + modules.
 - `MAX_WAVE` → runs deterministic max-wave evaluation.
 
+Optimizer tasks are defined for future versions and are not part of the v1 task API.
+
 If IDS input is missing, the API fails closed and returns missing sections, so
 always pass IDS input when you call the run API.
 
@@ -161,6 +163,8 @@ always pass IDS input when you call the run API.
 - Generated artefacts never live inside the library
 
 Violations of these rules are considered correctness bugs.
+
+Perk timelines are external artifacts produced by a separate offline resolver; if a run requires perks and no timeline is provided, TowerSim fails closed.
 
 ---
 
