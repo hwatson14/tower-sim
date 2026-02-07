@@ -25,7 +25,7 @@ class TierBattleConditions:
     """
     Tier battle-conditions catalog.
 
-    Source: reference/step1_dump_docs/part2_data/tier_battle_conditions.csv
+    Source: tables/tier_battle_conditions.csv
     (Effective Paths recovery, authoritative per user-supplied dump).
 
     Note: User-provided clarification confirms tiers 1–13 have no battle

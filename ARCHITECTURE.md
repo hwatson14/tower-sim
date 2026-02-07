@@ -69,7 +69,7 @@ and are treated as authoritative library data (with provenance).
 Default `_IDS.csv` resolution order:
 1. `tests/fixtures/tower-sim-data/_IDS.csv`
 2. `tests/fixtures/_IDS.csv`
-3. `reference/tower-sim-data/_IDS.csv`
+3. `tables/tower-sim-data/_IDS.csv`
 
 ## State Model
 ### A) Account Baseline (unchanged during a run)
@@ -480,30 +480,30 @@ mechanic details live in parts 1–4:
 ### Combat Engines (boss + nonboss)
 - **Missing mechanic:** combat resolution engines (boss survivability + nonboss
   combat loop).
-- **Reference location:** `reference/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
+- **Reference location:** `tables/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
   (explicitly notes `sim/engines/combat_engine.py` and
   `sim/engines/nonboss_combat_engine.py` are missing).
 
 ### Tier Battle Conditions + Heat
 - **Missing mechanic:** tier BC application in frozen order + heat scaling.
 - **Reference locations:**
-  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (expects
+  - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (expects
     `battle_conditions.csv` + `heat.csv` runtime inputs).
-  - `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
+  - `tables/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
     and `BC_HEAT_PROVENANCE.md` (source + gaps).
-  - `reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
+  - `tables/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
     (BC base magnitude table).
-  - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv` (league,wave heat).
-  - `reference/step1_dump_docs/part2_data/tier_battle_conditions.csv`
+  - `tables/step1_dump_docs/part2_data/heat_wave_scalar.csv` (league,wave heat).
+  - `tables/step1_dump_docs/part2_data/tier_battle_conditions.csv`
     (partial Tier 14–21 farming BC magnitudes; tiers 1–13 have none).
 
 ### Tournament Battle Conditions
 - **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
   boss frequency.
 - **Reference locations:**
-  - `reference/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
+  - `tables/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
     (per-wave BC magnitudes).
-  - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
+  - `tables/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
     (boss frequency by league).
 
 ### Wave Damage / Health Curves
@@ -516,9 +516,9 @@ mechanic details live in parts 1–4:
 - **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
   binding).
 - **Reference locations:**
-  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (expects `tiers.csv`
+  - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (expects `tiers.csv`
     + `dag.json` at runtime).
-  - `reference/step1_dump_docs/part2_data/dag.json` (DAG snapshot).
+  - `tables/step1_dump_docs/part2_data/dag.json` (DAG snapshot).
 
 ## “Stop the Line” Conditions
 Any of the following must stop work and ask for clarification:

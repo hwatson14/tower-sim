@@ -35,7 +35,6 @@ SECTION_SPECS = [
 DEFAULT_IDS_PATHS: Sequence[Path] = (
     Path("tests/fixtures/tower-sim-data/_IDS.csv"),
     Path("tests/fixtures/_IDS.csv"),
-    Path("reference/tower-sim-data/_IDS.csv"),
 )
 
 

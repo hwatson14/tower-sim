@@ -22,9 +22,9 @@ rules in `AGENTS.md`.
 - `tournament_more_bosses_static.csv`: tournament boss interval table.
 - `dag.json`: canonical DAG snapshot used by runtime checks.
 - `bot_upgrades_v1.csv`: DVT_Bot sheet from
-  `reference/effective_paths/copy_of_bots_v2_2.xlsx`.
+  `tables/effective_paths/copy_of_bots_v2_2.xlsx`.
 - `guardian_upgrades_v1.csv`: DVT_Guardians sheet from
-  `reference/effective_paths/copy_of_guardians_v2_2_5.xlsx`.
+  `tables/effective_paths/copy_of_guardians_v2_2_5.xlsx`.
 - `perks_v1.csv`: User-provided wiki excerpt in prompt (perk list, effects,
   max picks, stacking notes).
 - `perk_pool_weights_v1.csv`: User-provided wiki excerpt in prompt

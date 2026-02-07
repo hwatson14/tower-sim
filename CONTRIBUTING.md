@@ -8,8 +8,8 @@ architecture contract and repo hygiene rules.
   `tower_sim/`. Library code only.
 - Authoritative tables live in `tables/`.
 - Human-facing audits and comparison reports live in `audit/`.
-- Large reference dumps live in `reference/`.
-- Quarantined tests go in `tests_quarantine/`.
+- Large reference dumps live in `tables/`.
+- Quarantined tests go in `tests/`.
 
 See `REPO_STRUCTURE.md` for the full allowed tree.
 
@@ -34,5 +34,5 @@ PYTHONPATH=. pytest
 
 Quarantined tests (explicit opt-in):
 ```bash
-PYTHONPATH=. pytest tests_quarantine
+PYTHONPATH=. pytest tests
 ```

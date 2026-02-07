@@ -1,1 +1,0 @@
-Heat curves placeholder. Populate from Player & Stuff BC tab.

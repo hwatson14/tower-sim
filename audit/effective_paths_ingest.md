@@ -1,6 +1,6 @@
 # Effective Paths ingestion report
 
-Source: `reference/effective_paths/*.xlsx`.
+Source: `tables/effective_paths/*.xlsx`.
 
 ## Copy of Bots v2.2.xlsx
 - Size: 792338 bytes

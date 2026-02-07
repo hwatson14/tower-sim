@@ -2,16 +2,31 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
+from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
-from tower_sim.libs.data_paths import resolve_data_file
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
 from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
 from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
+
+
+_FIXTURE_DATA_DIRS = (
+    Path("tests/fixtures/tower-sim-data"),
+    Path("tests/fixtures"),
+)
+
+
+def _resolve_fixture_data_file(filename: str) -> Path:
+    for directory in _FIXTURE_DATA_DIRS:
+        candidate = directory / filename
+        if candidate.exists():
+            return candidate
+    candidates = ", ".join(str(directory / filename) for directory in _FIXTURE_DATA_DIRS)
+    raise FileNotFoundError(f"Missing data file {filename}. Tried: {candidates}")
 
 
 @dataclass(frozen=True)
@@ -482,7 +497,7 @@ def _load_uw_rows(spec: UWTrackSpec) -> List[Dict[str, str]]:
 
 
 def _load_dvt_column(column_label: str) -> List[str]:
-    path = resolve_data_file("Data_Val_Tables.csv")
+    path = _resolve_fixture_data_file("Data_Val_Tables.csv")
     rows = path.read_text().splitlines()
     data = [row.split(",") for row in rows]
     col_index = _column_letter_index(column_label)
@@ -533,7 +548,7 @@ def _uw_next_cost(rows: List[Dict[str, str]], level_index: int) -> Optional[floa
 
 def _uw_provenance(spec: UWTrackSpec) -> str:
     if spec.csv_file:
-        return f"reference/uw_tables_v2_1_2.zip:{spec.csv_file}"
+        return f"uw_tables_v2_1_2:{spec.csv_file}"
     if spec.dvt_value_column and spec.dvt_cost_column:
         return f"Data_Val_Tables.csv:{spec.dvt_value_column}:{spec.dvt_cost_column}"
     return "unknown"

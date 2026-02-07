@@ -66,7 +66,7 @@ def test_validate_sources_flags_missing_unmapped_and_conflicts(
             "token": "TOK_A",
             "gate": "A",
             "source_type": "effective_paths_sheet",
-            "source_path": "reference/a.xlsx",
+            "source_path": "tables/a.xlsx",
             "source_locator": "Sheet: Alpha",
             "notes": "conflict",
         },

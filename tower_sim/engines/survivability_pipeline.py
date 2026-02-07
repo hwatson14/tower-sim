@@ -156,9 +156,11 @@ def build_survivability_report(
     )
     compiled = compile_full_stat_inputs(ids_snapshot)
     if compiled.missing:
-        raise SurvivabilityPipelineError(
-            "Missing workshop/UW stat inputs: " + ", ".join(compiled.missing)
-        )
+        if not allow_provisional:
+            raise SurvivabilityPipelineError(
+                "Missing workshop/UW stat inputs: " + ", ".join(compiled.missing)
+            )
+        warnings["missing_stat_inputs"] = sorted(compiled.missing)
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
     stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
 
@@ -755,7 +757,7 @@ def _build_wave_state(scenario: ScenarioSpec, start_snapshot: Mapping[str, float
 def _load_tier_rules(
     scenario: ScenarioSpec,
 ) -> tuple[Optional[TierRulesResult], List[Dict[str, str]]]:
-    bc_path = Path(__file__).resolve().parents[2] / "tables" / "tier14_21_battle_conditions.csv"
+    bc_path = Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
     catalog = load_tier_battle_conditions(bc_path, allow_incomplete=True)
     run_context = RunContext.from_mode(scenario.mode, tier=str(scenario.tier))
     rules = build_tier_rules(scenario.tier, run_context, catalog)

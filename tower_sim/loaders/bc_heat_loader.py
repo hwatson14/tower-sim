@@ -106,7 +106,7 @@ def load_heat_bundle(heat_path: Path, magnitudes_path: Path) -> HeatBundle:
     return HeatBundle(
         heat_scalars=heat_scalars,
         magnitudes=magnitudes,
-        provenance="reference/step1_dump_docs/part2_data/README_HEAT.md",
+        provenance="tables/heat_*",
     )
 
 
