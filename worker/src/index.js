@@ -13,7 +13,7 @@ export default {
 
     const url = new URL(request.url);
 
-    // --- SnapshotReader: GET /snapshot/{name} ---
+    // --- SnapshotReader: GET /snapshot/{name} (accept optional trailing slash) ---
     const snapMatch = url.pathname.match(/^\/snapshot\/([a-z0-9_-]+)\/?$/i);
     if (request.method === "GET" && snapMatch) {
       const name = snapMatch[1].toLowerCase();
@@ -25,50 +25,78 @@ export default {
   },
 };
 
-const SNAPSHOT_FILES = {
+const SNAPSHOT_FILENAMES = {
   ids_dump: "ids_dump_latest.json",
   base_stats: "base_stats_latest.json",
   inventory: "inventory_latest.json",
   loadout: "loadout_latest.json",
 };
 
+// Try these directories in order. Most repos store these under audit/.
+// You can override/extend by setting SNAPSHOT_DIRS="audit,." (comma-separated).
+function snapshotDirs(env) {
+  const raw = (env.SNAPSHOT_DIRS || "audit,.").trim();
+  return raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0)
+    .map((s) => (s === "." ? "" : s.replace(/\/+$/, "")));
+}
+
 async function handleSnapshotGet(name, env) {
-  const path = SNAPSHOT_FILES[name];
-  if (!path) {
-    return json({ error: "invalid_snapshot_name", allowed: Object.keys(SNAPSHOT_FILES) }, 400);
+  const filename = SNAPSHOT_FILENAMES[name];
+  if (!filename) {
+    return json({ error: "invalid_snapshot_name", allowed: Object.keys(SNAPSHOT_FILENAMES) }, 400);
   }
 
   const owner = env.GITHUB_OWNER;
   const repo = env.GITHUB_REPO;
   const ref = env.SNAPSHOT_REF || "ids-dump-latest";
+  const dirs = snapshotDirs(env);
 
-  const out = await fetchGithubContentsJson({
-    owner,
-    repo,
-    ref,
-    path,
-    token: env.GITHUB_TOKEN,
-  });
+  // Attempt fetch in each candidate directory until one succeeds.
+  let lastErr = null;
+  for (const dir of dirs) {
+    const path = dir ? `${dir}/${filename}` : filename;
 
-  if (!out.ok) {
-    return json(
-      { error: "github_fetch_failed", ref, path, status: out.status, detail: out.detail },
-      502,
-    );
-  }
-
-  return json({
-    meta: {
-      source: "github_contents_api",
+    const out = await fetchGithubContentsJson({
       owner,
       repo,
       ref,
       path,
-      content_sha: out.contentSha,
-      fetched_at_utc: new Date().toISOString(),
+      token: env.GITHUB_TOKEN,
+    });
+
+    if (out.ok) {
+      return json({
+        meta: {
+          source: "github_contents_api",
+          owner,
+          repo,
+          ref,
+          path,
+          content_sha: out.contentSha,
+          fetched_at_utc: new Date().toISOString(),
+        },
+        data: out.data,
+      });
+    }
+
+    // Keep the last error; continue trying other dirs only on 404.
+    lastErr = { path, status: out.status, detail: out.detail };
+    if (out.status !== 404) break;
+  }
+
+  return json(
+    {
+      error: "github_fetch_failed",
+      ref,
+      attempted_paths: dirs.map((d) => (d ? `${d}/${filename}` : filename)),
+      status: lastErr?.status ?? 502,
+      detail: lastErr?.detail ?? "unknown",
     },
-    data: out.data,
-  });
+    502,
+  );
 }
 
 async function fetchGithubContentsJson({ owner, repo, path, ref, token }) {
