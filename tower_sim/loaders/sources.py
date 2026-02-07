@@ -10,8 +10,8 @@ import zipfile
 import pandas as pd
 from tower_sim.loaders.ids_parser import DEFAULT_IDS_PATHS, resolve_ids_path
 
-DATA_DIR = Path(__file__).resolve().parents[2] / "reference" / "tower-sim-data"
-DATA_DIR.mkdir(exist_ok=True)
+DATA_DIR = Path(__file__).resolve().parents[2] / "tests" / "fixtures" / "tower-sim-data"
+DATA_DIR.mkdir(parents=True, exist_ok=True)
 
 MANIFEST_FILENAME = "manifest.json"
 

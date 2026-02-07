@@ -78,30 +78,30 @@ corresponding Step1 part file(s):
 #### Combat Engines (boss + nonboss)
 - **Missing mechanic:** combat resolution engines (boss survivability + nonboss
   combat loop).
-- **Reference location:** `reference/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
+- **Reference location:** `tables/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
   (explicit missing `sim/engines/combat_engine.py` and
   `sim/engines/nonboss_combat_engine.py`).
 
 #### Tier Battle Conditions + Heat
 - **Missing mechanic:** tier BC application in frozen order + heat scaling.
 - **Reference locations:**
-  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (`battle_conditions.csv`,
+  - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (`battle_conditions.csv`,
     `heat.csv` runtime inputs).
-  - `reference/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
+  - `tables/step1_dump_docs/part3_refs_tests_docs/docs/BC_HEAT_SOURCE.md`
     and `BC_HEAT_PROVENANCE.md` (source + gaps).
-  - `reference/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
+  - `tables/step1_dump_docs/part2_data/battle_condition_magnitudes.csv`
     (BC base magnitude table).
-  - `reference/step1_dump_docs/part2_data/heat_wave_scalar.csv`
+  - `tables/step1_dump_docs/part2_data/heat_wave_scalar.csv`
     (league,wave heat).
-  - `reference/step1_dump_docs/part2_data/tier_battle_conditions.csv`
+  - `tables/step1_dump_docs/part2_data/tier_battle_conditions.csv`
     (partial Tier 14–21 farming BC magnitudes; tiers 1–13 have none).
 
 #### Tournament Battle Conditions
 - **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
   boss frequency.
 - **Reference locations:**
-  - `reference/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
-  - `reference/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
+  - `tables/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
+  - `tables/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
 
 #### Wave Damage / Health Curves
 - **Implemented mechanic:** canonical enemy scaling sourced from:
@@ -113,8 +113,8 @@ corresponding Step1 part file(s):
 - **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
   binding).
 - **Reference locations:**
-  - `reference/step1_dump_docs/part1_core/DATA_BINDING.md` (`tiers.csv` + `dag.json`).
-  - `reference/step1_dump_docs/part2_data/dag.json`.
+  - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (`tiers.csv` + `dag.json`).
+  - `tables/step1_dump_docs/part2_data/dag.json`.
 
 ### Boss Survivability Model (v1 objective)
 - Boss-only combat model (PC + thorns + regen + DR) implemented in

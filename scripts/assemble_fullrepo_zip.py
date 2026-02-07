@@ -82,7 +82,7 @@ def main() -> None:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("reference/tower_sim_step1_fullrepo.zip"),
+        default=Path("tables/tower_sim_step1_fullrepo.zip"),
         help="Output path for the combined zip file.",
     )
     args = parser.parse_args()

@@ -90,7 +90,7 @@ Proceed to task 2 only after resolving missing authoritative sources for Defense
 
 ## Recheck notes (latest merge)
 The repository snapshot in this workspace does not include the referenced
-identifier resolver files or `reference/runtime` artifacts described in the
+identifier resolver files or `tables/runtime` artifacts described in the
 latest merge summary. Re-run this audit after those files are present, as they
 may introduce authoritative mappings that unblock Defense %, Wall Regen base, or
 Wall Fortification.

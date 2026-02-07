@@ -45,7 +45,7 @@ class BossCombatEngine:
     """Boss combat engine (v1 minimal, deterministic).
 
     Mechanics implemented are based on the fail-closed combat model structure in
-    `reference/combat_model_authoritative.zip` and the Plasma Cannon card effect
+    `tables/combat_model_authoritative.zip` and the Plasma Cannon card effect
     table in `tables/wiki_cache/cards_rare.csv` (percent-current damage).
     """
 

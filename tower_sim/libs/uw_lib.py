@@ -5,13 +5,27 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, Optional
 
-from tower_sim.libs.data_paths import resolve_data_file
-
 
 @dataclass(frozen=True)
 class UWTable:
     name: str
     columns: Dict[str, list[str]]
+
+
+
+_FIXTURE_DATA_DIRS = (
+    Path("tests/fixtures/tower-sim-data"),
+    Path("tests/fixtures"),
+)
+
+
+def resolve_data_file(filename: str) -> Path:
+    for directory in _FIXTURE_DATA_DIRS:
+        candidate = directory / filename
+        if candidate.exists():
+            return candidate
+    candidates = ", ".join(str(directory / filename) for directory in _FIXTURE_DATA_DIRS)
+    raise FileNotFoundError(f"Missing data file {filename}. Tried: {candidates}")
 
 
 def _read_csv(path: Path) -> list[list[str]]:

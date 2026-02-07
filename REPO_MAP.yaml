@@ -2,10 +2,8 @@ top_level:
   allowed_dirs:
     - tower_sim
     - tables
-    - reference
     - audit
     - tests
-    - tests_quarantine
     - scripts
     - .github
     - worker
@@ -83,10 +81,6 @@ tables:
   forbidden_file_globs:
     - "**/*.py"
 
-reference:
-  allowed_file_globs:
-    - "**/*"
-
 audit:
   allowed_file_globs:
     - "**/*.md"
@@ -104,11 +98,6 @@ tests:
     - "**/*.yml"
     - "**/*.csv"
     - "**/*.tsv"
-
-tests_quarantine:
-  allowed_file_globs:
-    - "**/*.py"
-    - "README.md"
 
 scripts:
   allowed_file_globs:

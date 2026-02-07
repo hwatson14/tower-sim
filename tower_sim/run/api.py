@@ -138,9 +138,10 @@ def _resolve_bundle() -> DatasetBundle | IdsOnlyBundle:
 
 
 def _default_cache_dirs():
-    from tower_sim.libs.data_paths import DEFAULT_DATA_DIRS
-
-    return list(DEFAULT_DATA_DIRS)
+    return [
+        Path("tests/fixtures/tower-sim-data"),
+        Path("tests/fixtures"),
+    ]
 
 
 def _default_ids_paths():

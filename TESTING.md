@@ -9,5 +9,5 @@ PYTHONPATH=. pytest
 ## Quarantine (explicit opt-in)
 
 ```bash
-PYTHONPATH=. pytest tests_quarantine
+PYTHONPATH=. pytest tests
 ```

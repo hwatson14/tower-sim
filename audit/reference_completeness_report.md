@@ -1,8 +1,8 @@
 # Reference Completeness Report
 
 This report inventories required runtime tables and classifies them as:
-- **runtime**: present outside `reference/` and test fixtures.
-- **step1-only**: present only under `reference/step1_dump_docs/...`.
+- **runtime**: present outside `tables/` and test fixtures.
+- **step1-only**: present only under `tables/step1_dump_docs/...`.
 - **missing**: not present anywhere in the repo.
 
 ## Manifest (machine-readable)

@@ -140,15 +140,11 @@ def check_naming_rules(
         if is_ignored(path):
             continue
         rel_path = path.relative_to(repo_root)
-        if rel_path.parts and rel_path.parts[0] == "reference":
-            continue
         if rel_path.parts[:2] == ("tests", "fixtures"):
             continue
         if is_exception(rel_path, exceptions):
             continue
         if rel_path.parts and rel_path.parts[0] == "tables" and rel_path.name == "README.md":
-            continue
-        if rel_path.parts and rel_path.parts[0] == "tests_quarantine" and rel_path.name == "README.md":
             continue
         if len(rel_path.parts) == 1 and rel_path.name in allowed_top_level_files:
             continue
@@ -357,7 +353,7 @@ def main() -> None:
     tower_sim_dir = repo_root / "tower_sim"
     check_allowed_subdirs(tower_sim_dir, config["tower_sim"]["allowed_subdirs"], errors)
 
-    for section in ["tower_sim", "tables", "reference", "audit", "tests", "tests_quarantine", "scripts"]:
+    for section in ["tower_sim", "tables", "audit", "tests", "scripts"]:
         base = repo_root / section
         rules = config.get(section, {})
         check_directory_rules(repo_root, base, rules, exceptions, errors)
