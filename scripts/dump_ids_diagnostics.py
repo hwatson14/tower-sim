@@ -1,15 +1,22 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import subprocess
 from datetime import datetime, timezone
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Optional, Set
 
 from tower_sim.engines.statbook_builder import build_statbook
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
+from tower_sim.engines.stat_engine import StatEngine, StatInput
+from tower_sim.evaluators.max_wave import MaxWaveEvaluator
+from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.run.problem_spec import ProblemSpec, ScenarioSpec
+from tower_sim.run.spec_loader import load_problem_spec
 from tower_sim.loaders.account_snapshot_compiler import (
     compile_account_snapshot,
     resolve_loadout,
@@ -28,6 +35,127 @@ def _to_jsonable(value: Any) -> Any:
     if isinstance(value, Path):
         return str(value)
     return value
+
+
+def _canonical_json(obj: Any) -> str:
+    return json.dumps(_to_jsonable(obj), sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _sha256(obj: Any) -> str:
+    return hashlib.sha256(_canonical_json(obj).encode("utf-8")).hexdigest()
+
+
+def _serialize_stat_input(item: StatInput) -> Dict[str, Any]:
+    return {
+        "stat_id": item.stat_id,
+        "phase": item.phase.value if isinstance(item.phase, Phase) else str(item.phase),
+        "base_value": item.base_value,
+        "loadout_delta": item.loadout_delta,
+        "enhancement_multiplier": item.enhancement_multiplier,
+        "tier_rule_delta": item.tier_rule_delta,
+        "tier_rule_multiplier": item.tier_rule_multiplier,
+        "derived_value": item.derived_value,
+        "provenance": item.provenance,
+    }
+
+
+def _build_ids_raw_index(ids_raw: Any) -> Dict[str, Any]:
+    sections = []
+    for name, rows in ids_raw.raw_sections.items():
+        sections.append({"name": name, "rows": len(rows), "hash": _sha256(rows)})
+    sections.sort(key=lambda s: s["name"])
+    obj = {"sections": sections}
+    obj["hash"] = _sha256(obj)
+    return obj
+
+
+def _default_problem_spec() -> ProblemSpec:
+    # Deterministic baseline spec for debug bundle runs.
+    return ProblemSpec(scenario=ScenarioSpec(mode="farm", tier=12, wave=1000), stat_inputs=[])
+
+
+def _filter_statbook_rows(rows: list[Any], allowlist: Optional[Set[str]]) -> list[Dict[str, Any]]:
+    out: list[Dict[str, Any]] = []
+    for row in rows:
+        stat_id = getattr(row, "stat_id", None)
+        if allowlist is not None and stat_id not in allowlist:
+            continue
+        out.append(
+            {
+                "stat_id": row.stat_id,
+                "phase": row.phase,
+                "base_value": row.base_value,
+                "loadout_delta": getattr(row, "loadout_delta", None),
+                "enhancement_multiplier": getattr(row, "enhancement_multiplier", None),
+                "tier_rule_delta_or_multiplier": getattr(row, "tier_rule_delta_or_multiplier", None),
+                "final_value": row.final_value,
+                "provenance": _to_jsonable(getattr(row, "provenance", None)),
+            }
+        )
+    return out
+
+
+def _build_pipeline_bundle(
+    ids_raw: Any,
+    snapshot: Any,
+    *,
+    include_run_stats: bool,
+    include_statbook_rows: bool,
+    statbook_allowlist: Optional[Set[str]],
+    include_max_wave: bool,
+    problem_spec_path: Optional[Path],
+) -> Dict[str, Any]:
+    pipeline: Dict[str, Any] = {}
+    stage_hashes: Dict[str, str] = {}
+
+    raw_index = _build_ids_raw_index(ids_raw)
+    pipeline["ids_raw_index"] = raw_index
+    stage_hashes["ids_raw_index"] = raw_index["hash"]
+
+    compiled = compile_full_stat_inputs(snapshot)
+    compiled_obj: Dict[str, Any] = {
+        "stat_inputs": [_serialize_stat_input(i) for i in compiled.stat_inputs],
+        "missing": list(compiled.missing),
+        "fail_closed": bool(compiled.missing),
+    }
+    compiled_obj["hash"] = _sha256(compiled_obj)
+    pipeline["compiled_stat_inputs"] = compiled_obj
+    stage_hashes["compiled_stat_inputs"] = compiled_obj["hash"]
+
+    if include_run_stats:
+        registry = default_registry()
+        engine = StatEngine(registry)
+        engine_result = engine.build(compiled.stat_inputs)
+
+        run_stats_base = {phase.value: rs.values for phase, rs in engine_result.run_stats.items()}
+        stat_engine_obj: Dict[str, Any] = {"run_stats_base": run_stats_base}
+
+        if include_statbook_rows:
+            stat_engine_obj["statbook_rows_filtered"] = _filter_statbook_rows(
+                engine_result.statbook.rows,
+                statbook_allowlist,
+            )
+
+        stat_engine_obj["hash"] = _sha256(stat_engine_obj)
+        pipeline["stat_engine"] = stat_engine_obj
+        stage_hashes["stat_engine"] = stat_engine_obj["hash"]
+
+    if include_max_wave:
+        spec = _default_problem_spec()
+        if problem_spec_path is not None:
+            spec = load_problem_spec(problem_spec_path)
+        result = MaxWaveEvaluator().evaluate(spec, snapshot)
+        max_wave_obj: Dict[str, Any] = {
+            "problem_spec": _to_jsonable(asdict(spec)),
+            "result": _to_jsonable(result),
+        }
+        max_wave_obj["hash"] = _sha256(max_wave_obj)
+        pipeline["max_wave"] = max_wave_obj
+        stage_hashes["max_wave"] = max_wave_obj["hash"]
+
+    pipeline["stage_hashes"] = stage_hashes
+    pipeline["hash"] = _sha256(pipeline)
+    return pipeline
 
 
 def _safe_get(
@@ -59,7 +187,17 @@ def _resolve_git_sha() -> str | None:
     return sha or None
 
 
-def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
+def build_diagnostics(
+    ids_path: Path,
+    *,
+    include_raw: bool,
+    include_pipeline: bool = False,
+    include_run_stats: bool = False,
+    include_statbook_rows: bool = False,
+    statbook_allowlist: Optional[Set[str]] = None,
+    include_max_wave: bool = False,
+    problem_spec_path: Optional[Path] = None,
+) -> Dict[str, Any]:
     ids_raw = parse_ids(ids_path)
     snapshot = compile_account_snapshot(ids_raw)
     statbook = build_statbook(snapshot)
@@ -139,8 +277,8 @@ def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
             )
         )
 
-    return {
-        "schema_version": 4,
+    payload: Dict[str, Any] = {
+        "schema_version": 5 if include_pipeline else 4,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "git_sha": _resolve_git_sha(),
         "ids_path": str(ids_path),
@@ -150,6 +288,18 @@ def build_diagnostics(ids_path: Path, *, include_raw: bool) -> Dict[str, Any]:
         "snapshot": _to_jsonable(snapshot),
         "missing_sections": sorted(set(missing_sections)),
     }
+    if include_pipeline:
+        payload["pipeline"] = _build_pipeline_bundle(
+            ids_raw,
+            snapshot,
+            include_run_stats=include_run_stats,
+            include_statbook_rows=include_statbook_rows,
+            statbook_allowlist=statbook_allowlist,
+            include_max_wave=include_max_wave,
+            problem_spec_path=problem_spec_path,
+        )
+    return payload
+
 
 
 def main() -> None:
@@ -175,12 +325,58 @@ def main() -> None:
         action="store_true",
         help="Include raw inventory sections (themes/songs, guardians, player stuff).",
     )
+    parser.add_argument(
+        "--include-pipeline",
+        action="store_true",
+        help="Emit pipeline stage snapshots (stat inputs, computed stats, optional max-wave).",
+    )
+    parser.add_argument(
+        "--include-run-stats",
+        action="store_true",
+        help="Compute and emit StatEngine run_stats (baseline, no tier rules).",
+    )
+    parser.add_argument(
+        "--include-statbook-rows",
+        action="store_true",
+        help="Emit computed StatEngine statbook rows (filtered; can be large).",
+    )
+    parser.add_argument(
+        "--statbook-allowlist",
+        type=str,
+        default="",
+        help="Comma-separated stat_ids to include in statbook_rows_filtered. Empty = all rows.",
+    )
+    parser.add_argument(
+        "--include-max-wave",
+        action="store_true",
+        help="Run MaxWaveEvaluator and emit result+diagnostics in the pipeline bundle.",
+    )
+    parser.add_argument(
+        "--problem-spec",
+        type=Path,
+        default=None,
+        help="Optional path to a ProblemSpec YAML/JSON used when --include-max-wave is set.",
+    )
+
     args = parser.parse_args()
 
     ids_path = args.ids_path or resolve_ids_path()
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
-    payload = build_diagnostics(ids_path, include_raw=args.include_raw)
+    allowlist: Optional[Set[str]] = None
+    if args.statbook_allowlist.strip():
+        allowlist = {s.strip() for s in args.statbook_allowlist.split(",") if s.strip()}
+
+    payload = build_diagnostics(
+        ids_path,
+        include_raw=args.include_raw,
+        include_pipeline=args.include_pipeline,
+        include_run_stats=args.include_run_stats,
+        include_statbook_rows=args.include_statbook_rows,
+        statbook_allowlist=allowlist,
+        include_max_wave=args.include_max_wave,
+        problem_spec_path=args.problem_spec,
+    )
 
     snapshot_path = output_dir / "account_snapshot.json"
     summary_path = output_dir / "account_snapshot.summary.json"
