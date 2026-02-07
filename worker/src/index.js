@@ -12,6 +12,9 @@ export default {
     }
 
     const url = new URL(request.url);
+	if (request.method === "GET" && url.pathname === "/ping") {
+	  return json({ ok: true, now_utc: new Date().toISOString() }, 200);
+	}
 
     // --- SnapshotReader: GET /snapshot/{name} (accept optional trailing slash) ---
     const snapMatch = url.pathname.match(/^\/snapshot\/([a-z0-9_-]+)\/?$/i);
