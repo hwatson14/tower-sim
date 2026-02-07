@@ -46,8 +46,7 @@ def _parse_problem_spec(data: Mapping[str, Any]) -> ProblemSpec:
     scenario = _parse_scenario(data["scenario"])
     stat_inputs = _parse_stat_inputs(data["stat_inputs"])
     evaluator = str(data.get("evaluator", "max_wave"))
-    perk_timeline_path = data.get("perk_timeline_path")
-    return ProblemSpec(scenario=scenario, stat_inputs=stat_inputs, evaluator=evaluator, perk_timeline_path=perk_timeline_path)
+    return ProblemSpec(scenario=scenario, stat_inputs=stat_inputs, evaluator=evaluator)
 
 
 def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
@@ -61,6 +60,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
             "eals_ramp",
             "ehls_ramp",
             "boss_survivability",
+            "perk_timeline_path",
         },
     )
     mode = str(data["mode"])
@@ -71,6 +71,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
     eals_ramp = _parse_skip_ramp(data.get("eals_ramp"), "eals_ramp")
     ehls_ramp = _parse_skip_ramp(data.get("ehls_ramp"), "ehls_ramp")
     boss_survivability = _parse_boss_survivability(data.get("boss_survivability"))
+    perk_timeline_path = _optional_str(data.get("perk_timeline_path"))
     return ScenarioSpec(
         mode=mode,
         tier=tier,
@@ -80,6 +81,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
         eals_ramp=eals_ramp,
         ehls_ramp=ehls_ramp,
         boss_survivability=boss_survivability,
+        perk_timeline_path=perk_timeline_path,
     )
 
 

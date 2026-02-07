@@ -644,7 +644,7 @@ def _search_wmax(
         # Apply perk timeline up to this wave (one-way fetch; no path => no-op)
         stat_inputs_at_wave, perk_diag = apply_perk_timeline_to_inputs(
             registry=registry,
-            stat_inputs=stat_inputs_at_wave,
+            stat_inputs=stat_inputs,
             perk_timeline_path=getattr(scenario, "perk_timeline_path", None),
             current_wave=wave,
         )
@@ -655,7 +655,7 @@ def _search_wmax(
                 wave,
                 base_engine_result=engine_result,
                 registry=registry,
-                stat_inputs=stat_inputs,
+                stat_inputs=stat_inputs_at_wave,
                 scenario=scenario,
                 tier_rules=tier_rules,
                 run_context=run_context,
