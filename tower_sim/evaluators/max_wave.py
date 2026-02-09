@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict
+from functools import lru_cache
 from pathlib import Path
 from math import isfinite
 from typing import Any, Dict, Iterable, List, Optional, Tuple
@@ -15,7 +16,7 @@ from tower_sim.engines.combat.boss_survivability import (
 )
 from tower_sim.libs.boss_hit_interval import BossHitIntervalError, boss_hit_interval_seconds
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
-from tower_sim.loaders.bc_heat_loader import HeatDataError, load_heat_bundle
+from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
@@ -27,7 +28,17 @@ from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, 
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.engines.tier_rules import build_tier_rules
-from tower_sim.engines.wave_engine import SkipRamp, make_wave_state
+from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
+
+
+@lru_cache(maxsize=1)
+def _cached_tournament_heat_table(scale_path: str, registry_path: str):
+    """Cache parsed tournament heat table for repeated per-wave MAX_WAVE lookups.
+
+    Provenance: tables/heat_scale_long.csv + tables/heat_bc_registry.csv
+    via tower_sim.loaders.bc_heat_loader.load_tournament_heat_table.
+    """
+    return load_tournament_heat_table(Path(scale_path), Path(registry_path))
 
 
 class MaxWaveEvaluator:
@@ -120,11 +131,11 @@ class MaxWaveEvaluator:
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
             missing.append("stat_engine")
-        stat_inputs_for_scenario_wave, perk_diag = apply_perk_timeline_to_inputs(
+        stat_inputs_for_scenario_wave, perk_diag = _stat_inputs_for_wave(
             registry=registry,
             stat_inputs=stat_inputs,
-            perk_timeline_path=getattr(problem_spec.scenario, "perk_timeline_path", None),
-            current_wave=problem_spec.scenario.wave,
+            scenario=problem_spec.scenario,
+            wave=problem_spec.scenario.wave,
         )
         diagnostics["perk_timeline_scenario_wave"] = perk_diag
 
@@ -460,59 +471,86 @@ def _resolve_heat_magnitudes(
     if scenario.league is None:
         missing.append("heat_league")
         return None
-    heat_path = Path(__file__).resolve().parents[2] / "tables" / "heat_wave_scalar.csv"
-    magnitudes_path = (
-        Path(__file__).resolve().parents[2]
-        / "tables"
-        / "battle_condition_magnitudes.csv"
+
+    row, row_missing = _build_wave_row(problem_spec, registry, wave=wave)
+    if row_missing:
+        missing.extend(row_missing)
+        return None
+    diagnostics.setdefault("wave_rows", {})[str(wave)] = row
+    return row.get("heat_magnitudes")
+
+
+def _stat_inputs_for_wave(
+    *,
+    registry,
+    stat_inputs: List,
+    scenario,
+    wave: int,
+) -> Tuple[List, Dict[str, Any]]:
+    if scenario.mode == "tournament":
+        return stat_inputs, {"enabled": False, "reason": "tournament_mode"}
+    return apply_perk_timeline_to_inputs(
+        registry=registry,
+        stat_inputs=stat_inputs,
+        perk_timeline_path=getattr(scenario, "perk_timeline_path", None),
+        current_wave=wave,
     )
+
+
+def _build_wave_row(
+    problem_spec: ProblemSpec,
+    registry,
+    *,
+    wave: int,
+) -> Tuple[Optional[Dict[str, Any]], List[str]]:
+    wave_state, wave_missing = _resolve_wave_state_for_wave(problem_spec.scenario, wave)
+    if wave_missing or wave_state is None:
+        return None, wave_missing
+
+    row: Dict[str, Any] = {
+        # Wide-row v1 contract: MAX_WAVE consumes these stable keys directly.
+        "wave": int(wave),
+        "enemy_attack_wave": int(wave_state.W_attack),
+        "enemy_health_wave": int(wave_state.W_health),
+    }
+
+    if problem_spec.scenario.mode != "tournament":
+        return row, []
+
+    table_path = Path(__file__).resolve().parents[2] / "tables" / "heat_scale_long.csv"
+    registry_path = Path(__file__).resolve().parents[2] / "tables" / "heat_bc_registry.csv"
     try:
-        bundle = load_heat_bundle(heat_path, magnitudes_path)
-    except (HeatDataError, FileNotFoundError) as exc:
-        missing.append("heat_tables")
-        diagnostics["heat_tables_error"] = str(exc)
-        return None
+        table = _cached_tournament_heat_table(str(table_path), str(registry_path))
+    except (HeatDataError, FileNotFoundError):
+        return None, ["heat_tables"]
 
-    league = scenario.league.lower()
-    scalars = [row for row in bundle.heat_scalars if row.league == league and row.wave == wave]
-    if not scalars:
-        missing.append("heat_scalar")
-        return None
-    if any(row.scalar != 1.0 for row in scalars):
-        missing.append("heat_scalar_mapping")
-        diagnostics["heat_scalar_error"] = (
-            "Heat scalar mapping to BC magnitudes is not implemented."
-        )
-        return None
+    league = (problem_spec.scenario.league or "").strip().lower()
+    if not league:
+        return None, ["heat_league"]
 
-    magnitudes = [
-        row
-        for row in bundle.magnitudes
-        if row.league == league and row.wave == wave
-    ]
-    if not magnitudes:
-        missing.append("bc_magnitudes")
-        return None
-
-    mapped: Dict[str, float] = {}
-    unmapped: List[str] = []
-    for row in magnitudes:
-        if row.bc_id in mapped:
-            missing.append("bc_magnitudes_duplicate")
-            diagnostics["bc_magnitudes_error"] = f"Duplicate bc_id: {row.bc_id}"
-            return None
+    # Existing tier-rule provenance mapping reused for v1 tournament heat rows.
+    bc_to_stats = {
+        "orb_resistance:": ["orb_damage_mult"],
+        "death_ray_resistance:": ["death_ray_damage_mult"],
+        "thorns_resistance:": ["thorns_damage_mult"],
+        "plasma_cannon_resistance:": ["plasma_cannon_damage_mult"],
+        "knockback_resistance:": ["knockback_mult"],
+    }
+    bc_values: Dict[str, float] = {}
+    heat_magnitudes: Dict[str, float] = {}
+    for bc_id in bc_to_stats:
         try:
-            registry.validate_stat_id(row.bc_id)
-        except Exception:  # noqa: BLE001
-            unmapped.append(row.bc_id)
+            value = table.value_at(league=league, wave_actual=wave, bc_id=bc_id).value_num
+        except HeatDataError:
             continue
-        mapped[row.bc_id] = row.magnitude
+        bc_values[bc_id] = float(value)
+        for stat_id in bc_to_stats[bc_id]:
+            registry.validate_stat_id(stat_id)
+            heat_magnitudes[stat_id] = float(value)
 
-    if unmapped:
-        missing.append("bc_magnitudes_unmapped")
-        diagnostics["bc_magnitudes_unmapped"] = sorted(unmapped)
-        return None
-    return mapped
+    row["battle_conditions"] = bc_values
+    row["heat_magnitudes"] = heat_magnitudes
+    return row, []
 
 
 def _validate_boss_survivability_inputs(
@@ -544,22 +582,9 @@ def snapshot_at_wave(
     run_context: RunContext,
     tables: Dict[str, Any],
     ids_snapshot: AccountSnapshot,
+    wave_row: Dict[str, Any],
 ) -> AtWaveSnapshot:
-    if scenario.eals_ramp is None or scenario.ehls_ramp is None:
-        raise StatSnapshotError("Wave ramps are required for random-access snapshots.")
-    wave_state = make_wave_state(
-        wave,
-        SkipRamp(
-            start=scenario.eals_ramp.start,
-            end=scenario.eals_ramp.end,
-            ramp_waves=scenario.eals_ramp.ramp_waves,
-        ),
-        SkipRamp(
-            start=scenario.ehls_ramp.start,
-            end=scenario.ehls_ramp.end,
-            ramp_waves=scenario.ehls_ramp.ramp_waves,
-        ),
-    )
+    wave_state = _wave_state_from_row(wave_row)
     workshop_at_wave, workshop_missing = compile_workshop_values_at_wave(
         ids_snapshot,
         wave=wave,
@@ -626,27 +651,15 @@ def _search_wmax(
             entry, success, _result = cache[wave]
             return entry, success, []
 
-        wave_state, wave_state_missing = _resolve_wave_state_for_wave(scenario, wave)
-        if wave_state_missing:
-            return None, None, wave_state_missing
+        wave_row, wave_row_missing = _build_wave_row(problem_spec, registry, wave=wave)
+        if wave_row_missing or wave_row is None:
+            return None, None, wave_row_missing
 
-        heat_missing: List[str] = []
-        heat_magnitudes = _resolve_heat_magnitudes(
-            problem_spec,
-            registry,
-            wave=wave,
-            missing=heat_missing,
-            diagnostics=diagnostics,
-        )
-        if heat_missing:
-            return None, None, heat_missing
-
-        # Apply perk timeline up to this wave (one-way fetch; no path => no-op)
-        stat_inputs_at_wave, perk_diag = apply_perk_timeline_to_inputs(
+        stat_inputs_at_wave, perk_diag = _stat_inputs_for_wave(
             registry=registry,
             stat_inputs=stat_inputs,
-            perk_timeline_path=getattr(scenario, "perk_timeline_path", None),
-            current_wave=wave,
+            scenario=scenario,
+            wave=wave,
         )
         diagnostics.setdefault("perk_timeline", {})[str(wave)] = perk_diag
 
@@ -659,7 +672,8 @@ def _search_wmax(
                 scenario=scenario,
                 tier_rules=tier_rules,
                 run_context=run_context,
-                tables={"heat_magnitudes": heat_magnitudes},
+                tables={"heat_magnitudes": wave_row.get("heat_magnitudes")},
+                wave_row=wave_row,
                 ids_snapshot=ids_snapshot,
             )
         except StatSnapshotError as exc:
@@ -673,7 +687,7 @@ def _search_wmax(
             return None, None, survivability_missing
 
         wave_damage, wave_damage_missing = _resolve_wave_damage_for_wave(
-            problem_spec, wave_state
+            problem_spec, wave_row
         )
         if wave_damage_missing:
             return None, None, wave_damage_missing
@@ -976,9 +990,19 @@ def _resolve_wave_state_for_wave(
     return make_wave_state(wave, eals, ehls), []
 
 
+
+
+def _wave_state_from_row(wave_row: Dict[str, Any]) -> RunWaveState:
+    if "wave" not in wave_row or "enemy_attack_wave" not in wave_row or "enemy_health_wave" not in wave_row:
+        raise StatSnapshotError("Wave row missing required keys: wave/enemy_attack_wave/enemy_health_wave")
+    return RunWaveState(
+        W_actual=int(wave_row["wave"]),
+        W_attack=int(wave_row["enemy_attack_wave"]),
+        W_health=int(wave_row["enemy_health_wave"]),
+    )
 def _resolve_wave_damage_for_wave(
     problem_spec: ProblemSpec,
-    wave_state,
+    wave_row: Dict[str, Any] | RunWaveState,
 ) -> Tuple[Optional[float], List[str]]:
     missing: List[str] = []
     scenario = problem_spec.scenario
@@ -989,7 +1013,10 @@ def _resolve_wave_damage_for_wave(
         missing.append("wave_damage_tier")
         return None, missing
     lib = EnemyWaveDamageLib.from_repo_tables()
-    wave = wave_state.W_attack
+    if isinstance(wave_row, RunWaveState):
+        wave = int(wave_row.W_attack)
+    else:
+        wave = int(wave_row["enemy_attack_wave"])
     try:
         damage = lib.wave_damage(wave_tier, wave)
     except KeyError:

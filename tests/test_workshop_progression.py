@@ -73,3 +73,34 @@ def test_progression_with_explicit_policy() -> None:
     assert result.levels["Damage"] == [0.0, 1.0, 2.0]
     assert result.levels["Speed"] == [0.0, 0.0, 0.0]
     assert result.waves_to_end["Damage"] is None
+
+
+def test_uniform_allocation_single_headroom_stat_gets_all_ev_monotonic() -> None:
+    stats = [
+        WorkshopStat(
+            name="Damage",
+            category=WSCategory.OFFENSE,
+            start_level=0,
+            end_level=3,
+            max_level=3,
+        ),
+        WorkshopStat(
+            name="Speed",
+            category=WSCategory.OFFENSE,
+            start_level=2,
+            end_level=2,
+            max_level=2,
+        ),
+    ]
+    chances = FreeUpgradeChances(attack=1.0, defense=0.0, utility=0.0)
+    from tower_sim.engines.workshop_progression import uniform_allocation
+
+    result = simulate_workshop_progression(
+        stats,
+        chances,
+        max_waves=3,
+        allocation_policy=uniform_allocation,
+    )
+
+    assert result.levels["Damage"] == [0.0, 1.0, 2.0, 3.0]
+    assert result.levels["Speed"] == [2.0, 2.0, 2.0, 2.0]
