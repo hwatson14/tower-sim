@@ -554,13 +554,13 @@ Any of the following must stop work and ask for clarification:
 - [x] Apply BC/heat in frozen stat order for at-wave snapshots consumed by combat.
 - [x] Load canonical enemy damage/health scaling tables (`enemy_damage_table.csv`, `enemy_health_table.csv`) with per-wave log-linear interpolation.
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
-- [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
+- [x] Define evaluator objective contracts and economy model inputs with authoritative provenance (see "Evaluator Contracts" section; v1 `MAX_WAVE` implemented, economy evaluator deferred until authoritative tables are promoted).
 - [x] Wire canonical wave-time + uptime diagnostics into MAX_WAVE (WA loadout source, interval overlap, GComp events, bot-table channels).
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
 - [x] Implement boss combat mechanics (PC/thorns/regen/DR) in boss_engine (v1 minimal).
-- [ ] Implement boss combat model (boss-only survivability + W_max/failure_wave).
+- [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [x] Wire wall thorns + plasma cannon card fractions into survivability pipeline + mechanics registry (wiki excerpt in prompt).
