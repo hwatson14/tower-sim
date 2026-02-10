@@ -33,6 +33,9 @@ const SNAPSHOT_FILENAMES = {
   base_stats: "base_stats_latest.json",
   inventory: "inventory_latest.json",
   loadout: "loadout_latest.json",
+  base_components: "base_stats_components_latest.json",
+  inventory_components: "inventory_components_latest.json",
+  run_stats: "run_stats_latest.json",
 };
 
 // Try these directories in order. Most repos store these under audit/.

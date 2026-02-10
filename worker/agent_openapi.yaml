@@ -1,10 +1,8 @@
 openapi: 3.1.1
 info:
   title: Tower Runner API
-  version: 1.1.0
-  description: >
-    SnapshotReader endpoints for precomputed TowerSim artifacts, proxied through the
-    authenticated Worker (no direct raw GitHub access required).
+  version: 1.3.0
+  description: Precomputed snapshot fetch via authenticated Cloudflare Worker.
 
 servers:
   - url: https://tower-runner.tower-runner.workers.dev
@@ -19,6 +17,36 @@ components:
       in: header
       name: x-api-key
 
+  schemas:
+    SnapshotMeta:
+      type: object
+      additionalProperties: true
+      properties:
+        source:
+          type: string
+        owner:
+          type: string
+        repo:
+          type: string
+        ref:
+          type: string
+        path:
+          type: string
+        content_sha:
+          type: string
+          nullable: true
+        fetched_at_utc:
+          type: string
+    SnapshotResponse:
+      type: object
+      additionalProperties: true
+      properties:
+        meta:
+          $ref: "#/components/schemas/SnapshotMeta"
+        data:
+          type: object
+          additionalProperties: true
+
 paths:
   /snapshot/ids_dump:
     get:
@@ -30,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/SnapshotResponse"
         "401":
           description: Unauthorized
 
@@ -44,7 +72,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/SnapshotResponse"
         "401":
           description: Unauthorized
 
@@ -58,7 +86,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
+                $ref: "#/components/schemas/SnapshotResponse"
         "401":
           description: Unauthorized
 
@@ -72,6 +100,63 @@ paths:
           content:
             application/json:
               schema:
+                $ref: "#/components/schemas/SnapshotResponse"
+        "401":
+          description: Unauthorized
+
+  /snapshot/base_components:
+    get:
+      operationId: getBaseComponentsSnapshot
+      summary: Get latest base-stat component snapshot (themes/labs/UWs/vault/relics/workshop/guardians/bots).
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotResponse"
+        "401":
+          description: Unauthorized
+
+  /snapshot/inventory_components:
+    get:
+      operationId: getInventoryComponentsSnapshot
+      summary: Get latest inventory component snapshot (cards/modules/presets/shard allocation).
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotResponse"
+        "401":
+          description: Unauthorized
+
+  /snapshot/run_stats:
+    get:
+      operationId: getRunStatsSnapshot
+      summary: Get latest start/loadout-delta/end stat rows snapshot.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SnapshotResponse"
+        "401":
+          description: Unauthorized
+
+  /ping:
+    get:
+      operationId: ping
+      summary: Healthcheck endpoint.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
                 type: object
+                additionalProperties: true
         "401":
           description: Unauthorized

@@ -628,6 +628,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
+- [x] Add compact IDS dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
 - [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
 - [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).
