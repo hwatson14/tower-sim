@@ -166,6 +166,16 @@ Violations of these rules are considered correctness bugs.
 
 Perk timelines are external artifacts produced by a separate offline resolver; if a run requires perks and no timeline is provided, TowerSim fails closed.
 
+## CI workflows
+
+Current GitHub Actions coverage includes:
+
+- `ids_dump.yml`: exports deterministic IDS diagnostics + latest base stats/inventory/loadout artifacts.
+- `max_wave_runner.yml`: runs unit tests, validates deterministic max-wave runner output schema, checks runner `w_max` against EP export max-wave targets when those rows exist, and emits an end-of-run eHP/farming final-stats parity report against EP export verification rows.
+- `perk_timeline_runner.yml`: validates perk timeline logic and publishes a generated timeline/diagnostics artifact.
+
+The legacy `ehp_slice.yml` workflow was removed; EHP output is now exercised through run-task/test coverage instead of a separate bot-output branch workflow.
+
 ---
 
 ## Status

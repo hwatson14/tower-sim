@@ -49,9 +49,27 @@ jobs:
           print("Runner output validated.")
           PY
 
+      - name: Validate runner max-wave against EP export targets
+        run: |
+          python -m tower_sim.audit.max_wave_ep_parity \
+            --runner-output runner_output.json \
+            --suite ehp \
+            --allow-missing-targets
+
+      - name: Compare final stats against EP export rows (ehp/farming)
+        run: |
+          python -m tower_sim.audit.ep_export_final_stats_parity \
+            --ids tests/fixtures/tower-sim-data/_IDS.csv \
+            --spec tests/fixtures/specs/sample_spec.yaml \
+            --suite ehp \
+            --tolerance 0.01 \
+            --output ep_export_final_stats_report.json
+
       - name: Upload runner output artifact
         uses: actions/upload-artifact@v4
         with:
           name: max-wave-runner-output
-          path: runner_output.json
+          path: |
+            runner_output.json
+            ep_export_final_stats_report.json
           if-no-files-found: error
