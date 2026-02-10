@@ -38,10 +38,11 @@ const SNAPSHOT_FILENAMES = {
   run_stats: "run_stats_latest.json",
 };
 
-// Try these directories in order. Most repos store these under audit/.
-// You can override/extend by setting SNAPSHOT_DIRS="audit,." (comma-separated).
+// Try these directories in order. Prefer a dedicated top-level debug-friendly folder first.
+// You can override/extend by setting
+// SNAPSHOT_DIRS="out,audit,." (comma-separated).
 function snapshotDirs(env) {
-  const raw = (env.SNAPSHOT_DIRS || "audit,.").trim();
+  const raw = (env.SNAPSHOT_DIRS || "out,audit,.").trim();
   return raw
     .split(",")
     .map((s) => s.trim())

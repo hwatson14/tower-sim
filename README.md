@@ -72,18 +72,18 @@ running scripts**, use the `ids-dump-latest` branch published by the IDS dump
 workflow. The workflow writes and force-updates the following files on that
 branch, which you can fetch over HTTPS from GitHub:
 
-- `audit/ids_dump_latest.json` (canonical snapshot payload)
-- `audit/base_stats_latest.json`
-- `audit/inventory_latest.json`
-- `audit/loadout_latest.json`
-- `audit/base_stats_components_latest.json`
-- `audit/inventory_components_latest.json`
-- `audit/run_stats_latest.json`
+- `out/ids_dump_latest.json` (canonical snapshot payload)
+- `out/base_stats_latest.json`
+- `out/inventory_latest.json`
+- `out/loadout_latest.json`
+- `out/base_stats_components_latest.json`
+- `out/inventory_components_latest.json`
+- `out/run_stats_latest.json`
 
 Example (raw file URL; replace `<org>` and `<repo>` as needed):
 
 ```
-https://raw.githubusercontent.com/<org>/<repo>/ids-dump-latest/audit/inventory_latest.json
+https://raw.githubusercontent.com/<org>/<repo>/ids-dump-latest/out/inventory_latest.json
 ```
 
 If you are wiring a ChatGPT agent (or any tool runner) to pull deterministic player
@@ -94,21 +94,21 @@ is stable and fail-closed when required sections are missing.
 ```bash
 PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
   --ids-path /path/to/_IDS.csv \
-  --output-dir ./audit
+  --output-dir ./out
 ```
 
 After running the command, confirm the IDS dump artifacts land under the exact
-path `audit/account_snapshot.json` (same folder for the summary/diff JSON). This
+path `out/account_snapshot.json` (same folder for the summary/diff JSON). This
 snapshot is the full, canonical account state; the additional files below are
 convenience extracts so agents can fetch a single slice without parsing the full
 payload. The script writes dedicated extracts at:
 
-- `audit/base_stats.json`
-- `audit/inventory.json`
-- `audit/loadout.json`
-- `audit/base_stats_components.json`
-- `audit/inventory_components.json`
-- `audit/run_stats.json`
+- `out/base_stats.json`
+- `out/inventory.json`
+- `out/loadout.json`
+- `out/base_stats_components.json`
+- `out/inventory_components.json`
+- `out/run_stats.json`
 
 The script does not delete the files at the end of the job, so they should
 remain on disk until you remove them. Key fields:
