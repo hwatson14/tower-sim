@@ -140,5 +140,5 @@ Source for current component state: `audit/implementation_status_report.md`.
 
 - [x] Reconcile architecture checklist state with implemented evaluator contracts and boss combat status.
 - [x] Convert immediate next steps into release-focused tasks instead of stale implementation milestones.
-- [ ] Lock and automate a single parity threshold policy for reference-sheet validation in release-gate tests.
+- [x] Lock and automate a single parity threshold policy for reference-sheet validation in release-gate tests (`tests/test_max_wave_v1_contract.py`, `tests/test_release_gate_tournament_fixtures.py`).
 - [ ] Keep assumptions-manifest tolerances calibrated with reference-sheet drift data and document updates each release.
