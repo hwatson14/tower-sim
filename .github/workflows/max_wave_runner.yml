@@ -2,11 +2,6 @@ name: Max wave runner
 
 on:
   workflow_dispatch:
-    inputs:
-      verify_ep_export_parity:
-        description: "Run fail-closed EP export max-wave parity target extraction"
-        required: false
-        default: "false"
   push:
     branches:
       - main
@@ -61,8 +56,7 @@ jobs:
           path: runner_output.json
           if-no-files-found: error
 
-      - name: Verify EP export max-wave targets (optional, fail-closed when enabled)
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.verify_ep_export_parity == 'true' }}
+      - name: Verify EP export max-wave targets (fail-closed)
         run: |
           python - <<'PY'
           from tower_sim.loaders.ep_export_loader import (
