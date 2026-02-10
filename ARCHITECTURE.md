@@ -602,6 +602,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Fix max-wave runner GitHub Action to write JSON output directly.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
+- [x] Remove AUW fixture CSV dependencies; derive UW values/next costs directly from `_IDS.csv` UWs section for stat-input compilation.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
 - [x] Add tournament heat BC magnitudes from Player & Stuff Battle Conditions sheet (user-provided table).
 - [x] Document tiers 1–13 as having no battle conditions (user-provided clarification).
