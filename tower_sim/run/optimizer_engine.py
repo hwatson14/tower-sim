@@ -70,8 +70,8 @@ def run_resource_optimizer(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
         if missing_tables:
             return _fail_closed(task, [f"missing_table:{path}" for path in missing_tables])
         actions = _stone_actions(snapshot)
-        data_complete = False
-        incomplete_reasons = ["stone_actions_uw_uwplus_state_integration_not_implemented"]
+        data_complete = True
+        incomplete_reasons: List[str] = []
     elif task == "OPTIMIZE_COINS":
         actions = _placeholder_actions("coins")
         data_complete = False
@@ -88,11 +88,21 @@ def run_resource_optimizer(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
         baseline_snapshot = replace(snapshot, default_preset=preset_name)
         if base_patch is not None:
             baseline_snapshot = _apply_snapshot_patch(baseline_snapshot, base_patch)
-        baseline_value = adapter.evaluate(problem_spec, baseline_snapshot)
+
+        table_actions = [action for action in actions if _action_applies_to_preset(action, preset_name)]
+        has_eligible_actions = any(action.get("eligible", True) for action in table_actions)
+        baseline_value = adapter.evaluate(problem_spec, baseline_snapshot) if has_eligible_actions else None
 
         rows: List[Dict[str, Any]] = []
-        for action in actions:
-            row = _evaluate_action_row(action, baseline_snapshot, baseline_value, adapter, problem_spec)
+        for action in table_actions:
+            row = _evaluate_action_row(
+                action,
+                baseline_snapshot,
+                baseline_value,
+                adapter,
+                problem_spec,
+                include_maxed=False,
+            )
             rows.append(row)
 
         ranked = sorted(
@@ -103,6 +113,16 @@ def run_resource_optimizer(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
                 row["action_id"],
             ),
         )[:top_n]
+        actions_by_id = {action["action_id"]: action for action in table_actions}
+        _populate_ranked_maxed_values(
+            ranked,
+            actions_by_id,
+            baseline_snapshot,
+            baseline_value,
+            adapter,
+            problem_spec,
+        )
+
         tables.append(
             {
                 "preset_name": preset_name,
@@ -137,6 +157,8 @@ def _evaluate_action_row(
     baseline_value: float | None,
     adapter: EvaluatorAdapter,
     problem_spec: Any,
+    *,
+    include_maxed: bool = True,
 ) -> Dict[str, Any]:
     if not action.get("eligible", True):
         return _row_from_ineligible(action, baseline_value)
@@ -145,7 +167,7 @@ def _evaluate_action_row(
     unlock_value = adapter.evaluate(problem_spec, patched)
 
     maxed_value = None
-    if "apply_maxed" in action:
+    if include_maxed and "apply_maxed" in action:
         maxed_value = adapter.evaluate(problem_spec, action["apply_maxed"](baseline_snapshot))
 
     roi = None
@@ -172,6 +194,37 @@ def _evaluate_action_row(
         "roi": roi,
         "notes": action.get("notes"),
     }
+
+
+def _action_applies_to_preset(action: Dict[str, Any], preset_name: str) -> bool:
+    action_id = action.get("action_id", "")
+    if not action_id.startswith("mastery_unlock::"):
+        return True
+    parts = action_id.split("::", 2)
+    if len(parts) < 3:
+        return False
+    return parts[1] == preset_name
+
+
+def _populate_ranked_maxed_values(
+    ranked: List[Dict[str, Any]],
+    actions_by_id: Dict[str, Dict[str, Any]],
+    baseline_snapshot: AccountSnapshot,
+    baseline_value: float | None,
+    adapter: EvaluatorAdapter,
+    problem_spec: Any,
+) -> None:
+    if baseline_value is None:
+        return
+    for row in ranked:
+        if not row.get("eligible", True):
+            continue
+        action = actions_by_id.get(row["action_id"])
+        if action is None or "apply_maxed" not in action:
+            continue
+        maxed_value = adapter.evaluate(problem_spec, action["apply_maxed"](baseline_snapshot))
+        row["maxed_candidate_value"] = maxed_value
+        row["maxed_delta_value"] = None if maxed_value is None else (maxed_value - baseline_value)
 
 
 def _task_resource(task: str) -> str:
@@ -444,32 +497,33 @@ def _assist_efficiency_action(
 
 def _uw_unlock_action(*, uw_name: str, stone_cost: float) -> Dict[str, Any]:
     def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
-        current = snapshot.ultimate_weapons.get(uw_name)
-        if current is None:
-            return snapshot
-        patched = replace(current, unlocked="UW Unlocked")
-        return replace(snapshot, ultimate_weapons={**snapshot.ultimate_weapons, uw_name: patched})
+        rows = _patched_uw_rows(snapshot, uw_name=uw_name, track_name=None, next_level=None, unlock_uw=True, unlock_plus=False)
+        return _replace_snapshot_uw_state(snapshot, uw_name=uw_name, rows=rows)
 
     return {
         "action_id": f"uw_unlock::{uw_name}",
         "action_label": f"Unlock UW: {uw_name}",
-        "eligible": False,
+        "eligible": True,
         "cost": float(stone_cost),
         "resource_unit": "stones",
         "apply_unlock": _apply_unlock,
-        "notes": "uw_purchase_costs_v1_state_integration_pending",
+        "notes": "uw_purchase_costs_v1",
     }
 
 
 def _uw_plus_unlock_action(*, uw_name: str, stone_cost: float) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        rows = _patched_uw_rows(snapshot, uw_name=uw_name, track_name=None, next_level=None, unlock_uw=False, unlock_plus=True)
+        return _replace_snapshot_uw_state(snapshot, uw_name=uw_name, rows=rows)
+
     return {
         "action_id": f"uw_plus_unlock::{uw_name}",
         "action_label": f"Unlock UW+: {uw_name}",
-        "eligible": False,
+        "eligible": True,
         "cost": float(stone_cost),
         "resource_unit": "stones",
-        "apply_unlock": lambda snapshot: snapshot,
-        "notes": "uw_purchase_costs_v1_state_integration_pending",
+        "apply_unlock": _apply_unlock,
+        "notes": "uw_purchase_costs_v1",
     }
 
 
@@ -480,14 +534,25 @@ def _uw_track_upgrade_action(
     next_level: int,
     stone_cost: float,
 ) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        rows = _patched_uw_rows(
+            snapshot,
+            uw_name=uw_name,
+            track_name=track_name,
+            next_level=next_level,
+            unlock_uw=False,
+            unlock_plus=False,
+        )
+        return _replace_snapshot_uw_state(snapshot, uw_name=uw_name, rows=rows)
+
     return {
         "action_id": f"uw_track_upgrade::{uw_name}::{track_name}::{next_level}",
         "action_label": f"{uw_name}: {track_name} -> level {next_level}",
-        "eligible": False,
+        "eligible": True,
         "cost": float(stone_cost),
         "resource_unit": "stones",
-        "apply_unlock": lambda snapshot: snapshot,
-        "notes": "uw_track_ladders_v1_state_integration_pending",
+        "apply_unlock": _apply_unlock,
+        "notes": "uw_track_ladders_v1",
     }
 
 
@@ -498,16 +563,125 @@ def _uw_plus_track_upgrade_action(
     next_level: int,
     stone_cost: float,
 ) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        rows = _patched_uw_rows(
+            snapshot,
+            uw_name=uw_name,
+            track_name=plus_track_name,
+            next_level=next_level,
+            unlock_uw=False,
+            unlock_plus=False,
+            plus_track=True,
+        )
+        return _replace_snapshot_uw_state(snapshot, uw_name=uw_name, rows=rows)
+
     return {
         "action_id": f"uw_plus_track_upgrade::{uw_name}::{plus_track_name}::{next_level}",
         "action_label": f"{uw_name}+: {plus_track_name} -> level {next_level}",
-        "eligible": False,
+        "eligible": True,
         "cost": float(stone_cost),
         "resource_unit": "stones",
-        "apply_unlock": lambda snapshot: snapshot,
-        "notes": "uw_plus_ladders_v1_state_integration_pending",
+        "apply_unlock": _apply_unlock,
+        "notes": "uw_plus_ladders_v1",
     }
 
+
+
+
+def _replace_snapshot_uw_state(snapshot: AccountSnapshot, *, uw_name: str, rows: List[List[str]]) -> AccountSnapshot:
+    raw_sections = dict(snapshot.raw_sections)
+    raw_sections["UWs"] = rows
+
+    ultimate_weapons = dict(snapshot.ultimate_weapons)
+    current = ultimate_weapons.get(uw_name)
+    if current is not None:
+        block = _find_uw_block(rows, uw_name)
+        unlocked = block[2][1] if len(block[2]) > 1 else current.unlocked
+        track_levels: List[str] = []
+        for track_row in block[:3]:
+            if len(track_row) > 4 and track_row[4].strip():
+                track_levels.append(track_row[4].strip())
+        ultimate_weapons[uw_name] = replace(current, unlocked=unlocked, track_levels=track_levels)
+
+    return replace(snapshot, raw_sections=raw_sections, ultimate_weapons=ultimate_weapons)
+
+
+def _find_uw_block(rows: List[List[str]], uw_name: str) -> List[List[str]]:
+    for index in range(0, len(rows), 4):
+        block = rows[index : index + 4]
+        if len(block) < 4:
+            continue
+        name = block[0][0].strip() if block[0] else ""
+        if name == uw_name:
+            return block
+    raise OptimizerDataError(f"UW row block not found: {uw_name}")
+
+
+def _patched_uw_rows(
+    snapshot: AccountSnapshot,
+    *,
+    uw_name: str,
+    track_name: str | None,
+    next_level: int | None,
+    unlock_uw: bool,
+    unlock_plus: bool,
+    plus_track: bool = False,
+) -> List[List[str]]:
+    rows = [list(row) for row in snapshot.raw_sections.get("UWs", [])]
+    block_index: int | None = None
+    for index in range(0, len(rows), 4):
+        block = rows[index : index + 4]
+        if len(block) < 4:
+            continue
+        name = block[0][0].strip() if block[0] else ""
+        if name == uw_name:
+            block_index = index
+            break
+    if block_index is None:
+        raise OptimizerDataError(f"UW row block not found: {uw_name}")
+
+    block = rows[block_index : block_index + 4]
+    if unlock_uw:
+        _ensure_cell(block[2], 2)
+        block[2][0] = "true"
+        block[2][1] = "UW Unlocked"
+
+    if unlock_plus:
+        plus_row = block[3]
+        _ensure_cell(plus_row, 5)
+        if plus_row[3].strip().lower() != "locked":
+            raise OptimizerDataError(f"UW+ already unlocked: {uw_name}")
+        plus_row[3] = "0"
+        plus_row[4] = "00 | unlocked"
+
+    if track_name is not None and next_level is not None:
+        track_row: List[str] | None = None
+        search_rows = [block[3]] if plus_track else block[:3]
+        for row in search_rows:
+            _ensure_cell(row, 5)
+            if row[2].strip() == track_name:
+                track_row = row
+                break
+        if track_row is None:
+            family = "UW+" if plus_track else "UW"
+            raise OptimizerDataError(f"{family} track not found: {uw_name}:{track_name}")
+
+        current_level = _parse_level_from_display(track_row[4])
+        if current_level is None:
+            raise OptimizerDataError(f"Cannot parse current level for {uw_name}:{track_name}")
+        if current_level + 1 != next_level:
+            raise OptimizerDataError(
+                f"Invalid next level for {uw_name}:{track_name}. expected {current_level + 1}, got {next_level}"
+            )
+        track_row[4] = f"{next_level:02d} | patched_by_optimizer"
+
+    rows[block_index : block_index + 4] = block
+    return rows
+
+
+def _ensure_cell(row: List[str], min_len: int) -> None:
+    if len(row) < min_len:
+        row.extend([""] * (min_len - len(row)))
 
 def _mastery_action(
     *,
@@ -639,29 +813,30 @@ def _parse_uw_rows(snapshot: AccountSnapshot) -> Dict[str, Any]:
         else:
             locked_uws.append(uw_name)
 
-        for track_row in block[:3]:
-            if len(track_row) < 5:
-                continue
-            track_name = track_row[2].strip()
-            if not track_name:
-                continue
-            current_level = _parse_level_from_display(track_row[4])
-            if current_level is None:
-                continue
-            uw_tracks.append(
-                {
-                    "uw_name": uw_name,
-                    "track_name": track_name,
-                    "current_level": current_level,
-                }
-            )
+        if is_unlocked:
+            for track_row in block[:3]:
+                if len(track_row) < 5:
+                    continue
+                track_name = track_row[2].strip()
+                if not track_name:
+                    continue
+                current_level = _parse_level_from_display(track_row[4])
+                if current_level is None:
+                    continue
+                uw_tracks.append(
+                    {
+                        "uw_name": uw_name,
+                        "track_name": track_name,
+                        "current_level": current_level,
+                    }
+                )
 
         plus_row = block[3]
         plus_track_name = plus_row[2].strip() if len(plus_row) > 2 else ""
         plus_current = plus_row[3].strip() if len(plus_row) > 3 else ""
         plus_display = plus_row[4].strip() if len(plus_row) > 4 else ""
 
-        if plus_track_name:
+        if plus_track_name and is_unlocked:
             if plus_current.lower() == "locked":
                 uw_plus_locked.append(uw_name)
             else:
