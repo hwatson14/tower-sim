@@ -170,6 +170,121 @@ def _safe_get(
         return None
 
 
+def _build_base_stats_components(snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    workshop_coin_levels = {}
+    for name, entry in snapshot.get("workshop", {}).items():
+        coin_level = entry.get("coin_level")
+        if coin_level is not None:
+            workshop_coin_levels[name] = int(coin_level)
+
+    uw_start_end = {}
+    for name, uw in snapshot.get("ultimate_weapons", {}).items():
+        levels = [str(level) for level in uw.get("track_levels", [])]
+        uw_start_end[name] = {
+            "unlocked": uw.get("unlocked"),
+            "start_of_run": levels,
+            "end_of_run": levels,
+        }
+
+    return {
+        "themes_songs": list(snapshot.get("raw_sections", {}).get("Themes & Songs", [])),
+        "labs": dict(snapshot.get("labs", {})),
+        "ultimate_weapons": uw_start_end,
+        "vault_v2": dict(snapshot.get("vault", {})),
+        "relics": dict(snapshot.get("relics", {})),
+        "workshop_coin_levels": workshop_coin_levels,
+        "enhancements": {
+            "header": list(snapshot.get("workshop_enhancements", {}).get("header", [])),
+            "rows": list(snapshot.get("workshop_enhancements", {}).get("rows", [])),
+        },
+        "guardians": {
+            "header": list(snapshot.get("guardians", {}).get("header", [])),
+            "rows": list(snapshot.get("guardians", {}).get("rows", [])),
+        },
+        "bots": {
+            "names": list(snapshot.get("bots", [])),
+            "upgrades": dict(snapshot.get("bot_upgrades", {})),
+        },
+    }
+
+
+def _build_inventory_components(snapshot: Dict[str, Any]) -> Dict[str, Any]:
+    cards_mastery_inventory = {}
+    for name, card in snapshot.get("cards_inventory", {}).items():
+        cards_mastery_inventory[name] = {
+            "level": card.get("level"),
+            "mastery_unlocked": card.get("mastery_unlocked"),
+            "mastery_lab_level": card.get("mastery_lab_level"),
+        }
+
+    modules_inventory = {}
+    for name, module in snapshot.get("modules_inventory", {}).items():
+        modules_inventory[name] = {
+            "slot_type": module.get("slot_type"),
+            "rarity": module.get("rarity"),
+            "level": module.get("level"),
+            "stat": module.get("stat"),
+            "substats": [
+                {
+                    "stat_name": substat.get("stat_name"),
+                    "rarity": substat.get("rarity"),
+                    "value_display": substat.get("value_display"),
+                    "value_num": substat.get("value_num"),
+                }
+                for substat in module.get("substats", [])
+            ],
+        }
+
+    shard_allocation = {
+        "slot_levels": {
+            slot: {
+                "primary_level": allocation.get("primary_level"),
+                "assist_level": allocation.get("assist_level"),
+            }
+            for slot, allocation in snapshot.get("allocation_levels", {}).items()
+        },
+        "calculated_shards_per_category": dict(snapshot.get("inferred_shard_budgets", {})),
+    }
+
+    return {
+        "cards_mastery_inventory": cards_mastery_inventory,
+        "card_presets": dict(snapshot.get("card_presets", {})),
+        "modules_inventory": modules_inventory,
+        "module_presets": {
+            preset: {
+                slot: {
+                    "primary": selection.get("primary"),
+                    "assist": selection.get("assist"),
+                }
+                for slot, selection in slots.items()
+            }
+            for preset, slots in snapshot.get("module_presets", {}).items()
+        },
+        "shard_allocation": shard_allocation,
+    }
+
+
+def _build_run_stats_report(payload: Dict[str, Any]) -> Dict[str, Any]:
+    rows = []
+    for row in payload.get("base_stats", []):
+        rows.append(
+            {
+                "stat_id": row.get("stat_id"),
+                "phase": row.get("phase"),
+                "start_of_run": row.get("base_value"),
+                "loadout_delta": None,
+                "end_of_run": row.get("final_value"),
+                "provenance": row.get("provenance"),
+            }
+        )
+    rows.sort(key=lambda r: (str(r["stat_id"]), str(r["phase"])))
+    return {
+        "rows": rows,
+        "missing": list(payload.get("missing_sections", [])),
+        "fail_closed": bool(payload.get("missing_sections")),
+    }
+
+
 def _resolve_git_sha() -> str | None:
     env_sha = os.getenv("GITHUB_SHA")
     if env_sha:
@@ -384,6 +499,9 @@ def main() -> None:
     base_stats_path = output_dir / "base_stats.json"
     inventory_path = output_dir / "inventory.json"
     loadout_path = output_dir / "loadout.json"
+    base_components_path = output_dir / "base_stats_components.json"
+    inventory_components_path = output_dir / "inventory_components.json"
+    run_stats_path = output_dir / "run_stats.json"
 
     previous = _read_json(snapshot_path)
     snapshot_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
@@ -397,6 +515,14 @@ def main() -> None:
     loadout_path.write_text(
         json.dumps(payload.get("loadout", {}), indent=2, sort_keys=True)
     )
+    snapshot = payload.get("snapshot", {})
+    base_components_path.write_text(
+        json.dumps(_build_base_stats_components(snapshot), indent=2, sort_keys=True)
+    )
+    inventory_components_path.write_text(
+        json.dumps(_build_inventory_components(snapshot), indent=2, sort_keys=True)
+    )
+    run_stats_path.write_text(json.dumps(_build_run_stats_report(payload), indent=2, sort_keys=True))
     if previous is not None:
         diff_path.write_text(
             json.dumps(_build_diff(previous, payload), indent=2, sort_keys=True)
@@ -406,6 +532,9 @@ def main() -> None:
     print(f"Wrote {base_stats_path}")
     print(f"Wrote {inventory_path}")
     print(f"Wrote {loadout_path}")
+    print(f"Wrote {base_components_path}")
+    print(f"Wrote {inventory_components_path}")
+    print(f"Wrote {run_stats_path}")
     if diff_path.exists():
         print(f"Wrote {diff_path}")
 

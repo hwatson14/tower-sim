@@ -14,6 +14,9 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     output_path = output_dir / "account_snapshot.json"
     summary_path = output_dir / "account_snapshot.summary.json"
     diff_path = output_dir / "account_snapshot.diff.json"
+    base_components_path = output_dir / "base_stats_components.json"
+    inventory_components_path = output_dir / "inventory_components.json"
+    run_stats_path = output_dir / "run_stats.json"
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(repo_root)
@@ -34,6 +37,9 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
 
     assert output_path.exists()
     assert summary_path.exists()
+    assert base_components_path.exists()
+    assert inventory_components_path.exists()
+    assert run_stats_path.exists()
     assert not diff_path.exists()
     payload = json.loads(output_path.read_text())
     assert payload["schema_version"] == 4
@@ -70,6 +76,30 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
         assert "final_value" in row
         assert "provenance" in row
     assert "Wrote" in result.stdout
+
+
+    base_components = json.loads(base_components_path.read_text())
+    assert "themes_songs" in base_components
+    assert "labs" in base_components
+    assert "ultimate_weapons" in base_components
+    assert "vault_v2" in base_components
+    assert "relics" in base_components
+    assert "workshop_coin_levels" in base_components
+    assert "enhancements" in base_components
+    assert "guardians" in base_components
+    assert "bots" in base_components
+
+    inventory_components = json.loads(inventory_components_path.read_text())
+    assert "cards_mastery_inventory" in inventory_components
+    assert "card_presets" in inventory_components
+    assert "modules_inventory" in inventory_components
+    assert "module_presets" in inventory_components
+    assert "shard_allocation" in inventory_components
+
+    run_stats = json.loads(run_stats_path.read_text())
+    assert isinstance(run_stats["rows"], list)
+    assert "missing" in run_stats
+    assert "fail_closed" in run_stats
 
     summary = json.loads(summary_path.read_text())
     assert summary["ids_path"] == str(ids_path)

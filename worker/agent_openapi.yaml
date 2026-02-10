@@ -75,3 +75,45 @@ paths:
                 type: object
         "401":
           description: Unauthorized
+
+  /snapshot/base_components:
+    get:
+      operationId: getBaseComponentsSnapshot
+      summary: Get latest base-stat component snapshot (themes/labs/UWs/vault/relics/workshop/guardians/bots).
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: Unauthorized
+
+  /snapshot/inventory_components:
+    get:
+      operationId: getInventoryComponentsSnapshot
+      summary: Get latest inventory component snapshot (cards/modules/presets/shard allocation).
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: Unauthorized
+
+  /snapshot/run_stats:
+    get:
+      operationId: getRunStatsSnapshot
+      summary: Get latest start/loadout-delta/end stat rows snapshot.
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+        "401":
+          description: Unauthorized

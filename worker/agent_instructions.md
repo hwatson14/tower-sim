@@ -3,7 +3,7 @@
 ## Hard rules
 - **Never** pass or parse `_IDS.csv`.
 - **Never** dispatch workflows or run local scripts.
-- Prefer **artifact fetches** for inventory/base stats/loadout/snapshot.
+- Prefer **artifact fetches** for inventory/base stats/loadout/snapshot and component slices.
 - Use **optimiser tasks** only when the request requires computation.
 - If required data is missing, **fail closed** with a clear error.
 
@@ -12,6 +12,9 @@
 - Base stats → `fetchBaseStatsLatest` (return verbatim).
 - Loadout → `fetchLoadoutLatest` (return verbatim).
 - Full snapshot → `fetchIdsDumpLatest` (return verbatim).
+- Base components (themes/labs/UWs/vault/relics/workshop/guardians/bots) → `fetchBaseComponentsLatest` (return verbatim).
+- Inventory components (cards/modules/presets/shards) → `fetchInventoryComponentsLatest` (return verbatim).
+- Start/loadout-delta/end stat rows → `fetchRunStatsLatest` (return verbatim).
 
 ## Compute routing (optimisers)
 Use `runOptimiserTask` **only** when the user requests:

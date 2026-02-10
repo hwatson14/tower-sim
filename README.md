@@ -76,6 +76,9 @@ branch, which you can fetch over HTTPS from GitHub:
 - `audit/base_stats_latest.json`
 - `audit/inventory_latest.json`
 - `audit/loadout_latest.json`
+- `audit/base_stats_components_latest.json`
+- `audit/inventory_components_latest.json`
+- `audit/run_stats_latest.json`
 
 Example (raw file URL; replace `<org>` and `<repo>` as needed):
 
@@ -103,6 +106,9 @@ payload. The script writes dedicated extracts at:
 - `audit/base_stats.json`
 - `audit/inventory.json`
 - `audit/loadout.json`
+- `audit/base_stats_components.json`
+- `audit/inventory_components.json`
+- `audit/run_stats.json`
 
 The script does not delete the files at the end of the job, so they should
 remain on disk until you remove them. Key fields:
@@ -111,6 +117,9 @@ remain on disk until you remove them. Key fields:
 - `inventory`: card/module/uw/bot/vault/etc inventory snapshots.
 - `loadout`: resolved preset name, card list, module selections, and allocation
   levels for the active preset.
+- `base_stats_components`: themes/labs/UWs/vault/relics/workshop/enhancements/guardians/bots slice.
+- `inventory_components`: cards+mastery, card presets, modules, module presets, shard allocation slice.
+- `run_stats`: start-of-run + loadout delta + end-of-run stat row projection.
 
 If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 `--include-raw`.
