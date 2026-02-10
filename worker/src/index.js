@@ -58,7 +58,7 @@ async function handleSnapshotGet(name, env) {
 
   const owner = env.GITHUB_OWNER;
   const repo = env.GITHUB_REPO;
-  const ref = env.SNAPSHOT_REF || "ids-dump-latest";
+  const ref = env.SNAPSHOT_REF || "main";
   const dirs = snapshotDirs(env);
 
   // Attempt fetch in each candidate directory until one succeeds.

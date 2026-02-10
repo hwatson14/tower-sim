@@ -68,9 +68,8 @@ If something is unclear, it likely belongs in one of the documents above rather 
 ## Agent quickstart: base stats, inventory, loadout
 
 If you want an agent to **fetch the latest inventory/loadout/base stats without
-running scripts**, use the `ids-dump-latest` branch published by the IDS dump
-workflow. The workflow writes and force-updates the following files on that
-branch, which you can fetch over HTTPS from GitHub:
+running scripts**, use the repository's `main` branch. The IDS dump workflow updates the
+following files in `out/`, which you can fetch over HTTPS from GitHub:
 
 - `out/ids_dump_latest.json` (canonical snapshot payload)
 - `out/base_stats_latest.json`
@@ -83,7 +82,7 @@ branch, which you can fetch over HTTPS from GitHub:
 Example (raw file URL; replace `<org>` and `<repo>` as needed):
 
 ```
-https://raw.githubusercontent.com/<org>/<repo>/ids-dump-latest/out/inventory_latest.json
+https://raw.githubusercontent.com/<org>/<repo>/main/out/inventory_latest.json
 ```
 
 If you are wiring a ChatGPT agent (or any tool runner) to pull deterministic player
@@ -126,7 +125,7 @@ If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 
 **How does my agent know what to call?**  
 If you do not want the agent running scripts, have it download the latest files
-from the `ids-dump-latest` branch (examples above). If you are running locally,
+from the `main` branch (examples above). If you are running locally,
 your agent can call the `dump_ids_diagnostics.py` script (or an equivalent
 wrapper around it) and then read the resulting JSON file. The single call above
 produces everything it needs for base stats, inventory, and loadout in one
