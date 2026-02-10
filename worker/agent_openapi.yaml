@@ -46,6 +46,18 @@ components:
         data:
           type: object
           additionalProperties: true
+    PingResponse:
+      type: object
+      additionalProperties: false
+      properties:
+        ok:
+          type: boolean
+        now_utc:
+          type: string
+          format: date-time
+      required:
+        - ok
+        - now_utc
 
 paths:
   /snapshot/ids_dump:
@@ -156,7 +168,6 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                additionalProperties: true
+                $ref: "#/components/schemas/PingResponse"
         "401":
           description: Unauthorized
