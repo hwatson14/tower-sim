@@ -1,5 +1,6 @@
 data/
 out/*
 !out/.gitkeep
+!out/*_latest.json
 __pycache__/
 *.py[cod]
