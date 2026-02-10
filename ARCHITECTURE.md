@@ -555,6 +555,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Load canonical enemy damage/health scaling tables (`enemy_damage_table.csv`, `enemy_health_table.csv`) with per-wave log-linear interpolation.
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
+- [x] Wire canonical wave-time + uptime diagnostics into MAX_WAVE (WA loadout source, interval overlap, GComp events, bot-table channels).
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).

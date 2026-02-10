@@ -29,6 +29,18 @@ from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.engines.tier_rules import build_tier_rules
 from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
+from tower_sim.engines.uptime import (
+    TimedEffect,
+    aggregate_uptime,
+    gcomp_sec,
+    build_bot_effects,
+    build_gcomp_activation_intervals,
+    build_periodic_activation_intervals,
+    overlap_fraction,
+    uniform_event_times_from_rate,
+)
+from tower_sim.engines.wave_time import wa_reduction_from_snapshot, wave_seconds
+from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
 
 
 @lru_cache(maxsize=1)
@@ -161,6 +173,13 @@ class MaxWaveEvaluator:
         survivability_stats, survivability_missing = _resolve_survivability_stats(
             engine_result_base, wave_snapshot
         )
+        uptime_diag = _build_timing_uptime_diagnostics(
+            problem_spec=problem_spec,
+            ids_snapshot=ids_snapshot,
+            wave_snapshot=wave_snapshot,
+        )
+        diagnostics["timing_uptime"] = uptime_diag
+
         if survivability_missing:
             diagnostics["missing_survivability_stats"] = survivability_missing
             missing.extend(survivability_missing)
@@ -965,6 +984,143 @@ def _resolve_survivability_stats(
         return None, [f"stat:{stat_id}" for stat_id in missing]
     return values, []
 
+
+
+def _build_timing_uptime_diagnostics(
+    *,
+    problem_spec: ProblemSpec,
+    ids_snapshot: AccountSnapshot,
+    wave_snapshot: Optional[AtWaveSnapshot],
+) -> Dict[str, Any]:
+    window_s = 600.0
+    run_type = str(getattr(problem_spec.scenario.mode, "value", problem_spec.scenario.mode)).lower().strip()
+    wa_reduction = wa_reduction_from_snapshot(snapshot=ids_snapshot, run_type=run_type)
+    ws = wave_seconds(wa_reduction=wa_reduction, tournament=run_type == "tournament")
+
+    snapshot_values = wave_snapshot.values if wave_snapshot is not None else {}
+    package_chance_stat_id = "workshop_package_chance"
+    package_chance_raw = snapshot_values.get(package_chance_stat_id)
+    package_chance_missing = package_chance_raw is None
+    package_chance = float(package_chance_raw or 0.0)
+
+    preset_name = (
+        "Tourney" if run_type == "tournament" else "Farming" if run_type == "farming" else ids_snapshot.default_preset
+    )
+    loadout = resolve_loadout(ids_snapshot, preset_name)
+
+    gcomp_enabled = False
+    gcomp_rarity = None
+    gcomp_seconds = 0.0
+    generator_primary = loadout.modules_by_slot["Generator"].primary
+    if generator_primary == "Galaxy Compressor":
+        module = ids_snapshot.modules_inventory.get("Galaxy Compressor")
+        if module is None or module.rarity is None:
+            raise ValueError("Galaxy Compressor equipped but inventory rarity is missing.")
+        gcomp_rarity = _normalize_module_rarity(module.rarity)
+        gcomp_enabled = True
+        gcomp_seconds = gcomp_sec(gcomp_rarity)
+
+    if gcomp_enabled and package_chance_missing:
+        raise ValueError(
+            f"Missing required package chance stat ({package_chance_stat_id}) while Galaxy Compressor is equipped."
+        )
+
+    packages_per_second = package_chance / ws if ws > 0 else 0.0
+    package_events = uniform_event_times_from_rate(rate_per_second=packages_per_second, window_s=window_s)
+
+    gt_cooldown = float(snapshot_values.get("uw_golden_tower_cooldown", 0.0) or 0.0)
+    gt_duration = float(snapshot_values.get("uw_golden_tower_duration", 0.0) or 0.0)
+    gt_mult = float(snapshot_values.get("uw_golden_tower_multiplier", 1.0) or 1.0)
+
+    uw_pairs = [
+        ("uw_smart_missiles", "uw_smart_missiles_cooldown", None),
+        ("uw_death_wave", "uw_death_wave_cooldown", None),
+        ("uw_chrono_field", "uw_chrono_field_cooldown", "uw_chrono_field_duration"),
+        ("uw_inner_land_mines", "uw_inner_land_mines_cooldown", None),
+        ("uw_golden_tower", "uw_golden_tower_cooldown", "uw_golden_tower_duration"),
+        ("uw_black_hole", "uw_black_hole_cooldown", "uw_black_hole_duration"),
+    ]
+
+    uw_intervals: Dict[str, Any] = {}
+    for uw_name, cooldown_id, duration_id in uw_pairs:
+        cooldown = float(snapshot_values.get(cooldown_id, 0.0) or 0.0)
+        duration = float(snapshot_values.get(duration_id, 0.0) or 0.0) if duration_id else 0.0
+        if cooldown <= 0.0:
+            continue
+        if gcomp_enabled:
+            intervals = build_gcomp_activation_intervals(
+                base_cooldown_s=cooldown,
+                duration_s=duration,
+                package_event_times_s=package_events,
+                seconds_reduced_per_package=gcomp_seconds,
+                window_s=window_s,
+                start_on_cooldown=True,
+            )
+        else:
+            intervals = build_periodic_activation_intervals(
+                duration_s=duration,
+                cooldown_s=cooldown,
+                window_s=window_s,
+                phase_s=0.0,
+            )
+        uw_intervals[uw_name] = intervals
+
+    if gt_cooldown <= 0:
+        return {
+            "window_s": window_s,
+            "wa_reduction": wa_reduction,
+            "wave_seconds": ws,
+            "package_event_model": "uniform_from_rate",
+            "package_chance_stat_id": package_chance_stat_id,
+            "package_chance_missing": package_chance_missing,
+            "packages_per_second": packages_per_second,
+            "gcomp_enabled": gcomp_enabled,
+            "gcomp_rarity": gcomp_rarity,
+            "missing": ["uw_golden_tower_cooldown"],
+        }
+
+    gt_intervals = uw_intervals.get("uw_golden_tower", tuple())
+    bh_intervals = uw_intervals.get("uw_black_hole", tuple())
+
+    effects = [TimedEffect(name="GT", activation_intervals=gt_intervals, coin_multiplier=gt_mult)]
+    bot_levels = ids_snapshot.bot_upgrades
+    bot_diag = "present" if bot_levels else "missing"
+    if bot_levels:
+        effects.extend(build_bot_effects(bot_levels=bot_levels, window_s=window_s))
+
+    summary = aggregate_uptime(effects, window_s=window_s)
+    output: Dict[str, Any] = {
+        "window_s": window_s,
+        "wa_reduction": wa_reduction,
+        "wave_seconds": ws,
+        "package_event_model": "uniform_from_rate",
+        "package_chance_stat_id": package_chance_stat_id,
+        "package_chance_missing": package_chance_missing,
+        "packages_per_second": packages_per_second,
+        "gcomp_enabled": gcomp_enabled,
+        "gcomp_rarity": gcomp_rarity,
+        "gcomp_seconds_per_package": gcomp_seconds,
+        "gt_bh_overlap": overlap_fraction(gt_intervals, bh_intervals, window_s=window_s) if bh_intervals else None,
+        "expected_coin_multiplier": summary.expected_coin_multiplier,
+        "expected_damage_taken": summary.expected_damage_taken,
+        "expected_damage_multiplier": summary.expected_damage_multiplier,
+        "bot_levels_source": bot_diag,
+        "package_event_count": len(package_events),
+        "uw_interval_counts": {name: len(intervals) for name, intervals in uw_intervals.items()},
+    }
+    if gcomp_enabled and not bh_intervals:
+        output.setdefault("warnings", []).append("uw_black_hole_intervals_missing")
+    return output
+
+
+def _normalize_module_rarity(raw_rarity: str) -> str:
+    cleaned = raw_rarity.strip()
+    while cleaned.endswith("+"):
+        cleaned = cleaned[:-1]
+    canonical = cleaned.capitalize()
+    if canonical not in {"Epic", "Legendary", "Mythic", "Ancestral"}:
+        raise ValueError(f"Unsupported module rarity for canonical lookup: {raw_rarity!r}")
+    return canonical
 
 def _resolve_wave_state_for_wave(
     scenario,
