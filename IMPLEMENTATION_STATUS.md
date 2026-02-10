@@ -130,7 +130,15 @@ corresponding Step1 part file(s):
 - Loadout optimiser and stone spending optimiser not implemented.
 
 ## Immediate Next Steps (Codex PR sequence)
-1. Resolve `statbook_builder.py` API mismatch + tests.
-2. Wire progression + skip mapping to produce per-wave stats.
-3. Implement boss-only combat model and validate against reference sheets.
-4. Add validation harness against Harry’s reference sheets.
+1. Reconcile this document with `audit/implementation_status_report.md` on every release cut.
+2. Define and enforce a single v1 release-gate parity policy (fixture matrix + tolerances) for Harry-sheet validation.
+3. Keep tournament scenario coverage explicit (Champion + Legend BC/heat fixtures) and fail closed on unresolved BC families.
+
+## V1 Closeout Task Board
+
+Source for current component state: `audit/implementation_status_report.md`.
+
+- [x] Reconcile architecture checklist state with implemented evaluator contracts and boss combat status.
+- [x] Convert immediate next steps into release-focused tasks instead of stale implementation milestones.
+- [x] Lock and automate a single parity threshold policy for reference-sheet validation in release-gate tests (`tests/test_max_wave_v1_contract.py`, `tests/test_release_gate_tournament_fixtures.py`).
+- [ ] Keep assumptions-manifest tolerances calibrated with reference-sheet drift data and document updates each release.
