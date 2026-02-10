@@ -13,6 +13,8 @@ def test_ep_registry_loads_without_validation() -> None:
 
     assert "EPD_ASPD" in registry.mechanics
     assert "EPD_BST" in registry.mechanics
+    assert "EPC_CPK" in registry.mechanics
+    assert "EPC_FUP" in registry.mechanics
     assert "ep_edamage_ef5" in registry.formulas
 
     bst = registry.mechanics["EPD_BST"]

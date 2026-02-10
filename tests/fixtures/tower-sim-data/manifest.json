@@ -57,7 +57,12 @@
       "sheet": "EP Export",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 37,
-      "bytes": 1959
+      "bytes": 1959,
+      "verification_presets": {
+        "edmg": "tournament",
+        "ehp": "farming",
+        "eecon": "farming"
+      }
     }
   }
 }
