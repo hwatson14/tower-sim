@@ -588,7 +588,6 @@ Any of the following must stop work and ask for clarification:
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
 - [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
-- [x] Remove legacy EHP slice GitHub Action now that run tasks cover EHP output.
 - [x] Add perk timeline GitHub Action to run perk tests and publish timeline smoke artifacts.
 - [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
 - [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
@@ -620,7 +619,6 @@ Any of the following must stop work and ask for clarification:
 - [x] Add card mastery table + loader with tests for sim access.
 - [x] Sync Effective Paths eDamage mechanics to canonical extract (crit/ASPD/multishot/range/rapid fire/super tower).
 - [x] Implement Effective Paths econ_current formulas + tests (Harry reference sheet).
-- [x] Add allowlisted run task dispatcher (BASE_STATS/INVENTORY/LOADOUT/EHP_SLICE/MAX_WAVE).
 - [x] Define task schemas + fail-closed validation for run dispatcher inputs.
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.

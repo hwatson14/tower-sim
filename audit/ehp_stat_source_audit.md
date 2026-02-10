@@ -2,7 +2,7 @@
 
 ## Scope
 This audit identifies which sources currently back the vertical-slice stats needed
-for the EHP slice (Health, Health Regen, Defense %, Wall Health, Wall Regen,
+for the EHP stat set (Health, Health Regen, Defense %, Wall Health, Wall Regen,
 Wall Fortification). It only maps existing tables and IDS inputs; no mechanics
 are implemented here.
 

@@ -25,7 +25,7 @@ _HUMAN_SUFFIX_SCALE: Dict[str, float] = {
 # - ep_formula:<formula_id>            (tables/registry/ep_formulas/formula_library.yaml)
 # - ep_mechanic:<lambda_name>          (tables/registry/ep_formulas/mechanics_library.yaml)
 # - stat_input:<stat_id>               (compiled deterministic stat input)
-# - ehp_slice:<stat_key>               (deterministic eHP stat evaluator output)
+# - ehp_eval:<stat_key>                (deterministic eHP stat evaluator output)
 # - ep_sheet:<Sheet!Cell>               (authoritative user-provided EP workbook cell formula)
 _ROWS_WITHOUT_DEFINITIVE_FORMULAS: set[tuple[str, str]] = set()
 
@@ -48,13 +48,13 @@ _EP_ROW_SOURCES: Dict[tuple[str, str], tuple[str, str]] = {
     ("edmg", "max_rend_mult"): ("ep_mechanic:EPD_MAXREND", "stat_inputs.workshop_rend_armor_mult"),
     ("edmg", "recovery_package_chance"): ("stat_input:workshop_recovery_packages", "stat_inputs.workshop_recovery_packages"),
     ("ehp", "ehp"): ("ep_sheet:eHP!CG5", "ep_formula.eval.ehp"),
-    ("ehp", "health"): ("ep_mechanic:EPH_HEALTH", "ehp_slice.stats.tower_hp"),
-    ("ehp", "health_regen"): ("ep_mechanic:EPH_REGEN", "ehp_slice.stats.tower_regen"),
+    ("ehp", "health"): ("ep_mechanic:EPH_HEALTH", "ehp_eval.stats.tower_hp"),
+    ("ehp", "health_regen"): ("ep_mechanic:EPH_REGEN", "ehp_eval.stats.tower_regen"),
     ("ehp", "defense_absolute"): ("ep_mechanic:EPH_DABS", "stat_inputs.workshop_defense_absolute"),
-    ("ehp", "defense_percent"): ("ep_mechanic:EPH_DEF_PCT", "ehp_slice.stats.def_pct"),
-    ("ehp", "wall_health"): ("ep_mechanic:EPH_WALL_HEALTH", "ehp_slice.stats.wall_hp"),
+    ("ehp", "defense_percent"): ("ep_mechanic:EPH_DEF_PCT", "ehp_eval.stats.def_pct"),
+    ("ehp", "wall_health"): ("ep_mechanic:EPH_WALL_HEALTH", "ehp_eval.stats.wall_hp"),
     ("ehp", "wall_fortification"): ("ep_mechanic:EPH_ARMOR", "ep_formula.eval.wall_fortification"),
-    ("ehp", "wall_regen"): ("ep_mechanic:EPH_WALL_REGEN", "ehp_slice.stats.wall_regen"),
+    ("ehp", "wall_regen"): ("ep_mechanic:EPH_WALL_REGEN", "ehp_eval.stats.wall_regen"),
     ("ehp", "max_recovery"): ("ep_mechanic:EPH_MAX_RCVR", "ep_formula.eval.max_recovery"),
     ("eecon", "cpk_average"): ("ep_sheet:eEcon!AO26", "ep_formula.eval.cpk_average"),
     ("eecon", "coins_per_kill_bonus"): ("stat_input:workshop_coins_per_kill_bonus", "stat_inputs.workshop_coins_per_kill_bonus"),

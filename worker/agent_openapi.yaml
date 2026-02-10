@@ -4,7 +4,7 @@ info:
   version: 1.1.0
   description: >
     SnapshotReader endpoints for precomputed TowerSim artifacts, proxied through the
-    authenticated Worker (no direct raw GitHub access required). Includes legacy EHP runner.
+    authenticated Worker (no direct raw GitHub access required).
 
 servers:
   - url: https://tower-runner.tower-runner.workers.dev
@@ -66,56 +66,6 @@ paths:
     get:
       operationId: getLoadoutSnapshot
       summary: Get latest loadout snapshot (proxied).
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-        "401":
-          description: Unauthorized
-
-  /run/ehp:
-    post:
-      operationId: runEhpLegacy
-      deprecated: true
-      summary: Legacy EHP slice runner (deprecated).
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: object
-              additionalProperties: false
-              properties:
-                ref:
-                  type: string
-                  description: Git ref (branch/tag/sha) to run. Defaults to "main".
-                allow_out_of_scope:
-                  type: boolean
-                  description: Legacy flag forwarded to workflow.
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: object
-        "401":
-          description: Unauthorized
-
-  /run/ehp/{run_id}:
-    get:
-      operationId: getEhpLegacyResult
-      deprecated: true
-      summary: Poll legacy EHP run status and (on success) return latest output.
-      parameters:
-        - name: run_id
-          in: path
-          required: true
-          schema:
-            type: string
       responses:
         "200":
           description: OK
