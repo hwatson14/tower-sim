@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-02-09T14:25:36.810Z",
+  "generated_utc": "2026-02-10T04:32:20.226Z",
   "spreadsheet_id": "1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c",
   "dest_prefix": "tests/fixtures/tower-sim-data/",
   "files": {
@@ -51,6 +51,13 @@
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 400,
       "bytes": 100405
+    },
+    "EP_Export.csv": {
+      "github_path": "tests/fixtures/tower-sim-data/EP_Export.csv",
+      "sheet": "EP Export",
+      "rangeA1": "AUTO(lastRow/lastCol)",
+      "approx_lines": 37,
+      "bytes": 1959
     }
   }
 }
