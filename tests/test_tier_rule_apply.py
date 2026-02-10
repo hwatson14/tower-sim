@@ -66,6 +66,24 @@ def test_apply_damage_multiplier_sets_tier_rule_multiplier() -> None:
     assert orb.tier_rule_multiplier == 0.5
 
 
+def test_more_bosses_is_supported_noop_for_stat_inputs() -> None:
+    context = RunContext.from_mode("tier")
+    condition = TierBattleCondition(
+        tier=14,
+        name="more_bosses",
+        kind="boss_interval_waves",
+        value=9.0,
+        unit="waves",
+        notes="",
+    )
+    tier_rules = TierRulesResult(tier=14, context=context, conditions=[condition])
+
+    inputs = _base_inputs()
+    updated = apply_tier_rules_to_inputs(inputs, tier_rules)
+
+    assert updated == inputs
+
+
 def test_apply_unknown_condition_raises() -> None:
     context = RunContext.from_mode("tier")
     condition = TierBattleCondition(

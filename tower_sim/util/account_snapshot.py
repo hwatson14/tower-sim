@@ -90,6 +90,7 @@ class AccountSnapshot:
     relics: Dict[str, Optional[int]]
     vault: Dict[str, Optional[int]]
     bots: List[str]
+    bot_upgrades: Dict[str, Dict[str, int]]
     guardians: TableSnapshot
     player_meta: Dict[str, Optional[str]]
     cards_inventory: Dict[str, CardSnapshot]

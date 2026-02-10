@@ -2,32 +2,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 import re
-from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
-from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
 from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
-
-
-_FIXTURE_DATA_DIRS = (
-    Path("tests/fixtures/tower-sim-data"),
-    Path("tests/fixtures"),
-)
-
-
-def _resolve_fixture_data_file(filename: str) -> Path:
-    for directory in _FIXTURE_DATA_DIRS:
-        candidate = directory / filename
-        if candidate.exists():
-            return candidate
-    candidates = ", ".join(str(directory / filename) for directory in _FIXTURE_DATA_DIRS)
-    raise FileNotFoundError(f"Missing data file {filename}. Tried: {candidates}")
-
 
 @dataclass(frozen=True)
 class CompiledStatInputs:
@@ -51,6 +33,7 @@ class UWTrackSpec:
 
 
 _UW_LEVEL_RE = re.compile(r"^(\d+)")
+_UW_NEXT_COST_RE = re.compile(r"\bNext\s+([0-9]+(?:\.[0-9]+)?)")
 
 
 _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
@@ -392,24 +375,13 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
 
     uw_tracks, uw_missing = _parse_uw_tracks(ids_snapshot.raw_sections.get("UWs", []))
     missing.extend(uw_missing)
-    tables: Dict[str, List[Dict[str, str]]] = {}
 
-    for uw_name, track_name, level_index in uw_tracks:
+    for uw_name, track_name, value, next_cost in uw_tracks:
         mapping = _UW_TRACK_SPECS.get(uw_name)
         if mapping is None or track_name not in mapping:
             missing.append(f"uw_mapping:{uw_name}:{track_name}")
             continue
         spec = mapping[track_name]
-        cache_key = spec.csv_file or f"dvt:{spec.dvt_value_column}:{spec.dvt_cost_column}"
-        rows = tables.get(cache_key)
-        if rows is None:
-            rows = _load_uw_rows(spec)
-            tables[cache_key] = rows
-        try:
-            value, next_cost = _resolve_uw_values(rows, level_index)
-        except (IndexError, ValueError):
-            missing.append(f"uw_level:{uw_name}:{track_name}")
-            continue
         if value is None:
             missing.append(f"uw_locked:{uw_name}:{track_name}")
             continue
@@ -436,8 +408,8 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
 
 def _parse_uw_tracks(
     rows: Iterable[List[str]],
-) -> Tuple[List[Tuple[str, str, int]], List[str]]:
-    tracks: List[Tuple[str, str, int]] = []
+) -> Tuple[List[Tuple[str, str, Optional[float], Optional[float]]], List[str]]:
+    tracks: List[Tuple[str, str, Optional[float], Optional[float]]] = []
     missing: List[str] = []
     current: Optional[str] = None
     for row in rows:
@@ -457,7 +429,7 @@ def _parse_uw_tracks(
         if level_index is None:
             missing.append(f"uw_level_missing:{current}:{track_name}")
             continue
-        tracks.append((current, track_name, level_index))
+        tracks.append((current, track_name, _parse_uw_value(row[3]), _parse_next_cost(row[4])))
     return tracks, missing
 
 
@@ -470,88 +442,25 @@ def _parse_level_index(value: str) -> Optional[int]:
     return int(match.group(1))
 
 
-def _load_uw_rows(spec: UWTrackSpec) -> List[Dict[str, str]]:
-    if spec.csv_file:
-        table = load_uw_table(spec.csv_file)
-        rows: List[Dict[str, str]] = []
-        indices = table.columns.get("level_index")
-        values = table.columns.get("value")
-        costs = table.columns.get("cost")
-        if indices is None or values is None or costs is None:
-            raise ValueError(f"UW table {spec.csv_file} missing required columns.")
-        for idx, value, cost in zip(indices, values, costs):
-            rows.append({"level_index": idx, "value": value, "cost": cost})
-        return rows
-    if spec.dvt_value_column and spec.dvt_cost_column:
-        values = _load_dvt_column(spec.dvt_value_column)
-        costs = _load_dvt_column(spec.dvt_cost_column)
-        if len(values) != len(costs):
-            raise ValueError(
-                f"Data_Val_Tables columns {spec.dvt_value_column}/{spec.dvt_cost_column} length mismatch."
-            )
-        rows: List[Dict[str, str]] = []
-        for idx, (value, cost) in enumerate(zip(values, costs)):
-            rows.append({"level_index": str(idx), "value": value, "cost": cost})
-        return rows
-    raise ValueError(f"UW track spec {spec.stat_id} missing table source.")
-
-
-def _load_dvt_column(column_label: str) -> List[str]:
-    path = _resolve_fixture_data_file("Data_Val_Tables.csv")
-    rows = path.read_text().splitlines()
-    data = [row.split(",") for row in rows]
-    col_index = _column_letter_index(column_label)
-    values: List[str] = []
-    for row in data[2:66]:
-        if col_index >= len(row):
-            values.append("")
-        else:
-            values.append(row[col_index].strip())
-    return values
-
-
-def _column_letter_index(label: str) -> int:
-    total = 0
-    for char in label.upper():
-        if not ("A" <= char <= "Z"):
-            raise ValueError(f"Invalid column label {label!r}")
-        total = total * 26 + (ord(char) - ord("A") + 1)
-    return total - 1
-
-
-def _resolve_uw_values(
-    rows: List[Dict[str, str]], level_index: int
-) -> Tuple[Optional[float], Optional[float]]:
-    if level_index < 0 or level_index >= len(rows):
-        raise IndexError("UW level index out of range.")
-    row = rows[level_index]
-    value_raw = row["value"].strip()
-    if value_raw.lower() in {"locked", "lo"}:
-        return None, None
-    value = float(value_raw)
-    next_cost = _uw_next_cost(rows, level_index)
-    return value, next_cost
-
-
-def _uw_next_cost(rows: List[Dict[str, str]], level_index: int) -> Optional[float]:
-    current_cost = rows[level_index]["cost"].strip()
-    if current_cost.lower() == "max":
+def _parse_uw_value(value: str) -> Optional[float]:
+    cleaned = value.strip()
+    if not cleaned or cleaned.lower() == "locked":
         return None
-    next_index = level_index + 1
-    if next_index >= len(rows):
+    try:
+        return float(cleaned)
+    except ValueError:
         return None
-    next_cost = rows[next_index]["cost"]
-    if next_cost.strip().lower() == "max":
+
+
+def _parse_next_cost(descriptor: str) -> Optional[float]:
+    match = _UW_NEXT_COST_RE.search(descriptor)
+    if not match:
         return None
-    return float(next_cost)
+    return float(match.group(1))
 
 
 def _uw_provenance(spec: UWTrackSpec) -> str:
-    if spec.csv_file:
-        return f"uw_tables_v2_1_2:{spec.csv_file}"
-    if spec.dvt_value_column and spec.dvt_cost_column:
-        return f"Data_Val_Tables.csv:{spec.dvt_value_column}:{spec.dvt_cost_column}"
-    return "unknown"
+    return "uw_section:_IDS.csv"
 
 
 __all__ = ["CompiledStatInputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]

@@ -555,6 +555,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Load canonical enemy damage/health scaling tables (`enemy_damage_table.csv`, `enemy_health_table.csv`) with per-wave log-linear interpolation.
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [ ] Define evaluator objective contracts and economy model inputs with authoritative provenance.
+- [x] Wire canonical wave-time + uptime diagnostics into MAX_WAVE (WA loadout source, interval overlap, GComp events, bot-table channels).
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
@@ -579,8 +580,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement module main-effect multiplier formula (MODSTAT_*).
 - [x] Add boss hit-interval table for survivability (boss_hit_interval_v1.csv).
 - [x] Document run API task routing for agent usage.
-- [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
-- [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
+- [ ] (v2) Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
+- [ ] (v2) Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).
 - [x] Wire Effective Paths eDamage LAMBDAs into derived stat pipeline (tower DPS/crit/ASPD).
 - [x] Add token source mapping audit (token map, report, and validation script).
@@ -601,6 +602,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Fix max-wave runner GitHub Action to write JSON output directly.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
+- [x] Remove AUW fixture CSV dependencies; derive UW values/next costs directly from `_IDS.csv` UWs section for stat-input compilation.
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
 - [x] Add tournament heat BC magnitudes from Player & Stuff Battle Conditions sheet (user-provided table).
 - [x] Document tiers 1–13 as having no battle conditions (user-provided clarification).
@@ -609,6 +611,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Allow root .gitmodules in REPO_MAP allowed files.
 - [x] Allow root GAME_OVERVIEW.md and PROJECT_INTENT.md in REPO_MAP allowed files.
 - [x] Consolidate tier battle condition loaders onto step1 table parser + shim legacy loader.
+- [x] Wire Tier BC `more_bosses` as a supported v1 no-op (keeps fail-closed for unsupported BC families).
 - [x] Add identifier resolver with fail-closed eHP ledger closure guard.
 - [x] Add card mastery table + loader with tests for sim access.
 - [x] Sync Effective Paths eDamage mechanics to canonical extract (crit/ASPD/multishot/range/rapid fire/super tower).
@@ -616,12 +619,14 @@ Any of the following must stop work and ask for clarification:
 - [x] Add allowlisted run task dispatcher (BASE_STATS/INVENTORY/LOADOUT/EHP_SLICE/MAX_WAVE).
 - [x] Define task schemas + fail-closed validation for run dispatcher inputs.
 - [x] Add unit tests covering run task dispatcher + core tasks.
+- [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
 - [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
-- [x] Audit stone optimizer table wiring coverage and completeness (`audit/stone_optimizer_table_wiring_review.md`).
-
 - [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
 - [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).
+- [x] Reconcile implementation status report paths/states with current code and tests.
+- [x] Add versioned assumptions manifest to MAX_WAVE results (all outcomes), with provisional parity tolerances (10% wave / 1% stats) and tournament league scope (champion, legend).
+- [x] Add explicit Champion + Legend tournament MAX_WAVE fixture matrix to release-gate coverage (`tests/fixtures/specs/tournament_champion_spec.yaml`, `tests/fixtures/specs/tournament_legend_spec.yaml`).

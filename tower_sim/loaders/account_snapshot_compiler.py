@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
 
 from tower_sim.libs.module_shards import shards_to_reach_level
+from tower_sim.libs.bots_lib import bots_from_table
 from tower_sim.util.account_snapshot import (
     AccountSnapshot,
     CardSnapshot,
@@ -61,7 +62,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
     ultimate_weapons = _parse_ultimate_weapons(raw_sections.get("UWs", []))
     relics = _parse_key_value_int(raw_sections.get("Relics", []))
     vault = _parse_key_value_int(raw_sections.get("Vault", []))
-    bots = _parse_bots(raw_sections.get("Bots", []))
+    bots, bot_upgrades = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
     player_meta = _parse_key_value_str(raw_sections.get("Player & Stuff", []))
     cards_inventory, card_presets = _parse_cards(raw_sections.get("Cards", []), labs)
@@ -91,6 +92,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
         relics=relics,
         vault=vault,
         bots=bots,
+        bot_upgrades=bot_upgrades,
         guardians=guardians,
         player_meta=player_meta,
         cards_inventory=cards_inventory,
@@ -204,13 +206,46 @@ def _parse_key_value_str(rows: List[List[str]]) -> Dict[str, Optional[str]]:
     return values
 
 
-def _parse_bots(rows: List[List[str]]) -> List[str]:
+def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]]]:
     bots: List[str] = []
+    bot_values: Dict[str, Dict[str, float]] = {}
+    current_bot: Optional[str] = None
     for row in rows:
         name = row[0].strip() if row else ""
-        if name:
+        attr = row[2].strip() if len(row) > 2 else ""
+        raw_value = row[3].strip() if len(row) > 3 else ""
+
+        if name and name not in {"true", "false"}:
+            current_bot = name
             bots.append(name)
-    return bots
+        if current_bot is None or not attr or raw_value == "":
+            continue
+        try:
+            bot_values.setdefault(current_bot, {})[attr] = float(raw_value)
+        except ValueError:
+            continue
+
+    table = bots_from_table()
+    bot_upgrades: Dict[str, Dict[str, int]] = {}
+    for bot, attrs in bot_values.items():
+        if bot not in table:
+            continue
+        for attr, value in attrs.items():
+            if attr not in table[bot]:
+                continue
+            levels = table[bot][attr].values
+            matched_level: Optional[int] = None
+            for level, table_value in levels.items():
+                if abs(table_value - value) <= 1e-9:
+                    matched_level = int(level)
+                    break
+            if matched_level is None:
+                raise ValueError(
+                    f"Unable to map bot value to canonical level for {bot} {attr}: {value}"
+                )
+            bot_upgrades.setdefault(bot, {})[attr] = matched_level
+
+    return bots, bot_upgrades
 
 
 def _parse_table(rows: List[List[str]]) -> TableSnapshot:

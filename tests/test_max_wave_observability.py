@@ -119,3 +119,17 @@ def test_max_wave_report_includes_debug_sections() -> None:
     assert "wave_mapping" in report
     assert "trace" in report
     assert len(report["trace"]) <= 20
+
+
+def test_max_wave_includes_timing_uptime_diagnostics() -> None:
+    problem = _build_problem_spec()
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    result = MaxWaveEvaluator().evaluate(problem, ids_snapshot)
+
+    timing = result["diagnostics"]["timing_uptime"]
+    assert timing["package_event_model"] == "uniform_from_rate"
+    assert "wa_reduction" in timing
+    assert "gcomp_enabled" in timing
+    assert "expected_coin_multiplier" in timing or "missing" in timing

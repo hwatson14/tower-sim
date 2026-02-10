@@ -135,3 +135,35 @@ def test_tournament_heat_table_is_cached(monkeypatch) -> None:
     assert row1 is not None
     assert row2 is not None
     assert calls["count"] == 1
+
+
+def test_assumptions_manifest_present_on_success() -> None:
+    result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
+    manifest = result["assumptions_manifest"]
+    assert manifest["schema_version"] == "v1"
+    assert manifest["policy_version"] == "v1"
+    assert manifest["tolerance_version"] == "v1"
+    assert manifest["perk_timeline"]["required"] is True
+    assert manifest["parity_tolerances"]["wmax_wave_relative"] == 0.10
+    assert manifest["parity_tolerances"]["stats_relative"] == 0.01
+
+
+def test_assumptions_manifest_present_on_fail_closed() -> None:
+    base_problem = _problem(mode="farming", wave=10)
+    problem = ProblemSpec(
+        scenario=base_problem.scenario,
+        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "tower_hp"],
+        evaluator=base_problem.evaluator,
+    )
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+    assert result["fail_closed"] is True
+    manifest = result["assumptions_manifest"]
+    assert manifest["schema_version"] == "v1"
+    assert manifest["perk_timeline"]["required"] is True
+
+
+def test_assumptions_manifest_tournament_leagues() -> None:
+    result = MaxWaveEvaluator().evaluate(_problem(mode="tournament", wave=10), _snapshot())
+    manifest = result["assumptions_manifest"]
+    assert manifest["tournament"]["supported_leagues"] == ["champion", "legend"]
+    assert manifest["perk_timeline"]["required"] is False

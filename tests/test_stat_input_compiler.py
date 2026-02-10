@@ -3,7 +3,6 @@ from __future__ import annotations
 from pathlib import Path
 
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
-from tower_sim.libs.uw_lib import load_uw_table
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
 from tower_sim.util.account_snapshot import (
     AccountSnapshot,
@@ -56,6 +55,7 @@ def _snapshot_with_workshop_and_uw(
         relics={},
         vault={},
         bots=[],
+        bot_upgrades={},
         guardians=TableSnapshot(header=[], rows=[]),
         player_meta={},
         cards_inventory={},
@@ -82,7 +82,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
         )
     }
     uw_rows = [
-        ["Golden Tower", "", "Multiplier", "", "01 | x5.8 | Cost 5 ? | Next 13 ?"],
+        ["Golden Tower", "", "Multiplier", "5.8", "01 | x5.8 | Cost 5 ? | Next 13 ?"],
     ]
     snapshot = _snapshot_with_workshop_and_uw(
         workshop_entries=workshop_entries,
@@ -94,9 +94,8 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     tables = load_workshop_tables()
     expected_damage = float(workshop_value("Damage", 1, tables, section="WSValues"))
 
-    uw_table = load_uw_table("AUW_GT_MULT_ARRAY.csv")
-    value = float(uw_table.columns["value"][1])
-    next_cost = float(uw_table.columns["cost"][2])
+    value = 5.8
+    next_cost = 13.0
 
     damage_input = next(
         stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_damage"
