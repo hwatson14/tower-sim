@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from tower_sim.loaders.account_snapshot_loader import load_account_snapshot
+from tower_sim.run.optimizer_engine import run_resource_optimizer
 from tower_sim.run.optimizer_patch import validate_loadout_patch, validate_snapshot_patch
 
 OPTIMIZER_TASKS = {
@@ -16,6 +17,7 @@ OPTIMIZER_TASKS = {
 
 OBJECTIVES = {"MAX_WAVE", "ECON_PER_HOUR"}
 MISSING_NOT_IMPLEMENTED = "optimizer_not_implemented"
+RESOURCE_TASKS = {"OPTIMIZE_STONES", "OPTIMIZE_COINS", "OPTIMIZE_LABS"}
 
 
 def run_optimizer_task(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
@@ -34,11 +36,10 @@ def run_optimizer_task(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
     if loadout_patch is not None:
         validate_loadout_patch(loadout_patch)
 
-    return _fail_closed(
-        task,
-        missing=[MISSING_NOT_IMPLEMENTED],
-        resolved_from="account_snapshot_payload",
-    )
+    if task in RESOURCE_TASKS:
+        return run_resource_optimizer(task, args)
+
+    return _fail_closed(task, missing=[MISSING_NOT_IMPLEMENTED], resolved_from="account_snapshot_payload")
 
 
 def _validate_task_name(task: str) -> None:
@@ -58,6 +59,8 @@ def _validate_task_args(args: Dict[str, Any]) -> None:
             "loadout_override",
             "constraints",
             "debug",
+            "problem_spec",
+            "top_n",
         },
     )
     objective = args["objective"]
@@ -75,6 +78,10 @@ def _validate_task_args(args: Dict[str, Any]) -> None:
         raise ValueError("constraints must be a mapping.")
     if "debug" in args and not isinstance(args["debug"], dict):
         raise ValueError("debug must be a mapping.")
+    if "problem_spec" in args and not isinstance(args["problem_spec"], dict):
+        raise ValueError("problem_spec must be a mapping.")
+    if "top_n" in args and (not isinstance(args["top_n"], int) or args["top_n"] <= 0):
+        raise ValueError("top_n must be a positive integer.")
 
 
 def _require_keys(
