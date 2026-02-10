@@ -291,16 +291,16 @@ To keep the fast path viable, publish optimiser outputs as artifacts alongside I
 3. **Validate:** fail closed if the snapshot or required libraries are missing.
 4. **Evaluate:** run optimiser tasks in deterministic order with fixed budgets and constraints.
 5. **Record:** emit full input envelopes (objective + budgets + BC set) into each output.
-6. **Publish:** write results to `audit/` as `*_latest.json` artifacts (examples below).
+6. **Publish:** write results to `out/` as `*_latest.json` artifacts (examples below).
 7. **Push:** force-update a branch (e.g., `optimizer-latest`) or extend `ids-dump-latest`.
 
 Suggested artifacts:
-- `audit/optimal_loadout_latest_<bc>.json`
-- `audit/optimal_module_substats_latest.json`
-- `audit/optimal_stone_spend_latest.json`
-- `audit/optimal_coin_spend_latest.json`
-- `audit/optimal_lab_time_latest.json`
-- `audit/sensitivity_report_latest.json`
+- `out/optimal_loadout_latest_<bc>.json`
+- `out/optimal_module_substats_latest.json`
+- `out/optimal_stone_spend_latest.json`
+- `out/optimal_coin_spend_latest.json`
+- `out/optimal_lab_time_latest.json`
+- `out/sensitivity_report_latest.json`
 
 ### First Optimiser Spec (Loadout + BC, future v2+)
 **Goal:** determine the best loadout (cards + modules, primary/assist slots) for a given BC set.
@@ -611,7 +611,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Promote Step1 part2 runtime tables (BC magnitudes, wave damage, tournament boss freq, DAG) with loaders/tests.
 - [x] Add tournament heat BC magnitudes from Player & Stuff Battle Conditions sheet (user-provided table).
 - [x] Document tiers 1–13 as having no battle conditions (user-provided clarification).
-- [x] Consolidate audit report outputs under repo-root `audit/` (remove `tower_sim/audit` artifacts).
+- [x] Consolidate generated outputs under repo-root `out/` and keep long-lived documentation/reporting under `audit/`.
 - [x] Add repo governance enforcement (REPO_MAP.yaml + validation script + tests).
 - [x] Allow root .gitmodules in REPO_MAP allowed files.
 - [x] Allow root GAME_OVERVIEW.md and PROJECT_INTENT.md in REPO_MAP allowed files.
@@ -625,7 +625,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
-- [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
+- [x] Confirm IDS dump artifacts are written under `out/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
 - [x] Add compact IDS dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
