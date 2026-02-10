@@ -8,9 +8,6 @@ from typing import Any, Dict
 from tower_sim.loaders.ep_export_loader import extract_max_wave_targets, load_ep_export_dataset
 
 
-MISSING_TARGETS_FRAGMENT = "missing max-wave rows"
-
-
 def validate_runner_against_ep_export(
     *,
     runner_output_path: Path,
@@ -25,17 +22,17 @@ def validate_runner_against_ep_export(
     runner_wmax = float(payload["w_max"])
 
     dataset = load_ep_export_dataset()
-    try:
-        targets = extract_max_wave_targets(dataset)
-    except ValueError as exc:
-        if allow_missing_targets and MISSING_TARGETS_FRAGMENT in str(exc):
+    targets = extract_max_wave_targets(dataset)
+    if not targets:
+        reason = "EP export has no max-wave rows; max-wave parity check skipped."
+        if allow_missing_targets:
             return {
                 "status": "skipped_missing_targets",
                 "suite": suite,
-                "reason": str(exc),
+                "reason": reason,
                 "runner_w_max": runner_wmax,
             }
-        raise
+        raise ValueError(reason)
 
     if suite not in targets:
         raise ValueError(
