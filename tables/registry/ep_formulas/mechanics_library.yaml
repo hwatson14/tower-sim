@@ -300,3 +300,17 @@ ids_helpers:
   status: complete
 stacking_rules:
   status: complete
+eEcon_mechanics:
+  version: ep_v5.00.01_extract_2026-02-10
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  mechanics:
+  - id: ep_lambda_epc_cpk
+    name: EPC_CPK
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, has_cto, ito_lvl, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1 + 0.02 * lab_lvl,\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, (1 + 0.01 * wse_lvl)^2,\n  PERK, IF(has_perk, (1 + 0.15 * 5) * (1 + 1% * spb_lvl), 1),\n  CTO, IF(has_cto, 1.8 * (1 + 1% * ito_lvl), 1),\n  VAULT, 1 + vault_pct,\n\n(WS * LAB + SUBSTAT) * WSE * PERK * CTO * VAULT))"
+    notes: From user-provided Effective Paths workbook formula extract (eEcon CPK core).
+  - id: ep_lambda_epc_fup
+    name: EPC_FUP
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, has_card, card_val, has_perk, spb_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, relic_pct, vault_pct, LET(\n  CARD, IF(has_card, card_val, 0),\n  PERK, IF(has_perk, 0.05 * 5 * (1 + 1% * spb_lvl), 0),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n\n(ws_val + CARD + PERK + SUBSTAT) * WSE * RELIC * VAULT))"
+    notes: From user-provided Effective Paths workbook formula extract (eEcon free-upgrades core).
