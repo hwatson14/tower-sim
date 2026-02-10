@@ -618,6 +618,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add allowlisted run task dispatcher (BASE_STATS/INVENTORY/LOADOUT/EHP_SLICE/MAX_WAVE).
 - [x] Define task schemas + fail-closed validation for run dispatcher inputs.
 - [x] Add unit tests covering run task dispatcher + core tasks.
+- [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
 - [x] Confirm IDS dump artifacts are written under `audit/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
