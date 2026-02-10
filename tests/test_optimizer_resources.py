@@ -28,17 +28,21 @@ def _snapshot_payload():
     return {"snapshot": _to_jsonable(snapshot)}
 
 
-def test_optimize_stones_fails_closed_when_required_tables_missing() -> None:
+def test_optimize_stones_uses_assist_tables_and_returns_ranked_rows() -> None:
     result = run_task(
         TASK_OPTIMIZE_STONES,
         {
             "objective": "MAX_WAVE",
             "account_snapshot": _snapshot_payload(),
+            "top_n": 8,
         },
     )
-    assert result["ok"] is False
-    assert result["fail_closed"] is True
-    assert any(item.startswith("missing_table:") for item in result["missing"])
+    assert result["ok"] is True
+    assert result["fail_closed"] is False
+    assert result["result"]["incomplete_reasons"] == ["stone_actions_uw_uwplus_state_integration_not_implemented"]
+    rows = result["result"]["tables"][0]["ranked_actions"]
+    assert any(row["action_id"].startswith("assist_efficiency_upgrade::") for row in rows)
+    assert any(row["action_id"].startswith("assist_rarity_upgrade::") for row in rows)
 
 
 def test_optimize_stones_econ_objective_is_v2_only() -> None:
@@ -104,3 +108,43 @@ def test_snapshot_patch_unknown_stat_fails_closed() -> None:
                 },
             },
         )
+
+
+def test_assist_multiplier_and_substat_efficiency_use_same_cost_table() -> None:
+    result = run_task(
+        TASK_OPTIMIZE_STONES,
+        {
+            "objective": "MAX_WAVE",
+            "account_snapshot": _snapshot_payload(),
+            "top_n": 20,
+        },
+    )
+    table = result["result"]["tables"][0]
+    rows = {row["action_id"]: row for row in table["ranked_actions"]}
+
+    multiplier = rows["assist_efficiency_upgrade::Generator::multiplier::10"]
+    substat = rows["assist_efficiency_upgrade::Generator::substat::10"]
+
+    assert multiplier["notes"] == "assist_efficiency_upgrade_costs_v1"
+    assert substat["notes"] == "assist_efficiency_upgrade_costs_v1"
+    assert multiplier["cost"] == substat["cost"]
+
+
+def test_optimize_stones_includes_uw_and_uwplus_rows() -> None:
+    result = run_task(
+        TASK_OPTIMIZE_STONES,
+        {
+            "objective": "MAX_WAVE",
+            "account_snapshot": _snapshot_payload(),
+            "top_n": 400,
+        },
+    )
+    rows = result["result"]["tables"][0]["ranked_actions"]
+    assert any(row["action_id"].startswith("uw_unlock::") for row in rows)
+    assert any(row["action_id"].startswith("uw_track_upgrade::") for row in rows)
+    assert any(row["action_id"].startswith("uw_plus_unlock::") for row in rows)
+    assert all(
+        row["eligible"] is False
+        for row in rows
+        if row["action_id"].startswith(("uw_unlock::", "uw_track_upgrade::", "uw_plus_unlock::", "uw_plus_track_upgrade::"))
+    )

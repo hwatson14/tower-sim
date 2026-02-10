@@ -621,3 +621,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
+- [x] Audit stone optimizer table wiring coverage and completeness (`audit/stone_optimizer_table_wiring_review.md`).
+
+- [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
+- [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).

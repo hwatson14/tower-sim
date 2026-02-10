@@ -41,6 +41,18 @@ rules in `AGENTS.md`.
   (Max Recovery entry still missing from prompt; fail-closed until populated).
 - `wse_presets_v1.csv`: Table shell for WSE preset mappings
   (Max Recovery preset values still missing from prompt; fail-closed until populated).
+- `uw_purchase_costs_v1.csv`: Effective Paths UWs v2.1.2 sheet
+  `All UWs!B5:E14` (Unlock Costs per UW and UW+).
+- `uw_track_ladders_v1.csv`: Effective Paths UW ladder token columns
+  (`DVT_UW_UG_*`) extracted from Data_Val_Tables snapshot.
+- `uw_plus_ladders_v1.csv`: Effective Paths UW+ ladder token columns
+  (`DVT_UW_UG_*` plus tracks) extracted from Data_Val_Tables snapshot.
+- `assist_slot_unlock_costs_v1.csv`: User-provided rule in prompt
+  (assist unlock is Epic unlock cost: 1000 stones).
+- `assist_unique_rarity_upgrade_costs_v1.csv`: User-provided wiki table in prompt
+  (Epic/Legendary/Mythic/Ancestral rarity upgrade stone costs).
+- `assist_efficiency_upgrade_costs_v1.csv`: Effective Paths Modules v5.12
+  sheet `DVT_Modules!H2:J71` (`Assist level`, `Cost`, `%`).
 - `card_masteries_v1.csv`: Card mastery table pasted from the Tower wiki by the
   user in the prompt (wiki-exact names + level 0–9 values).
 

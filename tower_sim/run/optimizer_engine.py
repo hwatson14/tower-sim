@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import re
 from dataclasses import replace
 from pathlib import Path
 from typing import Any, Dict, List, Protocol
@@ -70,7 +71,7 @@ def run_resource_optimizer(task: str, args: Dict[str, Any]) -> Dict[str, Any]:
             return _fail_closed(task, [f"missing_table:{path}" for path in missing_tables])
         actions = _stone_actions(snapshot)
         data_complete = False
-        incomplete_reasons = ["stone_actions_uw_uwplus_assist_not_implemented"]
+        incomplete_reasons = ["stone_actions_uw_uwplus_state_integration_not_implemented"]
     elif task == "OPTIMIZE_COINS":
         actions = _placeholder_actions("coins")
         data_complete = False
@@ -232,6 +233,12 @@ def _row_from_ineligible(action: Dict[str, Any], baseline_value: Any) -> Dict[st
 
 def _stone_actions(snapshot: AccountSnapshot) -> List[Dict[str, Any]]:
     card_masteries = _load_card_masteries()
+    uw_purchase_costs = _load_uw_purchase_costs()
+    uw_track_costs = _load_uw_track_ladders()
+    uw_plus_costs = _load_uw_plus_ladders()
+    assist_efficiency_costs = _load_assist_efficiency_costs()
+    assist_slot_unlock_cost = _load_assist_slot_unlock_cost()
+    assist_rarity_costs = _load_assist_unique_rarity_costs()
     actions: List[Dict[str, Any]] = []
     for preset_name in _optimizer_presets(snapshot):
         equipped = snapshot.card_presets.get(preset_name, [])
@@ -249,9 +256,257 @@ def _stone_actions(snapshot: AccountSnapshot) -> List[Dict[str, Any]]:
                     stone_cost=stone_cost,
                 )
             )
+
+    uw_state = _parse_uw_rows(snapshot)
+    next_uw_unlock_cost = uw_purchase_costs.get(uw_state["uw_unlocked_count"] + 1)
+    if next_uw_unlock_cost is not None:
+        for uw_name in uw_state["locked_uws"]:
+            actions.append(
+                _uw_unlock_action(
+                    uw_name=uw_name,
+                    stone_cost=float(next_uw_unlock_cost),
+                )
+            )
+
+    next_uw_plus_unlock_cost = uw_purchase_costs.get(
+        "uw_plus", {}
+    ).get(uw_state["uw_plus_unlocked_count"] + 1)
+    if next_uw_plus_unlock_cost is not None:
+        for uw_name in uw_state["uw_plus_locked"]:
+            actions.append(
+                _uw_plus_unlock_action(
+                    uw_name=uw_name,
+                    stone_cost=float(next_uw_plus_unlock_cost),
+                )
+            )
+
+    for track in uw_state["uw_tracks"]:
+        next_level = track["current_level"] + 1
+        key = (track["uw_name"], track["track_name"], next_level)
+        next_cost = uw_track_costs.get(key)
+        if next_cost is None:
+            continue
+        actions.append(
+            _uw_track_upgrade_action(
+                uw_name=track["uw_name"],
+                track_name=track["track_name"],
+                next_level=next_level,
+                stone_cost=float(next_cost),
+            )
+        )
+
+    for plus_track in uw_state["uw_plus_tracks"]:
+        next_level = plus_track["current_level"] + 1
+        key = (plus_track["uw_name"], plus_track["plus_track_name"], next_level)
+        next_cost = uw_plus_costs.get(key)
+        if next_cost is None:
+            continue
+        actions.append(
+            _uw_plus_track_upgrade_action(
+                uw_name=plus_track["uw_name"],
+                plus_track_name=plus_track["plus_track_name"],
+                next_level=next_level,
+                stone_cost=float(next_cost),
+            )
+        )
+
+    for slot_type, state in snapshot.module_system_state.items():
+        if not state.assist_unlocked:
+            actions.append(
+                _assist_slot_unlock_action(
+                    slot_type=slot_type,
+                    stone_cost=assist_slot_unlock_cost,
+                )
+            )
+            continue
+
+        next_rarity = _next_assist_rarity(state.rarity_cap, assist_rarity_costs)
+        if next_rarity is not None:
+            actions.append(
+                _assist_rarity_upgrade_action(
+                    slot_type=slot_type,
+                    current_rarity=state.rarity_cap or "Locked",
+                    next_rarity=next_rarity,
+                    stone_cost=float(assist_rarity_costs[(state.rarity_cap or "Locked", next_rarity)]),
+                )
+            )
+
+        multiplier_level = _assist_cap_level_from_percent(state.multiplier_cap)
+        if multiplier_level is not None and (multiplier_level + 1) in assist_efficiency_costs:
+            actions.append(
+                _assist_efficiency_action(
+                    slot_type=slot_type,
+                    target="multiplier",
+                    next_level=multiplier_level + 1,
+                    stone_cost=float(assist_efficiency_costs[multiplier_level + 1]),
+                )
+            )
+
+        substat_level = _assist_cap_level_from_percent(state.substat_cap)
+        if substat_level is not None and (substat_level + 1) in assist_efficiency_costs:
+            actions.append(
+                _assist_efficiency_action(
+                    slot_type=slot_type,
+                    target="substat",
+                    next_level=substat_level + 1,
+                    stone_cost=float(assist_efficiency_costs[substat_level + 1]),
+                )
+            )
+
     if not actions:
         return _placeholder_actions("stones")
     return actions
+
+
+def _assist_cap_level_from_percent(value: float | None) -> int | None:
+    if value is None:
+        return None
+    return max(0, int(round((float(value) * 100.0) - 1.0)))
+
+
+def _next_assist_rarity(
+    current_rarity: str | None,
+    rarity_costs: Dict[tuple[str, str], int],
+) -> str | None:
+    source = current_rarity or "Locked"
+    for from_rarity, to_rarity in rarity_costs:
+        if from_rarity == source:
+            return to_rarity
+    return None
+
+
+def _assist_slot_unlock_action(*, slot_type: str, stone_cost: float) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        state = snapshot.module_system_state[slot_type]
+        patched = replace(state, assist_unlocked=True, rarity_cap="Epic")
+        return replace(snapshot, module_system_state={**snapshot.module_system_state, slot_type: patched})
+
+    return {
+        "action_id": f"assist_slot_unlock::{slot_type}",
+        "action_label": f"{slot_type}: unlock assist slot",
+        "eligible": True,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": _apply_unlock,
+        "notes": "assist_slot_unlock_costs_v1",
+    }
+
+
+def _assist_rarity_upgrade_action(
+    *,
+    slot_type: str,
+    current_rarity: str,
+    next_rarity: str,
+    stone_cost: float,
+) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        state = snapshot.module_system_state[slot_type]
+        patched = replace(state, rarity_cap=next_rarity)
+        return replace(snapshot, module_system_state={**snapshot.module_system_state, slot_type: patched})
+
+    return {
+        "action_id": f"assist_rarity_upgrade::{slot_type}::{current_rarity}->{next_rarity}",
+        "action_label": f"{slot_type}: rarity cap {current_rarity} -> {next_rarity}",
+        "eligible": True,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": _apply_unlock,
+        "notes": "assist_unique_rarity_upgrade_costs_v1",
+    }
+
+
+def _assist_efficiency_action(
+    *,
+    slot_type: str,
+    target: str,
+    next_level: int,
+    stone_cost: float,
+) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        state = snapshot.module_system_state[slot_type]
+        next_percent = (next_level + 1) / 100.0
+        if target == "multiplier":
+            patched = replace(state, multiplier_cap=next_percent)
+        else:
+            patched = replace(state, substat_cap=next_percent)
+        return replace(snapshot, module_system_state={**snapshot.module_system_state, slot_type: patched})
+
+    return {
+        "action_id": f"assist_efficiency_upgrade::{slot_type}::{target}::{next_level}",
+        "action_label": f"{slot_type}: {target} efficiency -> level {next_level}",
+        "eligible": True,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": _apply_unlock,
+        "notes": "assist_efficiency_upgrade_costs_v1",
+    }
+
+
+def _uw_unlock_action(*, uw_name: str, stone_cost: float) -> Dict[str, Any]:
+    def _apply_unlock(snapshot: AccountSnapshot) -> AccountSnapshot:
+        current = snapshot.ultimate_weapons.get(uw_name)
+        if current is None:
+            return snapshot
+        patched = replace(current, unlocked="UW Unlocked")
+        return replace(snapshot, ultimate_weapons={**snapshot.ultimate_weapons, uw_name: patched})
+
+    return {
+        "action_id": f"uw_unlock::{uw_name}",
+        "action_label": f"Unlock UW: {uw_name}",
+        "eligible": False,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": _apply_unlock,
+        "notes": "uw_purchase_costs_v1_state_integration_pending",
+    }
+
+
+def _uw_plus_unlock_action(*, uw_name: str, stone_cost: float) -> Dict[str, Any]:
+    return {
+        "action_id": f"uw_plus_unlock::{uw_name}",
+        "action_label": f"Unlock UW+: {uw_name}",
+        "eligible": False,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": lambda snapshot: snapshot,
+        "notes": "uw_purchase_costs_v1_state_integration_pending",
+    }
+
+
+def _uw_track_upgrade_action(
+    *,
+    uw_name: str,
+    track_name: str,
+    next_level: int,
+    stone_cost: float,
+) -> Dict[str, Any]:
+    return {
+        "action_id": f"uw_track_upgrade::{uw_name}::{track_name}::{next_level}",
+        "action_label": f"{uw_name}: {track_name} -> level {next_level}",
+        "eligible": False,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": lambda snapshot: snapshot,
+        "notes": "uw_track_ladders_v1_state_integration_pending",
+    }
+
+
+def _uw_plus_track_upgrade_action(
+    *,
+    uw_name: str,
+    plus_track_name: str,
+    next_level: int,
+    stone_cost: float,
+) -> Dict[str, Any]:
+    return {
+        "action_id": f"uw_plus_track_upgrade::{uw_name}::{plus_track_name}::{next_level}",
+        "action_label": f"{uw_name}+: {plus_track_name} -> level {next_level}",
+        "eligible": False,
+        "cost": float(stone_cost),
+        "resource_unit": "stones",
+        "apply_unlock": lambda snapshot: snapshot,
+        "notes": "uw_plus_ladders_v1_state_integration_pending",
+    }
 
 
 def _mastery_action(
@@ -304,6 +559,177 @@ def _load_card_masteries() -> Dict[str, int]:
         reader = csv.DictReader(handle)
         for row in reader:
             values[row["card_mastery"]] = int(row["stone_cost"])
+    return values
+
+
+def _load_uw_purchase_costs() -> Dict[str | int, Dict[int, int] | int]:
+    path = Path("tables/uw_purchase_costs_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/uw_purchase_costs_v1.csv")
+    uw_costs: Dict[int, int] = {}
+    uw_plus_costs: Dict[int, int] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            uw_costs[int(row["uw_unlock_count"])] = int(row["uw_unlock_cost"])
+            uw_plus_costs[int(row["uw_plus_unlock_count"])] = int(row["uw_plus_unlock_cost"])
+    if not uw_costs or not uw_plus_costs:
+        raise OptimizerDataError("uw_purchase_costs_v1.csv is empty.")
+    data: Dict[str | int, Dict[int, int] | int] = dict(uw_costs)
+    data["uw_plus"] = uw_plus_costs
+    return data
+
+
+def _load_uw_track_ladders() -> Dict[tuple[str, str, int], int]:
+    path = Path("tables/uw_track_ladders_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/uw_track_ladders_v1.csv")
+    values: Dict[tuple[str, str, int], int] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            cost = row.get("cost", "").strip()
+            if not cost:
+                continue
+            key = (row["uw_name"], row["track_name"], int(row["level_index"]))
+            values[key] = int(cost)
+    if not values:
+        raise OptimizerDataError("uw_track_ladders_v1.csv has no usable rows.")
+    return values
+
+
+def _load_uw_plus_ladders() -> Dict[tuple[str, str, int], int]:
+    path = Path("tables/uw_plus_ladders_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/uw_plus_ladders_v1.csv")
+    values: Dict[tuple[str, str, int], int] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            cost = row.get("cost", "").strip()
+            if not cost:
+                continue
+            key = (row["uw_name"], row["plus_track_name"], int(row["level_index"]))
+            values[key] = int(cost)
+    if not values:
+        raise OptimizerDataError("uw_plus_ladders_v1.csv has no usable rows.")
+    return values
+
+
+def _parse_uw_rows(snapshot: AccountSnapshot) -> Dict[str, Any]:
+    rows = snapshot.raw_sections.get("UWs", [])
+    uw_unlocked_count = 0
+    uw_plus_unlocked_count = 0
+    locked_uws: List[str] = []
+    uw_plus_locked: List[str] = []
+    uw_tracks: List[Dict[str, Any]] = []
+    uw_plus_tracks: List[Dict[str, Any]] = []
+
+    for i in range(0, len(rows), 4):
+        block = rows[i : i + 4]
+        if len(block) < 4:
+            continue
+        uw_name = block[0][0].strip() if block[0] else ""
+        if not uw_name:
+            continue
+
+        is_unlocked = (block[2][0].strip().lower() == "true") if len(block[2]) > 0 else False
+        if is_unlocked:
+            uw_unlocked_count += 1
+        else:
+            locked_uws.append(uw_name)
+
+        for track_row in block[:3]:
+            if len(track_row) < 5:
+                continue
+            track_name = track_row[2].strip()
+            if not track_name:
+                continue
+            current_level = _parse_level_from_display(track_row[4])
+            if current_level is None:
+                continue
+            uw_tracks.append(
+                {
+                    "uw_name": uw_name,
+                    "track_name": track_name,
+                    "current_level": current_level,
+                }
+            )
+
+        plus_row = block[3]
+        plus_track_name = plus_row[2].strip() if len(plus_row) > 2 else ""
+        plus_current = plus_row[3].strip() if len(plus_row) > 3 else ""
+        plus_display = plus_row[4].strip() if len(plus_row) > 4 else ""
+
+        if plus_track_name:
+            if plus_current.lower() == "locked":
+                uw_plus_locked.append(uw_name)
+            else:
+                uw_plus_unlocked_count += 1
+                plus_level = _parse_level_from_display(plus_display)
+                if plus_level is not None:
+                    uw_plus_tracks.append(
+                        {
+                            "uw_name": uw_name,
+                            "plus_track_name": plus_track_name,
+                            "current_level": plus_level,
+                        }
+                    )
+
+    return {
+        "uw_unlocked_count": uw_unlocked_count,
+        "uw_plus_unlocked_count": uw_plus_unlocked_count,
+        "locked_uws": locked_uws,
+        "uw_plus_locked": uw_plus_locked,
+        "uw_tracks": uw_tracks,
+        "uw_plus_tracks": uw_plus_tracks,
+    }
+
+
+def _parse_level_from_display(value: str) -> int | None:
+    match = re.match(r"\s*(\d+)", value or "")
+    if match is None:
+        return None
+    return int(match.group(1))
+
+
+def _load_assist_efficiency_costs() -> Dict[int, int]:
+    path = Path("tables/assist_efficiency_upgrade_costs_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/assist_efficiency_upgrade_costs_v1.csv")
+    values: Dict[int, int] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            values[int(row["assist_level"])] = int(row["stone_cost"])
+    if not values:
+        raise OptimizerDataError("assist_efficiency_upgrade_costs_v1.csv is empty.")
+    return values
+
+
+def _load_assist_slot_unlock_cost() -> int:
+    path = Path("tables/assist_slot_unlock_costs_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/assist_slot_unlock_costs_v1.csv")
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        rows = list(reader)
+    if not rows:
+        raise OptimizerDataError("assist_slot_unlock_costs_v1.csv is empty.")
+    return int(rows[0]["stone_cost"])
+
+
+def _load_assist_unique_rarity_costs() -> Dict[tuple[str, str], int]:
+    path = Path("tables/assist_unique_rarity_upgrade_costs_v1.csv")
+    if not path.exists():
+        raise OptimizerDataError("Missing required table: tables/assist_unique_rarity_upgrade_costs_v1.csv")
+    values: Dict[tuple[str, str], int] = {}
+    with path.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            values[(row["from_rarity"], row["to_rarity"])] = int(row["stone_cost"])
+    if not values:
+        raise OptimizerDataError("assist_unique_rarity_upgrade_costs_v1.csv is empty.")
     return values
 
 
