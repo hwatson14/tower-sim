@@ -697,6 +697,7 @@ def _search_wmax(
         return None, None, None, None, [], {}, ["wave_limit"]
 
     cache: Dict[int, Tuple[Dict[str, Any], bool, Dict[str, Any]]] = {}
+    failure_snapshots: Dict[int, Dict[str, Any]] = {}
     history: List[Dict[str, Any]] = []
     failure_wave: Optional[int] = None
     failure_reason: Optional[str] = None
@@ -769,16 +770,17 @@ def _search_wmax(
         cache[wave] = (entry, success, result)
         history.append(entry)
         if not success:
+            failure_snapshots[wave] = _build_failure_snapshot(
+                problem_spec=problem_spec,
+                survivability_stats=survivability_stats,
+                wave=wave,
+                wave_damage=wave_damage,
+                result=result,
+            )
             if failure_wave is None or wave < failure_wave:
                 failure_wave = wave
                 failure_reason = outcome
-                failure_snapshot = _build_failure_snapshot(
-                    problem_spec=problem_spec,
-                    survivability_stats=survivability_stats,
-                    wave=wave,
-                    wave_damage=wave_damage,
-                    result=result,
-                )
+                failure_snapshot = failure_snapshots[wave]
         return entry, success, []
 
     def check_monotonicity() -> Tuple[Optional[bool], List[str]]:
@@ -880,6 +882,17 @@ def _search_wmax(
         w_max = last_success
 
     trace = history[-trace_depth:] if history else []
+
+    if w_max < max_wave:
+        boundary_wave = w_max + 1
+        _, boundary_success, boundary_missing = evaluate_wave(boundary_wave)
+        if boundary_missing:
+            return None, None, None, None, [], diagnostics, boundary_missing
+        if boundary_success is False:
+            failure_wave = boundary_wave
+            failure_reason = cache[boundary_wave][0].get("outcome")
+            failure_snapshot = failure_snapshots.get(boundary_wave)
+
     diagnostics.update(
         {
             "max_wave": max_wave,
