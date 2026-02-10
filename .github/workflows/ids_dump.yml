@@ -3,10 +3,6 @@ name: IDS dump
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: "Git ref to run (branch/sha)"
-        required: false
-        default: "main"
       ids_path:
         description: "Path to _IDS.csv"
         required: false
@@ -36,6 +32,8 @@ on:
         required: false
         default: ""
   push:
+    branches:
+      - main
     paths:
       - "**/_IDS.csv"
 
@@ -50,7 +48,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.ref || github.ref }}
+          ref: main
           fetch-depth: 0
 
       - name: Set up Python
@@ -68,18 +66,21 @@ jobs:
         run: |
           PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
             --ids-path "${IDS_PATH}" \
-            --output-dir audit \
+            --output-dir out \
             $([ "${INCLUDE_PIPELINE}" = "true" ] && echo "--include-pipeline") \
             $([ "${INCLUDE_RUN_STATS}" = "true" ] && echo "--include-run-stats") \
             $([ "${INCLUDE_STATBOOK_ROWS}" = "true" ] && echo "--include-statbook-rows") \
             $([ -n "${STATBOOK_ALLOWLIST}" ] && echo "--statbook-allowlist ${STATBOOK_ALLOWLIST}") \
             $([ "${INCLUDE_MAX_WAVE}" = "true" ] && echo "--include-max-wave") \
             $([ -n "${PROBLEM_SPEC}" ] && echo "--problem-spec ${PROBLEM_SPEC}")
-          cp audit/account_snapshot.json audit/ids_dump_latest.json
-          cp audit/base_stats.json audit/base_stats_latest.json
-          cp audit/inventory.json audit/inventory_latest.json
-          cp audit/loadout.json audit/loadout_latest.json
-          echo "Wrote audit/ids_dump_latest.json"
+          cp out/account_snapshot.json out/ids_dump_latest.json
+          cp out/base_stats.json out/base_stats_latest.json
+          cp out/inventory.json out/inventory_latest.json
+          cp out/loadout.json out/loadout_latest.json
+          cp out/base_stats_components.json out/base_stats_components_latest.json
+          cp out/inventory_components.json out/inventory_components_latest.json
+          cp out/run_stats.json out/run_stats_latest.json
+          echo "Wrote out/ids_dump_latest.json"
         env:
           IDS_PATH: ${{ inputs.ids_path || 'tests/fixtures/tower-sim-data/_IDS.csv' }}
           INCLUDE_PIPELINE: ${{ inputs.include_pipeline || 'true' }}
@@ -94,32 +95,30 @@ jobs:
         with:
           name: ids-dump
           path: |
-            audit/ids_dump_latest.json
-            audit/base_stats_latest.json
-            audit/inventory_latest.json
-            audit/loadout_latest.json
+            out/ids_dump_latest.json
+            out/base_stats_latest.json
+            out/inventory_latest.json
+            out/loadout_latest.json
+            out/base_stats_components_latest.json
+            out/inventory_components_latest.json
+            out/run_stats_latest.json
           if-no-files-found: error
 
-      - name: Publish latest IDS dump artifacts branch
+      - name: Commit latest IDS dump artifacts to current branch
         run: |
           set -euo pipefail
-          tmp_dir="$(mktemp -d)"
-          cp audit/ids_dump_latest.json "$tmp_dir/ids_dump_latest.json"
-          cp audit/base_stats_latest.json "$tmp_dir/base_stats_latest.json"
-          cp audit/inventory_latest.json "$tmp_dir/inventory_latest.json"
-          cp audit/loadout_latest.json "$tmp_dir/loadout_latest.json"
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git checkout --orphan ids-dump-latest
-          git rm -rf .
-          mkdir -p audit
-          cp "$tmp_dir/ids_dump_latest.json" audit/ids_dump_latest.json
-          cp "$tmp_dir/base_stats_latest.json" audit/base_stats_latest.json
-          cp "$tmp_dir/inventory_latest.json" audit/inventory_latest.json
-          cp "$tmp_dir/loadout_latest.json" audit/loadout_latest.json
-          git add audit/ids_dump_latest.json
-          git add audit/base_stats_latest.json
-          git add audit/inventory_latest.json
-          git add audit/loadout_latest.json
+          git add out/ids_dump_latest.json
+          git add out/base_stats_latest.json
+          git add out/inventory_latest.json
+          git add out/loadout_latest.json
+          git add out/base_stats_components_latest.json
+          git add out/inventory_components_latest.json
+          git add out/run_stats_latest.json
+          if git diff --cached --quiet; then
+            echo "No artifact changes to commit."
+            exit 0
+          fi
           git commit -m "Update latest IDS dump artifacts"
-          git push --force origin ids-dump-latest
+          git push origin HEAD

@@ -68,22 +68,21 @@ If something is unclear, it likely belongs in one of the documents above rather 
 ## Agent quickstart: base stats, inventory, loadout
 
 If you want an agent to **fetch the latest inventory/loadout/base stats without
-running scripts**, use the `ids-dump-latest` branch published by the IDS dump
-workflow. The workflow writes and force-updates the following files on that
-branch, which you can fetch over HTTPS from GitHub:
+running scripts**, use the repository's `main` branch. The IDS dump workflow updates the
+following files in `out/`, which you can fetch over HTTPS from GitHub:
 
-- `audit/ids_dump_latest.json` (canonical snapshot payload)
-- `audit/base_stats_latest.json`
-- `audit/inventory_latest.json`
-- `audit/loadout_latest.json`
-- `audit/base_stats_components_latest.json`
-- `audit/inventory_components_latest.json`
-- `audit/run_stats_latest.json`
+- `out/ids_dump_latest.json` (canonical snapshot payload)
+- `out/base_stats_latest.json`
+- `out/inventory_latest.json`
+- `out/loadout_latest.json`
+- `out/base_stats_components_latest.json`
+- `out/inventory_components_latest.json`
+- `out/run_stats_latest.json`
 
 Example (raw file URL; replace `<org>` and `<repo>` as needed):
 
 ```
-https://raw.githubusercontent.com/<org>/<repo>/ids-dump-latest/audit/inventory_latest.json
+https://raw.githubusercontent.com/<org>/<repo>/main/out/inventory_latest.json
 ```
 
 If you are wiring a ChatGPT agent (or any tool runner) to pull deterministic player
@@ -94,21 +93,21 @@ is stable and fail-closed when required sections are missing.
 ```bash
 PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
   --ids-path /path/to/_IDS.csv \
-  --output-dir ./audit
+  --output-dir ./out
 ```
 
 After running the command, confirm the IDS dump artifacts land under the exact
-path `audit/account_snapshot.json` (same folder for the summary/diff JSON). This
+path `out/account_snapshot.json` (same folder for the summary/diff JSON). This
 snapshot is the full, canonical account state; the additional files below are
 convenience extracts so agents can fetch a single slice without parsing the full
 payload. The script writes dedicated extracts at:
 
-- `audit/base_stats.json`
-- `audit/inventory.json`
-- `audit/loadout.json`
-- `audit/base_stats_components.json`
-- `audit/inventory_components.json`
-- `audit/run_stats.json`
+- `out/base_stats.json`
+- `out/inventory.json`
+- `out/loadout.json`
+- `out/base_stats_components.json`
+- `out/inventory_components.json`
+- `out/run_stats.json`
 
 The script does not delete the files at the end of the job, so they should
 remain on disk until you remove them. Key fields:
@@ -126,7 +125,7 @@ If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 
 **How does my agent know what to call?**  
 If you do not want the agent running scripts, have it download the latest files
-from the `ids-dump-latest` branch (examples above). If you are running locally,
+from the `main` branch (examples above). If you are running locally,
 your agent can call the `dump_ids_diagnostics.py` script (or an equivalent
 wrapper around it) and then read the resulting JSON file. The single call above
 produces everything it needs for base stats, inventory, and loadout in one

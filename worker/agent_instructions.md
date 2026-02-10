@@ -39,3 +39,8 @@ Use `runOptimiserTask` **only** when the user requests:
 - If the user asks for **verbatim output**, return the artifact payload exactly.
 - Summaries and interpretations are allowed unless the user requests verbatim output.
 - For optimiser failures, return the error payload and **do not guess**.
+
+## Snapshot artifact location
+- Publish latest snapshot artifacts to top-level `out/` so both humans and the worker can inspect/debug them.
+- Keep filenames stable (for example `*_latest.json`) and overwrite in place each run.
+- Worker lookup checks `out/` first, then `audit/`, then repository root unless `SNAPSHOT_DIRS` is overridden.

@@ -7,4 +7,4 @@ GITHUB_OWNER = "hwatson14"
 GITHUB_REPO  = "tower-sim"
 
 # SnapshotReader source (precomputed)
-SNAPSHOT_REF = "ids-dump-latest"
+SNAPSHOT_REF = "main"
