@@ -24,6 +24,7 @@ from tower_sim.loaders.wiki.cards import CardEffect, get_card_effect
 from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 from tower_sim.loaders.wiki.assist_module_labs import AssistLabLevels
 from tower_sim.loaders.bc_heat_loader import load_heat_bundle
+from tower_sim.registry.combat_stat_contract import required_survivability_stat_ids
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import BossSurvivabilitySpec, ProblemSpec, ScenarioSpec
@@ -86,15 +87,7 @@ class SurvivabilityVerdict:
     outcome: str
 
 
-STAT_IDS_SURVIVABILITY = (
-    "tower_hp",
-    "tower_regen",
-    "def_pct",
-    "wall_hp",
-    "wall_regen",
-    "thorns_damage_mult",
-    "plasma_cannon_damage_mult",
-)
+STAT_IDS_SURVIVABILITY = required_survivability_stat_ids(include_optional_offense=True)
 
 _RELEVANT_SUBSTATS = {
     "Health Regen",

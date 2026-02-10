@@ -1,12 +1,24 @@
 from __future__ import annotations
 
-from dataclasses import asdict
-from functools import lru_cache
+from dataclasses import asdict, dataclass
 from pathlib import Path
 from math import isfinite
-from typing import Any, Dict, Iterable, List, Optional, Tuple
+import time
+from typing import Any, Dict, List, Optional, Tuple
 
 from tower_sim.engines.combat.boss_engine import BossCombatEngine, BossCombatInputs, MissingMechanicError
+from tower_sim.engines.combat_stat_derivation import (
+    build_canonical_stat_inputs,
+    build_canonical_wave_row,
+    build_canonical_wave_snapshot,
+    cached_tournament_heat_table,
+    canonical_stat_inputs_for_wave,
+    derive_canonical_combat_snapshot,
+    resolve_canonical_heat_magnitudes,
+    resolve_canonical_wave_damage,
+    resolve_canonical_wave_damage_for_attack_wave,
+    validate_boss_survivability_spec,
+)
 from tower_sim.engines.combat.boss_survivability import (
     BossContext,
     BossDataError,
@@ -15,16 +27,12 @@ from tower_sim.engines.combat.boss_survivability import (
     resolve_boss_fight,
 )
 from tower_sim.libs.boss_hit_interval import BossHitIntervalError, boss_hit_interval_seconds
-from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
-from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
-from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
 from tower_sim.engines.stat_engine import StatEngine, StatInput
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.registry.stat_registry import Phase, default_registry
-from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
+from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.engines.tier_rules import build_tier_rules
@@ -43,111 +51,71 @@ from tower_sim.engines.wave_time import wa_reduction_from_snapshot, wave_seconds
 from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
 
 
-@lru_cache(maxsize=1)
-def _cached_tournament_heat_table(scale_path: str, registry_path: str):
-    """Cache parsed tournament heat table for repeated per-wave MAX_WAVE lookups.
-
-    Provenance: tables/heat_scale_long.csv + tables/heat_bc_registry.csv
-    via tower_sim.loaders.bc_heat_loader.load_tournament_heat_table.
-    """
-    return load_tournament_heat_table(Path(scale_path), Path(registry_path))
-
-
 class MaxWaveEvaluator:
     def __init__(self, bc_table_path: Optional[Path] = None) -> None:
         self._bc_table_path = bc_table_path
+
+    def preflight(
+        self,
+        problem_spec: ProblemSpec,
+        ids_snapshot: AccountSnapshot,
+    ) -> Dict[str, Any]:
+        preflight = _run_preflight(problem_spec=problem_spec, ids_snapshot=ids_snapshot)
+        return {
+            "evaluator": problem_spec.evaluator,
+            "fail_closed": bool(preflight.missing or preflight.override_collisions),
+            "missing": preflight.missing,
+            "override_collisions": preflight.override_collisions,
+            "w_max": None,
+            "diagnostics": preflight.diagnostics,
+            "assumptions_manifest": preflight.assumptions_manifest,
+        }
 
     def evaluate(
         self,
         problem_spec: ProblemSpec,
         ids_snapshot: AccountSnapshot,
     ) -> Dict[str, Any]:
-        missing: List[str] = []
-        diagnostics: Dict[str, Any] = {}
-
-        run_context = RunContext.from_mode(
-            problem_spec.scenario.mode,
-            tier=str(problem_spec.scenario.tier),
-        )
-
-        spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
-        compiled = compile_full_stat_inputs(ids_snapshot)
-        stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
-        if compiled.missing:
-            diagnostics["compiled_missing"] = compiled.missing
-
-        wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
-        if wave_state is not None:
-            diagnostics["wave_state"] = asdict(wave_state)
-        if wave_state_missing:
-            diagnostics["missing_wave_state"] = wave_state_missing
-            missing.extend(wave_state_missing)
-
-        tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
-        if tier_rule_missing:
-            diagnostics["missing_tier_rules"] = tier_rule_missing
-            missing.extend(tier_rule_missing)
-        registry = default_registry()
-        stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
-        if invalid_stat_inputs:
-            diagnostics["invalid_stat_inputs"] = invalid_stat_inputs
-            missing.extend(invalid_stat_inputs)
-        missing_stat_inputs = _missing_required_stat_inputs(stat_inputs)
-        if missing_stat_inputs:
-            diagnostics["missing_stat_inputs"] = missing_stat_inputs
-            missing.extend(missing_stat_inputs)
-
-        wave_damage, wave_damage_missing = _resolve_wave_damage(
-            problem_spec, wave_state, diagnostics
-        )
-        if wave_damage_missing:
-            diagnostics["missing_wave_damage"] = wave_damage_missing
-            missing.extend(wave_damage_missing)
-        boss_missing, boss_diagnostics = _validate_boss_survivability_inputs(problem_spec)
-        if boss_missing:
-            diagnostics["missing_boss_survivability"] = boss_missing
-            missing.extend(boss_missing)
-        if boss_diagnostics:
-            diagnostics["boss_survivability_validation"] = boss_diagnostics
-        _resolve_heat_magnitudes(
-            problem_spec,
-            registry,
-            wave=problem_spec.scenario.wave,
-            missing=missing,
-            diagnostics=diagnostics,
-        )
-
-        assumptions_manifest = _build_assumptions_manifest(problem_spec)
-        missing = sorted(set(missing))
-        if missing:
+        preflight = _run_preflight(problem_spec=problem_spec, ids_snapshot=ids_snapshot)
+        if preflight.missing or preflight.override_collisions:
             return {
                 "evaluator": problem_spec.evaluator,
                 "fail_closed": True,
-                "missing": missing,
+                "missing": preflight.missing,
+                "override_collisions": preflight.override_collisions,
                 "w_max": None,
-                "diagnostics": diagnostics,
-                "assumptions_manifest": assumptions_manifest,
+                "diagnostics": preflight.diagnostics,
+                "assumptions_manifest": preflight.assumptions_manifest,
             }
 
-        engine = StatEngine(registry=registry)
+        diagnostics = dict(preflight.diagnostics)
+        missing: List[str] = []
+
+        engine = StatEngine(registry=preflight.registry)
         engine_result = None
         engine_result_base = None
         try:
-            if tier_rules is None:
-                engine_result = engine.build(stat_inputs, wave_state=wave_state)
-                engine_result_base = engine.build(stat_inputs)
+            if preflight.tier_rules is None:
+                engine_result = engine.build(preflight.stat_inputs, wave_state=preflight.wave_state)
+                engine_result_base = engine.build(preflight.stat_inputs)
             else:
                 engine_result = engine.build_with_tier_rules(
-                    stat_inputs, tier_rules, wave_state=wave_state
+                    preflight.stat_inputs,
+                    preflight.tier_rules,
+                    wave_state=preflight.wave_state,
                 )
-                engine_result_base = engine.build_with_tier_rules(stat_inputs, tier_rules)
+                engine_result_base = engine.build_with_tier_rules(
+                    preflight.stat_inputs,
+                    preflight.tier_rules,
+                )
             diagnostics["statbook_rows"] = len(engine_result.statbook.rows)
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
             missing.append("stat_engine")
-        stat_inputs_for_scenario_wave, perk_diag = _stat_inputs_for_wave(
-            registry=registry,
-            stat_inputs=stat_inputs,
+
+        stat_inputs_for_scenario_wave, perk_diag = canonical_stat_inputs_for_wave(
+            registry=preflight.registry,
+            stat_inputs=preflight.stat_inputs,
             scenario=problem_spec.scenario,
             wave=problem_spec.scenario.wave,
         )
@@ -157,10 +125,10 @@ class MaxWaveEvaluator:
             problem_spec,
             stat_inputs_for_scenario_wave,
             engine_result_base,
-            registry,
-            tier_rules,
-            run_context,
-            wave_state,
+            preflight.registry,
+            preflight.tier_rules,
+            preflight.run_context,
+            preflight.wave_state,
             ids_snapshot,
             missing,
             diagnostics,
@@ -172,30 +140,42 @@ class MaxWaveEvaluator:
                 "applied_heat": wave_snapshot.applied_heat,
             }
 
-        survivability_stats, survivability_missing = _resolve_survivability_stats(
+        combat_snapshot, survivability_missing = derive_canonical_combat_snapshot(
             engine_result_base, wave_snapshot
         )
+        if combat_snapshot is not None:
+            diagnostics["combat_snapshot_sources_scenario_wave"] = {
+                stat_id: [contrib.source for contrib in contribs]
+                for stat_id, contribs in combat_snapshot.contributions.items()
+            }
         uptime_diag = _build_timing_uptime_diagnostics(
             problem_spec=problem_spec,
             ids_snapshot=ids_snapshot,
             wave_snapshot=wave_snapshot,
         )
         diagnostics["timing_uptime"] = uptime_diag
-
         if survivability_missing:
             diagnostics["missing_survivability_stats"] = survivability_missing
             missing.extend(survivability_missing)
 
-        assumptions_manifest = _build_assumptions_manifest(problem_spec)
-        missing = sorted(set(missing))
+        wave_damage, wave_damage_missing, wave_damage_diag = resolve_canonical_wave_damage(
+            problem_spec=problem_spec,
+            wave_state=preflight.wave_state,
+        )
+        diagnostics.update({k: v for k, v in wave_damage_diag.items() if k not in diagnostics})
+        if wave_damage_missing:
+            diagnostics["missing_wave_damage"] = wave_damage_missing
+            missing.extend(wave_damage_missing)
+
         if missing:
             return {
                 "evaluator": problem_spec.evaluator,
                 "fail_closed": True,
-                "missing": missing,
+                "missing": sorted(set(missing)),
+                "override_collisions": [],
                 "w_max": None,
                 "diagnostics": diagnostics,
-                "assumptions_manifest": assumptions_manifest,
+                "assumptions_manifest": preflight.assumptions_manifest,
             }
 
         (
@@ -208,11 +188,11 @@ class MaxWaveEvaluator:
             search_missing,
         ) = _search_wmax(
             problem_spec=problem_spec,
-            stat_inputs=stat_inputs,
+            stat_inputs=preflight.stat_inputs,
             engine_result=engine_result_base,
-            registry=registry,
-            tier_rules=tier_rules,
-            run_context=run_context,
+            registry=preflight.registry,
+            tier_rules=preflight.tier_rules,
+            run_context=preflight.run_context,
             ids_snapshot=ids_snapshot,
         )
         if search_missing:
@@ -239,13 +219,114 @@ class MaxWaveEvaluator:
             "evaluator": problem_spec.evaluator,
             "fail_closed": fail_closed,
             "missing": missing,
+            "override_collisions": [],
             "w_max": w_max if not fail_closed else None,
             "failure_wave": None if fail_closed else failure_wave,
             "failure_reason": None if fail_closed else failure_reason,
             "at_failure_snapshot": None if fail_closed else failure_snapshot,
             "diagnostics": diagnostics,
-            "assumptions_manifest": assumptions_manifest,
+            "assumptions_manifest": preflight.assumptions_manifest,
         }
+
+
+@dataclass(frozen=True)
+class _PreflightResult:
+    missing: List[str]
+    override_collisions: List[str]
+    diagnostics: Dict[str, Any]
+    assumptions_manifest: Dict[str, Any]
+    stat_inputs: List[StatInput]
+    registry: Any
+    run_context: RunContext
+    tier_rules: Optional[Any]
+    wave_state: Optional[RunWaveState]
+
+
+def _run_preflight(
+    *,
+    problem_spec: ProblemSpec,
+    ids_snapshot: AccountSnapshot,
+) -> _PreflightResult:
+    preflight_started = time.perf_counter()
+    missing: List[str] = []
+    diagnostics: Dict[str, Any] = {}
+    override_collisions: List[str] = []
+    run_context = RunContext.from_mode(
+        problem_spec.scenario.mode,
+        tier=str(problem_spec.scenario.tier),
+    )
+
+    canonical_inputs = build_canonical_stat_inputs(
+        problem_spec=problem_spec,
+        ids_snapshot=ids_snapshot,
+        registry=default_registry(),
+    )
+    stat_inputs = canonical_inputs.stat_inputs
+    diagnostics["core_stat_override_policy"] = canonical_inputs.core_stat_override_policy
+    if canonical_inputs.compiled_missing:
+        diagnostics["compiled_missing"] = canonical_inputs.compiled_missing
+    if canonical_inputs.blocked_core_overrides:
+        diagnostics["blocked_core_stat_overrides"] = canonical_inputs.blocked_core_overrides
+        override_collisions = canonical_inputs.blocked_core_overrides
+    if canonical_inputs.invalid_stat_inputs:
+        diagnostics["invalid_stat_inputs"] = canonical_inputs.invalid_stat_inputs
+        missing.extend(canonical_inputs.invalid_stat_inputs)
+    if canonical_inputs.missing_required_stat_inputs:
+        diagnostics["missing_stat_inputs"] = canonical_inputs.missing_required_stat_inputs
+        missing.extend(canonical_inputs.missing_required_stat_inputs)
+
+    wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
+    if wave_state is not None:
+        diagnostics["wave_state"] = asdict(wave_state)
+    if wave_state_missing:
+        diagnostics["missing_wave_state"] = wave_state_missing
+        missing.extend(wave_state_missing)
+
+    tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+    if tier_rule_missing:
+        diagnostics["missing_tier_rules"] = tier_rule_missing
+        missing.extend(tier_rule_missing)
+    registry = default_registry()
+
+    wave_damage, wave_damage_missing, wave_damage_diag = resolve_canonical_wave_damage(
+        problem_spec=problem_spec,
+        wave_state=wave_state,
+    )
+    diagnostics.update(wave_damage_diag)
+    if wave_damage_missing:
+        diagnostics["missing_wave_damage"] = wave_damage_missing
+        missing.extend(wave_damage_missing)
+
+    boss_missing, boss_diagnostics = validate_boss_survivability_spec(problem_spec)
+    if boss_missing:
+        diagnostics["missing_boss_survivability"] = boss_missing
+        missing.extend(boss_missing)
+    if boss_diagnostics:
+        diagnostics["boss_survivability_validation"] = boss_diagnostics
+
+    _, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
+        problem_spec=problem_spec,
+        registry=registry,
+        wave=problem_spec.scenario.wave,
+    )
+    if heat_row is not None:
+        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave)] = heat_row
+    if heat_missing:
+        diagnostics["missing_heat"] = heat_missing
+        missing.extend(heat_missing)
+
+    diagnostics["preflight_ms"] = (time.perf_counter() - preflight_started) * 1000.0
+    return _PreflightResult(
+        missing=sorted(set(missing)),
+        override_collisions=sorted(set(override_collisions)),
+        diagnostics=diagnostics,
+        assumptions_manifest=_build_assumptions_manifest(problem_spec),
+        stat_inputs=stat_inputs,
+        registry=registry,
+        run_context=run_context,
+        tier_rules=tier_rules,
+        wave_state=wave_state,
+    )
 
 
 
@@ -280,54 +361,6 @@ def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
             "status": "provisional",
         },
     }
-
-def _missing_required_stat_inputs(stat_inputs: Iterable) -> List[str]:
-    required = {
-        "eals_pct",
-        "ehls_pct",
-        "orb_damage_mult",
-        "death_ray_damage_mult",
-        "thorns_damage_mult",
-        "plasma_cannon_damage_mult",
-        "knockback_mult",
-        "tower_hp",
-        "tower_regen",
-        "wall_hp",
-        "wall_regen",
-        "def_pct",
-    }
-    present = {stat_input.stat_id for stat_input in stat_inputs}
-    return [f"stat_input:{stat_id}" for stat_id in sorted(required - present)]
-
-
-def _merge_stat_inputs(
-    spec_inputs: List[StatInput],
-    compiled_inputs: List[StatInput],
-) -> List[StatInput]:
-    existing = {(item.stat_id, item.phase) for item in spec_inputs}
-    merged = list(spec_inputs)
-    for item in compiled_inputs:
-        if (item.stat_id, item.phase) in existing:
-            continue
-        merged.append(item)
-    return merged
-
-
-def _filter_known_stat_inputs(
-    stat_inputs: List[StatInput],
-    registry,
-) -> Tuple[List[StatInput], List[str]]:
-    filtered: List[StatInput] = []
-    invalid: List[str] = []
-    for item in stat_inputs:
-        try:
-            registry.validate_stat_id(item.stat_id)
-        except Exception:  # noqa: BLE001
-            invalid.append(item.stat_id)
-            continue
-        filtered.append(item)
-    return filtered, sorted(set(invalid))
-
 
 def _load_tier_rules(
     problem_spec: ProblemSpec,
@@ -384,42 +417,6 @@ def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], L
     return make_wave_state(scenario.wave, eals, ehls), missing
 
 
-def _resolve_wave_damage(
-    problem_spec: ProblemSpec,
-    wave_state,
-    diagnostics: Dict[str, Any],
-) -> Tuple[Optional[float], List[str]]:
-    missing: List[str] = []
-    scenario = problem_spec.scenario
-    wave_tier = scenario.wave_damage_tier
-    if wave_tier is None:
-        wave_tier = _default_wave_damage_tier(scenario)
-    if wave_tier is None:
-        missing.append("wave_damage_tier")
-        return None, missing
-
-    lib = EnemyWaveDamageLib.from_repo_tables()
-    wave = scenario.wave if wave_state is None else wave_state.W_attack
-    try:
-        damage = lib.wave_damage(wave_tier, wave)
-    except KeyError as exc:
-        missing.append("wave_damage_table")
-        diagnostics["wave_damage_error"] = str(exc)
-        return None, missing
-    diagnostics["wave_damage_tier"] = wave_tier
-    diagnostics["wave_damage_wave"] = wave
-    diagnostics["wave_damage"] = damage
-    return damage, missing
-
-
-def _default_wave_damage_tier(scenario) -> Optional[str]:
-    if scenario.mode == "farming":
-        return f"Tier {scenario.tier}"
-    if scenario.league:
-        return scenario.league
-    return None
-
-
 def _probe_boss_combat(
     problem_spec: ProblemSpec,
     engine_result,
@@ -429,25 +426,16 @@ def _probe_boss_combat(
     if engine_result is None or wave_damage is None:
         return "boss_combat_inputs"
     try:
-        start_stats = engine_result.run_stats.get(Phase.START_OF_RUN)
-        if start_stats is None:
+        combat_snapshot, combat_missing = derive_canonical_combat_snapshot(engine_result, wave_snapshot)
+        if combat_missing or combat_snapshot is None:
             return "boss_combat_inputs"
-        snapshot_values = wave_snapshot.values if wave_snapshot is not None else {}
-        tower_hp = snapshot_values.get("tower_hp", start_stats.values.get("tower_hp", 0.0))
-        tower_regen = snapshot_values.get(
-            "tower_regen", start_stats.values.get("tower_regen", 0.0)
-        )
-        defense_pct = snapshot_values.get("def_pct", start_stats.values.get("def_pct", 0.0))
-        thorns_pct = snapshot_values.get(
-            "thorns_damage_mult", start_stats.values.get("thorns_damage_mult")
-        )
         inputs = BossCombatInputs(
             wave=problem_spec.scenario.wave,
             wave_damage=wave_damage,
-            tower_hp=tower_hp,
-            tower_regen=tower_regen,
-            defense_pct=defense_pct,
-            thorns_pct=thorns_pct,
+            tower_hp=combat_snapshot.values["tower_hp"],
+            tower_regen=combat_snapshot.values["tower_regen"],
+            defense_pct=combat_snapshot.values["def_pct"],
+            thorns_pct=combat_snapshot.values["thorns_damage_mult"],
             pc_frac=None,
             pc_boss_mult=None,
             package_chance=None,
@@ -480,189 +468,40 @@ def _resolve_wave_snapshot(
     if engine_result is None:
         missing.append("wave_snapshot_inputs")
         return None
-    heat_magnitudes = _resolve_heat_magnitudes(
-        problem_spec,
-        registry,
-        wave=problem_spec.scenario.wave,
-        missing=missing,
-        diagnostics=diagnostics,
-    )
-    workshop_at_wave, workshop_missing = compile_workshop_values_at_wave(
-        ids_snapshot,
+    heat_magnitudes, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
+        problem_spec=problem_spec,
+        registry=registry,
         wave=problem_spec.scenario.wave,
     )
-    if workshop_missing:
-        missing.extend(workshop_missing)
-        return None
-
+    if heat_row is not None:
+        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave)] = heat_row
+    if heat_missing:
+        missing.extend(heat_missing)
     try:
-        return build_at_wave_snapshot(
+        wave_row = {
+            "wave": int(problem_spec.scenario.wave),
+            "enemy_attack_wave": int(wave_state.W_attack) if wave_state is not None else int(problem_spec.scenario.wave),
+            "enemy_health_wave": int(wave_state.W_health) if wave_state is not None else int(problem_spec.scenario.wave),
+        }
+        wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
+            ids_snapshot=ids_snapshot,
+            wave=problem_spec.scenario.wave,
             stat_inputs=stat_inputs,
             engine_result=engine_result,
             registry=registry,
             tier_rules=tier_rules,
-            battle_conditions=None,
-            wave_state=wave_state,
-            wave=problem_spec.scenario.wave,
             run_context=run_context,
             heat_magnitudes=heat_magnitudes,
-            per_wave_overrides=workshop_at_wave,
+            wave_row=wave_row,
         )
+        if wave_snapshot_missing:
+            missing.extend(wave_snapshot_missing)
+            return None
+        return wave_snapshot
     except StatSnapshotError as exc:
         missing.append("wave_snapshot")
         diagnostics["wave_snapshot_error"] = str(exc)
         return None
-
-
-def _resolve_heat_magnitudes(
-    problem_spec: ProblemSpec,
-    registry,
-    *,
-    wave: int,
-    missing: List[str],
-    diagnostics: Dict[str, Any],
-) -> Optional[Dict[str, float]]:
-    scenario = problem_spec.scenario
-    if scenario.mode != "tournament":
-        return None
-    if scenario.league is None:
-        missing.append("heat_league")
-        return None
-
-    row, row_missing = _build_wave_row(problem_spec, registry, wave=wave)
-    if row_missing:
-        missing.extend(row_missing)
-        return None
-    diagnostics.setdefault("wave_rows", {})[str(wave)] = row
-    return row.get("heat_magnitudes")
-
-
-def _stat_inputs_for_wave(
-    *,
-    registry,
-    stat_inputs: List,
-    scenario,
-    wave: int,
-) -> Tuple[List, Dict[str, Any]]:
-    if scenario.mode == "tournament":
-        return stat_inputs, {"enabled": False, "reason": "tournament_mode"}
-    return apply_perk_timeline_to_inputs(
-        registry=registry,
-        stat_inputs=stat_inputs,
-        perk_timeline_path=getattr(scenario, "perk_timeline_path", None),
-        current_wave=wave,
-    )
-
-
-def _build_wave_row(
-    problem_spec: ProblemSpec,
-    registry,
-    *,
-    wave: int,
-) -> Tuple[Optional[Dict[str, Any]], List[str]]:
-    wave_state, wave_missing = _resolve_wave_state_for_wave(problem_spec.scenario, wave)
-    if wave_missing or wave_state is None:
-        return None, wave_missing
-
-    row: Dict[str, Any] = {
-        # Wide-row v1 contract: MAX_WAVE consumes these stable keys directly.
-        "wave": int(wave),
-        "enemy_attack_wave": int(wave_state.W_attack),
-        "enemy_health_wave": int(wave_state.W_health),
-    }
-
-    if problem_spec.scenario.mode != "tournament":
-        return row, []
-
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "heat_scale_long.csv"
-    registry_path = Path(__file__).resolve().parents[2] / "tables" / "heat_bc_registry.csv"
-    try:
-        table = _cached_tournament_heat_table(str(table_path), str(registry_path))
-    except (HeatDataError, FileNotFoundError):
-        return None, ["heat_tables"]
-
-    league = (problem_spec.scenario.league or "").strip().lower()
-    if not league:
-        return None, ["heat_league"]
-
-    # Existing tier-rule provenance mapping reused for v1 tournament heat rows.
-    bc_to_stats = {
-        "orb_resistance:": ["orb_damage_mult"],
-        "death_ray_resistance:": ["death_ray_damage_mult"],
-        "thorns_resistance:": ["thorns_damage_mult"],
-        "plasma_cannon_resistance:": ["plasma_cannon_damage_mult"],
-        "knockback_resistance:": ["knockback_mult"],
-    }
-    bc_values: Dict[str, float] = {}
-    heat_magnitudes: Dict[str, float] = {}
-    for bc_id in bc_to_stats:
-        try:
-            value = table.value_at(league=league, wave_actual=wave, bc_id=bc_id).value_num
-        except HeatDataError:
-            continue
-        bc_values[bc_id] = float(value)
-        for stat_id in bc_to_stats[bc_id]:
-            registry.validate_stat_id(stat_id)
-            heat_magnitudes[stat_id] = float(value)
-
-    row["battle_conditions"] = bc_values
-    row["heat_magnitudes"] = heat_magnitudes
-    return row, []
-
-
-def _validate_boss_survivability_inputs(
-    problem_spec: ProblemSpec,
-) -> Tuple[List[str], Dict[str, Any]]:
-    missing: List[str] = []
-    diagnostics: Dict[str, Any] = {}
-    spec = problem_spec.scenario.boss_survivability
-    if spec is None:
-        missing.append("boss_survivability_inputs")
-        return missing, diagnostics
-    hit_interval_id = spec.combat_params.get("hit_interval_id", "default")
-    try:
-        boss_hit_interval_seconds(str(hit_interval_id))
-    except BossHitIntervalError as exc:
-        missing.append("boss_hit_interval")
-        diagnostics["boss_hit_interval_error"] = str(exc)
-    return missing, diagnostics
-
-
-def snapshot_at_wave(
-    wave: int,
-    *,
-    base_engine_result,
-    registry,
-    stat_inputs: List,
-    scenario,
-    tier_rules,
-    run_context: RunContext,
-    tables: Dict[str, Any],
-    ids_snapshot: AccountSnapshot,
-    wave_row: Dict[str, Any],
-) -> AtWaveSnapshot:
-    wave_state = _wave_state_from_row(wave_row)
-    workshop_at_wave, workshop_missing = compile_workshop_values_at_wave(
-        ids_snapshot,
-        wave=wave,
-    )
-    if workshop_missing:
-        raise StatSnapshotError(
-            "Missing workshop progression inputs: " + ", ".join(sorted(set(workshop_missing)))
-        )
-
-    return build_at_wave_snapshot(
-        stat_inputs=stat_inputs,
-        engine_result=base_engine_result,
-        registry=registry,
-        tier_rules=tier_rules,
-        battle_conditions=None,
-        wave_state=wave_state,
-        wave=wave,
-        run_context=run_context,
-        heat_magnitudes=tables.get("heat_magnitudes"),
-        per_wave_overrides=workshop_at_wave,
-    )
 
 
 def _search_wmax(
@@ -709,11 +548,11 @@ def _search_wmax(
             entry, success, _result = cache[wave]
             return entry, success, []
 
-        wave_row, wave_row_missing = _build_wave_row(problem_spec, registry, wave=wave)
+        wave_row, wave_row_missing = build_canonical_wave_row(problem_spec, registry, wave=wave)
         if wave_row_missing or wave_row is None:
             return None, None, wave_row_missing
 
-        stat_inputs_at_wave, perk_diag = _stat_inputs_for_wave(
+        stat_inputs_at_wave, perk_diag = canonical_stat_inputs_for_wave(
             registry=registry,
             stat_inputs=stat_inputs,
             scenario=scenario,
@@ -722,30 +561,39 @@ def _search_wmax(
         diagnostics.setdefault("perk_timeline", {})[str(wave)] = perk_diag
 
         try:
-            wave_snapshot = snapshot_at_wave(
-                wave,
-                base_engine_result=engine_result,
-                registry=registry,
+            wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
+                ids_snapshot=ids_snapshot,
+                wave=wave,
                 stat_inputs=stat_inputs_at_wave,
-                scenario=scenario,
+                engine_result=engine_result,
+                registry=registry,
                 tier_rules=tier_rules,
                 run_context=run_context,
-                tables={"heat_magnitudes": wave_row.get("heat_magnitudes")},
+                heat_magnitudes=wave_row.get("heat_magnitudes"),
                 wave_row=wave_row,
-                ids_snapshot=ids_snapshot,
             )
+            if wave_snapshot_missing:
+                return None, None, wave_snapshot_missing
         except StatSnapshotError as exc:
             diagnostics["wave_snapshot_error"] = str(exc)
             return None, None, ["wave_snapshot"]
 
-        survivability_stats, survivability_missing = _resolve_survivability_stats(
+        combat_snapshot, survivability_missing = derive_canonical_combat_snapshot(
             engine_result, wave_snapshot
         )
+        survivability_stats = None if combat_snapshot is None else combat_snapshot.values
+        if combat_snapshot is not None:
+            diagnostics.setdefault("combat_snapshot_sources", {})[str(wave)] = {
+                stat_id: [contrib.source for contrib in contribs]
+                for stat_id, contribs in combat_snapshot.contributions.items()
+            }
         if survivability_missing:
             return None, None, survivability_missing
 
-        wave_damage, wave_damage_missing = _resolve_wave_damage_for_wave(
-            problem_spec, wave_row
+        attack_wave = int(wave_row["enemy_attack_wave"])
+        wave_damage, wave_damage_missing = resolve_canonical_wave_damage_for_attack_wave(
+            problem_spec=problem_spec,
+            attack_wave=attack_wave,
         )
         if wave_damage_missing:
             return None, None, wave_damage_missing
@@ -1012,31 +860,6 @@ def _resolve_boss_survivability(
         return {"error": str(exc)}
 
 
-def _resolve_survivability_stats(
-    engine_result,
-    wave_snapshot: Optional[AtWaveSnapshot],
-) -> Tuple[Optional[Dict[str, float]], List[str]]:
-    if engine_result is None:
-        return None, ["stat_engine"]
-    start_stats = engine_result.run_stats.get(Phase.START_OF_RUN)
-    if start_stats is None:
-        return None, ["start_stats"]
-    snapshot_values = wave_snapshot.values if wave_snapshot is not None else {}
-    required = ["tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen", "thorns_damage_mult"]
-    values: Dict[str, float] = {}
-    missing = []
-    for stat_id in required:
-        value = snapshot_values.get(stat_id, start_stats.values.get(stat_id))
-        if value is None:
-            missing.append(stat_id)
-            continue
-        values[stat_id] = float(value)
-    if missing:
-        return None, [f"stat:{stat_id}" for stat_id in missing]
-    return values, []
-
-
-
 def _build_timing_uptime_diagnostics(
     *,
     problem_spec: ProblemSpec,
@@ -1173,60 +996,3 @@ def _normalize_module_rarity(raw_rarity: str) -> str:
         raise ValueError(f"Unsupported module rarity for canonical lookup: {raw_rarity!r}")
     return canonical
 
-def _resolve_wave_state_for_wave(
-    scenario,
-    wave: int,
-) -> Tuple[Optional[Any], List[str]]:
-    missing: List[str] = []
-    if scenario.eals_ramp is None:
-        missing.append("skip_ramp:eals")
-    if scenario.ehls_ramp is None:
-        missing.append("skip_ramp:ehls")
-    if missing:
-        return None, missing
-    eals = SkipRamp(
-        start=scenario.eals_ramp.start,
-        end=scenario.eals_ramp.end,
-        ramp_waves=scenario.eals_ramp.ramp_waves,
-    )
-    ehls = SkipRamp(
-        start=scenario.ehls_ramp.start,
-        end=scenario.ehls_ramp.end,
-        ramp_waves=scenario.ehls_ramp.ramp_waves,
-    )
-    return make_wave_state(wave, eals, ehls), []
-
-
-
-
-def _wave_state_from_row(wave_row: Dict[str, Any]) -> RunWaveState:
-    if "wave" not in wave_row or "enemy_attack_wave" not in wave_row or "enemy_health_wave" not in wave_row:
-        raise StatSnapshotError("Wave row missing required keys: wave/enemy_attack_wave/enemy_health_wave")
-    return RunWaveState(
-        W_actual=int(wave_row["wave"]),
-        W_attack=int(wave_row["enemy_attack_wave"]),
-        W_health=int(wave_row["enemy_health_wave"]),
-    )
-def _resolve_wave_damage_for_wave(
-    problem_spec: ProblemSpec,
-    wave_row: Dict[str, Any] | RunWaveState,
-) -> Tuple[Optional[float], List[str]]:
-    missing: List[str] = []
-    scenario = problem_spec.scenario
-    wave_tier = scenario.wave_damage_tier
-    if wave_tier is None:
-        wave_tier = _default_wave_damage_tier(scenario)
-    if wave_tier is None:
-        missing.append("wave_damage_tier")
-        return None, missing
-    lib = EnemyWaveDamageLib.from_repo_tables()
-    if isinstance(wave_row, RunWaveState):
-        wave = int(wave_row.W_attack)
-    else:
-        wave = int(wave_row["enemy_attack_wave"])
-    try:
-        damage = lib.wave_damage(wave_tier, wave)
-    except KeyError:
-        missing.append("wave_damage_table")
-        return None, missing
-    return damage, []

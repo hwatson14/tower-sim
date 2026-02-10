@@ -61,6 +61,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
             "ehls_ramp",
             "boss_survivability",
             "perk_timeline_path",
+            "allow_core_stat_overrides",
         },
     )
     mode = str(data["mode"])
@@ -72,6 +73,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
     ehls_ramp = _parse_skip_ramp(data.get("ehls_ramp"), "ehls_ramp")
     boss_survivability = _parse_boss_survivability(data.get("boss_survivability"))
     perk_timeline_path = _optional_str(data.get("perk_timeline_path"))
+    allow_core_stat_overrides = bool(data.get("allow_core_stat_overrides", False))
     return ScenarioSpec(
         mode=mode,
         tier=tier,
@@ -82,6 +84,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
         ehls_ramp=ehls_ramp,
         boss_survivability=boss_survivability,
         perk_timeline_path=perk_timeline_path,
+        allow_core_stat_overrides=allow_core_stat_overrides,
     )
 
 

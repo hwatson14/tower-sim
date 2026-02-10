@@ -639,3 +639,18 @@ Any of the following must stop work and ask for clarification:
 - [x] Add automated EP Export fixture ingest in `tests/fixtures/tower-sim-data/EP_Export.csv`, record verification preset provenance (`edmg` from tournament preset; `ehp`/`eecon` from farming preset), and add loader-backed value-column parsing/tests for numeric conversion plus registry/source wiring checks.
 - [x] Scope stone optimizer mastery evaluations to the active preset and defer maxed-value evaluation to ranked rows so integrated stone actions remain functional without runner stalls.
 - [x] Complete stone optimizer UW/UW+ state integration (unlock + track progression patching into raw UWs snapshot rows) and remove provisional incomplete-reason flag.
+- [x] Add canonical combat stat contributor contract and source coverage gate tests for MAX_WAVE-required survivability stats.
+- [x] Add canonical combat-stat derivation engine scaffold (fail-closed required stat extraction + source attribution) and wire MAX_WAVE survivability reads through it.
+- [x] Refactor survivability pipeline required-stat list to consume canonical combat contract (with explicit optional offensive survivability stat flag).
+- [x] Add fail-closed MAX_WAVE guardrail for canonical core-stat spec/compiled override collisions and reuse canonical derivation in boss-combat probing.
+- [x] Add explicit scenario override mode flag (`allow_core_stat_overrides`) and spec-loader wiring for core-stat precedence policy control.
+- [x] Move MAX_WAVE canonical stat-input assembly/validation into combat derivation engine so evaluator consumes prebuilt canonical inputs before search.
+- [x] Remove MAX_WAVE evaluator survivability-wrapper duplication; consume canonical combat snapshot directly at evaluation callsites.
+- [x] Move perk-timeline wave input transformation helper out of MAX_WAVE evaluator into canonical combat derivation module.
+- [x] Move wave-damage tier resolution and boss-survivability spec validation helpers into canonical combat derivation module and reuse from MAX_WAVE.
+- [x] Move at-wave snapshot assembly (including workshop at-wave overrides + wave-row mapping) into canonical combat derivation module and consume from MAX_WAVE.
+- [x] Remove residual MAX_WAVE per-wave damage helper wrapper; consume canonical attack-wave damage resolver directly in search path.
+- [x] Emit canonical combat snapshot source-ledger diagnostics for scenario-wave and search-wave MAX_WAVE evaluations.
+- [x] Move MAX_WAVE wave-row/heat-row construction and tournament heat-table caching into canonical combat derivation module.
+- [x] Split MAX_WAVE into explicit preflight (validation/diagnostics only) and eval stages; report override collisions separately from missing and add fail-closed tournament heat value checks/mechanical heat-effect tests.
+- [x] Enforce preflight as validation-only (no heavy stat/snapshot builds), validate tournament heat BC id order against registry CSV, and add runner schema-stability tests.

@@ -74,6 +74,7 @@ class ScenarioSpec:
     ehls_ramp: Optional[SkipRampSpec] = None
     boss_survivability: Optional[BossSurvivabilitySpec] = None
     perk_timeline_path: Optional[str] = None
+    allow_core_stat_overrides: bool = False
 
 
 
