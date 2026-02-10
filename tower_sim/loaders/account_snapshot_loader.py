@@ -219,6 +219,19 @@ def _parse_raw_sections(data: Dict[str, Any]) -> Dict[str, List[List[str]]]:
     return parsed
 
 
+def _parse_bot_upgrades(data: Dict[str, Any]) -> Dict[str, Dict[str, int]]:
+    parsed: Dict[str, Dict[str, int]] = {}
+    for bot_name, upgrade_map in data.items():
+        _ensure_dict(upgrade_map, f"bot_upgrades[{bot_name}]")
+        inner: Dict[str, int] = {}
+        for attr_name, level in upgrade_map.items():
+            if not isinstance(level, int):
+                raise ValueError(f"bot_upgrades[{bot_name}][{attr_name}] must be an integer.")
+            inner[str(attr_name)] = level
+        parsed[str(bot_name)] = inner
+    return parsed
+
+
 def _require_keys(data: Dict[str, Any], *, required: set[str]) -> None:
     missing = required - set(data.keys())
     if missing:
@@ -342,4 +355,3 @@ def _require_dict_of_optional_str(data: Dict[str, Any], key: str) -> Dict[str, O
         else:
             raise ValueError(f"{key}[{k}] must be a string or null.")
     return parsed
-

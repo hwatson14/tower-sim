@@ -40,6 +40,29 @@ def test_load_account_snapshot_from_payload_roundtrip() -> None:
     assert set(loaded.modules_inventory.keys()) == set(
         payload["snapshot"]["modules_inventory"].keys()
     )
+    assert loaded.bot_upgrades == payload["snapshot"]["bot_upgrades"]
+
+
+def test_load_account_snapshot_bot_upgrades_requires_integer_levels() -> None:
+    payload = _snapshot_payload()
+    payload["snapshot"]["bot_upgrades"]["Flame Bot"]["Range"] = "4"
+
+    with pytest.raises(
+        ValueError,
+        match=r"bot_upgrades\[Flame Bot\]\[Range\] must be an integer\.",
+    ):
+        load_account_snapshot(payload)
+
+
+def test_load_account_snapshot_bot_upgrades_requires_mapping_per_bot() -> None:
+    payload = _snapshot_payload()
+    payload["snapshot"]["bot_upgrades"]["Flame Bot"] = []
+
+    with pytest.raises(
+        ValueError,
+        match=r"bot_upgrades\[Flame Bot\] must be a mapping\.",
+    ):
+        load_account_snapshot(payload)
 
 
 def test_run_optimizer_task_requires_snapshot_payload() -> None:
