@@ -600,6 +600,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Fix max-wave runner GitHub Action to write JSON output directly.
+- [x] Fix account snapshot loader bot-upgrades parsing regression (`_parse_bot_upgrades` missing).
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
 - [x] Remove AUW fixture CSV dependencies; derive UW values/next costs directly from `_IDS.csv` UWs section for stat-input compilation.
