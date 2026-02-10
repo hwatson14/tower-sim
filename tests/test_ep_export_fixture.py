@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import pytest
 
-from tower_sim.loaders.ep_export_loader import load_ep_export_dataset, parse_human_number
+from tower_sim.loaders.ep_export_loader import (
+    extract_max_wave_targets,
+    load_ep_export_dataset,
+    parse_human_number,
+)
 
 
 def test_parse_human_number_supported_formats() -> None:
@@ -43,3 +47,13 @@ def test_ep_export_loader_uses_sheet_formula_sources_for_aggregate_rows() -> Non
 
     assert by_key[("ehp", "ehp")].source_ref == "ep_sheet:eHP!CG5"
     assert by_key[("eecon", "cpk_average")].source_ref == "ep_sheet:eEcon!AO26"
+
+
+def test_extract_max_wave_targets_fails_closed_when_rows_are_missing() -> None:
+    dataset = load_ep_export_dataset()
+
+    with pytest.raises(
+        ValueError,
+        match="missing max-wave rows",
+    ):
+        extract_max_wave_targets(dataset)

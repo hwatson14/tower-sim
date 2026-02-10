@@ -96,6 +96,35 @@ class EPExportDataset:
         return self.pending_rows
 
 
+def extract_max_wave_targets(dataset: EPExportDataset) -> Mapping[str, float]:
+    """Return EP-exported max-wave targets keyed by suite.
+
+    Fail-closed behavior:
+    - Raises when EP export has no recognizable max-wave rows.
+    - Raises when duplicate max-wave rows exist for the same suite.
+    """
+
+    rows = [
+        row
+        for row in dataset.rows
+        if row.key.lower() in {"max_wave", "w_max", "wave_max"}
+        or row.label.strip().lower() in {"max wave", "w max", "wave max"}
+    ]
+    if not rows:
+        raise ValueError(
+            "EP export is missing max-wave rows; cannot verify max-wave parity."
+        )
+
+    targets: dict[str, float] = {}
+    for row in rows:
+        if row.suite in targets:
+            raise ValueError(
+                f"EP export has duplicate max-wave rows for suite {row.suite!r}."
+            )
+        targets[row.suite] = row.value_numeric
+    return targets
+
+
 def parse_human_number(raw: str) -> float:
     text = raw.strip()
     if not text:
@@ -187,6 +216,7 @@ def _load_verification_presets(manifest_path: Path) -> Mapping[str, str]:
 __all__ = [
     "EPExportDataset",
     "EPExportRow",
+    "extract_max_wave_targets",
     "load_ep_export_dataset",
     "parse_human_number",
 ]
