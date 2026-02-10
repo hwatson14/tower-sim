@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
-from tower_sim.evaluators.ehp_stat_evaluator import evaluate_stats
 from tower_sim.engines.statbook_builder import build_statbook
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.loaders.ids_parser import parse_ids
@@ -27,7 +26,6 @@ TASK_BASE_STATS = "BASE_STATS"
 TASK_STAT_INPUTS = "STAT_INPUTS"
 TASK_INVENTORY = "INVENTORY"
 TASK_LOADOUT = "LOADOUT"
-TASK_EHP_SLICE = "EHP_SLICE"
 TASK_MAX_WAVE = "MAX_WAVE"
 TASK_OPTIMIZE_LOADOUT = "OPTIMIZE_LOADOUT"
 TASK_OPTIMIZE_MODULE_SUBSTATS = "OPTIMIZE_MODULE_SUBSTATS"
@@ -41,7 +39,6 @@ TASKS_REQUIRING_IDS = {
     TASK_STAT_INPUTS,
     TASK_INVENTORY,
     TASK_LOADOUT,
-    TASK_EHP_SLICE,
     TASK_MAX_WAVE,
 }
 
@@ -108,19 +105,6 @@ def run_task(
             _serialize_loadout(resolved_ids_snapshot),
             resolved_from=bundle.resolved_from,
         )
-    if task == TASK_EHP_SLICE:
-        enabled_stats = resolved_args["enabled_stats"]
-        allow_out_of_scope = resolved_args.get("allow_out_of_scope", False)
-        stats = evaluate_stats(
-            resolved_ids_snapshot,
-            enabled_stats,
-            allow_out_of_scope=allow_out_of_scope,
-        )
-        return _ok(
-            task,
-            {"stats": stats},
-            resolved_from=bundle.resolved_from,
-        )
     if task == TASK_MAX_WAVE:
         problem_spec = parse_problem_spec_data(resolved_args["problem_spec"])
         _log_problem_spec(problem_spec)
@@ -180,7 +164,6 @@ def _validate_task_name(task: str) -> None:
         TASK_STAT_INPUTS,
         TASK_INVENTORY,
         TASK_LOADOUT,
-        TASK_EHP_SLICE,
         TASK_MAX_WAVE,
     }
     if task not in allowed and task not in OPTIMIZER_TASKS:
@@ -193,17 +176,6 @@ def _validate_task_args(task: str, args: Dict[str, Any]) -> None:
     if task in {TASK_BASE_STATS, TASK_STAT_INPUTS, TASK_INVENTORY, TASK_LOADOUT}:
         if args:
             raise ValueError(f"Task {task} does not accept args.")
-        return
-    if task == TASK_EHP_SLICE:
-        _require_keys(args, required={"enabled_stats"}, optional={"allow_out_of_scope"})
-        enabled_stats = args["enabled_stats"]
-        if not isinstance(enabled_stats, list) or not all(
-            isinstance(item, str) for item in enabled_stats
-        ):
-            raise ValueError("enabled_stats must be a list of strings.")
-        allow_out_of_scope = args.get("allow_out_of_scope", False)
-        if not isinstance(allow_out_of_scope, bool):
-            raise ValueError("allow_out_of_scope must be a boolean.")
         return
     if task == TASK_MAX_WAVE:
         _require_keys(args, required={"problem_spec"}, optional=set())

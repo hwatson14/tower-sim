@@ -9,7 +9,6 @@ from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.api import (
     TASK_BASE_STATS,
     TASK_STAT_INPUTS,
-    TASK_EHP_SLICE,
     TASK_INVENTORY,
     TASK_LOADOUT,
     TASK_MAX_WAVE,
@@ -54,17 +53,6 @@ def test_run_task_loadout() -> None:
     assert "Armor" in modules
     assert modules["Armor"]["allocation"]["primary_level"] is not None
     assert modules["Armor"]["allocation"]["assist_level"] is not None
-
-
-def test_run_task_ehp_slice() -> None:
-    ids_snapshot = _fixture_ids_snapshot()
-    result = run_task(
-        TASK_EHP_SLICE,
-        {"enabled_stats": ["tower_hp"], "allow_out_of_scope": True},
-        ids_snapshot=ids_snapshot,
-    )
-    assert result["ok"] is True
-    assert result["result"]["stats"]
 
 
 def test_run_task_max_wave() -> None:

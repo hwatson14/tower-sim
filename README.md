@@ -174,7 +174,6 @@ Current GitHub Actions coverage includes:
 - `max_wave_runner.yml`: runs unit tests, validates deterministic max-wave runner output schema, checks runner `w_max` against EP export max-wave targets when those rows exist, and emits an end-of-run eHP/farming final-stats parity report against EP export verification rows.
 - `perk_timeline_runner.yml`: validates perk timeline logic and publishes a generated timeline/diagnostics artifact.
 
-The legacy `ehp_slice.yml` workflow was removed; EHP output is now exercised through run-task/test coverage instead of a separate bot-output branch workflow.
 
 ---
 
