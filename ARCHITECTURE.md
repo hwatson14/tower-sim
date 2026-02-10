@@ -625,8 +625,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
+- [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
+- [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).
 - [x] Reconcile implementation status report paths/states with current code and tests.
-
 - [x] Add versioned assumptions manifest to MAX_WAVE results (all outcomes), with provisional parity tolerances (10% wave / 1% stats) and tournament league scope (champion, legend).
-
 - [x] Add explicit Champion + Legend tournament MAX_WAVE fixture matrix to release-gate coverage (`tests/fixtures/specs/tournament_champion_spec.yaml`, `tests/fixtures/specs/tournament_legend_spec.yaml`).
