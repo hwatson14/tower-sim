@@ -12,10 +12,28 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.run.spec_loader import load_problem_spec
 
 
-def run() -> Dict[str, Any]:
+def _resolve_default_fixture_paths() -> tuple[Path, Path]:
     repo_root = Path(__file__).resolve().parents[2]
     ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
     spec_path = repo_root / "tests" / "fixtures" / "specs" / "sample_spec.yaml"
+    if not ids_path.exists() or not spec_path.exists():
+        raise FileNotFoundError(
+            "Default runner fixtures are unavailable. Pass --ids and --spec explicitly."
+        )
+    return ids_path, spec_path
+
+
+def run(ids_path: Path | None = None, spec_path: Path | None = None) -> Dict[str, Any]:
+    if ids_path is None or spec_path is None:
+        default_ids_path, default_spec_path = _resolve_default_fixture_paths()
+        ids_path = ids_path or default_ids_path
+        spec_path = spec_path or default_spec_path
+
+    if not ids_path.exists():
+        raise FileNotFoundError(f"IDS CSV not found: {ids_path}")
+    if not spec_path.exists():
+        raise FileNotFoundError(f"Problem spec not found: {spec_path}")
+
     problem_spec = load_problem_spec(spec_path)
     ids_raw = parse_ids(ids_path)
     snapshot = compile_account_snapshot(ids_raw)
@@ -34,13 +52,23 @@ def _parse_args() -> argparse.Namespace:
         type=Path,
         help="Output JSON path (default: out/runner_output.json).",
     )
+    parser.add_argument(
+        "--ids",
+        type=Path,
+        help="Path to IDS CSV. Defaults to test fixture when available.",
+    )
+    parser.add_argument(
+        "--spec",
+        type=Path,
+        help="Path to ProblemSpec YAML/JSON. Defaults to test fixture when available.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = _parse_args()
     strict = args.strict or os.environ.get("STRICT") == "1"
-    result = run()
+    result = run(ids_path=args.ids, spec_path=args.spec)
     repo_root = Path(__file__).resolve().parents[2]
     output_path = args.output or (repo_root / "out" / "runner_output.json")
     output_path.parent.mkdir(parents=True, exist_ok=True)
