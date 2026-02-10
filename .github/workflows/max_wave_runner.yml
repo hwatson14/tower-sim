@@ -55,3 +55,16 @@ jobs:
           name: max-wave-runner-output
           path: runner_output.json
           if-no-files-found: error
+
+      - name: Verify EP export max-wave targets (fail-closed)
+        run: |
+          python - <<'PY'
+          from tower_sim.loaders.ep_export_loader import (
+              extract_max_wave_targets,
+              load_ep_export_dataset,
+          )
+
+          dataset = load_ep_export_dataset()
+          targets = extract_max_wave_targets(dataset)
+          print("EP max-wave targets:", dict(targets))
+          PY
