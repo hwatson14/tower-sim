@@ -78,6 +78,7 @@ def test_run_task_max_wave() -> None:
     )
     assert result["task"] == TASK_MAX_WAVE
     assert "w_max" in result["result"]
+    assert "assumptions_manifest" in result["result"]
 
 
 def test_run_task_rejects_unknown_args() -> None:
