@@ -610,6 +610,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Allow root .gitmodules in REPO_MAP allowed files.
 - [x] Allow root GAME_OVERVIEW.md and PROJECT_INTENT.md in REPO_MAP allowed files.
 - [x] Consolidate tier battle condition loaders onto step1 table parser + shim legacy loader.
+- [x] Wire Tier BC `more_bosses` as a supported v1 no-op (keeps fail-closed for unsupported BC families).
 - [x] Add identifier resolver with fail-closed eHP ledger closure guard.
 - [x] Add card mastery table + loader with tests for sim access.
 - [x] Sync Effective Paths eDamage mechanics to canonical extract (crit/ASPD/multishot/range/rapid fire/super tower).

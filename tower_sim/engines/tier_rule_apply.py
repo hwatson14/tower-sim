@@ -11,6 +11,7 @@ if TYPE_CHECKING:
 
 SUPPORTED_BC = {
     ("enemy_level_skip_reduction", "absolute_chance_subtract", "pp"),
+    ("more_bosses", "boss_interval_waves", "waves"),
     ("orb_resistance", "damage_multiplier", "mult"),
     ("death_ray_resistance", "damage_multiplier", "mult"),
     ("thorns_resistance", "damage_multiplier", "mult"),
@@ -45,6 +46,11 @@ def _apply_condition(
         )
     if condition.name == "enemy_level_skip_reduction":
         _apply_skip_reduction(inputs_by_id, condition.value)
+        return
+    if condition.name == "more_bosses":
+        # Provenance: tables/tier_battle_conditions.csv.
+        # Current MAX_WAVE model resolves boss survivability per-wave and does not
+        # model spawn cadence yet, so this BC is accepted as a no-op for v1.
         return
     if condition.name == "orb_resistance":
         _apply_multiplier(inputs_by_id, "orb_damage_mult", condition.value)
