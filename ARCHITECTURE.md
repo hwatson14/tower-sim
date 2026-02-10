@@ -590,6 +590,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
 - [x] Remove legacy EHP slice GitHub Action now that run tasks cover EHP output.
 - [x] Add perk timeline GitHub Action to run perk tests and publish timeline smoke artifacts.
+- [x] Add max-wave runner EP export parity check step (validate when targets exist; explicit skip when missing max-wave rows).
+- [x] Add EP export final-stats parity report step (eHP/farming suite + preset consistency validation in CI).
 - [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
 - [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
