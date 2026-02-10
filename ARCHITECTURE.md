@@ -600,6 +600,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add spec loader + run API front door for deterministic W_max evaluation.
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
+- [x] Add path-scoped IDS/run API GitHub Action with targeted tests and runner smoke artifact.
 - [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
 - [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
@@ -636,3 +637,5 @@ Any of the following must stop work and ask for clarification:
 - [x] Add versioned assumptions manifest to MAX_WAVE results (all outcomes), with provisional parity tolerances (10% wave / 1% stats) and tournament league scope (champion, legend).
 - [x] Add explicit Champion + Legend tournament MAX_WAVE fixture matrix to release-gate coverage (`tests/fixtures/specs/tournament_champion_spec.yaml`, `tests/fixtures/specs/tournament_legend_spec.yaml`).
 - [x] Add automated EP Export fixture ingest in `tests/fixtures/tower-sim-data/EP_Export.csv`, record verification preset provenance (`edmg` from tournament preset; `ehp`/`eecon` from farming preset), and add loader-backed value-column parsing/tests for numeric conversion plus registry/source wiring checks.
+- [x] Scope stone optimizer mastery evaluations to the active preset and defer maxed-value evaluation to ranked rows so integrated stone actions remain functional without runner stalls.
+- [x] Complete stone optimizer UW/UW+ state integration (unlock + track progression patching into raw UWs snapshot rows) and remove provisional incomplete-reason flag.
