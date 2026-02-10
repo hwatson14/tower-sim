@@ -580,8 +580,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement module main-effect multiplier formula (MODSTAT_*).
 - [x] Add boss hit-interval table for survivability (boss_hit_interval_v1.csv).
 - [x] Document run API task routing for agent usage.
-- [ ] Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
-- [ ] Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
+- [ ] (v2) Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
+- [ ] (v2) Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).
 - [x] Wire Effective Paths eDamage LAMBDAs into derived stat pipeline (tower DPS/crit/ASPD).
 - [x] Add token source mapping audit (token map, report, and validation script).
@@ -623,3 +623,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
 - [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
+- [x] Reconcile implementation status report paths/states with current code and tests.
+
+- [x] Add versioned assumptions manifest to MAX_WAVE results (all outcomes), with provisional parity tolerances (10% wave / 1% stats) and tournament league scope (champion, legend).
+
+- [x] Add explicit Champion + Legend tournament MAX_WAVE fixture matrix to release-gate coverage (`tests/fixtures/specs/tournament_champion_spec.yaml`, `tests/fixtures/specs/tournament_legend_spec.yaml`).

@@ -117,6 +117,7 @@ class MaxWaveEvaluator:
             diagnostics=diagnostics,
         )
 
+        assumptions_manifest = _build_assumptions_manifest(problem_spec)
         missing = sorted(set(missing))
         if missing:
             return {
@@ -125,6 +126,7 @@ class MaxWaveEvaluator:
                 "missing": missing,
                 "w_max": None,
                 "diagnostics": diagnostics,
+                "assumptions_manifest": assumptions_manifest,
             }
 
         engine = StatEngine(registry=registry)
@@ -184,6 +186,7 @@ class MaxWaveEvaluator:
             diagnostics["missing_survivability_stats"] = survivability_missing
             missing.extend(survivability_missing)
 
+        assumptions_manifest = _build_assumptions_manifest(problem_spec)
         missing = sorted(set(missing))
         if missing:
             return {
@@ -192,6 +195,7 @@ class MaxWaveEvaluator:
                 "missing": missing,
                 "w_max": None,
                 "diagnostics": diagnostics,
+                "assumptions_manifest": assumptions_manifest,
             }
 
         (
@@ -240,8 +244,42 @@ class MaxWaveEvaluator:
             "failure_reason": None if fail_closed else failure_reason,
             "at_failure_snapshot": None if fail_closed else failure_snapshot,
             "diagnostics": diagnostics,
+            "assumptions_manifest": assumptions_manifest,
         }
 
+
+
+def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
+    scenario = problem_spec.scenario
+    mode = (scenario.mode or "").strip().lower()
+    is_tournament = mode == "tournament"
+    league = (scenario.league or "").strip().lower()
+    return {
+        "schema_version": "v1",
+        "policy_version": "v1",
+        "tolerance_version": "v1",
+        "determinism": {
+            "randomness_allowed": False,
+            "perk_timeline_external_only": True,
+        },
+        "perk_timeline": {
+            "required": not is_tournament,
+            "enabled": not is_tournament,
+            "source": None if is_tournament else getattr(scenario, "perk_timeline_path", None),
+        },
+        "tournament": {
+            "heat_required": is_tournament,
+            "bc_required": is_tournament,
+            "perks_allowed": not is_tournament,
+            "league": league or None,
+            "supported_leagues": ["champion", "legend"],
+        },
+        "parity_tolerances": {
+            "wmax_wave_relative": 0.10,
+            "stats_relative": 0.01,
+            "status": "provisional",
+        },
+    }
 
 def _missing_required_stat_inputs(stat_inputs: Iterable) -> List[str]:
     required = {
