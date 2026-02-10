@@ -78,3 +78,10 @@ def test_module_preset_parsing_handles_blank_rows() -> None:
     assert presets["Preset 5"].assist is None
     assert presets["Testing"].primary == "Gamma"
     assert presets["Tourney"].primary == "Delta"
+
+
+def test_bot_upgrades_are_typed_levels() -> None:
+    snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    assert snapshot.bot_upgrades["Flame Bot"]["Damage R."] == 8
+    assert snapshot.bot_upgrades["Golden Bot"]["Bonus"] == 18
+    assert snapshot.bot_upgrades["Amplify Bot"]["Bonus"] == 0

@@ -56,6 +56,7 @@ def _snapshot_with_workshop_and_uw(
         relics={},
         vault={},
         bots=[],
+        bot_upgrades={},
         guardians=TableSnapshot(header=[], rows=[]),
         player_meta={},
         cards_inventory={},
