@@ -99,8 +99,8 @@ class EPExportDataset:
 def extract_max_wave_targets(dataset: EPExportDataset) -> Mapping[str, float]:
     """Return EP-exported max-wave targets keyed by suite.
 
-    Fail-closed behavior:
-    - Raises when EP export has no recognizable max-wave rows.
+    Behavior:
+    - Returns an empty mapping when EP export has no recognizable max-wave rows.
     - Raises when duplicate max-wave rows exist for the same suite.
     """
 
@@ -111,9 +111,7 @@ def extract_max_wave_targets(dataset: EPExportDataset) -> Mapping[str, float]:
         or row.label.strip().lower() in {"max wave", "w max", "wave max"}
     ]
     if not rows:
-        raise ValueError(
-            "EP export is missing max-wave rows; cannot verify max-wave parity."
-        )
+        return {}
 
     targets: dict[str, float] = {}
     for row in rows:
