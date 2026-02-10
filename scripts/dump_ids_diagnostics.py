@@ -432,8 +432,8 @@ def main() -> None:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=Path(__file__).resolve().parents[1] / "audit",
-        help="Output directory for audit JSON (default: audit/).",
+        default=Path(__file__).resolve().parents[1] / "out",
+        help="Output directory for JSON artifacts (default: out/).",
     )
     parser.add_argument(
         "--include-raw",

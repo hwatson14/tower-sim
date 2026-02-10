@@ -181,7 +181,7 @@ def check_generated_artifacts(
         rel_path = to_posix(path.relative_to(repo_root))
         if forbidden and matches_any(rel_path, forbidden):
             if not matches_any(rel_path, allowed_paths):
-                errors.append(f"Generated artifact stored outside audit/: {rel_path}")
+                errors.append(f"Generated artifact stored outside allowed generated artifact paths (audit/ or out/): {rel_path}")
 
 
 def check_file_count_caps(repo_root: Path, config: dict, errors: list[str]) -> None:
