@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
-from tower_sim.engines.statbook_builder import build_statbook
+from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
 from tower_sim.evaluators.ehp_stat_evaluator import evaluate_stats
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ep_export_loader import load_ep_export_dataset
@@ -19,12 +19,23 @@ def _relative_delta(expected: float, actual: float) -> float:
 
 
 def _build_statbook_value_map(ids_snapshot) -> Dict[str, float]:
-    statbook = build_statbook(ids_snapshot)
+    compiled = compile_full_stat_inputs(ids_snapshot)
     values: Dict[str, float] = {}
-    for row in statbook.rows:
-        if row.final_value is None:
+    for stat_input in compiled.stat_inputs:
+        if stat_input.phase.value != "end_of_run":
             continue
-        values.setdefault(row.stat_id, float(row.final_value))
+        if stat_input.derived_value is not None:
+            values[stat_input.stat_id] = float(stat_input.derived_value)
+            continue
+
+        base_value = stat_input.base_value or 0.0
+        loadout_delta = stat_input.loadout_delta or 0.0
+        enhancement_multiplier = stat_input.enhancement_multiplier or 1.0
+        tier_delta = stat_input.tier_rule_delta or 0.0
+        tier_multiplier = stat_input.tier_rule_multiplier or 1.0
+        values[stat_input.stat_id] = (
+            (base_value + loadout_delta) * enhancement_multiplier + tier_delta
+        ) * tier_multiplier
     return values
 
 
@@ -64,7 +75,7 @@ def verify_final_stats_against_ep_export(
             continue
         vp = row.verification_path
         actual: float | None
-        if vp.startswith("ehp_slice.stats."):
+        if vp.startswith("ehp_slice.stats.") or vp.startswith("ehp_eval.stats."):
             stat_key = vp.split(".")[-1]
             actual = ehp_stats.get(stat_key)
         elif vp.startswith("stat_inputs."):
