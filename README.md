@@ -173,7 +173,6 @@ Current GitHub Actions coverage includes:
 - `ids_dump.yml`: exports deterministic IDS diagnostics + latest base stats/inventory/loadout artifacts.
 - `max_wave_runner.yml`: runs unit tests plus a deterministic max-wave runner schema check.
 - `perk_timeline_runner.yml`: validates perk timeline logic and publishes a generated timeline/diagnostics artifact.
-- `max_wave_ep_exports.yml`: gates EP export fixture wiring against max-wave contract/release-gate tests and runner output.
 
 The legacy `ehp_slice.yml` workflow was removed; EHP output is now exercised through run-task/test coverage instead of a separate bot-output branch workflow.
 
