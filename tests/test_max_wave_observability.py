@@ -133,3 +133,4 @@ def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     assert "wa_reduction" in timing
     assert "gcomp_enabled" in timing
     assert "expected_coin_multiplier" in timing or "missing" in timing
+    assert timing["contract_scope"]["contract_status"] == "excluded"
