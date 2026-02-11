@@ -171,3 +171,26 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
         )
     assert isinstance(payload_raw["missing_sections"], list)
     assert "Wrote" in result_raw.stdout
+
+
+def test_dump_ids_diagnostics_runs_without_pythonpath_env(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
+    output_dir = tmp_path / "audit_no_pythonpath"
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(repo_root / "scripts" / "dump_ids_diagnostics.py"),
+            "--ids-path",
+            str(ids_path),
+            "--output-dir",
+            str(output_dir),
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert (output_dir / "account_snapshot.json").exists()
+    assert (output_dir / "stage_1_base_no_respec.json").exists()
+    assert "Wrote" in result.stdout

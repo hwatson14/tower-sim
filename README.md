@@ -88,6 +88,16 @@ following files in `out/`, which you can fetch over HTTPS from GitHub:
 - `out/base_stats_components_latest.json`
 - `out/inventory_components_latest.json`
 - `out/run_stats_latest.json`
+- `out/ids_raw_index_latest.json`
+- `out/compiled_stat_inputs_latest.json`
+- `out/stat_engine_latest.json`
+- `out/resolved_problem_spec_latest.json`
+- `out/max_wave_latest.json`
+- `out/stage_1_base_no_respec_latest.json`
+- `out/stage_2_base_with_respec_latest.json`
+- `out/stage_3_with_loadout_latest.json`
+- `out/stage_4_with_battle_conditions_latest.json`
+- `out/stage_5_end_of_run_latest.json`
 
 Example (raw file URL; replace `<org>` and `<repo>` as needed):
 
@@ -118,6 +128,16 @@ payload. The script writes dedicated extracts at:
 - `out/base_stats_components.json`
 - `out/inventory_components.json`
 - `out/run_stats.json`
+- `out/ids_raw_index.json`
+- `out/compiled_stat_inputs.json`
+- `out/stat_engine.json`
+- `out/resolved_problem_spec.json`
+- `out/max_wave.json`
+- `out/stage_1_base_no_respec.json`
+- `out/stage_2_base_with_respec.json`
+- `out/stage_3_with_loadout.json`
+- `out/stage_4_with_battle_conditions.json`
+- `out/stage_5_end_of_run.json`
 
 The script does not delete the files at the end of the job, so they should
 remain on disk until you remove them. Key fields:
