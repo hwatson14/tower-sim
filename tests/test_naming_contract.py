@@ -9,6 +9,7 @@ from tower_sim.registry.naming_contract import (
     resolve_named_entity,
     resolve_stat_id,
     unsupported_or_unmapped_items,
+    validate_catalog_contract,
     validate_named_entity_coverage,
     validate_registry_parity,
 )
@@ -37,6 +38,8 @@ def test_repo_naming_contract_raises_for_unknown_alias() -> None:
 
 
 def test_named_entity_contract_has_all_core_categories() -> None:
+    assert validate_catalog_contract() == ()
+
     errors = validate_named_entity_coverage()
     assert errors == ()
 
@@ -65,6 +68,9 @@ def test_named_entity_contract_resolves_representative_paths() -> None:
     assert resolve_named_entity("module_substats", "Armor:Recovery Package Chance") == "Recovery Package Chance"
     assert resolve_named_entity("bots", "Golden Bot") == "Golden Bot"
     assert resolve_named_entity("bot_attributes", "Golden Bot:Bonus") == "Golden Bot.Bonus"
+    assert resolve_named_entity("labs", "Black Hole Coin Bonus") == "LAB_BLACK_HOLE_COINS_BONUS"
+    assert resolve_named_entity("labs", "Damage / Meter") == "LAB_DAMAGE_PER_METER"
+    assert resolve_named_entity("labs", "Missile Radius") == "LAB_MISSILES_RADIUS"
 
 
 def test_named_entity_contract_raises_for_unknown_category_alias() -> None:

@@ -6,6 +6,8 @@ import csv
 import hashlib
 import json
 from dataclasses import dataclass
+
+import yaml
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -99,29 +101,28 @@ def _load_audit_report(audit_path: Path) -> dict[str, dict]:
 
 
 def _load_labs_catalog(catalog_path: Path) -> dict[str, str]:
-    labs_section = False
-    current_id: str | None = None
+    payload = yaml.safe_load(catalog_path.read_text(encoding="utf-8"))
+    if not isinstance(payload, dict):
+        raise ValueError("Naming catalog must be a mapping")
+
+    categories = payload.get("categories")
+    if not isinstance(categories, dict):
+        raise ValueError("Naming catalog missing categories mapping")
+
+    labs_entries = categories.get("labs")
+    if not isinstance(labs_entries, list):
+        raise ValueError("Naming catalog missing labs category list")
+
     mapping: dict[str, str] = {}
-    for line in catalog_path.read_text(encoding="utf-8").splitlines():
-        stripped = line.strip()
-        if not stripped or stripped.startswith("#"):
-            continue
-        if line.startswith("  ") and not line.startswith("    "):
-            category = stripped.rstrip(":")
-            labs_section = category == "labs"
-            continue
-        if not labs_section:
-            continue
-        if stripped.startswith("- canonical_id:"):
-            current_id = stripped.split(":", 1)[1].strip()
-            continue
-        if stripped.startswith("primary_name:"):
-            if current_id is None:
-                raise ValueError("primary_name encountered before canonical_id")
-            primary = stripped.split(":", 1)[1].strip()
-            if primary.startswith('"') and primary.endswith('"'):
-                primary = primary[1:-1]
-            mapping[primary] = current_id
+    for entry in labs_entries:
+        if not isinstance(entry, dict):
+            raise ValueError("Lab catalog entries must be mappings")
+        canonical_id = str(entry.get("canonical_id", "")).strip()
+        primary_name = str(entry.get("primary_name", "")).strip()
+        if not canonical_id or not primary_name:
+            raise ValueError("Lab catalog entry missing canonical_id or primary_name")
+        mapping[primary_name] = canonical_id
+
     if not mapping:
         raise ValueError("No lab entries found in naming catalog")
     return mapping
