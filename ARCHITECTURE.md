@@ -551,6 +551,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [x] Define evaluator objective contracts and economy model inputs with authoritative provenance (see "Evaluator Contracts" section; v1 `MAX_WAVE` implemented, economy evaluator deferred until authoritative tables are promoted).
 - [x] Wire canonical wave-time + uptime diagnostics into MAX_WAVE (WA loadout source, interval overlap, GComp events, bot-table channels).
+- [x] Resolve all runtime bot stats (table levels + stat-engine-composed labs/relics/module-unique scalar channels) in canonical combat derivation before timing uptime; timing engine consumes only resolved bot effect values.
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).

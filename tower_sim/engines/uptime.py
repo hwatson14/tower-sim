@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, List, Sequence, Tuple
 
-from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.libs.modules_lib import load_modules_library, unique_effect_value
 
 Interval = Tuple[float, float]
@@ -178,40 +177,32 @@ def aggregate_uptime(
 
 def build_bot_effects(
     *,
-    bot_levels: Dict[str, Dict[str, int]],
+    resolved_bot_effects: Sequence[Dict[str, float]],
     window_s: float,
 ) -> Tuple[TimedEffect, ...]:
     effects: List[TimedEffect] = []
 
-    def _bot_intervals(bot_name: str) -> Tuple[Interval, ...]:
-        if bot_name not in bot_levels:
-            return tuple()
-        bot = bot_levels[bot_name]
-        if "Duration" not in bot or "Cooldown" not in bot:
-            return tuple()
-        duration, _, _ = get_bot_attribute(bot_name, "Duration", bot["Duration"])
-        cooldown, _, _ = get_bot_attribute(bot_name, "Cooldown", bot["Cooldown"])
-        return build_periodic_activation_intervals(
-            duration_s=float(duration),
-            cooldown_s=float(cooldown),
+    for effect in resolved_bot_effects:
+        name = str(effect["name"])
+        duration_s = float(effect["duration_s"])
+        cooldown_s = float(effect["cooldown_s"])
+        intervals = build_periodic_activation_intervals(
+            duration_s=duration_s,
+            cooldown_s=cooldown_s,
             window_s=window_s,
             phase_s=0.0,
         )
-
-    flame_intervals = _bot_intervals("Flame Bot")
-    if flame_intervals and "Damage R." in bot_levels.get("Flame Bot", {}):
-        value, _, _ = get_bot_attribute("Flame Bot", "Damage R.", bot_levels["Flame Bot"]["Damage R."])
-        effects.append(TimedEffect("Flame Bot", flame_intervals, damage_reduction=float(value)))
-
-    golden_intervals = _bot_intervals("Golden Bot")
-    if golden_intervals and "Bonus" in bot_levels.get("Golden Bot", {}):
-        value, _, _ = get_bot_attribute("Golden Bot", "Bonus", bot_levels["Golden Bot"]["Bonus"])
-        effects.append(TimedEffect("Golden Bot", golden_intervals, coin_multiplier=float(value)))
-
-    amplify_intervals = _bot_intervals("Amplify Bot")
-    if amplify_intervals and "Bonus" in bot_levels.get("Amplify Bot", {}):
-        value, _, _ = get_bot_attribute("Amplify Bot", "Bonus", bot_levels["Amplify Bot"]["Bonus"])
-        effects.append(TimedEffect("Amplify Bot", amplify_intervals, damage_multiplier=float(value)))
+        if not intervals:
+            continue
+        effects.append(
+            TimedEffect(
+                name=name,
+                activation_intervals=intervals,
+                coin_multiplier=float(effect.get("coin_multiplier", 1.0)),
+                damage_reduction=float(effect.get("damage_reduction", 0.0)),
+                damage_multiplier=float(effect.get("damage_multiplier", 1.0)),
+            )
+        )
 
     return tuple(effects)
 

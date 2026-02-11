@@ -19,6 +19,7 @@ from tower_sim.engines.combat_stat_derivation import (
     resolve_canonical_heat_magnitudes,
     resolve_canonical_wave_damage,
     resolve_canonical_wave_damage_for_attack_wave,
+    resolve_runtime_bot_effects,
     validate_boss_survivability_spec,
 )
 from tower_sim.engines.combat.boss_survivability import (
@@ -977,6 +978,11 @@ def _build_timing_uptime_diagnostics(
     packages_per_second = package_chance / ws if ws > 0 else 0.0
     package_events = uniform_event_times_from_rate(rate_per_second=packages_per_second, window_s=window_s)
 
+    resolved_bot_effects, bot_scalars = resolve_runtime_bot_effects(
+        ids_snapshot=ids_snapshot,
+        snapshot_values=snapshot_values,
+    )
+
     gt_cooldown = float(snapshot_values.get("uw_golden_tower_cooldown", 0.0) or 0.0)
     gt_duration = float(snapshot_values.get("uw_golden_tower_duration", 0.0) or 0.0)
     gt_mult = float(snapshot_values.get("uw_golden_tower_multiplier", 1.0) or 1.0)
@@ -1032,6 +1038,7 @@ def _build_timing_uptime_diagnostics(
             "packages_per_second": packages_per_second,
             "gcomp_enabled": gcomp_enabled,
             "gcomp_rarity": gcomp_rarity,
+            "bot_effect_scalars": dict(bot_scalars),
             "expected_coin_multiplier": 1.0,
             "expected_damage_taken": 1.0,
             "expected_damage_multiplier": 1.0,
@@ -1042,10 +1049,9 @@ def _build_timing_uptime_diagnostics(
     bh_intervals = uw_intervals.get("uw_black_hole", tuple())
 
     effects = [TimedEffect(name="GT", activation_intervals=gt_intervals, coin_multiplier=gt_mult)]
-    bot_levels = ids_snapshot.bot_upgrades
-    bot_diag = "present" if bot_levels else "missing"
-    if bot_levels:
-        effects.extend(build_bot_effects(bot_levels=bot_levels, window_s=window_s))
+    bot_diag = "present" if resolved_bot_effects else "missing"
+    if resolved_bot_effects:
+        effects.extend(build_bot_effects(resolved_bot_effects=resolved_bot_effects, window_s=window_s))
 
     summary = aggregate_uptime(effects, window_s=window_s)
     output: Dict[str, Any] = {
@@ -1065,6 +1071,7 @@ def _build_timing_uptime_diagnostics(
         "expected_damage_taken": summary.expected_damage_taken,
         "expected_damage_multiplier": summary.expected_damage_multiplier,
         "bot_levels_source": bot_diag,
+        "bot_effect_scalars": dict(bot_scalars),
         "package_event_count": len(package_events),
         "uw_interval_counts": {name: len(intervals) for name, intervals in uw_intervals.items()},
     }

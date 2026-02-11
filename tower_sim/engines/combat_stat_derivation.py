@@ -14,6 +14,7 @@ from tower_sim.engines.survivability_pipeline import compile_survivability_loado
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.loaders.tournament_bc_enrichment import (
     TOURNAMENT_HEAT_BC_IDS,
     TOURNAMENT_HEAT_BC_TO_STATS,
@@ -502,6 +503,92 @@ def validate_boss_survivability_spec(problem_spec: object) -> Tuple[List[str], D
         missing.append("boss_survivability_invalid")
     return missing, diagnostics
 
+
+
+def resolve_runtime_bot_effects(
+    *,
+    ids_snapshot,
+    snapshot_values: Dict[str, object],
+) -> Tuple[List[Dict[str, float]], Dict[str, float]]:
+    """Resolve canonical bot runtime effects before timing-uptime aggregation.
+
+    Bot table levels and stat-engine-composed scalar channels are resolved here so
+    the timing engine only consumes effective duration/cooldown/effect values.
+    """
+
+    def _scalar(stat_id: str) -> float:
+        raw = snapshot_values.get(stat_id)
+        if raw is None:
+            return 1.0
+        value = float(raw)
+        if value <= 0:
+            raise ValueError(f"{stat_id} must be > 0, got {value}.")
+        return value
+
+    scalars = {
+        "bot_duration_multiplier": _scalar("bot_duration_multiplier"),
+        "bot_cooldown_multiplier": _scalar("bot_cooldown_multiplier"),
+        "bot_bonus_multiplier": _scalar("bot_bonus_multiplier"),
+        "flame_bot_damage_reduction_multiplier": _scalar("flame_bot_damage_reduction_multiplier"),
+    }
+
+    profiles: List[Dict[str, float]] = []
+    bot_levels = ids_snapshot.bot_upgrades
+
+    if "Flame Bot" in bot_levels:
+        bot = bot_levels["Flame Bot"]
+        if {"Duration", "Cooldown", "Damage R."}.issubset(bot):
+            duration, _, _ = get_bot_attribute("Flame Bot", "Duration", bot["Duration"])
+            cooldown, _, _ = get_bot_attribute("Flame Bot", "Cooldown", bot["Cooldown"])
+            damage_r, _, _ = get_bot_attribute("Flame Bot", "Damage R.", bot["Damage R."])
+            profiles.append(
+                {
+                    "name": "Flame Bot",
+                    "duration_s": float(duration) * scalars["bot_duration_multiplier"],
+                    "cooldown_s": float(cooldown) * scalars["bot_cooldown_multiplier"],
+                    "damage_reduction": float(damage_r)
+                    * scalars["bot_bonus_multiplier"]
+                    * scalars["flame_bot_damage_reduction_multiplier"],
+                    "coin_multiplier": 1.0,
+                    "damage_multiplier": 1.0,
+                }
+            )
+
+    if "Golden Bot" in bot_levels:
+        bot = bot_levels["Golden Bot"]
+        if {"Duration", "Cooldown", "Bonus"}.issubset(bot):
+            duration, _, _ = get_bot_attribute("Golden Bot", "Duration", bot["Duration"])
+            cooldown, _, _ = get_bot_attribute("Golden Bot", "Cooldown", bot["Cooldown"])
+            bonus, _, _ = get_bot_attribute("Golden Bot", "Bonus", bot["Bonus"])
+            profiles.append(
+                {
+                    "name": "Golden Bot",
+                    "duration_s": float(duration) * scalars["bot_duration_multiplier"],
+                    "cooldown_s": float(cooldown) * scalars["bot_cooldown_multiplier"],
+                    "coin_multiplier": float(bonus) * scalars["bot_bonus_multiplier"],
+                    "damage_reduction": 0.0,
+                    "damage_multiplier": 1.0,
+                }
+            )
+
+    if "Amplify Bot" in bot_levels:
+        bot = bot_levels["Amplify Bot"]
+        if {"Duration", "Cooldown", "Bonus"}.issubset(bot):
+            duration, _, _ = get_bot_attribute("Amplify Bot", "Duration", bot["Duration"])
+            cooldown, _, _ = get_bot_attribute("Amplify Bot", "Cooldown", bot["Cooldown"])
+            bonus, _, _ = get_bot_attribute("Amplify Bot", "Bonus", bot["Bonus"])
+            profiles.append(
+                {
+                    "name": "Amplify Bot",
+                    "duration_s": float(duration) * scalars["bot_duration_multiplier"],
+                    "cooldown_s": float(cooldown) * scalars["bot_cooldown_multiplier"],
+                    "damage_multiplier": float(bonus) * scalars["bot_bonus_multiplier"],
+                    "damage_reduction": 0.0,
+                    "coin_multiplier": 1.0,
+                }
+            )
+
+    return profiles, scalars
 
 def resolve_canonical_wave_damage_for_attack_wave(
     *,
