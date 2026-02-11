@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import pandas as pd
 
-_CACHE_DIR = Path(__file__).resolve().parents[3] / "tables" / "wiki_cache"
+_CACHE_DIR = Path(__file__).resolve().parents[3] / "tables" / "cache" / "wiki"
 
 @dataclass(frozen=True)
 class LabEffect:

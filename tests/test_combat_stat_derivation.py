@@ -304,7 +304,7 @@ def test_heat_magnitude_mechanically_changes_wave_snapshot(monkeypatch) -> None:
 
 
 def test_tournament_heat_bc_ids_match_registry_csv_order() -> None:
-    registry_path = Path("tables/heat_bc_registry.csv")
+    registry_path = Path("tables/inputs/tournament/heat_bc_registry.csv")
     with registry_path.open(newline="") as handle:
         reader = csv.DictReader(handle)
         derived = []

@@ -5,7 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
-_DEFAULT_TABLES_DIR = Path(__file__).resolve().parents[2] / "tables"
+from tower_sim.loaders.table_paths import resolve_table_path
+
 _LEVEL_COLUMNS = tuple(f"level_{idx}" for idx in range(10))
 
 
@@ -19,7 +20,7 @@ class CardMasteryRow:
 
 
 def load_card_mastery_rows(path: Path | None = None) -> list[CardMasteryRow]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "card_masteries_v1.csv")
+    csv_path = path or resolve_table_path("card_masteries")
     required_columns = {
         "card_mastery",
         "stone_cost",

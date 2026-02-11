@@ -142,7 +142,7 @@ def load_tournament_heat_table(
     return TournamentHeatTable(
         values=values,
         registry=registry,
-        provenance="tables/heat_scale_long.csv + tables/heat_bc_registry.csv",
+        provenance="tables/inputs/tournament/heat_scale_long.csv + tables/inputs/tournament/heat_bc_registry.csv",
     )
 
 

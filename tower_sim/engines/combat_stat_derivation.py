@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
@@ -235,8 +237,8 @@ def build_canonical_wave_row(
     if problem_spec.scenario.mode != "tournament":
         return row, []
 
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "heat_scale_long.csv"
-    registry_path = Path(__file__).resolve().parents[2] / "tables" / "heat_bc_registry.csv"
+    table_path = resolve_table_path("heat_scale_long")
+    registry_path = resolve_table_path("heat_bc_registry")
     try:
         table = cached_tournament_heat_table(str(table_path), str(registry_path))
     except (HeatDataError, FileNotFoundError):

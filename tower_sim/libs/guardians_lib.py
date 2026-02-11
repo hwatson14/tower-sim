@@ -4,6 +4,8 @@ import csv
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, List, Optional
 
 
@@ -44,7 +46,7 @@ REQUIRED_HEADERS = {
 
 def _default_table_path() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tables" / "guardian_upgrades_v1.csv"
+    return resolve_table_path("guardian_upgrades")
 
 
 def _parse_level(value: str) -> int:

@@ -21,7 +21,7 @@ These planes describe where responsibilities live without changing the frozen st
 
 1) **Reference (immutable)**
    - Authoritative libraries, tables, and canonical IDs.
-   - Sources are the repo tables under `tables/` and the cached wiki tables under `tables/wiki_cache/`.
+   - Sources are canonical runtime tables under `tables/inputs/` and cached wiki tables under `tables/cache/wiki/`.
    - If a required table is missing or ambiguous, fail closed (see “Stop the Line”).
 
 2) **Derivation (pure, side-effect-free)**
@@ -59,7 +59,7 @@ If a run requires perks and no valid timeline artifact is supplied, the run must
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
-All other tables are shipped with the repo under `tables/` or `tables/wiki_cache/`,
+All other tables are shipped with the repo under `tables/inputs/`, `tables/cache/wiki/`, `tables/derived/`, and `tables/meta/`,
 and are treated as authoritative library data (with provenance).
 
 ### IDS Path Resolution

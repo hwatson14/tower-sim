@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 import csv
 from typing import Dict, Mapping
 
@@ -33,7 +35,7 @@ def boss_hit_interval_seconds(hit_interval_id: str) -> float:
 
 @lru_cache(maxsize=1)
 def _load_intervals() -> Mapping[str, BossHitIntervalRow]:
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "boss_hit_interval_v1.csv"
+    table_path = resolve_table_path("boss_hit_interval")
     if not table_path.exists():
         raise BossHitIntervalError(f"Missing table: {table_path}")
     with table_path.open("r", encoding="utf-8", newline="") as handle:
