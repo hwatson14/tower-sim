@@ -649,3 +649,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Split MAX_WAVE into explicit preflight (validation/diagnostics only) and eval stages; report override collisions separately from missing and add fail-closed tournament heat value checks/mechanical heat-effect tests.
 - [x] Enforce preflight as validation-only (no heavy stat/snapshot builds), validate tournament heat BC id order against registry CSV, and add runner schema-stability tests.
 - [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
+- [x] Split CI responsibilities so `max_wave_runner` runs max-wave-only contract checks while a dedicated always-on `pytest` workflow handles full-suite gating; keep a path-scoped agent-surface runner for run API + README instruction contract coverage.

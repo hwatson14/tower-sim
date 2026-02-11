@@ -27,9 +27,13 @@ jobs:
           python -m pip install -e .
           python -m pip install pytest
 
-      - name: Run tests
+      - name: Run max-wave contract tests
         run: |
-          pytest -q
+          pytest -q \
+            tests/test_max_wave_v1_contract.py \
+            tests/test_max_wave_ep_parity.py \
+            tests/test_ep_export_final_stats_parity.py \
+            tests/test_release_gate_tournament_fixtures.py
 
       - name: Run MaxWaveEvaluator runner
         run: |
