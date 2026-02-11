@@ -84,11 +84,11 @@ class StatEngine:
                 stat_id=stat_input.stat_id,
                 phase=stat_input.phase,
                 base_value=_decimal_optional(stat_input.base_value),
-                loadout_delta_modules=_decimal_zero(),
-                loadout_delta_cards=_decimal_zero(),
-                loadout_delta_bots=_decimal_zero(),
-                loadout_delta_guardians=_decimal_zero(),
-                loadout_delta_other=_decimal_optional(stat_input.loadout_delta),
+                loadout_delta_modules=_loadout_component(stat_input.loadout_delta, component="zero"),
+                loadout_delta_cards=_loadout_component(stat_input.loadout_delta, component="zero"),
+                loadout_delta_bots=_loadout_component(stat_input.loadout_delta, component="zero"),
+                loadout_delta_guardians=_loadout_component(stat_input.loadout_delta, component="zero"),
+                loadout_delta_other=_loadout_component(stat_input.loadout_delta, component="value"),
                 enhancement_multiplier=_decimal_optional(stat_input.enhancement_multiplier),
                 tier_rule_delta_or_multiplier=_decimal_optional(_tier_rule_numeric(stat_input.tier_rule_delta, stat_input.tier_rule_multiplier)),
                 final_value=_decimal_optional(stat_input.derived_value),
@@ -120,11 +120,11 @@ class StatEngine:
             stat_id=stat_input.stat_id,
             phase=stat_input.phase,
             base_value=_decimal_optional(stat_input.base_value),
-            loadout_delta_modules=_decimal_zero(),
-            loadout_delta_cards=_decimal_zero(),
-            loadout_delta_bots=_decimal_zero(),
-            loadout_delta_guardians=_decimal_zero(),
-            loadout_delta_other=_decimal_optional(stat_input.loadout_delta),
+            loadout_delta_modules=_loadout_component(stat_input.loadout_delta, component="zero"),
+            loadout_delta_cards=_loadout_component(stat_input.loadout_delta, component="zero"),
+            loadout_delta_bots=_loadout_component(stat_input.loadout_delta, component="zero"),
+            loadout_delta_guardians=_loadout_component(stat_input.loadout_delta, component="zero"),
+            loadout_delta_other=_loadout_component(stat_input.loadout_delta, component="value"),
             enhancement_multiplier=_decimal_optional(stat_input.enhancement_multiplier),
             tier_rule_delta_or_multiplier=_decimal_optional(_tier_rule_numeric(stat_input.tier_rule_delta, stat_input.tier_rule_multiplier)),
             final_value=_decimal_optional(tiered),
@@ -175,8 +175,14 @@ def _decimal_optional(value: Optional[float]) -> Optional[Decimal]:
     return Decimal(str(value))
 
 
-def _decimal_zero() -> Decimal:
-    return Decimal(0)
+def _loadout_component(loadout_delta: Optional[float], *, component: str) -> Optional[Decimal]:
+    if loadout_delta is None:
+        return None
+    if component == "zero":
+        return Decimal(0)
+    if component == "value":
+        return Decimal(str(loadout_delta))
+    raise ValueError(f"Unknown loadout component selector: {component}")
 
 
 def _tier_rule_numeric(delta: Optional[float], multiplier: Optional[float]) -> Optional[float]:

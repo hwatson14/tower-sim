@@ -41,4 +41,4 @@ def test_build_with_tier_rules_applies_skip_reduction() -> None:
     result = engine.build_with_tier_rules(inputs, tier_rules)
 
     eals_row = next(row for row in result.statbook.rows if row.stat_id == "eals_pct")
-    assert eals_row.tier_rule_delta_or_multiplier == "delta:-0.025"
+    assert str(eals_row.tier_rule_delta_or_multiplier) == "-0.025"

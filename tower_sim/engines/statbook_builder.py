@@ -90,11 +90,11 @@ def _stat_input_to_row(stat_input) -> StatRow:
         stat_id=stat_input.stat_id,
         phase=stat_input.phase,
         base_value=base_value,
-        loadout_delta_modules=Decimal(0),
-        loadout_delta_cards=Decimal(0),
-        loadout_delta_bots=Decimal(0),
-        loadout_delta_guardians=Decimal(0),
-        loadout_delta_other=loadout_delta,
+        loadout_delta_modules=_loadout_component(loadout_delta, component="zero"),
+        loadout_delta_cards=_loadout_component(loadout_delta, component="zero"),
+        loadout_delta_bots=_loadout_component(loadout_delta, component="zero"),
+        loadout_delta_guardians=_loadout_component(loadout_delta, component="zero"),
+        loadout_delta_other=_loadout_component(loadout_delta, component="value"),
         enhancement_multiplier=enhancement,
         tier_rule_delta_or_multiplier=tier_rule,
         final_value=final_value,
@@ -128,3 +128,13 @@ def _decimal_or_none(value: float | int | Decimal | None) -> Decimal | None:
     if value is None:
         return None
     return Decimal(str(value))
+
+
+def _loadout_component(loadout_delta: Decimal | None, *, component: str) -> Decimal | None:
+    if loadout_delta is None:
+        return None
+    if component == "zero":
+        return Decimal(0)
+    if component == "value":
+        return loadout_delta
+    raise ValueError(f"Unknown loadout component selector: {component}")

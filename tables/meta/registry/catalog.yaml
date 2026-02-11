@@ -241,10 +241,12 @@ categories:
     primary_name: Reroll Daily Missions
     aliases:
     - Reroll Daily Missions
+    - Reroll Daily Mission
   - canonical_id: LAB_WORKSHOP_ENHANCEMENT
     primary_name: Workshop Enhancement
     aliases:
     - Workshop Enhancement
+    - Workshop Enhancements
   - canonical_id: LAB_ENHANCEMENT_COIN_DISCOUNT
     primary_name: Enhancement Coin Discount
     aliases:
@@ -306,6 +308,7 @@ categories:
     primary_name: Orb Speed
     aliases:
     - Orb Speed
+    - Orbs Speed
   - canonical_id: LAB_LAND_MINE_DAMAGE
     primary_name: Land Mine Damage
     aliases:
@@ -338,6 +341,7 @@ categories:
     primary_name: Wall Thorn
     aliases:
     - Wall Thorn
+    - Wall Thorns
   - canonical_id: LAB_WALL_INVINCIBILITY
     primary_name: Wall Invincibility
     aliases:
@@ -564,6 +568,7 @@ categories:
     primary_name: Extra Orb Adjuster
     aliases:
     - Extra Orb Adjuster
+    - Extra Orb Mastery
   - canonical_id: LAB_EXTRA_EXTRA_ORBS
     primary_name: Extra Extra Orbs
     aliases:
@@ -633,10 +638,12 @@ categories:
     primary_name: Flame Bot Cooldown
     aliases:
     - Flame Bot Cooldown
+    - Flame Bot - Cooldown
   - canonical_id: LAB_THUNDER_BOT_COOLDOWN
     primary_name: Thunder Bot Cooldown
     aliases:
     - Thunder Bot Cooldown
+    - Thunder Bot - Cooldown
   - canonical_id: LAB_GOLDEN_BOT_COOLDOWN
     primary_name: Golden Bot Cooldown
     aliases:
@@ -765,6 +772,7 @@ categories:
     primary_name: Module Shard Costs
     aliases:
     - Module Shard Costs
+    - Module Shards Cost
   - canonical_id: LAB_MODULE_COIN_COST
     primary_name: Module Coin Cost
     aliases:
