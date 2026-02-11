@@ -10,6 +10,7 @@ from tower_sim.registry.combat_stat_contract import (
     contributor_ids_sections,
     ordered_stat_lineage_sections,
     required_max_wave_stat_input_ids,
+    required_combat_stat_ids,
     stat_lineage_manifest,
 )
 from tower_sim.registry.stat_registry import Phase, default_registry
@@ -137,3 +138,5 @@ def test_stat_lineage_sections_put_required_stats_first() -> None:
     registry_ids = [definition.stat_id for definition in default_registry().all_defs()]
     assert set(section_ids) == set(registry_ids)
     assert len(section_ids) == len(registry_ids)
+    consumed_ids = set(required_combat_stat_ids())
+    assert consumed_ids.issubset(reached_ids)

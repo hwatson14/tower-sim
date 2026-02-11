@@ -1,0 +1,14 @@
+{
+  "missing_required": [],
+  "reached_required": [
+    "def_pct",
+    "thorns_damage_mult",
+    "tower_hp",
+    "tower_regen",
+    "wall_hp",
+    "wall_regen"
+  ],
+  "required_count": 6,
+  "schema": "stat_lineage_contract_gate.v1",
+  "status": "ok"
+}

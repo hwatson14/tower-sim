@@ -33,6 +33,9 @@ jobs:
         run: |
           pytest -q \
             tests/test_max_wave_v1_contract.py \
+            tests/test_max_wave_ep_parity.py \
+            tests/test_ep_export_final_stats_parity.py \
+            tests/test_release_gate_tournament_fixtures.py
             tests/test_max_wave_lineage_contract.py \
             tests/test_naming_contract.py \
             tests/test_naming_contract_check.py \
@@ -90,6 +93,7 @@ jobs:
           from tower_sim.registry.combat_stat_contract import (
               ordered_stat_lineage_sections,
               required_max_wave_stat_input_ids,
+              required_combat_stat_ids,
               stat_lineage_manifest,
           )
 
@@ -110,6 +114,9 @@ jobs:
                   for entry in manifest[stat_id]
               ]
               for stat_id in ordered_stat_ids
+                  for entry in entries
+              ]
+              for stat_id, entries in sorted(manifest.items())
           }
           payload = {
               "schema": "stat_lineage_manifest.v1",
@@ -122,6 +129,7 @@ jobs:
                   }
                   for name, stat_ids in section_defs
               ],
+              "required_combat_stat_ids": list(required_combat_stat_ids()),
               "stats": serialized,
           }
           Path("out/stat_lineage_manifest.json").write_text(
@@ -130,6 +138,7 @@ jobs:
           )
 
           required = set(required_max_wave_stat_input_ids())
+          required = set(required_combat_stat_ids())
           reached_required = sorted(
               stat_id
               for stat_id in required
@@ -176,6 +185,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git add out/runner_output_latest.json out/ep_export_final_stats_report_latest.json
           git add \
             out/runner_output_latest.json \
             out/ep_export_final_stats_report_latest.json \

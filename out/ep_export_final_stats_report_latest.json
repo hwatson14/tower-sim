@@ -41,6 +41,38 @@
       "within_tolerance": false
     }
   ],
+  "decisive_lineage": [
+    {
+      "alias": "Health",
+      "expected_stat_id": "tower_hp",
+      "key": "health",
+      "verification_path": "ehp_eval.stats.tower_hp"
+    },
+    {
+      "alias": "Health Regen",
+      "expected_stat_id": "tower_regen",
+      "key": "health_regen",
+      "verification_path": "ehp_eval.stats.tower_regen"
+    },
+    {
+      "alias": "Defense %",
+      "expected_stat_id": "def_pct",
+      "key": "defense_percent",
+      "verification_path": "ehp_eval.stats.def_pct"
+    },
+    {
+      "alias": "Wall Health",
+      "expected_stat_id": "wall_hp",
+      "key": "wall_health",
+      "verification_path": "ehp_eval.stats.wall_hp"
+    },
+    {
+      "alias": "Wall Regen",
+      "expected_stat_id": "wall_regen",
+      "key": "wall_regen",
+      "verification_path": "ehp_eval.stats.wall_regen"
+    }
+  ],
   "matched_count": 0,
   "mismatch_count": 5,
   "preset": "farming",

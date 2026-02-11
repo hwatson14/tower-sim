@@ -2,7 +2,7 @@ schema_version: 1
 active_pack: ep_formulas_current
 packs:
   ep_formulas_current:
-    path: tables/registry/ep_formulas
+    path: tables/meta/registry/ep_formulas
     status: active
     files:
       mechanics: mechanics_library.yaml

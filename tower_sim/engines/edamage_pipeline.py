@@ -199,6 +199,10 @@ def compute_edamage_outputs(inputs: EDamageInputs) -> EDamageOutputs:
         "crit_chance": "tables/meta/registry/ep_formulas/mechanics_library.yaml (EPD_CRIT_CHANCE)",
         "crit_multiplier": "tables/meta/registry/ep_formulas/mechanics_library.yaml (EPD_CRITICAL)",
         "tower_dps": "tables/meta/registry/ep_formulas/mechanics_library.yaml (BULLET_PER_SECOND)",
+        "attack_speed": "mechanics/manifest.yaml -> active pack mechanics file (EPD_ASPD)",
+        "crit_chance": "mechanics/manifest.yaml -> active pack mechanics file (EPD_CRIT_CHANCE)",
+        "crit_multiplier": "mechanics/manifest.yaml -> active pack mechanics file (EPD_CRITICAL)",
+        "tower_dps": "mechanics/manifest.yaml -> active pack mechanics file (BULLET_PER_SECOND)",
     }
     return EDamageOutputs(
         tower_damage=tower_damage,

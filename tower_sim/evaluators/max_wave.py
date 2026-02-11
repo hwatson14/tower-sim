@@ -201,6 +201,7 @@ class MaxWaveEvaluator:
             tier_rules=preflight.tier_rules,
             run_context=preflight.run_context,
             ids_snapshot=ids_snapshot,
+            base_timing_uptime=uptime_diag,
         )
         if search_missing:
             missing.extend(search_missing)
@@ -534,6 +535,7 @@ def _search_wmax(
     tier_rules,
     run_context: RunContext,
     ids_snapshot: AccountSnapshot,
+    base_timing_uptime: Optional[Dict[str, Any]] = None,
     trace_depth: int = 5,
 ) -> Tuple[
     Optional[int],
@@ -611,6 +613,14 @@ def _search_wmax(
         if survivability_missing:
             return None, None, survivability_missing
 
+        timing_uptime = base_timing_uptime
+        if timing_uptime is None:
+            timing_uptime = _build_timing_uptime_diagnostics(
+                problem_spec=problem_spec,
+                ids_snapshot=ids_snapshot,
+                wave_snapshot=wave_snapshot,
+            )
+
         attack_wave = int(wave_row["enemy_attack_wave"])
         wave_damage, wave_damage_missing = resolve_canonical_wave_damage_for_attack_wave(
             problem_spec=problem_spec,
@@ -620,7 +630,11 @@ def _search_wmax(
             return None, None, wave_damage_missing
 
         result = _resolve_boss_survivability(
-            problem_spec, wave, wave_damage, survivability_stats
+            problem_spec,
+            wave,
+            wave_damage,
+            survivability_stats,
+            timing_uptime=timing_uptime,
         )
         if "error" in result:
             diagnostics["boss_survivability_error"] = result["error"]
@@ -842,6 +856,8 @@ def _resolve_boss_survivability(
     wave: int,
     wave_damage: float,
     survivability_stats: Dict[str, float],
+    *,
+    timing_uptime: Optional[Dict[str, Any]] = None,
 ) -> Dict[str, Any]:
     spec = problem_spec.scenario.boss_survivability
     if spec is None:
@@ -861,6 +877,13 @@ def _resolve_boss_survivability(
             shields=spec.tower.shields,
         )
         combat_params = dict(spec.combat_params)
+        if timing_uptime is not None:
+            expected_damage_taken = _resolve_expected_damage_taken(timing_uptime)
+            base_damage_reduction = float(combat_params.get("damage_reduction", 0.0) or 0.0)
+            combat_params["damage_reduction"] = _compose_damage_reduction(
+                base_damage_reduction=base_damage_reduction,
+                expected_damage_taken=expected_damage_taken,
+            )
         combat_params["tower_hp"] = survivability_stats["tower_hp"]
         combat_params["tower_regen"] = survivability_stats["tower_regen"]
         combat_params["defense_pct"] = survivability_stats["def_pct"]
@@ -877,8 +900,31 @@ def _resolve_boss_survivability(
             bc_params=spec.bc_params,
         )
         return resolve_boss_fight(ctx)
-    except (BossDataError, BossHitIntervalError) as exc:
+    except (BossDataError, BossHitIntervalError, ValueError) as exc:
         return {"error": str(exc)}
+
+
+def _resolve_expected_damage_taken(timing_uptime: Dict[str, Any]) -> float:
+    if "expected_damage_taken" not in timing_uptime:
+        missing = timing_uptime.get("missing", [])
+        raise ValueError(
+            "Timing uptime diagnostics missing expected_damage_taken "
+            f"(missing={missing})."
+        )
+    expected_damage_taken = float(timing_uptime["expected_damage_taken"])
+    if not 0.0 <= expected_damage_taken <= 1.0:
+        raise ValueError(
+            f"Timing expected_damage_taken must be in [0,1], got {expected_damage_taken}."
+        )
+    return expected_damage_taken
+
+
+def _compose_damage_reduction(*, base_damage_reduction: float, expected_damage_taken: float) -> float:
+    if not 0.0 <= base_damage_reduction <= 1.0:
+        raise ValueError(
+            f"damage_reduction must be in [0,1], got {base_damage_reduction}."
+        )
+    return 1.0 - ((1.0 - base_damage_reduction) * expected_damage_taken)
 
 
 def _build_timing_uptime_diagnostics(
@@ -978,6 +1024,9 @@ def _build_timing_uptime_diagnostics(
             "packages_per_second": packages_per_second,
             "gcomp_enabled": gcomp_enabled,
             "gcomp_rarity": gcomp_rarity,
+            "expected_coin_multiplier": 1.0,
+            "expected_damage_taken": 1.0,
+            "expected_damage_multiplier": 1.0,
             "missing": ["uw_golden_tower_cooldown"],
         }
 
