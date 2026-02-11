@@ -42,14 +42,14 @@
     "tower_stats": {
       "damage_reduction": 0.0,
       "defense_abs": 0.0,
-      "defense_pct": 0.26,
+      "defense_pct": 0.30000000000000004,
       "electrons_damage_frac": 0.0,
       "orb_damage_frac": 0.0,
       "pc_boss_mult": 1.0,
       "pc_frac": 0.0,
       "thorns_frac": 0.8,
-      "tower_hp": 7470.0,
-      "tower_regen": 150.0,
+      "tower_hp": 10383.3,
+      "tower_regen": 181.5,
       "wall_hp": 1900.0,
       "wall_regen": 10.0
     },
@@ -348,7 +348,7 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 66.21962199999132,
+    "preflight_ms": 65.5334570000008,
     "statbook_rows": 112,
     "timing_uptime": {
       "bot_effect_scalars": {
