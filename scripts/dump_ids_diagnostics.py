@@ -5,10 +5,15 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timezone
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict, Optional, Set
+from typing import Any, Callable, Dict, List, Optional, Set
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from tower_sim.engines.statbook_builder import build_statbook
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
@@ -71,7 +76,7 @@ def _build_ids_raw_index(ids_raw: Any) -> Dict[str, Any]:
 
 def _default_problem_spec() -> ProblemSpec:
     # Deterministic baseline spec for debug bundle runs.
-    return ProblemSpec(scenario=ScenarioSpec(mode="farm", tier=12, wave=1000), stat_inputs=[])
+    return ProblemSpec(scenario=ScenarioSpec(mode="farming", tier=12, wave=1000), stat_inputs=[])
 
 
 def _filter_statbook_rows(rows: list[Any], allowlist: Optional[Set[str]]) -> list[Dict[str, Any]]:
@@ -285,6 +290,105 @@ def _build_run_stats_report(payload: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _build_staged_outputs(
+    *,
+    payload: Dict[str, Any],
+    snapshot: Any,
+    resolved_spec: ProblemSpec,
+    preflight: Dict[str, Any],
+    include_max_wave: bool,
+) -> Dict[str, Dict[str, Any]]:
+    snapshot_dict = _to_jsonable(snapshot)
+    pipeline = payload.get("pipeline", {})
+    loadout = payload.get("loadout", {})
+    run_stats = _build_run_stats_report(payload)
+
+    stage_1 = {
+        "name": "locked_base",
+        "description": "Themes & Songs, Labs, UWs, Vault, Relics",
+        "themes_songs": list(snapshot_dict.get("raw_sections", {}).get("Themes & Songs", [])),
+        "labs": dict(snapshot_dict.get("labs", {})),
+        "ultimate_weapons": dict(snapshot_dict.get("ultimate_weapons", {})),
+        "vault": dict(snapshot_dict.get("vault", {})),
+        "relics": dict(snapshot_dict.get("relics", {})),
+        "fail_closed": False,
+        "missing": [],
+    }
+
+    workshop_coin = {
+        name: entry.get("coin_level")
+        for name, entry in snapshot_dict.get("workshop", {}).items()
+        if entry.get("coin_level") is not None
+    }
+    stage_2 = {
+        "name": "gem_respec_base",
+        "description": "Workshop Coin, Enhancements, Guardians, Bots",
+        "workshop_coin": workshop_coin,
+        "enhancements": {
+            "header": list(snapshot_dict.get("workshop_enhancements", {}).get("header", [])),
+            "rows": list(snapshot_dict.get("workshop_enhancements", {}).get("rows", [])),
+        },
+        "guardians": {
+            "header": list(snapshot_dict.get("guardians", {}).get("header", [])),
+            "rows": list(snapshot_dict.get("guardians", {}).get("rows", [])),
+        },
+        "bots": {
+            "names": list(snapshot_dict.get("bots", [])),
+            "upgrades": dict(snapshot_dict.get("bot_upgrades", {})),
+        },
+        "fail_closed": False,
+        "missing": [],
+    }
+
+    stage_3 = {
+        "name": "loadout",
+        "description": "Cards and Modules",
+        "preset_name": loadout.get("preset_name"),
+        "cards": list(loadout.get("cards", [])),
+        "modules": dict(loadout.get("modules", {})),
+        "fail_closed": bool(payload.get("missing_sections")),
+        "missing": list(payload.get("missing_sections", [])),
+    }
+
+    stage_4_missing: List[str] = []
+    diagnostics = preflight.get("diagnostics", {}) if isinstance(preflight, dict) else {}
+    if not diagnostics:
+        stage_4_missing.append("battle_conditions_context")
+    stage_4 = {
+        "name": "battle_conditions",
+        "description": "Tier battle conditions and scenario context",
+        "problem_spec": _to_jsonable(asdict(resolved_spec)),
+        "mode": resolved_spec.scenario.mode,
+        "tier": resolved_spec.scenario.tier,
+        "league": resolved_spec.scenario.league,
+        "wave": resolved_spec.scenario.wave,
+        "wave_state": diagnostics.get("wave_state"),
+        "wave_rows": diagnostics.get("wave_rows", {}),
+        "missing_tier_rules": diagnostics.get("missing_tier_rules", []),
+        "missing_heat": diagnostics.get("missing_heat", []),
+        "fail_closed": bool(preflight.get("fail_closed", False) or stage_4_missing),
+        "missing": sorted(set(stage_4_missing + list(preflight.get("missing", [])))),
+    }
+
+    stage_5 = {
+        "name": "end_of_run",
+        "description": "Run stats and evaluator outputs",
+        "stat_engine": dict(pipeline.get("stat_engine", {})),
+        "run_stats": run_stats,
+        "max_wave": dict(pipeline.get("max_wave", {})) if include_max_wave else {},
+        "fail_closed": bool(run_stats.get("fail_closed")),
+        "missing": list(run_stats.get("missing", [])),
+    }
+
+    return {
+        "stage_1_base_no_respec": stage_1,
+        "stage_2_base_with_respec": stage_2,
+        "stage_3_with_loadout": stage_3,
+        "stage_4_with_battle_conditions": stage_4,
+        "stage_5_end_of_run": stage_5,
+    }
+
+
 def _resolve_git_sha() -> str | None:
     env_sha = os.getenv("GITHUB_SHA")
     if env_sha:
@@ -393,7 +497,7 @@ def build_diagnostics(
         )
 
     payload: Dict[str, Any] = {
-        "schema_version": 5 if include_pipeline else 4,
+        "schema_version": 5,
         "created_utc": datetime.now(timezone.utc).isoformat(),
         "git_sha": _resolve_git_sha(),
         "ids_path": str(ids_path),
@@ -403,16 +507,24 @@ def build_diagnostics(
         "snapshot": _to_jsonable(snapshot),
         "missing_sections": sorted(set(missing_sections)),
     }
-    if include_pipeline:
-        payload["pipeline"] = _build_pipeline_bundle(
-            ids_raw,
-            snapshot,
-            include_run_stats=include_run_stats,
-            include_statbook_rows=include_statbook_rows,
-            statbook_allowlist=statbook_allowlist,
-            include_max_wave=include_max_wave,
-            problem_spec_path=problem_spec_path,
-        )
+    payload["pipeline"] = _build_pipeline_bundle(
+        ids_raw,
+        snapshot,
+        include_run_stats=include_run_stats,
+        include_statbook_rows=include_statbook_rows,
+        statbook_allowlist=statbook_allowlist,
+        include_max_wave=include_max_wave,
+        problem_spec_path=problem_spec_path,
+    )
+    resolved_spec = _default_problem_spec() if problem_spec_path is None else load_problem_spec(problem_spec_path)
+    preflight = MaxWaveEvaluator().preflight(resolved_spec, snapshot)
+    payload["staged_outputs"] = _build_staged_outputs(
+        payload=payload,
+        snapshot=snapshot,
+        resolved_spec=resolved_spec,
+        preflight=preflight,
+        include_max_wave=include_max_wave,
+    )
     return payload
 
 
@@ -443,12 +555,12 @@ def main() -> None:
     parser.add_argument(
         "--include-pipeline",
         action="store_true",
-        help="Emit pipeline stage snapshots (stat inputs, computed stats, optional max-wave).",
+        help="Deprecated flag (pipeline snapshots are always emitted).",
     )
     parser.add_argument(
         "--include-run-stats",
         action="store_true",
-        help="Compute and emit StatEngine run_stats (baseline, no tier rules).",
+        help="Deprecated flag (StatEngine run_stats are always emitted).",
     )
     parser.add_argument(
         "--include-statbook-rows",
@@ -485,8 +597,8 @@ def main() -> None:
     payload = build_diagnostics(
         ids_path,
         include_raw=args.include_raw,
-        include_pipeline=args.include_pipeline,
-        include_run_stats=args.include_run_stats,
+        include_pipeline=True,
+        include_run_stats=True,
         include_statbook_rows=args.include_statbook_rows,
         statbook_allowlist=allowlist,
         include_max_wave=args.include_max_wave,
@@ -502,6 +614,16 @@ def main() -> None:
     base_components_path = output_dir / "base_stats_components.json"
     inventory_components_path = output_dir / "inventory_components.json"
     run_stats_path = output_dir / "run_stats.json"
+    ids_raw_index_path = output_dir / "ids_raw_index.json"
+    compiled_stat_inputs_path = output_dir / "compiled_stat_inputs.json"
+    stat_engine_path = output_dir / "stat_engine.json"
+    resolved_problem_spec_path = output_dir / "resolved_problem_spec.json"
+    max_wave_path = output_dir / "max_wave.json"
+    stage_1_path = output_dir / "stage_1_base_no_respec.json"
+    stage_2_path = output_dir / "stage_2_base_with_respec.json"
+    stage_3_path = output_dir / "stage_3_with_loadout.json"
+    stage_4_path = output_dir / "stage_4_with_battle_conditions.json"
+    stage_5_path = output_dir / "stage_5_end_of_run.json"
 
     previous = _read_json(snapshot_path)
     snapshot_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
@@ -523,6 +645,41 @@ def main() -> None:
         json.dumps(_build_inventory_components(snapshot), indent=2, sort_keys=True)
     )
     run_stats_path.write_text(json.dumps(_build_run_stats_report(payload), indent=2, sort_keys=True))
+    pipeline = payload.get("pipeline", {})
+    ids_raw_index_path.write_text(
+        json.dumps(pipeline.get("ids_raw_index", {}), indent=2, sort_keys=True)
+    )
+    compiled_stat_inputs_path.write_text(
+        json.dumps(pipeline.get("compiled_stat_inputs", {}), indent=2, sort_keys=True)
+    )
+    stat_engine_path.write_text(
+        json.dumps(pipeline.get("stat_engine", {}), indent=2, sort_keys=True)
+    )
+
+    resolved_spec = _default_problem_spec() if args.problem_spec is None else load_problem_spec(args.problem_spec)
+    resolved_problem_spec_path.write_text(
+        json.dumps(_to_jsonable(asdict(resolved_spec)), indent=2, sort_keys=True)
+    )
+    max_wave_path.write_text(
+        json.dumps(pipeline.get("max_wave", {}), indent=2, sort_keys=True)
+    )
+
+    staged_outputs = payload.get("staged_outputs", {})
+    stage_1_path.write_text(
+        json.dumps(staged_outputs.get("stage_1_base_no_respec", {}), indent=2, sort_keys=True)
+    )
+    stage_2_path.write_text(
+        json.dumps(staged_outputs.get("stage_2_base_with_respec", {}), indent=2, sort_keys=True)
+    )
+    stage_3_path.write_text(
+        json.dumps(staged_outputs.get("stage_3_with_loadout", {}), indent=2, sort_keys=True)
+    )
+    stage_4_path.write_text(
+        json.dumps(staged_outputs.get("stage_4_with_battle_conditions", {}), indent=2, sort_keys=True)
+    )
+    stage_5_path.write_text(
+        json.dumps(staged_outputs.get("stage_5_end_of_run", {}), indent=2, sort_keys=True)
+    )
     if previous is not None:
         diff_path.write_text(
             json.dumps(_build_diff(previous, payload), indent=2, sort_keys=True)
@@ -535,6 +692,16 @@ def main() -> None:
     print(f"Wrote {base_components_path}")
     print(f"Wrote {inventory_components_path}")
     print(f"Wrote {run_stats_path}")
+    print(f"Wrote {ids_raw_index_path}")
+    print(f"Wrote {compiled_stat_inputs_path}")
+    print(f"Wrote {stat_engine_path}")
+    print(f"Wrote {resolved_problem_spec_path}")
+    print(f"Wrote {max_wave_path}")
+    print(f"Wrote {stage_1_path}")
+    print(f"Wrote {stage_2_path}")
+    print(f"Wrote {stage_3_path}")
+    print(f"Wrote {stage_4_path}")
+    print(f"Wrote {stage_5_path}")
     if diff_path.exists():
         print(f"Wrote {diff_path}")
 
