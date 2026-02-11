@@ -32,6 +32,8 @@ _EXPLICIT_STAT_ALIAS_TO_ID: Dict[str, str] = {
     "wall hp": "wall_hp",
     "thorn damage": "thorns_damage_mult",
     "thorns": "thorns_damage_mult",
+    "max amount": "workshop_max_recovery",
+    "workshop max amount": "workshop_max_recovery",
 }
 
 
