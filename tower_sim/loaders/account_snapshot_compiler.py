@@ -58,7 +58,7 @@ _MODULE_KNOWN_LABELS = {
 def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming") -> AccountSnapshot:
     raw_sections = ids_raw.raw_sections
     labs = _parse_labs(raw_sections.get("Labs", []))
-    workshop = _parse_workshop(raw_sections.get("WS", []))
+    workshop = _parse_workshop(raw_sections.get("WS", []), default_preset=default_preset)
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
     ultimate_weapons = _parse_ultimate_weapons(raw_sections.get("UWs", []))
     relics = _parse_key_value_int(raw_sections.get("Relics", []))
@@ -161,16 +161,18 @@ def _parse_labs(rows: List[List[str]]) -> Dict[str, Optional[int]]:
     return labs
 
 
-def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
+def _parse_workshop(
+    rows: List[List[str]], *, default_preset: str
+) -> Dict[str, WorkshopEntrySnapshot]:
+    level_indices = _workshop_level_indices(default_preset)
     entries: Dict[str, WorkshopEntrySnapshot] = {}
     for row in rows:
         name = row[0].strip() if row else ""
         if not name or name == "Workshop Upgrade":
             continue
-        numeric_levels = _numeric_values(row[1:])
-        coin_level = numeric_levels[0] if numeric_levels else None
-        end_level = numeric_levels[1] if len(numeric_levels) > 1 else None
-        max_level = numeric_levels[-1] if numeric_levels else None
+        coin_level = _parse_optional_int(_safe_cell(row, level_indices[0]))
+        end_level = _parse_optional_int(_safe_cell(row, level_indices[1]))
+        max_level = _parse_optional_int(_safe_cell(row, 11))
         entries[name] = WorkshopEntrySnapshot(
             name=name,
             unlocked=_optional_str(_safe_cell(row, 1)),
@@ -180,6 +182,21 @@ def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
             category=_optional_str(_safe_cell(row, 5)),
         )
     return entries
+
+
+def _workshop_level_indices(default_preset: str) -> Tuple[int, int]:
+    indices_by_preset: Dict[str, Tuple[int, int]] = {
+        "Farming": (1, 2),
+        "Tourney": (3, 4),
+        "Testing": (5, 6),
+        "Preset 4": (7, 8),
+        "Preset 5": (9, 10),
+    }
+    if default_preset not in indices_by_preset:
+        raise ValueError(
+            f"Default preset must be one of {PRESET_NAMES}, got {default_preset!r}."
+        )
+    return indices_by_preset[default_preset]
 
 
 def _parse_ultimate_weapons(rows: List[List[str]]) -> Dict[str, UltimateWeaponSnapshot]:
@@ -595,19 +612,6 @@ def _find_row(
                 continue
             return row
     return None
-
-
-def _numeric_values(cells: List[str]) -> List[int]:
-    values: List[int] = []
-    for cell in cells:
-        cleaned = cell.strip()
-        if cleaned == "":
-            continue
-        try:
-            values.append(int(float(cleaned)))
-        except ValueError:
-            continue
-    return values
 
 
 def _find_value(rows: List[List[str]], label: str) -> Optional[str]:

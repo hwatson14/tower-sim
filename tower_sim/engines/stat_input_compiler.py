@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass
 import re
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
+from tower_sim.loaders.table_paths import resolve_table_path
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
@@ -387,19 +389,29 @@ def _workshop_provenance(name: str) -> str:
 def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInput], List[str]]:
     stat_inputs: List[StatInput] = []
     missing: List[str] = []
+    ladder_values, ladder_missing = _load_uw_track_values()
+    missing.extend(ladder_missing)
 
     uw_tracks, uw_missing = _parse_uw_tracks(ids_snapshot.raw_sections.get("UWs", []))
     missing.extend(uw_missing)
 
-    for uw_name, track_name, value, next_cost in uw_tracks:
+    for uw_name, track_name, level_index, raw_value, next_cost in uw_tracks:
         mapping = _UW_TRACK_SPECS.get(uw_name)
         if mapping is None or track_name not in mapping:
             missing.append(f"uw_mapping:{uw_name}:{track_name}")
             continue
         spec = mapping[track_name]
-        if value is None:
+        if raw_value is None:
             missing.append(f"uw_locked:{uw_name}:{track_name}")
             continue
+
+        ladder_key = (uw_name, track_name, level_index)
+        value = ladder_values.get(ladder_key)
+        if value is None:
+            missing.append(f"uw_table:{uw_name}:{track_name}:{level_index}")
+            continue
+        if abs(raw_value - value) > 1e-9:
+            missing.append(f"uw_value_mismatch:{uw_name}:{track_name}:{level_index}")
 
         stat_inputs.append(
             StatInput(
@@ -423,8 +435,8 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
 
 def _parse_uw_tracks(
     rows: Iterable[List[str]],
-) -> Tuple[List[Tuple[str, str, Optional[float], Optional[float]]], List[str]]:
-    tracks: List[Tuple[str, str, Optional[float], Optional[float]]] = []
+) -> Tuple[List[Tuple[str, str, int, Optional[float], Optional[float]]], List[str]]:
+    tracks: List[Tuple[str, str, int, Optional[float], Optional[float]]] = []
     missing: List[str] = []
     current: Optional[str] = None
     for row in rows:
@@ -444,8 +456,39 @@ def _parse_uw_tracks(
         if level_index is None:
             missing.append(f"uw_level_missing:{current}:{track_name}")
             continue
-        tracks.append((current, track_name, _parse_uw_value(row[3]), _parse_next_cost(row[4])))
+        tracks.append(
+            (current, track_name, level_index, _parse_uw_value(row[3]), _parse_next_cost(row[4]))
+        )
     return tracks, missing
+
+
+def _load_uw_track_values() -> Tuple[Dict[Tuple[str, str, int], float], List[str]]:
+    path = resolve_table_path("uw_track_ladders")
+    values: Dict[Tuple[str, str, int], float] = {}
+    missing: List[str] = []
+    with path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            uw_name = row.get("uw_name", "").strip()
+            track_name = row.get("track_name", "").strip()
+            level_raw = row.get("level_index", "").strip()
+            value_raw = row.get("value", "").strip()
+            if not uw_name or not track_name or not level_raw:
+                continue
+            try:
+                level = int(level_raw)
+            except ValueError:
+                missing.append(f"uw_table_level:{uw_name}:{track_name}:{level_raw}")
+                continue
+            if not value_raw:
+                continue
+            try:
+                value = float(value_raw)
+            except ValueError:
+                missing.append(f"uw_table_value:{uw_name}:{track_name}:{level}")
+                continue
+            values[(uw_name, track_name, level)] = value
+    return values, missing
 
 
 def _parse_level_index(value: str) -> Optional[int]:
