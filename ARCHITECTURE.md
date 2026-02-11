@@ -1,3 +1,5 @@
+> **Role:** Normative architecture contract.
+
 # TowerSim Architecture (Codex Contract)
 
 **Goal:** Deterministically evaluate run objectives (v1 focuses on boss-only Wmax) across farming/tournament/milestone contexts, and support optimisation (loadouts, perk policy, future spending, and respec mode).
