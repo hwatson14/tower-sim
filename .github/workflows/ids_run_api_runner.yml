@@ -1,4 +1,4 @@
-name: IDS and run API runner
+name: Agent surface runner
 
 on:
   workflow_dispatch:
@@ -12,12 +12,14 @@ on:
       - "tower_sim/run/api.py"
       - "tower_sim/run/runner.py"
       - "tower_sim/run/context.py"
+      - "README.md"
       - "tests/test_dump_ids_diagnostics.py"
       - "tests/test_ids_parser.py"
       - "tests/test_account_snapshot_compiler.py"
       - "tests/test_run_api.py"
       - "tests/test_run_runner.py"
       - "tests/test_run_context.py"
+      - "tests/test_worker_openapi_snapshot_surface.py"
       - "tests/fixtures/tower-sim-data/_IDS.csv"
   pull_request:
     paths:
@@ -27,16 +29,18 @@ on:
       - "tower_sim/run/api.py"
       - "tower_sim/run/runner.py"
       - "tower_sim/run/context.py"
+      - "README.md"
       - "tests/test_dump_ids_diagnostics.py"
       - "tests/test_ids_parser.py"
       - "tests/test_account_snapshot_compiler.py"
       - "tests/test_run_api.py"
       - "tests/test_run_runner.py"
       - "tests/test_run_context.py"
+      - "tests/test_worker_openapi_snapshot_surface.py"
       - "tests/fixtures/tower-sim-data/_IDS.csv"
 
 jobs:
-  run-ids-and-run-api:
+  run-agent-surface:
     runs-on: ubuntu-latest
 
     steps:
@@ -55,7 +59,7 @@ jobs:
           python -m pip install -e .
           python -m pip install pytest
 
-      - name: Run IDS and run API unit tests
+      - name: Run agent surface unit tests
         run: |
           pytest -q \
             tests/test_dump_ids_diagnostics.py \
@@ -63,9 +67,10 @@ jobs:
             tests/test_account_snapshot_compiler.py \
             tests/test_run_api.py \
             tests/test_run_runner.py \
-            tests/test_run_context.py
+            tests/test_run_context.py \
+            tests/test_worker_openapi_snapshot_surface.py
 
-      - name: Run runner smoke output
+      - name: Run runner smoke output (agent surface)
         run: |
           python -m tower_sim.run.runner --output out/runner_ids_run_api_smoke.json
 
@@ -80,12 +85,12 @@ jobs:
           missing = required - set(payload)
           if missing:
               raise SystemExit(f"Missing required keys: {sorted(missing)}")
-          print("IDS/run API runner output validated")
+          print("Agent surface runner output validated")
           PY
 
-      - name: Upload IDS/run API artifacts
+      - name: Upload agent surface artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ids-run-api-output
+          name: agent-surface-output
           path: out/runner_ids_run_api_smoke.json
           if-no-files-found: error
