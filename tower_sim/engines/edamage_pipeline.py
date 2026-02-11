@@ -5,6 +5,8 @@ import re
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, Mapping, Sequence
 
 from tower_sim.engines.edamage_formulas import (
@@ -191,12 +193,12 @@ def compute_edamage_outputs(inputs: EDamageInputs) -> EDamageOutputs:
     tower_dps = tower_damage * crit_multiplier * bullets
 
     provenance = {
-        "tower_damage": "tables/wiki_cache/cards_common.csv + tables/perks_v1.csv + "
-        "tables/labs_values_v1.csv",
-        "attack_speed": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_ASPD)",
-        "crit_chance": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_CRIT_CHANCE)",
-        "crit_multiplier": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_CRITICAL)",
-        "tower_dps": "tables/registry/ep_formulas/mechanics_library.yaml (BULLET_PER_SECOND)",
+        "tower_damage": "tables/cache/wiki/cards_common.csv + tables/inputs/perks/perks_v1.csv + "
+        "tables/inputs/economy/labs_values_v1.csv",
+        "attack_speed": "tables/meta/registry/ep_formulas/mechanics_library.yaml (EPD_ASPD)",
+        "crit_chance": "tables/meta/registry/ep_formulas/mechanics_library.yaml (EPD_CRIT_CHANCE)",
+        "crit_multiplier": "tables/meta/registry/ep_formulas/mechanics_library.yaml (EPD_CRITICAL)",
+        "tower_dps": "tables/meta/registry/ep_formulas/mechanics_library.yaml (BULLET_PER_SECOND)",
     }
     return EDamageOutputs(
         tower_damage=tower_damage,
@@ -220,12 +222,12 @@ def lookup_lab_multiplier(
     labs = load_labs_values()
     if lab_name not in labs:
         raise EDamageInputError(
-            f"Missing lab {lab_name!r} in tables/labs_values_v1.csv."
+            f"Missing lab {lab_name!r} in tables/inputs/economy/labs_values_v1.csv."
         )
     lab = labs[lab_name]
     if level not in lab.levels:
         raise EDamageInputError(
-            f"Lab {lab_name!r} missing level {level} in tables/labs_values_v1.csv."
+            f"Lab {lab_name!r} missing level {level} in tables/inputs/economy/labs_values_v1.csv."
         )
     value = lab.levels[level]
     if lab.unit == "percent_points":
@@ -242,7 +244,7 @@ def resolve_damage_perk_multiplier(config: PerkConfig) -> float:
         if picks <= 0:
             continue
         if perk_name not in definitions:
-            raise EDamageInputError(f"Unknown perk {perk_name!r} in tables/perks_v1.csv.")
+            raise EDamageInputError(f"Unknown perk {perk_name!r} in tables/inputs/perks/perks_v1.csv.")
         definition = definitions[perk_name]
         perk_multiplier = _parse_damage_multiplier(definition.effect)
         if perk_multiplier is None:
@@ -306,7 +308,7 @@ class _ModuleSubstat:
 
 @lru_cache(maxsize=1)
 def _module_substat_table() -> Dict[tuple[str, str, str], _ModuleSubstat]:
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "module_substats_v1.csv"
+    table_path = resolve_table_path("module_substats")
     if not table_path.exists():
         raise FileNotFoundError(f"Missing module substat table: {table_path}")
     with table_path.open(newline="", encoding="utf-8") as handle:
@@ -349,7 +351,7 @@ def _sum_module_substats(
         key = (selection.slot, selection.substat, selection.rarity)
         if key not in table:
             raise EDamageInputError(
-                f"Missing module substat {key} in tables/module_substats_v1.csv."
+                f"Missing module substat {key} in tables/inputs/modules/module_substats_v1.csv."
             )
         entry = table[key]
         total += _coerce_substat_value(entry.value, entry.unit)
@@ -386,7 +388,7 @@ def resolve_card_mastery_value(card_name: str, level: int | None) -> float:
     masteries = load_card_masteries()
     if card_name not in masteries:
         raise EDamageInputError(
-            f"Missing card mastery {card_name!r} in tables/card_masteries_v1.csv."
+            f"Missing card mastery {card_name!r} in tables/inputs/cards/card_masteries_v1.csv."
         )
     row = masteries[card_name]
     if level > len(row.level_values):

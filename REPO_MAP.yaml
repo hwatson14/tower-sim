@@ -1,3 +1,4 @@
+# Role: Index-only machine-readable repository map.
 top_level:
   allowed_dirs:
     - tower_sim

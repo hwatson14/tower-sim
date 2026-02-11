@@ -1,0 +1,73 @@
+{
+  "compared_rows": [
+    {
+      "actual": 11314998536.23848,
+      "expected": 5390000000000.0,
+      "key": "health",
+      "relative_delta": 0.9979007423865978,
+      "verification_path": "ehp_eval.stats.tower_hp",
+      "within_tolerance": false
+    },
+    {
+      "actual": 30919400339.730965,
+      "expected": 42290000000000.0,
+      "key": "health_regen",
+      "relative_delta": 0.9992688720657429,
+      "verification_path": "ehp_eval.stats.tower_regen",
+      "within_tolerance": false
+    },
+    {
+      "actual": 0.551,
+      "expected": 0.98,
+      "key": "defense_percent",
+      "relative_delta": 0.42899999999999994,
+      "verification_path": "ehp_eval.stats.def_pct",
+      "within_tolerance": false
+    },
+    {
+      "actual": 28740096282.04574,
+      "expected": 45970000000000.0,
+      "key": "wall_health",
+      "relative_delta": 0.999374807564019,
+      "verification_path": "ehp_eval.stats.wall_hp",
+      "within_tolerance": false
+    },
+    {
+      "actual": 64930740713.43503,
+      "expected": 111000000000000.0,
+      "key": "wall_regen",
+      "relative_delta": 0.999415038371951,
+      "verification_path": "ehp_eval.stats.wall_regen",
+      "within_tolerance": false
+    }
+  ],
+  "matched_count": 0,
+  "mismatch_count": 5,
+  "preset": "farming",
+  "spec_mode": "farming",
+  "status": "mismatch",
+  "suite": "ehp",
+  "tolerance": 0.01,
+  "unresolved_rows": [
+    {
+      "key": "ehp",
+      "reason": "unsupported_verification_path",
+      "verification_path": "ep_formula.eval.ehp"
+    },
+    {
+      "key": "defense_absolute",
+      "reason": "missing_runtime_value",
+      "verification_path": "stat_inputs.workshop_defense_absolute"
+    },
+    {
+      "key": "wall_fortification",
+      "reason": "unsupported_verification_path",
+      "verification_path": "ep_formula.eval.wall_fortification"
+    },
+    {
+      "key": "max_recovery",
+      "reason": "unsupported_verification_path",
+      "verification_path": "ep_formula.eval.max_recovery"
+    }
+  ]
+}

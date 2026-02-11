@@ -4,7 +4,7 @@ Design intent
 -------------
 The simulator should not depend on live network calls.
 Instead we keep a cached copy of each lab's (Level, Value, Cost, Total Cost)
-table in ``tables/wiki_cache``.
+table in ``tables/cache/wiki``.
 
 This script refreshes that cache from the primary source:
 The Tower - Idle Tower Defense Wiki (Fandom).
@@ -150,7 +150,7 @@ def ingest_all(cache_dir: Path) -> tuple[list[Path], list[LabPage]]:
 
 
 def main() -> None:
-    cache_dir = Path(__file__).resolve().parents[3] / "tables" / "wiki_cache"
+    cache_dir = Path(__file__).resolve().parents[3] / "tables" / "cache" / "wiki"
     written, needs_review = ingest_all(cache_dir)
     print(f"Wrote {len(written)} lab tables to {cache_dir}")
     if needs_review:

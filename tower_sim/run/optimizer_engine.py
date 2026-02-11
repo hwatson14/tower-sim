@@ -4,6 +4,8 @@ import csv
 import re
 from dataclasses import replace
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Any, Dict, List, Protocol
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
@@ -17,13 +19,13 @@ PRESET_LABELS = {"Farming": "Farming", "Tourney": "Tournament", "Testing": "Mile
 
 # Canonical stone-spend table manifest required before a full stone optimizer can run.
 REQUIRED_STONE_TABLES = (
-    "tables/uw_purchase_costs_v1.csv",
-    "tables/uw_track_ladders_v1.csv",
-    "tables/uw_plus_ladders_v1.csv",
-    "tables/assist_slot_unlock_costs_v1.csv",
-    "tables/assist_unique_rarity_upgrade_costs_v1.csv",
-    "tables/assist_efficiency_upgrade_costs_v1.csv",
-    "tables/card_masteries_v1.csv",
+    "tables/inputs/uw/uw_purchase_costs_v1.csv",
+    "tables/inputs/uw/uw_track_ladders_v1.csv",
+    "tables/inputs/uw/uw_plus_ladders_v1.csv",
+    "tables/inputs/modules/assist_slot_unlock_costs_v1.csv",
+    "tables/inputs/modules/assist_unique_rarity_upgrade_costs_v1.csv",
+    "tables/inputs/modules/assist_efficiency_upgrade_costs_v1.csv",
+    "tables/inputs/cards/card_masteries_v1.csv",
 )
 
 
@@ -725,9 +727,9 @@ def _mastery_action(
 
 
 def _load_card_masteries() -> Dict[str, int]:
-    path = Path("tables/card_masteries_v1.csv")
+    path = resolve_table_path("card_masteries")
     if not path.exists():
-        raise OptimizerDataError("Missing required table: tables/card_masteries_v1.csv")
+        raise OptimizerDataError("Missing required table: tables/inputs/cards/card_masteries_v1.csv")
     values: Dict[str, int] = {}
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -737,9 +739,9 @@ def _load_card_masteries() -> Dict[str, int]:
 
 
 def _load_uw_purchase_costs() -> Dict[str | int, Dict[int, int] | int]:
-    path = Path("tables/uw_purchase_costs_v1.csv")
+    path = resolve_table_path("uw_purchase_costs")
     if not path.exists():
-        raise OptimizerDataError("Missing required table: tables/uw_purchase_costs_v1.csv")
+        raise OptimizerDataError("Missing required table: tables/inputs/uw/uw_purchase_costs_v1.csv")
     uw_costs: Dict[int, int] = {}
     uw_plus_costs: Dict[int, int] = {}
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -755,9 +757,9 @@ def _load_uw_purchase_costs() -> Dict[str | int, Dict[int, int] | int]:
 
 
 def _load_uw_track_ladders() -> Dict[tuple[str, str, int], int]:
-    path = Path("tables/uw_track_ladders_v1.csv")
+    path = resolve_table_path("uw_track_ladders")
     if not path.exists():
-        raise OptimizerDataError("Missing required table: tables/uw_track_ladders_v1.csv")
+        raise OptimizerDataError("Missing required table: tables/inputs/uw/uw_track_ladders_v1.csv")
     values: Dict[tuple[str, str, int], int] = {}
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -773,9 +775,9 @@ def _load_uw_track_ladders() -> Dict[tuple[str, str, int], int]:
 
 
 def _load_uw_plus_ladders() -> Dict[tuple[str, str, int], int]:
-    path = Path("tables/uw_plus_ladders_v1.csv")
+    path = resolve_table_path("uw_plus_ladders")
     if not path.exists():
-        raise OptimizerDataError("Missing required table: tables/uw_plus_ladders_v1.csv")
+        raise OptimizerDataError("Missing required table: tables/inputs/uw/uw_plus_ladders_v1.csv")
     values: Dict[tuple[str, str, int], int] = {}
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -869,7 +871,7 @@ def _parse_level_from_display(value: str) -> int | None:
 
 
 def _load_assist_efficiency_costs() -> Dict[int, int]:
-    path = Path("tables/assist_efficiency_upgrade_costs_v1.csv")
+    path = resolve_table_path("assist_efficiency_upgrade_costs")
     if not path.exists():
         raise OptimizerDataError("Missing required table: tables/assist_efficiency_upgrade_costs_v1.csv")
     values: Dict[int, int] = {}
@@ -883,7 +885,7 @@ def _load_assist_efficiency_costs() -> Dict[int, int]:
 
 
 def _load_assist_slot_unlock_cost() -> int:
-    path = Path("tables/assist_slot_unlock_costs_v1.csv")
+    path = resolve_table_path("assist_slot_unlock_costs")
     if not path.exists():
         raise OptimizerDataError("Missing required table: tables/assist_slot_unlock_costs_v1.csv")
     with path.open("r", encoding="utf-8", newline="") as handle:
@@ -895,7 +897,7 @@ def _load_assist_slot_unlock_cost() -> int:
 
 
 def _load_assist_unique_rarity_costs() -> Dict[tuple[str, str], int]:
-    path = Path("tables/assist_unique_rarity_upgrade_costs_v1.csv")
+    path = resolve_table_path("assist_unique_rarity_upgrade_costs")
     if not path.exists():
         raise OptimizerDataError("Missing required table: tables/assist_unique_rarity_upgrade_costs_v1.csv")
     values: Dict[tuple[str, str], int] = {}

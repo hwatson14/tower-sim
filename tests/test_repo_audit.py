@@ -19,7 +19,7 @@ def _write(path: Path, content: str) -> None:
 
 def _build_repo(tmp_path: Path, naming_yaml: str, stub_module: str | None = None) -> Path:
     repo_root = tmp_path
-    _write(repo_root / "tables" / "registry" / "catalog.yaml", naming_yaml)
+    _write(repo_root / "tables" / "meta" / "registry" / "catalog.yaml", naming_yaml)
 
     _write(
         repo_root / "tower_sim" / "registry" / "stat_registry.py",

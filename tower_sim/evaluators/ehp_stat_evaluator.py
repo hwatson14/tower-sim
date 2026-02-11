@@ -561,7 +561,7 @@ def _load_mechanics() -> _MechanicsData:
 
 def _default_mechanics_path() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tables" / "registry" / "ep_formulas" / MECHANICS_FILENAME
+    return repo_root / "tables" / "meta" / "registry" / "ep_formulas" / MECHANICS_FILENAME
 
 
 @lru_cache(maxsize=1)

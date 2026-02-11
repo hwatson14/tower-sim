@@ -9,11 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from itertools import combinations
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 import csv
 from typing import Iterable, List, Mapping, Set, Tuple
 
-_DEFAULT_RULES_PATH = Path(__file__).resolve().parents[2] / "tables" / "tournament_league_rules.csv"
-_DEFAULT_REGISTRY_PATH = Path(__file__).resolve().parents[2] / "tables" / "heat_bc_registry.csv"
+_DEFAULT_RULES_PATH = resolve_table_path("tournament_league_rules")
+_DEFAULT_REGISTRY_PATH = resolve_table_path("heat_bc_registry")
 
 
 @dataclass(frozen=True)

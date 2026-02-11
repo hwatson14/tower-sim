@@ -131,7 +131,7 @@ def load_ep_formula_registry(
 
 
 def _default_registry_dir() -> Path:
-    return Path(__file__).resolve().parents[2] / "tables" / "registry" / "ep_formulas"
+    return Path(__file__).resolve().parents[2] / "tables" / "meta" / "registry" / "ep_formulas"
 
 
 def _load_yaml(path: Path) -> Mapping[str, object]:

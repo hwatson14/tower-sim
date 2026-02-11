@@ -5,6 +5,8 @@ import csv
 from pathlib import Path
 from typing import Dict, Iterable, List
 
+from tower_sim.loaders.table_paths import resolve_table_path
+
 
 @dataclass(frozen=True)
 class PerkDefinition:
@@ -53,7 +55,7 @@ POOL_WEIGHT_COLUMNS = (
 
 
 def load_perk_definitions(path: Path | None = None) -> List[PerkDefinition]:
-    resolved = path or Path("tables/perks_v1.csv")
+    resolved = path or resolve_table_path("perks")
     rows = _read_rows(resolved, REQUIRED_COLUMNS)
     perks: List[PerkDefinition] = []
     for row in rows:
@@ -80,7 +82,7 @@ def load_perk_definitions(path: Path | None = None) -> List[PerkDefinition]:
 
 
 def load_perk_pool_weights(path: Path | None = None) -> List[PerkPoolWeight]:
-    resolved = path or Path("tables/perk_pool_weights_v1.csv")
+    resolved = path or resolve_table_path("perk_pool_weights")
     rows = _read_rows(resolved, POOL_WEIGHT_COLUMNS)
     weights: List[PerkPoolWeight] = []
     for row in rows:

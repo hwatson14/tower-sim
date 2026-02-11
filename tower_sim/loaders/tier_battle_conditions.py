@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Iterable, List
 
 from tower_sim.libs.step1_tables import TierBattleConditionRow, load_tier_battle_condition_rows
@@ -25,7 +27,7 @@ class TierBattleConditions:
     """
     Tier battle-conditions catalog.
 
-    Source: tables/tier_battle_conditions.csv
+    Source: tables/inputs/combat/tier_battle_conditions.csv
     (Effective Paths recovery, authoritative per user-supplied dump).
 
     Note: User-provided clarification confirms tiers 1–13 have no battle

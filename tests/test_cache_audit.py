@@ -21,7 +21,7 @@ audit_cache_file = _CACHE_AUDIT.audit_cache_file
 
 def test_cache_audit_promotable() -> None:
     repo_root = Path(__file__).resolve().parents[1]
-    cache_file = repo_root / "tables" / "wiki_cache" / "lab_health.csv"
+    cache_file = repo_root / "tables" / "cache" / "wiki" / "lab_health.csv"
     result = audit_cache_file(cache_file)
     assert result.status in {"PROMOTABLE", "PROMOTABLE_WITH_GAPS"}
     assert result.level_column is not None

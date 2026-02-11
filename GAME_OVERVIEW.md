@@ -1,3 +1,5 @@
+> **Role:** Explanatory reference overview.
+
 # Game Overview — *The Tower: Idle Tower Defense*
 
 This document provides a **high-level, system-oriented overview** of the mobile game  
