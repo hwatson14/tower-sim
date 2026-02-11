@@ -35,13 +35,10 @@ jobs:
             tests/test_max_wave_v1_contract.py \
             tests/test_max_wave_ep_parity.py \
             tests/test_ep_export_final_stats_parity.py \
-            tests/test_release_gate_tournament_fixtures.py
+            tests/test_release_gate_tournament_fixtures.py \
             tests/test_max_wave_lineage_contract.py \
             tests/test_naming_contract.py \
-            tests/test_naming_contract_check.py \
-            tests/test_max_wave_ep_parity.py \
-            tests/test_ep_export_final_stats_parity.py \
-            tests/test_release_gate_tournament_fixtures.py
+            tests/test_naming_contract_check.py
 
       - name: Validate repository naming contract (fail-closed)
         run: |
@@ -191,7 +188,6 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add out/runner_output_latest.json out/ep_export_final_stats_report_latest.json
           git add \
             out/runner_output_latest.json \
             out/ep_export_final_stats_report_latest.json \
