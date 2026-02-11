@@ -204,3 +204,33 @@ def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -
     tables = load_workshop_tables()
     start_damage = float(workshop_value("Damage", 1, tables, section="WSValues"))
     assert at_wave_values["workshop_damage"] > start_damage
+
+
+def test_compile_full_stat_inputs_applies_health_lab_multiplier() -> None:
+    workshop_entries = {
+        "Health": WorkshopEntrySnapshot(
+            name="Health",
+            unlocked=None,
+            coin_level=1,
+            end_level=1,
+            max_level=1,
+            category=None,
+        )
+    }
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries=workshop_entries,
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "labs": {"Health": 1},
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    health_input = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_health"
+    )
+    assert health_input.enhancement_multiplier is not None
+    assert health_input.enhancement_multiplier > 1.0

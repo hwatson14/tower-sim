@@ -61,6 +61,25 @@ def test_derive_canonical_combat_snapshot_prefers_wave_values() -> None:
     assert snapshot.contributions["wall_hp"][0].source == "start_of_run"
 
 
+def test_derive_canonical_combat_snapshot_caps_defense_percent_at_98() -> None:
+    engine_result = _engine_result(
+        {
+            "tower_hp": 100.0,
+            "tower_regen": 2.0,
+            "def_pct": 1.4,
+            "wall_hp": 50.0,
+            "wall_regen": 1.0,
+            "thorns_damage_mult": 0.2,
+        }
+    )
+
+    snapshot, missing = derive_canonical_combat_snapshot(engine_result, wave_snapshot=None)
+
+    assert not missing
+    assert snapshot is not None
+    assert snapshot.values["def_pct"] == 0.98
+
+
 def test_derive_canonical_combat_snapshot_fail_closed_when_required_stat_missing() -> None:
     engine_result = _engine_result(
         {
@@ -117,6 +136,10 @@ def test_build_canonical_stat_inputs_blocks_core_override_in_strict_mode(monkeyp
         "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
         _fake_compile,
     )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [],
+    )
 
     built = build_canonical_stat_inputs(
         problem_spec=_problem_spec(allow_core_stat_overrides=False),
@@ -150,6 +173,10 @@ def test_build_canonical_stat_inputs_allows_core_override_in_explicit_mode(monke
         "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
         _fake_compile,
     )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [],
+    )
 
     built = build_canonical_stat_inputs(
         problem_spec=_problem_spec(allow_core_stat_overrides=True),
@@ -159,6 +186,138 @@ def test_build_canonical_stat_inputs_allows_core_override_in_explicit_mode(monke
 
     assert built.core_stat_override_policy == "explicit_override_mode"
     assert built.blocked_core_overrides == []
+
+
+def test_build_canonical_stat_inputs_blocks_non_core_base_override_in_strict_mode(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="workshop_damage",
+                        phase=Phase.START_OF_RUN,
+                        base_value=333.0,
+                        provenance="compiled",
+                    )
+                ],
+                "missing": [],
+            },
+        )()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [],
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="farming", tier=12, allow_core_stat_overrides=False),
+            stat_inputs=[
+                StatInputSpec(
+                    stat_id="workshop_damage",
+                    phase=Phase.START_OF_RUN,
+                    base_value=111.0,
+                    provenance="test",
+                )
+            ],
+        ),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    workshop_damage = next(
+        item
+        for item in built.stat_inputs
+        if item.stat_id == "workshop_damage" and item.phase == Phase.START_OF_RUN
+    )
+    assert workshop_damage.base_value == 111.0
+    assert built.blocked_core_overrides == ["workshop_damage@start_of_run"]
+
+
+def test_build_canonical_stat_inputs_allows_core_loadout_delta_in_strict_mode(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type("_Compiled", (), {"stat_inputs": [], "missing": []})()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [
+            StatInput(
+                stat_id="def_pct",
+                phase=Phase.START_OF_RUN,
+                loadout_delta=0.12,
+                provenance="loadout",
+            )
+        ],
+    )
+
+    problem = ProblemSpec(
+        scenario=ScenarioSpec(mode="farming", tier=12, allow_core_stat_overrides=False),
+        stat_inputs=[
+            StatInputSpec(
+                stat_id="def_pct",
+                phase=Phase.START_OF_RUN,
+                base_value=0.5,
+                provenance="test",
+            )
+        ],
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=problem,
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    def_pct = next(
+        item
+        for item in built.stat_inputs
+        if item.stat_id == "def_pct" and item.phase == Phase.START_OF_RUN
+    )
+    assert def_pct.base_value == 0.5
+    assert def_pct.loadout_delta == 0.12
+    assert built.blocked_core_overrides == []
+
+
+def test_build_canonical_stat_inputs_requires_base_or_derived_for_required_stat(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type("_Compiled", (), {"stat_inputs": [], "missing": []})()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [
+            StatInput(
+                stat_id="tower_hp",
+                phase=Phase.START_OF_RUN,
+                loadout_delta=250.0,
+                provenance="loadout",
+            )
+        ],
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="farming", tier=12, allow_core_stat_overrides=False),
+            stat_inputs=[],
+        ),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    assert "stat_input:tower_hp" in built.missing_required_stat_inputs
 
 from tower_sim.run.problem_spec import BossStatsSpec, BossSurvivabilitySpec, TowerDefenseSpec
 

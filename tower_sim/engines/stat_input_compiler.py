@@ -12,6 +12,7 @@ from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
 from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
+from tower_sim.libs.labs_lib import load_labs_values
 
 @dataclass(frozen=True)
 class CompiledStatInputs:
@@ -285,6 +286,7 @@ def _compile_workshop_stat_inputs(
     ids_snapshot: AccountSnapshot,
 ) -> Tuple[List[StatInput], List[str]]:
     workshop_tables = load_workshop_tables()
+    labs = load_labs_values()
     enhancement_map, enhancement_missing = _parse_workshop_enhancement_multipliers(ids_snapshot)
     stat_inputs: List[StatInput] = []
     missing: List[str] = list(enhancement_missing)
@@ -308,7 +310,10 @@ def _compile_workshop_stat_inputs(
                     stat_id=spec.stat_id,
                     phase=Phase.START_OF_RUN,
                     base_value=float(value),
-                    enhancement_multiplier=enhancement_map.get(spec.stat_id),
+                    enhancement_multiplier=_combine_multipliers(
+                        enhancement_map.get(spec.stat_id),
+                        _resolve_lab_multiplier(name, ids_snapshot, labs, missing),
+                    ),
                     provenance="workshop_formula:DVT_WS_VALUE",
                 )
             )
@@ -327,11 +332,53 @@ def _compile_workshop_stat_inputs(
                 stat_id=spec.stat_id,
                 phase=Phase.START_OF_RUN,
                 base_value=value,
-                enhancement_multiplier=enhancement_map.get(spec.stat_id),
+                enhancement_multiplier=_combine_multipliers(
+                    enhancement_map.get(spec.stat_id),
+                    _resolve_lab_multiplier(name, ids_snapshot, labs, missing),
+                ),
                 provenance=_workshop_provenance(name),
             )
         )
     return stat_inputs, missing
+
+
+def _combine_multipliers(left: Optional[float], right: Optional[float]) -> Optional[float]:
+    if left is None and right is None:
+        return None
+    return float(left or 1.0) * float(right or 1.0)
+
+
+_WORKSHOP_TO_LAB_NAME = {
+    "Package Chance": "Recovery Package Chance",
+}
+
+
+def _resolve_lab_multiplier(
+    workshop_name: str,
+    ids_snapshot: AccountSnapshot,
+    labs,
+    missing: List[str],
+) -> Optional[float]:
+    lab_name = _WORKSHOP_TO_LAB_NAME.get(workshop_name, workshop_name)
+    if lab_name not in labs:
+        return None
+    level = ids_snapshot.labs.get(lab_name)
+    if level is None:
+        missing.append(f"lab_level:{lab_name}")
+        return None
+    if level <= 0:
+        return None
+    lab = labs[lab_name]
+    if level not in lab.levels:
+        missing.append(f"lab_table:{lab_name}:{level}")
+        return None
+    value = float(lab.levels[level])
+    if lab.unit == "raw_number":
+        return value
+    if lab.unit in {"percent", "percent_points"}:
+        return 1.0 + (value / 100.0)
+    missing.append(f"lab_unit:{lab_name}:{lab.unit}")
+    return None
 
 
 def _parse_workshop_enhancement_multipliers(

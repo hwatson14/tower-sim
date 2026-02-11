@@ -908,9 +908,9 @@ def _resolve_expected_damage_taken(timing_uptime: Dict[str, Any]) -> float:
     timing_uptime.setdefault(
         "contract_scope",
         {
-            "authoritative": False,
-            "contract_status": "excluded",
-            "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome",
+            "authoritative": True,
+            "contract_status": "consumed",
+            "reason": "consumed:timing_uptime_expected_damage_taken_feeds_max_wave_survivability",
         },
     )
     if "expected_damage_taken" not in timing_uptime:
@@ -1015,9 +1015,9 @@ def _build_timing_uptime_diagnostics(
         uw_intervals[uw_name] = intervals
 
     contract_scope = {
-        "authoritative": False,
-        "contract_status": "excluded",
-        "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome",
+        "authoritative": True,
+        "contract_status": "consumed",
+        "reason": "consumed:timing_uptime_expected_damage_taken_feeds_max_wave_survivability",
     }
 
     if gt_cooldown <= 0:

@@ -10,6 +10,7 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
+from tower_sim.engines.survivability_pipeline import compile_survivability_loadout_stat_inputs
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
@@ -24,6 +25,7 @@ from tower_sim.registry.combat_stat_contract import (
 )
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
+from tower_sim.loaders.wiki.module_rules import apply_hard_cap
 
 
 @dataclass(frozen=True)
@@ -57,12 +59,23 @@ def build_canonical_stat_inputs(
 ) -> CanonicalStatInputBuild:
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = compile_full_stat_inputs(ids_snapshot)
+    loadout_inputs: List[StatInput] = []
+    loadout_missing: List[str] = []
+    try:
+        loadout_inputs = compile_survivability_loadout_stat_inputs(
+            ids_snapshot,
+            module_context="Testing",
+            allow_provisional=True,
+        )
+    except Exception as exc:  # noqa: BLE001
+        loadout_missing.append(f"survivability_loadout:{exc}")
+
     strict_core_stat_overrides = not bool(
         getattr(problem_spec.scenario, "allow_core_stat_overrides", False)
     )
     merged_inputs, blocked = _merge_stat_inputs(
         spec_inputs,
-        compiled.stat_inputs,
+        compiled.stat_inputs + loadout_inputs,
         strict_core_stat_overrides=strict_core_stat_overrides,
     )
     filtered_inputs, invalid = _filter_known_stat_inputs(merged_inputs, registry)
@@ -72,7 +85,7 @@ def build_canonical_stat_inputs(
         blocked_core_overrides=blocked,
         invalid_stat_inputs=invalid,
         missing_required_stat_inputs=missing_required,
-        compiled_missing=sorted(compiled.missing),
+        compiled_missing=sorted(compiled.missing + loadout_missing),
         core_stat_override_policy=(
             "strict_fail_closed" if strict_core_stat_overrides else "explicit_override_mode"
         ),
@@ -106,6 +119,8 @@ def derive_canonical_combat_snapshot(
         from_wave = snapshot_values.get(stat_id)
         if from_wave is not None:
             value = float(from_wave)
+            if stat_id == "def_pct":
+                value = apply_hard_cap("Defense %", value)
             values[stat_id] = value
             contributions[stat_id] = [
                 CombatStatContribution(
@@ -119,6 +134,8 @@ def derive_canonical_combat_snapshot(
         from_start = start_stats.values.get(stat_id)
         if from_start is not None:
             value = float(from_start)
+            if stat_id == "def_pct":
+                value = apply_hard_cap("Defense %", value)
             values[stat_id] = value
             contributions[stat_id] = [
                 CombatStatContribution(
@@ -139,8 +156,23 @@ def derive_canonical_combat_snapshot(
 
 def _missing_required_stat_inputs(stat_inputs: Iterable[StatInput]) -> List[str]:
     required = set(required_max_wave_stat_input_ids())
-    present = {stat_input.stat_id for stat_input in stat_inputs}
-    return [f"stat_input:{stat_id}" for stat_id in sorted(required - present)]
+    by_stat_id: Dict[str, List[StatInput]] = {}
+    for stat_input in stat_inputs:
+        by_stat_id.setdefault(stat_input.stat_id, []).append(stat_input)
+
+    missing: List[str] = []
+    for stat_id in sorted(required):
+        entries = by_stat_id.get(stat_id)
+        if not entries:
+            missing.append(f"stat_input:{stat_id}")
+            continue
+        has_base_or_derived = any(
+            entry.base_value is not None or entry.derived_value is not None
+            for entry in entries
+        )
+        if not has_base_or_derived:
+            missing.append(f"stat_input:{stat_id}")
+    return missing
 
 
 def _merge_stat_inputs(
@@ -158,11 +190,48 @@ def _merge_stat_inputs(
             if (
                 strict_core_stat_overrides
                 and item.phase == Phase.START_OF_RUN
-                and item.stat_id in required_combat_stat_ids()
             ):
-                blocked.append(f"{item.stat_id}@{item.phase.value}")
+                if item.base_value is not None or item.derived_value is not None:
+                    blocked.append(f"{item.stat_id}@{item.phase.value}")
+                    continue
+            existing_item = existing[key]
+            merged_item = StatInput(
+                stat_id=existing_item.stat_id,
+                phase=existing_item.phase,
+                base_value=(
+                    existing_item.base_value
+                    if existing_item.base_value is not None
+                    else item.base_value
+                ),
+                loadout_delta=(existing_item.loadout_delta or 0.0)
+                + (item.loadout_delta or 0.0),
+                enhancement_multiplier=(existing_item.enhancement_multiplier or 1.0)
+                * (item.enhancement_multiplier or 1.0),
+                tier_rule_delta=(
+                    existing_item.tier_rule_delta
+                    if existing_item.tier_rule_delta is not None
+                    else item.tier_rule_delta
+                ),
+                tier_rule_multiplier=(
+                    existing_item.tier_rule_multiplier
+                    if existing_item.tier_rule_multiplier is not None
+                    else item.tier_rule_multiplier
+                ),
+                derived_value=(
+                    existing_item.derived_value
+                    if existing_item.derived_value is not None
+                    else item.derived_value
+                ),
+                provenance=existing_item.provenance or item.provenance,
+            )
+            existing[key] = merged_item
+            for idx, current in enumerate(merged):
+                if current.stat_id == key[0] and current.phase == key[1]:
+                    merged[idx] = merged_item
+                    break
             continue
         merged.append(item)
+        existing[key] = item
     return merged, sorted(set(blocked))
 
 
