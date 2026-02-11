@@ -137,12 +137,12 @@ def _build_reaches_stat_input() -> Dict[str, Tuple[str, ...]]:
         reaches.setdefault(stat_id, set()).add("lab")
 
     # Core survivability and BC multiplier stat inputs used by MAX_WAVE.
-    reaches["tower_hp"] = {"workshop"}
-    reaches["tower_regen"] = {"workshop"}
-    reaches["wall_hp"] = {"workshop"}
-    reaches["wall_regen"] = {"workshop"}
-    reaches["def_pct"] = {"workshop", "bc"}
-    reaches["thorns_damage_mult"] = {"workshop", "bc"}
+    reaches["tower_hp"] = {"workshop", "card", "module"}
+    reaches["tower_regen"] = {"workshop", "card", "module"}
+    reaches["wall_hp"] = {"workshop", "module"}
+    reaches["wall_regen"] = {"workshop", "module"}
+    reaches["def_pct"] = {"workshop", "card", "module", "relic", "perk", "bc"}
+    reaches["thorns_damage_mult"] = {"workshop", "module", "relic", "bc"}
     reaches["orb_damage_mult"] = {"bc"}
     reaches["death_ray_damage_mult"] = {"bc"}
     reaches["plasma_cannon_damage_mult"] = {"bc"}

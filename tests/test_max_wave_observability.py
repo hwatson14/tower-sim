@@ -152,3 +152,4 @@ def test_timing_damage_reduction_composition() -> None:
 def test_resolve_expected_damage_taken_from_timing_diag() -> None:
     timing = {"expected_damage_taken": 1.0}
     assert _resolve_expected_damage_taken(timing) == 1.0
+    assert timing["contract_scope"]["contract_status"] == "consumed"
