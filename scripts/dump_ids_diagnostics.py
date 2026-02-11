@@ -5,10 +5,17 @@ import hashlib
 import json
 import os
 import subprocess
+import sys
 from datetime import datetime, timezone
 from dataclasses import asdict, is_dataclass
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, Set
+
+import yaml
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+if str(REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(REPO_ROOT))
 
 from tower_sim.engines.statbook_builder import build_statbook
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
@@ -579,6 +586,11 @@ def main() -> None:
         default=None,
         help="Optional path to a ProblemSpec YAML/JSON used when --include-max-wave is set.",
     )
+    parser.add_argument(
+        "--write-yaml",
+        action="store_true",
+        help="Also emit account_snapshot.yml and diagnostics.yml artifacts.",
+    )
 
     args = parser.parse_args()
 
@@ -619,6 +631,9 @@ def main() -> None:
     stage_3_path = output_dir / "stage_3_with_loadout.json"
     stage_4_path = output_dir / "stage_4_with_battle_conditions.json"
     stage_5_path = output_dir / "stage_5_end_of_run.json"
+    diagnostics_path = output_dir / "diagnostics.json"
+    snapshot_yaml_path = output_dir / "account_snapshot.yml"
+    diagnostics_yaml_path = output_dir / "diagnostics.yml"
 
     previous = _read_json(snapshot_path)
     snapshot_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
@@ -675,6 +690,16 @@ def main() -> None:
     stage_5_path.write_text(
         json.dumps(staged_outputs.get("stage_5_end_of_run", {}), indent=2, sort_keys=True)
     )
+    diagnostics_path.write_text(
+        json.dumps(_build_diagnostics_report(payload), indent=2, sort_keys=True)
+    )
+    if args.write_yaml:
+        snapshot_yaml_path.write_text(
+            yaml.safe_dump(_to_jsonable(payload), sort_keys=False, allow_unicode=True)
+        )
+        diagnostics_yaml_path.write_text(
+            yaml.safe_dump(_build_diagnostics_report(payload), sort_keys=False, allow_unicode=True)
+        )
     if previous is not None:
         diff_path.write_text(
             json.dumps(_build_diff(previous, payload), indent=2, sort_keys=True)
@@ -697,6 +722,10 @@ def main() -> None:
     print(f"Wrote {stage_3_path}")
     print(f"Wrote {stage_4_path}")
     print(f"Wrote {stage_5_path}")
+    print(f"Wrote {diagnostics_path}")
+    if args.write_yaml:
+        print(f"Wrote {snapshot_yaml_path}")
+        print(f"Wrote {diagnostics_yaml_path}")
     if diff_path.exists():
         print(f"Wrote {diff_path}")
 
@@ -720,6 +749,52 @@ def _build_summary(payload: Dict[str, Any]) -> Dict[str, Any]:
         "module_slots": sorted(snapshot.get("module_system_state", {}).keys()),
         "allocation_levels": snapshot.get("allocation_levels", {}),
         "inferred_shard_budgets": snapshot.get("inferred_shard_budgets", {}),
+    }
+
+
+def _build_diagnostics_report(payload: Dict[str, Any]) -> Dict[str, Any]:
+    pipeline = payload.get("pipeline", {})
+    staged_outputs = payload.get("staged_outputs", {})
+    stage_4 = staged_outputs.get("stage_4_with_battle_conditions", {})
+    stage_5 = staged_outputs.get("stage_5_end_of_run", {})
+    run_stats = _build_run_stats_report(payload)
+
+    max_wave = pipeline.get("max_wave", {}) if isinstance(pipeline, dict) else {}
+    max_wave_result = max_wave.get("result", {}) if isinstance(max_wave, dict) else {}
+    max_wave_diagnostics = (
+        max_wave_result.get("diagnostics", {}) if isinstance(max_wave_result, dict) else {}
+    )
+
+    return {
+        "ids_path": payload.get("ids_path"),
+        "schema_version": payload.get("schema_version"),
+        "stages": {
+            "stage_4_battle_conditions": {
+                "fail_closed": bool(stage_4.get("fail_closed", False)),
+                "missing": list(stage_4.get("missing", [])),
+                "missing_tier_rules": list(stage_4.get("missing_tier_rules", [])),
+                "missing_heat": list(stage_4.get("missing_heat", [])),
+            },
+            "stage_5_end_of_run": {
+                "fail_closed": bool(stage_5.get("fail_closed", False)),
+                "missing": list(stage_5.get("missing", [])),
+            },
+        },
+        "run_stats": {
+            "missing": list(run_stats.get("missing", [])),
+            "fail_closed": bool(run_stats.get("fail_closed", False)),
+            "row_count": len(run_stats.get("rows", [])),
+        },
+        "max_wave": {
+            "enabled": bool(max_wave),
+            "fail_closed": bool(max_wave_result.get("fail_closed", False))
+            if isinstance(max_wave_result, dict)
+            else False,
+            "missing": list(max_wave_result.get("missing", []))
+            if isinstance(max_wave_result, dict)
+            else [],
+            "diagnostics": max_wave_diagnostics,
+        },
     }
 
 

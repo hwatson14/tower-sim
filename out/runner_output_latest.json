@@ -1,0 +1,409 @@
+{
+  "assumptions_manifest": {
+    "determinism": {
+      "perk_timeline_external_only": true,
+      "randomness_allowed": false
+    },
+    "parity_tolerances": {
+      "stats_relative": 0.01,
+      "status": "provisional",
+      "wmax_wave_relative": 0.1
+    },
+    "perk_timeline": {
+      "enabled": true,
+      "required": true,
+      "source": null
+    },
+    "policy_version": "v1",
+    "schema_version": "v1",
+    "tolerance_version": "v1",
+    "tournament": {
+      "bc_required": false,
+      "heat_required": false,
+      "league": null,
+      "perks_allowed": true,
+      "supported_leagues": [
+        "champion",
+        "legend"
+      ]
+    }
+  },
+  "at_failure_snapshot": {
+    "boss_stats": {
+      "attack": 882660000.0,
+      "attack_interval": 2.0,
+      "enrage_mult": 1.0
+    },
+    "margins": {
+      "margin_seconds": -2.0,
+      "ttd_seconds": 2.0,
+      "ttk_seconds": 4.0
+    },
+    "tower_stats": {
+      "damage_reduction": 0.0,
+      "defense_abs": 0.0,
+      "defense_pct": 0.2,
+      "electrons_damage_frac": 0.0,
+      "orb_damage_frac": 0.0,
+      "pc_boss_mult": 1.0,
+      "pc_frac": 0.0,
+      "thorns_frac": 0.8,
+      "tower_hp": 1000.0,
+      "tower_regen": 50.0,
+      "wall_hp": 500.0,
+      "wall_regen": 5.0
+    },
+    "wave": 1
+  },
+  "diagnostics": {
+    "at_wave_snapshot": {
+      "applied_bc": {},
+      "applied_heat": {},
+      "wave": 100
+    },
+    "boss_survivability": {
+      "hits_to_death": 1.0,
+      "hits_to_kill": 2,
+      "outcome": "boss_kills_tower",
+      "ttd_seconds": 2.0,
+      "ttk_seconds": 4.0
+    },
+    "combat_snapshot_sources_scenario_wave": {
+      "def_pct": [
+        "at_wave_snapshot"
+      ],
+      "thorns_damage_mult": [
+        "at_wave_snapshot"
+      ],
+      "tower_hp": [
+        "at_wave_snapshot"
+      ],
+      "tower_regen": [
+        "at_wave_snapshot"
+      ],
+      "wall_hp": [
+        "at_wave_snapshot"
+      ],
+      "wall_regen": [
+        "at_wave_snapshot"
+      ]
+    },
+    "compiled_missing": [
+      "uw_level_missing:Black Hole:Consume",
+      "uw_level_missing:Chain Lightning:Smite",
+      "uw_level_missing:Chrono Field:Chrono Loop",
+      "uw_level_missing:Death Wave:Kill Wall",
+      "uw_level_missing:Golden Tower:Golden Combo",
+      "uw_level_missing:Inner Land Mines:Charged Mines",
+      "uw_level_missing:Poison Swamp:Death Creep",
+      "uw_level_missing:Smart Missiles:Cover Fire",
+      "uw_level_missing:Spotlight:Light Range",
+      "workshop_mapping:Coin / Kill Bonus",
+      "workshop_mapping:Land Mine Chance",
+      "workshop_mapping:Land Mine Radius",
+      "workshop_mapping:Orb Speed",
+      "workshop_mapping:Orbs",
+      "workshop_mapping:Package Chance",
+      "workshop_mapping:Wall Rebuild",
+      "workshop_table:Attack Speed",
+      "workshop_table:Wall Health",
+      "workshop_unsupported:Bounce Shot Range",
+      "workshop_unsupported:Max Amount"
+    ],
+    "core_stat_override_policy": "strict_fail_closed",
+    "margin_trace": [
+      {
+        "margin_seconds": -2.0,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0,
+        "wave": 49
+      },
+      {
+        "margin_seconds": -2.0,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0,
+        "wave": 65
+      },
+      {
+        "margin_seconds": -2.0,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0,
+        "wave": 81
+      },
+      {
+        "margin_seconds": -2.0,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0,
+        "wave": 97
+      },
+      {
+        "margin_seconds": -2.0,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0,
+        "wave": 100
+      }
+    ],
+    "perk_timeline_scenario_wave": {
+      "enabled": false,
+      "reason": "no_path"
+    },
+    "preflight_ms": 70.695795000006,
+    "statbook_rows": 103,
+    "timing_uptime": {
+      "bot_levels_source": "present",
+      "expected_coin_multiplier": 7.255800000000001,
+      "expected_damage_multiplier": 1.4166666666666665,
+      "expected_damage_taken": 1.0,
+      "gcomp_enabled": false,
+      "gcomp_rarity": null,
+      "gcomp_seconds_per_package": 0.0,
+      "gt_bh_overlap": 0.1,
+      "package_chance_missing": true,
+      "package_chance_stat_id": "workshop_package_chance",
+      "package_event_count": 0,
+      "package_event_model": "uniform_from_rate",
+      "packages_per_second": 0.0,
+      "uw_interval_counts": {
+        "uw_black_hole": 12,
+        "uw_chrono_field": 10,
+        "uw_death_wave": 0,
+        "uw_golden_tower": 4,
+        "uw_inner_land_mines": 0,
+        "uw_smart_missiles": 0
+      },
+      "wa_reduction": 0.54,
+      "wave_seconds": 39.14,
+      "window_s": 600.0
+    },
+    "w_max_search": {
+      "combat_snapshot_sources": {
+        "1": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "100": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "17": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "33": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "49": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "65": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "81": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "97": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        }
+      },
+      "evaluated_waves": 8,
+      "last_wave_result": {
+        "hits_to_death": 1.0,
+        "hits_to_kill": 2,
+        "outcome": "boss_kills_tower",
+        "ttd_seconds": 2.0,
+        "ttk_seconds": 4.0
+      },
+      "max_wave": 100,
+      "monotonic": true,
+      "perk_timeline": {
+        "1": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "100": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "17": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "33": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "49": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "65": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "81": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "97": {
+          "enabled": false,
+          "reason": "no_path"
+        }
+      },
+      "search_strategy": "exponential_binary",
+      "trace_depth": 5
+    },
+    "wave_damage": 414490000000.0,
+    "wave_damage_tier": "Tier 14",
+    "wave_damage_wave": 100,
+    "wave_state": {
+      "W_actual": 100,
+      "W_attack": 100,
+      "W_health": 100
+    }
+  },
+  "evaluator": "max_wave",
+  "fail_closed": false,
+  "failure_reason": "boss_kills_tower",
+  "failure_wave": 1,
+  "missing": [],
+  "override_collisions": [],
+  "w_max": 0
+}

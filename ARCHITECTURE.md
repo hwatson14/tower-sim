@@ -21,7 +21,7 @@ These planes describe where responsibilities live without changing the frozen st
 
 1) **Reference (immutable)**
    - Authoritative libraries, tables, and canonical IDs.
-   - Sources are the repo tables under `tables/` and the cached wiki tables under `tables/wiki_cache/`.
+   - Sources are canonical runtime tables under `tables/inputs/` and cached wiki tables under `tables/cache/wiki/`.
    - If a required table is missing or ambiguous, fail closed (see “Stop the Line”).
 
 2) **Derivation (pure, side-effect-free)**
@@ -59,7 +59,7 @@ If a run requires perks and no valid timeline artifact is supplied, the run must
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
-All other tables are shipped with the repo under `tables/` or `tables/wiki_cache/`,
+All other tables are shipped with the repo under `tables/inputs/`, `tables/cache/wiki/`, `tables/derived/`, and `tables/meta/`,
 and are treated as authoritative library data (with provenance).
 
 ### IDS Path Resolution
@@ -602,6 +602,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Fix max-wave runner GitHub Action to write JSON output directly.
 - [x] Fix account snapshot loader bot-upgrades parsing regression (`_parse_bot_upgrades` missing).
+- [x] Split tournament wave-row enrichment into dedicated BC mapping loader while keeping cached heat-table resolution in canonical wave-row derivation.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
 - [x] Remove AUW fixture CSV dependencies; derive UW values/next costs directly from `_IDS.csv` UWs section for stat-input compilation.
@@ -651,6 +652,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Split MAX_WAVE into explicit preflight (validation/diagnostics only) and eval stages; report override collisions separately from missing and add fail-closed tournament heat value checks/mechanical heat-effect tests.
 - [x] Enforce preflight as validation-only (no heavy stat/snapshot builds), validate tournament heat BC id order against registry CSV, and add runner schema-stability tests.
 - [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
+- [x] Route max-wave CI outputs through `out/` and publish `out/runner_output_latest.json` + `out/ep_export_final_stats_report_latest.json` on `main`.
 - [x] Split CI responsibilities so `max_wave_runner` runs max-wave-only contract checks while a dedicated always-on `pytest` workflow handles full-suite gating; keep a path-scoped agent-surface runner for run API + README instruction contract coverage.
 - [x] Add canonical `mechanics/` manifest proposal scaffold to centralize formula/mechanic contracts and define fail-closed routing expectations.
 - [x] Consolidate `mechanics/` contract onto existing `tables/registry/ep_formulas` assets and enforce eDamage wrapper routing through registry LAMBDA evaluation.

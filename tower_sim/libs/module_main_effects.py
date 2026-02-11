@@ -8,6 +8,8 @@ import csv
 import re
 from typing import Dict, Iterable, List, Mapping
 
+from tower_sim.loaders.table_paths import resolve_table_path
+
 
 class ModuleMainEffectError(ValueError):
     pass
@@ -107,7 +109,7 @@ def _round_half_up(value: Decimal, places: int) -> Decimal:
 
 @lru_cache(maxsize=1)
 def _load_base_bonuses() -> Mapping[str, BaseBonusRow]:
-    rows = _load_csv("tables/module_main_effect_bases_v1.csv")
+    rows = _load_csv(resolve_table_path("module_main_effect_bases"))
     result: Dict[str, BaseBonusRow] = {}
     for row in rows:
         rarity = row["rarity"]
@@ -124,7 +126,7 @@ def _load_base_bonuses() -> Mapping[str, BaseBonusRow]:
 
 @lru_cache(maxsize=1)
 def _load_bands() -> List[BandRow]:
-    rows = _load_csv("tables/module_main_effect_bands_v1.csv")
+    rows = _load_csv(resolve_table_path("module_main_effect_bands"))
     bands: List[BandRow] = []
     for row in rows:
         bands.append(
@@ -142,8 +144,7 @@ def _load_bands() -> List[BandRow]:
     return bands
 
 
-def _load_csv(path: str) -> List[Dict[str, str]]:
-    table_path = Path(__file__).resolve().parents[2] / path
+def _load_csv(table_path: Path) -> List[Dict[str, str]]:
     if not table_path.exists():
         raise ModuleMainEffectError(f"Missing table: {table_path}")
     with table_path.open("r", encoding="utf-8", newline="") as handle:

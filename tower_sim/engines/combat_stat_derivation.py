@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
@@ -11,26 +13,15 @@ from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, 
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
+from tower_sim.loaders.tournament_bc_enrichment import (
+    TOURNAMENT_HEAT_BC_IDS,
+    TOURNAMENT_HEAT_BC_TO_STATS,
+    map_tournament_heat_bc_to_stat_magnitudes,
+)
 from tower_sim.registry.combat_stat_contract import required_combat_stat_ids
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
 
-
-TOURNAMENT_HEAT_BC_IDS: Tuple[str, ...] = (
-    "death_ray_resistance:",
-    "knockback_resistance:",
-    "orb_resistance:",
-    "plasma_cannon_resistance:",
-    "thorns_resistance:",
-)
-
-TOURNAMENT_HEAT_BC_TO_STATS: Dict[str, Tuple[str, ...]] = {
-    "orb_resistance:": ("orb_damage_mult",),
-    "death_ray_resistance:": ("death_ray_damage_mult",),
-    "thorns_resistance:": ("thorns_damage_mult",),
-    "plasma_cannon_resistance:": ("plasma_cannon_damage_mult",),
-    "knockback_resistance:": ("knockback_mult",),
-}
 
 @dataclass(frozen=True)
 class CombatStatContribution:
@@ -246,8 +237,8 @@ def build_canonical_wave_row(
     if problem_spec.scenario.mode != "tournament":
         return row, []
 
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "heat_scale_long.csv"
-    registry_path = Path(__file__).resolve().parents[2] / "tables" / "heat_bc_registry.csv"
+    table_path = resolve_table_path("heat_scale_long")
+    registry_path = resolve_table_path("heat_bc_registry")
     try:
         table = cached_tournament_heat_table(str(table_path), str(registry_path))
     except (HeatDataError, FileNotFoundError):
@@ -258,7 +249,6 @@ def build_canonical_wave_row(
         return None, ["heat_league"]
 
     bc_values: Dict[str, float] = {}
-    heat_magnitudes: Dict[str, float] = {}
     missing_heat_ids: List[str] = []
     for bc_id in TOURNAMENT_HEAT_BC_IDS:
         try:
@@ -267,15 +257,15 @@ def build_canonical_wave_row(
             missing_heat_ids.append(f"heat_bc_value:{bc_id}")
             continue
         bc_values[bc_id] = float(value)
-        for stat_id in TOURNAMENT_HEAT_BC_TO_STATS[bc_id]:
-            registry.validate_stat_id(stat_id)
-            heat_magnitudes[stat_id] = float(value)
 
     if missing_heat_ids:
         return None, sorted(set(missing_heat_ids))
 
     row["battle_conditions"] = bc_values
-    row["heat_magnitudes"] = heat_magnitudes
+    row["heat_magnitudes"] = map_tournament_heat_bc_to_stat_magnitudes(
+        registry=registry,
+        bc_values=bc_values,
+    )
     return row, []
 
 

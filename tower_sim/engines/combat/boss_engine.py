@@ -46,7 +46,7 @@ class BossCombatEngine:
 
     Mechanics implemented are based on the fail-closed combat model structure in
     `tables/combat_model_authoritative.zip` and the Plasma Cannon card effect
-    table in `tables/wiki_cache/cards_rare.csv` (percent-current damage).
+    table in `tables/cache/wiki/cards_rare.csv` (percent-current damage).
     """
 
     def evaluate(self, inputs: BossCombatInputs) -> BossCombatResult:

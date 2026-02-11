@@ -80,6 +80,16 @@ jobs:
           cp out/base_stats_components.json out/base_stats_components_latest.json
           cp out/inventory_components.json out/inventory_components_latest.json
           cp out/run_stats.json out/run_stats_latest.json
+          cp out/ids_raw_index.json out/ids_raw_index_latest.json
+          cp out/compiled_stat_inputs.json out/compiled_stat_inputs_latest.json
+          cp out/stat_engine.json out/stat_engine_latest.json
+          cp out/resolved_problem_spec.json out/resolved_problem_spec_latest.json
+          cp out/max_wave.json out/max_wave_latest.json
+          cp out/stage_1_base_no_respec.json out/stage_1_base_no_respec_latest.json
+          cp out/stage_2_base_with_respec.json out/stage_2_base_with_respec_latest.json
+          cp out/stage_3_with_loadout.json out/stage_3_with_loadout_latest.json
+          cp out/stage_4_with_battle_conditions.json out/stage_4_with_battle_conditions_latest.json
+          cp out/stage_5_end_of_run.json out/stage_5_end_of_run_latest.json
           echo "Wrote out/ids_dump_latest.json"
         env:
           IDS_PATH: ${{ inputs.ids_path || 'tests/fixtures/tower-sim-data/_IDS.csv' }}
@@ -95,6 +105,24 @@ jobs:
         with:
           name: ids-dump
           path: |
+            out/account_snapshot.json
+            out/account_snapshot.summary.json
+            out/base_stats.json
+            out/inventory.json
+            out/loadout.json
+            out/base_stats_components.json
+            out/inventory_components.json
+            out/run_stats.json
+            out/ids_raw_index.json
+            out/compiled_stat_inputs.json
+            out/stat_engine.json
+            out/resolved_problem_spec.json
+            out/max_wave.json
+            out/stage_1_base_no_respec.json
+            out/stage_2_base_with_respec.json
+            out/stage_3_with_loadout.json
+            out/stage_4_with_battle_conditions.json
+            out/stage_5_end_of_run.json
             out/ids_dump_latest.json
             out/base_stats_latest.json
             out/inventory_latest.json
@@ -102,6 +130,16 @@ jobs:
             out/base_stats_components_latest.json
             out/inventory_components_latest.json
             out/run_stats_latest.json
+            out/ids_raw_index_latest.json
+            out/compiled_stat_inputs_latest.json
+            out/stat_engine_latest.json
+            out/resolved_problem_spec_latest.json
+            out/max_wave_latest.json
+            out/stage_1_base_no_respec_latest.json
+            out/stage_2_base_with_respec_latest.json
+            out/stage_3_with_loadout_latest.json
+            out/stage_4_with_battle_conditions_latest.json
+            out/stage_5_end_of_run_latest.json
           if-no-files-found: error
 
       - name: Commit latest stats dump artifacts to current branch
@@ -109,10 +147,47 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
+          git add \
+            out/account_snapshot.json \
+            out/account_snapshot.summary.json \
+            out/base_stats.json \
+            out/inventory.json \
+            out/loadout.json \
+            out/base_stats_components.json \
+            out/inventory_components.json \
+            out/run_stats.json \
+            out/ids_raw_index.json \
+            out/compiled_stat_inputs.json \
+            out/stat_engine.json \
+            out/resolved_problem_spec.json \
+            out/max_wave.json \
+            out/stage_1_base_no_respec.json \
+            out/stage_2_base_with_respec.json \
+            out/stage_3_with_loadout.json \
+            out/stage_4_with_battle_conditions.json \
+            out/stage_5_end_of_run.json \
+            out/ids_dump_latest.json \
+            out/base_stats_latest.json \
+            out/inventory_latest.json \
+            out/loadout_latest.json \
+            out/base_stats_components_latest.json \
+            out/inventory_components_latest.json \
+            out/run_stats_latest.json \
+            out/ids_raw_index_latest.json \
+            out/compiled_stat_inputs_latest.json \
+            out/stat_engine_latest.json \
+            out/resolved_problem_spec_latest.json \
+            out/max_wave_latest.json \
+            out/stage_1_base_no_respec_latest.json \
+            out/stage_2_base_with_respec_latest.json \
+            out/stage_3_with_loadout_latest.json \
+            out/stage_4_with_battle_conditions_latest.json \
+            out/stage_5_end_of_run_latest.json
           git add -A out/*_latest.json
           if git diff --cached --quiet; then
             echo "No artifact changes to commit."
             exit 0
           fi
+          git commit -m "Update stats dump standalone and latest artifacts"
           git commit -m "Update latest stats dump artifacts"
           git push origin HEAD

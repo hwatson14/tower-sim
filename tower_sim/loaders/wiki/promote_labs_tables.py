@@ -20,43 +20,43 @@ class LabSourceSpec:
 
 LAB_SOURCES = [
     LabSourceSpec(
-        source_path="tables/wiki_cache/lab_enemy_attack_level_skip.csv",
+        source_path="tables/cache/wiki/lab_enemy_attack_level_skip.csv",
         lab_primary_name="Enemy Attack Level Skip",
         level_column="level",
         value_column="value_percent_points",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/lab_enemy_health_level_skip.csv",
+        source_path="tables/cache/wiki/lab_enemy_health_level_skip.csv",
         lab_primary_name="Enemy Health Level Skip",
         level_column="level",
         value_column="value_percent_points",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/lab_health.csv",
+        source_path="tables/cache/wiki/lab_health.csv",
         lab_primary_name="Health",
         level_column="Level",
         value_column="Value",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/lab_health_regen.csv",
+        source_path="tables/cache/wiki/lab_health_regen.csv",
         lab_primary_name="Health Regen",
         level_column="Level",
         value_column="Value",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/lab_recovery_package_chance.csv",
+        source_path="tables/cache/wiki/lab_recovery_package_chance.csv",
         lab_primary_name="Recovery Package Chance",
         level_column="Level",
         value_column="Value",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/wall_lab_wall_health.csv",
+        source_path="tables/cache/wiki/wall_lab_wall_health.csv",
         lab_primary_name="Wall Health",
         level_column="Level",
         value_column="Value",
     ),
     LabSourceSpec(
-        source_path="tables/wiki_cache/wall_lab_wall_regen.csv",
+        source_path="tables/cache/wiki/wall_lab_wall_regen.csv",
         lab_primary_name="Wall Regen",
         level_column="Level",
         value_column="Value",
@@ -173,13 +173,13 @@ def _get_provenance(
 
 def build_labs_values_v1(output_path: Path | None = None) -> Path:
     repo_root = Path(__file__).resolve().parents[3]
-    catalog_path = repo_root / "tables" / "registry" / "catalog.yaml"
+    catalog_path = repo_root / "tables" / "meta" / "registry" / "catalog.yaml"
     audit_path = repo_root / "audit" / "wiki_cache_audit.json"
     labs_catalog = _load_labs_catalog(catalog_path)
     audit_index = _load_audit_report(audit_path)
 
     if output_path is None:
-        output_path = repo_root / "tables" / "labs_values_v1.csv"
+        output_path = repo_root / "tables" / "inputs" / "economy" / "labs_values_v1.csv"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     rows: list[list[str]] = []

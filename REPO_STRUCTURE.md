@@ -4,8 +4,11 @@
 
 ## Allowed top-level folders
 - `tower_sim/`: importable Python library code only. **No generated outputs** (md/json/yaml) live here.
-- `tables/`: authoritative immutable tables (CSV/TSV/JSON), including cached wiki tables.
-- `tables/`: large evidence locker (Step1 dumps, source snapshots). Treated as read-only.
+- `tables/inputs/`: authoritative immutable runtime tables (CSV/TSV/JSON).
+- `tables/cache/wiki/`: cached wiki scrape/promotion inputs (non-runtime).
+- `tables/derived/`: generated deterministic snapshots/artifacts.
+- `tables/meta/`: schemas and registry metadata.
+- `tables/legacy/`: deprecated non-runtime tables.
 - `audit/`: human-facing audits, comparisons, cleanup ledgers, and optional generated reports.
 - `tests/`: primary test suite.
 - `tests/`: quarantined legacy tests (not collected by default).
