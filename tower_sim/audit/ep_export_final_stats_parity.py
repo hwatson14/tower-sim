@@ -11,7 +11,19 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ep_export_loader import load_ep_export_dataset
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
+from tower_sim.registry.naming_contract import resolve_stat_id, validate_registry_parity
+from tower_sim.registry.stat_registry import default_registry
 
+
+
+
+_DECISIVE_EHP_KEYS: Dict[str, str] = {
+    "health": "Health",
+    "health_regen": "Health Regen",
+    "defense_percent": "Defense %",
+    "wall_health": "Wall Health",
+    "wall_regen": "Wall Regen",
+}
 
 def _relative_delta(expected: float, actual: float) -> float:
     denom = max(abs(expected), 1.0)
@@ -47,6 +59,9 @@ def verify_final_stats_against_ep_export(
     tolerance: float = 0.01,
 ) -> Dict[str, Any]:
     dataset = load_ep_export_dataset()
+    parity_errors = validate_registry_parity(default_registry())
+    if parity_errors:
+        raise ValueError(f"Registry/naming parity failed: {list(parity_errors)}")
     if suite not in dataset.verification_presets:
         raise ValueError(f"Unknown EP export suite {suite!r}.")
 
@@ -69,6 +84,7 @@ def verify_final_stats_against_ep_export(
 
     compared: List[Dict[str, Any]] = []
     unresolved: List[Dict[str, Any]] = []
+    decisive_lineage: List[Dict[str, Any]] = []
 
     for row in dataset.rows:
         if row.suite != suite:
@@ -101,6 +117,25 @@ def verify_final_stats_against_ep_export(
             )
             continue
 
+        if suite == "ehp" and row.key in _DECISIVE_EHP_KEYS:
+            expected_stat_id = resolve_stat_id(_DECISIVE_EHP_KEYS[row.key])
+            if not vp.endswith(f".{expected_stat_id}"):
+                unresolved.append(
+                    {
+                        "key": row.key,
+                        "verification_path": row.verification_path,
+                        "reason": f"lineage_mismatch_expected:{expected_stat_id}",
+                    }
+                )
+            decisive_lineage.append(
+                {
+                    "key": row.key,
+                    "alias": _DECISIVE_EHP_KEYS[row.key],
+                    "expected_stat_id": expected_stat_id,
+                    "verification_path": row.verification_path,
+                }
+            )
+
         expected = float(row.value_numeric)
         rel = _relative_delta(expected, float(actual))
         compared.append(
@@ -118,6 +153,17 @@ def verify_final_stats_against_ep_export(
         raise ValueError(f"No EP export rows were comparable for suite {suite!r}.")
 
     mismatches = [item for item in compared if not item["within_tolerance"]]
+
+    if suite == "ehp":
+        present = {entry["key"] for entry in decisive_lineage}
+        expected = set(_DECISIVE_EHP_KEYS)
+        if present != expected:
+            missing_keys = sorted(expected - present)
+            raise ValueError(f"Decisive lineage keys missing from parity coverage: {missing_keys}")
+        lineage_errors = [item for item in unresolved if str(item.get("reason", "")).startswith("lineage_mismatch_expected:")]
+        if lineage_errors:
+            raise ValueError(f"Decisive lineage gate failed: {lineage_errors}")
+
     return {
         "suite": suite,
         "preset": expected_preset,
@@ -125,6 +171,7 @@ def verify_final_stats_against_ep_export(
         "tolerance": tolerance,
         "compared_rows": compared,
         "unresolved_rows": unresolved,
+        "decisive_lineage": decisive_lineage,
         "mismatch_count": len(mismatches),
         "matched_count": len(compared) - len(mismatches),
         "status": "validated" if not mismatches else "mismatch",

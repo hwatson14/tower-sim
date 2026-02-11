@@ -33,9 +33,18 @@ jobs:
         run: |
           pytest -q \
             tests/test_max_wave_v1_contract.py \
+            tests/test_naming_contract.py \
+            tests/test_naming_contract_check.py \
             tests/test_max_wave_ep_parity.py \
             tests/test_ep_export_final_stats_parity.py \
             tests/test_release_gate_tournament_fixtures.py
+
+      - name: Validate repository naming contract (fail-closed)
+        run: |
+          python -m tower_sim.audit.naming_contract_check \
+            --ids tests/fixtures/tower-sim-data/_IDS.csv \
+            --strict \
+            --output out/naming_contract_check.json
 
       - name: Run MaxWaveEvaluator runner
         run: |

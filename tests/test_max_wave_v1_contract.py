@@ -9,6 +9,7 @@ from tower_sim.engines.combat_stat_derivation import (
     cached_tournament_heat_table,
     canonical_stat_inputs_for_wave,
     TOURNAMENT_HEAT_BC_IDS,
+    CanonicalStatInputBuild,
 )
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
@@ -305,3 +306,31 @@ def test_runner_contract_schema_stability() -> None:
     assert isinstance(preflight["override_collisions"], list)
     assert isinstance(evaluate["override_collisions"], list)
     assert preflight["w_max"] is None
+
+
+def test_preflight_fails_closed_for_decisive_unmapped_or_unsupported(monkeypatch) -> None:
+    def _stub_build(*, problem_spec, ids_snapshot, registry):
+        stat_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
+        return CanonicalStatInputBuild(
+            stat_inputs=stat_inputs,
+            blocked_core_overrides=[],
+            invalid_stat_inputs=[],
+            missing_required_stat_inputs=[],
+            compiled_missing=["workshop_unsupported:Health"],
+            core_stat_override_policy="strict_fail_closed",
+        )
+
+    monkeypatch.setattr("tower_sim.evaluators.max_wave.build_canonical_stat_inputs", _stub_build)
+    result = MaxWaveEvaluator().preflight(_problem(mode="farming", wave=10), _snapshot())
+
+    assert result["fail_closed"] is True
+    assert any(item.startswith("ids_unmapped_or_unsupported:workshop_unsupported:Health") for item in result["missing"])
+
+
+def test_preflight_emits_canonical_naming_contract_diagnostics() -> None:
+    result = MaxWaveEvaluator().preflight(_problem(mode="farming", wave=10), _snapshot())
+    contract = result["diagnostics"]["canonical_naming_contract"]
+
+    assert contract["status"] == "ok"
+    assert contract["aliases"]["health"] == "tower_hp"
+    assert contract["aliases"]["wall regen"] == "wall_regen"

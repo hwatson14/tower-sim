@@ -34,6 +34,11 @@ from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.context import RunContext
 from tower_sim.engines.stat_engine import StatEngine, StatInput
 from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.registry.naming_contract import (
+    alias_to_stat_id_map,
+    unsupported_or_unmapped_items,
+    validate_registry_parity,
+)
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
@@ -289,6 +294,20 @@ def _run_preflight(
         diagnostics["missing_tier_rules"] = tier_rule_missing
         missing.extend(tier_rule_missing)
     registry = default_registry()
+
+    naming_errors = list(validate_registry_parity(registry))
+    if naming_errors:
+        diagnostics["naming_contract_errors"] = naming_errors
+        missing.extend(naming_errors)
+    diagnostics["canonical_naming_contract"] = {
+        "aliases": dict(sorted(alias_to_stat_id_map().items())),
+        "status": "ok" if not naming_errors else "error",
+    }
+
+    unsupported_items = list(unsupported_or_unmapped_items(canonical_inputs.compiled_missing))
+    if unsupported_items:
+        diagnostics["unsupported_decisive_items"] = unsupported_items
+        missing.extend(f"ids_unmapped_or_unsupported:{item}" for item in unsupported_items)
 
     wave_damage, wave_damage_missing, wave_damage_diag = resolve_canonical_wave_damage(
         problem_spec=problem_spec,
@@ -997,4 +1016,3 @@ def _normalize_module_rarity(raw_rarity: str) -> str:
     if canonical not in {"Epic", "Legendary", "Mythic", "Ancestral"}:
         raise ValueError(f"Unsupported module rarity for canonical lookup: {raw_rarity!r}")
     return canonical
-

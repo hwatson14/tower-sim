@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from copy import deepcopy
 from pathlib import Path
+
+import pytest
 
 from tower_sim.loaders.account_snapshot_compiler import (
     _parse_module_presets,
@@ -85,3 +88,22 @@ def test_bot_upgrades_are_typed_levels() -> None:
     assert snapshot.bot_upgrades["Flame Bot"]["Damage R."] == 8
     assert snapshot.bot_upgrades["Golden Bot"]["Bonus"] == 18
     assert snapshot.bot_upgrades["Amplify Bot"]["Bonus"] == 0
+
+
+def test_compile_account_snapshot_fails_closed_on_unmapped_workshop_name() -> None:
+    ids_raw = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    mutated = deepcopy(ids_raw.raw_sections)
+    replaced = False
+    for row in mutated["WS"]:
+        if row and row[0].strip() == "Health":
+            row[0] = "Health_UNKNOWN_ALIAS"
+            replaced = True
+            break
+    assert replaced
+
+    from tower_sim.util.ids_raw import IdsRaw
+
+    bad_ids = IdsRaw(ids_path=ids_raw.ids_path, header=ids_raw.header, raw_sections=mutated)
+
+    with pytest.raises(ValueError, match="Naming contract violations in IDS snapshot"):
+        compile_account_snapshot(bad_ids)
