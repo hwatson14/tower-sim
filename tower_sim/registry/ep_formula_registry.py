@@ -143,6 +143,8 @@ def load_ep_formula_registry(*, strict: bool = True) -> FormulaRegistry:
     return registry
 
 
+def _default_registry_dir() -> Path:
+    return Path(__file__).resolve().parents[2] / "tables" / "meta" / "registry" / "ep_formulas"
 def _default_manifest_path() -> Path:
     return Path(__file__).resolve().parents[2] / "mechanics" / "manifest.yaml"
 

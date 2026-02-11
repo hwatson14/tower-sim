@@ -36,6 +36,8 @@ on:
       - main
     paths:
       - "**/_IDS.csv"
+      - "scripts/dump_ids_diagnostics.py"
+      - ".github/workflows/stats_dump.yml"
 
 permissions:
   contents: write
