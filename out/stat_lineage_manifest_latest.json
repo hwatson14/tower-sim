@@ -1,5 +1,6 @@
 {
   "schema": "stat_lineage_manifest.v1",
+  "stat_count": 151,
   "required_max_wave_stat_input_ids": [
     "eals_pct",
     "ehls_pct",
