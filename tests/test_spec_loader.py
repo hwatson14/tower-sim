@@ -49,3 +49,23 @@ extra: 1
     )
     with pytest.raises(ValueError, match="Unknown keys"):
         load_problem_spec(bad)
+
+
+def test_scenario_allow_core_stat_overrides_parses() -> None:
+    spec = load_problem_spec(FIXTURES / "sample_spec.yaml")
+    assert spec.scenario.allow_core_stat_overrides is False
+
+
+def test_scenario_allow_core_stat_overrides_accepts_true(tmp_path: Path) -> None:
+    custom = tmp_path / "override_mode.yaml"
+    custom.write_text(
+        """
+scenario:
+  mode: farming
+  tier: 14
+  allow_core_stat_overrides: true
+stat_inputs: []
+"""
+    )
+    spec = load_problem_spec(custom)
+    assert spec.scenario.allow_core_stat_overrides is True

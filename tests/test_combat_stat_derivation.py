@@ -1,0 +1,317 @@
+from __future__ import annotations
+
+from dataclasses import dataclass
+import csv
+from pathlib import Path
+
+from tower_sim.engines.combat_stat_derivation import (
+    build_canonical_stat_inputs,
+    build_canonical_wave_row,
+    build_canonical_wave_snapshot,
+    TOURNAMENT_HEAT_BC_IDS,
+    derive_canonical_combat_snapshot,
+    resolve_canonical_wave_damage_for_attack_wave,
+    validate_boss_survivability_spec,
+    wave_state_from_row,
+)
+from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.loaders.bc_heat_loader import HeatDataError, make_bc_id
+
+
+@dataclass(frozen=True)
+class _RunStats:
+    values: dict[str, float]
+
+
+@dataclass(frozen=True)
+class _EngineResult:
+    run_stats: dict
+
+
+@dataclass(frozen=True)
+class _WaveSnapshot:
+    values: dict[str, float]
+
+
+def _engine_result(start_values: dict[str, float]) -> _EngineResult:
+    return _EngineResult(run_stats={Phase.START_OF_RUN: _RunStats(values=start_values)})
+
+
+def test_derive_canonical_combat_snapshot_prefers_wave_values() -> None:
+    engine_result = _engine_result(
+        {
+            "tower_hp": 100.0,
+            "tower_regen": 2.0,
+            "def_pct": 0.1,
+            "wall_hp": 50.0,
+            "wall_regen": 1.0,
+            "thorns_damage_mult": 0.2,
+        }
+    )
+    wave_snapshot = _WaveSnapshot(values={"tower_hp": 120.0, "def_pct": 0.2})
+
+    snapshot, missing = derive_canonical_combat_snapshot(engine_result, wave_snapshot)
+
+    assert not missing
+    assert snapshot is not None
+    assert snapshot.values["tower_hp"] == 120.0
+    assert snapshot.values["def_pct"] == 0.2
+    assert snapshot.values["wall_hp"] == 50.0
+    assert snapshot.contributions["tower_hp"][0].source == "at_wave_snapshot"
+    assert snapshot.contributions["wall_hp"][0].source == "start_of_run"
+
+
+def test_derive_canonical_combat_snapshot_fail_closed_when_required_stat_missing() -> None:
+    engine_result = _engine_result(
+        {
+            "tower_hp": 100.0,
+            "tower_regen": 2.0,
+            "def_pct": 0.1,
+            "wall_hp": 50.0,
+            "wall_regen": 1.0,
+        }
+    )
+
+    snapshot, missing = derive_canonical_combat_snapshot(engine_result, wave_snapshot=None)
+
+    assert snapshot is None
+    assert missing == ["stat:thorns_damage_mult"]
+
+from tower_sim.engines.stat_engine import StatInput
+from tower_sim.run.problem_spec import ProblemSpec, ScenarioSpec, SkipRampSpec, StatInputSpec
+
+
+def _problem_spec(*, allow_core_stat_overrides: bool = False) -> ProblemSpec:
+    return ProblemSpec(
+        scenario=ScenarioSpec(mode="farming", tier=12, allow_core_stat_overrides=allow_core_stat_overrides),
+        stat_inputs=[
+            StatInputSpec(
+                stat_id="tower_hp",
+                phase=Phase.START_OF_RUN,
+                base_value=100.0,
+                provenance="test",
+            )
+        ],
+    )
+
+
+def test_build_canonical_stat_inputs_blocks_core_override_in_strict_mode(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="tower_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=120.0,
+                        provenance="compiled",
+                    )
+                ],
+                "missing": [],
+            },
+        )()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=_problem_spec(allow_core_stat_overrides=False),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    assert built.core_stat_override_policy == "strict_fail_closed"
+    assert built.blocked_core_overrides == ["tower_hp@start_of_run"]
+
+
+def test_build_canonical_stat_inputs_allows_core_override_in_explicit_mode(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="tower_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=120.0,
+                        provenance="compiled",
+                    )
+                ],
+                "missing": [],
+            },
+        )()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=_problem_spec(allow_core_stat_overrides=True),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    assert built.core_stat_override_policy == "explicit_override_mode"
+    assert built.blocked_core_overrides == []
+
+from tower_sim.run.problem_spec import BossStatsSpec, BossSurvivabilitySpec, TowerDefenseSpec
+
+
+def test_resolve_canonical_wave_damage_for_attack_wave() -> None:
+    problem = ProblemSpec(
+        scenario=ScenarioSpec(mode="farming", tier=1, wave=10),
+        stat_inputs=[],
+    )
+    damage, missing = resolve_canonical_wave_damage_for_attack_wave(
+        problem_spec=problem,
+        attack_wave=10,
+    )
+    assert missing == []
+    assert isinstance(damage, float)
+    assert damage > 0
+
+
+def test_validate_boss_survivability_spec_reports_invalid_fields() -> None:
+    problem = ProblemSpec(
+        scenario=ScenarioSpec(
+            mode="farming",
+            tier=1,
+            boss_survivability=BossSurvivabilitySpec(
+                boss=BossStatsSpec(hp=1.0, attack=-1.0, attack_interval=0.0, enrage_mult=0.0),
+                tower=TowerDefenseSpec(dr_frac=1.5, regen_per_sec=-1.0, shields=-1.0),
+                combat_params={},
+                bc_params={},
+            ),
+        ),
+        stat_inputs=[],
+    )
+    missing, diagnostics = validate_boss_survivability_spec(problem)
+    assert missing == ["boss_survivability_invalid"]
+    assert diagnostics["boss_attack"] == "non_positive"
+    assert diagnostics["boss_attack_interval"] == "non_positive"
+    assert diagnostics["tower_dr_frac"] == "out_of_range"
+
+from tower_sim.engines.stat_snapshots import StatSnapshotError
+
+
+def test_wave_state_from_row_fail_closed_when_keys_missing() -> None:
+    try:
+        wave_state_from_row({"wave": 10})
+    except StatSnapshotError as exc:
+        assert "Wave row missing required keys" in str(exc)
+    else:
+        raise AssertionError("Expected StatSnapshotError")
+
+from tower_sim.engines.stat_engine import StatEngine
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.ids_parser import parse_ids
+from tower_sim.run.context import RunContext
+
+
+def test_tournament_heat_missing_is_fail_closed(monkeypatch) -> None:
+    class _FakeHeatTable:
+        def value_at(self, *, league: str, wave_actual: int, bc_id: str):
+            if bc_id == "thorns_resistance:":
+                raise HeatDataError("missing")
+
+            class _Row:
+                value_num = 1.0
+
+            return _Row()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.cached_tournament_heat_table",
+        lambda scale_path, registry_path: _FakeHeatTable(),
+    )
+
+    problem = ProblemSpec(
+        scenario=ScenarioSpec(
+            mode="tournament",
+            tier=12,
+            league="champion",
+            wave=10,
+            eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
+            ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
+        ),
+        stat_inputs=[],
+    )
+    row, missing = build_canonical_wave_row(problem, default_registry(), wave=10)
+    assert row is None
+    assert missing == ["heat_bc_value:thorns_resistance:"]
+
+
+def test_heat_magnitude_mechanically_changes_wave_snapshot(monkeypatch) -> None:
+    ids_snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    registry = default_registry()
+    stat_inputs = [
+        StatInput(stat_id="tower_hp", phase=Phase.START_OF_RUN, base_value=100.0, provenance="test"),
+        StatInput(stat_id="tower_regen", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="def_pct", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+        StatInput(stat_id="wall_hp", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+        StatInput(stat_id="wall_regen", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+        StatInput(stat_id="thorns_damage_mult", phase=Phase.START_OF_RUN, base_value=0.25, provenance="test"),
+        StatInput(stat_id="orb_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="death_ray_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="plasma_cannon_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="knockback_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="eals_pct", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+        StatInput(stat_id="ehls_pct", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+    ]
+    engine_result = StatEngine(registry=registry).build(stat_inputs)
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_workshop_values_at_wave",
+        lambda _ids_snapshot, wave: ({}, []),
+    )
+
+    wave_row = {"wave": 10, "enemy_attack_wave": 10, "enemy_health_wave": 10}
+    snapshot_no_heat, missing_no_heat = build_canonical_wave_snapshot(
+        ids_snapshot=ids_snapshot,
+        wave=10,
+        stat_inputs=stat_inputs,
+        engine_result=engine_result,
+        registry=registry,
+        tier_rules=None,
+        run_context=RunContext.from_mode("farming", tier="12"),
+        heat_magnitudes=None,
+        wave_row=wave_row,
+    )
+    snapshot_with_heat, missing_with_heat = build_canonical_wave_snapshot(
+        ids_snapshot=ids_snapshot,
+        wave=10,
+        stat_inputs=stat_inputs,
+        engine_result=engine_result,
+        registry=registry,
+        tier_rules=None,
+        run_context=RunContext.from_mode("tournament", tier="12"),
+        heat_magnitudes={"thorns_damage_mult": 1.30},
+        wave_row=wave_row,
+    )
+
+    assert missing_no_heat == []
+    assert missing_with_heat == []
+    assert snapshot_no_heat is not None
+    assert snapshot_with_heat is not None
+    assert snapshot_no_heat.values["thorns_damage_mult"] == 0.25
+    assert snapshot_with_heat.values["thorns_damage_mult"] == 1.30
+    assert snapshot_with_heat.applied_heat["thorns_damage_mult"] == 1.30
+
+
+def test_tournament_heat_bc_ids_match_registry_csv_order() -> None:
+    registry_path = Path("tables/heat_bc_registry.csv")
+    with registry_path.open(newline="") as handle:
+        reader = csv.DictReader(handle)
+        derived = []
+        seen = set()
+        for row in reader:
+            bc_id = make_bc_id(row["bc_key"].strip(), row.get("bc_variant", "").strip())
+            if bc_id in TOURNAMENT_HEAT_BC_IDS and bc_id not in seen:
+                derived.append(bc_id)
+                seen.add(bc_id)
+    assert tuple(derived) == TOURNAMENT_HEAT_BC_IDS
