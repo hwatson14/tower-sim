@@ -12,7 +12,7 @@
       "Wave Accelerator",
       "Critical Coin",
       "Second Wind",
-      "Extra Orb",
+      "Extra Orbs",
       "Energy Shield",
       "Cash",
       "Free Upgrades",
@@ -32,7 +32,7 @@
       "Wave Skip",
       "Energy Shield",
       "Ultimate Crit",
-      "Extra Orb",
+      "Extra Orbs",
       "Recovery Package Chance",
       "Extra Defense",
       "Slow Aura",
@@ -110,7 +110,7 @@
       "mastery_lab_level": 0,
       "mastery_unlocked": false
     },
-    "Extra Orb": {
+    "Extra Orbs": {
       "level": 7,
       "mastery_lab_level": 0,
       "mastery_unlocked": false

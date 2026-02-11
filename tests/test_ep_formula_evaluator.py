@@ -43,3 +43,17 @@ def test_eph_wall_regen_formula() -> None:
 def test_unknown_identifier_errors() -> None:
     with pytest.raises(UnknownParameterError):
         evaluate_lambda("EPH_WALL_REGEN", {"lab_lvl": 1.0, "prim_effect": 1.0})
+
+
+def test_eval_lambda_case_insensitive_identifier_resolution() -> None:
+    result = evaluate_lambda(
+        "EPD_CRITICAL",
+        {
+            "cc": 0.2,
+            "cf": 4.0,
+            "scc": 0.1,
+            "scm": 8.0,
+            "being_annihilator": 0.0,
+        },
+    )
+    assert result > 1.0

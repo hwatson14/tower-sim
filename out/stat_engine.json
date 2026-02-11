@@ -1,5 +1,5 @@
 {
-  "hash": "1743a6a9d3cfbc4837255445cb465b6d3b01b4aa0adc91d369932e2a9cccf213",
+  "hash": "9ef034f2e6943a779d6608586f3dc54a6a835ad096f86fcf721001e5a3a12004",
   "run_stats_base": {
     "start_of_run": {
       "uw_black_hole_cooldown": 50.0,
@@ -58,6 +58,7 @@
       "workshop_bounce_shot_targets": 6.0,
       "workshop_cash_bonus": 4.471570699167758e+16,
       "workshop_cash_per_wave": 596.0,
+      "workshop_coins_per_kill_bonus": 1.3396679999999999,
       "workshop_coins_per_wave": 150.0,
       "workshop_critical_chance": 0.8,
       "workshop_critical_factor": 5.169785043140672e+16,
@@ -76,10 +77,15 @@
       "workshop_interest": 0.059399999999999994,
       "workshop_knockback_chance": 0.8,
       "workshop_knockback_force": 6.4,
+      "workshop_land_mine_chance": 3.12,
       "workshop_land_mine_damage": 9.839690042050816e+16,
+      "workshop_land_mine_radius": 1.5,
       "workshop_lifesteal": 4.460204124,
       "workshop_multishot_chance": 0.495,
       "workshop_multishot_targets": 9.0,
+      "workshop_orb_speed": 6.1000000000000005,
+      "workshop_orbs": 4.0,
+      "workshop_package_chance": 0.3,
       "workshop_range_meters": 69.5,
       "workshop_rapid_fire_chance": 0.34,
       "workshop_rapid_fire_duration": 5.55,
@@ -90,7 +96,8 @@
       "workshop_shockwave_size": 2.35,
       "workshop_super_crit_chance": 0.2,
       "workshop_super_crit_mult_alt": 11.2,
-      "workshop_thorn_damage": 0.99
+      "workshop_thorn_damage": 0.99,
+      "workshop_wall_rebuild": 2.51
     }
   }
 }

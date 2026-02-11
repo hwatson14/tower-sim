@@ -1405,14 +1405,14 @@
       "final_value": "0",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Extra Orb Mastery"
+      "stat_id": "Extra Orbs Mastery"
     },
     {
       "base_value": "0",
       "final_value": "0",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Extra Orb Mastery"
+      "stat_id": "Extra Orbs Mastery"
     },
     {
       "base_value": "0",
@@ -1503,14 +1503,14 @@
       "final_value": "21",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Flame Bot - Cooldown"
+      "stat_id": "Flame Bot Cooldown"
     },
     {
       "base_value": "21",
       "final_value": "21",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Flame Bot - Cooldown"
+      "stat_id": "Flame Bot Cooldown"
     },
     {
       "base_value": "0",
@@ -2217,14 +2217,14 @@
       "final_value": "30",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Module Shards Cost"
+      "stat_id": "Module Shard Costs"
     },
     {
       "base_value": "30",
       "final_value": "30",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Module Shards Cost"
+      "stat_id": "Module Shard Costs"
     },
     {
       "base_value": "0",
@@ -2325,10 +2325,24 @@
       "stat_id": "Orb Resistance"
     },
     {
+      "base_value": "20",
+      "final_value": "20",
+      "phase": "end_of_run",
+      "provenance": "ids:labs",
+      "stat_id": "Orb Speed"
+    },
+    {
       "base_value": "38",
       "final_value": "38",
       "phase": "end_of_run",
       "provenance": "ids:workshop",
+      "stat_id": "Orb Speed"
+    },
+    {
+      "base_value": "20",
+      "final_value": "20",
+      "phase": "start_of_run",
+      "provenance": "ids:labs",
       "stat_id": "Orb Speed"
     },
     {
@@ -2351,20 +2365,6 @@
       "phase": "start_of_run",
       "provenance": "ids:workshop",
       "stat_id": "Orbs"
-    },
-    {
-      "base_value": "20",
-      "final_value": "20",
-      "phase": "end_of_run",
-      "provenance": "ids:labs",
-      "stat_id": "Orbs Speed"
-    },
-    {
-      "base_value": "20",
-      "final_value": "20",
-      "phase": "start_of_run",
-      "provenance": "ids:labs",
-      "stat_id": "Orbs Speed"
     },
     {
       "base_value": "1",
@@ -2819,14 +2819,14 @@
       "final_value": "1",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Reroll Daily Mission"
+      "stat_id": "Reroll Daily Missions"
     },
     {
       "base_value": "1",
       "final_value": "1",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Reroll Daily Mission"
+      "stat_id": "Reroll Daily Missions"
     },
     {
       "base_value": "100",
@@ -3309,28 +3309,28 @@
       "final_value": "0",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Thunder Bot - Cooldown"
+      "stat_id": "Thunder Bot - Linger Time"
     },
     {
       "base_value": "0",
       "final_value": "0",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Thunder Bot - Cooldown"
+      "stat_id": "Thunder Bot - Linger Time"
     },
     {
       "base_value": "0",
       "final_value": "0",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Thunder Bot - Linger Time"
+      "stat_id": "Thunder Bot Cooldown"
     },
     {
       "base_value": "0",
       "final_value": "0",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Thunder Bot - Linger Time"
+      "stat_id": "Thunder Bot Cooldown"
     },
     {
       "base_value": "0",
@@ -3519,14 +3519,14 @@
       "final_value": "13",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Wall Thorns"
+      "stat_id": "Wall Thorn"
     },
     {
       "base_value": "13",
       "final_value": "13",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Wall Thorns"
+      "stat_id": "Wall Thorn"
     },
     {
       "base_value": "0",
@@ -3603,14 +3603,14 @@
       "final_value": "1",
       "phase": "end_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Workshop Enhancements"
+      "stat_id": "Workshop Enhancement"
     },
     {
       "base_value": "1",
       "final_value": "1",
       "phase": "start_of_run",
       "provenance": "ids:labs",
-      "stat_id": "Workshop Enhancements"
+      "stat_id": "Workshop Enhancement"
     },
     {
       "base_value": "1",
@@ -3641,8 +3641,8 @@
       "stat_id": "Workshop Utility Discount"
     }
   ],
-  "created_utc": "2026-02-11T07:45:34.159476+00:00",
-  "git_sha": "a7ac6c7ecf7f45b100d72024eb4cb50bf34b5f76",
+  "created_utc": "2026-02-11T08:00:45.723260+00:00",
+  "git_sha": "8dc88c40217529fa56d2eec8242eef237a7c6408",
   "ids_path": "tests/fixtures/tower-sim-data/_IDS.csv",
   "inventory": {
     "bots": [
@@ -3736,11 +3736,11 @@
         "mastery_unlocked": false,
         "name": "Extra Defense"
       },
-      "Extra Orb": {
+      "Extra Orbs": {
         "level": 7,
         "mastery_lab_level": 0,
         "mastery_unlocked": false,
-        "name": "Extra Orb"
+        "name": "Extra Orbs"
       },
       "Fortress": {
         "level": 7,
@@ -3924,14 +3924,14 @@
       "Extra Defense Mastery": 0,
       "Extra Extra Orbs": 2,
       "Extra Orb Adjuster": 1,
-      "Extra Orb Mastery": 0,
+      "Extra Orbs Mastery": 0,
       "Fast Enemy Attack": 0,
       "Fast Enemy Health": 0,
       "Fast Enemy Speed": 0,
       "Fast's Ultimate": 0,
       "First Perk Choice": 1,
       "Flame Bot - Burn Stack": 0,
-      "Flame Bot - Cooldown": 21,
+      "Flame Bot Cooldown": 21,
       "Fortress Mastery": 0,
       "Free Upgrades Mastery": 0,
       "Game Speed": 7,
@@ -3969,13 +3969,13 @@
       "Missile Radius": 0,
       "Missiles Explosion": 0,
       "Module Coin Cost": 0,
-      "Module Shards Cost": 30,
+      "Module Shard Costs": 30,
       "More Enemies": 0,
       "More Round Stats": 1,
       "Nuke Mastery": 0,
       "Orb Boss Hit": 10,
       "Orb Resistance": 0,
-      "Orbs Speed": 20,
+      "Orb Speed": 20,
       "Package After Boss": 1,
       "Perk Option Quantity": 2,
       "Plasma Cannon Mastery": 0,
@@ -4001,7 +4001,7 @@
       "Recovery Package Chance": 20,
       "Recovery Package Chance Mastery": 1,
       "Recovery Package Max": 0,
-      "Reroll Daily Mission": 1,
+      "Reroll Daily Missions": 1,
       "Reroll Shards": 100,
       "Scatter Enemy Attack": 0,
       "Scatter Enemy Health": 0,
@@ -4031,8 +4031,8 @@
       "Tank's Ultimate": 0,
       "Target Priority": 2,
       "Thorns Resistance": 0,
-      "Thunder Bot - Cooldown": 0,
       "Thunder Bot - Linger Time": 0,
+      "Thunder Bot Cooldown": 0,
       "Ultimate Crit Mastery": 0,
       "Ultimate Weapon Durations": 0,
       "Unlock Perks": 1,
@@ -4044,13 +4044,13 @@
       "Wall Invincibility": 0,
       "Wall Rebuild": 5,
       "Wall Regen": 21,
-      "Wall Thorns": 13,
+      "Wall Thorn": 13,
       "Wave Accelerator Mastery": 0,
       "Wave Skip Mastery": 0,
       "Waves Required": 13,
       "Workshop Attack Discount": 16,
       "Workshop Defense Discount": 19,
-      "Workshop Enhancements": 1,
+      "Workshop Enhancement": 1,
       "Workshop Respec": 1,
       "Workshop Utility Discount": 27
     },
@@ -5003,7 +5003,7 @@
       "Smart Missile Barrage Automation": null,
       "Smart Nuke Automation": null,
       "Super Crit Chance": 0,
-      "Super Crit Mult": 0,
+      "Super Crit Multi": 0,
       "Thorn Damage": 0,
       "Total Bonuses": null,
       "Ultimate Weapon Damage": 0,
@@ -5432,7 +5432,7 @@
       "Wave Accelerator",
       "Critical Coin",
       "Second Wind",
-      "Extra Orb",
+      "Extra Orbs",
       "Energy Shield",
       "Cash",
       "Free Upgrades",
@@ -5468,7 +5468,7 @@
   "pipeline": {
     "compiled_stat_inputs": {
       "fail_closed": true,
-      "hash": "031548a68d23d89a2e30aa84b2999006b87fc5a7df9693f75f4985043d059c0f",
+      "hash": "066a53453e595b9a2aabfe550eb57f8f6eaf74564b9a3909480d58a450c95512",
       "missing": [
         "uw_level_missing:Black Hole:Consume",
         "uw_level_missing:Chain Lightning:Smite",
@@ -5479,13 +5479,6 @@
         "uw_level_missing:Poison Swamp:Death Creep",
         "uw_level_missing:Smart Missiles:Cover Fire",
         "uw_level_missing:Spotlight:Light Range",
-        "workshop_mapping:Coin / Kill Bonus",
-        "workshop_mapping:Land Mine Chance",
-        "workshop_mapping:Land Mine Radius",
-        "workshop_mapping:Orb Speed",
-        "workshop_mapping:Orbs",
-        "workshop_mapping:Package Chance",
-        "workshop_mapping:Wall Rebuild",
         "workshop_table:Attack Speed",
         "workshop_table:Wall Health",
         "workshop_unsupported:Bounce Shot Range",
@@ -5746,6 +5739,28 @@
           "tier_rule_multiplier": null
         },
         {
+          "base_value": 6.1000000000000005,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_orb_speed",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
+          "base_value": 4.0,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_orbs",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
           "base_value": 2.35,
           "derived_value": null,
           "enhancement_multiplier": null,
@@ -5768,6 +5783,17 @@
           "tier_rule_multiplier": null
         },
         {
+          "base_value": 3.12,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_land_mine_chance",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
           "base_value": 4.73062021252443e+16,
           "derived_value": null,
           "enhancement_multiplier": 2.08,
@@ -5779,6 +5805,17 @@
           "tier_rule_multiplier": null
         },
         {
+          "base_value": 1.5,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_land_mine_radius",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
           "base_value": 0.3,
           "derived_value": null,
           "enhancement_multiplier": null,
@@ -5786,6 +5823,17 @@
           "phase": "start_of_run",
           "provenance": "workshop_formula:DVT_WS_VALUE",
           "stat_id": "workshop_death_defy",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
+          "base_value": 2.51,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_wall_rebuild",
           "tier_rule_delta": null,
           "tier_rule_multiplier": null
         },
@@ -5808,6 +5856,17 @@
           "phase": "start_of_run",
           "provenance": "workshop_formula:DVT_WS_VALUE",
           "stat_id": "workshop_cash_per_wave",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
+          "base_value": 1.0149,
+          "derived_value": null,
+          "enhancement_multiplier": 1.32,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_coins_per_kill_bonus",
           "tier_rule_delta": null,
           "tier_rule_multiplier": null
         },
@@ -5874,6 +5933,17 @@
           "phase": "start_of_run",
           "provenance": "workshop_formula:DVT_WS_VALUE",
           "stat_id": "workshop_recovery_amount",
+          "tier_rule_delta": null,
+          "tier_rule_multiplier": null
+        },
+        {
+          "base_value": 0.3,
+          "derived_value": null,
+          "enhancement_multiplier": null,
+          "loadout_delta": null,
+          "phase": "start_of_run",
+          "provenance": "workshop_formula:DVT_WS_VALUE",
+          "stat_id": "workshop_package_chance",
           "tier_rule_delta": null,
           "tier_rule_multiplier": null
         },
@@ -6473,9 +6543,9 @@
         }
       ]
     },
-    "hash": "c3ed7aeeecd9f89894d67df9b937142e29ef7b795dbae6fe69552a133043c1e6",
+    "hash": "ae73628d2a292bce572ef0bac0eb316bb952a182435b7e180642c3f9fb69418d",
     "ids_raw_index": {
-      "hash": "efe3bb6fa4f02f346af2103ac2a9024fe1bc884017b61af4b7a076da5cab8b8c",
+      "hash": "32e94e09781cea28c3f80282bae718992baf6e3edfdc669275273602a277496c",
       "sections": [
         {
           "hash": "5227a315fd4514a5f7b056a1e1837e57cc2b9b1890c6f2fd296b4a31a8d10a82",
@@ -6483,7 +6553,7 @@
           "rows": 16
         },
         {
-          "hash": "df7cac905179e471f6c8bf2287e787560eaea6760dd3d3a77a659154897dd49c",
+          "hash": "10a3c3decaedc0b4d0ac8e291483da08ef54c9805be2fa467c731304982905bd",
           "name": "Cards",
           "rows": 31
         },
@@ -6493,7 +6563,7 @@
           "rows": 15
         },
         {
-          "hash": "e2e3864c159547a3ac2e92a7057f593dab8898cbb82ef9f61bdc01b552512977",
+          "hash": "a356ae8edb882ddd61d26df05b8bb10afc289a210d8c4cb74544a90990cc7e13",
           "name": "Labs",
           "rows": 212
         },
@@ -6523,7 +6593,7 @@
           "rows": 36
         },
         {
-          "hash": "eb899c6aa0f3a94885cc8c09d8264c485bcb27e569140e4c6d666261ffd80969",
+          "hash": "94352e665a6730b46206c55e840556828bce63a3feb7e61b6d03820579b592cd",
           "name": "Vault",
           "rows": 67
         },
@@ -6540,12 +6610,12 @@
       ]
     },
     "stage_hashes": {
-      "compiled_stat_inputs": "031548a68d23d89a2e30aa84b2999006b87fc5a7df9693f75f4985043d059c0f",
-      "ids_raw_index": "efe3bb6fa4f02f346af2103ac2a9024fe1bc884017b61af4b7a076da5cab8b8c",
-      "stat_engine": "1743a6a9d3cfbc4837255445cb465b6d3b01b4aa0adc91d369932e2a9cccf213"
+      "compiled_stat_inputs": "066a53453e595b9a2aabfe550eb57f8f6eaf74564b9a3909480d58a450c95512",
+      "ids_raw_index": "32e94e09781cea28c3f80282bae718992baf6e3edfdc669275273602a277496c",
+      "stat_engine": "9ef034f2e6943a779d6608586f3dc54a6a835ad096f86fcf721001e5a3a12004"
     },
     "stat_engine": {
-      "hash": "1743a6a9d3cfbc4837255445cb465b6d3b01b4aa0adc91d369932e2a9cccf213",
+      "hash": "9ef034f2e6943a779d6608586f3dc54a6a835ad096f86fcf721001e5a3a12004",
       "run_stats_base": {
         "start_of_run": {
           "uw_black_hole_cooldown": 50.0,
@@ -6604,6 +6674,7 @@
           "workshop_bounce_shot_targets": 6.0,
           "workshop_cash_bonus": 4.471570699167758e+16,
           "workshop_cash_per_wave": 596.0,
+          "workshop_coins_per_kill_bonus": 1.3396679999999999,
           "workshop_coins_per_wave": 150.0,
           "workshop_critical_chance": 0.8,
           "workshop_critical_factor": 5.169785043140672e+16,
@@ -6622,10 +6693,15 @@
           "workshop_interest": 0.059399999999999994,
           "workshop_knockback_chance": 0.8,
           "workshop_knockback_force": 6.4,
+          "workshop_land_mine_chance": 3.12,
           "workshop_land_mine_damage": 9.839690042050816e+16,
+          "workshop_land_mine_radius": 1.5,
           "workshop_lifesteal": 4.460204124,
           "workshop_multishot_chance": 0.495,
           "workshop_multishot_targets": 9.0,
+          "workshop_orb_speed": 6.1000000000000005,
+          "workshop_orbs": 4.0,
+          "workshop_package_chance": 0.3,
           "workshop_range_meters": 69.5,
           "workshop_rapid_fire_chance": 0.34,
           "workshop_rapid_fire_duration": 5.55,
@@ -6636,7 +6712,8 @@
           "workshop_shockwave_size": 2.35,
           "workshop_super_crit_chance": 0.2,
           "workshop_super_crit_mult_alt": 11.2,
-          "workshop_thorn_damage": 0.99
+          "workshop_thorn_damage": 0.99,
+          "workshop_wall_rebuild": 2.51
         }
       }
     }
@@ -6706,7 +6783,7 @@
         "Wave Accelerator",
         "Critical Coin",
         "Second Wind",
-        "Extra Orb",
+        "Extra Orbs",
         "Energy Shield",
         "Cash",
         "Free Upgrades",
@@ -6726,7 +6803,7 @@
         "Wave Skip",
         "Energy Shield",
         "Ultimate Crit",
-        "Extra Orb",
+        "Extra Orbs",
         "Recovery Package Chance",
         "Extra Defense",
         "Slow Aura",
@@ -6818,11 +6895,11 @@
         "mastery_unlocked": false,
         "name": "Extra Defense"
       },
-      "Extra Orb": {
+      "Extra Orbs": {
         "level": 7,
         "mastery_lab_level": 0,
         "mastery_unlocked": false,
-        "name": "Extra Orb"
+        "name": "Extra Orbs"
       },
       "Fortress": {
         "level": 7,
@@ -7122,14 +7199,14 @@
       "Extra Defense Mastery": 0,
       "Extra Extra Orbs": 2,
       "Extra Orb Adjuster": 1,
-      "Extra Orb Mastery": 0,
+      "Extra Orbs Mastery": 0,
       "Fast Enemy Attack": 0,
       "Fast Enemy Health": 0,
       "Fast Enemy Speed": 0,
       "Fast's Ultimate": 0,
       "First Perk Choice": 1,
       "Flame Bot - Burn Stack": 0,
-      "Flame Bot - Cooldown": 21,
+      "Flame Bot Cooldown": 21,
       "Fortress Mastery": 0,
       "Free Upgrades Mastery": 0,
       "Game Speed": 7,
@@ -7167,13 +7244,13 @@
       "Missile Radius": 0,
       "Missiles Explosion": 0,
       "Module Coin Cost": 0,
-      "Module Shards Cost": 30,
+      "Module Shard Costs": 30,
       "More Enemies": 0,
       "More Round Stats": 1,
       "Nuke Mastery": 0,
       "Orb Boss Hit": 10,
       "Orb Resistance": 0,
-      "Orbs Speed": 20,
+      "Orb Speed": 20,
       "Package After Boss": 1,
       "Perk Option Quantity": 2,
       "Plasma Cannon Mastery": 0,
@@ -7199,7 +7276,7 @@
       "Recovery Package Chance": 20,
       "Recovery Package Chance Mastery": 1,
       "Recovery Package Max": 0,
-      "Reroll Daily Mission": 1,
+      "Reroll Daily Missions": 1,
       "Reroll Shards": 100,
       "Scatter Enemy Attack": 0,
       "Scatter Enemy Health": 0,
@@ -7229,8 +7306,8 @@
       "Tank's Ultimate": 0,
       "Target Priority": 2,
       "Thorns Resistance": 0,
-      "Thunder Bot - Cooldown": 0,
       "Thunder Bot - Linger Time": 0,
+      "Thunder Bot Cooldown": 0,
       "Ultimate Crit Mastery": 0,
       "Ultimate Weapon Durations": 0,
       "Unlock Perks": 1,
@@ -7242,13 +7319,13 @@
       "Wall Invincibility": 0,
       "Wall Rebuild": 5,
       "Wall Regen": 21,
-      "Wall Thorns": 13,
+      "Wall Thorn": 13,
       "Wave Accelerator Mastery": 0,
       "Wave Skip Mastery": 0,
       "Waves Required": 13,
       "Workshop Attack Discount": 16,
       "Workshop Defense Discount": 19,
-      "Workshop Enhancements": 1,
+      "Workshop Enhancement": 1,
       "Workshop Respec": 1,
       "Workshop Utility Discount": 27
     },
@@ -8383,7 +8460,7 @@
           "7",
           "false",
           "Second Wind",
-          "Extra Orb",
+          "Extra Orbs",
           "",
           "",
           ""
@@ -8392,14 +8469,14 @@
           "Free Upgrades",
           "7",
           "false",
-          "Extra Orb",
+          "Extra Orbs",
           "Recovery Package Chance",
           "",
           "",
           ""
         ],
         [
-          "Extra Orb",
+          "Extra Orbs",
           "7",
           "false",
           "Energy Shield",
@@ -8760,13 +8837,13 @@
           "1"
         ],
         [
-          "Reroll Daily Mission",
+          "Reroll Daily Missions",
           "1",
           "",
           "1"
         ],
         [
-          "Workshop Enhancements",
+          "Workshop Enhancement",
           "1",
           "",
           "1"
@@ -8868,7 +8945,7 @@
           "50"
         ],
         [
-          "Orbs Speed",
+          "Orb Speed",
           "20",
           "",
           "20"
@@ -8916,7 +8993,7 @@
           "30"
         ],
         [
-          "Wall Thorns",
+          "Wall Thorn",
           "13",
           "",
           "20"
@@ -9354,13 +9431,13 @@
           "32"
         ],
         [
-          "Flame Bot - Cooldown",
+          "Flame Bot Cooldown",
           "21",
           "",
           "25"
         ],
         [
-          "Thunder Bot - Cooldown",
+          "Thunder Bot Cooldown",
           "0",
           "",
           "25"
@@ -9546,7 +9623,7 @@
           "50"
         ],
         [
-          "Module Shards Cost",
+          "Module Shard Costs",
           "30",
           "",
           "30"
@@ -9726,7 +9803,7 @@
           "9"
         ],
         [
-          "Extra Orb Mastery",
+          "Extra Orbs Mastery",
           "0",
           "",
           "9"
@@ -12327,7 +12404,7 @@
           "0"
         ],
         [
-          "Super Crit Mult",
+          "Super Crit Multi",
           "0"
         ],
         [
@@ -13613,7 +13690,7 @@
       "Smart Missile Barrage Automation": null,
       "Smart Nuke Automation": null,
       "Super Crit Chance": 0,
-      "Super Crit Mult": 0,
+      "Super Crit Multi": 0,
       "Thorn Damage": 0,
       "Total Bonuses": null,
       "Ultimate Weapon Damage": 0,
@@ -14303,14 +14380,14 @@
         "Extra Defense Mastery": 0,
         "Extra Extra Orbs": 2,
         "Extra Orb Adjuster": 1,
-        "Extra Orb Mastery": 0,
+        "Extra Orbs Mastery": 0,
         "Fast Enemy Attack": 0,
         "Fast Enemy Health": 0,
         "Fast Enemy Speed": 0,
         "Fast's Ultimate": 0,
         "First Perk Choice": 1,
         "Flame Bot - Burn Stack": 0,
-        "Flame Bot - Cooldown": 21,
+        "Flame Bot Cooldown": 21,
         "Fortress Mastery": 0,
         "Free Upgrades Mastery": 0,
         "Game Speed": 7,
@@ -14348,13 +14425,13 @@
         "Missile Radius": 0,
         "Missiles Explosion": 0,
         "Module Coin Cost": 0,
-        "Module Shards Cost": 30,
+        "Module Shard Costs": 30,
         "More Enemies": 0,
         "More Round Stats": 1,
         "Nuke Mastery": 0,
         "Orb Boss Hit": 10,
         "Orb Resistance": 0,
-        "Orbs Speed": 20,
+        "Orb Speed": 20,
         "Package After Boss": 1,
         "Perk Option Quantity": 2,
         "Plasma Cannon Mastery": 0,
@@ -14380,7 +14457,7 @@
         "Recovery Package Chance": 20,
         "Recovery Package Chance Mastery": 1,
         "Recovery Package Max": 0,
-        "Reroll Daily Mission": 1,
+        "Reroll Daily Missions": 1,
         "Reroll Shards": 100,
         "Scatter Enemy Attack": 0,
         "Scatter Enemy Health": 0,
@@ -14410,8 +14487,8 @@
         "Tank's Ultimate": 0,
         "Target Priority": 2,
         "Thorns Resistance": 0,
-        "Thunder Bot - Cooldown": 0,
         "Thunder Bot - Linger Time": 0,
+        "Thunder Bot Cooldown": 0,
         "Ultimate Crit Mastery": 0,
         "Ultimate Weapon Durations": 0,
         "Unlock Perks": 1,
@@ -14423,13 +14500,13 @@
         "Wall Invincibility": 0,
         "Wall Rebuild": 5,
         "Wall Regen": 21,
-        "Wall Thorns": 13,
+        "Wall Thorn": 13,
         "Wave Accelerator Mastery": 0,
         "Wave Skip Mastery": 0,
         "Waves Required": 13,
         "Workshop Attack Discount": 16,
         "Workshop Defense Discount": 19,
-        "Workshop Enhancements": 1,
+        "Workshop Enhancement": 1,
         "Workshop Respec": 1,
         "Workshop Utility Discount": 27
       },
@@ -14638,7 +14715,7 @@
         "Smart Missile Barrage Automation": null,
         "Smart Nuke Automation": null,
         "Super Crit Chance": 0,
-        "Super Crit Mult": 0,
+        "Super Crit Multi": 0,
         "Thorn Damage": 0,
         "Total Bonuses": null,
         "Ultimate Weapon Damage": 0,
@@ -16724,7 +16801,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Extra Orb Mastery"
+            "stat_id": "Extra Orbs Mastery"
           },
           {
             "end_of_run": "0",
@@ -16732,7 +16809,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Extra Orb Mastery"
+            "stat_id": "Extra Orbs Mastery"
           },
           {
             "end_of_run": "0",
@@ -16836,7 +16913,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "21",
-            "stat_id": "Flame Bot - Cooldown"
+            "stat_id": "Flame Bot Cooldown"
           },
           {
             "end_of_run": "21",
@@ -16844,7 +16921,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "21",
-            "stat_id": "Flame Bot - Cooldown"
+            "stat_id": "Flame Bot Cooldown"
           },
           {
             "end_of_run": "0",
@@ -17652,7 +17729,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "30",
-            "stat_id": "Module Shards Cost"
+            "stat_id": "Module Shard Costs"
           },
           {
             "end_of_run": "30",
@@ -17660,7 +17737,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "30",
-            "stat_id": "Module Shards Cost"
+            "stat_id": "Module Shard Costs"
           },
           {
             "end_of_run": "0",
@@ -17775,11 +17852,27 @@
             "stat_id": "Orb Resistance"
           },
           {
+            "end_of_run": "20",
+            "loadout_delta": null,
+            "phase": "end_of_run",
+            "provenance": "ids:labs",
+            "start_of_run": "20",
+            "stat_id": "Orb Speed"
+          },
+          {
             "end_of_run": "38",
             "loadout_delta": null,
             "phase": "end_of_run",
             "provenance": "ids:workshop",
             "start_of_run": "38",
+            "stat_id": "Orb Speed"
+          },
+          {
+            "end_of_run": "20",
+            "loadout_delta": null,
+            "phase": "start_of_run",
+            "provenance": "ids:labs",
+            "start_of_run": "20",
             "stat_id": "Orb Speed"
           },
           {
@@ -17805,22 +17898,6 @@
             "provenance": "ids:workshop",
             "start_of_run": "4",
             "stat_id": "Orbs"
-          },
-          {
-            "end_of_run": "20",
-            "loadout_delta": null,
-            "phase": "end_of_run",
-            "provenance": "ids:labs",
-            "start_of_run": "20",
-            "stat_id": "Orbs Speed"
-          },
-          {
-            "end_of_run": "20",
-            "loadout_delta": null,
-            "phase": "start_of_run",
-            "provenance": "ids:labs",
-            "start_of_run": "20",
-            "stat_id": "Orbs Speed"
           },
           {
             "end_of_run": "1",
@@ -18340,7 +18417,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "1",
-            "stat_id": "Reroll Daily Mission"
+            "stat_id": "Reroll Daily Missions"
           },
           {
             "end_of_run": "1",
@@ -18348,7 +18425,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "1",
-            "stat_id": "Reroll Daily Mission"
+            "stat_id": "Reroll Daily Missions"
           },
           {
             "end_of_run": "100",
@@ -18900,7 +18977,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Thunder Bot - Cooldown"
+            "stat_id": "Thunder Bot - Linger Time"
           },
           {
             "end_of_run": "0",
@@ -18908,7 +18985,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Thunder Bot - Cooldown"
+            "stat_id": "Thunder Bot - Linger Time"
           },
           {
             "end_of_run": "0",
@@ -18916,7 +18993,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Thunder Bot - Linger Time"
+            "stat_id": "Thunder Bot Cooldown"
           },
           {
             "end_of_run": "0",
@@ -18924,7 +19001,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "0",
-            "stat_id": "Thunder Bot - Linger Time"
+            "stat_id": "Thunder Bot Cooldown"
           },
           {
             "end_of_run": "0",
@@ -19140,7 +19217,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "13",
-            "stat_id": "Wall Thorns"
+            "stat_id": "Wall Thorn"
           },
           {
             "end_of_run": "13",
@@ -19148,7 +19225,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "13",
-            "stat_id": "Wall Thorns"
+            "stat_id": "Wall Thorn"
           },
           {
             "end_of_run": "0",
@@ -19236,7 +19313,7 @@
             "phase": "end_of_run",
             "provenance": "ids:labs",
             "start_of_run": "1",
-            "stat_id": "Workshop Enhancements"
+            "stat_id": "Workshop Enhancement"
           },
           {
             "end_of_run": "1",
@@ -19244,7 +19321,7 @@
             "phase": "start_of_run",
             "provenance": "ids:labs",
             "start_of_run": "1",
-            "stat_id": "Workshop Enhancements"
+            "stat_id": "Workshop Enhancement"
           },
           {
             "end_of_run": "1",
@@ -19281,7 +19358,7 @@
         ]
       },
       "stat_engine": {
-        "hash": "1743a6a9d3cfbc4837255445cb465b6d3b01b4aa0adc91d369932e2a9cccf213",
+        "hash": "9ef034f2e6943a779d6608586f3dc54a6a835ad096f86fcf721001e5a3a12004",
         "run_stats_base": {
           "start_of_run": {
             "uw_black_hole_cooldown": 50.0,
@@ -19340,6 +19417,7 @@
             "workshop_bounce_shot_targets": 6.0,
             "workshop_cash_bonus": 4.471570699167758e+16,
             "workshop_cash_per_wave": 596.0,
+            "workshop_coins_per_kill_bonus": 1.3396679999999999,
             "workshop_coins_per_wave": 150.0,
             "workshop_critical_chance": 0.8,
             "workshop_critical_factor": 5.169785043140672e+16,
@@ -19358,10 +19436,15 @@
             "workshop_interest": 0.059399999999999994,
             "workshop_knockback_chance": 0.8,
             "workshop_knockback_force": 6.4,
+            "workshop_land_mine_chance": 3.12,
             "workshop_land_mine_damage": 9.839690042050816e+16,
+            "workshop_land_mine_radius": 1.5,
             "workshop_lifesteal": 4.460204124,
             "workshop_multishot_chance": 0.495,
             "workshop_multishot_targets": 9.0,
+            "workshop_orb_speed": 6.1000000000000005,
+            "workshop_orbs": 4.0,
+            "workshop_package_chance": 0.3,
             "workshop_range_meters": 69.5,
             "workshop_rapid_fire_chance": 0.34,
             "workshop_rapid_fire_duration": 5.55,
@@ -19372,7 +19455,8 @@
             "workshop_shockwave_size": 2.35,
             "workshop_super_crit_chance": 0.2,
             "workshop_super_crit_mult_alt": 11.2,
-            "workshop_thorn_damage": 0.99
+            "workshop_thorn_damage": 0.99,
+            "workshop_wall_rebuild": 2.51
           }
         }
       }

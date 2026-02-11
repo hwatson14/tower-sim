@@ -1404,14 +1404,14 @@
     "final_value": "0",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Extra Orb Mastery"
+    "stat_id": "Extra Orbs Mastery"
   },
   {
     "base_value": "0",
     "final_value": "0",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Extra Orb Mastery"
+    "stat_id": "Extra Orbs Mastery"
   },
   {
     "base_value": "0",
@@ -1502,14 +1502,14 @@
     "final_value": "21",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Flame Bot - Cooldown"
+    "stat_id": "Flame Bot Cooldown"
   },
   {
     "base_value": "21",
     "final_value": "21",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Flame Bot - Cooldown"
+    "stat_id": "Flame Bot Cooldown"
   },
   {
     "base_value": "0",
@@ -2216,14 +2216,14 @@
     "final_value": "30",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Module Shards Cost"
+    "stat_id": "Module Shard Costs"
   },
   {
     "base_value": "30",
     "final_value": "30",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Module Shards Cost"
+    "stat_id": "Module Shard Costs"
   },
   {
     "base_value": "0",
@@ -2324,10 +2324,24 @@
     "stat_id": "Orb Resistance"
   },
   {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Speed"
+  },
+  {
     "base_value": "38",
     "final_value": "38",
     "phase": "end_of_run",
     "provenance": "ids:workshop",
+    "stat_id": "Orb Speed"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
     "stat_id": "Orb Speed"
   },
   {
@@ -2350,20 +2364,6 @@
     "phase": "start_of_run",
     "provenance": "ids:workshop",
     "stat_id": "Orbs"
-  },
-  {
-    "base_value": "20",
-    "final_value": "20",
-    "phase": "end_of_run",
-    "provenance": "ids:labs",
-    "stat_id": "Orbs Speed"
-  },
-  {
-    "base_value": "20",
-    "final_value": "20",
-    "phase": "start_of_run",
-    "provenance": "ids:labs",
-    "stat_id": "Orbs Speed"
   },
   {
     "base_value": "1",
@@ -2818,14 +2818,14 @@
     "final_value": "1",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Reroll Daily Mission"
+    "stat_id": "Reroll Daily Missions"
   },
   {
     "base_value": "1",
     "final_value": "1",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Reroll Daily Mission"
+    "stat_id": "Reroll Daily Missions"
   },
   {
     "base_value": "100",
@@ -3308,28 +3308,28 @@
     "final_value": "0",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Thunder Bot - Cooldown"
+    "stat_id": "Thunder Bot - Linger Time"
   },
   {
     "base_value": "0",
     "final_value": "0",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Thunder Bot - Cooldown"
+    "stat_id": "Thunder Bot - Linger Time"
   },
   {
     "base_value": "0",
     "final_value": "0",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Thunder Bot - Linger Time"
+    "stat_id": "Thunder Bot Cooldown"
   },
   {
     "base_value": "0",
     "final_value": "0",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Thunder Bot - Linger Time"
+    "stat_id": "Thunder Bot Cooldown"
   },
   {
     "base_value": "0",
@@ -3518,14 +3518,14 @@
     "final_value": "13",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Wall Thorns"
+    "stat_id": "Wall Thorn"
   },
   {
     "base_value": "13",
     "final_value": "13",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Wall Thorns"
+    "stat_id": "Wall Thorn"
   },
   {
     "base_value": "0",
@@ -3602,14 +3602,14 @@
     "final_value": "1",
     "phase": "end_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Workshop Enhancements"
+    "stat_id": "Workshop Enhancement"
   },
   {
     "base_value": "1",
     "final_value": "1",
     "phase": "start_of_run",
     "provenance": "ids:labs",
-    "stat_id": "Workshop Enhancements"
+    "stat_id": "Workshop Enhancement"
   },
   {
     "base_value": "1",

@@ -1,6 +1,6 @@
 {
   "fail_closed": true,
-  "hash": "031548a68d23d89a2e30aa84b2999006b87fc5a7df9693f75f4985043d059c0f",
+  "hash": "066a53453e595b9a2aabfe550eb57f8f6eaf74564b9a3909480d58a450c95512",
   "missing": [
     "uw_level_missing:Black Hole:Consume",
     "uw_level_missing:Chain Lightning:Smite",
@@ -11,13 +11,6 @@
     "uw_level_missing:Poison Swamp:Death Creep",
     "uw_level_missing:Smart Missiles:Cover Fire",
     "uw_level_missing:Spotlight:Light Range",
-    "workshop_mapping:Coin / Kill Bonus",
-    "workshop_mapping:Land Mine Chance",
-    "workshop_mapping:Land Mine Radius",
-    "workshop_mapping:Orb Speed",
-    "workshop_mapping:Orbs",
-    "workshop_mapping:Package Chance",
-    "workshop_mapping:Wall Rebuild",
     "workshop_table:Attack Speed",
     "workshop_table:Wall Health",
     "workshop_unsupported:Bounce Shot Range",
@@ -278,6 +271,28 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 6.1000000000000005,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_orb_speed",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 4.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_orbs",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 2.35,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -300,6 +315,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 3.12,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_land_mine_chance",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 4.73062021252443e+16,
       "derived_value": null,
       "enhancement_multiplier": 2.08,
@@ -311,6 +337,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 1.5,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_land_mine_radius",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.3,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -318,6 +355,17 @@
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_death_defy",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 2.51,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_wall_rebuild",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -340,6 +388,17 @@
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_cash_per_wave",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 1.0149,
+      "derived_value": null,
+      "enhancement_multiplier": 1.32,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_coins_per_kill_bonus",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -406,6 +465,17 @@
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_recovery_amount",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.3,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
+      "stat_id": "workshop_package_chance",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
