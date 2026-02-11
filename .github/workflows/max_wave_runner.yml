@@ -33,6 +33,7 @@ jobs:
         run: |
           pytest -q \
             tests/test_max_wave_v1_contract.py \
+            tests/test_max_wave_lineage_contract.py \
             tests/test_naming_contract.py \
             tests/test_naming_contract_check.py \
             tests/test_max_wave_ep_parity.py \
@@ -80,10 +81,73 @@ jobs:
             --tolerance 0.01 \
             --output out/ep_export_final_stats_report.json
 
+      - name: Emit stat lineage contract outputs
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          from tower_sim.registry.combat_stat_contract import (
+              required_combat_stat_ids,
+              stat_lineage_manifest,
+          )
+
+          out_dir = Path("out")
+          out_dir.mkdir(parents=True, exist_ok=True)
+
+          manifest = stat_lineage_manifest()
+          serialized = {
+              stat_id: [
+                  {
+                      "contributor": entry.contributor,
+                      "canonical_stat_id": entry.canonical_stat_id,
+                      "reaches_stat_input": bool(entry.reaches_stat_input),
+                      "exclusion_reason": entry.exclusion_reason,
+                  }
+                  for entry in entries
+              ]
+              for stat_id, entries in sorted(manifest.items())
+          }
+          payload = {
+              "schema": "stat_lineage_manifest.v1",
+              "stat_count": len(serialized),
+              "required_combat_stat_ids": list(required_combat_stat_ids()),
+              "stats": serialized,
+          }
+          Path("out/stat_lineage_manifest.json").write_text(
+              json.dumps(payload, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+
+          required = set(required_combat_stat_ids())
+          reached_required = sorted(
+              stat_id
+              for stat_id in required
+              if any(entry.reaches_stat_input for entry in manifest[stat_id])
+          )
+          gate = {
+              "schema": "stat_lineage_contract_gate.v1",
+              "required_count": len(required),
+              "reached_required": reached_required,
+              "missing_required": sorted(required - set(reached_required)),
+              "status": "ok" if required <= set(reached_required) else "fail",
+          }
+          Path("out/stat_lineage_contract_gate.json").write_text(
+              json.dumps(gate, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+
+          if gate["status"] != "ok":
+              raise SystemExit(f"Lineage contract gate failed: {gate['missing_required']}")
+          print("Wrote out/stat_lineage_manifest.json and out/stat_lineage_contract_gate.json")
+          PY
+
       - name: Promote max-wave outputs to latest artifact names
         run: |
           cp out/runner_output.json out/runner_output_latest.json
           cp out/ep_export_final_stats_report.json out/ep_export_final_stats_report_latest.json
+          cp out/stat_lineage_manifest.json out/stat_lineage_manifest_latest.json
+          cp out/stat_lineage_contract_gate.json out/stat_lineage_contract_gate_latest.json
 
       - name: Upload runner output artifact
         uses: actions/upload-artifact@v4
@@ -92,6 +156,8 @@ jobs:
           path: |
             out/runner_output_latest.json
             out/ep_export_final_stats_report_latest.json
+            out/stat_lineage_manifest_latest.json
+            out/stat_lineage_contract_gate_latest.json
           if-no-files-found: error
 
       - name: Commit latest max-wave artifacts to main
@@ -100,7 +166,11 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
-          git add out/runner_output_latest.json out/ep_export_final_stats_report_latest.json
+          git add \
+            out/runner_output_latest.json \
+            out/ep_export_final_stats_report_latest.json \
+            out/stat_lineage_manifest_latest.json \
+            out/stat_lineage_contract_gate_latest.json
           if git diff --cached --quiet; then
             echo "No max-wave latest artifact changes to commit."
             exit 0
