@@ -17,6 +17,16 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     base_components_path = output_dir / "base_stats_components.json"
     inventory_components_path = output_dir / "inventory_components.json"
     run_stats_path = output_dir / "run_stats.json"
+    ids_raw_index_path = output_dir / "ids_raw_index.json"
+    compiled_stat_inputs_path = output_dir / "compiled_stat_inputs.json"
+    stat_engine_path = output_dir / "stat_engine.json"
+    resolved_problem_spec_path = output_dir / "resolved_problem_spec.json"
+    max_wave_path = output_dir / "max_wave.json"
+    stage_1_path = output_dir / "stage_1_base_no_respec.json"
+    stage_2_path = output_dir / "stage_2_base_with_respec.json"
+    stage_3_path = output_dir / "stage_3_with_loadout.json"
+    stage_4_path = output_dir / "stage_4_with_battle_conditions.json"
+    stage_5_path = output_dir / "stage_5_end_of_run.json"
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(repo_root)
@@ -40,9 +50,19 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert base_components_path.exists()
     assert inventory_components_path.exists()
     assert run_stats_path.exists()
+    assert ids_raw_index_path.exists()
+    assert compiled_stat_inputs_path.exists()
+    assert stat_engine_path.exists()
+    assert resolved_problem_spec_path.exists()
+    assert max_wave_path.exists()
+    assert stage_1_path.exists()
+    assert stage_2_path.exists()
+    assert stage_3_path.exists()
+    assert stage_4_path.exists()
+    assert stage_5_path.exists()
     assert not diff_path.exists()
     payload = json.loads(output_path.read_text())
-    assert payload["schema_version"] == 4
+    assert payload["schema_version"] == 5
     assert isinstance(payload["created_utc"], str)
     assert payload["created_utc"]
     assert "git_sha" in payload
@@ -53,6 +73,16 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert "inventory" in payload
     assert "loadout" in payload
     assert "snapshot" in payload
+    assert "pipeline" in payload
+    assert "ids_raw_index" in payload["pipeline"]
+    assert "compiled_stat_inputs" in payload["pipeline"]
+    assert "stat_engine" in payload["pipeline"]
+    assert "staged_outputs" in payload
+    assert "stage_1_base_no_respec" in payload["staged_outputs"]
+    assert "stage_2_base_with_respec" in payload["staged_outputs"]
+    assert "stage_3_with_loadout" in payload["staged_outputs"]
+    assert "stage_4_with_battle_conditions" in payload["staged_outputs"]
+    assert "stage_5_end_of_run" in payload["staged_outputs"]
     assert isinstance(payload["base_stats"], list)
     assert payload["base_stats"]
     assert "cards" in payload["inventory"]
@@ -104,6 +134,17 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     summary = json.loads(summary_path.read_text())
     assert summary["ids_path"] == str(ids_path)
     assert summary["labs_count"] >= 1
+
+    stage_1 = json.loads(stage_1_path.read_text())
+    stage_2 = json.loads(stage_2_path.read_text())
+    stage_3 = json.loads(stage_3_path.read_text())
+    stage_4 = json.loads(stage_4_path.read_text())
+    stage_5 = json.loads(stage_5_path.read_text())
+    assert stage_1["name"] == "locked_base"
+    assert stage_2["name"] == "gem_respec_base"
+    assert stage_3["name"] == "loadout"
+    assert stage_4["name"] == "battle_conditions"
+    assert stage_5["name"] == "end_of_run"
 
     output_dir_raw = tmp_path / "audit_raw"
     output_path_raw = output_dir_raw / "account_snapshot.json"
