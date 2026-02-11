@@ -905,6 +905,14 @@ def _resolve_boss_survivability(
 
 
 def _resolve_expected_damage_taken(timing_uptime: Dict[str, Any]) -> float:
+    timing_uptime.setdefault(
+        "contract_scope",
+        {
+            "authoritative": False,
+            "contract_status": "excluded",
+            "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome",
+        },
+    )
     if "expected_damage_taken" not in timing_uptime:
         missing = timing_uptime.get("missing", [])
         raise ValueError(
