@@ -75,27 +75,69 @@ def test_overlap_fraction_toy_case() -> None:
 
 def test_bot_effects_are_table_backed() -> None:
     effects = build_bot_effects(
-        bot_levels={
-            "Flame Bot": {"Damage R.": 1, "Cooldown": 1},
-            "Golden Bot": {"Bonus": 1, "Duration": 1, "Cooldown": 1},
-            "Amplify Bot": {"Bonus": 1, "Duration": 1, "Cooldown": 1},
-        },
+        resolved_bot_effects=[
+            {
+                "name": "Golden Bot",
+                "duration_s": 20.5,
+                "cooldown_s": 114.5,
+                "coin_multiplier": 2.2,
+            },
+            {
+                "name": "Amplify Bot",
+                "duration_s": 20.5,
+                "cooldown_s": 114.5,
+                "damage_multiplier": 3.9,
+            },
+        ],
         window_s=120.0,
     )
     by_name = {effect.name: effect for effect in effects}
-    assert "Flame Bot" not in by_name
     assert by_name["Golden Bot"].coin_multiplier == 2.2
     assert by_name["Amplify Bot"].damage_multiplier == 3.9
 
 
 def test_bot_effects_use_bot_specific_intervals() -> None:
     effects = build_bot_effects(
-        bot_levels={
-            "Golden Bot": {"Bonus": 1, "Duration": 1, "Cooldown": 1},
-        },
+        resolved_bot_effects=[
+            {
+                "name": "Golden Bot",
+                "duration_s": 20.5,
+                "cooldown_s": 114.5,
+                "coin_multiplier": 2.2,
+            },
+        ],
         window_s=300.0,
     )
     golden = {e.name: e for e in effects}["Golden Bot"]
     assert len(golden.activation_intervals) > 0
     assert golden.activation_intervals[0][1] == pytest.approx(20.5)
+
+
+
+def test_bot_effect_scalars_adjust_values() -> None:
+    effects = build_bot_effects(
+        resolved_bot_effects=[
+            {
+                "name": "Golden Bot",
+                "duration_s": 30.75,
+                "cooldown_s": 57.25,
+                "coin_multiplier": 2.42,
+            },
+            {
+                "name": "Amplify Bot",
+                "duration_s": 30.75,
+                "cooldown_s": 57.25,
+                "damage_multiplier": 4.29,
+            },
+        ],
+        window_s=60.0,
+    )
+    by_name = {effect.name: effect for effect in effects}
+
+    golden = by_name["Golden Bot"]
+    assert golden.activation_intervals[0][1] == pytest.approx(30.75)
+    assert golden.coin_multiplier == pytest.approx(2.42)
+
+    amplify = by_name["Amplify Bot"]
+    assert amplify.damage_multiplier == pytest.approx(4.29)
 
