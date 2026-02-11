@@ -27,6 +27,7 @@ from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 from tower_sim.loaders.wiki.assist_module_labs import AssistLabLevels
 from tower_sim.loaders.bc_heat_loader import load_heat_bundle
 from tower_sim.registry.combat_stat_contract import required_survivability_stat_ids
+from tower_sim.registry.naming_contract import resolve_named_entity
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import BossSurvivabilitySpec, ProblemSpec, ScenarioSpec
@@ -580,12 +581,12 @@ def _resolve_thorns_inputs(
         )
     workshop_thorns = workshop_level * _WORKSHOP_THORNS_PER_LEVEL
 
-    wall_thorns_level = ids_snapshot.labs.get("Wall Thorns")
+    wall_thorns_level = ids_snapshot.labs.get("Wall Thorn")
     if wall_thorns_level is None:
-        raise SurvivabilityPipelineError("Missing lab level for 'Wall Thorns' in IDS.")
+        raise SurvivabilityPipelineError("Missing canonical lab level for 'Wall Thorn' in IDS.")
     if wall_thorns_level < 0:
         raise SurvivabilityPipelineError(
-            f"Invalid lab level for Wall Thorns: {wall_thorns_level}."
+            f"Invalid lab level for Wall Thorn: {wall_thorns_level}."
         )
     wall_thorns_pct = wall_thorns_level * _WALL_THORNS_PER_LEVEL
 
@@ -594,7 +595,7 @@ def _resolve_thorns_inputs(
 
     multiplier = relic_multiplier * wall_thorns_pct * _BOSS_THORNS_MULT
     provenance = (
-        "workshop:Thorn Damage + labs:Wall Thorns + relics:Thorns "
+        "workshop:Thorn Damage + labs:Wall Thorn + relics:Thorns "
         "(wiki excerpt in prompt)"
     )
     return workshop_thorns, multiplier, provenance
@@ -1451,18 +1452,25 @@ def _apply_card_effects(
                     f"Extra Defense card has unsupported unit {effect.unit!r}."
                 )
             accumulator.add("def_pct", effect.value, "cards:extra_defense")
-        elif effect.card in ("Plasma Canon", "Plasma Cannon"):
-            if effect.unit != "percent":
-                raise SurvivabilityPipelineError(
-                    f"Plasma Cannon card has unsupported unit {effect.unit!r}."
-                )
-            accumulator.add(
-                "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
-            )
         else:
-            raise SurvivabilityPipelineError(
-                f"Unsupported card for survivability pipeline: {card_name!r}."
-            )
+            try:
+                card_canonical = resolve_named_entity("cards", effect.card)
+            except KeyError as exc:
+                raise SurvivabilityPipelineError(
+                    f"Unsupported card for survivability pipeline: {card_name!r}."
+                ) from exc
+            if card_canonical == "CARD_PLASMA_CANNON":
+                if effect.unit != "percent":
+                    raise SurvivabilityPipelineError(
+                        f"Plasma Cannon card has unsupported unit {effect.unit!r}."
+                    )
+                accumulator.add(
+                    "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
+                )
+            else:
+                raise SurvivabilityPipelineError(
+                    f"Unsupported card for survivability pipeline: {card_name!r}."
+                )
 
 
 def _resolve_equipped_cards(

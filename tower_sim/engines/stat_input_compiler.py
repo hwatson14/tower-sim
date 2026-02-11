@@ -82,6 +82,20 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
     "Land Mine Damage": WorkshopStatSpec(
         stat_id="workshop_land_mine_damage", dvt_keys=("Land Mine Damage",)
     ),
+    "Land Mine Chance": WorkshopStatSpec(stat_id="workshop_land_mine_chance"),
+    "Land Mine Radius": WorkshopStatSpec(stat_id="workshop_land_mine_radius"),
+    "Orbs": WorkshopStatSpec(stat_id="workshop_orbs"),
+    "Orb Speed": WorkshopStatSpec(stat_id="workshop_orb_speed"),
+    "Package Chance": WorkshopStatSpec(stat_id="workshop_package_chance"),
+    "Wall Rebuild": WorkshopStatSpec(stat_id="workshop_wall_rebuild"),
+    "Coins per Kill": WorkshopStatSpec(
+        stat_id="workshop_coins_per_kill_bonus",
+        dvt_keys=("Coin / Kill Bonus", "Coins per Kill"),
+    ),
+    "Coin / Kill Bonus": WorkshopStatSpec(
+        stat_id="workshop_coins_per_kill_bonus",
+        dvt_keys=("Coin / Kill Bonus",),
+    ),
     "Wall Health": WorkshopStatSpec(stat_id="workshop_wall_health", dvt_keys=("Wall Health",)),
     "Orb Size": WorkshopStatSpec(stat_id="workshop_orb_size", dvt_keys=("Orb Size",)),
     "Cash Bonus": WorkshopStatSpec(stat_id="workshop_cash_bonus", dvt_keys=("Cash Bonus",)),
@@ -151,6 +165,7 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Recovery Amount": lambda level: 0.1 + 0.01 * level,
     "Package Chance": lambda level: _pct(6 + 0.4 * level),
     "Wall Rebuild": lambda level: 0.01 + 0.01 * level,
+    "Coins per Kill": lambda level: 1 + _pct(0.01 * level),
     "Coin / Kill Bonus": lambda level: 1 + _pct(0.01 * level),
     "Enemy Attack Level Skip": lambda level: _pct(0.5 + 0.5 * level),
     "Enemy Health Level Skip": lambda level: _pct(0.5 + 0.5 * level),
