@@ -1,3 +1,5 @@
+> **Role:** Status-only implementation audit.
+
 # TowerSim Implementation Status (Truthful Audit)
 
 This document describes what is implemented in the bundled code at the time of packaging, and what remains stubbed/missing. It is intended to prevent “README optimism”.

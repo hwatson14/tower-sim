@@ -1,3 +1,5 @@
+> **Role:** Normative scope-definition document.
+
 # TowerSim — Project Intent 
 
 > **Status:** Locked intent  

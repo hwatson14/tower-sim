@@ -1,3 +1,5 @@
+> **Role:** Explanatory index of repository structure.
+
 # Repository Structure
 
 ## Allowed top-level folders

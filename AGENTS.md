@@ -1,3 +1,5 @@
+> **Role:** Normative agent operating rules.
+
 # Codex Operating Rules for TowerSim
 
 These rules are binding for any agent or automated coding assistant working on this repo.

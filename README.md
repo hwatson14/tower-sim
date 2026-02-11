@@ -1,4 +1,14 @@
+> **Role:** Explanatory overview and navigation entrypoint.
+
 # TowerSim
+
+## Authority map
+
+- **Normative:** `ARCHITECTURE.md`, `AGENTS.md`
+- **Scope definition:** `PROJECT_INTENT.md`
+- **Status only:** `IMPLEMENTATION_STATUS.md`
+- **Reference only:** `GAME_OVERVIEW.md`
+- **Index only:** `REPO_MAP.yaml`, `REPO_STRUCTURE.md`
 
 TowerSim is a **deterministic simulator** for the mobile game  
 **The Tower — Idle Tower Defense**.
