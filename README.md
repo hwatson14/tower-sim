@@ -123,6 +123,52 @@ remain on disk until you remove them. Key fields:
 If you need raw inventory rows for Themes/Songs, Guardians, or Player Stuff, add
 `--include-raw`.
 
+### `out/` artifact contract (current + proposed)
+
+`out/` is the repository's generated-artifact root. The table below lists what is
+currently produced, where it comes from, and whether it is committed/published.
+
+| Artifact path | Producer | Status | Notes |
+| --- | --- | --- | --- |
+| `out/account_snapshot.json` | `scripts/dump_ids_diagnostics.py --output-dir out` | Local run output | Canonical full IDS-derived account snapshot payload used by downstream consumers. |
+| `out/base_stats.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Convenience extract of `account_snapshot.base_stats`. |
+| `out/inventory.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Convenience extract of `account_snapshot.inventory`. |
+| `out/loadout.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Convenience extract of resolved active preset/loadout. |
+| `out/base_stats_components.json` | `scripts/dump_ids_diagnostics.py` | Local run output | `BASE_STATS` component slices (labs/workshop/etc) for diagnostics. |
+| `out/inventory_components.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Inventory component slices (cards/modules/presets/shards). |
+| `out/run_stats.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Start/loadout/end run stat projection bundle. |
+| `out/ids_dump_latest.json` | `.github/workflows/ids_dump.yml` (copy from `account_snapshot.json`) | Published on `main` | Canonical remote fetch target for agents that cannot run scripts. |
+| `out/base_stats_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/inventory_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/loadout_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/base_stats_components_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published diagnostics component extract. |
+| `out/inventory_components_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published diagnostics component extract. |
+| `out/run_stats_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published run projection extract. |
+| `out/perk_timeline/latest.json` | `.github/workflows/perk_timeline_runner.yml` | CI artifact (not committed) | Deterministic perk timeline output for smoke validation. |
+| `out/perk_timeline/diagnostics.json` | `.github/workflows/perk_timeline_runner.yml` | CI artifact (not committed) | Validation metadata for perk timeline generation. |
+| `out/runner_output.json` (or custom `--output`) | `python -m tower_sim.run.runner` | Local run output | Deterministic run/evaluator result payload. |
+| `out/runner_ids_run_api_smoke.json` | `.github/workflows/ids_run_api_runner.yml` | CI artifact (not committed) | Runner smoke output for IDS-fed run API checks. |
+
+Proposed additions that would reduce ambiguity and improve agent reliability:
+
+1. `out/manifest_latest.json`
+   - Include generation timestamp, git commit SHA, workflow name, schema version,
+     and checksums for every `*_latest.json` file.
+   - Lets agents verify they fetched a consistent artifact set and fail closed on
+     mixed revisions.
+2. `out/schema/account_snapshot.schema.json`
+   - Publish the expected snapshot contract consumed by run APIs.
+   - Makes validation explicit for external callers before they hand data to
+     evaluators.
+3. `out/runner_output_latest.json` (optional, if governance allows publishing)
+   - One pinned deterministic smoke-run payload from CI.
+   - Useful as a stable fixture for integration consumers that need a concrete
+     end-to-end output example.
+4. `out/provenance_latest.md`
+   - Human-readable short note listing source tables/sheets and workflow inputs
+     used for the latest publication.
+   - Improves traceability without requiring users to inspect workflow logs.
+
 **How does my agent know what to call?**  
 If you do not want the agent running scripts, have it download the latest files
 from the `main` branch (examples above). If you are running locally,
