@@ -40,6 +40,15 @@ class StatContributorContract:
     exclusion_reason: str | None = None
 
 
+@dataclass(frozen=True)
+class StatLineageStatus:
+    """Contributor wiring status groups for a canonical stat."""
+
+    wired_up: Tuple[str, ...]
+    not_expected_to_be_wired_up: Tuple[str, ...]
+    still_requires_wiring_up: Tuple[str, ...]
+
+
 # Phase-A contract: each canonical survivability stat must declare contributor coverage.
 # This is a declaration/validation contract only; composition wiring follows in later phases.
 _CANONICAL_COVERAGE: Dict[str, CombatContributorCoverage] = {
@@ -113,31 +122,49 @@ def _compiled_uw_stat_ids() -> Tuple[str, ...]:
     return tuple(sorted(stat_ids))
 
 
+def _build_reaches_stat_input() -> Dict[str, Tuple[str, ...]]:
+    """Build contributor reachability from current canonical compiler/runtime wiring."""
+
+    reaches: Dict[str, set[str]] = {
+        stat_id: {"workshop"} for stat_id in _compiled_workshop_stat_ids()
+    }
+    for stat_id in _compiled_uw_stat_ids():
+        reaches.setdefault(stat_id, set()).add("uw")
+
+    # Workshop enhancements and lab progression are consumed through the canonical
+    # workshop stat-input compiler path for mapped workshop stats.
+    for stat_id in _compiled_workshop_stat_ids():
+        reaches.setdefault(stat_id, set()).add("lab")
+
+    # Core survivability and BC multiplier stat inputs used by MAX_WAVE.
+    reaches["tower_hp"] = {"workshop"}
+    reaches["tower_regen"] = {"workshop"}
+    reaches["wall_hp"] = {"workshop"}
+    reaches["wall_regen"] = {"workshop"}
+    reaches["def_pct"] = {"workshop", "bc"}
+    reaches["thorns_damage_mult"] = {"workshop", "bc"}
+    reaches["orb_damage_mult"] = {"bc"}
+    reaches["death_ray_damage_mult"] = {"bc"}
+    reaches["plasma_cannon_damage_mult"] = {"bc"}
+    reaches["knockback_mult"] = {"bc"}
+    reaches["eals_pct"] = {"workshop", "lab"}
+    reaches["ehls_pct"] = {"workshop", "lab"}
+    reaches["wave_attack_index"] = {"workshop", "lab"}
+    reaches["wave_health_index"] = {"workshop", "lab"}
+
+    # Effective-paths eDamage outputs include these contributor families.
+    reaches["tower_damage"] = {"workshop", "lab", "card", "module", "relic", "perk"}
+    reaches["tower_attack_speed"] = {"workshop", "lab", "card", "module", "relic"}
+    reaches["tower_crit_chance"] = {"workshop", "card", "module", "relic"}
+    reaches["tower_crit_multiplier"] = {"workshop", "module"}
+    reaches["tower_dps"] = {"workshop", "lab", "card", "module", "relic", "perk"}
+
+    return {stat_id: tuple(sorted(contributors)) for stat_id, contributors in reaches.items()}
+
+
 # Explicit reaches-stat-input declarations with provenance in existing runtime wiring.
 # All unspecified contributor/stat combinations fail-closed as excluded.
-_REACHES_STAT_INPUT: Dict[str, Tuple[str, ...]] = {
-    **{stat_id: ("workshop",) for stat_id in _compiled_workshop_stat_ids()},
-    **{stat_id: ("uw",) for stat_id in _compiled_uw_stat_ids()},
-    "tower_hp": ("workshop",),
-    "tower_regen": ("workshop",),
-    "wall_hp": ("workshop",),
-    "wall_regen": ("workshop",),
-    "def_pct": ("workshop", "bc"),
-    "thorns_damage_mult": ("workshop", "bc"),
-    "orb_damage_mult": ("bc",),
-    "death_ray_damage_mult": ("bc",),
-    "plasma_cannon_damage_mult": ("bc",),
-    "knockback_mult": ("bc",),
-    "eals_pct": ("workshop", "lab"),
-    "ehls_pct": ("workshop", "lab"),
-    "wave_attack_index": ("workshop", "lab"),
-    "wave_health_index": ("workshop", "lab"),
-    "tower_damage": ("workshop", "lab", "card", "module", "relic", "perk"),
-    "tower_attack_speed": ("workshop", "lab", "card", "module", "relic"),
-    "tower_crit_chance": ("workshop", "card", "module", "relic"),
-    "tower_crit_multiplier": ("workshop", "module"),
-    "tower_dps": ("workshop", "lab", "card", "module", "relic", "perk"),
-}
+_REACHES_STAT_INPUT: Dict[str, Tuple[str, ...]] = _build_reaches_stat_input()
 
 
 def _excluded_reason(contributor: str, stat_id: str) -> str:
@@ -217,17 +244,24 @@ def required_max_wave_stat_input_ids() -> Tuple[str, ...]:
 
 
 def ordered_stat_lineage_sections() -> Tuple[Tuple[str, Tuple[str, ...]], ...]:
-    """Return stat-lineage sections with max-wave-required IDs first."""
+    """Return stat-lineage sections with required combat stats first."""
 
-    required = tuple(required_max_wave_stat_input_ids())
-    required_set = set(required)
+    required_combat = tuple(required_combat_stat_ids())
+    required_combat_set = set(required_combat)
+    required_max_wave_other = tuple(
+        stat_id
+        for stat_id in required_max_wave_stat_input_ids()
+        if stat_id not in required_combat_set
+    )
+    required_set = required_combat_set | set(required_max_wave_other)
     other = tuple(
         definition.stat_id
         for definition in default_registry().all_defs()
         if definition.stat_id not in required_set
     )
     return (
-        ("required_max_wave_stat_inputs", required),
+        ("required_combat_stat_inputs", required_combat),
+        ("required_max_wave_other_stat_inputs", required_max_wave_other),
         ("other_registry_stats", other),
     )
 
@@ -238,6 +272,38 @@ def declared_combat_stat_coverage() -> Mapping[str, CombatContributorCoverage]:
 
 def stat_lineage_manifest() -> Mapping[str, Tuple[StatContributorContract, ...]]:
     return _ALL_STAT_LINEAGE
+
+
+def stat_lineage_status_lists() -> Mapping[str, StatLineageStatus]:
+    statuses: Dict[str, StatLineageStatus] = {}
+    for stat_id, entries in _ALL_STAT_LINEAGE.items():
+        wired_up = tuple(sorted(entry.contributor for entry in entries if entry.reaches_stat_input))
+        not_expected = tuple(
+            sorted(
+                entry.contributor
+                for entry in entries
+                if not entry.reaches_stat_input
+                and entry.exclusion_reason
+                in (
+                    "excluded:no_authoritative_bc_mapping_for_stat",
+                    "excluded:no_authoritative_uw_mapping_for_stat",
+                )
+            )
+        )
+        still_requires = tuple(
+            sorted(
+                entry.contributor
+                for entry in entries
+                if not entry.reaches_stat_input
+                and entry.exclusion_reason == "excluded:not_wired_to_canonical_stat_input"
+            )
+        )
+        statuses[stat_id] = StatLineageStatus(
+            wired_up=wired_up,
+            not_expected_to_be_wired_up=not_expected,
+            still_requires_wiring_up=still_requires,
+        )
+    return statuses
 
 
 def contributor_ids_sections() -> Mapping[str, Tuple[str, ...]]:
@@ -253,6 +319,7 @@ def missing_required_combat_stats(stat_ids: Iterable[str]) -> Tuple[str, ...]:
 __all__ = [
     "CombatContributorCoverage",
     "StatContributorContract",
+    "StatLineageStatus",
     "contributor_ids_sections",
     "declared_combat_stat_coverage",
     "missing_required_combat_stats",
@@ -261,4 +328,5 @@ __all__ = [
     "required_max_wave_stat_input_ids",
     "ordered_stat_lineage_sections",
     "stat_lineage_manifest",
+    "stat_lineage_status_lists",
 ]
