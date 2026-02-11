@@ -68,7 +68,7 @@ If something is unclear, it likely belongs in one of the documents above rather 
 ## Agent quickstart: base stats, inventory, loadout
 
 If you want an agent to **fetch the latest inventory/loadout/base stats without
-running scripts**, use the repository's `main` branch. The IDS dump workflow updates the
+running scripts**, use the repository's `main` branch. The stats dump workflow updates the
 following files in `out/`, which you can fetch over HTTPS from GitHub:
 
 - `out/ids_dump_latest.json` (canonical snapshot payload)
@@ -96,7 +96,7 @@ PYTHONPATH=. python scripts/dump_ids_diagnostics.py \
   --output-dir ./out
 ```
 
-After running the command, confirm the IDS dump artifacts land under the exact
+After running the command, confirm the stats dump artifacts land under the exact
 path `out/account_snapshot.json` (same folder for the summary/diff JSON). This
 snapshot is the full, canonical account state; the additional files below are
 convenience extracts so agents can fetch a single slice without parsing the full
@@ -137,17 +137,16 @@ currently produced, where it comes from, and whether it is committed/published.
 | `out/base_stats_components.json` | `scripts/dump_ids_diagnostics.py` | Local run output | `BASE_STATS` component slices (labs/workshop/etc) for diagnostics. |
 | `out/inventory_components.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Inventory component slices (cards/modules/presets/shards). |
 | `out/run_stats.json` | `scripts/dump_ids_diagnostics.py` | Local run output | Start/loadout/end run stat projection bundle. |
-| `out/ids_dump_latest.json` | `.github/workflows/ids_dump.yml` (copy from `account_snapshot.json`) | Published on `main` | Canonical remote fetch target for agents that cannot run scripts. |
-| `out/base_stats_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
-| `out/inventory_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
-| `out/loadout_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published convenience extract. |
-| `out/base_stats_components_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published diagnostics component extract. |
-| `out/inventory_components_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published diagnostics component extract. |
-| `out/run_stats_latest.json` | `.github/workflows/ids_dump.yml` | Published on `main` | Published run projection extract. |
+| `out/ids_dump_latest.json` | `.github/workflows/stats_dump.yml` (copy from `account_snapshot.json`) | Published on `main` | Canonical remote fetch target for agents that cannot run scripts. |
+| `out/base_stats_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/inventory_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/loadout_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published convenience extract. |
+| `out/base_stats_components_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published diagnostics component extract. |
+| `out/inventory_components_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published diagnostics component extract. |
+| `out/run_stats_latest.json` | `.github/workflows/stats_dump.yml` | Published on `main` | Published run projection extract. |
 | `out/perk_timeline/latest.json` | `.github/workflows/perk_timeline_runner.yml` | CI artifact (not committed) | Deterministic perk timeline output for smoke validation. |
 | `out/perk_timeline/diagnostics.json` | `.github/workflows/perk_timeline_runner.yml` | CI artifact (not committed) | Validation metadata for perk timeline generation. |
 | `out/runner_output.json` (or custom `--output`) | `python -m tower_sim.run.runner` | Local run output | Deterministic run/evaluator result payload. |
-| `out/runner_ids_run_api_smoke.json` | `.github/workflows/ids_run_api_runner.yml` | CI artifact (not committed) | Runner smoke output for IDS-fed run API checks. |
 
 Proposed additions that would reduce ambiguity and improve agent reliability:
 
@@ -224,7 +223,7 @@ Perk timelines are external artifacts produced by a separate offline resolver; i
 
 Current GitHub Actions coverage includes:
 
-- `ids_dump.yml`: exports deterministic IDS diagnostics + latest base stats/inventory/loadout artifacts.
+- `stats_dump.yml`: exports deterministic IDS diagnostics + latest base stats/inventory/loadout artifacts.
 - `max_wave_runner.yml`: runs unit tests, validates deterministic max-wave runner output schema, checks runner `w_max` against EP export max-wave targets when those rows exist, and emits an end-of-run eHP/farming final-stats parity report against EP export verification rows.
 - `perk_timeline_runner.yml`: validates perk timeline logic and publishes a generated timeline/diagnostics artifact.
 
