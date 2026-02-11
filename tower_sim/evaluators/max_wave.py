@@ -1006,8 +1006,15 @@ def _build_timing_uptime_diagnostics(
             )
         uw_intervals[uw_name] = intervals
 
+    contract_scope = {
+        "authoritative": False,
+        "contract_status": "excluded",
+        "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome",
+    }
+
     if gt_cooldown <= 0:
         return {
+            "contract_scope": contract_scope,
             "window_s": window_s,
             "wa_reduction": wa_reduction,
             "wave_seconds": ws,
@@ -1034,6 +1041,7 @@ def _build_timing_uptime_diagnostics(
 
     summary = aggregate_uptime(effects, window_s=window_s)
     output: Dict[str, Any] = {
+        "contract_scope": contract_scope,
         "window_s": window_s,
         "wa_reduction": wa_reduction,
         "wave_seconds": ws,
