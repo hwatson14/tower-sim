@@ -17,7 +17,6 @@ from tower_sim.loaders.account_snapshot_compiler import (
 from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot, ResolvedLoadout
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.optimizer_runner import OPTIMIZER_TASKS, run_optimizer_task
-from tower_sim.loaders.sources import DatasetBundle, IdsOnlyBundle, load_ids_only_bundle, load_snapshot_bundle
 from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
 
 LOGGER = logging.getLogger(__name__)
@@ -33,15 +32,6 @@ TASK_OPTIMIZE_STONES = "OPTIMIZE_STONES"
 TASK_OPTIMIZE_COINS = "OPTIMIZE_COINS"
 TASK_OPTIMIZE_LABS = "OPTIMIZE_LABS"
 TASK_SENSITIVITY_REPORT = "SENSITIVITY_REPORT"
-
-TASKS_REQUIRING_IDS = {
-    TASK_BASE_STATS,
-    TASK_STAT_INPUTS,
-    TASK_INVENTORY,
-    TASK_LOADOUT,
-    TASK_MAX_WAVE,
-}
-
 
 def run(
     problem_spec: ProblemSpec,
@@ -68,19 +58,18 @@ def run_task(
     _validate_task_args(task, resolved_args)
     if task in OPTIMIZER_TASKS:
         return run_optimizer_task(task, resolved_args)
-    bundle = _resolve_bundle()
-    resolved_ids_snapshot = _resolve_ids_snapshot(bundle, ids_path, ids_snapshot)
+    resolved_ids_snapshot = _resolve_ids_snapshot(ids_path, ids_snapshot)
     missing: list[str] = []
     if resolved_ids_snapshot is None:
         missing.append("ids_snapshot")
-        return _fail_closed(task, missing=missing, resolved_from=bundle.resolved_from)
+        return _fail_closed(task, missing=missing, resolved_from="ids_only")
 
     if task == TASK_BASE_STATS:
         statbook = build_statbook(resolved_ids_snapshot)
         return _ok(
             task,
             {"statbook": asdict(statbook)},
-            resolved_from=bundle.resolved_from,
+            resolved_from="ids_only",
         )
     if task == TASK_STAT_INPUTS:
         compiled = compile_full_stat_inputs(resolved_ids_snapshot)
@@ -91,66 +80,39 @@ def run_task(
                 "missing": compiled.missing,
                 "fail_closed": bool(compiled.missing),
             },
-            resolved_from=bundle.resolved_from,
+            resolved_from="ids_only",
         )
     if task == TASK_INVENTORY:
         return _ok(
             task,
             _serialize_inventory(resolved_ids_snapshot),
-            resolved_from=bundle.resolved_from,
+            resolved_from="ids_only",
         )
     if task == TASK_LOADOUT:
         return _ok(
             task,
             _serialize_loadout(resolved_ids_snapshot),
-            resolved_from=bundle.resolved_from,
+            resolved_from="ids_only",
         )
     if task == TASK_MAX_WAVE:
         problem_spec = parse_problem_spec_data(resolved_args["problem_spec"])
         _log_problem_spec(problem_spec)
         evaluator = MaxWaveEvaluator()
         result = evaluator.evaluate(problem_spec, resolved_ids_snapshot)
-        return _ok(task, result, resolved_from=bundle.resolved_from)
+        return _ok(task, result, resolved_from="ids_only")
     raise ValueError(f"Unknown task: {task!r}")
 
 
-def _resolve_bundle() -> DatasetBundle | IdsOnlyBundle:
-    try:
-        return load_snapshot_bundle(_default_cache_dirs())
-    except FileNotFoundError:
-        return load_ids_only_bundle(_default_ids_paths())
-
-
-def _default_cache_dirs():
-    return [
-        Path("tests/fixtures/tower-sim-data"),
-        Path("tests/fixtures"),
-    ]
-
-
-def _default_ids_paths():
-    from tower_sim.loaders.ids_parser import DEFAULT_IDS_PATHS
-
-    return list(DEFAULT_IDS_PATHS)
-
-
 def _resolve_ids_snapshot(
-    bundle: DatasetBundle | IdsOnlyBundle,
     ids_path: Optional[Path],
     ids_snapshot: Optional[AccountSnapshot],
 ) -> Optional[AccountSnapshot]:
     if ids_snapshot is not None:
         return ids_snapshot
     try:
-        if ids_path is not None:
-            return compile_account_snapshot(parse_ids(ids_path))
-        if isinstance(bundle, DatasetBundle) and "_IDS.csv" in bundle.files:
-            return compile_account_snapshot(parse_ids(bundle.files["_IDS.csv"]))
-        if isinstance(bundle, IdsOnlyBundle):
-            return compile_account_snapshot(parse_ids(bundle.ids_path))
+        return compile_account_snapshot(parse_ids(ids_path))
     except (FileNotFoundError, ValueError):
         return None
-    return None
 
 
 def _log_problem_spec(problem_spec: ProblemSpec) -> None:

@@ -60,16 +60,9 @@ Primary external input is `_IDS.csv` (player inventory + levels + equipped prese
 All other tables are shipped with the repo under `tables/` or `tables/wiki_cache/`,
 and are treated as authoritative library data (with provenance).
 
-### Snapshot Priority Order
-1. **Local cache < 24 hours old**
-2. **Git (tower-sim-data main)**
-3. **Older cached snapshot(s)**
-
 ### IDS Path Resolution
-Default `_IDS.csv` resolution order:
+Default `_IDS.csv` location:
 1. `tests/fixtures/tower-sim-data/_IDS.csv`
-2. `tests/fixtures/_IDS.csv`
-3. `tables/tower-sim-data/_IDS.csv`
 
 ## State Model
 ### A) Account Baseline (unchanged during a run)
