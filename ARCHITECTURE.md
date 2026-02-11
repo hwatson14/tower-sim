@@ -560,6 +560,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [x] Wire wall thorns + plasma cannon card fractions into survivability pipeline + mechanics registry (wiki excerpt in prompt).
+- [x] Wire Damage/Attack Speed/Critical Chance/Recovery Package Chance/Range/Cash/Coins/Free Upgrades card effects into survivability loadout stat-input assembly consumed by MAX_WAVE.
 - [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
 - [x] Ingest Effective Paths reference sheets into an audit report.
