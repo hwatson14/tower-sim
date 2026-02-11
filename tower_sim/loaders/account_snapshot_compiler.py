@@ -4,6 +4,7 @@ from dataclasses import asdict
 from typing import Dict, List, Optional, Tuple
 
 from tower_sim.libs.module_shards import shards_to_reach_level
+from tower_sim.registry.naming_contract import validate_account_snapshot_naming
 from tower_sim.libs.bots_lib import bots_from_table
 from tower_sim.util.account_snapshot import (
     AccountSnapshot,
@@ -83,7 +84,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
         default_preset,
     )
 
-    return AccountSnapshot(
+    snapshot = AccountSnapshot(
         ids_path=ids_raw.ids_path,
         labs=labs,
         workshop=workshop,
@@ -105,6 +106,16 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
         default_preset=default_preset,
         raw_sections=raw_sections,
     )
+
+    naming_errors = validate_account_snapshot_naming(snapshot)
+    if naming_errors:
+        raise ValueError(
+            "Naming contract violations in IDS snapshot: "
+            + ", ".join(naming_errors[:10])
+            + (" ..." if len(naming_errors) > 10 else "")
+        )
+
+    return snapshot
 
 
 def snapshot_as_dict(snapshot: AccountSnapshot) -> Dict[str, object]:

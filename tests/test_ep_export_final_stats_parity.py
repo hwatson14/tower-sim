@@ -35,3 +35,10 @@ def test_verify_final_stats_returns_comparison_report() -> None:
     assert report["spec_mode"] == "farming"
     assert report["matched_count"] + report["mismatch_count"] == len(report["compared_rows"])
     assert len(report["compared_rows"]) > 0
+    assert {entry["key"] for entry in report["decisive_lineage"]} == {
+        "health",
+        "health_regen",
+        "defense_percent",
+        "wall_health",
+        "wall_regen",
+    }

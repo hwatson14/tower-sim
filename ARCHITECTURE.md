@@ -569,6 +569,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Extract guardian upgrade tables (DVT_Guardians) into CSV + loader + tests.
 - [x] Add perk effect and pool-weight tables from wiki excerpt (perks_v1.csv, perk_pool_weights_v1.csv).
 - [x] Add assist stone efficiency table from wiki excerpt (assist_stone_levels_v1.csv).
+- [x] Enforce repository-wide canonical naming contract at loaders/evaluators/audits + CI fail-closed parity and lineage gates.
 - [x] Add recovery package module substat caps table from wiki excerpt (module_substats_v1.csv).
 - [x] Add deterministic resource-optimizer runner scaffold (MAX_WAVE only; ECON and missing authoritative spend tables fail closed).
 - [x] Add module main-effect base/step tables from Module Base Stat sheet (module_main_effect_bases_v1.csv, module_main_effect_bands_v1.csv).
