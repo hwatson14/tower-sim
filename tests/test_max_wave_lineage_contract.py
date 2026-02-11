@@ -8,6 +8,8 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import SECTION_SPECS, parse_ids
 from tower_sim.registry.combat_stat_contract import (
     contributor_ids_sections,
+    ordered_stat_lineage_sections,
+    required_max_wave_stat_input_ids,
     required_combat_stat_ids,
     stat_lineage_manifest,
 )
@@ -151,6 +153,19 @@ def test_name_contract_gate_ids_sections_to_compiler_to_registry_to_max_wave_con
             if entry.reaches_stat_input:
                 reached_ids.add(entry.canonical_stat_id)
 
+    consumed_ids = set(required_max_wave_stat_input_ids())
+    assert consumed_ids.issubset(reached_ids)
+
+
+def test_stat_lineage_sections_put_required_stats_first() -> None:
+    sections = ordered_stat_lineage_sections()
+    assert sections[0][0] == "required_max_wave_stat_inputs"
+    assert sections[0][1] == required_max_wave_stat_input_ids()
+
+    section_ids = [stat_id for _, stat_ids in sections for stat_id in stat_ids]
+    registry_ids = [definition.stat_id for definition in default_registry().all_defs()]
+    assert set(section_ids) == set(registry_ids)
+    assert len(section_ids) == len(registry_ids)
     consumed_ids = set(required_combat_stat_ids())
     assert consumed_ids.issubset(reached_ids)
 

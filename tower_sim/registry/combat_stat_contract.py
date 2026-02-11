@@ -193,10 +193,43 @@ _OPTIONAL_SURVIVABILITY_STAT_IDS: Tuple[str, ...] = (
 )
 
 
+# Canonical MAX_WAVE stat inputs currently required by canonical stat-input assembly.
+# Provenance: `tower_sim/engines/combat_stat_derivation.py::_missing_required_stat_inputs`.
+_MAX_WAVE_REQUIRED_STAT_INPUT_IDS: Tuple[str, ...] = (
+    "eals_pct",
+    "ehls_pct",
+    "orb_damage_mult",
+    "death_ray_damage_mult",
+    "plasma_cannon_damage_mult",
+    "knockback_mult",
+    *_CANONICAL_REQUIRED_COMBAT_STAT_IDS,
+)
+
+
 def required_survivability_stat_ids(*, include_optional_offense: bool = False) -> Tuple[str, ...]:
     if include_optional_offense:
         return _CANONICAL_REQUIRED_COMBAT_STAT_IDS + _OPTIONAL_SURVIVABILITY_STAT_IDS
     return _CANONICAL_REQUIRED_COMBAT_STAT_IDS
+
+
+def required_max_wave_stat_input_ids() -> Tuple[str, ...]:
+    return _MAX_WAVE_REQUIRED_STAT_INPUT_IDS
+
+
+def ordered_stat_lineage_sections() -> Tuple[Tuple[str, Tuple[str, ...]], ...]:
+    """Return stat-lineage sections with max-wave-required IDs first."""
+
+    required = tuple(required_max_wave_stat_input_ids())
+    required_set = set(required)
+    other = tuple(
+        definition.stat_id
+        for definition in default_registry().all_defs()
+        if definition.stat_id not in required_set
+    )
+    return (
+        ("required_max_wave_stat_inputs", required),
+        ("other_registry_stats", other),
+    )
 
 
 def declared_combat_stat_coverage() -> Mapping[str, CombatContributorCoverage]:
@@ -225,5 +258,7 @@ __all__ = [
     "missing_required_combat_stats",
     "required_combat_stat_ids",
     "required_survivability_stat_ids",
+    "required_max_wave_stat_input_ids",
+    "ordered_stat_lineage_sections",
     "stat_lineage_manifest",
 ]
