@@ -137,20 +137,20 @@ def _build_reaches_stat_input() -> Dict[str, Tuple[str, ...]]:
         reaches.setdefault(stat_id, set()).add("lab")
 
     # Core survivability and BC multiplier stat inputs used by MAX_WAVE.
-    reaches["tower_hp"] = {"workshop", "card", "module"}
-    reaches["tower_regen"] = {"workshop", "card", "module"}
-    reaches["wall_hp"] = {"workshop", "module"}
-    reaches["wall_regen"] = {"workshop", "module"}
-    reaches["def_pct"] = {"workshop", "card", "module", "relic", "perk", "bc"}
-    reaches["thorns_damage_mult"] = {"workshop", "module", "relic", "bc"}
+    reaches["tower_hp"] = {"workshop", "lab", "card", "module", "perk"}
+    reaches["tower_regen"] = {"workshop", "lab", "card", "module", "perk"}
+    reaches["wall_hp"] = {"workshop", "lab", "module"}
+    reaches["wall_regen"] = {"workshop", "lab", "module"}
+    reaches["def_pct"] = {"workshop", "lab", "card", "module", "relic", "perk", "bc"}
+    reaches["thorns_damage_mult"] = {"workshop", "lab", "module", "relic", "bc"}
     reaches["orb_damage_mult"] = {"bc"}
     reaches["death_ray_damage_mult"] = {"bc"}
-    reaches["plasma_cannon_damage_mult"] = {"bc"}
+    reaches["plasma_cannon_damage_mult"] = {"bc", "card"}
     reaches["knockback_mult"] = {"bc"}
-    reaches["eals_pct"] = {"workshop", "lab"}
-    reaches["ehls_pct"] = {"workshop", "lab"}
-    reaches["wave_attack_index"] = {"workshop", "lab"}
-    reaches["wave_health_index"] = {"workshop", "lab"}
+    reaches["eals_pct"] = {"workshop", "lab", "module"}
+    reaches["ehls_pct"] = {"workshop", "lab", "module"}
+    reaches["wave_attack_index"] = {"workshop", "lab", "module"}
+    reaches["wave_health_index"] = {"workshop", "lab", "module"}
 
     # Effective-paths eDamage outputs include these contributor families.
     reaches["tower_damage"] = {"workshop", "lab", "card", "module", "relic", "perk"}

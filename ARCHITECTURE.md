@@ -641,6 +641,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add canonical combat stat contributor contract and source coverage gate tests for MAX_WAVE-required survivability stats.
 - [x] Expand lineage manifest to all canonical registry stats and enforce name-contract CI gate linking IDS sections -> compiler mappings -> registry IDs -> consumed MAX_WAVE stats, with explicit fail-closed exclusions for non-wired contributors.
 - [x] Expand lineage reachability declarations so compiled workshop stats mark workshop+lab contributors while preserving fail-closed exclusions for unresolved unlock placeholders.
+- [x] Add deterministic stat-lineage wiring burn-down report CLI (`python -m tower_sim.audit.stat_lineage_report`) with fail-closed manifest shape validation and required MAX_WAVE gap summary output.
 - [x] Add canonical combat-stat derivation engine scaffold (fail-closed required stat extraction + source attribution) and wire MAX_WAVE survivability reads through it.
 - [x] Refactor survivability pipeline required-stat list to consume canonical combat contract (with explicit optional offensive survivability stat flag).
 - [x] Add fail-closed MAX_WAVE guardrail for canonical core-stat spec/compiled override collisions and reuse canonical derivation in boss-combat probing.

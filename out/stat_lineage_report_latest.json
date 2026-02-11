@@ -1,0 +1,1111 @@
+{
+  "missing_by_contributor": {
+    "card": 144,
+    "lab": 81,
+    "module": 137,
+    "perk": 147,
+    "relic": 146,
+    "workshop": 79
+  },
+  "missing_by_stat": {
+    "death_ray_damage_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "eals_pct": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "ehls_pct": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "knockback_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "orb_damage_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "plasma_cannon_damage_mult": [
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "thorns_damage_mult": [
+      "card",
+      "perk"
+    ],
+    "tower_attack_speed": [
+      "perk"
+    ],
+    "tower_crit_chance": [
+      "lab",
+      "perk"
+    ],
+    "tower_crit_multiplier": [
+      "card",
+      "lab",
+      "perk",
+      "relic"
+    ],
+    "tower_hp": [
+      "relic"
+    ],
+    "tower_regen": [
+      "relic"
+    ],
+    "uw_black_hole_consume": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_consume_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_duration": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_duration_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_size": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_black_hole_size_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_chance": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_chance_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_damage": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_damage_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_quantity": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_quantity_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_smite": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chain_lightning_smite_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_chrono_loop": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_chrono_loop_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_duration": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_duration_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_speed_reduction": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_chrono_field_speed_reduction_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_damage": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_damage_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_kill_wall": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_kill_wall_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_quantity": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_death_wave_quantity_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_duration": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_duration_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_golden_combo": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_golden_combo_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_multiplier": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_golden_tower_multiplier_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_charged_mines": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_charged_mines_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_damage": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_damage_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_quantity": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_inner_land_mines_quantity_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_damage": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_damage_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_death_creep": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_death_creep_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_duration": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_poison_swamp_duration_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_cooldown": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_cooldown_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_cover_fire": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_cover_fire_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_damage": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_damage_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_quantity": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_smart_missiles_quantity_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_angle": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_angle_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_light_range": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_light_range_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_multiplier": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_multiplier_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_quantity": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "uw_spotlight_quantity_next_cost": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "wall_hp": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "wall_regen": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "wave_attack_index": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "wave_health_index": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "workshop_attack_speed": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_bounce_shot_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_bounce_shot_range": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_bounce_shot_targets": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_cash_bonus": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_cash_per_wave": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_cells_per_kill_bonus": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_coins_per_kill_bonus": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_coins_per_wave": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_critical_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_critical_factor": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_damage": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_damage_per_meter": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_death_defy": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_defense_absolute": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_defense_percent": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_enemy_attack_level_skip": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_enemy_health_level_skip": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_enemy_level_skip": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_free_attack_upgrade": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_free_defense_upgrade": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_free_upgrades": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_free_utility_upgrade": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_health": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_health_regen": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_interest": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_knockback": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "workshop_knockback_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_knockback_force": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_land_mine": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "workshop_land_mine_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_land_mine_damage": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_land_mine_radius": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_lifesteal": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_max_amount": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_max_recovery": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_multishot_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_multishot_targets": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_orb_size": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_orb_speed": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_orbs": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_package_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_range_meters": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_rapid_fire_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_rapid_fire_duration": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_recovery_amount": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_recovery_packages": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_rend_armor": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_rend_armor_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_rend_armor_mult": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_shockwave": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "workshop_shockwave_frequency": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_shockwave_size": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_super_crit_chance": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_super_crit_mult": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_super_crit_mult_alt": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_thorn_damage": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_wall_fortification": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_wall_health": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_wall_rebuild": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ],
+    "workshop_wall_regen": [
+      "card",
+      "module",
+      "perk",
+      "relic"
+    ]
+  },
+  "required_max_wave_gap_count": 11,
+  "required_max_wave_gaps": {
+    "death_ray_damage_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "eals_pct": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "ehls_pct": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "knockback_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "orb_damage_mult": [
+      "card",
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "plasma_cannon_damage_mult": [
+      "lab",
+      "module",
+      "perk",
+      "relic",
+      "workshop"
+    ],
+    "thorns_damage_mult": [
+      "card",
+      "perk"
+    ],
+    "tower_hp": [
+      "relic"
+    ],
+    "tower_regen": [
+      "relic"
+    ],
+    "wall_hp": [
+      "card",
+      "perk",
+      "relic"
+    ],
+    "wall_regen": [
+      "card",
+      "perk",
+      "relic"
+    ]
+  },
+  "stats_total": 152,
+  "stats_with_missing": 149,
+  "total_missing_pairs": 734
+}

@@ -194,6 +194,65 @@ def test_only_authoritatively_unmapped_workshop_unlock_stats_remain_unwired() ->
     assert unwired == {"workshop_knockback", "workshop_land_mine", "workshop_shockwave"}
 
 
+
+
+def test_def_pct_lab_contributor_is_wired_in_lineage_status() -> None:
+    status = stat_lineage_status_lists()["def_pct"]
+    assert "lab" in status.wired_up
+    assert "lab" not in status.still_requires_wiring_up
+
+
+def test_tower_hp_and_regen_lab_contributors_are_wired_in_lineage_status() -> None:
+    statuses = stat_lineage_status_lists()
+
+    tower_hp_status = statuses["tower_hp"]
+    assert "lab" in tower_hp_status.wired_up
+    assert "lab" not in tower_hp_status.still_requires_wiring_up
+
+    tower_regen_status = statuses["tower_regen"]
+    assert "lab" in tower_regen_status.wired_up
+    assert "lab" not in tower_regen_status.still_requires_wiring_up
+
+
+def test_wall_hp_and_regen_lab_contributors_are_wired_in_lineage_status() -> None:
+    statuses = stat_lineage_status_lists()
+
+    wall_hp_status = statuses["wall_hp"]
+    assert "lab" in wall_hp_status.wired_up
+    assert "lab" not in wall_hp_status.still_requires_wiring_up
+
+    wall_regen_status = statuses["wall_regen"]
+    assert "lab" in wall_regen_status.wired_up
+    assert "lab" not in wall_regen_status.still_requires_wiring_up
+
+
+def test_thorns_damage_mult_lab_contributor_is_wired_in_lineage_status() -> None:
+    status = stat_lineage_status_lists()["thorns_damage_mult"]
+    assert "lab" in status.wired_up
+    assert "lab" not in status.still_requires_wiring_up
+
+
+def test_perk_tower_hp_and_regen_and_module_skip_and_plasma_card_are_wired() -> None:
+    statuses = stat_lineage_status_lists()
+
+    for stat_id in ("tower_hp", "tower_regen"):
+        assert "perk" in statuses[stat_id].wired_up
+        assert "perk" not in statuses[stat_id].still_requires_wiring_up
+
+    for stat_id in ("eals_pct", "ehls_pct"):
+        assert "module" in statuses[stat_id].wired_up
+        assert "module" not in statuses[stat_id].still_requires_wiring_up
+
+    plasma = statuses["plasma_cannon_damage_mult"]
+    assert "card" in plasma.wired_up
+    assert "card" not in plasma.still_requires_wiring_up
+
+
+def test_module_contributor_is_wired_for_wave_indices() -> None:
+    statuses = stat_lineage_status_lists()
+    for stat_id in ("wave_attack_index", "wave_health_index"):
+        assert "module" in statuses[stat_id].wired_up
+        assert "module" not in statuses[stat_id].still_requires_wiring_up
 def test_stat_lineage_status_lists_partition_contributors_for_all_stats() -> None:
     statuses = stat_lineage_status_lists()
     manifest = stat_lineage_manifest()

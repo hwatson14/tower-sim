@@ -1,6 +1,5 @@
 {
   "schema": "stat_lineage_manifest.v1",
-  "stat_count": 152,
   "required_max_wave_stat_input_ids": [
     "eals_pct",
     "ehls_pct",
@@ -196,7 +195,9 @@
     "tower_hp": {
       "wired_up": [
         "card",
+        "lab",
         "module",
+        "perk",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -204,15 +205,15 @@
         "uw"
       ],
       "still_requires_wiring_up": [
-        "lab",
-        "perk",
         "relic"
       ]
     },
     "tower_regen": {
       "wired_up": [
         "card",
+        "lab",
         "module",
+        "perk",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -220,8 +221,6 @@
         "uw"
       ],
       "still_requires_wiring_up": [
-        "lab",
-        "perk",
         "relic"
       ]
     },
@@ -229,6 +228,7 @@
       "wired_up": [
         "bc",
         "card",
+        "lab",
         "module",
         "perk",
         "relic",
@@ -237,12 +237,11 @@
       "not_expected_to_be_wired_up": [
         "uw"
       ],
-      "still_requires_wiring_up": [
-        "lab"
-      ]
+      "still_requires_wiring_up": []
     },
     "wall_hp": {
       "wired_up": [
+        "lab",
         "module",
         "workshop"
       ],
@@ -252,13 +251,13 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "lab",
         "perk",
         "relic"
       ]
     },
     "wall_regen": {
       "wired_up": [
+        "lab",
         "module",
         "workshop"
       ],
@@ -268,7 +267,6 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "lab",
         "perk",
         "relic"
       ]
@@ -276,6 +274,7 @@
     "thorns_damage_mult": {
       "wired_up": [
         "bc",
+        "lab",
         "module",
         "relic",
         "workshop"
@@ -285,13 +284,13 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "lab",
         "perk"
       ]
     },
     "eals_pct": {
       "wired_up": [
         "lab",
+        "module",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -300,7 +299,6 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "module",
         "perk",
         "relic"
       ]
@@ -308,6 +306,7 @@
     "ehls_pct": {
       "wired_up": [
         "lab",
+        "module",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -316,7 +315,6 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "module",
         "perk",
         "relic"
       ]
@@ -355,13 +353,13 @@
     },
     "plasma_cannon_damage_mult": {
       "wired_up": [
-        "bc"
+        "bc",
+        "card"
       ],
       "not_expected_to_be_wired_up": [
         "uw"
       ],
       "still_requires_wiring_up": [
-        "card",
         "lab",
         "module",
         "perk",
@@ -1618,6 +1616,7 @@
     "wave_attack_index": {
       "wired_up": [
         "lab",
+        "module",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -1626,7 +1625,6 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "module",
         "perk",
         "relic"
       ]
@@ -1634,6 +1632,7 @@
     "wave_health_index": {
       "wired_up": [
         "lab",
+        "module",
         "workshop"
       ],
       "not_expected_to_be_wired_up": [
@@ -1642,7 +1641,6 @@
       ],
       "still_requires_wiring_up": [
         "card",
-        "module",
         "perk",
         "relic"
       ]
@@ -2632,8 +2630,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "tower_hp",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2656,8 +2654,8 @@
       {
         "contributor": "perk",
         "canonical_stat_id": "tower_hp",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "bc",
@@ -2682,8 +2680,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "tower_regen",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2706,8 +2704,8 @@
       {
         "contributor": "perk",
         "canonical_stat_id": "tower_regen",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "bc",
@@ -2732,8 +2730,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "def_pct",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2782,8 +2780,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "wall_hp",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2832,8 +2830,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "wall_regen",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2882,8 +2880,8 @@
       {
         "contributor": "lab",
         "canonical_stat_id": "thorns_damage_mult",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "card",
@@ -2944,8 +2942,8 @@
       {
         "contributor": "module",
         "canonical_stat_id": "eals_pct",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "relic",
@@ -2994,8 +2992,8 @@
       {
         "contributor": "module",
         "canonical_stat_id": "ehls_pct",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "relic",
@@ -3138,8 +3136,8 @@
       {
         "contributor": "card",
         "canonical_stat_id": "plasma_cannon_damage_mult",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "module",
@@ -7094,8 +7092,8 @@
       {
         "contributor": "module",
         "canonical_stat_id": "wave_attack_index",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "relic",
@@ -7144,8 +7142,8 @@
       {
         "contributor": "module",
         "canonical_stat_id": "wave_health_index",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
+        "reaches_stat_input": true,
+        "exclusion_reason": null
       },
       {
         "contributor": "relic",
