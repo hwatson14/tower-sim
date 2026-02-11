@@ -12,6 +12,7 @@ from tower_sim.registry.combat_stat_contract import (
     required_max_wave_stat_input_ids,
     required_combat_stat_ids,
     stat_lineage_manifest,
+    stat_lineage_status_lists,
 )
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.problem_spec import (
@@ -159,8 +160,15 @@ def test_name_contract_gate_ids_sections_to_compiler_to_registry_to_max_wave_con
 
 def test_stat_lineage_sections_put_required_stats_first() -> None:
     sections = ordered_stat_lineage_sections()
-    assert sections[0][0] == "required_max_wave_stat_inputs"
-    assert sections[0][1] == required_max_wave_stat_input_ids()
+    assert sections[0][0] == "required_combat_stat_inputs"
+    assert sections[0][1] == required_combat_stat_ids()
+
+    assert sections[1][0] == "required_max_wave_other_stat_inputs"
+    assert sections[1][1] == tuple(
+        stat_id
+        for stat_id in required_max_wave_stat_input_ids()
+        if stat_id not in set(required_combat_stat_ids())
+    )
 
     section_ids = [stat_id for _, stat_ids in sections for stat_id in stat_ids]
     registry_ids = [definition.stat_id for definition in default_registry().all_defs()]
@@ -184,3 +192,21 @@ def test_only_authoritatively_unmapped_workshop_unlock_stats_remain_unwired() ->
         if all(not entry.reaches_stat_input for entry in entries)
     }
     assert unwired == {"workshop_knockback", "workshop_land_mine", "workshop_shockwave"}
+
+
+def test_stat_lineage_status_lists_partition_contributors_for_all_stats() -> None:
+    statuses = stat_lineage_status_lists()
+    manifest = stat_lineage_manifest()
+    assert set(statuses) == set(manifest)
+
+    expected_contributors = {"workshop", "lab", "card", "module", "relic", "perk", "bc", "uw"}
+    for stat_id, status in statuses.items():
+        partition = (
+            set(status.wired_up)
+            | set(status.not_expected_to_be_wired_up)
+            | set(status.still_requires_wiring_up)
+        )
+        assert partition == expected_contributors, stat_id
+        assert set(status.wired_up).isdisjoint(status.not_expected_to_be_wired_up)
+        assert set(status.wired_up).isdisjoint(status.still_requires_wiring_up)
+        assert set(status.not_expected_to_be_wired_up).isdisjoint(status.still_requires_wiring_up)

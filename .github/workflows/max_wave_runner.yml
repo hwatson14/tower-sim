@@ -95,12 +95,14 @@ jobs:
               required_max_wave_stat_input_ids,
               required_combat_stat_ids,
               stat_lineage_manifest,
+              stat_lineage_status_lists,
           )
 
           out_dir = Path("out")
           out_dir.mkdir(parents=True, exist_ok=True)
 
           manifest = stat_lineage_manifest()
+          status_lists = stat_lineage_status_lists()
           section_defs = ordered_stat_lineage_sections()
           ordered_stat_ids = [stat_id for _name, stat_ids in section_defs for stat_id in stat_ids]
           serialized = {
@@ -114,9 +116,6 @@ jobs:
                   for entry in manifest[stat_id]
               ]
               for stat_id in ordered_stat_ids
-                  for entry in entries
-              ]
-              for stat_id, entries in sorted(manifest.items())
           }
           payload = {
               "schema": "stat_lineage_manifest.v1",
@@ -130,14 +129,21 @@ jobs:
                   for name, stat_ids in section_defs
               ],
               "required_combat_stat_ids": list(required_combat_stat_ids()),
+              "status_lists": {
+                  stat_id: {
+                      "wired_up": list(status_lists[stat_id].wired_up),
+                      "not_expected_to_be_wired_up": list(status_lists[stat_id].not_expected_to_be_wired_up),
+                      "still_requires_wiring_up": list(status_lists[stat_id].still_requires_wiring_up),
+                  }
+                  for stat_id in ordered_stat_ids
+              },
               "stats": serialized,
           }
           Path("out/stat_lineage_manifest.json").write_text(
-              json.dumps(payload, indent=2, sort_keys=True),
+              json.dumps(payload, indent=2, sort_keys=False),
               encoding="utf-8",
           )
 
-          required = set(required_max_wave_stat_input_ids())
           required = set(required_combat_stat_ids())
           reached_required = sorted(
               stat_id

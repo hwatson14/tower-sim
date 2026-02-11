@@ -640,6 +640,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Complete stone optimizer UW/UW+ state integration (unlock + track progression patching into raw UWs snapshot rows) and remove provisional incomplete-reason flag.
 - [x] Add canonical combat stat contributor contract and source coverage gate tests for MAX_WAVE-required survivability stats.
 - [x] Expand lineage manifest to all canonical registry stats and enforce name-contract CI gate linking IDS sections -> compiler mappings -> registry IDs -> consumed MAX_WAVE stats, with explicit fail-closed exclusions for non-wired contributors.
+- [x] Expand lineage reachability declarations so compiled workshop stats mark workshop+lab contributors while preserving fail-closed exclusions for unresolved unlock placeholders.
 - [x] Add canonical combat-stat derivation engine scaffold (fail-closed required stat extraction + source attribution) and wire MAX_WAVE survivability reads through it.
 - [x] Refactor survivability pipeline required-stat list to consume canonical combat contract (with explicit optional offensive survivability stat flag).
 - [x] Add fail-closed MAX_WAVE guardrail for canonical core-stat spec/compiled override collisions and reuse canonical derivation in boss-combat probing.
