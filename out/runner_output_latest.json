@@ -152,7 +152,7 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 59.38276199999848,
+    "preflight_ms": 56.29898700000524,
     "statbook_rows": 103,
     "timing_uptime": {
       "bot_levels_source": "present",
