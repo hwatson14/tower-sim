@@ -2,17 +2,17 @@
   "compared_rows": [
     {
       "actual": 11314998536.23848,
-      "expected": 5390000000000.0,
+      "expected": 5210000000000.0,
       "key": "health",
-      "relative_delta": 0.9979007423865978,
+      "relative_delta": 0.9978282152521616,
       "verification_path": "ehp_eval.stats.tower_hp",
       "within_tolerance": false
     },
     {
       "actual": 30919400339.730965,
-      "expected": 42290000000000.0,
+      "expected": 43910000000000.0,
       "key": "health_regen",
-      "relative_delta": 0.9992688720657429,
+      "relative_delta": 0.999295846040999,
       "verification_path": "ehp_eval.stats.tower_regen",
       "within_tolerance": false
     },
@@ -26,17 +26,17 @@
     },
     {
       "actual": 28740096282.04574,
-      "expected": 45970000000000.0,
+      "expected": 89550000000000.0,
       "key": "wall_health",
-      "relative_delta": 0.999374807564019,
+      "relative_delta": 0.999679060901373,
       "verification_path": "ehp_eval.stats.wall_hp",
       "within_tolerance": false
     },
     {
       "actual": 64930740713.43503,
-      "expected": 111000000000000.0,
+      "expected": 230540000000000.0,
       "key": "wall_regen",
-      "relative_delta": 0.999415038371951,
+      "relative_delta": 0.9997183536882388,
       "verification_path": "ehp_eval.stats.wall_regen",
       "within_tolerance": false
     }
