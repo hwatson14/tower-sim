@@ -9,6 +9,7 @@ import yaml
 from tower_sim.engines.stat_input_compiler import _UW_TRACK_SPECS, _WORKSHOP_STAT_SPECS
 from tower_sim.libs.bots_lib import load_bot_upgrades
 from tower_sim.libs.modules_library import SUBSTATS_BY_SLOT, UNIQUE_EFFECTS
+from tower_sim.registry.combat_stat_contract import required_combat_stat_ids
 from tower_sim.registry.stat_registry import default_registry
 
 
@@ -23,6 +24,7 @@ from tower_sim.registry.stat_registry import default_registry
 _EXPLICIT_STAT_ALIAS_TO_ID: Dict[str, str] = {
     "hp": "tower_hp",
     "tower health": "tower_hp",
+    "health": "tower_hp",
     "hpregen": "tower_regen",
     "tower health regen": "tower_regen",
     "defence %": "def_pct",
@@ -39,7 +41,6 @@ _EXPLICIT_ENTITY_ALIASES: Dict[str, Dict[str, str]] = {
         "plasma canon": "CARD_PLASMA_CANNON",
     },
     "workshop": {
-        "coin / kill bonus": "Coin / Kill Bonus",
         "land mine chance": "Land Mine Chance",
         "land mine radius": "Land Mine Radius",
         "orb speed": "Orb Speed",
@@ -357,6 +358,7 @@ def validate_named_entity_coverage() -> Tuple[str, ...]:
 
 def unsupported_or_unmapped_items(items: Iterable[str]) -> Tuple[str, ...]:
     failures = []
+    decisive_ids = set(required_combat_stat_ids())
     for item in items:
         if ":" not in item:
             continue
@@ -366,9 +368,13 @@ def unsupported_or_unmapped_items(items: Iterable[str]) -> Tuple[str, ...]:
         try:
             stat_id = resolve_stat_id(label)
         except KeyError:
-            failures.append(f"{kind}:{label}->unmapped")
-            continue
-        failures.append(f"{kind}:{label}->{stat_id}")
+            workshop_spec = _WORKSHOP_STAT_SPECS.get(label)
+            if workshop_spec is None:
+                failures.append(f"{kind}:{label}->unmapped")
+                continue
+            stat_id = workshop_spec.stat_id
+        if stat_id in decisive_ids:
+            failures.append(f"{kind}:{label}->{stat_id}")
     return tuple(sorted(set(failures)))
 
 

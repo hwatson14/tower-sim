@@ -560,11 +560,6 @@ def _load_mechanics() -> _MechanicsData:
     return _MechanicsData(stats=stats, helpers=helpers)
 
 
-def _default_mechanics_path() -> Path:
-    repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tables" / "meta" / "registry" / "ep_formulas" / MECHANICS_FILENAME
-
-
 @lru_cache(maxsize=1)
 def _load_workshop_tables() -> WorkshopTables:
     return load_workshop_tables()
