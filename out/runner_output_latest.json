@@ -348,9 +348,15 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 62.33355599999868,
+    "preflight_ms": 64.0309770000016,
     "statbook_rows": 112,
     "timing_uptime": {
+      "bot_effect_scalars": {
+        "bot_bonus_multiplier": 1.0,
+        "bot_cooldown_multiplier": 1.0,
+        "bot_duration_multiplier": 1.0,
+        "flame_bot_damage_reduction_multiplier": 1.0
+      },
       "bot_levels_source": "present",
       "contract_scope": {
         "authoritative": true,
