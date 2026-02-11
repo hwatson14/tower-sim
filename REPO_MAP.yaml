@@ -3,6 +3,7 @@ top_level:
   allowed_dirs:
     - tower_sim
     - tables
+    - mechanics
     - audit
     - tests
     - scripts
@@ -82,6 +83,13 @@ tables:
 
   forbidden_file_globs:
     - "**/*.py"
+
+mechanics:
+  allowed_file_globs:
+    - "**/*.md"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "**/*.json"
 
 audit:
   allowed_file_globs:

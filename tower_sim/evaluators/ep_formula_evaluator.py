@@ -90,15 +90,28 @@ def _bind_parameters(
             raise UnknownParameterError(
                 f"LAMBDA {mechanic.name} missing parameters: {missing}"
             )
-        return {name: float(args[name]) for name in mechanic.parameters}
+        return _with_identifier_case_aliases(
+            {name: float(args[name]) for name in mechanic.parameters}
+        )
     if len(args) != len(mechanic.parameters):
         raise UnknownParameterError(
             f"LAMBDA {mechanic.name} expects {len(mechanic.parameters)} args; got {len(args)}."
         )
-    return {
-        name: float(value)
-        for name, value in zip(mechanic.parameters, args, strict=True)
-    }
+    return _with_identifier_case_aliases(
+        {
+            name: float(value)
+            for name, value in zip(mechanic.parameters, args, strict=True)
+        }
+    )
+
+
+def _with_identifier_case_aliases(bindings: Dict[str, float]) -> Dict[str, float]:
+    """Excel identifiers are case-insensitive; mirror parameter bindings accordingly."""
+    aliased = dict(bindings)
+    for name, value in list(bindings.items()):
+        aliased.setdefault(name.lower(), value)
+        aliased.setdefault(name.upper(), value)
+    return aliased
 
 
 def _eval_expr(expr: ExprNode, env: Dict[str, float]) -> float:

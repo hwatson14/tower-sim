@@ -26,3 +26,10 @@ These rules are binding for any agent or automated coding assistant working on t
 2. Tower wiki (secondary; must be cited).
 3. Existing repo libraries only if provenance is clear.
 
+
+
+## Mechanics manifest authority
+- All mechanics/formulas must be loaded via `mechanics/manifest.yaml`.
+- No direct YAML loads of mechanics/formulas in runtime code outside the manifest loader entrypoint.
+- Do not add alternate path/override hooks that bypass manifest-driven mechanics loading.
+- No new mechanics packs or files unless explicitly requested.

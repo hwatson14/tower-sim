@@ -69,6 +69,10 @@ class RegistryValidationError(ValueError):
         self.missing_symbols = list(missing_symbols or [])
 
 
+class MechanicsManifestError(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class LambdaMechanic:
     name: str
@@ -107,14 +111,23 @@ class FormulaRegistry:
             )
 
 
-def load_ep_formula_registry(
-    registry_dir: Path | None = None, *, strict: bool = True
-) -> FormulaRegistry:
-    resolved_dir = registry_dir or _default_registry_dir()
-    formula_data = _load_yaml(resolved_dir / "formula_library.yaml")
-    mechanics_data = _load_yaml(resolved_dir / "mechanics_library.yaml")
-    targets = _load_yaml(resolved_dir / "targets.yaml")
-    sources = _load_yaml(resolved_dir / "sources.yaml")
+@dataclass(frozen=True)
+class ActiveMechanicsPack:
+    pack_id: str
+    pack_path: Path
+    mechanics_library: Mapping[str, object]
+    formula_library: Mapping[str, object]
+    targets: Mapping[str, object]
+    sources: Mapping[str, object]
+    legacy_v0_7_payload: Mapping[str, object] | None
+
+
+def load_ep_formula_registry(*, strict: bool = True) -> FormulaRegistry:
+    active_pack = load_active_mechanics_pack()
+    formula_data = active_pack.formula_library
+    mechanics_data = active_pack.mechanics_library
+    targets = active_pack.targets
+    sources = active_pack.sources
 
     mechanics = _parse_mechanics(mechanics_data)
     formulas = _parse_formulas(formula_data, mechanics)
@@ -130,12 +143,105 @@ def load_ep_formula_registry(
     return registry
 
 
-def _default_registry_dir() -> Path:
-    return Path(__file__).resolve().parents[2] / "tables" / "registry" / "ep_formulas"
+def load_active_mechanics_pack() -> ActiveMechanicsPack:
+    manifest_path = _default_manifest_path()
+    if not manifest_path.exists():
+        raise MechanicsManifestError(
+            f"Missing authoritative mechanics manifest: {manifest_path}"
+        )
+    raw = yaml.safe_load(manifest_path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise MechanicsManifestError("mechanics/manifest.yaml must be a mapping.")
+    if raw.get("schema_version") != 1:
+        raise MechanicsManifestError("mechanics/manifest.yaml schema_version must be 1.")
+
+    active_pack_id = raw.get("active_pack")
+    packs = raw.get("packs")
+    if not isinstance(active_pack_id, str) or not active_pack_id:
+        raise MechanicsManifestError("mechanics/manifest.yaml missing active_pack.")
+    if not isinstance(packs, dict):
+        raise MechanicsManifestError("mechanics/manifest.yaml missing packs mapping.")
+    if active_pack_id not in packs:
+        raise MechanicsManifestError(
+            f"Active pack {active_pack_id!r} not present in packs."
+        )
+
+    active_status_ids = [
+        pack_id
+        for pack_id, pack_cfg in packs.items()
+        if isinstance(pack_cfg, dict) and pack_cfg.get("status") == "active"
+    ]
+    if len(active_status_ids) != 1:
+        raise MechanicsManifestError(
+            "mechanics/manifest.yaml must contain exactly one pack with status: active."
+        )
+    if active_status_ids[0] != active_pack_id:
+        raise MechanicsManifestError(
+            "mechanics/manifest.yaml active_pack must match the single status: active pack."
+        )
+
+    active_pack = packs[active_pack_id]
+    if not isinstance(active_pack, dict):
+        raise MechanicsManifestError("Active pack entry must be a mapping.")
+    rel_path = active_pack.get("path")
+    if not isinstance(rel_path, str) or not rel_path:
+        raise MechanicsManifestError("Active pack missing path.")
+
+    repo_root = Path(__file__).resolve().parents[2]
+    pack_path = (repo_root / rel_path).resolve()
+    if not pack_path.exists() or not pack_path.is_dir():
+        raise MechanicsManifestError(
+            f"Active pack path does not exist or is not a directory: {pack_path}"
+        )
+
+    files = active_pack.get("files")
+    if not isinstance(files, dict):
+        raise MechanicsManifestError("Active pack missing files mapping.")
+    required_keys = {"mechanics", "formulas", "targets", "sources", "ehp_legacy"}
+    missing_keys = sorted(required_keys.difference(files.keys()))
+    if missing_keys:
+        raise MechanicsManifestError(
+            f"Active pack files mapping missing keys: {missing_keys}"
+        )
+
+    mechanics_path = pack_path / str(files["mechanics"])
+    formula_path = pack_path / str(files["formulas"])
+    targets_path = pack_path / str(files["targets"])
+    sources_path = pack_path / str(files["sources"])
+    legacy_path = pack_path / str(files["ehp_legacy"])
+    for required_path in [
+        mechanics_path,
+        formula_path,
+        targets_path,
+        sources_path,
+        legacy_path,
+    ]:
+        if not required_path.exists():
+            raise MechanicsManifestError(
+                f"Active pack missing required file: {required_path}"
+            )
+
+    legacy_payload = _load_yaml(legacy_path)
+    return ActiveMechanicsPack(
+        pack_id=active_pack_id,
+        pack_path=pack_path,
+        mechanics_library=_load_yaml(mechanics_path),
+        formula_library=_load_yaml(formula_path),
+        targets=_load_yaml(targets_path),
+        sources=_load_yaml(sources_path),
+        legacy_v0_7_payload=legacy_payload,
+    )
+
+
+def _default_manifest_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "mechanics" / "manifest.yaml"
 
 
 def _load_yaml(path: Path) -> Mapping[str, object]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise MechanicsManifestError(f"Expected YAML mapping in {path}")
+    return raw
 
 
 def _parse_mechanics(raw: Mapping[str, object]) -> Dict[str, LambdaMechanic]:

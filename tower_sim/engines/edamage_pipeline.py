@@ -193,10 +193,10 @@ def compute_edamage_outputs(inputs: EDamageInputs) -> EDamageOutputs:
     provenance = {
         "tower_damage": "tables/wiki_cache/cards_common.csv + tables/perks_v1.csv + "
         "tables/labs_values_v1.csv",
-        "attack_speed": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_ASPD)",
-        "crit_chance": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_CRIT_CHANCE)",
-        "crit_multiplier": "tables/registry/ep_formulas/mechanics_library.yaml (EPD_CRITICAL)",
-        "tower_dps": "tables/registry/ep_formulas/mechanics_library.yaml (BULLET_PER_SECOND)",
+        "attack_speed": "mechanics/manifest.yaml active pack registry mechanic (EPD_ASPD)",
+        "crit_chance": "mechanics/manifest.yaml active pack registry mechanic (EPD_CRIT_CHANCE)",
+        "crit_multiplier": "mechanics/manifest.yaml active pack registry mechanic (EPD_CRITICAL)",
+        "tower_dps": "mechanics/manifest.yaml active pack registry mechanic (BULLET_PER_SECOND)",
     }
     return EDamageOutputs(
         tower_damage=tower_damage,

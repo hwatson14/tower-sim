@@ -7,13 +7,10 @@ import re
 from typing import Any, Dict, Iterable, Mapping, MutableMapping, Sequence
 
 import csv
-import yaml
 
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
+from tower_sim.registry.ep_formula_registry import load_active_mechanics_pack
 from tower_sim.util.account_snapshot import AccountSnapshot
-
-
-MECHANICS_FILENAME = "mechanics_library_v0_7.yaml"
 
 # WSValues uses "HPregen" while IDS uses "Health Regen" in the fixture export.
 # Provenance: audit/ehp_stat_source_audit.md notes WSValues uses HPregen for base regen.
@@ -551,17 +548,16 @@ def _load_table(table_path: Path) -> Dict[str, Dict[int, tuple[float, str]]]:
 
 @lru_cache(maxsize=1)
 def _load_mechanics() -> _MechanicsData:
-    mechanics_path = _default_mechanics_path()
-    raw = yaml.safe_load(mechanics_path.read_text(encoding="utf-8"))
+    active_pack = load_active_mechanics_pack()
+    raw = active_pack.legacy_v0_7_payload
+    if raw is None:
+        raise StatEvaluationError(
+            "Active mechanics pack is missing required legacy v0.7 mechanics definitions for ehp_stat_evaluator."
+        )
     stat_definitions = raw.get("stat_definitions", {})
     stats = stat_definitions.get("stats", {})
     helpers = stat_definitions.get("helpers", {})
     return _MechanicsData(stats=stats, helpers=helpers)
-
-
-def _default_mechanics_path() -> Path:
-    repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tables" / "registry" / "ep_formulas" / MECHANICS_FILENAME
 
 
 @lru_cache(maxsize=1)

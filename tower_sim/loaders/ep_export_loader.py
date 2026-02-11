@@ -22,8 +22,8 @@ _HUMAN_SUFFIX_SCALE: Dict[str, float] = {
 
 # Row contract: every exported EP row must have a deterministic source reference.
 # Sources use prefixes:
-# - ep_formula:<formula_id>            (tables/registry/ep_formulas/formula_library.yaml)
-# - ep_mechanic:<lambda_name>          (tables/registry/ep_formulas/mechanics_library.yaml)
+# - ep_formula:<formula_id>            (active registry formulas via mechanics/manifest.yaml)
+# - ep_mechanic:<lambda_name>          (active registry mechanics via mechanics/manifest.yaml)
 # - stat_input:<stat_id>               (compiled deterministic stat input)
 # - ehp_eval:<stat_key>                (deterministic eHP stat evaluator output)
 # - ep_sheet:<Sheet!Cell>               (authoritative user-provided EP workbook cell formula)
