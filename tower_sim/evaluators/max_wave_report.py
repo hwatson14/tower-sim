@@ -16,16 +16,18 @@ from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.evaluators.max_wave import (
-    _default_wave_damage_tier,
-    _filter_known_stat_inputs,
     _load_tier_rules,
     _maybe_build_wave_state,
-    _missing_required_stat_inputs,
-    _resolve_survivability_stats,
-    _resolve_wave_damage_for_wave,
     _resolve_wave_snapshot,
-    _resolve_wave_state_for_wave,
     _search_wmax,
+)
+from tower_sim.engines.combat_stat_derivation import (
+    _filter_known_stat_inputs,
+    _missing_required_stat_inputs,
+    default_wave_damage_tier,
+    derive_canonical_combat_snapshot,
+    resolve_canonical_wave_damage_for_attack_wave,
+    resolve_wave_state_for_wave,
 )
 
 
@@ -206,13 +208,14 @@ def _build_wave_mapping_report(
         waves.add(failure_wave)
     wave_details = []
     for wave in sorted(waves):
-        wave_state, wave_state_missing = _resolve_wave_state_for_wave(scenario, wave)
+        wave_state, wave_state_missing = resolve_wave_state_for_wave(scenario, wave)
         if wave_state_missing:
             for item in wave_state_missing:
                 _record_report_error(item, ValueError("Missing wave state inputs."), missing, errors)
             continue
-        wave_damage, wave_damage_missing = _resolve_wave_damage_for_wave(
-            problem_spec, wave_state
+        wave_damage, wave_damage_missing = resolve_canonical_wave_damage_for_attack_wave(
+            problem_spec=problem_spec,
+            attack_wave=wave_state.W_attack,
         )
         if wave_damage_missing:
             for item in wave_damage_missing:
@@ -227,7 +230,7 @@ def _build_wave_mapping_report(
                     "W_health": wave_state.W_health,
                 },
                 "wave_damage_tier": scenario.wave_damage_tier
-                or _default_wave_damage_tier(scenario),
+                or default_wave_damage_tier(scenario),
                 "wave_damage": wave_damage,
             }
         )
@@ -358,18 +361,19 @@ def _resolve_survivability_stats_for_report(
         tier_rules,
         run_context,
         wave_state,
+        ids_snapshot,
         missing,
         diagnostics,
     )
 
-    survivability_stats, survivability_missing = _resolve_survivability_stats(
+    combat_snapshot, survivability_missing = derive_canonical_combat_snapshot(
         engine_result, wave_snapshot
     )
     missing.extend(survivability_missing)
 
-    if missing:
+    if missing or combat_snapshot is None:
         return None, missing
-    return survivability_stats, []
+    return dict(combat_snapshot.values), []
 
 
 def _serialize_stat_input(stat_input: StatInput) -> Dict[str, Any]:

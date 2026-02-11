@@ -277,9 +277,9 @@ Typed deltas are required for optimizer runner tasks because they allow stricter
 budget checks, and slot constraints) and make optimisation traces easier to audit.
 
 ### Precompute Workflow (Future, v2+)
-To keep the fast path viable, publish optimiser outputs as artifacts alongside IDS dumps.
+To keep the fast path viable, publish optimiser outputs as artifacts alongside stats dumps.
 
-1. **Trigger:** scheduled workflow or IDS dump completion.
+1. **Trigger:** scheduled workflow or stats dump completion.
 2. **Fetch:** load `ids_dump_latest.json` from the repository `main` branch artifact path (`out/ids_dump_latest.json`).
 3. **Validate:** fail closed if the snapshot or required libraries are missing.
 4. **Evaluate:** run optimiser tasks in deterministic order with fixed budgets and constraints.
@@ -580,13 +580,13 @@ Any of the following must stop work and ask for clarification:
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
-- [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
+- [x] Add stats dump GitHub Action (workflow dispatch + IDS change trigger).
 - [x] Add perk timeline GitHub Action to run perk tests and publish timeline smoke artifacts.
 - [x] Add max-wave runner EP export parity check step (validate when targets exist; explicit skip when missing max-wave rows).
 - [x] Remove max-wave-row hard requirement from EP export ingest; treat absent rows as explicit parity skip.
 - [x] Add EP export final-stats parity report step (eHP/farming suite + preset consistency validation in CI).
 - [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
-- [x] Publish latest IDS dump artifacts at `out/*_latest.json` on `main` for agent fetches.
+- [x] Publish latest stats dump artifacts at `out/*_latest.json` on `main` for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
 - [x] Update run API inventory/loadout outputs to use AccountSnapshot snapshots.
@@ -594,6 +594,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Add path-scoped IDS/run API GitHub Action with targeted tests and runner smoke artifact.
+- [x] Remove redundant IDS/run API path-scoped GitHub Action after max-wave runner coverage became the canonical gate.
 - [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
 - [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
@@ -619,10 +620,10 @@ Any of the following must stop work and ask for clarification:
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
-- [x] Confirm IDS dump artifacts are written under `out/` after running the diagnostics helper.
+- [x] Confirm stats dump artifacts are written under `out/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
-- [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
-- [x] Add compact IDS dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
+- [x] Add stats dump extracts for base stats, inventory, and loadout (agent fetch files).
+- [x] Add compact stats dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
 - [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
 - [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).

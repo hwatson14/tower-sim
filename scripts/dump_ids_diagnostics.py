@@ -527,7 +527,7 @@ def build_diagnostics(
 def main() -> None:
     parser = argparse.ArgumentParser(
         description=(
-            "Compile an IDS account snapshot and write IDS dump artifacts "
+            "Compile an IDS account snapshot and write stats dump artifacts "
             "(snapshot + extracts)."
         )
     )

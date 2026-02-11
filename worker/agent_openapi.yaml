@@ -63,7 +63,7 @@ paths:
   /snapshot/ids_dump:
     get:
       operationId: getIdsDumpSnapshot
-      summary: Get latest canonical IDS dump snapshot (proxied).
+      summary: Get latest canonical stats dump snapshot (proxied).
       responses:
         "200":
           description: OK
