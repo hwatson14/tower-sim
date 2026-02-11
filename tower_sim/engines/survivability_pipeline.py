@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Mapping, Optional
 
 from tower_sim.engines.combat.boss_survivability import (
@@ -750,7 +752,7 @@ def _build_wave_state(scenario: ScenarioSpec, start_snapshot: Mapping[str, float
 def _load_tier_rules(
     scenario: ScenarioSpec,
 ) -> tuple[Optional[TierRulesResult], List[Dict[str, str]]]:
-    bc_path = Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
+    bc_path = resolve_table_path("tier_battle_conditions")
     catalog = load_tier_battle_conditions(bc_path, allow_incomplete=True)
     run_context = RunContext.from_mode(scenario.mode, tier=str(scenario.tier))
     rules = build_tier_rules(scenario.tier, run_context, catalog)
@@ -809,7 +811,7 @@ def _resolve_heat_magnitudes(
         return None
     if scenario.league is None:
         raise SurvivabilityPipelineError("Missing league for tournament heat lookup.")
-    heat_path = Path(__file__).resolve().parents[2] / "tables" / "heat_wave_scalar.csv"
+    heat_path = resolve_table_path("heat_scale_long")
     magnitudes_path = (
         Path(__file__).resolve().parents[2]
         / "tables"
@@ -1399,7 +1401,7 @@ def _armor_module_multiplier(
 
 
 def _assist_stone_percent(level: int) -> float:
-    table_path = Path(__file__).resolve().parents[2] / "tables" / "assist_stone_levels_v1.csv"
+    table_path = resolve_table_path("assist_stone_levels")
     if not table_path.exists():
         raise SurvivabilityPipelineError(
             f"Missing assist stone table: {table_path}"

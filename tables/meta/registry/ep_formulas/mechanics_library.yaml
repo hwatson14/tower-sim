@@ -251,22 +251,22 @@ eHP_mechanics:
     name: EPH_HEALTH
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, wse_lvl, has_perk, spb_lvl, has_cto, has_rto, relic_pct, vault_pct, has_dwhp, dwhp_lvl, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val * IF(has_mastery, 1 + 0.2 * (1 + mastery_lvl), 1), 1),\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKHP, IF(has_perk, (1 + 0.2 * 5) * (1 + 1% * spb_lvl), 1),\n  CTO, IF(has_cto, 0.3, 1),\n  RTO, IF(has_rto, 0.4, 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n  DWHP, IF(has_dwhp, 500% + 25% * dwhp_lvl, 1),\n\nWS * LAB * CARD * WSE * PERKHP * CTO * RTO * RELIC * VAULT * DWHP))"
-    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/perks_v1.csv (x1.20 Max Health, x1.80 coins but Tower Max Health -70%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.20 Max Health, x1.80 coins but Tower Max Health -70%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
   - id: ep_lambda_eph_regen
     name: EPH_REGEN
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, has_rgnto, has_rto, ito_lvl, relic_pct, vault_pct, has_swm, swm_lvl, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val * IF(has_mastery, 1 + 0.4 * (1 + mastery_lvl), 1), 1),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, 1 + prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKREGEN, IF(has_perk, (1 + 0.75 * 5) * (1 + 1% * spb_lvl), 1),\n  RGNTO, IF(has_rgnto, 0.1, 1),\n  RTO, IF(has_rto, 8 * (1 + 1% * ito_lvl), 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n  SWM, IF(has_swm, 1 + 0.9 * (1 + swm_lvl), 1),\n\nWS * LAB * CARD * SUBSTAT * WSE * PERKREGEN * RGNTO * RTO * RELIC * VAULT * SWM))"
-    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/perks_v1.csv (x1.75 Health Regen, Enemies Have -50% Health but Tower Health Regen and Lifesteal -90%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.75 Health Regen, Enemies Have -50% Health but Tower Health Regen and Lifesteal -90%, Tower Health Regen x8.00 but Tower Max Max Health -60%).
   - id: ep_lambda_eph_def_pct
     name: EPH_DEF_PCT
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub, ass_sub, has_perk, spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 0.2% * lab_lvl,\n  CARD, IF(has_card, card_val + IF(has_mastery, 0.7% * (1 + mastery_lvl), 0), 0),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, prim_sub + ass_sub * SAC,\n  PERKDEF, IF(has_perk, (4% * 5) * (1 + 1% * spb_lvl), 0),\n  RELIC, relic_pct,\n  VAULT, vault_pct,\n\nMIN(98%, WS + LAB + CARD + SUBSTAT + PERKDEF + RELIC + VAULT)))"
-    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/perks_v1.csv (Defense Percent +4.00).
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/inputs/perks/perks_v1.csv (Defense Percent +4.00).
   - id: ep_lambda_eph_dabs
     name: EPH_DABS
     type: excel_named_formula
     excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1 + 0.03 * lab_lvl,\n  CARD, IF(has_card, card_val, 1),\n  SAC, (1 + stone_sac + lab_sac) * 0.01,\n  SUBSTAT, 1 + prim_sub + ass_sub * SAC,\n  WSE, 1 + 0.01 * wse_lvl,\n  PERKDABS, IF(has_perk, (1 + 0.15 * 5) * (1 + 1% * spb_lvl), 1),\n  RELIC, 1 + relic_pct,\n  VAULT, 1 + vault_pct,\n\nWS * LAB * CARD * SUBSTAT * WSE * PERKDABS * RELIC * VAULT))"
-    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/perks_v1.csv (x1.15 Defense Absolute).
+    notes: From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.15 Defense Absolute).
   - id: ep_lambda_eph_armor
     name: EPH_ARMOR
     type: excel_named_formula
@@ -295,7 +295,7 @@ survivability_mechanics:
     name: PLASMA_CANNON_CARD_FRAC
     type: excel_named_formula
     excel_definition: "LAMBDA(card_pct, bc_mult, IF(card_pct > 0, card_pct * bc_mult, 0))"
-    notes: Plasma Cannon card applies a percent of boss max HP immediately; card percent is from tables/wiki_cache/cards_rare.csv and BC multiplier is from tier battle conditions (user-provided wiki excerpt in prompt).
+    notes: Plasma Cannon card applies a percent of boss max HP immediately; card percent is from tables/cache/wiki/cards_rare.csv and BC multiplier is from tier battle conditions (user-provided wiki excerpt in prompt).
 ids_helpers:
   status: complete
 stacking_rules:

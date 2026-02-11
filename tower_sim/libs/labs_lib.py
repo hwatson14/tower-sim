@@ -3,6 +3,8 @@ from __future__ import annotations
 import csv
 from dataclasses import dataclass
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from functools import lru_cache
 from typing import Dict, List
 
@@ -38,7 +40,7 @@ ALLOWED_UNITS = {"percent_points", "percent", "raw_number"}
 
 def _default_table_path() -> Path:
     repo_root = Path(__file__).resolve().parents[2]
-    return repo_root / "tables" / "labs_values_v1.csv"
+    return resolve_table_path("labs_values")
 
 
 def _parse_level(value: str) -> int:

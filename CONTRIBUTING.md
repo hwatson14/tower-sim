@@ -6,9 +6,9 @@ architecture contract and repo hygiene rules.
 ## Structure rules
 - **Do not** place generated reports, markdown artefacts, or JSON/YAML outputs in
   `tower_sim/`. Library code only.
-- Authoritative tables live in `tables/`.
+- Authoritative runtime tables live in `tables/inputs/`.
 - Human-facing audits and comparison reports live in `audit/`.
-- Large reference dumps live in `tables/`.
+- Cache and metadata tables live under `tables/cache/` and `tables/meta/`; deprecated tables live in `tables/legacy/`.
 - Quarantined tests go in `tests/`.
 
 See `REPO_STRUCTURE.md` for the full allowed tree.

@@ -5,6 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict
 
+from tower_sim.loaders.table_paths import resolve_table_path
+
 
 @dataclass(frozen=True)
 class CardTable:
@@ -18,9 +20,10 @@ def _read_csv(path: Path) -> list[list[str]]:
         return list(csv.reader(handle))
 
 
-def load_cards_tables(cache_dir: Path = Path("tables/wiki_cache")) -> Dict[str, CardTable]:
+def load_cards_tables(cache_dir: Path | None = None) -> Dict[str, CardTable]:
+    resolved_cache_dir = cache_dir or resolve_table_path("wiki_cache_dir", runtime_mode=False)
     tables: Dict[str, CardTable] = {}
-    for path in sorted(cache_dir.glob("cards_*.csv")):
+    for path in sorted(resolved_cache_dir.glob("cards_*.csv")):
         rows = _read_csv(path)
         if not rows:
             continue

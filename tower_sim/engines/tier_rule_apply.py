@@ -48,7 +48,7 @@ def _apply_condition(
         _apply_skip_reduction(inputs_by_id, condition.value)
         return
     if condition.name == "more_bosses":
-        # Provenance: tables/tier_battle_conditions.csv.
+        # Provenance: tables/inputs/combat/tier_battle_conditions.csv.
         # Current MAX_WAVE model resolves boss survivability per-wave and does not
         # model spawn cadence yet, so this BC is accepted as a no-op for v1.
         return
