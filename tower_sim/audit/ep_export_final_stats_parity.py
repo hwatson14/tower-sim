@@ -5,14 +5,20 @@ import json
 from pathlib import Path
 from typing import Any, Dict, List
 
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
-from tower_sim.evaluators.ehp_stat_evaluator import evaluate_stats
+from tower_sim.engines.combat_stat_derivation import (
+    build_canonical_stat_inputs,
+    build_canonical_wave_row,
+    build_canonical_wave_snapshot,
+    derive_canonical_combat_snapshot,
+)
+from tower_sim.engines.stat_engine import StatEngine
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ep_export_loader import load_ep_export_dataset
 from tower_sim.loaders.ids_parser import parse_ids
+from tower_sim.run.context import RunContext
 from tower_sim.run.spec_loader import load_problem_spec
 from tower_sim.registry.naming_contract import resolve_stat_id, validate_registry_parity
-from tower_sim.registry.stat_registry import default_registry
+from tower_sim.registry.stat_registry import Phase, default_registry
 
 
 
@@ -28,27 +34,70 @@ _DECISIVE_EHP_KEYS: Dict[str, str] = {
 def _relative_delta(expected: float, actual: float) -> float:
     denom = max(abs(expected), 1.0)
     return abs(expected - actual) / denom
+def _resolve_stat_input_value(stat_input) -> float:
+    if stat_input.derived_value is not None:
+        return float(stat_input.derived_value)
+    base_value = float(stat_input.base_value or 0.0)
+    loadout_delta = float(stat_input.loadout_delta or 0.0)
+    enhancement_multiplier = float(stat_input.enhancement_multiplier or 1.0)
+    tier_delta = float(stat_input.tier_rule_delta or 0.0)
+    tier_multiplier = float(stat_input.tier_rule_multiplier or 1.0)
+    return ((base_value + loadout_delta) * enhancement_multiplier + tier_delta) * tier_multiplier
 
 
-def _build_statbook_value_map(ids_snapshot) -> Dict[str, float]:
-    compiled = compile_full_stat_inputs(ids_snapshot)
-    values: Dict[str, float] = {}
-    for stat_input in compiled.stat_inputs:
-        if stat_input.phase.value != "end_of_run":
+def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Dict[str, float]]:
+    registry = default_registry()
+    canonical = build_canonical_stat_inputs(
+        problem_spec=spec,
+        ids_snapshot=ids_snapshot,
+        registry=registry,
+    )
+    missing = list(canonical.missing_required_stat_inputs)
+    if canonical.blocked_core_overrides:
+        missing.extend(canonical.blocked_core_overrides)
+    if missing:
+        raise ValueError(
+            "Canonical stat-input build failed for parity run: " + ", ".join(sorted(set(missing)))
+        )
+
+    engine = StatEngine(registry=registry)
+    engine_result = engine.build(canonical.stat_inputs)
+
+    stat_input_values: Dict[str, float] = {}
+    for stat_input in canonical.stat_inputs:
+        if stat_input.phase != Phase.START_OF_RUN:
             continue
-        if stat_input.derived_value is not None:
-            values[stat_input.stat_id] = float(stat_input.derived_value)
-            continue
+        stat_input_values[stat_input.stat_id] = _resolve_stat_input_value(stat_input)
 
-        base_value = stat_input.base_value or 0.0
-        loadout_delta = stat_input.loadout_delta or 0.0
-        enhancement_multiplier = stat_input.enhancement_multiplier or 1.0
-        tier_delta = stat_input.tier_rule_delta or 0.0
-        tier_multiplier = stat_input.tier_rule_multiplier or 1.0
-        values[stat_input.stat_id] = (
-            (base_value + loadout_delta) * enhancement_multiplier + tier_delta
-        ) * tier_multiplier
-    return values
+    wave_row, wave_missing = build_canonical_wave_row(spec, registry, wave=spec.scenario.wave)
+    if wave_missing or wave_row is None:
+        raise ValueError(f"Canonical wave-row build failed for parity run: {wave_missing}")
+    wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
+        ids_snapshot=ids_snapshot,
+        wave=spec.scenario.wave,
+        stat_inputs=canonical.stat_inputs,
+        engine_result=engine_result,
+        registry=registry,
+        tier_rules=None,
+        run_context=RunContext.from_mode(
+            spec.scenario.mode,
+            tier=str(spec.scenario.tier),
+        ),
+        heat_magnitudes=wave_row.get("heat_magnitudes"),
+        wave_row=wave_row,
+    )
+    if wave_snapshot_missing or wave_snapshot is None:
+        raise ValueError(
+            "Canonical wave snapshot build failed for parity run: "
+            + ", ".join(sorted(set(wave_snapshot_missing)))
+        )
+    combat_snapshot, combat_missing = derive_canonical_combat_snapshot(engine_result, wave_snapshot)
+    if combat_missing or combat_snapshot is None:
+        raise ValueError(
+            "Canonical combat snapshot build failed for parity run: "
+            + ", ".join(sorted(set(combat_missing)))
+        )
+    return stat_input_values, combat_snapshot.values
 
 
 def verify_final_stats_against_ep_export(
@@ -75,12 +124,7 @@ def verify_final_stats_against_ep_export(
         )
 
     ids_snapshot = compile_account_snapshot(parse_ids(ids_path))
-    statbook_values = _build_statbook_value_map(ids_snapshot)
-    ehp_stats = evaluate_stats(
-        ids_snapshot,
-        ["tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen"],
-        allow_out_of_scope=True,
-    )
+    stat_input_values, combat_stats = _build_canonical_stat_maps(ids_snapshot, spec)
 
     compared: List[Dict[str, Any]] = []
     unresolved: List[Dict[str, Any]] = []
@@ -93,10 +137,10 @@ def verify_final_stats_against_ep_export(
         actual: float | None
         if vp.startswith("ehp_slice.stats.") or vp.startswith("ehp_eval.stats."):
             stat_key = vp.split(".")[-1]
-            actual = ehp_stats.get(stat_key)
+            actual = combat_stats.get(stat_key)
         elif vp.startswith("stat_inputs."):
             stat_id = vp.split(".", 1)[1]
-            actual = statbook_values.get(stat_id)
+            actual = stat_input_values.get(stat_id)
         else:
             unresolved.append(
                 {

@@ -23,6 +23,7 @@ from tower_sim.run.problem_spec import (
     StatInputSpec,
     TowerDefenseSpec,
 )
+from tower_sim.run.spec_loader import load_problem_spec
 
 
 def _stat_input(stat_id: str, value: float) -> StatInputSpec:
@@ -161,7 +162,7 @@ def test_assumptions_manifest_present_on_fail_closed() -> None:
     base_problem = _problem(mode="farming", wave=10)
     problem = ProblemSpec(
         scenario=base_problem.scenario,
-        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "tower_hp"],
+        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "orb_damage_mult"],
         evaluator=base_problem.evaluator,
     )
     result = MaxWaveEvaluator().evaluate(problem, _snapshot())
@@ -212,6 +213,15 @@ def test_max_wave_emits_combat_snapshot_source_diagnostics() -> None:
     assert "tower_hp" in diag["combat_snapshot_sources_scenario_wave"]
 
 
+def test_sample_spec_fixture_produces_nonzero_max_wave() -> None:
+    spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+    result = MaxWaveEvaluator().evaluate(spec, _snapshot())
+
+    assert result["fail_closed"] is False
+    assert result["w_max"] is not None
+    assert result["w_max"] > 0
+
+
 def test_preflight_returns_validation_only() -> None:
     evaluator = MaxWaveEvaluator()
     result = evaluator.preflight(_problem(mode="farming", wave=10), _snapshot())
@@ -224,7 +234,7 @@ def test_evaluate_short_circuits_search_on_preflight_fail(monkeypatch) -> None:
     base_problem = _problem(mode="farming", wave=10)
     problem = ProblemSpec(
         scenario=base_problem.scenario,
-        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "tower_hp"],
+        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "orb_damage_mult"],
         evaluator=base_problem.evaluator,
     )
 
@@ -234,7 +244,7 @@ def test_evaluate_short_circuits_search_on_preflight_fail(monkeypatch) -> None:
     monkeypatch.setattr("tower_sim.evaluators.max_wave._search_wmax", _fail_if_called)
     result = MaxWaveEvaluator().evaluate(problem, _snapshot())
     assert result["fail_closed"] is True
-    assert "stat_input:tower_hp" in result["missing"]
+    assert "stat_input:orb_damage_mult" in result["missing"]
 
 
 def test_override_collisions_are_reported_outside_missing(monkeypatch) -> None:

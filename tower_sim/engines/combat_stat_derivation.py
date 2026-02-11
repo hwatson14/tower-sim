@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+import re
 
 from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Optional, Tuple
@@ -13,6 +14,7 @@ from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, 
 from tower_sim.engines.survivability_pipeline import compile_survivability_loadout_stat_inputs
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
+from tower_sim.libs.labs_lib import load_labs_values
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.loaders.tournament_bc_enrichment import (
@@ -60,14 +62,15 @@ def build_canonical_stat_inputs(
 ) -> CanonicalStatInputBuild:
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = compile_full_stat_inputs(ids_snapshot)
+    module_context = _module_context_for_mode(problem_spec.scenario.mode)
     loadout_inputs: List[StatInput] = []
     loadout_missing: List[str] = []
     try:
-        loadout_inputs = compile_survivability_loadout_stat_inputs(
+        loadout_inputs, skipped_cards = _compile_survivability_loadout_inputs_resilient(
             ids_snapshot,
-            module_context="Testing",
-            allow_provisional=True,
+            module_context=module_context,
         )
+        loadout_missing.extend(skipped_cards)
     except Exception as exc:  # noqa: BLE001
         loadout_missing.append(f"survivability_loadout:{exc}")
 
@@ -78,6 +81,10 @@ def build_canonical_stat_inputs(
         spec_inputs,
         compiled.stat_inputs + loadout_inputs,
         strict_core_stat_overrides=strict_core_stat_overrides,
+    )
+    merged_inputs = _rebase_wall_stats_from_tower(
+        merged_inputs,
+        ids_snapshot=ids_snapshot,
     )
     filtered_inputs, invalid = _filter_known_stat_inputs(merged_inputs, registry)
     missing_required = _missing_required_stat_inputs(filtered_inputs)
@@ -91,6 +98,173 @@ def build_canonical_stat_inputs(
             "strict_fail_closed" if strict_core_stat_overrides else "explicit_override_mode"
         ),
     )
+
+
+def _module_context_for_mode(mode: str) -> str:
+    normalized = (mode or "").strip().lower()
+    if normalized == "tournament":
+        return "Tourney"
+    if normalized == "farming":
+        return "Farming"
+    return "Testing"
+
+
+def _resolved_stat_input_value(stat_input: StatInput) -> float:
+    if stat_input.derived_value is not None:
+        return float(stat_input.derived_value)
+    base_value = float(stat_input.base_value or 0.0)
+    loadout_delta = float(stat_input.loadout_delta or 0.0)
+    enhancement_multiplier = float(stat_input.enhancement_multiplier or 1.0)
+    tier_delta = float(stat_input.tier_rule_delta or 0.0)
+    tier_multiplier = float(stat_input.tier_rule_multiplier or 1.0)
+    return ((base_value + loadout_delta) * enhancement_multiplier + tier_delta) * tier_multiplier
+
+
+def _wall_ratio_from_ids(
+    ids_snapshot,
+    stat_inputs: List[StatInput],
+) -> tuple[Optional[float], Optional[float], List[str]]:
+    missing: List[str] = []
+    labs = load_labs_values()
+
+    by_key = {(item.stat_id, item.phase): item for item in stat_inputs}
+    wall_health_input = by_key.get(("workshop_wall_health", Phase.START_OF_RUN))
+    if wall_health_input is None:
+        missing.append("workshop_alias_missing:workshop_wall_health")
+        return None, None, missing
+    wall_health_ratio = _resolved_stat_input_value(wall_health_input)
+
+    wall_health_lab = ids_snapshot.labs.get("Wall Health")
+    if wall_health_lab is None:
+        missing.append("lab_level:Wall Health")
+        wall_health_lab = 0
+    if wall_health_lab > 0:
+        lab = labs.get("Wall Health")
+        if lab is None:
+            missing.append("lab_table:Wall Health")
+            return None, None, missing
+        if wall_health_lab not in lab.levels:
+            missing.append(f"lab_table:Wall Health:{wall_health_lab}")
+            return None, None, missing
+        if lab.unit not in {"percent", "percent_points"}:
+            missing.append(f"lab_unit:Wall Health:{lab.unit}")
+            return None, None, missing
+        wall_health_ratio += float(lab.levels[wall_health_lab]) / 100.0
+
+    wall_regen_input = by_key.get(("workshop_wall_regen", Phase.START_OF_RUN))
+    wall_regen_ratio = (
+        _resolved_stat_input_value(wall_regen_input) if wall_regen_input is not None else 0.0
+    )
+    wall_regen_lab = ids_snapshot.labs.get("Wall Regen")
+    if wall_regen_lab is None:
+        missing.append("lab_level:Wall Regen")
+        wall_regen_lab = 0
+    if wall_regen_lab > 0:
+        lab = labs.get("Wall Regen")
+        if lab is None:
+            missing.append("lab_table:Wall Regen")
+            return None, None, missing
+        if wall_regen_lab not in lab.levels:
+            missing.append(f"lab_table:Wall Regen:{wall_regen_lab}")
+            return None, None, missing
+        if lab.unit not in {"percent", "percent_points"}:
+            missing.append(f"lab_unit:Wall Regen:{lab.unit}")
+            return None, None, missing
+        wall_regen_ratio += float(lab.levels[wall_regen_lab]) / 100.0
+    return wall_health_ratio, wall_regen_ratio, missing
+
+
+def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput], *, ids_snapshot) -> List[StatInput]:
+    by_key = {(item.stat_id, item.phase): item for item in stat_inputs}
+    tower_hp = by_key.get(("tower_hp", Phase.START_OF_RUN))
+    tower_regen = by_key.get(("tower_regen", Phase.START_OF_RUN))
+    wall_hp = by_key.get(("wall_hp", Phase.START_OF_RUN))
+    wall_regen = by_key.get(("wall_regen", Phase.START_OF_RUN))
+    if tower_hp is None or tower_regen is None or wall_hp is None or wall_regen is None:
+        return stat_inputs
+
+    wall_health_ratio, wall_regen_ratio, missing = _wall_ratio_from_ids(
+        ids_snapshot,
+        stat_inputs,
+    )
+    if missing or wall_health_ratio is None or wall_regen_ratio is None:
+        return stat_inputs
+
+    target_wall_hp_base = _resolved_stat_input_value(tower_hp) * float(wall_health_ratio)
+    target_wall_regen_base = _resolved_stat_input_value(tower_regen) * float(wall_regen_ratio)
+
+    def _replace_base(item: StatInput, target_base: float) -> StatInput:
+        current_base = float(item.base_value or 0.0)
+        resolved = _resolved_stat_input_value(item)
+        transfer_multiplier = 1.0
+        if current_base > 0.0:
+            transfer_multiplier = max(resolved / current_base, 0.0)
+        return StatInput(
+            stat_id=item.stat_id,
+            phase=item.phase,
+            base_value=target_base,
+            loadout_delta=None,
+            enhancement_multiplier=transfer_multiplier if transfer_multiplier != 1.0 else None,
+            tier_rule_delta=None,
+            tier_rule_multiplier=None,
+            derived_value=None,
+            provenance=(item.provenance or "") + ":rebased_from_tower",
+        )
+
+    replacements = {
+        ("wall_hp", Phase.START_OF_RUN): _replace_base(wall_hp, target_wall_hp_base),
+        ("wall_regen", Phase.START_OF_RUN): _replace_base(wall_regen, target_wall_regen_base),
+    }
+
+    rebased: List[StatInput] = []
+    for item in stat_inputs:
+        rebased.append(replacements.get((item.stat_id, item.phase), item))
+    return rebased
+
+
+_UNSUPPORTED_CARD_RE = re.compile(r"Unsupported card for survivability pipeline: '([^']+)'")
+_UNKNOWN_CARD_RE = re.compile(r"Unknown card: '([^']+)'")
+
+
+def _compile_survivability_loadout_inputs_resilient(
+    ids_snapshot,
+    *,
+    module_context: str,
+) -> Tuple[List[StatInput], List[str]]:
+    selected_cards = None
+    card_presets = getattr(ids_snapshot, "card_presets", None)
+    if isinstance(card_presets, dict):
+        selected_cards = list(card_presets.get(module_context, []))
+    skipped: List[str] = []
+    while True:
+        try:
+            kwargs = {
+                "module_context": module_context,
+                "allow_provisional": True,
+            }
+            if selected_cards is not None:
+                kwargs["selected_cards"] = selected_cards
+            inputs = compile_survivability_loadout_stat_inputs(
+                ids_snapshot,
+                **kwargs,
+            )
+            return inputs, skipped
+        except Exception as exc:  # noqa: BLE001
+            message = str(exc)
+            match = _UNSUPPORTED_CARD_RE.search(message)
+            reason = "survivability_loadout_unsupported_card"
+            if match is None:
+                match = _UNKNOWN_CARD_RE.search(message)
+                reason = "survivability_loadout_unknown_card"
+            if match is None:
+                raise
+            if selected_cards is None:
+                raise
+            card_name = match.group(1)
+            if card_name not in selected_cards:
+                raise
+            selected_cards = [card for card in selected_cards if card != card_name]
+            skipped.append(f"{reason}:{card_name}")
 
 
 def derive_canonical_combat_snapshot(
@@ -193,6 +367,8 @@ def _merge_stat_inputs(
                 and item.phase == Phase.START_OF_RUN
             ):
                 if item.base_value is not None or item.derived_value is not None:
+                    if (item.provenance or "").startswith("workshop_alias:"):
+                        continue
                     blocked.append(f"{item.stat_id}@{item.phase.value}")
                     continue
             existing_item = existing[key]

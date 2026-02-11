@@ -258,6 +258,147 @@ def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -
     assert at_wave_values["workshop_damage"] > start_damage
 
 
+def test_compile_workshop_values_at_wave_emits_canonical_survivability_ids(monkeypatch) -> None:
+    workshop_entries = {
+        "Health": WorkshopEntrySnapshot(
+            name="Health",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Health Regen": WorkshopEntrySnapshot(
+            name="Health Regen",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Wall Health": WorkshopEntrySnapshot(
+            name="Wall Health",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Wall Regen": WorkshopEntrySnapshot(
+            name="Wall Regen",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Free Attack Upgrade": WorkshopEntrySnapshot(
+            name="Free Attack Upgrade",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=99,
+            category="Utility",
+        ),
+        "Free Defense Upgrade": WorkshopEntrySnapshot(
+            name="Free Defense Upgrade",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=99,
+            category="Utility",
+        ),
+        "Free Utility Upgrade": WorkshopEntrySnapshot(
+            name="Free Utility Upgrade",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=99,
+            category="Utility",
+        ),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    from tower_sim.engines import stat_input_compiler as compiler
+
+    real_resolve = compiler._resolve_workshop_value
+
+    def _patched_resolve(tables, spec, *, level):
+        if spec.stat_id == "workshop_wall_regen":
+            return 0.2
+        return real_resolve(tables, spec, level=level)
+
+    monkeypatch.setattr(compiler, "_resolve_workshop_value", _patched_resolve)
+
+    at_wave_values, missing = compile_workshop_values_at_wave(snapshot, wave=1)
+
+    assert missing == []
+    assert at_wave_values["tower_hp"] == pytest.approx(at_wave_values["workshop_health"])
+    assert at_wave_values["tower_regen"] == pytest.approx(at_wave_values["workshop_health_regen"])
+    assert at_wave_values["wall_hp"] == pytest.approx(
+        at_wave_values["tower_hp"] * at_wave_values["workshop_wall_health"]
+    )
+    assert at_wave_values["wall_regen"] == pytest.approx(
+        at_wave_values["tower_regen"] * at_wave_values["workshop_wall_regen"]
+    )
+
+
+def test_compile_full_stat_inputs_wall_regen_alias_uses_workshop_ratio_without_lab(monkeypatch) -> None:
+    workshop_entries = {
+        "Health": WorkshopEntrySnapshot(
+            name="Health",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Health Regen": WorkshopEntrySnapshot(
+            name="Health Regen",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Wall Health": WorkshopEntrySnapshot(
+            name="Wall Health",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+        "Wall Regen": WorkshopEntrySnapshot(
+            name="Wall Regen",
+            unlocked=None,
+            coin_level=10,
+            end_level=10,
+            max_level=10,
+            category="Defense",
+        ),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    from tower_sim.engines import stat_input_compiler as compiler
+
+    real_resolve = compiler._resolve_workshop_value
+
+    def _patched_resolve(tables, spec, *, level):
+        if spec.stat_id == "workshop_wall_regen":
+            return 0.2
+        return real_resolve(tables, spec, level=level)
+
+    monkeypatch.setattr(compiler, "_resolve_workshop_value", _patched_resolve)
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+    assert by_id["wall_regen"].base_value == pytest.approx(
+        by_id["tower_regen"].base_value * by_id["workshop_wall_regen"].base_value
+    )
+
+
 def test_compile_full_stat_inputs_applies_health_lab_multiplier() -> None:
     workshop_entries = {
         "Health": WorkshopEntrySnapshot(
@@ -281,11 +422,85 @@ def test_compile_full_stat_inputs_applies_health_lab_multiplier() -> None:
     )
 
     compiled = compile_full_stat_inputs(snapshot)
-    health_input = next(
-        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_health"
-    )
+    health_input = next(stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_health")
+    tower_hp_alias = next(stat for stat in compiled.stat_inputs if stat.stat_id == "tower_hp")
     assert health_input.enhancement_multiplier is not None
     assert health_input.enhancement_multiplier > 1.0
+    assert tower_hp_alias.enhancement_multiplier == health_input.enhancement_multiplier
+    assert tower_hp_alias.provenance == "workshop_alias:Health->tower_hp"
+
+
+def test_compile_full_stat_inputs_emits_canonical_survivability_aliases() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Health": WorkshopEntrySnapshot(name="Health", coin_level=1, end_level=1, max_level=6000, unlocked=None, category=None),
+            "Health Regen": WorkshopEntrySnapshot(name="Health Regen", coin_level=1, end_level=1, max_level=6000, unlocked=None, category=None),
+            "Defense %": WorkshopEntrySnapshot(name="Defense %", coin_level=1, end_level=1, max_level=99, unlocked=None, category=None),
+            "Wall Health": WorkshopEntrySnapshot(name="Wall Health", coin_level=1, end_level=1, max_level=1800, unlocked=None, category=None),
+            "Wall Regen": WorkshopEntrySnapshot(name="Wall Regen", coin_level=1, end_level=1, max_level=1800, unlocked=None, category=None),
+            "Thorn Damage": WorkshopEntrySnapshot(name="Thorn Damage", coin_level=1, end_level=1, max_level=99, unlocked=None, category=None),
+            "Enemy Attack Level Skip": WorkshopEntrySnapshot(name="Enemy Attack Level Skip", coin_level=1, end_level=1, max_level=99, unlocked=None, category=None),
+            "Enemy Health Level Skip": WorkshopEntrySnapshot(name="Enemy Health Level Skip", coin_level=1, end_level=1, max_level=99, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    for stat_id in (
+        "tower_hp",
+        "tower_regen",
+        "def_pct",
+        "wall_hp",
+        "wall_regen",
+        "thorns_damage_mult",
+        "eals_pct",
+        "ehls_pct",
+    ):
+        assert stat_id in by_id
+        assert by_id[stat_id].base_value is not None
+
+
+def test_compile_full_stat_inputs_wall_aliases_use_resolved_values_not_raw_levels() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Health": WorkshopEntrySnapshot(name="Health", coin_level=100, end_level=100, max_level=6000, unlocked=None, category=None),
+            "Health Regen": WorkshopEntrySnapshot(name="Health Regen", coin_level=100, end_level=100, max_level=6000, unlocked=None, category=None),
+            "Wall Health": WorkshopEntrySnapshot(name="Wall Health", coin_level=100, end_level=100, max_level=1800, unlocked=None, category=None),
+            "Wall Regen": WorkshopEntrySnapshot(name="Wall Regen", coin_level=100, end_level=100, max_level=1800, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "workshop_enhancements": TableSnapshot(
+                header=["Workshop Enhancement", "", "Farming"],
+                rows=[
+                    ["Health +", "3.0", "200"],
+                    ["Wall Health +", "2.0", "100"],
+                ],
+            ),
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    tower_hp = by_id["tower_hp"]
+    wall_hp = by_id["wall_hp"]
+    resolved_tower_hp = float(tower_hp.base_value or 0.0) * float(
+        tower_hp.enhancement_multiplier or 1.0
+    )
+    resolved_wall_ratio = float(by_id["workshop_wall_health"].base_value or 0.0) * float(
+        by_id["workshop_wall_health"].enhancement_multiplier or 1.0
+    )
+
+    assert wall_hp.base_value == pytest.approx(
+        resolved_tower_hp * resolved_wall_ratio,
+        rel=1e-12,
+    )
 
 
 def test_compile_full_stat_inputs_includes_relic_modifiers() -> None:
