@@ -59,9 +59,8 @@ class StatEngine:
                 )
             row = self._build_row(stat_input, stat_def.kind)
             rows.append(row)
-            phase_values.setdefault(stat_input.phase, {})[stat_input.stat_id] = float(
-                row.final_value
-            )
+            if row.final_value is not None:
+                phase_values.setdefault(stat_input.phase, {})[stat_input.stat_id] = float(row.final_value)
 
         run_stats = {
             phase: RunStats(phase=phase, values=values)
@@ -79,21 +78,21 @@ class StatEngine:
         return self.build(adjusted, wave_state=wave_state)
 
     def _build_row(self, stat_input: StatInput, stat_kind: StatKind) -> StatRow:
-        tier_rule = _format_tier_rule(
-            stat_input.tier_rule_delta, stat_input.tier_rule_multiplier
-        )
-
         if stat_input.derived_value is not None:
             _validate_derived(stat_input, stat_kind)
             return StatRow(
                 stat_id=stat_input.stat_id,
-                phase=stat_input.phase.value,
-                base_value=_format_optional(stat_input.base_value),
-                loadout_delta=_format_optional(stat_input.loadout_delta),
-                enhancement_multiplier=_format_optional(stat_input.enhancement_multiplier),
-                tier_rule_delta_or_multiplier=tier_rule,
-                final_value=_format_optional(stat_input.derived_value),
-                provenance=stat_input.provenance,
+                phase=stat_input.phase,
+                base_value=_decimal_optional(stat_input.base_value),
+                loadout_delta_modules=_decimal_zero(),
+                loadout_delta_cards=_decimal_zero(),
+                loadout_delta_bots=_decimal_zero(),
+                loadout_delta_guardians=_decimal_zero(),
+                loadout_delta_other=_decimal_optional(stat_input.loadout_delta),
+                enhancement_multiplier=_decimal_optional(stat_input.enhancement_multiplier),
+                tier_rule_delta_or_multiplier=_decimal_optional(_tier_rule_numeric(stat_input.tier_rule_delta, stat_input.tier_rule_multiplier)),
+                final_value=_decimal_optional(stat_input.derived_value),
+                provenance=stat_input.provenance or "derived:stat_engine",
             )
 
         if (
@@ -119,13 +118,17 @@ class StatEngine:
 
         return StatRow(
             stat_id=stat_input.stat_id,
-            phase=stat_input.phase.value,
-            base_value=_format_optional(stat_input.base_value),
-            loadout_delta=_format_optional(stat_input.loadout_delta),
-            enhancement_multiplier=_format_optional(stat_input.enhancement_multiplier),
-            tier_rule_delta_or_multiplier=tier_rule,
-            final_value=_format_optional(tiered),
-            provenance=stat_input.provenance,
+            phase=stat_input.phase,
+            base_value=_decimal_optional(stat_input.base_value),
+            loadout_delta_modules=_decimal_zero(),
+            loadout_delta_cards=_decimal_zero(),
+            loadout_delta_bots=_decimal_zero(),
+            loadout_delta_guardians=_decimal_zero(),
+            loadout_delta_other=_decimal_optional(stat_input.loadout_delta),
+            enhancement_multiplier=_decimal_optional(stat_input.enhancement_multiplier),
+            tier_rule_delta_or_multiplier=_decimal_optional(_tier_rule_numeric(stat_input.tier_rule_delta, stat_input.tier_rule_multiplier)),
+            final_value=_decimal_optional(tiered),
+            provenance=stat_input.provenance or "derived:stat_engine",
         )
 
     def _append_wave_state_inputs(
@@ -163,22 +166,26 @@ class StatEngine:
         ]
 
 
-def _format_optional(value: Optional[float]) -> Optional[str]:
+from decimal import Decimal
+
+
+def _decimal_optional(value: Optional[float]) -> Optional[Decimal]:
     if value is None:
         return None
-    return str(value)
+    return Decimal(str(value))
 
 
-def _format_tier_rule(
-    delta: Optional[float],
-    multiplier: Optional[float],
-) -> Optional[str]:
+def _decimal_zero() -> Decimal:
+    return Decimal(0)
+
+
+def _tier_rule_numeric(delta: Optional[float], multiplier: Optional[float]) -> Optional[float]:
     if delta is not None and multiplier is not None:
         raise ValueError("Tier rule cannot be both delta and multiplier.")
     if delta is not None:
-        return f"delta:{delta}"
+        return delta
     if multiplier is not None:
-        return f"mult:{multiplier}"
+        return multiplier
     return None
 
 
