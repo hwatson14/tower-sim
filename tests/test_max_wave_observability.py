@@ -137,6 +137,7 @@ def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     assert "wa_reduction" in timing
     assert "gcomp_enabled" in timing
     assert "expected_coin_multiplier" in timing or "missing" in timing
+    assert timing["contract_scope"]["contract_status"] == "excluded"
 
 
 def test_timing_damage_reduction_composition() -> None:
@@ -148,7 +149,7 @@ def test_timing_damage_reduction_composition() -> None:
     assert abs(composed - 0.44) < 1e-12
 
 
-def test_resolve_expected_damage_taken_defaults_from_timing_diag() -> None:
+def test_resolve_expected_damage_taken_from_timing_diag() -> None:
     timing = {"expected_damage_taken": 1.0}
     assert _resolve_expected_damage_taken(timing) == 1.0
     assert timing["contract_scope"]["contract_status"] == "consumed"
