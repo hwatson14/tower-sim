@@ -280,12 +280,12 @@ budget checks, and slot constraints) and make optimisation traces easier to audi
 To keep the fast path viable, publish optimiser outputs as artifacts alongside IDS dumps.
 
 1. **Trigger:** scheduled workflow or IDS dump completion.
-2. **Fetch:** load `ids_dump_latest.json` from the `ids-dump-latest` branch.
+2. **Fetch:** load `ids_dump_latest.json` from the repository `main` branch artifact path (`out/ids_dump_latest.json`).
 3. **Validate:** fail closed if the snapshot or required libraries are missing.
 4. **Evaluate:** run optimiser tasks in deterministic order with fixed budgets and constraints.
 5. **Record:** emit full input envelopes (objective + budgets + BC set) into each output.
 6. **Publish:** write results to `out/` as `*_latest.json` artifacts (examples below).
-7. **Push:** force-update a branch (e.g., `optimizer-latest`) or extend `ids-dump-latest`.
+7. **Push:** commit/push `out/*_latest.json` updates to the publishing branch (currently `main`).
 
 Suggested artifacts:
 - `out/optimal_loadout_latest_<bc>.json`
@@ -586,7 +586,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Remove max-wave-row hard requirement from EP export ingest; treat absent rows as explicit parity skip.
 - [x] Add EP export final-stats parity report step (eHP/farming suite + preset consistency validation in CI).
 - [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
-- [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
+- [x] Publish latest IDS dump artifacts at `out/*_latest.json` on `main` for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
 - [x] Update run API inventory/loadout outputs to use AccountSnapshot snapshots.
@@ -647,3 +647,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Move MAX_WAVE wave-row/heat-row construction and tournament heat-table caching into canonical combat derivation module.
 - [x] Split MAX_WAVE into explicit preflight (validation/diagnostics only) and eval stages; report override collisions separately from missing and add fail-closed tournament heat value checks/mechanical heat-effect tests.
 - [x] Enforce preflight as validation-only (no heavy stat/snapshot builds), validate tournament heat BC id order against registry CSV, and add runner schema-stability tests.
+- [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
