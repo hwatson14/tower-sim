@@ -669,3 +669,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Make `mechanics/manifest.yaml` the single authoritative mechanics selector and route runtime EP registry loads through manifest-driven loader with bypass guard tests.
 - [x] Enforce single active mechanics pack in `mechanics/manifest.yaml` and require manifest-declared pack file mapping for registry + eHP legacy tables.
 - [x] Remove EP registry path override hook (`registry_dir`) so manifest-selected mechanics pack is the only runtime registry source.
+- [x] Add deterministic wiring-health scorecard audit (`python -m tower_sim.audit.wiring_health_check`) to gate naming contract, stat-lineage manifest summaries, and mechanics manifest resolution in one payload.
