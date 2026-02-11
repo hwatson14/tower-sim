@@ -1,4 +1,4 @@
-name: IDS dump
+name: stats dump
 
 on:
   workflow_dispatch:
@@ -100,7 +100,7 @@ jobs:
           INCLUDE_MAX_WAVE: ${{ inputs.include_max_wave || 'false' }}
           PROBLEM_SPEC: ${{ inputs.problem_spec || '' }}
 
-      - name: Upload IDS dump artifact
+      - name: Upload stats dump artifact
         uses: actions/upload-artifact@v4
         with:
           name: ids-dump
@@ -142,7 +142,7 @@ jobs:
             out/stage_5_end_of_run_latest.json
           if-no-files-found: error
 
-      - name: Commit latest IDS dump artifacts to current branch
+      - name: Commit latest stats dump artifacts to current branch
         run: |
           set -euo pipefail
           git config user.name "github-actions"
@@ -187,5 +187,5 @@ jobs:
             echo "No artifact changes to commit."
             exit 0
           fi
-          git commit -m "Update IDS dump standalone and latest artifacts"
+          git commit -m "Update stats dump standalone and latest artifacts"
           git push origin HEAD

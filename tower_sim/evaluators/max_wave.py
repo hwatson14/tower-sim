@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from math import isfinite
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -392,7 +394,7 @@ def _load_tier_rules(
 
 
 def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
-    return Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
+    return resolve_table_path("tier_battle_conditions")
 
 
 def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:

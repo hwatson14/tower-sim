@@ -6,8 +6,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, Mapping
 
-
-_DEFAULT_TABLES_DIR = Path(__file__).resolve().parents[2] / "tables"
+from tower_sim.loaders.table_paths import resolve_table_path
 
 
 @dataclass(frozen=True)
@@ -58,7 +57,7 @@ class TierBattleConditionRow:
 def load_battle_condition_magnitudes(
     path: Path | None = None,
 ) -> list[BattleConditionMagnitude]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "battle_condition_magnitudes.csv")
+    csv_path = path or resolve_table_path("battle_condition_magnitudes")
     rows = _read_csv_rows(csv_path, {"bc_id", "league", "wave", "magnitude"})
     parsed: list[BattleConditionMagnitude] = []
     seen: set[tuple[str, str, int]] = set()
@@ -87,7 +86,7 @@ def load_battle_condition_magnitudes(
 def load_tournament_more_bosses_static(
     path: Path | None = None,
 ) -> list[TournamentBossFrequency]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "tournament_more_bosses_static.csv")
+    csv_path = path or resolve_table_path("tournament_more_bosses_static")
     rows = _read_csv_rows(csv_path, {"league", "boss_every_n_waves"})
     parsed: list[TournamentBossFrequency] = []
     seen: set[str] = set()
@@ -106,7 +105,7 @@ def load_tournament_more_bosses_static(
 
 
 def load_heat_wave_scalars(path: Path | None = None) -> list[HeatWaveScalar]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "heat_wave_scalar.csv")
+    csv_path = path or resolve_table_path("heat_scale_long")
     rows = _read_csv_rows(csv_path, {"league", "wave", "heat_scalar"})
     parsed: list[HeatWaveScalar] = []
     seen: set[tuple[str, int]] = set()
@@ -127,7 +126,7 @@ def load_heat_wave_scalars(path: Path | None = None) -> list[HeatWaveScalar]:
 
 
 def load_tier_wave_damage_rows(path: Path | None = None) -> list[TierWaveDamageRow]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "tier_wave_damage.csv")
+    csv_path = path or resolve_table_path("tier_wave_damage_legacy", runtime_mode=False)
     rows = _read_csv_rows(csv_path, {"tier", "wave", "wave_damage"})
     parsed: list[TierWaveDamageRow] = []
     seen: set[tuple[float, int]] = set()
@@ -148,7 +147,7 @@ def load_tier_wave_damage_rows(path: Path | None = None) -> list[TierWaveDamageR
 def load_tournament_wave_damage_rows(
     path: Path | None = None,
 ) -> list[TournamentWaveDamageRow]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "tournament_wave_damage.csv")
+    csv_path = path or resolve_table_path("tournament_wave_damage_legacy", runtime_mode=False)
     rows = _read_csv_rows(csv_path, {"tournament_league", "wave", "wave_damage"})
     parsed: list[TournamentWaveDamageRow] = []
     seen: set[tuple[str, int]] = set()
@@ -175,7 +174,7 @@ def load_tournament_wave_damage_rows(
 def load_tier_battle_condition_rows(
     path: Path | None = None,
 ) -> list[TierBattleConditionRow]:
-    csv_path = path or (_DEFAULT_TABLES_DIR / "tier_battle_conditions.csv")
+    csv_path = path or resolve_table_path("tier_battle_conditions")
     rows = _read_csv_rows(
         csv_path, {"tier", "bc", "kind", "value", "unit", "notes"}
     )
@@ -211,7 +210,7 @@ def load_tier_battle_condition_rows(
 
 
 def load_dag_table(path: Path | None = None) -> dict:
-    json_path = path or (_DEFAULT_TABLES_DIR / "dag.json")
+    json_path = path or resolve_table_path("dag", runtime_mode=False)
     if not json_path.exists():
         raise FileNotFoundError(f"Missing DAG table: {json_path}")
     payload = json.loads(json_path.read_text(encoding="utf-8"))

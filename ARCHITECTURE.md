@@ -1,3 +1,5 @@
+> **Role:** Normative architecture contract.
+
 # TowerSim Architecture (Codex Contract)
 
 **Goal:** Deterministically evaluate run objectives (v1 focuses on boss-only Wmax) across farming/tournament/milestone contexts, and support optimisation (loadouts, perk policy, future spending, and respec mode).
@@ -19,7 +21,7 @@ These planes describe where responsibilities live without changing the frozen st
 
 1) **Reference (immutable)**
    - Authoritative libraries, tables, and canonical IDs.
-   - Sources are the repo tables under `tables/` and the cached wiki tables under `tables/wiki_cache/`.
+   - Sources are canonical runtime tables under `tables/inputs/` and cached wiki tables under `tables/cache/wiki/`.
    - If a required table is missing or ambiguous, fail closed (see “Stop the Line”).
 
 2) **Derivation (pure, side-effect-free)**
@@ -57,7 +59,7 @@ If a run requires perks and no valid timeline artifact is supplied, the run must
 
 ## Data Sources (Authoritative)
 Primary external input is `_IDS.csv` (player inventory + levels + equipped preset).
-All other tables are shipped with the repo under `tables/` or `tables/wiki_cache/`,
+All other tables are shipped with the repo under `tables/inputs/`, `tables/cache/wiki/`, `tables/derived/`, and `tables/meta/`,
 and are treated as authoritative library data (with provenance).
 
 ### IDS Path Resolution
@@ -277,15 +279,15 @@ Typed deltas are required for optimizer runner tasks because they allow stricter
 budget checks, and slot constraints) and make optimisation traces easier to audit.
 
 ### Precompute Workflow (Future, v2+)
-To keep the fast path viable, publish optimiser outputs as artifacts alongside IDS dumps.
+To keep the fast path viable, publish optimiser outputs as artifacts alongside stats dumps.
 
-1. **Trigger:** scheduled workflow or IDS dump completion.
-2. **Fetch:** load `ids_dump_latest.json` from the `ids-dump-latest` branch.
+1. **Trigger:** scheduled workflow or stats dump completion.
+2. **Fetch:** load `ids_dump_latest.json` from the repository `main` branch artifact path (`out/ids_dump_latest.json`).
 3. **Validate:** fail closed if the snapshot or required libraries are missing.
 4. **Evaluate:** run optimiser tasks in deterministic order with fixed budgets and constraints.
 5. **Record:** emit full input envelopes (objective + budgets + BC set) into each output.
 6. **Publish:** write results to `out/` as `*_latest.json` artifacts (examples below).
-7. **Push:** force-update a branch (e.g., `optimizer-latest`) or extend `ids-dump-latest`.
+7. **Push:** commit/push `out/*_latest.json` updates to the publishing branch (currently `main`).
 
 Suggested artifacts:
 - `out/optimal_loadout_latest_<bc>.json`
@@ -580,13 +582,13 @@ Any of the following must stop work and ask for clarification:
 - [x] Add token source mapping audit (token map, report, and validation script).
 - [x] Add implementation status report generator (`python -m tower_sim.audit.status`).
 - [x] Add IDS diagnostics dump script (schema-versioned JSON, missing-sections reporting, include-raw flag).
-- [x] Add IDS dump GitHub Action (workflow dispatch + IDS change trigger).
+- [x] Add stats dump GitHub Action (workflow dispatch + IDS change trigger).
 - [x] Add perk timeline GitHub Action to run perk tests and publish timeline smoke artifacts.
 - [x] Add max-wave runner EP export parity check step (validate when targets exist; explicit skip when missing max-wave rows).
 - [x] Remove max-wave-row hard requirement from EP export ingest; treat absent rows as explicit parity skip.
 - [x] Add EP export final-stats parity report step (eHP/farming suite + preset consistency validation in CI).
 - [x] Fail-closed when max wave evaluator encounters missing/invalid stat inputs.
-- [x] Publish latest IDS dump artifacts on `ids-dump-latest` branch for agent fetches.
+- [x] Publish latest stats dump artifacts at `out/*_latest.json` on `main` for agent fetches.
 - [x] Add IDS raw ingest + account snapshot compiler with preset-aware loadout resolution.
 - [x] Switch survivability/max-wave report entrypoints to AccountSnapshot inputs.
 - [x] Update run API inventory/loadout outputs to use AccountSnapshot snapshots.
@@ -594,11 +596,13 @@ Any of the following must stop work and ask for clarification:
 - [x] Add max-wave observability scaffolding (tier-1 result + tier-2 report).
 - [x] Add deterministic MaxWaveEvaluator runner + fail-closed W_max search guardrails.
 - [x] Add path-scoped IDS/run API GitHub Action with targeted tests and runner smoke artifact.
+- [x] Remove redundant IDS/run API path-scoped GitHub Action after max-wave runner coverage became the canonical gate.
 - [x] Fix MaxWaveEvaluator failure snapshot/tracing and filter invalid stat inputs from reports.
 - [x] Document pipeline flow from IDS to evaluators (loaders, engines, StatBook, evaluators).
 - [x] Add ignored `out/` directory and route runner outputs into it by default.
 - [x] Fix max-wave runner GitHub Action to write JSON output directly.
 - [x] Fix account snapshot loader bot-upgrades parsing regression (`_parse_bot_upgrades` missing).
+- [x] Split tournament wave-row enrichment into dedicated BC mapping loader while keeping cached heat-table resolution in canonical wave-row derivation.
 - [x] Add reference completeness report and runtime table guardrail test.
 - [x] Compile workshop + UW stat inputs from tables and expose STAT_INPUTS run task.
 - [x] Remove AUW fixture CSV dependencies; derive UW values/next costs directly from `_IDS.csv` UWs section for stat-input compilation.
@@ -619,10 +623,10 @@ Any of the following must stop work and ask for clarification:
 - [x] Add unit tests covering run task dispatcher + core tasks.
 - [x] Harden max-wave runner path resolution with explicit --ids/--spec overrides and fail-closed missing-path errors.
 - [x] Document agent-friendly IDS diagnostics usage for base stats, inventory, and loadout.
-- [x] Confirm IDS dump artifacts are written under `out/` after running the diagnostics helper.
+- [x] Confirm stats dump artifacts are written under `out/` after running the diagnostics helper.
 - [x] Add account snapshot JSON loader + optimizer runner task stubs with typed patch validation.
-- [x] Add IDS dump extracts for base stats, inventory, and loadout (agent fetch files).
-- [x] Add compact IDS dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
+- [x] Add stats dump extracts for base stats, inventory, and loadout (agent fetch files).
+- [x] Add compact stats dump component extracts for base-stat and inventory slices (`base_stats_components`, `inventory_components`, `run_stats`) to reduce runner payload size.
 - [x] Document optimiser runner schema, patch grammar, precompute workflow, and loadout+BC spec.
 - [x] Wire stone optimizer assist actions to canonical assist slot/rarity/efficiency cost tables.
 - [x] Wire UW and UW+ stone spend actions into optimizer candidate generation (state integration pending for evaluator patch application).
@@ -647,3 +651,6 @@ Any of the following must stop work and ask for clarification:
 - [x] Move MAX_WAVE wave-row/heat-row construction and tournament heat-table caching into canonical combat derivation module.
 - [x] Split MAX_WAVE into explicit preflight (validation/diagnostics only) and eval stages; report override collisions separately from missing and add fail-closed tournament heat value checks/mechanical heat-effect tests.
 - [x] Enforce preflight as validation-only (no heavy stat/snapshot builds), validate tournament heat BC id order against registry CSV, and add runner schema-stability tests.
+- [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
+- [x] Route max-wave CI outputs through `out/` and publish `out/runner_output_latest.json` + `out/ep_export_final_stats_report_latest.json` on `main`.
+- [x] Split CI responsibilities so `max_wave_runner` runs max-wave-only contract checks while a dedicated always-on `pytest` workflow handles full-suite gating; keep a path-scoped agent-surface runner for run API + README instruction contract coverage.

@@ -2,8 +2,8 @@
 Enemy wave-damage library (wave damage only, enemy types deferred).
 
 Source (canonical runtime tables):
-- `tables/enemy_damage_table.csv`
-- `tables/enemy_health_table.csv`
+- `tables/inputs/combat/enemy_damage_table.csv`
+- `tables/inputs/combat/enemy_health_table.csv`
 These tables store per-tier/per-league anchor values keyed by `wave_actual`.
 
 Important:
@@ -231,8 +231,10 @@ Wave	Tier 13
 9,500	11.89s
 10,000	26.61s"""
 
-_ENEMY_DAMAGE_TABLE_CSV = Path(__file__).resolve().parents[2] / "tables" / "enemy_damage_table.csv"
-_ENEMY_HEALTH_TABLE_CSV = Path(__file__).resolve().parents[2] / "tables" / "enemy_health_table.csv"
+from tower_sim.loaders.table_paths import resolve_table_path
+
+_ENEMY_DAMAGE_TABLE_CSV = resolve_table_path("enemy_damage_table")
+_ENEMY_HEALTH_TABLE_CSV = resolve_table_path("enemy_health_table")
 
 
 def parse_compact_number(s: str) -> float:
@@ -326,12 +328,12 @@ def _load_enemy_scaling_wide_table(path: Path) -> Dict[str, Dict[int, float]]:
 
 
 def load_enemy_damage_tables(path: Path = _ENEMY_DAMAGE_TABLE_CSV) -> Dict[str, Dict[int, float]]:
-    """Load canonical enemy damage anchor table from `tables/enemy_damage_table.csv`."""
+    """Load canonical enemy damage anchor table from `tables/inputs/combat/enemy_damage_table.csv`."""
     return _load_enemy_scaling_wide_table(path)
 
 
 def load_enemy_health_tables(path: Path = _ENEMY_HEALTH_TABLE_CSV) -> Dict[str, Dict[int, float]]:
-    """Load canonical enemy health anchor table from `tables/enemy_health_table.csv`."""
+    """Load canonical enemy health anchor table from `tables/inputs/combat/enemy_health_table.csv`."""
     return _load_enemy_scaling_wide_table(path)
 
 

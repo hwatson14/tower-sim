@@ -13,7 +13,7 @@ from tower_sim.loaders.wiki.cache_audit import (
 
 def main() -> None:
     repo_root = Path(__file__).resolve().parents[3]
-    cache_dir = repo_root / "tables" / "wiki_cache"
+    cache_dir = repo_root / "tables" / "cache" / "wiki"
     audit_dir = repo_root / "audit"
 
     results = audit_cache_dir(cache_dir)

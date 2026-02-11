@@ -10,6 +10,8 @@ on:
 jobs:
   run-max-wave:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       - name: Checkout
@@ -27,13 +29,17 @@ jobs:
           python -m pip install -e .
           python -m pip install pytest
 
-      - name: Run tests
+      - name: Run max-wave contract tests
         run: |
-          pytest -q
+          pytest -q \
+            tests/test_max_wave_v1_contract.py \
+            tests/test_max_wave_ep_parity.py \
+            tests/test_ep_export_final_stats_parity.py \
+            tests/test_release_gate_tournament_fixtures.py
 
       - name: Run MaxWaveEvaluator runner
         run: |
-          python -m tower_sim.run.runner --output runner_output.json
+          python -m tower_sim.run.runner --output out/runner_output.json
 
       - name: Validate runner output schema
         run: |
@@ -41,7 +47,7 @@ jobs:
           import json
           from pathlib import Path
 
-          payload = json.loads(Path("runner_output.json").read_text(encoding="utf-8"))
+          payload = json.loads(Path("out/runner_output.json").read_text(encoding="utf-8"))
           required = {"evaluator", "fail_closed", "missing", "w_max", "diagnostics"}
           missing = required - set(payload.keys())
           if missing:
@@ -52,7 +58,7 @@ jobs:
       - name: Validate runner max-wave against EP export targets
         run: |
           python -m tower_sim.audit.max_wave_ep_parity \
-            --runner-output runner_output.json \
+            --runner-output out/runner_output.json \
             --suite ehp \
             --allow-missing-targets
 
@@ -63,16 +69,35 @@ jobs:
             --spec tests/fixtures/specs/sample_spec.yaml \
             --suite ehp \
             --tolerance 0.01 \
-            --output ep_export_final_stats_report.json
+            --output out/ep_export_final_stats_report.json
+
+      - name: Promote max-wave outputs to latest artifact names
+        run: |
+          cp out/runner_output.json out/runner_output_latest.json
+          cp out/ep_export_final_stats_report.json out/ep_export_final_stats_report_latest.json
 
       - name: Upload runner output artifact
         uses: actions/upload-artifact@v4
         with:
           name: max-wave-runner-output
           path: |
-            runner_output.json
-            ep_export_final_stats_report.json
+            out/runner_output_latest.json
+            out/ep_export_final_stats_report_latest.json
           if-no-files-found: error
+
+      - name: Commit latest max-wave artifacts to main
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add out/runner_output_latest.json out/ep_export_final_stats_report_latest.json
+          if git diff --cached --quiet; then
+            echo "No max-wave latest artifact changes to commit."
+            exit 0
+          fi
+          git commit -m "Update latest max-wave runner artifacts"
+          git push origin HEAD
 
       - name: Verify EP export max-wave targets (fail-closed)
         run: |

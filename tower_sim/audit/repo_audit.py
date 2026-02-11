@@ -113,7 +113,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
 
 def _find_naming_yaml_files(repo_root: Path) -> List[Path]:
     candidates: List[Path] = []
-    naming_dir = repo_root / "tables" / "registry"
+    naming_dir = repo_root / "tables" / "meta" / "registry"
     wiki_dir = repo_root / "tower_sim" / "loaders" / "wiki"
     for base in (naming_dir, wiki_dir):
         if base.exists():
@@ -555,7 +555,7 @@ def _failure_recommendation(item: AuditItem) -> Optional[str]:
         "A_CANONICAL_ID_MISSING": "Add canonical_id fields to each naming catalog entry.",
         "A_CATEGORY_SCHEMA": "Ensure category entries are YAML lists of mappings.",
         "A_ENTRY_SCHEMA": "Ensure each category entry is a mapping with canonical_id and names.",
-        "A_NAMING_MISSING": "Add a naming YAML (e.g., tables/registry/catalog.yaml) or restore it.",
+        "A_NAMING_MISSING": "Add a naming YAML (e.g., tables/meta/registry/catalog.yaml) or restore it.",
         "A_YAML_PARSE_ERROR": "Fix YAML syntax errors in the naming catalog.",
         "A_YAML_SCHEMA": "Add a top-level 'categories' mapping in naming YAML.",
         "A_ALIAS_SCHEMA": "Ensure aliases is a list of strings (or omit for none).",

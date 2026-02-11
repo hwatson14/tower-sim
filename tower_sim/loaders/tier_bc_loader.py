@@ -1,11 +1,13 @@
 from __future__ import annotations
 
 from pathlib import Path
+
+from tower_sim.loaders.table_paths import resolve_table_path
 from tower_sim.libs.step1_tables import load_tier_battle_condition_rows
 from tower_sim.loaders.tier_battle_conditions import TierBattleCondition
 
 
-_DEFAULT_TIER_BC_PATH = Path(__file__).resolve().parents[2] / "tables" / "tier_battle_conditions.csv"
+_DEFAULT_TIER_BC_PATH = resolve_table_path("tier_battle_conditions")
 
 
 def load_tier_battle_conditions(
