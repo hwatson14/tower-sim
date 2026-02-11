@@ -7,6 +7,7 @@ import pytest
 from tower_sim.engines.survivability_pipeline import (
     _parse_module_blocks,
     build_survivability_report,
+    compile_survivability_loadout_stat_inputs,
 )
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
@@ -123,3 +124,91 @@ def test_enemy_level_skip_uses_lab_plus_workshop_plus_enhancement_multiplier() -
     assert base_only["eals_pct"] == pytest.approx(0.21275, rel=1e-9)
     assert base_only["ehls_pct"] == pytest.approx(0.207, rel=1e-9)
 
+
+def test_damage_attack_speed_and_crit_chance_cards_feed_loadout_stat_inputs() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    baseline = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+    with_damage_cards = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon", "Damage", "Attack Speed", "Critical Chance"],
+        allow_provisional=True,
+    )
+
+    baseline_by_stat = {item.stat_id: item for item in baseline}
+    with_damage_by_stat = {item.stat_id: item for item in with_damage_cards}
+
+    assert "tower_damage" not in baseline_by_stat
+    assert "tower_attack_speed" not in baseline_by_stat
+    assert "tower_crit_chance" not in baseline_by_stat
+
+    assert with_damage_by_stat["tower_damage"].enhancement_multiplier is not None
+    assert with_damage_by_stat["tower_damage"].enhancement_multiplier > 1.0
+    assert with_damage_by_stat["tower_attack_speed"].enhancement_multiplier is not None
+    assert with_damage_by_stat["tower_attack_speed"].enhancement_multiplier > 1.0
+    assert with_damage_by_stat["tower_crit_chance"].loadout_delta is not None
+    assert with_damage_by_stat["tower_crit_chance"].loadout_delta > 0.0
+
+
+def test_utility_cards_feed_loadout_stat_inputs() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    baseline = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+    with_utility_cards = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=[
+            "Plasma Cannon",
+            "Recovery Package Chance",
+            "Range",
+            "Cash",
+            "Coins",
+            "Free Upgrades",
+        ],
+        allow_provisional=True,
+    )
+
+    baseline_by_stat = {item.stat_id: item for item in baseline}
+    with_utility_by_stat = {item.stat_id: item for item in with_utility_cards}
+
+    assert "workshop_package_chance" not in baseline_by_stat
+    assert "workshop_range_meters" not in baseline_by_stat
+    assert "workshop_cash_bonus" not in baseline_by_stat
+    assert "workshop_coins_per_kill_bonus" not in baseline_by_stat
+    assert "workshop_free_upgrades" not in baseline_by_stat
+
+    assert with_utility_by_stat["workshop_package_chance"].loadout_delta is not None
+    assert with_utility_by_stat["workshop_package_chance"].loadout_delta > 0.0
+
+    assert with_utility_by_stat["workshop_range_meters"].enhancement_multiplier is not None
+    assert with_utility_by_stat["workshop_range_meters"].enhancement_multiplier > 1.0
+
+    assert with_utility_by_stat["workshop_cash_bonus"].enhancement_multiplier is not None
+    assert with_utility_by_stat["workshop_cash_bonus"].enhancement_multiplier > 1.0
+
+    assert (
+        with_utility_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier
+        is not None
+    )
+    assert (
+        with_utility_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier
+        > 1.0
+    )
+
+    assert with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier is not None
+    assert with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier > 1.0

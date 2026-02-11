@@ -1476,6 +1476,64 @@ def _apply_card_effects(
                     f"Health Regen card has unsupported unit {effect.unit!r}."
                 )
             accumulator.multiply("tower_regen", effect.value, "cards:health_regen")
+        elif effect.card == "Damage":
+            if effect.unit != "mult":
+                raise SurvivabilityPipelineError(
+                    f"Damage card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_damage", effect.value, "cards:damage")
+        elif effect.card == "Attack Speed":
+            if effect.unit == "percent":
+                multiplier = 1.0 + effect.value
+            elif effect.unit == "mult":
+                multiplier = effect.value
+            else:
+                raise SurvivabilityPipelineError(
+                    f"Attack Speed card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_attack_speed", multiplier, "cards:attack_speed")
+        elif effect.card == "Critical Chance":
+            if effect.unit != "percent":
+                raise SurvivabilityPipelineError(
+                    f"Critical Chance card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add("tower_crit_chance", effect.value, "cards:critical_chance")
+        elif effect.card == "Range":
+            if effect.unit != "mult":
+                raise SurvivabilityPipelineError(
+                    f"Range card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("workshop_range_meters", effect.value, "cards:range")
+        elif effect.card == "Cash":
+            if effect.unit != "mult":
+                raise SurvivabilityPipelineError(
+                    f"Cash card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("workshop_cash_bonus", effect.value, "cards:cash")
+        elif effect.card == "Coins":
+            if effect.unit != "mult":
+                raise SurvivabilityPipelineError(
+                    f"Coins card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply(
+                "workshop_coins_per_kill_bonus", effect.value, "cards:coins"
+            )
+        elif effect.card == "Free Upgrades":
+            if effect.unit != "percent":
+                raise SurvivabilityPipelineError(
+                    f"Free Upgrades card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply(
+                "workshop_free_upgrades", 1.0 + effect.value, "cards:free_upgrades"
+            )
+        elif effect.card == "Recovery Package Chance":
+            if effect.unit != "percent":
+                raise SurvivabilityPipelineError(
+                    f"Recovery Package Chance card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add(
+                "workshop_package_chance", effect.value, "cards:recovery_package_chance"
+            )
         elif effect.card == "Extra Defense":
             if effect.unit != "percent":
                 raise SurvivabilityPipelineError(

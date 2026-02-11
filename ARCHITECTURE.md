@@ -551,6 +551,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Add survivability pipeline entrypoint (StatEngine snapshots + verdict JSON).
 - [x] Define evaluator objective contracts and economy model inputs with authoritative provenance (see "Evaluator Contracts" section; v1 `MAX_WAVE` implemented, economy evaluator deferred until authoritative tables are promoted).
 - [x] Wire canonical wave-time + uptime diagnostics into MAX_WAVE (WA loadout source, interval overlap, GComp events, bot-table channels).
+- [x] Resolve all runtime bot stats (table levels + stat-engine-composed labs/relics/module-unique scalar channels) in canonical combat derivation before timing uptime; timing engine consumes only resolved bot effect values.
 - [x] Wire per-wave stat composition for workshop progression into stat snapshots (deterministic free-upgrade model; wave-skip extras deferred).
 - [x] Wire skip mapping into StatEngine for at-wave stat snapshots.
 - [x] Add data-driven combat engine scaffold (parameterized DR/thorns/PC).
@@ -559,6 +560,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement boss combat model (boss-only survivability + W_max/failure_wave).
 - [x] Implement boss survivability model (TTK/TTD resolution + BC loader + schema).
 - [x] Wire wall thorns + plasma cannon card fractions into survivability pipeline + mechanics registry (wiki excerpt in prompt).
+- [x] Wire Damage/Attack Speed/Critical Chance/Recovery Package Chance/Range/Cash/Coins/Free Upgrades card effects into survivability loadout stat-input assembly consumed by MAX_WAVE.
 - [x] Add validation harness against Harry’s reference sheets.
 - [x] Document missing mechanics cross-referenced to Step1 `/reference` parts 1–4.
 - [x] Ingest Effective Paths reference sheets into an audit report.

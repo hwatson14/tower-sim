@@ -8,6 +8,7 @@ from tower_sim.evaluators.max_wave import (
     _resolve_expected_damage_taken,
 )
 from tower_sim.evaluators.max_wave_report import build_max_wave_report
+from tower_sim.engines.combat_stat_derivation import resolve_runtime_bot_effects
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.stat_registry import Phase
@@ -137,6 +138,7 @@ def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     assert "wa_reduction" in timing
     assert "gcomp_enabled" in timing
     assert "expected_coin_multiplier" in timing or "missing" in timing
+    assert "bot_effect_scalars" in timing
     assert timing["contract_scope"]["contract_status"] in {"excluded", "consumed"}
 
 
@@ -153,3 +155,30 @@ def test_resolve_expected_damage_taken_from_timing_diag() -> None:
     timing = {"expected_damage_taken": 1.0}
     assert _resolve_expected_damage_taken(timing) == 1.0
     assert timing["contract_scope"]["contract_status"] == "consumed"
+
+def test_resolve_runtime_bot_effects_defaults() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    effects, scalars = resolve_runtime_bot_effects(ids_snapshot=ids_snapshot, snapshot_values={})
+    assert scalars["bot_duration_multiplier"] == 1.0
+    assert scalars["bot_cooldown_multiplier"] == 1.0
+    assert scalars["bot_bonus_multiplier"] == 1.0
+    assert scalars["flame_bot_damage_reduction_multiplier"] == 1.0
+    assert isinstance(effects, list)
+
+
+def test_resolve_runtime_bot_effects_rejects_non_positive() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    try:
+        resolve_runtime_bot_effects(
+            ids_snapshot=ids_snapshot,
+            snapshot_values={"bot_bonus_multiplier": 0.0},
+        )
+    except ValueError as exc:
+        assert "bot_bonus_multiplier" in str(exc)
+    else:
+        raise AssertionError("Expected ValueError for non-positive bot scalar")
+
