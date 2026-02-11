@@ -1,6 +1,6 @@
 {
   "schema": "stat_lineage_manifest.v1",
-  "stat_count": 152,
+  "stat_count": 151,
   "required_max_wave_stat_input_ids": [
     "eals_pct",
     "ehls_pct",
@@ -154,7 +154,6 @@
         "workshop_land_mine_damage",
         "workshop_land_mine_radius",
         "workshop_lifesteal",
-        "workshop_max_amount",
         "workshop_max_recovery",
         "workshop_multishot_chance",
         "workshop_multishot_targets",
@@ -2174,22 +2173,6 @@
       ]
     },
     "workshop_lifesteal": {
-      "wired_up": [
-        "lab",
-        "workshop"
-      ],
-      "not_expected_to_be_wired_up": [
-        "bc",
-        "uw"
-      ],
-      "still_requires_wiring_up": [
-        "card",
-        "module",
-        "perk",
-        "relic"
-      ]
-    },
-    "workshop_max_amount": {
       "wired_up": [
         "lab",
         "workshop"
@@ -8868,56 +8851,6 @@
       {
         "contributor": "uw",
         "canonical_stat_id": "workshop_lifesteal",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:no_authoritative_uw_mapping_for_stat"
-      }
-    ],
-    "workshop_max_amount": [
-      {
-        "contributor": "workshop",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": true,
-        "exclusion_reason": null
-      },
-      {
-        "contributor": "lab",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": true,
-        "exclusion_reason": null
-      },
-      {
-        "contributor": "card",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
-      },
-      {
-        "contributor": "module",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
-      },
-      {
-        "contributor": "relic",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
-      },
-      {
-        "contributor": "perk",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:not_wired_to_canonical_stat_input"
-      },
-      {
-        "contributor": "bc",
-        "canonical_stat_id": "workshop_max_amount",
-        "reaches_stat_input": false,
-        "exclusion_reason": "excluded:no_authoritative_bc_mapping_for_stat"
-      },
-      {
-        "contributor": "uw",
-        "canonical_stat_id": "workshop_max_amount",
         "reaches_stat_input": false,
         "exclusion_reason": "excluded:no_authoritative_uw_mapping_for_stat"
       }

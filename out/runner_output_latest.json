@@ -86,6 +86,7 @@
         "hpregen": "tower_regen",
         "knockback mult": "knockback_mult",
         "knockback multiplier": "knockback_mult",
+        "max amount": "workshop_max_recovery",
         "orb damage mult": "orb_damage_mult",
         "orb damage multiplier": "orb_damage_mult",
         "plasma cannon damage mult": "plasma_cannon_damage_mult",
@@ -215,7 +216,7 @@
         "workshop land mine damage": "workshop_land_mine_damage",
         "workshop land mine radius": "workshop_land_mine_radius",
         "workshop lifesteal": "workshop_lifesteal",
-        "workshop max amount": "workshop_max_amount",
+        "workshop max amount": "workshop_max_recovery",
         "workshop max recovery": "workshop_max_recovery",
         "workshop multishot chance": "workshop_multishot_chance",
         "workshop multishot targets": "workshop_multishot_targets",
@@ -303,11 +304,7 @@
       "uw_value_mismatch:Smart Missiles:Quantity:0",
       "uw_value_mismatch:Spotlight:Angle:8",
       "uw_value_mismatch:Spotlight:Multiplier:8",
-      "uw_value_mismatch:Spotlight:Quantity:2",
-      "workshop_table:Attack Speed",
-      "workshop_table:Wall Health",
-      "workshop_unsupported:Bounce Shot Range",
-      "workshop_unsupported:Max Amount"
+      "uw_value_mismatch:Spotlight:Quantity:2"
     ],
     "core_stat_override_policy": "strict_fail_closed",
     "margin_trace": [
@@ -351,8 +348,8 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 61.353760999992346,
-    "statbook_rows": 108,
+    "preflight_ms": 61.95594199999732,
+    "statbook_rows": 112,
     "timing_uptime": {
       "bot_levels_source": "present",
       "contract_scope": {
