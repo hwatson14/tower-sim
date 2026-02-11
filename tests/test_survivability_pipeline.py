@@ -107,3 +107,18 @@ def test_thorns_and_plasma_cannon_inputs() -> None:
     assert start_snapshot["plasma_cannon_damage_mult"] == pytest.approx(
         0.54, rel=1e-9
     )
+
+
+def test_enemy_level_skip_uses_lab_plus_workshop_plus_enhancement_multiplier() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
+
+    report = build_survivability_report(
+        ids_snapshot, spec, module_context="Testing", allow_provisional=True
+    )
+    base_only = report["snapshots"]["base_only"]
+
+    assert base_only["eals_pct"] == pytest.approx(0.21275, rel=1e-9)
+    assert base_only["ehls_pct"] == pytest.approx(0.207, rel=1e-9)

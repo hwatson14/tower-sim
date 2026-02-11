@@ -715,7 +715,39 @@ def _resolve_skip_stat(ids_snapshot: AccountSnapshot, lab_name: str) -> float:
             f"Unsupported lab unit {lab.unit!r} for {lab_name!r}."
         )
 
-    return workshop_level_to_chance(workshop_level) + float(lab_value)
+    chance = workshop_level_to_chance(workshop_level) + float(lab_value)
+    return _clamp01(chance * _enemy_level_skips_enhancement_multiplier(ids_snapshot))
+
+
+def _enemy_level_skips_enhancement_multiplier(ids_snapshot: AccountSnapshot) -> float:
+    for row in ids_snapshot.workshop_enhancements.rows:
+        if not row:
+            continue
+        base_name = row[0].strip()
+        if base_name != "Enemy Level Skips +":
+            continue
+        if len(row) < 2 or not row[1].strip():
+            raise SurvivabilityPipelineError("Missing Enemy Level Skips enhancement multiplier in WS+ table.")
+        try:
+            mult = float(row[1].strip())
+        except ValueError as exc:
+            raise SurvivabilityPipelineError(
+                f"Invalid Enemy Level Skips enhancement multiplier: {row[1]!r}."
+            ) from exc
+        if mult <= 0:
+            raise SurvivabilityPipelineError(
+                f"Enemy Level Skips enhancement multiplier must be > 0, got {mult}."
+            )
+        return mult
+    raise SurvivabilityPipelineError("Missing Enemy Level Skips enhancement row in WS+ table.")
+
+
+def _clamp01(value: float) -> float:
+    if value <= 0.0:
+        return 0.0
+    if value >= 1.0:
+        return 1.0
+    return value
 
 
 def _resolve_loadout(
