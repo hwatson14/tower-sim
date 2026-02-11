@@ -813,15 +813,6 @@ def default_registry() -> StatRegistry:
             description="Workshop free utility upgrade from DVT_WS_VALUE.",
         ),
         StatDef(
-            stat_id="workshop_max_amount",
-            display_name="Workshop Max Amount",
-            unit=Unit.NONE,
-            kind=StatKind.BASE,
-            scope=StatScope.RUN,
-            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
-            description="Workshop max amount (unsupported; EP lacks numeric rule).",
-        ),
-        StatDef(
             stat_id="uw_golden_tower_duration",
             display_name="UW Golden Tower Duration",
             unit=Unit.SECONDS,
