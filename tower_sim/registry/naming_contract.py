@@ -55,6 +55,20 @@ _EXPLICIT_ENTITY_ALIASES: Dict[str, Dict[str, str]] = {
 }
 
 
+# Disallowed duplicate canonicals retained here to fail-closed on semantic drift.
+# These names must resolve via aliases on the canonical entries instead.
+_DISALLOWED_CANONICAL_IDS: Dict[str, str] = {
+    "LAB_BLACK_HOLE_COIN_BONUS": "Use LAB_BLACK_HOLE_COINS_BONUS with alias 'Black Hole Coin Bonus'.",
+    "LAB_COINS_WAVE": "Use LAB_COINS_PER_WAVE with alias 'Coins / Wave'.",
+    "LAB_DAMAGE_METER": "Use LAB_DAMAGE_PER_METER with alias 'Damage / Meter'.",
+    "LAB_DEATH_WAVE_CELLS_BONUS": "Use LAB_DEATH_WAVE_CELL_BONUS with alias 'Death Wave Cells Bonus'.",
+    "LAB_MISSILE_DESPAWN_TIME": "Use LAB_MISSILES_DESPAWN_TIME with alias 'Missile Despawn Time'.",
+    "LAB_MISSILE_RADIUS": "Use LAB_MISSILES_RADIUS with alias 'Missile Radius'.",
+    "LAB_AMP_BOT_COOLDOWN": "Use LAB_AMPLIFY_BOT_COOLDOWN with alias 'Amp Bot - Cooldown'.",
+    "LAB_AMP_BOT_DURATION": "Use LAB_AMPLIFY_BOT_DURATION with alias 'Amp Bot - Duration'.",
+}
+
+
 def normalize_identifier(value: str) -> str:
     return " ".join(value.strip().lower().replace("_", " ").split())
 
@@ -65,7 +79,83 @@ def _catalog_yaml() -> dict:
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("Naming catalog YAML must be a mapping.")
+    categories = data.get("categories")
+    if not isinstance(categories, dict):
+        raise ValueError("Naming catalog YAML missing categories mapping.")
     return data
+
+
+def _validate_catalog_category_entries(entries: list, *, category_key: str) -> None:
+    seen_canonical_ids: Dict[str, str] = {}
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError(f"Catalog entry for {category_key!r} must be a mapping")
+        canonical_id = str(entry.get("canonical_id", "")).strip()
+        primary_name = str(entry.get("primary_name", "")).strip()
+        aliases = entry.get("aliases")
+        if not canonical_id or not primary_name:
+            raise ValueError(f"Catalog {category_key!r} entry missing canonical_id/primary_name")
+        if not isinstance(aliases, list):
+            raise ValueError(f"Catalog {category_key!r} entry {canonical_id!r} missing aliases list")
+        previous = seen_canonical_ids.get(canonical_id)
+        if previous is not None:
+            raise ValueError(
+                f"Catalog {category_key!r} canonical_id {canonical_id!r} is duplicated"
+            )
+        seen_canonical_ids[canonical_id] = primary_name
+
+
+def validate_catalog_contract() -> Tuple[str, ...]:
+    errors: list[str] = []
+    catalog = _catalog_yaml()
+    categories = catalog.get("categories", {})
+    if not isinstance(categories, dict):
+        return ("catalog_missing_categories",)
+
+    seen_global_ids: Dict[str, str] = {}
+    for category_key, entries in categories.items():
+        if not isinstance(entries, list):
+            errors.append(f"catalog_category_not_list:{category_key}")
+            continue
+        normalized_primary_to_id: Dict[str, str] = {}
+        for entry in entries:
+            if not isinstance(entry, dict):
+                errors.append(f"catalog_entry_not_mapping:{category_key}")
+                continue
+            canonical_id = str(entry.get("canonical_id", "")).strip()
+            primary_name = str(entry.get("primary_name", "")).strip()
+            aliases = entry.get("aliases")
+            if not canonical_id or not primary_name:
+                errors.append(f"catalog_missing_required_fields:{category_key}")
+                continue
+            if not isinstance(aliases, list):
+                errors.append(f"catalog_aliases_not_list:{category_key}:{canonical_id}")
+            owner = seen_global_ids.get(canonical_id)
+            if owner is not None and owner != category_key:
+                errors.append(f"catalog_global_id_duplicate:{canonical_id}:{owner}:{category_key}")
+            else:
+                seen_global_ids[canonical_id] = category_key
+
+            if canonical_id in _DISALLOWED_CANONICAL_IDS:
+                errors.append(
+                    f"catalog_disallowed_canonical_id:{category_key}:{canonical_id}:{_DISALLOWED_CANONICAL_IDS[canonical_id]}"
+                )
+
+            normalized_primary = normalize_identifier(primary_name)
+            prior = normalized_primary_to_id.get(normalized_primary)
+            if prior is not None and prior != canonical_id:
+                errors.append(
+                    f"catalog_normalized_primary_collision:{category_key}:{normalized_primary}:{prior}:{canonical_id}"
+                )
+            else:
+                normalized_primary_to_id[normalized_primary] = canonical_id
+
+        try:
+            _validate_catalog_category_entries(entries, category_key=str(category_key))
+        except ValueError as exc:
+            errors.append(f"catalog_category_invalid:{category_key}:{exc}")
+
+    return tuple(sorted(set(errors)))
 
 
 def _register_alias(
@@ -162,14 +252,11 @@ def _build_named_entity_maps() -> tuple[Dict[str, Dict[str, str]], Dict[str, Dic
         entries = catalog_categories.get(category_key, [])
         if not isinstance(entries, list):
             raise ValueError(f"Catalog category {category_key!r} must be a list")
+        _validate_catalog_category_entries(entries, category_key=category_key)
         for entry in entries:
-            if not isinstance(entry, dict):
-                raise ValueError(f"Catalog entry for {category_key!r} must be a mapping")
             canonical_id = str(entry.get("canonical_id", "")).strip()
             primary_name = str(entry.get("primary_name", "")).strip()
             aliases = entry.get("aliases", []) or []
-            if not canonical_id or not primary_name:
-                raise ValueError(f"Catalog {category_key!r} entry missing canonical_id/primary_name")
             _register_alias(categories[target], conflicts[target], canonical_id, canonical_id)
             _register_alias(categories[target], conflicts[target], primary_name, canonical_id)
             if not isinstance(aliases, list):
@@ -257,7 +344,7 @@ def resolve_named_entity(category: str, value: str) -> str:
 
 
 def validate_named_entity_coverage() -> Tuple[str, ...]:
-    errors = []
+    errors = list(validate_catalog_contract())
     maps, conflicts = _build_named_entity_maps()
     for category, alias_map in maps.items():
         if not alias_map:
@@ -288,13 +375,14 @@ def unsupported_or_unmapped_items(items: Iterable[str]) -> Tuple[str, ...]:
 
 def _is_ignored_placeholder_name(value: str) -> bool:
     norm = normalize_identifier(value)
-    return norm in {"true", "false"} or norm.startswith("any other")
+    return norm in {"true", "false", "end of array"} or norm.startswith("any other")
 
 
 def validate_account_snapshot_naming(
     snapshot,
     *,
     strict_categories: Sequence[str] = (
+        "labs",
         "workshop",
         "cards",
         "uws",
@@ -309,6 +397,8 @@ def validate_account_snapshot_naming(
 
     if "labs" in strict:
         for name in snapshot.labs:
+            if _is_ignored_placeholder_name(name):
+                continue
             try:
                 resolve_named_entity("labs", name)
             except KeyError:
@@ -410,6 +500,7 @@ __all__ = [
     "resolve_named_entity",
     "resolve_stat_id",
     "unsupported_or_unmapped_items",
+    "validate_catalog_contract",
     "validate_account_snapshot_naming",
     "validate_named_entity_coverage",
     "validate_registry_parity",
