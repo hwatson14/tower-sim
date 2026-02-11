@@ -63,7 +63,7 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
         dvt_keys=("Damage / Meter", "Damage/Meter"),
     ),
     "Lifesteal": WorkshopStatSpec(stat_id="workshop_lifesteal", wsvalues_key="Lifesteal"),
-    "Attack Speed": WorkshopStatSpec(stat_id="workshop_attack_speed", dvt_keys=("Attack Speed",)),
+    "Attack Speed": WorkshopStatSpec(stat_id="workshop_attack_speed"),
     "Critical Factor": WorkshopStatSpec(
         stat_id="workshop_critical_factor", dvt_keys=("Critical Factor",)
     ),
@@ -99,7 +99,7 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
         stat_id="workshop_coins_per_kill_bonus",
         dvt_keys=("Coin / Kill Bonus",),
     ),
-    "Wall Health": WorkshopStatSpec(stat_id="workshop_wall_health", dvt_keys=("Wall Health",)),
+    "Wall Health": WorkshopStatSpec(stat_id="workshop_wall_health"),
     "Orb Size": WorkshopStatSpec(stat_id="workshop_orb_size", dvt_keys=("Orb Size",)),
     "Cash Bonus": WorkshopStatSpec(stat_id="workshop_cash_bonus", dvt_keys=("Cash Bonus",)),
     "Coin Bonus": WorkshopStatSpec(
@@ -137,12 +137,18 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
     "Super Critical Chance": WorkshopStatSpec(stat_id="workshop_super_crit_chance"),
     "Super Critical Mult": WorkshopStatSpec(stat_id="workshop_super_crit_mult_alt"),
     "Recovery Amount": WorkshopStatSpec(stat_id="workshop_recovery_amount"),
-    "Max Amount": WorkshopStatSpec(stat_id="workshop_max_amount"),
+    "Max Amount": WorkshopStatSpec(stat_id="workshop_max_recovery"),
 }
 
 
 def _pct(value: float) -> float:
     return value / 100.0
+
+
+def _bounded_linear(level: int, *, min_level: int, max_level: int, base: float, per_level: float) -> float | None:
+    if level < min_level or level > max_level:
+        return None
+    return base + (per_level * level)
 
 
 _WORKSHOP_FORMULAS: Dict[str, callable] = {
@@ -152,7 +158,13 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Rapid Fire Duration": lambda level: 0.6 + 0.05 * level,
     "Bounce Shot Chance": lambda level: _pct(0.8 * level),
     "Bounce Shot Targets": lambda level: 1 + level,
-    "Bounce Shot Range": lambda level: None,
+    "Bounce Shot Range": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=60,
+        base=2.0,
+        per_level=0.1,
+    ),
     "Super Critical Chance": lambda level: _pct(0.2 * level),
     "Super Critical Mult": lambda level: 1.2 + 0.1 * level,
     "Rend Armor Chance": lambda level: _pct(0.5 + 0.1 * level),
@@ -175,7 +187,34 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Free Attack Upgrade": lambda level: _pct(0.5 * level),
     "Free Defense Upgrade": lambda level: _pct(0.5 * level),
     "Free Utility Upgrade": lambda level: _pct(0.5 * level),
-    "Max Amount": lambda level: None,
+    "Max Amount": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=500,
+        base=1.0,
+        per_level=0.031,
+    ),
+    "Max Recovery": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=500,
+        base=1.0,
+        per_level=0.031,
+    ),
+    "Attack Speed": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=99,
+        base=1.0,
+        per_level=0.05,
+    ),
+    "Wall Health": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=1800,
+        base=0.2,
+        per_level=0.001,
+    ),
     "Cash / Wave": lambda level: 4 * level,
     "Coin / Wave": lambda level: 1 + level,
     "Critical Chance": lambda level: _pct(1 + 1 * level),

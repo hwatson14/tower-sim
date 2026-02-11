@@ -138,7 +138,7 @@ def test_compile_full_stat_inputs_reports_uw_value_mismatch() -> None:
     assert "uw_value_mismatch:Golden Tower:Multiplier:1" in compiled.missing
 
 
-def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
+def test_compile_full_stat_inputs_compiles_bounce_shot_range_formula() -> None:
     workshop_entries = {
         "Bounce Shot Range": WorkshopEntrySnapshot(
             name="Bounce Shot Range",
@@ -156,7 +156,57 @@ def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:
 
     compiled = compile_full_stat_inputs(snapshot)
 
-    assert "workshop_unsupported:Bounce Shot Range" in compiled.missing
+    assert "workshop_unsupported:Bounce Shot Range" not in compiled.missing
+    bounce = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_bounce_shot_range"
+    )
+    assert bounce.base_value == 2.1
+
+
+def test_compile_full_stat_inputs_aliases_max_amount_to_max_recovery() -> None:
+    workshop_entries = {
+        "Max Amount": WorkshopEntrySnapshot(
+            name="Max Amount",
+            unlocked=None,
+            coin_level=500,
+            end_level=500,
+            max_level=500,
+            category=None,
+        )
+    }
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries=workshop_entries,
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "workshop_unsupported:Max Amount" not in compiled.missing
+    max_recovery = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_max_recovery"
+    )
+    assert max_recovery.base_value == 16.5
+
+
+def test_compile_full_stat_inputs_rejects_attack_speed_above_workshop_cap() -> None:
+    workshop_entries = {
+        "Attack Speed": WorkshopEntrySnapshot(
+            name="Attack Speed",
+            unlocked=None,
+            coin_level=100,
+            end_level=100,
+            max_level=100,
+            category=None,
+        )
+    }
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries=workshop_entries,
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "workshop_unsupported:Attack Speed" in compiled.missing
 
 
 def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -> None:
