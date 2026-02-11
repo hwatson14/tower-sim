@@ -324,10 +324,15 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 58.80988599999171,
+    "preflight_ms": 62.63244600000917,
     "statbook_rows": 110,
     "timing_uptime": {
       "bot_levels_source": "present",
+      "contract_scope": {
+        "authoritative": false,
+        "contract_status": "excluded",
+        "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome"
+      },
       "expected_coin_multiplier": 7.255800000000001,
       "expected_damage_multiplier": 1.4166666666666665,
       "expected_damage_taken": 1.0,
