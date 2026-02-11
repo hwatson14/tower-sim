@@ -66,7 +66,7 @@ def _load_snapshot(data: Dict[str, Any]) -> AccountSnapshot:
         workshop=_parse_workshop(_require_dict(data, "workshop")),
         workshop_enhancements=_parse_table(_require_dict(data, "workshop_enhancements")),
         ultimate_weapons=_parse_ultimate_weapons(_require_dict(data, "ultimate_weapons")),
-        relics=_require_dict_of_optional_ints(data, "relics"),
+        relics=_require_dict_of_optional_numbers(data, "relics"),
         vault=_require_dict_of_optional_ints(data, "vault"),
         bots=_require_list_of_str(data, "bots"),
         bot_upgrades=_parse_bot_upgrades(_require_dict(data, "bot_upgrades")),
@@ -317,6 +317,21 @@ def _require_list_of_row(data: Dict[str, Any], key: str) -> List[List[str]]:
         rows.append([str(cell) for cell in row])
     return rows
 
+
+
+
+def _require_dict_of_optional_numbers(data: Dict[str, Any], key: str) -> Dict[str, Optional[float]]:
+    value = data.get(key)
+    _ensure_dict(value, key)
+    parsed: Dict[str, Optional[float]] = {}
+    for k, v in value.items():
+        if v is None:
+            parsed[str(k)] = None
+        elif isinstance(v, (int, float)):
+            parsed[str(k)] = float(v)
+        else:
+            raise ValueError(f"{key}[{k}] must be a number or null.")
+    return parsed
 
 def _require_dict_of_optional_ints(data: Dict[str, Any], key: str) -> Dict[str, Optional[int]]:
     value = data.get(key)

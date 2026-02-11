@@ -315,11 +315,64 @@ def compile_full_stat_inputs(
         stat_inputs.extend(uw_inputs)
         missing.extend(uw_missing)
 
+    relic_inputs = _compile_relic_stat_inputs(ids_snapshot)
+    stat_inputs.extend(relic_inputs)
+
     return CompiledStatInputs(
         stat_inputs=stat_inputs,
         missing=sorted(set(missing)),
     )
 
+
+
+
+def _compile_relic_stat_inputs(ids_snapshot: AccountSnapshot) -> List[StatInput]:
+    def _sum(keys: Tuple[str, ...]) -> float:
+        total = 0.0
+        for key in keys:
+            raw = ids_snapshot.relics.get(key)
+            if raw is None:
+                continue
+            value = float(raw)
+            if value < 0.0:
+                raise ValueError(f"Relic bonus must be non-negative for {key!r}, got {value}.")
+            total += value
+        return total
+
+    specs = (
+        (("Health",), "tower_hp", "mult", "relics:health"),
+        (("Health Regen",), "tower_regen", "mult", "relics:health_regen"),
+        (("Wall Health",), "wall_hp", "mult", "relics:wall_health"),
+        (("Wall Regen",), "wall_regen", "mult", "relics:wall_regen"),
+        (("Defense", "Defense %"), "def_pct", "delta", "relics:defense"),
+        (("Enemy Attack Level Skip",), "eals_pct", "delta", "relics:eals"),
+        (("Enemy Health Level Skip",), "ehls_pct", "delta", "relics:ehls"),
+    )
+
+    inputs: List[StatInput] = []
+    for keys, stat_id, mode, provenance in specs:
+        total = _sum(keys)
+        if total <= 0.0:
+            continue
+        if mode == "mult":
+            inputs.append(
+                StatInput(
+                    stat_id=stat_id,
+                    phase=Phase.START_OF_RUN,
+                    enhancement_multiplier=1.0 + total,
+                    provenance=provenance,
+                )
+            )
+        else:
+            inputs.append(
+                StatInput(
+                    stat_id=stat_id,
+                    phase=Phase.START_OF_RUN,
+                    loadout_delta=total,
+                    provenance=provenance,
+                )
+            )
+    return inputs
 
 def _compile_workshop_stat_inputs(
     ids_snapshot: AccountSnapshot,

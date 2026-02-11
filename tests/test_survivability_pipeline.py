@@ -94,7 +94,7 @@ def test_thorns_and_plasma_cannon_inputs() -> None:
         ids_snapshot, spec, module_context="Testing", allow_provisional=True
     )
     base_only = report["snapshots"]["base_only"]
-    assert base_only["thorns_damage_mult"] == pytest.approx(0.06435, rel=1e-9)
+    assert base_only["thorns_damage_mult"] == pytest.approx(0.0701415, rel=1e-9)
 
     plasma_report = build_survivability_report(
         ids_snapshot,
@@ -122,3 +122,4 @@ def test_enemy_level_skip_uses_lab_plus_workshop_plus_enhancement_multiplier() -
 
     assert base_only["eals_pct"] == pytest.approx(0.21275, rel=1e-9)
     assert base_only["ehls_pct"] == pytest.approx(0.207, rel=1e-9)
+

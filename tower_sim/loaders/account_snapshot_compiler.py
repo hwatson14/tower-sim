@@ -61,7 +61,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
     workshop = _parse_workshop(raw_sections.get("WS", []), default_preset=default_preset)
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
     ultimate_weapons = _parse_ultimate_weapons(raw_sections.get("UWs", []))
-    relics = _parse_key_value_int(raw_sections.get("Relics", []))
+    relics = _parse_key_value_float(raw_sections.get("Relics", []))
     vault = _parse_key_value_int(raw_sections.get("Vault", []))
     bots, bot_upgrades = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
@@ -221,6 +221,16 @@ def _parse_key_value_int(rows: List[List[str]]) -> Dict[str, Optional[int]]:
         if not name:
             continue
         values[name] = _parse_optional_int_relaxed(_safe_cell(row, 1))
+    return values
+
+
+def _parse_key_value_float(rows: List[List[str]]) -> Dict[str, Optional[float]]:
+    values: Dict[str, Optional[float]] = {}
+    for row in rows:
+        name = row[0].strip() if row else ""
+        if not name:
+            continue
+        values[name] = _parse_optional_float(_safe_cell(row, 1))
     return values
 
 
