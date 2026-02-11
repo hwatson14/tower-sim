@@ -654,3 +654,9 @@ Any of the following must stop work and ask for clarification:
 - [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
 - [x] Route max-wave CI outputs through `out/` and publish `out/runner_output_latest.json` + `out/ep_export_final_stats_report_latest.json` on `main`.
 - [x] Split CI responsibilities so `max_wave_runner` runs max-wave-only contract checks while a dedicated always-on `pytest` workflow handles full-suite gating; keep a path-scoped agent-surface runner for run API + README instruction contract coverage.
+- [x] Add canonical `mechanics/` manifest proposal scaffold to centralize formula/mechanic contracts and define fail-closed routing expectations.
+- [x] Consolidate `mechanics/` contract onto existing `tables/registry/ep_formulas` assets and enforce eDamage wrapper routing through registry LAMBDA evaluation.
+- [x] Add mechanics contract usage audit to enforce manifest parity with runtime `evaluate_lambda` callsites and EP export registry source mappings.
+- [x] Make `mechanics/manifest.yaml` the single authoritative mechanics selector and route runtime EP registry loads through manifest-driven loader with bypass guard tests.
+- [x] Enforce single active mechanics pack in `mechanics/manifest.yaml` and require manifest-declared pack file mapping for registry + eHP legacy tables.
+- [x] Remove EP registry path override hook (`registry_dir`) so manifest-selected mechanics pack is the only runtime registry source.

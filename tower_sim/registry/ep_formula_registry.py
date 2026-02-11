@@ -69,6 +69,10 @@ class RegistryValidationError(ValueError):
         self.missing_symbols = list(missing_symbols or [])
 
 
+class MechanicsManifestError(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class LambdaMechanic:
     name: str
@@ -107,14 +111,23 @@ class FormulaRegistry:
             )
 
 
-def load_ep_formula_registry(
-    registry_dir: Path | None = None, *, strict: bool = True
-) -> FormulaRegistry:
-    resolved_dir = registry_dir or _default_registry_dir()
-    formula_data = _load_yaml(resolved_dir / "formula_library.yaml")
-    mechanics_data = _load_yaml(resolved_dir / "mechanics_library.yaml")
-    targets = _load_yaml(resolved_dir / "targets.yaml")
-    sources = _load_yaml(resolved_dir / "sources.yaml")
+@dataclass(frozen=True)
+class ActiveMechanicsPack:
+    pack_id: str
+    pack_path: Path
+    mechanics_library: Mapping[str, object]
+    formula_library: Mapping[str, object]
+    targets: Mapping[str, object]
+    sources: Mapping[str, object]
+    legacy_v0_7_payload: Mapping[str, object] | None
+
+
+def load_ep_formula_registry(*, strict: bool = True) -> FormulaRegistry:
+    active_pack = load_active_mechanics_pack()
+    formula_data = active_pack.formula_library
+    mechanics_data = active_pack.mechanics_library
+    targets = active_pack.targets
+    sources = active_pack.sources
 
     mechanics = _parse_mechanics(mechanics_data)
     formulas = _parse_formulas(formula_data, mechanics)
@@ -135,7 +148,10 @@ def _default_registry_dir() -> Path:
 
 
 def _load_yaml(path: Path) -> Mapping[str, object]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise MechanicsManifestError(f"Expected YAML mapping in {path}")
+    return raw
 
 
 def _parse_mechanics(raw: Mapping[str, object]) -> Dict[str, LambdaMechanic]:

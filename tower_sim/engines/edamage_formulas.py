@@ -20,24 +20,21 @@ def epd_aspd(
     has_mastery: bool,
     mastery_level: float,
 ) -> float:
-    """EPD_ASPD from Effective Paths eDamage extract (DJ5 -> EPD_ASPD)."""
-    ws = 1 / (1 + ws_level * 0.02)
-    ws_plus = 1 / (1 + wsp_level * 0.01)
-    lab = 1 / (1 + lab_level * 0.02)
-    card_aspd = 1 / (1 + card_level * 0.02) if has_card else 1
-    substat_value = 1 / (1 + substat)
-    mastery = 1 / (1 + (0.005 * (1 + mastery_level))) if has_mastery else 1
-    relic_bonus = 1 / (1 + relic)
-    vault_bonus = 1 / (1 + vault)
-    return (
-        ws
-        * ws_plus
-        * lab
-        * card_aspd
-        * substat_value
-        * mastery
-        * relic_bonus
-        * vault_bonus
+    """EPD_ASPD from Effective Paths mechanics registry."""
+    return evaluate_lambda(
+        "EPD_ASPD",
+        {
+            "ws_level": ws_level,
+            "wsp_level": wsp_level,
+            "lab_level": lab_level,
+            "has_card": has_card,
+            "card_level": card_level,
+            "substat": substat,
+            "relic": relic,
+            "vault": vault,
+            "has_mastery": has_mastery,
+            "mastery_level": mastery_level,
+        },
     )
 
 
@@ -51,11 +48,20 @@ def epd_crit_chance(
     has_mastery: bool,
     mastery_level: float,
 ) -> float:
-    """EPD_CRIT_CHANCE from Effective Paths eDamage extract (CZ5 -> EPD_CRIT_CHANCE)."""
-    ws = ws_level * 0.003
-    card_cc = card_level * 0.0015 if has_card else 0.0
-    mastery = 0.001 * (1 + mastery_level) if has_mastery else 0.0
-    return ws + card_cc + substat + relic + vault + mastery
+    """EPD_CRIT_CHANCE from Effective Paths mechanics registry."""
+    return evaluate_lambda(
+        "EPD_CRIT_CHANCE",
+        {
+            "ws_level": ws_level,
+            "has_card": has_card,
+            "card_level": card_level,
+            "relic": relic,
+            "vault": vault,
+            "substat": substat,
+            "has_mastery": has_mastery,
+            "mastery_level": mastery_level,
+        },
+    )
 
 
 def epd_critical(
@@ -65,12 +71,17 @@ def epd_critical(
     super_crit_mult: float,
     being_annihilator: float,
 ) -> float:
-    """EPD_CRITICAL from Effective Paths eDamage extract (DD5 -> EPD_CRITICAL)."""
-    cc = min(1.0, crit_chance)
-    normal_crit = 1 + cc * (crit_factor - 1)
-    super_crit_chance = min(cc, super_crit_chance)
-    super_crit = 1 + super_crit_chance * (super_crit_mult - crit_factor)
-    return normal_crit * super_crit + being_annihilator
+    """EPD_CRITICAL from Effective Paths mechanics registry."""
+    return evaluate_lambda(
+        "EPD_CRITICAL",
+        {
+            "cc": crit_chance,
+            "cf": crit_factor,
+            "scc": super_crit_chance,
+            "scm": super_crit_mult,
+            "being_annihilator": being_annihilator,
+        },
+    )
 
 
 __all__ = [
