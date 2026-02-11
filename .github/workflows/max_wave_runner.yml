@@ -91,6 +91,8 @@ jobs:
           from pathlib import Path
 
           from tower_sim.registry.combat_stat_contract import (
+              ordered_stat_lineage_sections,
+              required_max_wave_stat_input_ids,
               required_combat_stat_ids,
               stat_lineage_manifest,
           )
@@ -99,6 +101,8 @@ jobs:
           out_dir.mkdir(parents=True, exist_ok=True)
 
           manifest = stat_lineage_manifest()
+          section_defs = ordered_stat_lineage_sections()
+          ordered_stat_ids = [stat_id for _name, stat_ids in section_defs for stat_id in stat_ids]
           serialized = {
               stat_id: [
                   {
@@ -107,6 +111,9 @@ jobs:
                       "reaches_stat_input": bool(entry.reaches_stat_input),
                       "exclusion_reason": entry.exclusion_reason,
                   }
+                  for entry in manifest[stat_id]
+              ]
+              for stat_id in ordered_stat_ids
                   for entry in entries
               ]
               for stat_id, entries in sorted(manifest.items())
@@ -114,6 +121,14 @@ jobs:
           payload = {
               "schema": "stat_lineage_manifest.v1",
               "stat_count": len(serialized),
+              "required_max_wave_stat_input_ids": list(required_max_wave_stat_input_ids()),
+              "sections": [
+                  {
+                      "name": name,
+                      "stat_ids": list(stat_ids),
+                  }
+                  for name, stat_ids in section_defs
+              ],
               "required_combat_stat_ids": list(required_combat_stat_ids()),
               "stats": serialized,
           }
@@ -122,6 +137,7 @@ jobs:
               encoding="utf-8",
           )
 
+          required = set(required_max_wave_stat_input_ids())
           required = set(required_combat_stat_ids())
           reached_required = sorted(
               stat_id

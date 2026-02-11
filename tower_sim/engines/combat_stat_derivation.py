@@ -18,7 +18,10 @@ from tower_sim.loaders.tournament_bc_enrichment import (
     TOURNAMENT_HEAT_BC_TO_STATS,
     map_tournament_heat_bc_to_stat_magnitudes,
 )
-from tower_sim.registry.combat_stat_contract import required_combat_stat_ids
+from tower_sim.registry.combat_stat_contract import (
+    required_combat_stat_ids,
+    required_max_wave_stat_input_ids,
+)
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
 
@@ -135,15 +138,7 @@ def derive_canonical_combat_snapshot(
 
 
 def _missing_required_stat_inputs(stat_inputs: Iterable[StatInput]) -> List[str]:
-    required = {
-        "eals_pct",
-        "ehls_pct",
-        "orb_damage_mult",
-        "death_ray_damage_mult",
-        "plasma_cannon_damage_mult",
-        "knockback_mult",
-        *required_combat_stat_ids(),
-    }
+    required = set(required_max_wave_stat_input_ids())
     present = {stat_input.stat_id for stat_input in stat_inputs}
     return [f"stat_input:{stat_id}" for stat_id in sorted(required - present)]
 
