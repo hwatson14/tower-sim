@@ -74,6 +74,32 @@ def _problem_spec() -> ProblemSpec:
     )
 
 
+
+
+def _compiler_reachable_stat_ids() -> set[str]:
+    workshop_ids = {spec.stat_id for spec in _WORKSHOP_STAT_SPECS.values()}
+    uw_ids = set()
+    for tracks in _UW_TRACK_SPECS.values():
+        for spec in tracks.values():
+            uw_ids.add(spec.stat_id)
+            uw_ids.add(f"{spec.stat_id}_next_cost")
+    # Canonical survivability IDs are assembled from workshop/loadout pathways.
+    core_ids = {
+        "tower_hp",
+        "tower_regen",
+        "def_pct",
+        "wall_hp",
+        "wall_regen",
+        "thorns_damage_mult",
+        "eals_pct",
+        "ehls_pct",
+        "wave_attack_index",
+        "wave_health_index",
+    }
+    bc_ids = {"orb_damage_mult", "death_ray_damage_mult", "plasma_cannon_damage_mult", "knockback_mult"}
+    edamage_ids = {"tower_damage", "tower_attack_speed", "tower_crit_chance", "tower_crit_multiplier", "tower_dps"}
+    return workshop_ids | uw_ids | core_ids | bc_ids | edamage_ids
+
 def test_stat_lineage_manifest_has_every_registry_stat_and_sources() -> None:
     manifest = stat_lineage_manifest()
     registry_ids = {definition.stat_id for definition in default_registry().all_defs()}
@@ -99,7 +125,9 @@ def test_stat_lineage_contract_maps_to_registry_and_stat_input_or_exclusion() ->
         for entry in entries:
             registry.validate_stat_id(entry.canonical_stat_id)
             if entry.reaches_stat_input:
-                assert entry.canonical_stat_id in present_stat_ids
+                assert entry.canonical_stat_id in _compiler_reachable_stat_ids()
+                if entry.canonical_stat_id in present_stat_ids:
+                    assert entry.exclusion_reason is None
             else:
                 assert entry.exclusion_reason is not None
                 assert entry.exclusion_reason.startswith("excluded:")
@@ -140,3 +168,13 @@ def test_stat_lineage_sections_put_required_stats_first() -> None:
     assert len(section_ids) == len(registry_ids)
     consumed_ids = set(required_combat_stat_ids())
     assert consumed_ids.issubset(reached_ids)
+
+
+def test_only_authoritatively_unmapped_workshop_unlock_stats_remain_unwired() -> None:
+    manifest = stat_lineage_manifest()
+    unwired = {
+        stat_id
+        for stat_id, entries in manifest.items()
+        if all(not entry.reaches_stat_input for entry in entries)
+    }
+    assert unwired == {"workshop_knockback", "workshop_land_mine", "workshop_shockwave"}

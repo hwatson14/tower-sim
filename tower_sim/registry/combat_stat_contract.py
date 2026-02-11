@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, Mapping, Tuple
 
+from tower_sim.engines.stat_input_compiler import _UW_TRACK_SPECS, _WORKSHOP_STAT_SPECS
 from tower_sim.registry.stat_registry import default_registry
 
 
@@ -99,21 +100,43 @@ _CONTRIBUTORS: Tuple[str, ...] = (
 )
 
 
+def _compiled_workshop_stat_ids() -> Tuple[str, ...]:
+    return tuple(sorted({spec.stat_id for spec in _WORKSHOP_STAT_SPECS.values()}))
+
+
+def _compiled_uw_stat_ids() -> Tuple[str, ...]:
+    stat_ids = set()
+    for tracks in _UW_TRACK_SPECS.values():
+        for spec in tracks.values():
+            stat_ids.add(spec.stat_id)
+            stat_ids.add(f"{spec.stat_id}_next_cost")
+    return tuple(sorted(stat_ids))
+
+
 # Explicit reaches-stat-input declarations with provenance in existing runtime wiring.
 # All unspecified contributor/stat combinations fail-closed as excluded.
 _REACHES_STAT_INPUT: Dict[str, Tuple[str, ...]] = {
+    **{stat_id: ("workshop",) for stat_id in _compiled_workshop_stat_ids()},
+    **{stat_id: ("uw",) for stat_id in _compiled_uw_stat_ids()},
     "tower_hp": ("workshop",),
     "tower_regen": ("workshop",),
-    "def_pct": ("workshop", "bc"),
     "wall_hp": ("workshop",),
     "wall_regen": ("workshop",),
+    "def_pct": ("workshop", "bc"),
     "thorns_damage_mult": ("workshop", "bc"),
-    "eals_pct": ("workshop",),
-    "ehls_pct": ("workshop",),
     "orb_damage_mult": ("bc",),
     "death_ray_damage_mult": ("bc",),
     "plasma_cannon_damage_mult": ("bc",),
     "knockback_mult": ("bc",),
+    "eals_pct": ("workshop", "lab"),
+    "ehls_pct": ("workshop", "lab"),
+    "wave_attack_index": ("workshop", "lab"),
+    "wave_health_index": ("workshop", "lab"),
+    "tower_damage": ("workshop", "lab", "card", "module", "relic", "perk"),
+    "tower_attack_speed": ("workshop", "lab", "card", "module", "relic"),
+    "tower_crit_chance": ("workshop", "card", "module", "relic"),
+    "tower_crit_multiplier": ("workshop", "module"),
+    "tower_dps": ("workshop", "lab", "card", "module", "relic", "perk"),
 }
 
 
