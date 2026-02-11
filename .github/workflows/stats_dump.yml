@@ -185,9 +185,11 @@ jobs:
             out/stage_3_with_loadout_latest.json \
             out/stage_4_with_battle_conditions_latest.json \
             out/stage_5_end_of_run_latest.json
+          git add -A out/*_latest.json
           if git diff --cached --quiet; then
             echo "No artifact changes to commit."
             exit 0
           fi
           git commit -m "Update stats dump standalone and latest artifacts"
+          git commit -m "Update latest stats dump artifacts"
           git push origin HEAD

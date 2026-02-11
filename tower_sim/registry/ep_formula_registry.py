@@ -69,6 +69,10 @@ class RegistryValidationError(ValueError):
         self.missing_symbols = list(missing_symbols or [])
 
 
+class MechanicsManifestError(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class LambdaMechanic:
     name: str
@@ -107,14 +111,23 @@ class FormulaRegistry:
             )
 
 
-def load_ep_formula_registry(
-    registry_dir: Path | None = None, *, strict: bool = True
-) -> FormulaRegistry:
-    resolved_dir = registry_dir or _default_registry_dir()
-    formula_data = _load_yaml(resolved_dir / "formula_library.yaml")
-    mechanics_data = _load_yaml(resolved_dir / "mechanics_library.yaml")
-    targets = _load_yaml(resolved_dir / "targets.yaml")
-    sources = _load_yaml(resolved_dir / "sources.yaml")
+@dataclass(frozen=True)
+class ActiveMechanicsPack:
+    pack_id: str
+    pack_path: Path
+    mechanics_library: Mapping[str, object]
+    formula_library: Mapping[str, object]
+    targets: Mapping[str, object]
+    sources: Mapping[str, object]
+    legacy_v0_7_payload: Mapping[str, object] | None
+
+
+def load_ep_formula_registry(*, strict: bool = True) -> FormulaRegistry:
+    active_pack = load_active_mechanics_pack()
+    formula_data = active_pack.formula_library
+    mechanics_data = active_pack.mechanics_library
+    targets = active_pack.targets
+    sources = active_pack.sources
 
     mechanics = _parse_mechanics(mechanics_data)
     formulas = _parse_formulas(formula_data, mechanics)
@@ -132,10 +145,93 @@ def load_ep_formula_registry(
 
 def _default_registry_dir() -> Path:
     return Path(__file__).resolve().parents[2] / "tables" / "meta" / "registry" / "ep_formulas"
+def _default_manifest_path() -> Path:
+    return Path(__file__).resolve().parents[2] / "mechanics" / "manifest.yaml"
+
+
+def load_active_mechanics_pack() -> ActiveMechanicsPack:
+    manifest_path = _default_manifest_path()
+    if not manifest_path.exists():
+        raise MechanicsManifestError(
+            f"Mechanics manifest not found: {manifest_path}"
+        )
+
+    manifest = _load_yaml(manifest_path)
+    schema_version = manifest.get("schema_version")
+    if schema_version != 1:
+        raise MechanicsManifestError(
+            f"Unsupported mechanics manifest schema_version: {schema_version!r}"
+        )
+
+    active_pack_id = manifest.get("active_pack")
+    if not isinstance(active_pack_id, str) or not active_pack_id:
+        raise MechanicsManifestError("Manifest active_pack must be a non-empty string")
+
+    packs = manifest.get("packs")
+    if not isinstance(packs, dict):
+        raise MechanicsManifestError("Manifest packs must be a mapping")
+
+    pack_cfg = packs.get(active_pack_id)
+    if not isinstance(pack_cfg, dict):
+        raise MechanicsManifestError(
+            f"Active mechanics pack {active_pack_id!r} is not defined"
+        )
+
+    pack_path_raw = pack_cfg.get("path")
+    if not isinstance(pack_path_raw, str) or not pack_path_raw:
+        raise MechanicsManifestError(
+            f"Pack {active_pack_id!r} must define a non-empty path"
+        )
+
+    pack_root = (manifest_path.parent.parent / pack_path_raw).resolve()
+    if not pack_root.exists() or not pack_root.is_dir():
+        raise MechanicsManifestError(
+            f"Pack {active_pack_id!r} path does not exist: {pack_root}"
+        )
+
+    files = pack_cfg.get("files")
+    if not isinstance(files, dict):
+        raise MechanicsManifestError(
+            f"Pack {active_pack_id!r} must define a files mapping"
+        )
+
+    required_files = {
+        "mechanics": "mechanics_library",
+        "formulas": "formula_library",
+        "targets": "targets",
+        "sources": "sources",
+        "ehp_legacy": "ehp_legacy",
+    }
+    payloads: Dict[str, Mapping[str, object]] = {}
+    for manifest_key, payload_key in required_files.items():
+        file_name = files.get(manifest_key)
+        if not isinstance(file_name, str) or not file_name:
+            raise MechanicsManifestError(
+                f"Pack {active_pack_id!r} missing files.{manifest_key}"
+            )
+        file_path = pack_root / file_name
+        if not file_path.exists():
+            raise MechanicsManifestError(
+                f"Pack {active_pack_id!r} file does not exist: {file_path}"
+            )
+        payloads[payload_key] = _load_yaml(file_path)
+
+    return ActiveMechanicsPack(
+        pack_id=active_pack_id,
+        pack_path=pack_root,
+        mechanics_library=payloads["mechanics_library"],
+        formula_library=payloads["formula_library"],
+        targets=payloads["targets"],
+        sources=payloads["sources"],
+        legacy_v0_7_payload=payloads["ehp_legacy"],
+    )
 
 
 def _load_yaml(path: Path) -> Mapping[str, object]:
-    return yaml.safe_load(path.read_text(encoding="utf-8"))
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise MechanicsManifestError(f"Expected YAML mapping in {path}")
+    return raw
 
 
 def _parse_mechanics(raw: Mapping[str, object]) -> Dict[str, LambdaMechanic]:

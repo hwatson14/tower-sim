@@ -569,6 +569,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Extract guardian upgrade tables (DVT_Guardians) into CSV + loader + tests.
 - [x] Add perk effect and pool-weight tables from wiki excerpt (perks_v1.csv, perk_pool_weights_v1.csv).
 - [x] Add assist stone efficiency table from wiki excerpt (assist_stone_levels_v1.csv).
+- [x] Enforce repository-wide canonical naming contract at loaders/evaluators/audits + CI fail-closed parity and lineage gates.
 - [x] Add recovery package module substat caps table from wiki excerpt (module_substats_v1.csv).
 - [x] Add deterministic resource-optimizer runner scaffold (MAX_WAVE only; ECON and missing authoritative spend tables fail closed).
 - [x] Add module main-effect base/step tables from Module Base Stat sheet (module_main_effect_bases_v1.csv, module_main_effect_bands_v1.csv).
@@ -637,6 +638,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Scope stone optimizer mastery evaluations to the active preset and defer maxed-value evaluation to ranked rows so integrated stone actions remain functional without runner stalls.
 - [x] Complete stone optimizer UW/UW+ state integration (unlock + track progression patching into raw UWs snapshot rows) and remove provisional incomplete-reason flag.
 - [x] Add canonical combat stat contributor contract and source coverage gate tests for MAX_WAVE-required survivability stats.
+- [x] Expand lineage manifest to all canonical registry stats and enforce name-contract CI gate linking IDS sections -> compiler mappings -> registry IDs -> consumed MAX_WAVE stats, with explicit fail-closed exclusions for non-wired contributors.
 - [x] Add canonical combat-stat derivation engine scaffold (fail-closed required stat extraction + source attribution) and wire MAX_WAVE survivability reads through it.
 - [x] Refactor survivability pipeline required-stat list to consume canonical combat contract (with explicit optional offensive survivability stat flag).
 - [x] Add fail-closed MAX_WAVE guardrail for canonical core-stat spec/compiled override collisions and reuse canonical derivation in boss-combat probing.
@@ -654,3 +656,9 @@ Any of the following must stop work and ask for clarification:
 - [x] Document `out/` artifact inventory (current producers/publication status) and list proposed missing publishable artifacts for agent consumption.
 - [x] Route max-wave CI outputs through `out/` and publish `out/runner_output_latest.json` + `out/ep_export_final_stats_report_latest.json` on `main`.
 - [x] Split CI responsibilities so `max_wave_runner` runs max-wave-only contract checks while a dedicated always-on `pytest` workflow handles full-suite gating; keep a path-scoped agent-surface runner for run API + README instruction contract coverage.
+- [x] Add canonical `mechanics/` manifest proposal scaffold to centralize formula/mechanic contracts and define fail-closed routing expectations.
+- [x] Consolidate `mechanics/` contract onto existing `tables/registry/ep_formulas` assets and enforce eDamage wrapper routing through registry LAMBDA evaluation.
+- [x] Add mechanics contract usage audit to enforce manifest parity with runtime `evaluate_lambda` callsites and EP export registry source mappings.
+- [x] Make `mechanics/manifest.yaml` the single authoritative mechanics selector and route runtime EP registry loads through manifest-driven loader with bypass guard tests.
+- [x] Enforce single active mechanics pack in `mechanics/manifest.yaml` and require manifest-declared pack file mapping for registry + eHP legacy tables.
+- [x] Remove EP registry path override hook (`registry_dir`) so manifest-selected mechanics pack is the only runtime registry source.

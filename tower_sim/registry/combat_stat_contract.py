@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict, Iterable, Mapping, Tuple
 
+from tower_sim.registry.stat_registry import default_registry
+
 
 # Provenance: ARCHITECTURE.md "Evaluator Contracts" and survivability requirements
 # in `tower_sim/evaluators/max_wave.py` define these as required combat stats.
@@ -25,6 +27,16 @@ class CombatContributorCoverage:
     enhancement: bool
     tier: bool
     derived: bool
+
+
+@dataclass(frozen=True)
+class StatContributorContract:
+    """Machine-checkable contract for stat contributor lineage."""
+
+    contributor: str
+    canonical_stat_id: str
+    reaches_stat_input: bool
+    exclusion_reason: str | None = None
 
 
 # Phase-A contract: each canonical survivability stat must declare contributor coverage.
@@ -75,6 +87,73 @@ _CANONICAL_COVERAGE: Dict[str, CombatContributorCoverage] = {
 }
 
 
+_CONTRIBUTORS: Tuple[str, ...] = (
+    "workshop",
+    "lab",
+    "card",
+    "module",
+    "relic",
+    "perk",
+    "bc",
+    "uw",
+)
+
+
+# Explicit reaches-stat-input declarations with provenance in existing runtime wiring.
+# All unspecified contributor/stat combinations fail-closed as excluded.
+_REACHES_STAT_INPUT: Dict[str, Tuple[str, ...]] = {
+    "tower_hp": ("workshop",),
+    "tower_regen": ("workshop",),
+    "def_pct": ("workshop", "bc"),
+    "wall_hp": ("workshop",),
+    "wall_regen": ("workshop",),
+    "thorns_damage_mult": ("workshop", "bc"),
+}
+
+
+def _excluded_reason(contributor: str, stat_id: str) -> str:
+    if contributor == "bc":
+        return "excluded:no_authoritative_bc_mapping_for_stat"
+    if contributor == "uw":
+        return "excluded:no_authoritative_uw_mapping_for_stat"
+    return "excluded:not_wired_to_canonical_stat_input"
+
+
+# Authoritative lineage manifest for all canonical registry stat IDs.
+# Scope: contract declarations + CI validation gates.
+#
+# Contributor semantics:
+# - reaches_stat_input=True: contributor must flow into canonical StatInput composition.
+# - reaches_stat_input=False: contributor is explicitly excluded until deterministic,
+#   authoritative mechanics wiring exists; exclusion must state a fail-closed reason.
+_ALL_STAT_LINEAGE: Dict[str, Tuple[StatContributorContract, ...]] = {}
+for stat_def in default_registry().all_defs():
+    stat_id = stat_def.stat_id
+    reaches = set(_REACHES_STAT_INPUT.get(stat_id, tuple()))
+    _ALL_STAT_LINEAGE[stat_id] = tuple(
+        StatContributorContract(
+            contributor=contributor,
+            canonical_stat_id=stat_id,
+            reaches_stat_input=contributor in reaches,
+            exclusion_reason=None if contributor in reaches else _excluded_reason(contributor, stat_id),
+        )
+        for contributor in _CONTRIBUTORS
+    )
+
+
+# IDS section linkage for contributor-name contract gates.
+_CONTRIBUTOR_IDS_SECTIONS: Dict[str, Tuple[str, ...]] = {
+    "workshop": ("WS", "WS+"),
+    "lab": ("Labs",),
+    "card": ("Cards",),
+    "module": ("Modules",),
+    "relic": ("Relics",),
+    "perk": tuple(),
+    "bc": tuple(),
+    "uw": ("UWs",),
+}
+
+
 def required_combat_stat_ids() -> Tuple[str, ...]:
     return _CANONICAL_REQUIRED_COMBAT_STAT_IDS
 
@@ -95,6 +174,14 @@ def declared_combat_stat_coverage() -> Mapping[str, CombatContributorCoverage]:
     return _CANONICAL_COVERAGE
 
 
+def stat_lineage_manifest() -> Mapping[str, Tuple[StatContributorContract, ...]]:
+    return _ALL_STAT_LINEAGE
+
+
+def contributor_ids_sections() -> Mapping[str, Tuple[str, ...]]:
+    return _CONTRIBUTOR_IDS_SECTIONS
+
+
 def missing_required_combat_stats(stat_ids: Iterable[str]) -> Tuple[str, ...]:
     present = set(stat_ids)
     missing = sorted(set(_CANONICAL_REQUIRED_COMBAT_STAT_IDS) - present)
@@ -103,8 +190,11 @@ def missing_required_combat_stats(stat_ids: Iterable[str]) -> Tuple[str, ...]:
 
 __all__ = [
     "CombatContributorCoverage",
+    "StatContributorContract",
+    "contributor_ids_sections",
     "declared_combat_stat_coverage",
     "missing_required_combat_stats",
     "required_combat_stat_ids",
     "required_survivability_stat_ids",
+    "stat_lineage_manifest",
 ]

@@ -27,6 +27,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     stage_3_path = output_dir / "stage_3_with_loadout.json"
     stage_4_path = output_dir / "stage_4_with_battle_conditions.json"
     stage_5_path = output_dir / "stage_5_end_of_run.json"
+    diagnostics_path = output_dir / "diagnostics.json"
 
     env = os.environ.copy()
     env["PYTHONPATH"] = str(repo_root)
@@ -60,6 +61,7 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     assert stage_3_path.exists()
     assert stage_4_path.exists()
     assert stage_5_path.exists()
+    assert diagnostics_path.exists()
     assert not diff_path.exists()
     payload = json.loads(output_path.read_text())
     assert payload["schema_version"] == 5
@@ -140,11 +142,17 @@ def test_dump_ids_diagnostics(tmp_path: Path) -> None:
     stage_3 = json.loads(stage_3_path.read_text())
     stage_4 = json.loads(stage_4_path.read_text())
     stage_5 = json.loads(stage_5_path.read_text())
+    diagnostics = json.loads(diagnostics_path.read_text())
     assert stage_1["name"] == "locked_base"
     assert stage_2["name"] == "gem_respec_base"
     assert stage_3["name"] == "loadout"
     assert stage_4["name"] == "battle_conditions"
     assert stage_5["name"] == "end_of_run"
+    assert diagnostics["ids_path"] == str(ids_path)
+    assert diagnostics["schema_version"] == 5
+    assert "stages" in diagnostics
+    assert "run_stats" in diagnostics
+    assert "max_wave" in diagnostics
 
     output_dir_raw = tmp_path / "audit_raw"
     output_path_raw = output_dir_raw / "account_snapshot.json"
@@ -193,4 +201,30 @@ def test_dump_ids_diagnostics_runs_without_pythonpath_env(tmp_path: Path) -> Non
 
     assert (output_dir / "account_snapshot.json").exists()
     assert (output_dir / "stage_1_base_no_respec.json").exists()
+    assert (output_dir / "diagnostics.json").exists()
+    assert "Wrote" in result.stdout
+
+
+def test_dump_ids_diagnostics_writes_yaml_artifacts(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
+    output_dir = tmp_path / "audit_yaml"
+
+    result = subprocess.run(
+        [
+            sys.executable,
+            str(repo_root / "scripts" / "dump_ids_diagnostics.py"),
+            "--ids-path",
+            str(ids_path),
+            "--output-dir",
+            str(output_dir),
+            "--write-yaml",
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+    )
+
+    assert (output_dir / "account_snapshot.yml").exists()
+    assert (output_dir / "diagnostics.yml").exists()
     assert "Wrote" in result.stdout
