@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from tower_sim.evaluators.max_wave import MaxWaveEvaluator
+from tower_sim.evaluators.max_wave import (
+    MaxWaveEvaluator,
+    _compose_damage_reduction,
+    _resolve_expected_damage_taken,
+)
 from tower_sim.evaluators.max_wave_report import build_max_wave_report
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
@@ -133,3 +137,17 @@ def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     assert "wa_reduction" in timing
     assert "gcomp_enabled" in timing
     assert "expected_coin_multiplier" in timing or "missing" in timing
+
+
+def test_timing_damage_reduction_composition() -> None:
+    # Base DR and timing expected-damage-taken compose multiplicatively on damage taken.
+    composed = _compose_damage_reduction(
+        base_damage_reduction=0.30,
+        expected_damage_taken=0.80,
+    )
+    assert abs(composed - 0.44) < 1e-12
+
+
+def test_resolve_expected_damage_taken_defaults_from_timing_diag() -> None:
+    timing = {"expected_damage_taken": 1.0}
+    assert _resolve_expected_damage_taken(timing) == 1.0
