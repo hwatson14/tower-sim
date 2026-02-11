@@ -137,3 +137,10 @@ def test_compile_account_snapshot_uses_selected_workshop_preset_levels() -> None
     assert tourney.workshop["Damage"].coin_level == 211
     assert tourney.workshop["Damage"].end_level == 212
     assert tourney.workshop["Damage"].max_level == 999
+
+
+def test_relic_values_preserve_fractional_bonuses() -> None:
+    snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    assert snapshot.relics["Attack Speed"] == pytest.approx(0.05, rel=1e-12)
+    assert snapshot.relics["Defense %"] == pytest.approx(0.04, rel=1e-12)
+    assert snapshot.relics["Thorns"] == pytest.approx(0.09, rel=1e-12)

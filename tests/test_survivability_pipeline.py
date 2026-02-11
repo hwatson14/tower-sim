@@ -95,7 +95,7 @@ def test_thorns_and_plasma_cannon_inputs() -> None:
         ids_snapshot, spec, module_context="Testing", allow_provisional=True
     )
     base_only = report["snapshots"]["base_only"]
-    assert base_only["thorns_damage_mult"] == pytest.approx(0.06435, rel=1e-9)
+    assert base_only["thorns_damage_mult"] == pytest.approx(0.0701415, rel=1e-9)
 
     plasma_report = build_survivability_report(
         ids_snapshot,

@@ -611,9 +611,7 @@ def _sum_relic_bonus(
             continue
         value = relics.get(key)
         if value is None:
-            raise SurvivabilityPipelineError(
-                f"Missing relic value for {key!r} in IDS."
-            )
+            continue
         try:
             numeric = float(value)
         except ValueError as exc:
@@ -679,33 +677,7 @@ def _compile_loadout_stat_inputs(
         selected_cards=selected_cards,
     )
 
-    _apply_relic_effects(accumulator, ids_snapshot)
-
     return accumulator.to_stat_inputs()
-
-
-def _apply_relic_effects(
-    accumulator: "_StatAccumulator",
-    ids_snapshot: AccountSnapshot,
-) -> None:
-    defense_bonus = 0.0
-    for key in ("Defense", "Defense %"):
-        raw = ids_snapshot.relics.get(key)
-        if raw is None:
-            continue
-        try:
-            numeric = float(raw)
-        except ValueError as exc:
-            raise SurvivabilityPipelineError(
-                f"Invalid relic value for {key!r}: {raw!r}"
-            ) from exc
-        if numeric < 0:
-            raise SurvivabilityPipelineError(
-                f"Relic bonus must be non-negative for {key!r}, got {numeric}."
-            )
-        defense_bonus += numeric
-    if defense_bonus > 0.0:
-        accumulator.add("def_pct", defense_bonus, "relics:defense")
 
 
 def _resolve_skip_stat(ids_snapshot: AccountSnapshot, lab_name: str) -> float:

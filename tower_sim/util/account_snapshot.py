@@ -87,7 +87,7 @@ class AccountSnapshot:
     workshop: Dict[str, WorkshopEntrySnapshot]
     workshop_enhancements: TableSnapshot
     ultimate_weapons: Dict[str, UltimateWeaponSnapshot]
-    relics: Dict[str, Optional[int]]
+    relics: Dict[str, Optional[float]]
     vault: Dict[str, Optional[int]]
     bots: List[str]
     bot_upgrades: Dict[str, Dict[str, int]]

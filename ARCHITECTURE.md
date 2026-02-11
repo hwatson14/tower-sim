@@ -651,6 +651,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Move MAX_WAVE canonical stat-input assembly/validation into combat derivation engine so evaluator consumes prebuilt canonical inputs before search.
 - [x] Remove MAX_WAVE evaluator survivability-wrapper duplication; consume canonical combat snapshot directly at evaluation callsites.
 - [x] Move perk-timeline wave input transformation helper out of MAX_WAVE evaluator into canonical combat derivation module.
+- [x] Preserve fractional relic values from `_IDS.csv` and wire survivability relic modifiers (HP, regen, defense, thorns, EALS, EHLS).
+- [x] Wire survivability relic modifiers through `compile_full_stat_inputs` so relic effects are applied in StatEngine composition.
 - [x] Move wave-damage tier resolution and boss-survivability spec validation helpers into canonical combat derivation module and reuse from MAX_WAVE.
 - [x] Move at-wave snapshot assembly (including workshop at-wave overrides + wave-row mapping) into canonical combat derivation module and consume from MAX_WAVE.
 - [x] Remove residual MAX_WAVE per-wave damage helper wrapper; consume canonical attack-wave damage resolver directly in search path.

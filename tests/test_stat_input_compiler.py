@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
 from tower_sim.util.account_snapshot import (
@@ -284,3 +286,28 @@ def test_compile_full_stat_inputs_applies_health_lab_multiplier() -> None:
     )
     assert health_input.enhancement_multiplier is not None
     assert health_input.enhancement_multiplier > 1.0
+
+
+def test_compile_full_stat_inputs_includes_relic_modifiers() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "relics": {
+                "Health": 0.39,
+                "Health Regen": 0.21,
+                "Defense %": 0.04,
+                "Enemy Attack Level Skip": 0.02,
+                "Enemy Health Level Skip": 0.02,
+            },
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["tower_hp"].enhancement_multiplier == pytest.approx(1.39, rel=1e-12)
+    assert by_id["tower_regen"].enhancement_multiplier == pytest.approx(1.21, rel=1e-12)
+    assert by_id["def_pct"].loadout_delta == 0.04
+    assert by_id["eals_pct"].loadout_delta == 0.02
+    assert by_id["ehls_pct"].loadout_delta == 0.02
