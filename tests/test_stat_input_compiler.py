@@ -82,7 +82,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
         )
     }
     uw_rows = [
-        ["Golden Tower", "", "Multiplier", "5.8", "01 | x5.8 | Cost 5 ? | Next 13 ?"],
+        ["Golden Tower", "", "Multiplier", "1", "01 | x1 | Cost 5 ? | Next 13 ?"],
     ]
     snapshot = _snapshot_with_workshop_and_uw(
         workshop_entries=workshop_entries,
@@ -94,7 +94,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     tables = load_workshop_tables()
     expected_damage = float(workshop_value("Damage", 1, tables, section="WSValues"))
 
-    value = 5.8
+    value = 1.0
     next_cost = 13.0
 
     damage_input = next(
@@ -112,6 +112,30 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
         stat for stat in compiled.stat_inputs if stat.stat_id == "uw_golden_tower_multiplier_next_cost"
     )
     assert uw_cost_input.base_value == next_cost
+
+
+def test_compile_full_stat_inputs_reports_uw_value_mismatch() -> None:
+    workshop_entries = {
+        "Damage": WorkshopEntrySnapshot(
+            name="Damage",
+            unlocked=None,
+            coin_level=1,
+            end_level=1,
+            max_level=1,
+            category=None,
+        )
+    }
+    uw_rows = [
+        ["Golden Tower", "", "Multiplier", "5.8", "01 | x5.8 | Cost 5 ? | Next 13 ?"],
+    ]
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries=workshop_entries,
+        uw_rows=uw_rows,
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "uw_value_mismatch:Golden Tower:Multiplier:1" in compiled.missing
 
 
 def test_compile_full_stat_inputs_reports_unsupported_workshop_stat() -> None:

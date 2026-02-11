@@ -107,3 +107,33 @@ def test_compile_account_snapshot_fails_closed_on_unmapped_workshop_name() -> No
 
     with pytest.raises(ValueError, match="Naming contract violations in IDS snapshot"):
         compile_account_snapshot(bad_ids)
+
+
+def test_compile_account_snapshot_uses_selected_workshop_preset_levels() -> None:
+    ids_raw = parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    mutated = deepcopy(ids_raw.raw_sections)
+    updated = False
+    for row in mutated["WS"]:
+        if row and row[0].strip() == "Damage":
+            row[1] = "111"
+            row[2] = "112"
+            row[3] = "211"
+            row[4] = "212"
+            row[11] = "999"
+            updated = True
+            break
+    assert updated
+
+    from tower_sim.util.ids_raw import IdsRaw
+
+    modified = IdsRaw(ids_path=ids_raw.ids_path, header=ids_raw.header, raw_sections=mutated)
+
+    farming = compile_account_snapshot(modified, default_preset="Farming")
+    assert farming.workshop["Damage"].coin_level == 111
+    assert farming.workshop["Damage"].end_level == 112
+    assert farming.workshop["Damage"].max_level == 999
+
+    tourney = compile_account_snapshot(modified, default_preset="Tourney")
+    assert tourney.workshop["Damage"].coin_level == 211
+    assert tourney.workshop["Damage"].end_level == 212
+    assert tourney.workshop["Damage"].max_level == 999
