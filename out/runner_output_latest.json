@@ -42,16 +42,16 @@
     "tower_stats": {
       "damage_reduction": 0.0,
       "defense_abs": 0.0,
-      "defense_pct": 0.2,
+      "defense_pct": 0.26,
       "electrons_damage_frac": 0.0,
       "orb_damage_frac": 0.0,
       "pc_boss_mult": 1.0,
       "pc_frac": 0.0,
       "thorns_frac": 0.8,
-      "tower_hp": 1000.0,
-      "tower_regen": 50.0,
-      "wall_hp": 500.0,
-      "wall_regen": 5.0
+      "tower_hp": 7470.0,
+      "tower_regen": 150.0,
+      "wall_hp": 1900.0,
+      "wall_regen": 10.0
     },
     "wave": 1
   },
@@ -351,14 +351,14 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 62.63050000001158,
+    "preflight_ms": 61.353760999992346,
     "statbook_rows": 108,
     "timing_uptime": {
       "bot_levels_source": "present",
       "contract_scope": {
-        "authoritative": false,
-        "contract_status": "excluded",
-        "reason": "excluded:diagnostics_only_branch_not_consumed_by_max_wave_outcome"
+        "authoritative": true,
+        "contract_status": "consumed",
+        "reason": "consumed:timing_uptime_expected_damage_taken_feeds_max_wave_survivability"
       },
       "expected_coin_multiplier": 2.0810000000000004,
       "expected_damage_multiplier": 1.4166666666666667,
@@ -371,7 +371,7 @@
       "package_chance_stat_id": "workshop_package_chance",
       "package_event_count": 4,
       "package_event_model": "uniform_from_rate",
-      "packages_per_second": 0.0076647930505876335,
+      "packages_per_second": 0.00797138477261114,
       "uw_interval_counts": {
         "uw_black_hole": 40,
         "uw_chrono_field": 50,
