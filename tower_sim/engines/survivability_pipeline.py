@@ -583,6 +583,8 @@ def _resolve_thorns_inputs(
 
     wall_thorns_level = ids_snapshot.labs.get("Wall Thorn")
     if wall_thorns_level is None:
+        wall_thorns_level = ids_snapshot.labs.get("Wall Thorns")
+    if wall_thorns_level is None:
         raise SurvivabilityPipelineError("Missing canonical lab level for 'Wall Thorn' in IDS.")
     if wall_thorns_level < 0:
         raise SurvivabilityPipelineError(

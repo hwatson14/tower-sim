@@ -47,4 +47,4 @@ def test_statbook_reference_structure(tmp_path: Path) -> None:
     assert "tier_rule_delta_or_multiplier" in content
     assert "tower_hp" in content
     phases = {row.phase for row in result.statbook.rows}
-    assert {Phase.START_OF_RUN.value, Phase.END_OF_RUN.value}.issubset(phases)
+    assert {Phase.START_OF_RUN, Phase.END_OF_RUN}.issubset(phases)
