@@ -4,6 +4,8 @@ from dataclasses import dataclass
 import csv
 from pathlib import Path
 
+import pytest
+
 from tower_sim.engines.combat_stat_derivation import (
     build_canonical_stat_inputs,
     build_canonical_wave_row,
@@ -187,6 +189,287 @@ def test_build_canonical_stat_inputs_allows_core_override_in_explicit_mode(monke
     assert built.core_stat_override_policy == "explicit_override_mode"
     assert built.blocked_core_overrides == []
 
+
+def test_build_canonical_stat_inputs_ignores_workshop_alias_collisions(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="tower_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=120.0,
+                        provenance="workshop_alias:Health->tower_hp",
+                    )
+                ],
+                "missing": [],
+            },
+        )()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [],
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=_problem_spec(allow_core_stat_overrides=False),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    assert built.blocked_core_overrides == []
+
+
+def test_build_canonical_stat_inputs_uses_mode_specific_module_context(monkeypatch) -> None:
+    observed: list[str] = []
+
+    def _fake_compile(_ids_snapshot):
+        return type("_Compiled", (), {"stat_inputs": [], "missing": []})()
+
+    def _fake_loadout(_ids_snapshot, *, module_context, allow_provisional):
+        observed.append(module_context)
+        return []
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        _fake_loadout,
+    )
+
+    build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="farming", tier=12),
+            stat_inputs=[],
+        ),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+    build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="tournament", tier=12),
+            stat_inputs=[],
+        ),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    assert observed == ["Farming", "Tourney"]
+
+
+def test_build_canonical_stat_inputs_skips_unsupported_cards_but_keeps_loadout(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="tower_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=100.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="tower_regen",
+                        phase=Phase.START_OF_RUN,
+                        base_value=10.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="def_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.2,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="wall_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=20.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="wall_regen",
+                        phase=Phase.START_OF_RUN,
+                        base_value=1.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="thorns_damage_mult",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.1,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="eals_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="ehls_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.0,
+                        provenance="compiled",
+                    ),
+                ],
+                "missing": [],
+            },
+        )()
+
+    calls = {"count": 0}
+
+    def _fake_loadout(_ids_snapshot, *, module_context, selected_cards, allow_provisional):
+        calls["count"] += 1
+        if calls["count"] == 1:
+            raise ValueError("Unsupported card for survivability pipeline: 'Enemy Balance'.")
+        return [
+            StatInput(
+                stat_id="tower_hp",
+                phase=Phase.START_OF_RUN,
+                loadout_delta=50.0,
+                provenance="loadout",
+            )
+        ]
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        _fake_loadout,
+    )
+
+    class _Snapshot:
+        card_presets = {"Farming": ["Enemy Balance", "Health"]}
+
+    built = build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="farming", tier=12),
+            stat_inputs=[],
+        ),
+        ids_snapshot=_Snapshot(),
+        registry=default_registry(),
+    )
+
+    assert "survivability_loadout_unsupported_card:Enemy Balance" in built.compiled_missing
+    tower_hp = next(
+        item
+        for item in built.stat_inputs
+        if item.stat_id == "tower_hp" and item.phase == Phase.START_OF_RUN
+    )
+    assert tower_hp.loadout_delta == 50.0
+
+
+
+
+def test_build_canonical_stat_inputs_rebases_wall_stats_from_resolved_tower_values(monkeypatch) -> None:
+    def _fake_compile(_ids_snapshot):
+        return type(
+            "_Compiled",
+            (),
+            {
+                "stat_inputs": [
+                    StatInput(
+                        stat_id="tower_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=100.0,
+                        enhancement_multiplier=2.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="tower_regen",
+                        phase=Phase.START_OF_RUN,
+                        base_value=10.0,
+                        enhancement_multiplier=3.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="def_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.2,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="wall_hp",
+                        phase=Phase.START_OF_RUN,
+                        base_value=80.0,
+                        enhancement_multiplier=4.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="wall_regen",
+                        phase=Phase.START_OF_RUN,
+                        base_value=5.0,
+                        enhancement_multiplier=5.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="thorns_damage_mult",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.1,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="eals_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.0,
+                        provenance="compiled",
+                    ),
+                    StatInput(
+                        stat_id="ehls_pct",
+                        phase=Phase.START_OF_RUN,
+                        base_value=0.0,
+                        provenance="compiled",
+                    ),
+                ],
+                "missing": [],
+            },
+        )()
+
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        _fake_compile,
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        lambda *_args, **_kwargs: [],
+    )
+    monkeypatch.setattr(
+        "tower_sim.engines.combat_stat_derivation._wall_ratio_from_ids",
+        lambda _ids_snapshot, _stat_inputs: (2.5, 0.5, []),
+    )
+
+    built = build_canonical_stat_inputs(
+        problem_spec=ProblemSpec(
+            scenario=ScenarioSpec(mode="farming", tier=12),
+            stat_inputs=[],
+        ),
+        ids_snapshot=object(),
+        registry=default_registry(),
+    )
+
+    by_id = {
+        item.stat_id: item
+        for item in built.stat_inputs
+        if item.phase == Phase.START_OF_RUN
+    }
+    wall_hp = by_id["wall_hp"]
+    wall_regen = by_id["wall_regen"]
+
+    assert wall_hp.base_value == pytest.approx(500.0)
+    assert wall_hp.enhancement_multiplier == pytest.approx(4.0)
+    assert wall_regen.base_value == pytest.approx(15.0)
+    assert wall_regen.enhancement_multiplier == pytest.approx(5.0)
 
 def test_build_canonical_stat_inputs_blocks_non_core_base_override_in_strict_mode(monkeypatch) -> None:
     def _fake_compile(_ids_snapshot):

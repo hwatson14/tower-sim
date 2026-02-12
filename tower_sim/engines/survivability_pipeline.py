@@ -1557,6 +1557,20 @@ def _apply_card_effects(
                 accumulator.add(
                     "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
                 )
+            elif card_canonical in {
+                "CARD_ENEMY_BALANCE",
+                "CARD_CRITICAL_COIN",
+                "CARD_EXTRA_ORBS",
+                "CARD_ENERGY_SHIELD",
+                "CARD_LAND_MINE_STUN",
+                "CARD_SECOND_WIND",
+                "CARD_WAVE_ACCELERATOR",
+                "CARD_WAVE_SKIP",
+            }:
+                # These cards do not currently map to canonical survivability stat inputs.
+                # Their mechanics are handled in other pipeline surfaces (spawn/wave pacing,
+                # shield event handling, etc.) and are therefore a deterministic no-op here.
+                continue
             else:
                 raise SurvivabilityPipelineError(
                     f"Unsupported card for survivability pipeline: {card_name!r}."
@@ -1581,7 +1595,32 @@ def _resolve_card_effect(
         raise SurvivabilityPipelineError(
             f"Missing card {card_name!r} or card level in IDS."
         )
-    return get_card_effect(card_name, entry.level)
+    try:
+        return get_card_effect(card_name, entry.level)
+    except KeyError as exc:
+        try:
+            canonical = resolve_named_entity("cards", card_name)
+        except KeyError:
+            raise exc
+        if canonical in {
+            "CARD_ENEMY_BALANCE",
+            "CARD_CRITICAL_COIN",
+            "CARD_EXTRA_ORBS",
+            "CARD_ENERGY_SHIELD",
+            "CARD_LAND_MINE_STUN",
+            "CARD_SECOND_WIND",
+            "CARD_WAVE_ACCELERATOR",
+            "CARD_WAVE_SKIP",
+        }:
+            return CardEffect(
+                card=card_name,
+                rarity="Unknown",
+                level=int(entry.level),
+                value=0.0,
+                value_raw="0",
+                unit="flat",
+            )
+        raise exc
 
 
 class _StatAccumulator:

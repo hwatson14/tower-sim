@@ -669,4 +669,12 @@ Any of the following must stop work and ask for clarification:
 - [x] Make `mechanics/manifest.yaml` the single authoritative mechanics selector and route runtime EP registry loads through manifest-driven loader with bypass guard tests.
 - [x] Enforce single active mechanics pack in `mechanics/manifest.yaml` and require manifest-declared pack file mapping for registry + eHP legacy tables.
 - [x] Remove EP registry path override hook (`registry_dir`) so manifest-selected mechanics pack is the only runtime registry source.
+- [x] Recalibrate default max-wave sample fixture inputs to EP-export survivability anchors and add a non-zero max-wave contract test to keep runner outputs realistic enough for parity triage.
+- [x] Wire workshop survivability stats into canonical MAX_WAVE stat IDs via explicit compiler aliases (HP/regen/defense/wall/thorns/EALS/EHLS) with alias-collision-safe strict override merging.
+- [x] Route survivability loadout compilation by scenario mode (Farming/Tourney) in canonical MAX_WAVE stat-input assembly to prevent Testing-preset distortion.
+- [x] Ensure canonical wall survivability aliases consume resolved stat values (after multipliers/deltas) rather than raw workshop levels in stat-input compilation.
+- [x] Remove EP final-stats parity dependence on legacy eHP evaluator and source parity values from canonical max-wave combat/stat-input pipeline outputs.
+- [x] Make canonical stat-input build resilient to non-modeled card effects by skipping unsupported/unknown cards per preset while preserving supported loadout effects and explicit diagnostics.
+- [x] Rebase canonical wall HP/regen stat inputs from resolved tower values using workshop/lab wall ratios so wall survivability uses value-derived pipeline outputs instead of pre-loadout level-era bases.
+- [x] Align workshop at-wave progression outputs with canonical survivability IDs (including derived wall HP/regen) so per-wave snapshots consume canonical values instead of source-only `workshop_*` IDs.
 - [x] Add deterministic wiring-health scorecard audit (`python -m tower_sim.audit.wiring_health_check`) to gate naming contract, stat-lineage manifest summaries, and mechanics manifest resolution in one payload.

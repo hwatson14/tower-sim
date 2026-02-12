@@ -140,6 +140,35 @@ _WORKSHOP_STAT_SPECS: Dict[str, WorkshopStatSpec] = {
     "Max Amount": WorkshopStatSpec(stat_id="workshop_max_recovery"),
 }
 
+_WORKSHOP_CANONICAL_ALIASES: Dict[str, str] = {
+    "Health": "tower_hp",
+    "Health Regen": "tower_regen",
+    "Defense %": "def_pct",
+    "Thorn Damage": "thorns_damage_mult",
+    "Enemy Attack Level Skip": "eals_pct",
+    "Enemy Health Level Skip": "ehls_pct",
+}
+
+
+def _canonicalize_workshop_values(values: Dict[str, float]) -> Dict[str, float]:
+    """Emit canonical aliases for workshop-derived values.
+
+    Canonical max-wave/runtime consumers read survivability stats by canonical IDs,
+    while workshop progression still tracks source-specific `workshop_*` IDs.
+    Keep both representations deterministic and in-sync.
+    """
+
+    canonicalized = dict(values)
+    for workshop_name, canonical_stat_id in _WORKSHOP_CANONICAL_ALIASES.items():
+        spec = _WORKSHOP_STAT_SPECS.get(workshop_name)
+        if spec is None:
+            continue
+        source_value = canonicalized.get(spec.stat_id)
+        if source_value is None:
+            continue
+        canonicalized[canonical_stat_id] = float(source_value)
+    return canonicalized
+
 
 def _pct(value: float) -> float:
     return value / 100.0
@@ -392,23 +421,37 @@ def _compile_workshop_stat_inputs(
             missing.append(f"workshop_mapping:{name}")
             continue
         formula = _WORKSHOP_FORMULAS.get(name)
+        lab_multiplier = _resolve_lab_multiplier(name, ids_snapshot, labs, missing)
+        enhancement_multiplier = _combine_multipliers(
+            enhancement_map.get(spec.stat_id),
+            lab_multiplier,
+        )
         if formula is not None:
             value = formula(entry.coin_level)
             if value is None:
                 missing.append(f"workshop_unsupported:{name}")
                 continue
+            value_f = float(value)
             stat_inputs.append(
                 StatInput(
                     stat_id=spec.stat_id,
                     phase=Phase.START_OF_RUN,
-                    base_value=float(value),
-                    enhancement_multiplier=_combine_multipliers(
-                        enhancement_map.get(spec.stat_id),
-                        _resolve_lab_multiplier(name, ids_snapshot, labs, missing),
-                    ),
+                    base_value=value_f,
+                    enhancement_multiplier=enhancement_multiplier,
                     provenance="workshop_formula:DVT_WS_VALUE",
                 )
             )
+            canonical_stat_id = _WORKSHOP_CANONICAL_ALIASES.get(name)
+            if canonical_stat_id is not None:
+                stat_inputs.append(
+                    StatInput(
+                        stat_id=canonical_stat_id,
+                        phase=Phase.START_OF_RUN,
+                        base_value=value_f,
+                        enhancement_multiplier=enhancement_multiplier,
+                        provenance=f"workshop_alias:{name}->{canonical_stat_id}",
+                    )
+                )
             continue
         try:
             value = _resolve_workshop_value(
@@ -424,14 +467,123 @@ def _compile_workshop_stat_inputs(
                 stat_id=spec.stat_id,
                 phase=Phase.START_OF_RUN,
                 base_value=value,
-                enhancement_multiplier=_combine_multipliers(
-                    enhancement_map.get(spec.stat_id),
-                    _resolve_lab_multiplier(name, ids_snapshot, labs, missing),
-                ),
+                enhancement_multiplier=enhancement_multiplier,
                 provenance=_workshop_provenance(name),
             )
         )
+        canonical_stat_id = _WORKSHOP_CANONICAL_ALIASES.get(name)
+        if canonical_stat_id is not None:
+            stat_inputs.append(
+                StatInput(
+                    stat_id=canonical_stat_id,
+                    phase=Phase.START_OF_RUN,
+                    base_value=value,
+                    enhancement_multiplier=enhancement_multiplier,
+                    provenance=f"workshop_alias:{name}->{canonical_stat_id}",
+                )
+            )
+
+    wall_inputs, wall_missing = _compile_wall_survivability_aliases(
+        ids_snapshot=ids_snapshot,
+        labs=labs,
+        stat_inputs=stat_inputs,
+    )
+    stat_inputs.extend(wall_inputs)
+    missing.extend(wall_missing)
     return stat_inputs, missing
+
+
+def _compile_wall_survivability_aliases(
+    *,
+    ids_snapshot: AccountSnapshot,
+    labs,
+    stat_inputs: List[StatInput],
+) -> Tuple[List[StatInput], List[str]]:
+    missing: List[str] = []
+    by_id = {
+        item.stat_id: item
+        for item in stat_inputs
+        if item.phase == Phase.START_OF_RUN and item.base_value is not None
+    }
+    tower_hp = by_id.get("tower_hp")
+    tower_regen = by_id.get("tower_regen")
+    wall_health_ratio_input = by_id.get("workshop_wall_health")
+    if tower_hp is None:
+        missing.append("workshop_alias_missing:tower_hp")
+        return [], missing
+    if tower_regen is None:
+        missing.append("workshop_alias_missing:tower_regen")
+        return [], missing
+    if wall_health_ratio_input is None:
+        missing.append("workshop_alias_missing:workshop_wall_health")
+        return [], missing
+
+    wall_health_ratio = _resolved_stat_input_value(wall_health_ratio_input)
+    wall_health_lab = ids_snapshot.labs.get("Wall Health")
+    if wall_health_lab is None:
+        missing.append("lab_level:Wall Health")
+        wall_health_lab = 0
+    if wall_health_lab > 0:
+        lab = labs.get("Wall Health")
+        if lab is None:
+            missing.append("lab_table:Wall Health")
+            return [], missing
+        if wall_health_lab not in lab.levels:
+            missing.append(f"lab_table:Wall Health:{wall_health_lab}")
+            return [], missing
+        if lab.unit not in {"percent", "percent_points"}:
+            missing.append(f"lab_unit:Wall Health:{lab.unit}")
+            return [], missing
+        wall_health_ratio += float(lab.levels[wall_health_lab]) / 100.0
+
+    wall_regen_ratio_input = by_id.get("workshop_wall_regen")
+    wall_regen_ratio = (
+        _resolved_stat_input_value(wall_regen_ratio_input)
+        if wall_regen_ratio_input is not None
+        else 0.0
+    )
+    wall_regen_lab = ids_snapshot.labs.get("Wall Regen")
+    if wall_regen_lab is None:
+        missing.append("lab_level:Wall Regen")
+        wall_regen_lab = 0
+    if wall_regen_lab > 0:
+        lab = labs.get("Wall Regen")
+        if lab is None:
+            missing.append("lab_table:Wall Regen")
+            return [], missing
+        if wall_regen_lab not in lab.levels:
+            missing.append(f"lab_table:Wall Regen:{wall_regen_lab}")
+            return [], missing
+        if lab.unit not in {"percent", "percent_points"}:
+            missing.append(f"lab_unit:Wall Regen:{lab.unit}")
+            return [], missing
+        wall_regen_ratio += float(lab.levels[wall_regen_lab]) / 100.0
+
+    wall_hp = _resolved_stat_input_value(tower_hp) * wall_health_ratio
+    wall_regen = _resolved_stat_input_value(tower_regen) * wall_regen_ratio
+    return [
+        StatInput(
+            stat_id="wall_hp",
+            phase=Phase.START_OF_RUN,
+            base_value=wall_hp,
+            provenance="workshop_alias:Wall Health->wall_hp",
+        ),
+        StatInput(
+            stat_id="wall_regen",
+            phase=Phase.START_OF_RUN,
+            base_value=wall_regen,
+            provenance="workshop_alias:Wall Regen->wall_regen",
+        ),
+    ], missing
+
+
+def _resolved_stat_input_value(stat_input: StatInput) -> float:
+    base = float(stat_input.base_value or 0.0)
+    loadout_delta = float(stat_input.loadout_delta or 0.0)
+    enhancement_multiplier = float(stat_input.enhancement_multiplier or 1.0)
+    tier_rule_delta = float(stat_input.tier_rule_delta or 0.0)
+    tier_rule_multiplier = float(stat_input.tier_rule_multiplier or 1.0)
+    return ((base + loadout_delta) * enhancement_multiplier + tier_rule_delta) * tier_rule_multiplier
 
 
 def _combine_multipliers(left: Optional[float], right: Optional[float]) -> Optional[float]:
@@ -738,7 +890,42 @@ def compile_workshop_values_at_wave(
         mult = enhancement_map.get(spec.stat_id, 1.0)
         values[spec.stat_id] = float(value) * float(mult)
 
-    return values, sorted(set(missing))
+    canonical_values = _canonicalize_workshop_values(values)
+    tower_hp = canonical_values.get("tower_hp")
+    tower_regen = canonical_values.get("tower_regen")
+    wall_health_ratio = canonical_values.get("workshop_wall_health")
+    if (
+        tower_hp is not None
+        and tower_regen is not None
+        and wall_health_ratio is not None
+    ):
+        wall_health_lab = ids_snapshot.labs.get("Wall Health") or 0
+        if wall_health_lab > 0:
+            labs = load_labs_values()
+            wall_health_data = labs.get("Wall Health")
+            if (
+                wall_health_data is not None
+                and wall_health_lab in wall_health_data.levels
+                and wall_health_data.unit in {"percent", "percent_points"}
+            ):
+                wall_health_ratio += float(wall_health_data.levels[wall_health_lab]) / 100.0
+
+        wall_regen_ratio = canonical_values.get("workshop_wall_regen", 0.0)
+        wall_regen_lab = ids_snapshot.labs.get("Wall Regen") or 0
+        if wall_regen_lab > 0:
+            labs = load_labs_values()
+            wall_regen_data = labs.get("Wall Regen")
+            if (
+                wall_regen_data is not None
+                and wall_regen_lab in wall_regen_data.levels
+                and wall_regen_data.unit in {"percent", "percent_points"}
+            ):
+                wall_regen_ratio += float(wall_regen_data.levels[wall_regen_lab]) / 100.0
+
+        canonical_values["wall_hp"] = float(tower_hp) * float(wall_health_ratio)
+        canonical_values["wall_regen"] = float(tower_regen) * float(wall_regen_ratio)
+
+    return canonical_values, sorted(set(missing))
 
 
 def _workshop_category(raw: str | None) -> WSCategory | None:
