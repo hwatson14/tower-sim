@@ -36,10 +36,10 @@
       "wave": 100
     },
     "boss_survivability": {
-      "hits_to_death": 25117.0,
+      "hits_to_death": 21005.0,
       "hits_to_kill": 2,
       "outcome": "tower_kills_boss",
-      "ttd_seconds": 50234.0,
+      "ttd_seconds": 42010.0,
       "ttk_seconds": 4.0
     },
     "canonical_naming_contract": {
@@ -283,37 +283,37 @@
     "core_stat_override_policy": "strict_fail_closed",
     "margin_trace": [
       {
-        "margin_seconds": Infinity,
+        "margin_seconds": 1321168.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": Infinity,
+        "ttd_seconds": 1321172.0,
         "ttk_seconds": 4.0,
         "wave": 4
       },
       {
-        "margin_seconds": Infinity,
+        "margin_seconds": 742822.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": Infinity,
+        "ttd_seconds": 742826.0,
         "ttk_seconds": 4.0,
         "wave": 8
       },
       {
-        "margin_seconds": 893896.0,
+        "margin_seconds": 324726.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 893900.0,
+        "ttd_seconds": 324730.0,
         "ttk_seconds": 4.0,
         "wave": 16
       },
       {
-        "margin_seconds": 230528.0,
+        "margin_seconds": 116576.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 230532.0,
+        "ttd_seconds": 116580.0,
         "ttk_seconds": 4.0,
         "wave": 32
       },
       {
-        "margin_seconds": 50230.0,
+        "margin_seconds": 42006.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 50234.0,
+        "ttd_seconds": 42010.0,
         "ttk_seconds": 4.0,
         "wave": 64
       }
@@ -322,7 +322,7 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 80.42425599995795,
+    "preflight_ms": 136.58344600000305,
     "statbook_rows": 114,
     "timing_uptime": {
       "bot_effect_scalars": {
@@ -644,10 +644,10 @@
       },
       "evaluated_waves": 14,
       "last_wave_result": {
-        "hits_to_death": 25117.0,
+        "hits_to_death": 21005.0,
         "hits_to_kill": 2,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 50234.0,
+        "ttd_seconds": 42010.0,
         "ttk_seconds": 4.0
       },
       "max_wave": 100,
