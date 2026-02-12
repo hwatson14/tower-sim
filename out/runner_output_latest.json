@@ -28,33 +28,7 @@
       ]
     }
   },
-  "at_failure_snapshot": {
-    "boss_stats": {
-      "attack": 882660000.0,
-      "attack_interval": 2.0,
-      "enrage_mult": 1.0
-    },
-    "margins": {
-      "margin_seconds": -2.0,
-      "ttd_seconds": 2.0,
-      "ttk_seconds": 4.0
-    },
-    "tower_stats": {
-      "damage_reduction": 0.0,
-      "defense_abs": 0.0,
-      "defense_pct": 0.30000000000000004,
-      "electrons_damage_frac": 0.0,
-      "orb_damage_frac": 0.0,
-      "pc_boss_mult": 1.0,
-      "pc_frac": 0.0,
-      "thorns_frac": 0.8800000000000001,
-      "tower_hp": 10452.799999999997,
-      "tower_regen": 302.5,
-      "wall_hp": 2750.0,
-      "wall_regen": 12.5
-    },
-    "wave": 1
-  },
+  "at_failure_snapshot": null,
   "diagnostics": {
     "at_wave_snapshot": {
       "applied_bc": {},
@@ -62,10 +36,10 @@
       "wave": 100
     },
     "boss_survivability": {
-      "hits_to_death": 1.0,
+      "hits_to_death": 25117.0,
       "hits_to_kill": 2,
-      "outcome": "boss_kills_tower",
-      "ttd_seconds": 2.0,
+      "outcome": "tower_kills_boss",
+      "ttd_seconds": 50234.0,
       "ttk_seconds": 4.0
     },
     "canonical_naming_contract": {
@@ -309,47 +283,47 @@
     "core_stat_override_policy": "strict_fail_closed",
     "margin_trace": [
       {
-        "margin_seconds": -2.0,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "margin_seconds": Infinity,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": Infinity,
         "ttk_seconds": 4.0,
-        "wave": 49
+        "wave": 4
       },
       {
-        "margin_seconds": -2.0,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "margin_seconds": Infinity,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": Infinity,
         "ttk_seconds": 4.0,
-        "wave": 65
+        "wave": 8
       },
       {
-        "margin_seconds": -2.0,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "margin_seconds": 893896.0,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": 893900.0,
         "ttk_seconds": 4.0,
-        "wave": 81
+        "wave": 16
       },
       {
-        "margin_seconds": -2.0,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "margin_seconds": 230528.0,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": 230532.0,
         "ttk_seconds": 4.0,
-        "wave": 97
+        "wave": 32
       },
       {
-        "margin_seconds": -2.0,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "margin_seconds": 50230.0,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": 50234.0,
         "ttk_seconds": 4.0,
-        "wave": 100
+        "wave": 64
       }
     ],
     "perk_timeline_scenario_wave": {
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 64.32609399996636,
-    "statbook_rows": 112,
+    "preflight_ms": 80.42425599995795,
+    "statbook_rows": 114,
     "timing_uptime": {
       "bot_effect_scalars": {
         "bot_bonus_multiplier": 1.0,
@@ -427,7 +401,67 @@
             "at_wave_snapshot"
           ]
         },
+        "16": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
         "17": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "2": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "32": {
           "def_pct": [
             "at_wave_snapshot"
           ],
@@ -467,6 +501,26 @@
             "at_wave_snapshot"
           ]
         },
+        "4": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
         "49": {
           "def_pct": [
             "at_wave_snapshot"
@@ -487,7 +541,47 @@
             "at_wave_snapshot"
           ]
         },
+        "64": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
         "65": {
+          "def_pct": [
+            "at_wave_snapshot"
+          ],
+          "thorns_damage_mult": [
+            "at_wave_snapshot"
+          ],
+          "tower_hp": [
+            "at_wave_snapshot"
+          ],
+          "tower_regen": [
+            "at_wave_snapshot"
+          ],
+          "wall_hp": [
+            "at_wave_snapshot"
+          ],
+          "wall_regen": [
+            "at_wave_snapshot"
+          ]
+        },
+        "8": {
           "def_pct": [
             "at_wave_snapshot"
           ],
@@ -548,12 +642,12 @@
           ]
         }
       },
-      "evaluated_waves": 8,
+      "evaluated_waves": 14,
       "last_wave_result": {
-        "hits_to_death": 1.0,
+        "hits_to_death": 25117.0,
         "hits_to_kill": 2,
-        "outcome": "boss_kills_tower",
-        "ttd_seconds": 2.0,
+        "outcome": "tower_kills_boss",
+        "ttd_seconds": 50234.0,
         "ttk_seconds": 4.0
       },
       "max_wave": 100,
@@ -567,7 +661,19 @@
           "enabled": false,
           "reason": "no_path"
         },
+        "16": {
+          "enabled": false,
+          "reason": "no_path"
+        },
         "17": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "2": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "32": {
           "enabled": false,
           "reason": "no_path"
         },
@@ -575,11 +681,23 @@
           "enabled": false,
           "reason": "no_path"
         },
+        "4": {
+          "enabled": false,
+          "reason": "no_path"
+        },
         "49": {
           "enabled": false,
           "reason": "no_path"
         },
+        "64": {
+          "enabled": false,
+          "reason": "no_path"
+        },
         "65": {
+          "enabled": false,
+          "reason": "no_path"
+        },
+        "8": {
           "enabled": false,
           "reason": "no_path"
         },
@@ -606,9 +724,9 @@
   },
   "evaluator": "max_wave",
   "fail_closed": false,
-  "failure_reason": "boss_kills_tower",
-  "failure_wave": 1,
+  "failure_reason": null,
+  "failure_wave": null,
   "missing": [],
   "override_collisions": [],
-  "w_max": 0
+  "w_max": 100
 }

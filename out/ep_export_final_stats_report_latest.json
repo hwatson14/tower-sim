@@ -1,42 +1,50 @@
 {
   "compared_rows": [
     {
-      "actual": 11314998536.23848,
+      "actual": 4144486446964.8105,
       "expected": 5210000000000.0,
       "key": "health",
-      "relative_delta": 0.9978282152521616,
+      "relative_delta": 0.20451315797220526,
       "verification_path": "ehp_eval.stats.tower_hp",
       "within_tolerance": false
     },
     {
-      "actual": 30919400339.730965,
+      "actual": 2770318905191.2427,
       "expected": 43910000000000.0,
       "key": "health_regen",
-      "relative_delta": 0.999295846040999,
+      "relative_delta": 0.9369091572491177,
       "verification_path": "ehp_eval.stats.tower_regen",
       "within_tolerance": false
     },
     {
-      "actual": 0.551,
+      "actual": 80214388.0521576,
+      "expected": 318930000.0,
+      "key": "defense_absolute",
+      "relative_delta": 0.7484890475898862,
+      "verification_path": "stat_inputs.workshop_defense_absolute",
+      "within_tolerance": false
+    },
+    {
+      "actual": 0.7562,
       "expected": 0.98,
       "key": "defense_percent",
-      "relative_delta": 0.42899999999999994,
+      "relative_delta": 0.2238,
       "verification_path": "ehp_eval.stats.def_pct",
       "within_tolerance": false
     },
     {
-      "actual": 28740096282.04574,
+      "actual": 237662975879297.5,
       "expected": 89550000000000.0,
       "key": "wall_health",
-      "relative_delta": 0.999679060901373,
+      "relative_delta": 1.6539695798916527,
       "verification_path": "ehp_eval.stats.wall_hp",
       "within_tolerance": false
     },
     {
-      "actual": 64930740713.43503,
+      "actual": 14544174252254.025,
       "expected": 230540000000000.0,
       "key": "wall_regen",
-      "relative_delta": 0.9997183536882388,
+      "relative_delta": 0.9369125780677798,
       "verification_path": "ehp_eval.stats.wall_regen",
       "within_tolerance": false
     }
@@ -74,7 +82,7 @@
     }
   ],
   "matched_count": 0,
-  "mismatch_count": 5,
+  "mismatch_count": 6,
   "preset": "farming",
   "spec_mode": "farming",
   "status": "mismatch",
@@ -85,11 +93,6 @@
       "key": "ehp",
       "reason": "unsupported_verification_path",
       "verification_path": "ep_formula.eval.ehp"
-    },
-    {
-      "key": "defense_absolute",
-      "reason": "missing_runtime_value",
-      "verification_path": "stat_inputs.workshop_defense_absolute"
     },
     {
       "key": "wall_fortification",
