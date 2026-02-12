@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatEngine, StatInput
@@ -393,12 +394,17 @@ def _serialize_stat_input(stat_input: StatInput) -> Dict[str, Any]:
 def _serialize_statbook_row(row) -> Dict[str, Any]:
     return {
         "stat_id": row.stat_id,
-        "phase": row.phase,
-        "base_value": row.base_value,
-        "loadout_delta": row.loadout_delta,
-        "enhancement_multiplier": row.enhancement_multiplier,
-        "tier_rule_delta_or_multiplier": row.tier_rule_delta_or_multiplier,
-        "final_value": row.final_value,
+        "phase": row.phase.value,
+        "base_value": _format_optional_decimal(row.base_value),
+        "loadout_delta": _format_optional_decimal(row.loadout_delta_total()),
+        "loadout_delta_modules": _format_optional_decimal(row.loadout_delta_modules),
+        "loadout_delta_cards": _format_optional_decimal(row.loadout_delta_cards),
+        "loadout_delta_bots": _format_optional_decimal(row.loadout_delta_bots),
+        "loadout_delta_guardians": _format_optional_decimal(row.loadout_delta_guardians),
+        "loadout_delta_other": _format_optional_decimal(row.loadout_delta_other),
+        "enhancement_multiplier": _format_optional_decimal(row.enhancement_multiplier),
+        "tier_rule_delta_or_multiplier": _format_optional_decimal(row.tier_rule_delta_or_multiplier),
+        "final_value": _format_optional_decimal(row.final_value),
         "provenance": row.provenance,
     }
 
@@ -445,3 +451,10 @@ def _missing_identifier_from_exception(exc: Exception) -> Optional[str]:
     if "vault_stats_v1.csv" in message:
         return "vault_stats_v1.csv"
     return None
+
+
+def _format_optional_decimal(value: Decimal | None) -> str | None:
+    if value is None:
+        return None
+    return format(value, "f")
+

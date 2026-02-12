@@ -188,6 +188,17 @@ python -m tower_sim.audit.stat_lineage_report \
   --manifest out/stat_lineage_manifest_latest.json \
   --json-out out/stat_lineage_report_latest.json
 ```
+Wiring-health scorecard command (single deterministic gate over naming + lineage + mechanics manifest):
+
+```bash
+python -m tower_sim.audit.wiring_health_check \
+  --ids tests/fixtures/tower-sim-data/_IDS.csv \
+  --lineage-manifest out/stat_lineage_manifest_latest.json \
+  --output out/wiring_health_check.json
+```
+
+Add `--strict` to return a non-zero exit code when any configured gate fails.
+
 
 Proposed additions that would reduce ambiguity and improve agent reliability:
 

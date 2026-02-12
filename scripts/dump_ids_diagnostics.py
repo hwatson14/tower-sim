@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+from decimal import Decimal
 import hashlib
 import json
 import os
@@ -41,6 +42,8 @@ def _to_jsonable(value: Any) -> Any:
         return [_to_jsonable(item) for item in value]
     if isinstance(value, Path):
         return str(value)
+    if isinstance(value, Decimal):
+        return format(value, "f")
     return value
 
 
@@ -90,12 +93,17 @@ def _filter_statbook_rows(rows: list[Any], allowlist: Optional[Set[str]]) -> lis
         out.append(
             {
                 "stat_id": row.stat_id,
-                "phase": row.phase,
-                "base_value": row.base_value,
-                "loadout_delta": getattr(row, "loadout_delta", None),
-                "enhancement_multiplier": getattr(row, "enhancement_multiplier", None),
-                "tier_rule_delta_or_multiplier": getattr(row, "tier_rule_delta_or_multiplier", None),
-                "final_value": row.final_value,
+                "phase": row.phase.value,
+                "base_value": _to_jsonable(row.base_value),
+                "loadout_delta": _to_jsonable(row.loadout_delta_total()),
+                "loadout_delta_modules": _to_jsonable(row.loadout_delta_modules),
+                "loadout_delta_cards": _to_jsonable(row.loadout_delta_cards),
+                "loadout_delta_bots": _to_jsonable(row.loadout_delta_bots),
+                "loadout_delta_guardians": _to_jsonable(row.loadout_delta_guardians),
+                "loadout_delta_other": _to_jsonable(row.loadout_delta_other),
+                "enhancement_multiplier": _to_jsonable(getattr(row, "enhancement_multiplier", None)),
+                "tier_rule_delta_or_multiplier": _to_jsonable(getattr(row, "tier_rule_delta_or_multiplier", None)),
+                "final_value": _to_jsonable(row.final_value),
                 "provenance": _to_jsonable(getattr(row, "provenance", None)),
             }
         )
@@ -429,9 +437,9 @@ def build_diagnostics(
         base_stats.append(
             {
                 "stat_id": row.stat_id,
-                "phase": row.phase,
-                "base_value": row.base_value,
-                "final_value": row.final_value,
+                "phase": row.phase.value,
+                "base_value": _to_jsonable(row.base_value),
+                "final_value": _to_jsonable(row.final_value),
                 "provenance": _to_jsonable(row.provenance),
             }
         )

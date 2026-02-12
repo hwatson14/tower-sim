@@ -11,66 +11,67 @@ def _add_repo_root_to_path() -> None:
 
 _add_repo_root_to_path()
 
+from tower_sim.engines.statbook_builder import build_statbook  # noqa: E402
 from tower_sim.util.account_snapshot import (  # noqa: E402
     AccountSnapshot,
     ModuleAllocation,
     ModulePresetSelection,
     ModuleSystemState,
-    PRESET_NAMES,
-    SLOT_TYPES,
     TableSnapshot,
+    UltimateWeaponSnapshot,
     WorkshopEntrySnapshot,
 )
-from tower_sim.engines.statbook_builder import build_statbook  # noqa: E402
 
 
 def _snapshot_with_levels() -> AccountSnapshot:
-    workshop_entries = {
-        "Attack": WorkshopEntrySnapshot(
-            name="Attack",
-            unlocked=None,
-            coin_level=3,
-            end_level=3,
-            max_level=7,
-            category=None,
-        ),
-        "Defense": WorkshopEntrySnapshot(
-            name="Defense",
-            unlocked=None,
-            coin_level=None,
-            end_level=None,
-            max_level=None,
-            category=None,
-        ),
-    }
-    module_presets = {
-        preset: {
-            slot: ModulePresetSelection(primary=None, assist=None)
-            for slot in SLOT_TYPES
-        }
-        for preset in PRESET_NAMES
-    }
     module_system_state = {
-        slot: ModuleSystemState(
-            slot_type=slot,
-            assist_unlocked=False,
-            assist_level=0,
+        "Armor": ModuleSystemState(
+            slot_type="Armor",
+            assist_unlocked=True,
+            assist_level=1,
             rarity_cap=None,
             multiplier_cap=None,
             substat_cap=None,
         )
-        for slot in SLOT_TYPES
+    }
+    module_presets = {
+        "Farming": {
+            "Armor": ModulePresetSelection(primary=None, assist=None),
+        }
     }
     allocation_levels = {
-        slot: ModuleAllocation(primary_level=0, assist_level=0) for slot in SLOT_TYPES
+        "Armor": ModuleAllocation(primary_level=1, assist_level=1),
     }
-    inferred_shards = {slot: 0 for slot in SLOT_TYPES}
+    inferred_shards = {"Armor": 0}
     return AccountSnapshot(
-        ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+        ids_path=Path("dummy.csv"),
         labs={"LabA": 5, "LabB": None},
-        workshop=workshop_entries,
+        workshop={
+            "Health": WorkshopEntrySnapshot(
+                name="Health",
+                coin_level=10,
+                end_level=10,
+                max_level=10,
+                unlocked=None,
+                category=None,
+            ),
+            "Health Regen": WorkshopEntrySnapshot(
+                name="Health Regen",
+                coin_level=7,
+                end_level=7,
+                max_level=7,
+                unlocked=None,
+                category=None,
+            ),
+        },
         workshop_enhancements=TableSnapshot(header=[], rows=[]),
-        ultimate_weapons={},
+        ultimate_weapons={
+            "Chain Lightning": UltimateWeaponSnapshot(
+                name="Chain Lightning",
+                unlocked="true",
+                track_levels=["5", "5", "5", "5"],
+            )
+        },
         relics={},
         vault={},
         bots=[],
@@ -89,21 +90,20 @@ def _snapshot_with_levels() -> AccountSnapshot:
     )
 
 
-def test_build_statbook_outputs_rows() -> None:
+def test_build_statbook_outputs_canonical_rows() -> None:
     snapshot = _snapshot_with_levels()
     statbook = build_statbook(snapshot)
-    assert len(statbook.rows) == 8
+    assert statbook.rows
+    ids = {row.stat_id for row in statbook.rows}
+    assert "tower_hp" in ids
+    assert any(stat_id.startswith("uw_") for stat_id in ids)
+    assert all(row.phase.value == "start_of_run" for row in statbook.rows)
 
-    lab_start = next(row for row in statbook.rows if row.stat_id == "LabA" and row.phase == "start_of_run")
-    assert lab_start.base_value == "5"
-    assert lab_start.final_value == "5"
 
-    lab_missing = next(row for row in statbook.rows if row.stat_id == "LabB" and row.phase == "start_of_run")
-    assert lab_missing.base_value is None
-    assert lab_missing.final_value is None
-
-    workshop_end = next(row for row in statbook.rows if row.stat_id == "Attack" and row.phase == "end_of_run")
-    assert workshop_end.final_value == "7"
-
-    workshop_missing = next(row for row in statbook.rows if row.stat_id == "Defense" and row.phase == "end_of_run")
-    assert workshop_missing.final_value is None
+def test_build_statbook_places_wall_stats_before_uw_rows() -> None:
+    snapshot = _snapshot_with_levels()
+    statbook = build_statbook(snapshot)
+    row_ids = [row.stat_id for row in statbook.rows]
+    first_uw_index = min(index for index, stat_id in enumerate(row_ids) if stat_id.startswith("uw_"))
+    assert row_ids.index("wall_hp") < first_uw_index
+    assert row_ids.index("wall_regen") < first_uw_index

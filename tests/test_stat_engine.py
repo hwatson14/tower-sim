@@ -32,8 +32,8 @@ def test_stat_engine_composition_order() -> None:
     ]
     result = engine.build(inputs)
     row = result.statbook.rows[0]
-    assert row.final_value == "137.0"
-    assert row.tier_rule_delta_or_multiplier == "delta:5"
+    assert str(row.final_value) == "137.0"
+    assert str(row.tier_rule_delta_or_multiplier) == "5"
 
 
 def test_stat_engine_tier_multiplier() -> None:
@@ -52,8 +52,8 @@ def test_stat_engine_tier_multiplier() -> None:
     ]
     result = engine.build(inputs)
     row = result.statbook.rows[0]
-    assert row.final_value == "60.0"
-    assert row.tier_rule_delta_or_multiplier == "mult:0.5"
+    assert str(row.final_value) == "60.0"
+    assert str(row.tier_rule_delta_or_multiplier) == "0.5"
 
 
 def test_stat_engine_rejects_unknown_stat() -> None:
@@ -116,4 +116,4 @@ def test_stat_engine_wave_state_derivation() -> None:
     assert at_wave["wave_health_index"] == 1.0
 
     phases = {row.phase for row in result.statbook.rows}
-    assert Phase.AT_WAVE.value in phases
+    assert Phase.AT_WAVE in phases

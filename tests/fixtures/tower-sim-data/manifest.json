@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-02-10T14:25:33.400Z",
+  "generated_utc": "2026-02-11T14:25:35.563Z",
   "spreadsheet_id": "1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c",
   "dest_prefix": "tests/fixtures/tower-sim-data/",
   "files": {
@@ -22,14 +22,14 @@
       "sheet": "Progress",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 102,
-      "bytes": 20120
+      "bytes": 20221
     },
     "BossSurvivabilitySim.csv": {
       "github_path": "tests/fixtures/tower-sim-data/BossSurvivabilitySim.csv",
       "sheet": "BossSurvivabilitySim",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 343,
-      "bytes": 69177
+      "bytes": 69156
     },
     "Tiers.csv": {
       "github_path": "tests/fixtures/tower-sim-data/Tiers.csv",
@@ -43,7 +43,7 @@
       "sheet": "_IDS",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 213,
-      "bytes": 36948
+      "bytes": 36988
     },
     "Data_Val_Tables.csv": {
       "github_path": "tests/fixtures/tower-sim-data/Data_Val_Tables.csv",
@@ -57,11 +57,11 @@
       "sheet": "EP Export",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 37,
-      "bytes": 1959,
+      "bytes": 1965,
       "verification_presets": {
+        "edmg": "tournament",
         "ehp": "farming",
-        "eecon": "farming",
-        "edmg": "tournament"
+        "eecon": "farming"
       }
     }
   }

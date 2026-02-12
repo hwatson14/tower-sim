@@ -47,11 +47,11 @@
       "orb_damage_frac": 0.0,
       "pc_boss_mult": 1.0,
       "pc_frac": 0.0,
-      "thorns_frac": 0.8,
-      "tower_hp": 10383.3,
-      "tower_regen": 181.5,
-      "wall_hp": 1900.0,
-      "wall_regen": 10.0
+      "thorns_frac": 0.8800000000000001,
+      "tower_hp": 10452.799999999997,
+      "tower_regen": 302.5,
+      "wall_hp": 2750.0,
+      "wall_regen": 12.5
     },
     "wave": 1
   },
@@ -348,7 +348,7 @@
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 65.5334570000008,
+    "preflight_ms": 64.32609399996636,
     "statbook_rows": 112,
     "timing_uptime": {
       "bot_effect_scalars": {
