@@ -679,3 +679,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Rebase canonical wall HP/regen stat inputs from resolved tower values using workshop/lab wall ratios so wall survivability uses value-derived pipeline outputs instead of pre-loadout level-era bases.
 - [x] Align workshop at-wave progression outputs with canonical survivability IDs (including derived wall HP/regen) so per-wave snapshots consume canonical values instead of source-only `workshop_*` IDs.
 - [x] Add deterministic wiring-health scorecard audit (`python -m tower_sim.audit.wiring_health_check`) to gate naming contract, stat-lineage manifest summaries, and mechanics manifest resolution in one payload.
+- [x] Add stat-pipeline bypass guardrail audit (`python -m tower_sim.audit.stat_pipeline_guardrails`) with allowlist ratchet to block new direct runtime calls to low-level stat compilers during canonical-pipeline migration.

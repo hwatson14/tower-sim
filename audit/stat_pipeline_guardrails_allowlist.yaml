@@ -1,0 +1,21 @@
+# Runtime callsites currently permitted to invoke low-level stat compilers directly.
+# This file is a ratchet baseline for migration: no new callsites allowed.
+# Phase C target: collapse runtime callsites to canonical orchestrator only.
+
+functions:
+  compile_full_stat_inputs:
+    - scripts/dump_ids_diagnostics.py
+    - tower_sim/engines/combat_stat_derivation.py
+    - tower_sim/engines/statbook_builder.py
+    - tower_sim/engines/stat_input_compiler.py
+    - tower_sim/engines/survivability_pipeline.py
+    - tower_sim/evaluators/max_wave_report.py
+    - tower_sim/run/api.py
+  compile_survivability_base_stat_inputs:
+    - tower_sim/engines/combat_stat_derivation.py
+  compile_survivability_loadout_stat_inputs:
+    - tower_sim/engines/combat_stat_derivation.py
+
+scan_roots:
+  - tower_sim
+  - scripts
