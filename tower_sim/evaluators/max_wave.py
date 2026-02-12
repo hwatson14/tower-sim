@@ -280,6 +280,9 @@ def _run_preflight(
     if canonical_inputs.invalid_stat_inputs:
         diagnostics["invalid_stat_inputs"] = canonical_inputs.invalid_stat_inputs
         missing.extend(canonical_inputs.invalid_stat_inputs)
+    if canonical_inputs.preset_resolution_errors:
+        diagnostics["preset_resolution_errors"] = canonical_inputs.preset_resolution_errors
+        missing.extend(canonical_inputs.preset_resolution_errors)
     if canonical_inputs.missing_required_stat_inputs:
         diagnostics["missing_stat_inputs"] = canonical_inputs.missing_required_stat_inputs
         missing.extend(canonical_inputs.missing_required_stat_inputs)
