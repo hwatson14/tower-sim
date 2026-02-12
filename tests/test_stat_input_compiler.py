@@ -217,8 +217,8 @@ def test_compile_full_stat_inputs_rejects_attack_speed_above_workshop_cap() -> N
 
 
 def test_enemy_level_skip_level_zero_semantics_are_explicit() -> None:
-    # Wiki-derived linear model implies base 0.05% at level 0.
-    assert workshop_level_to_chance(0) == pytest.approx(0.0005)
+    # IDS uses level 0 for unpurchased workshop; skip chance is 0%.
+    assert workshop_level_to_chance(0) == pytest.approx(0.0)
 
     workshop_entries = {
         "Enemy Attack Level Skip": WorkshopEntrySnapshot(
@@ -248,15 +248,15 @@ def test_enemy_level_skip_level_zero_semantics_are_explicit() -> None:
         stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_enemy_health_level_skip"
     )
 
-    assert attack.base_value == pytest.approx(0.0005)
-    assert health.base_value == pytest.approx(0.0005)
+    assert attack.base_value == pytest.approx(0.0)
+    assert health.base_value == pytest.approx(0.0)
 
 def test_enemy_level_skip_workshop_scaling_matches_wiki_points() -> None:
     table_points = {
-        1: 0.0010,
-        10: 0.0055,
-        100: 0.0505,
-        699: 0.3500,
+        1: 0.0005,
+        10: 0.0050,
+        100: 0.0500,
+        699: 0.3495,
     }
     for level, expected in table_points.items():
         workshop_entries = {

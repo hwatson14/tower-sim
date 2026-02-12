@@ -16,8 +16,9 @@ from __future__ import annotations
 
 def workshop_level_to_chance(level: int) -> float:
     # Wiki source above: base 0.05% and +0.05% per level, capped at 35.00% at level 699.
-    # We model level 0 as base-only (0.05%) and level N as 0.05% * (N + 1).
-    if level < 0:
+    # IDS workshop levels are 0-indexed for unpurchased state; level 0 means 0% chance.
+    # Purchased levels then increase by +0.05% per level up to the 35.00% cap.
+    if level <= 0:
         return 0.0
-    chance = 0.0005 * (level + 1)
+    chance = 0.0005 * level
     return min(max(chance, 0.0), 0.35)

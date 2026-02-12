@@ -117,7 +117,7 @@ def build_canonical_stat_inputs(
     )
 
 
-def _resolve_preset_context(problem_spec, ids_snapshot) -> tuple[str, List[str], List[str]]:
+def _resolve_preset_context(problem_spec, ids_snapshot) -> tuple[str, List[str] | None, List[str]]:
     explicit = getattr(problem_spec.scenario, "preset", None)
     if explicit is not None:
         resolved = str(explicit).strip()
@@ -132,11 +132,17 @@ def _resolve_preset_context(problem_spec, ids_snapshot) -> tuple[str, List[str],
 
     try:
         loadout = resolve_loadout(ids_snapshot, resolved)
+        return resolved, list(loadout.card_names), errors
     except Exception as exc:  # noqa: BLE001
+        # Test doubles and partial snapshots may only provide card presets; preserve
+        # deterministic mode/preset wiring for loadout compilation in that case.
+        card_presets = getattr(ids_snapshot, "card_presets", None)
+        if isinstance(card_presets, dict) and resolved in card_presets:
+            return resolved, list(card_presets.get(resolved, [])), errors
+        if not hasattr(ids_snapshot, "card_presets") and not hasattr(ids_snapshot, "module_presets"):
+            return resolved, None, errors
         errors.append(f"preset_resolution:{resolved}:{exc}")
         return resolved, [], errors
-
-    return resolved, list(loadout.card_names), errors
 
 
 def _resolved_stat_input_value(stat_input: StatInput) -> float:

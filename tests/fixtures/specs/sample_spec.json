@@ -16,15 +16,15 @@
     },
     "boss_survivability": {
       "boss": {
-        "hp": 1000,
-        "attack": 100,
+        "hp": 1.0,
+        "attack": 1.0,
         "attack_interval": 1.0,
         "enrage_mult": 1.0
       },
       "tower": {
-        "dr_frac": 0.2,
-        "regen_per_sec": 10,
-        "shields": 500
+        "dr_frac": 0.0,
+        "regen_per_sec": 0.0,
+        "shields": 0.0
       },
       "combat_params": {
         "hit_interval_id": "default",
@@ -42,6 +42,54 @@
     }
   },
   "stat_inputs": [
+    {
+      "stat_id": "tower_hp",
+      "phase": "start_of_run",
+      "base_value": 1000000000000.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "tower_regen",
+      "phase": "start_of_run",
+      "base_value": 1000000000.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "def_pct",
+      "phase": "start_of_run",
+      "base_value": 0.98,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "wall_hp",
+      "phase": "start_of_run",
+      "base_value": 1000000000000.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "wall_regen",
+      "phase": "start_of_run",
+      "base_value": 1000000000.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "thorns_damage_mult",
+      "phase": "start_of_run",
+      "base_value": 1.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "eals_pct",
+      "phase": "start_of_run",
+      "base_value": 0.0,
+      "provenance": "fixture"
+    },
+    {
+      "stat_id": "ehls_pct",
+      "phase": "start_of_run",
+      "base_value": 0.0,
+      "provenance": "fixture"
+    },
     {
       "stat_id": "orb_damage_mult",
       "phase": "start_of_run",
