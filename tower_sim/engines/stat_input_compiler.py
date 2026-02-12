@@ -13,6 +13,7 @@ from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapsh
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
 from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
 from tower_sim.libs.labs_lib import load_labs_values
+from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 
 @dataclass(frozen=True)
 class CompiledStatInputs:
@@ -211,8 +212,8 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Wall Rebuild": lambda level: 0.01 + 0.01 * level,
     "Coins per Kill": lambda level: 1 + _pct(0.01 * level),
     "Coin / Kill Bonus": lambda level: 1 + _pct(0.01 * level),
-    "Enemy Attack Level Skip": lambda level: _pct(0.5 + 0.5 * level),
-    "Enemy Health Level Skip": lambda level: _pct(0.5 + 0.5 * level),
+    "Enemy Attack Level Skip": lambda level: workshop_level_to_chance(level),
+    "Enemy Health Level Skip": lambda level: workshop_level_to_chance(level),
     "Free Attack Upgrade": lambda level: _pct(0.5 * level),
     "Free Defense Upgrade": lambda level: _pct(0.5 * level),
     "Free Utility Upgrade": lambda level: _pct(0.5 * level),
@@ -421,17 +422,23 @@ def _compile_workshop_stat_inputs(
             missing.append(f"workshop_mapping:{name}")
             continue
         formula = _WORKSHOP_FORMULAS.get(name)
-        lab_multiplier = _resolve_lab_multiplier(name, ids_snapshot, labs, missing)
-        enhancement_multiplier = _combine_multipliers(
-            enhancement_map.get(spec.stat_id),
-            lab_multiplier,
-        )
+        if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
+            lab_delta = _resolve_lab_delta(name, ids_snapshot, labs, missing)
+            enhancement_multiplier = enhancement_map.get(spec.stat_id)
+        else:
+            lab_multiplier = _resolve_lab_multiplier(name, ids_snapshot, labs, missing)
+            enhancement_multiplier = _combine_multipliers(
+                enhancement_map.get(spec.stat_id),
+                lab_multiplier,
+            )
         if formula is not None:
             value = formula(entry.coin_level)
             if value is None:
                 missing.append(f"workshop_unsupported:{name}")
                 continue
             value_f = float(value)
+            if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
+                value_f = min(max(value_f + lab_delta, 0.0), 1.0)
             stat_inputs.append(
                 StatInput(
                     stat_id=spec.stat_id,
@@ -625,6 +632,36 @@ def _resolve_lab_multiplier(
     return None
 
 
+
+
+def _resolve_lab_delta(
+    workshop_name: str,
+    ids_snapshot: AccountSnapshot,
+    labs,
+    missing: List[str],
+) -> float:
+    lab_name = _WORKSHOP_TO_LAB_NAME.get(workshop_name, workshop_name)
+    if lab_name not in labs:
+        return 0.0
+    level = ids_snapshot.labs.get(lab_name)
+    if level is None:
+        missing.append(f"lab_level:{lab_name}")
+        return 0.0
+    if level <= 0:
+        return 0.0
+    lab = labs[lab_name]
+    if level not in lab.levels:
+        missing.append(f"lab_table:{lab_name}:{level}")
+        return 0.0
+    value = float(lab.levels[level])
+    if lab.unit in {"percent", "percent_points"}:
+        return value / 100.0
+    if lab.unit == "raw_number":
+        return value
+    missing.append(f"lab_unit:{lab_name}:{lab.unit}")
+    return 0.0
+
+
 def _parse_workshop_enhancement_multipliers(
     ids_snapshot: AccountSnapshot,
 ) -> Tuple[Dict[str, float], List[str]]:
@@ -638,9 +675,17 @@ def _parse_workshop_enhancement_multipliers(
         if not raw_name.endswith("+"):
             continue
         base_name = raw_name[:-1].strip()
-        spec = _WORKSHOP_STAT_SPECS.get(base_name)
-        if spec is None:
-            continue
+        target_stat_ids: List[str]
+        if base_name == "Enemy Level Skips":
+            target_stat_ids = [
+                "workshop_enemy_attack_level_skip",
+                "workshop_enemy_health_level_skip",
+            ]
+        else:
+            spec = _WORKSHOP_STAT_SPECS.get(base_name)
+            if spec is None:
+                continue
+            target_stat_ids = [spec.stat_id]
         raw_multiplier = row[1].strip() if len(row) > 1 else ""
         if not raw_multiplier:
             missing.append(f"workshop_enhancement_value:{base_name}")
@@ -653,7 +698,8 @@ def _parse_workshop_enhancement_multipliers(
         if multiplier <= 0:
             missing.append(f"workshop_enhancement_value:{base_name}")
             continue
-        multipliers[spec.stat_id] = multiplier
+        for stat_id in target_stat_ids:
+            multipliers[stat_id] = multiplier
     return multipliers, missing
 
 

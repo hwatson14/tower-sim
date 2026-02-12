@@ -374,7 +374,7 @@ def _compile_base_stat_inputs(
                 phase=Phase.START_OF_RUN,
                 base_value=thorns_base,
                 enhancement_multiplier=thorns_mult,
-                provenance=thorns_provenance,
+                provenance=f"base:{thorns_provenance}",
             ),
             StatInput(
                 stat_id="orb_damage_mult",
@@ -1703,6 +1703,14 @@ def _normalize_substat_name(name: str) -> str:
     return mapping.get(name, name)
 
 
+def compile_survivability_base_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+    *,
+    allow_provisional: bool = True,
+) -> List[StatInput]:
+    return _compile_base_stat_inputs(ids_snapshot, allow_provisional=allow_provisional)
+
+
 def compile_survivability_loadout_stat_inputs(
     ids_snapshot: AccountSnapshot,
     *,
@@ -1723,5 +1731,6 @@ def compile_survivability_loadout_stat_inputs(
 __all__ = [
     "SurvivabilityPipelineError",
     "build_survivability_report",
+    "compile_survivability_base_stat_inputs",
     "compile_survivability_loadout_stat_inputs",
 ]

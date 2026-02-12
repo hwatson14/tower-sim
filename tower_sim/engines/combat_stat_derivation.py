@@ -11,10 +11,14 @@ from typing import Dict, Iterable, List, Optional, Tuple
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
-from tower_sim.engines.survivability_pipeline import compile_survivability_loadout_stat_inputs
+from tower_sim.engines.survivability_pipeline import (
+    compile_survivability_base_stat_inputs,
+    compile_survivability_loadout_stat_inputs,
+)
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.libs.labs_lib import load_labs_values
+from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.loaders.tournament_bc_enrichment import (
@@ -51,6 +55,7 @@ class CanonicalStatInputBuild:
     invalid_stat_inputs: List[str]
     missing_required_stat_inputs: List[str]
     compiled_missing: List[str]
+    preset_resolution_errors: List[str]
     core_stat_override_policy: str
 
 
@@ -62,24 +67,35 @@ def build_canonical_stat_inputs(
 ) -> CanonicalStatInputBuild:
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = compile_full_stat_inputs(ids_snapshot)
-    module_context = _module_context_for_mode(problem_spec.scenario.mode)
+    base_inputs: List[StatInput] = []
+    base_missing: List[str] = []
+    try:
+        base_inputs = compile_survivability_base_stat_inputs(ids_snapshot, allow_provisional=True)
+    except Exception as exc:  # noqa: BLE001
+        base_missing.append(f"survivability_base:{exc}")
+    module_context, selected_cards, preset_resolution_errors = _resolve_preset_context(
+        problem_spec,
+        ids_snapshot,
+    )
     loadout_inputs: List[StatInput] = []
     loadout_missing: List[str] = []
-    try:
-        loadout_inputs, skipped_cards = _compile_survivability_loadout_inputs_resilient(
-            ids_snapshot,
-            module_context=module_context,
-        )
-        loadout_missing.extend(skipped_cards)
-    except Exception as exc:  # noqa: BLE001
-        loadout_missing.append(f"survivability_loadout:{exc}")
+    if not preset_resolution_errors:
+        try:
+            loadout_inputs, skipped_cards = _compile_survivability_loadout_inputs_resilient(
+                ids_snapshot,
+                module_context=module_context,
+                selected_cards=selected_cards,
+            )
+            loadout_missing.extend(skipped_cards)
+        except Exception as exc:  # noqa: BLE001
+            loadout_missing.append(f"survivability_loadout:{exc}")
 
     strict_core_stat_overrides = not bool(
         getattr(problem_spec.scenario, "allow_core_stat_overrides", False)
     )
     merged_inputs, blocked = _merge_stat_inputs(
         spec_inputs,
-        compiled.stat_inputs + loadout_inputs,
+        compiled.stat_inputs + base_inputs + loadout_inputs,
         strict_core_stat_overrides=strict_core_stat_overrides,
     )
     merged_inputs = _rebase_wall_stats_from_tower(
@@ -93,20 +109,34 @@ def build_canonical_stat_inputs(
         blocked_core_overrides=blocked,
         invalid_stat_inputs=invalid,
         missing_required_stat_inputs=missing_required,
-        compiled_missing=sorted(compiled.missing + loadout_missing),
+        compiled_missing=sorted(compiled.missing + base_missing + loadout_missing),
+        preset_resolution_errors=sorted(set(preset_resolution_errors)),
         core_stat_override_policy=(
             "strict_fail_closed" if strict_core_stat_overrides else "explicit_override_mode"
         ),
     )
 
 
-def _module_context_for_mode(mode: str) -> str:
-    normalized = (mode or "").strip().lower()
-    if normalized == "tournament":
-        return "Tourney"
-    if normalized == "farming":
-        return "Farming"
-    return "Testing"
+def _resolve_preset_context(problem_spec, ids_snapshot) -> tuple[str, List[str], List[str]]:
+    explicit = getattr(problem_spec.scenario, "preset", None)
+    if explicit is not None:
+        resolved = str(explicit).strip()
+    else:
+        mode = (problem_spec.scenario.mode or "").strip().lower()
+        resolved = "Tourney" if mode == "tournament" else "Farming"
+
+    errors: List[str] = []
+    if not resolved:
+        errors.append("preset_resolution:empty")
+        return "", [], errors
+
+    try:
+        loadout = resolve_loadout(ids_snapshot, resolved)
+    except Exception as exc:  # noqa: BLE001
+        errors.append(f"preset_resolution:{resolved}:{exc}")
+        return resolved, [], errors
+
+    return resolved, list(loadout.card_names), errors
 
 
 def _resolved_stat_input_value(stat_input: StatInput) -> float:
@@ -230,11 +260,8 @@ def _compile_survivability_loadout_inputs_resilient(
     ids_snapshot,
     *,
     module_context: str,
+    selected_cards: List[str] | None = None,
 ) -> Tuple[List[StatInput], List[str]]:
-    selected_cards = None
-    card_presets = getattr(ids_snapshot, "card_presets", None)
-    if isinstance(card_presets, dict):
-        selected_cards = list(card_presets.get(module_context, []))
     skipped: List[str] = []
     while True:
         try:
@@ -367,7 +394,8 @@ def _merge_stat_inputs(
                 and item.phase == Phase.START_OF_RUN
             ):
                 if item.base_value is not None or item.derived_value is not None:
-                    if (item.provenance or "").startswith("workshop_alias:"):
+                    provenance = item.provenance or ""
+                    if provenance.startswith("workshop_alias:") or provenance.startswith("base:"):
                         continue
                     blocked.append(f"{item.stat_id}@{item.phase.value}")
                     continue

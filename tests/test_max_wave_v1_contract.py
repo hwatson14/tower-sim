@@ -1,17 +1,23 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from pathlib import Path
+
+import pytest
 
 from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.engines.stat_engine import StatInput
+from tower_sim.engines.survivability_pipeline import compile_survivability_base_stat_inputs
 from tower_sim.engines.combat_stat_derivation import (
+    _resolved_stat_input_value,
+    build_canonical_stat_inputs,
     build_canonical_wave_row,
     cached_tournament_heat_table,
     canonical_stat_inputs_for_wave,
     TOURNAMENT_HEAT_BC_IDS,
     CanonicalStatInputBuild,
 )
-from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot, resolve_loadout
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.problem_spec import (
@@ -159,13 +165,12 @@ def test_assumptions_manifest_present_on_success() -> None:
 
 
 def test_assumptions_manifest_present_on_fail_closed() -> None:
-    base_problem = _problem(mode="farming", wave=10)
-    problem = ProblemSpec(
-        scenario=base_problem.scenario,
-        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "orb_damage_mult"],
-        evaluator=base_problem.evaluator,
+    snapshot = _snapshot()
+    broken_snapshot = replace(
+        snapshot,
+        card_presets={name: cards for name, cards in snapshot.card_presets.items() if name != "Farming"},
     )
-    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+    result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), broken_snapshot)
     assert result["fail_closed"] is True
     manifest = result["assumptions_manifest"]
     assert manifest["schema_version"] == "v1"
@@ -231,20 +236,19 @@ def test_preflight_returns_validation_only() -> None:
 
 
 def test_evaluate_short_circuits_search_on_preflight_fail(monkeypatch) -> None:
-    base_problem = _problem(mode="farming", wave=10)
-    problem = ProblemSpec(
-        scenario=base_problem.scenario,
-        stat_inputs=[s for s in base_problem.stat_inputs if s.stat_id != "orb_damage_mult"],
-        evaluator=base_problem.evaluator,
+    snapshot = _snapshot()
+    broken_snapshot = replace(
+        snapshot,
+        card_presets={name: cards for name, cards in snapshot.card_presets.items() if name != "Farming"},
     )
 
     def _fail_if_called(*args, **kwargs):
         raise AssertionError("search should not run when preflight fails")
 
     monkeypatch.setattr("tower_sim.evaluators.max_wave._search_wmax", _fail_if_called)
-    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+    result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), broken_snapshot)
     assert result["fail_closed"] is True
-    assert "stat_input:orb_damage_mult" in result["missing"]
+    assert any(item.startswith("preset_resolution:Farming:") for item in result["missing"])
 
 
 def test_override_collisions_are_reported_outside_missing(monkeypatch) -> None:
@@ -327,6 +331,7 @@ def test_preflight_fails_closed_for_decisive_unmapped_or_unsupported(monkeypatch
             invalid_stat_inputs=[],
             missing_required_stat_inputs=[],
             compiled_missing=["workshop_unsupported:Health"],
+            preset_resolution_errors=[],
             core_stat_override_policy="strict_fail_closed",
         )
 
@@ -344,3 +349,143 @@ def test_preflight_emits_canonical_naming_contract_diagnostics() -> None:
     assert contract["status"] == "ok"
     assert contract["aliases"]["health"] == "tower_hp"
     assert contract["aliases"]["wall regen"] == "wall_regen"
+
+
+def test_canonical_build_seeds_required_base_survivability_inputs() -> None:
+    problem = _problem(mode="farming", wave=10)
+    filtered_problem = ProblemSpec(
+        scenario=problem.scenario,
+        stat_inputs=[
+            stat
+            for stat in problem.stat_inputs
+            if stat.stat_id
+            not in {
+                "orb_damage_mult",
+                "death_ray_damage_mult",
+                "plasma_cannon_damage_mult",
+                "knockback_mult",
+            }
+        ],
+        evaluator=problem.evaluator,
+    )
+
+    object.__setattr__(problem.scenario, "preset", "Preset 4")
+
+    canonical = build_canonical_stat_inputs(
+        problem_spec=filtered_problem,
+        ids_snapshot=_snapshot(),
+        registry=default_registry(),
+    )
+
+    assert canonical.missing_required_stat_inputs == []
+    by_id = {item.stat_id: item for item in canonical.stat_inputs}
+    for required in (
+        "orb_damage_mult",
+        "death_ray_damage_mult",
+        "plasma_cannon_damage_mult",
+        "knockback_mult",
+    ):
+        assert required in by_id
+
+
+def test_preflight_fails_closed_when_resolved_preset_is_missing() -> None:
+    snapshot = _snapshot()
+    card_presets = dict(snapshot.card_presets)
+    card_presets.pop("Farming", None)
+    broken_snapshot = replace(snapshot, card_presets=card_presets)
+
+    result = MaxWaveEvaluator().preflight(_problem(mode="farming", wave=10), broken_snapshot)
+
+    assert result["fail_closed"] is True
+    assert any(item.startswith("preset_resolution:Farming:") for item in result["missing"])
+    assert "preset_resolution_errors" in result["diagnostics"]
+
+
+
+
+def test_canonical_preset_resolution_maps_tournament_mode_to_tourney(monkeypatch) -> None:
+    captured = {"preset": None}
+
+    def _capture(snapshot, preset_name=None):
+        captured["preset"] = preset_name
+        return resolve_loadout(snapshot, preset_name)
+
+    monkeypatch.setattr("tower_sim.engines.combat_stat_derivation.resolve_loadout", _capture)
+
+    build_canonical_stat_inputs(
+        problem_spec=_problem(mode="tournament", wave=10),
+        ids_snapshot=_snapshot(),
+        registry=default_registry(),
+    )
+
+    assert captured["preset"] == "Tourney"
+
+def test_canonical_preset_resolution_prefers_explicit_scenario_preset(monkeypatch) -> None:
+    captured = {"preset": None}
+
+    def _capture(snapshot, preset_name=None):
+        captured["preset"] = preset_name
+        return resolve_loadout(snapshot, preset_name)
+
+    monkeypatch.setattr("tower_sim.engines.combat_stat_derivation.resolve_loadout", _capture)
+
+    problem = _problem(mode="farming", wave=10)
+    object.__setattr__(problem.scenario, "preset", "Testing")
+
+    build_canonical_stat_inputs(
+        problem_spec=problem,
+        ids_snapshot=_snapshot(),
+        registry=default_registry(),
+    )
+
+    assert captured["preset"] == "Testing"
+
+
+
+def test_canonical_skip_inputs_match_survivability_base_pipeline_values() -> None:
+    snapshot = replace(_snapshot(), relics={})
+    base_inputs = compile_survivability_base_stat_inputs(snapshot, allow_provisional=True)
+    base_by_id = {item.stat_id: item for item in base_inputs}
+
+    base_problem = _problem(mode="farming", wave=10)
+    problem = ProblemSpec(
+        scenario=base_problem.scenario,
+        stat_inputs=[
+            stat
+            for stat in base_problem.stat_inputs
+            if stat.stat_id not in {"eals_pct", "ehls_pct"}
+        ],
+        evaluator=base_problem.evaluator,
+    )
+    object.__setattr__(problem.scenario, "preset", "Preset 4")
+
+    canonical = build_canonical_stat_inputs(
+        problem_spec=problem,
+        ids_snapshot=snapshot,
+        registry=default_registry(),
+    )
+    canonical_by_id = {item.stat_id: item for item in canonical.stat_inputs}
+
+    assert _resolved_stat_input_value(canonical_by_id["eals_pct"]) == pytest.approx(
+        _resolved_stat_input_value(base_by_id["eals_pct"]),
+    )
+    assert _resolved_stat_input_value(canonical_by_id["ehls_pct"]) == pytest.approx(
+        _resolved_stat_input_value(base_by_id["ehls_pct"]),
+    )
+
+
+def test_preflight_fails_closed_for_unmapped_workshop_stat_name_drift() -> None:
+    snapshot = _snapshot()
+    workshop = dict(snapshot.workshop)
+    renamed = workshop.pop("Enemy Attack Level Skip")
+    workshop["Enemy Attack Level Omit"] = renamed
+    drifted_snapshot = replace(snapshot, workshop=workshop)
+
+    result = MaxWaveEvaluator().preflight(_problem(mode="farming", wave=10), drifted_snapshot)
+
+    assert result["fail_closed"] is True
+    assert any(
+        item.startswith("ids_unmapped_or_unsupported:workshop_mapping:Enemy Attack Level Omit->unmapped")
+        for item in result["missing"]
+    )
+

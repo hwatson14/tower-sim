@@ -6,6 +6,7 @@ import pytest
 
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
+from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 from tower_sim.util.account_snapshot import (
     AccountSnapshot,
     ModuleAllocation,
@@ -210,6 +211,84 @@ def test_compile_full_stat_inputs_rejects_attack_speed_above_workshop_cap() -> N
 
     assert "workshop_unsupported:Attack Speed" in compiled.missing
 
+
+
+
+
+
+def test_enemy_level_skip_level_zero_semantics_are_explicit() -> None:
+    # Wiki-derived linear model implies base 0.05% at level 0.
+    assert workshop_level_to_chance(0) == pytest.approx(0.0005)
+
+    workshop_entries = {
+        "Enemy Attack Level Skip": WorkshopEntrySnapshot(
+            name="Enemy Attack Level Skip",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=699,
+            category="Utility",
+        ),
+        "Enemy Health Level Skip": WorkshopEntrySnapshot(
+            name="Enemy Health Level Skip",
+            unlocked=None,
+            coin_level=0,
+            end_level=0,
+            max_level=699,
+            category="Utility",
+        ),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+    attack = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_enemy_attack_level_skip"
+    )
+    health = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_enemy_health_level_skip"
+    )
+
+    assert attack.base_value == pytest.approx(0.0005)
+    assert health.base_value == pytest.approx(0.0005)
+
+def test_enemy_level_skip_workshop_scaling_matches_wiki_points() -> None:
+    table_points = {
+        1: 0.0010,
+        10: 0.0055,
+        100: 0.0505,
+        699: 0.3500,
+    }
+    for level, expected in table_points.items():
+        workshop_entries = {
+            "Enemy Attack Level Skip": WorkshopEntrySnapshot(
+                name="Enemy Attack Level Skip",
+                unlocked=None,
+                coin_level=level,
+                end_level=level,
+                max_level=699,
+                category="Utility",
+            ),
+            "Enemy Health Level Skip": WorkshopEntrySnapshot(
+                name="Enemy Health Level Skip",
+                unlocked=None,
+                coin_level=level,
+                end_level=level,
+                max_level=699,
+                category="Utility",
+            ),
+        }
+        snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+        compiled = compile_full_stat_inputs(snapshot)
+
+        attack = next(
+            stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_enemy_attack_level_skip"
+        )
+        health = next(
+            stat for stat in compiled.stat_inputs if stat.stat_id == "workshop_enemy_health_level_skip"
+        )
+        assert attack.base_value == pytest.approx(expected)
+        assert health.base_value == pytest.approx(expected)
 
 def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -> None:
     workshop_entries = {
