@@ -35,6 +35,7 @@
       "applied_heat": {},
       "wave": 100
     },
+    "at_wave_stage_skipped": "stages_not_materialized",
     "boss_survivability": {
       "hits_to_death": 21005.0,
       "hits_to_kill": 2,
@@ -318,12 +319,18 @@
         "wave": 64
       }
     ],
+    "perk_timeline": {
+      "enabled": false,
+      "reason": "no_path"
+    },
     "perk_timeline_scenario_wave": {
       "enabled": false,
       "reason": "no_path"
     },
-    "preflight_ms": 141.17037600000515,
-    "statbook_rows": 114,
+    "preflight_ms": 142.1007240000023,
+    "stages_materialized": false,
+    "start_stage_source": "canonical_stat_inputs",
+    "statbook_rows": 112,
     "timing_uptime": {
       "bot_effect_scalars": {
         "bot_bonus_multiplier": 1.0,
