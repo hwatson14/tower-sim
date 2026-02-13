@@ -16,7 +16,7 @@ def test_discover_function_calls_finds_known_runtime_callsite() -> None:
         function_names={"compile_full_stat_inputs"},
         scan_roots=["tower_sim"],
     )
-    assert "tower_sim/engines/combat_stat_derivation.py" in discovered[
+    assert "tower_sim/engines/stat_pipeline.py" in discovered[
         "compile_full_stat_inputs"
     ]
 
@@ -49,3 +49,23 @@ def test_validate_guardrails_reports_new_unallowlisted_callsite(tmp_path: Path) 
             for path in sorted(ephemeral_dir.glob("*.py")):
                 path.unlink()
             ephemeral_dir.rmdir()
+
+
+def test_summarize_guardrail_progress_reports_remaining_non_orchestrator() -> None:
+    progress = guardrails.summarize_guardrail_progress()
+    by_function = {entry.function_name: entry for entry in progress}
+    full_stats = by_function["compile_full_stat_inputs"]
+    assert full_stats.total_callsites >= 1
+    assert full_stats.remaining_non_orchestrator_callsites == 0
+
+
+def test_progress_report_cli_output(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(
+        "sys.argv",
+        ["stat_pipeline_guardrails.py", "--progress-report"],
+    )
+    exit_code = guardrails.main()
+    output = capsys.readouterr().out
+    assert exit_code == 0
+    assert "guardrail_progress:compile_full_stat_inputs:" in output
+    assert "remaining_non_orchestrator=" in output

@@ -987,13 +987,16 @@ def _workshop_category(raw: str | None) -> WSCategory | None:
     return None
 
 
+_compile_full = compile_full_stat_inputs
+
+
 def _free_upgrade_chances(
     ids_snapshot: AccountSnapshot,
     enhancement_map: Dict[str, float],
 ) -> Tuple[FreeUpgradeChances, List[str]]:
     missing: List[str] = []
 
-    compiled = compile_full_stat_inputs(ids_snapshot, include_workshop=True, include_uw=False)
+    compiled = _compile_full(ids_snapshot, include_workshop=True, include_uw=False)
     start_values = _workshop_start_values(compiled.stat_inputs)
 
     attack = start_values.get("workshop_free_attack_upgrade")

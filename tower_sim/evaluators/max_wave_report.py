@@ -22,6 +22,8 @@ from tower_sim.evaluators.max_wave import (
     _resolve_wave_snapshot,
     _search_wmax,
 )
+_compile_full = compile_full_stat_inputs
+
 from tower_sim.engines.combat_stat_derivation import (
     _filter_known_stat_inputs,
     _missing_required_stat_inputs,
@@ -173,7 +175,7 @@ def _safe_build_loadout_breakdown(
         _record_report_error("loadout_compilation", exc, missing, errors)
         return None
 
-    compiled = compile_full_stat_inputs(ids_snapshot)
+    compiled = _compile_full(ids_snapshot)
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
     stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
     registry = default_registry()
@@ -257,7 +259,7 @@ def _safe_build_trace(
         tier=str(problem_spec.scenario.tier),
     )
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
-    compiled = compile_full_stat_inputs(ids_snapshot)
+    compiled = _compile_full(ids_snapshot)
     stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
     registry = default_registry()
     stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
@@ -327,7 +329,7 @@ def _resolve_survivability_stats_for_report(
         tier=str(problem_spec.scenario.tier),
     )
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
-    compiled = compile_full_stat_inputs(ids_snapshot)
+    compiled = _compile_full(ids_snapshot)
     stat_inputs = _merge_stat_inputs(spec_inputs, compiled.stat_inputs)
     registry = default_registry()
     stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)

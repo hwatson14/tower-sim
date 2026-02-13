@@ -18,6 +18,14 @@ class GuardrailViolation:
     file_path: str
 
 
+@dataclass(frozen=True)
+class GuardrailProgress:
+    function_name: str
+    total_callsites: int
+    allowlisted_callsites: int
+    remaining_non_orchestrator_callsites: int
+
+
 def _iter_python_files(scan_roots: Iterable[str]) -> Iterable[Path]:
     for root in scan_roots:
         root_path = REPO_ROOT / root
@@ -89,6 +97,35 @@ def validate_guardrails(path: Path = DEFAULT_ALLOWLIST_PATH) -> List[GuardrailVi
     return violations
 
 
+def summarize_guardrail_progress(
+    path: Path = DEFAULT_ALLOWLIST_PATH,
+) -> List[GuardrailProgress]:
+    allowed_map, scan_roots = load_allowlist(path)
+    discovered = discover_function_calls(
+        function_names=set(allowed_map.keys()),
+        scan_roots=scan_roots,
+    )
+
+    progress: List[GuardrailProgress] = []
+    for function_name in sorted(allowed_map.keys()):
+        discovered_callsites = discovered.get(function_name, set())
+        allowlisted_callsites = allowed_map[function_name]
+        non_orchestrator = {
+            callsite
+            for callsite in discovered_callsites
+            if callsite != "tower_sim/engines/stat_pipeline.py"
+        }
+        progress.append(
+            GuardrailProgress(
+                function_name=function_name,
+                total_callsites=len(discovered_callsites),
+                allowlisted_callsites=len(allowlisted_callsites),
+                remaining_non_orchestrator_callsites=len(non_orchestrator),
+            )
+        )
+    return progress
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
@@ -101,7 +138,26 @@ def main() -> int:
         default=DEFAULT_ALLOWLIST_PATH,
         help="Path to guardrail allowlist YAML.",
     )
+    parser.add_argument(
+        "--progress-report",
+        action="store_true",
+        help=(
+            "Print deterministic migration progress counts for low-level compiler callsites "
+            "(including remaining non-orchestrator callsites)."
+        ),
+    )
     args = parser.parse_args()
+
+    if args.progress_report:
+        for entry in summarize_guardrail_progress(args.allowlist):
+            print(
+                "guardrail_progress:"
+                f"{entry.function_name}:"
+                f"total={entry.total_callsites}:"
+                f"allowlisted={entry.allowlisted_callsites}:"
+                f"remaining_non_orchestrator={entry.remaining_non_orchestrator_callsites}"
+            )
+        return 0
 
     violations = validate_guardrails(args.allowlist)
     if violations:
