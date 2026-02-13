@@ -69,3 +69,20 @@ stat_inputs: []
     )
     spec = load_problem_spec(custom)
     assert spec.scenario.allow_core_stat_overrides is True
+
+
+def test_load_problem_spec_supports_scenario_preset(tmp_path: Path) -> None:
+    payload = {
+        "scenario": {"mode": "farming", "tier": 1, "preset": "Farming"},
+        "stat_inputs": [],
+    }
+    path = tmp_path / "with_preset.yaml"
+    path.write_text("""scenario:
+  mode: farming
+  tier: 1
+  preset: Farming
+stat_inputs: []
+""")
+
+    spec = load_problem_spec(path)
+    assert spec.scenario.preset == "Farming"

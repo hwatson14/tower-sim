@@ -20,6 +20,7 @@ from tower_sim.run.optimizer_runner import OPTIMIZER_TASKS, run_optimizer_task
 from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
 
 LOGGER = logging.getLogger(__name__)
+_compile_full = compile_full_stat_inputs
 
 TASK_BASE_STATS = "BASE_STATS"
 TASK_STAT_INPUTS = "STAT_INPUTS"
@@ -72,7 +73,7 @@ def run_task(
             resolved_from="ids_only",
         )
     if task == TASK_STAT_INPUTS:
-        compiled = compile_full_stat_inputs(resolved_ids_snapshot)
+        compiled = _compile_full(resolved_ids_snapshot)
         return _ok(
             task,
             {
