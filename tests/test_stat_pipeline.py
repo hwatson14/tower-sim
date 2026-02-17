@@ -247,6 +247,7 @@ def test_stage_lineage_includes_workshop_formula_levels() -> None:
     workshop_formula_rows = [
         row
         for row in result.base_stage.contributors
+        for row in result.start_stage.contributors
         if row.provenance.startswith("workshop_formula:")
     ]
     assert workshop_formula_rows
