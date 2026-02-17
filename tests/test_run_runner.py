@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 import subprocess
 from pathlib import Path
 import sys
@@ -36,24 +37,29 @@ def test_runner_requires_existing_paths() -> None:
         runner.run(spec_path=Path("fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
 
 
-def test_runner_module_mode_executes_from_repo_root() -> None:
+def test_runner_module_mode_writes_outputs_under_cwd(tmp_path: Path) -> None:
     repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+    env = dict(os.environ)
+    pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(repo_root) if not pythonpath else f"{repo_root}:{pythonpath}"
     proc = subprocess.run(
         [
             sys.executable,
             "-m",
             "tower_sim.run",
-            "MAX_WAVE",
             "--spec",
-            "fixtures/specs/max_wave.yaml",
+            str(spec_path),
             "--ids",
-            "tests/fixtures/tower-sim-data/_IDS.csv",
+            str(ids_path),
         ],
-        cwd=repo_root,
+        cwd=tmp_path,
+        env=env,
         check=False,
         capture_output=True,
         text=True,
     )
     assert proc.returncode == 0, proc.stderr
-    assert (Path("out") / "max_wave_latest.json").exists()
-    assert (Path("out") / "lineage_manifest_latest.json").exists()
+    assert (tmp_path / "out" / "max_wave_latest.json").exists()
+    assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
