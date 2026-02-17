@@ -10,6 +10,7 @@ top_level:
     - .github
     - worker
     - out
+    - fixtures
 
   allowed_files:
     - README.md
@@ -26,6 +27,7 @@ top_level:
     - pytest.ini
     - .gitignore
     - .gitmodules
+    - STAT_PIPELINE_REFACTOR_PLAN.md
 
   forbidden_dirs:
     - docs

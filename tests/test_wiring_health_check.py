@@ -1,15 +1,34 @@
 from __future__ import annotations
 
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from tower_sim.audit.wiring_health_check import run_wiring_health_check
+from tower_sim.registry.combat_stat_contract import (
+    required_max_wave_stat_input_ids,
+    stat_lineage_status_lists,
+)
 
 
-def test_wiring_health_check_is_ok_without_thresholds() -> None:
+def _write_lineage_manifest(path: Path) -> None:
+    payload = {
+        "required_max_wave_stat_input_ids": list(required_max_wave_stat_input_ids()),
+        "status_lists": {
+            stat_id: asdict(status)
+            for stat_id, status in stat_lineage_status_lists().items()
+        },
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+
+
+def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
+    lineage_manifest = tmp_path / "stat_lineage_manifest_latest.json"
+    _write_lineage_manifest(lineage_manifest)
+
     result = run_wiring_health_check(
         ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
-        lineage_manifest_path=Path("out/stat_lineage_manifest_latest.json"),
+        lineage_manifest_path=lineage_manifest,
     )
 
     assert result["status"] == "ok"
@@ -19,10 +38,13 @@ def test_wiring_health_check_is_ok_without_thresholds() -> None:
     assert result["checks"]["lineage_summary"]["stats_total"] > 0
 
 
-def test_wiring_health_check_respects_threshold_violations() -> None:
+def test_wiring_health_check_respects_threshold_violations(tmp_path: Path) -> None:
+    lineage_manifest = tmp_path / "stat_lineage_manifest_latest.json"
+    _write_lineage_manifest(lineage_manifest)
+
     result = run_wiring_health_check(
         ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
-        lineage_manifest_path=Path("out/stat_lineage_manifest_latest.json"),
+        lineage_manifest_path=lineage_manifest,
         max_required_max_wave_gaps=0,
     )
 
