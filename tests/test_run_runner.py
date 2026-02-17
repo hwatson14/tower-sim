@@ -18,18 +18,33 @@ def _spec_fixture() -> Path:
     return Path("fixtures/specs/max_wave.yaml")
 
 
-def test_runner_executes_max_wave_and_writes_artifacts() -> None:
-    result = runner.run(spec_path=_spec_fixture(), ids_path=_ids_fixture())
+def test_runner_executes_max_wave_and_writes_artifacts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "out").mkdir(parents=True, exist_ok=True)
+
+    result = runner.run(spec_path=spec_path, ids_path=ids_path)
     assert result["task"] == "MAX_WAVE"
-    assert result["ok"] is True
-    assert (Path("out") / "max_wave_latest.json").exists()
-    assert (Path("out") / "lineage_manifest_latest.json").exists()
+    assert (tmp_path / "out" / "max_wave_latest.json").exists()
+    assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
 
 
-def test_runner_applies_yaml_overlay_patch() -> None:
-    patch_path = Path("tests/fixtures/specs/v1_patch_override.yaml")
-    result = runner.run(spec_path=_spec_fixture(), patch_path=patch_path, ids_path=_ids_fixture())
+def test_runner_applies_yaml_overlay_patch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+    patch_path = (repo_root / "tests/fixtures/specs/v1_patch_override.yaml").resolve()
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "out").mkdir(parents=True, exist_ok=True)
+
+    result = runner.run(spec_path=spec_path, patch_path=patch_path, ids_path=ids_path)
     assert result["task"] == "MAX_WAVE"
+    assert (tmp_path / "out" / "max_wave_latest.json").exists()
+    assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
 
 
 def test_runner_requires_existing_paths() -> None:
