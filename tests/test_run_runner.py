@@ -63,3 +63,30 @@ def test_runner_module_mode_writes_outputs_under_cwd(tmp_path: Path) -> None:
     assert proc.returncode == 0, proc.stderr
     assert (tmp_path / "out" / "max_wave_latest.json").exists()
     assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
+
+
+def test_runner_module_mode_accepts_legacy_max_wave_task_arg(tmp_path: Path) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+    env = dict(os.environ)
+    pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(repo_root) if not pythonpath else f"{repo_root}:{pythonpath}"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "tower_sim.run",
+            "MAX_WAVE",
+            "--spec",
+            str(spec_path),
+            "--ids",
+            str(ids_path),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
