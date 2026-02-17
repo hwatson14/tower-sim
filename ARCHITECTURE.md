@@ -697,3 +697,11 @@ Any of the following must stop work and ask for clarification:
 - [x] Replace dynamic globals-based stat-compiler indirection with explicit module-level aliases and update monkeypatch contract tests accordingly.
 - [x] Add pinned golden-value stage assertions for tournament Champion/Legend specs in canonical stat-pipeline tests.
 - [x] Populate canonical contributor lineage levels for `workshop_formula:*` provenance by mapping formula stat IDs to workshop coin levels, with pinned coverage.
+- [x] Add pinned contract asserting no null lineage levels for modeled level-bearing contributor provenance families (workshop table/alias/formula, UW section, cards).
+- [x] Expand pinned non-null lineage-level contract to sample + tournament Champion/Legend specs for modeled contributor provenance families.
+- [x] Extend card provenance lineage mapping to include `cards:critical_chance` so tournament card-driven contributors resolve deterministic levels.
+- [x] Add pinned cross-spec contract ensuring observed `cards:*` provenance keys are explicitly covered by canonical card lineage mapping.
+- [x] Add pinned cross-spec contract ensuring observed `workshop_formula:*` contributor stat IDs are explicitly covered by canonical workshop-formula lineage mapping.
+- [x] Add pinned cross-spec contract for `workshop_formula:*` lineage values to match compiled workshop-formula stat input values for mapped stat IDs.
+- [x] Add pinned Stage-3 delta contract for sample + tournament Champion/Legend specs, asserting exact at-wave delta stat ID sets versus start-stage values.
+- [x] Add pinned Stage-2 delta contract for sample + tournament Champion/Legend specs, asserting exact start-vs-base delta stat ID sets.

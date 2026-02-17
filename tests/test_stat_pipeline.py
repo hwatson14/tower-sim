@@ -7,6 +7,8 @@ from tower_sim.engines.stat_pipeline import (
     build_canonical_stat_pipeline,
     build_canonical_stat_pipeline_for_problem_spec,
 )
+import tower_sim.engines.stat_pipeline as stat_pipeline_module
+import tower_sim.engines.stat_input_compiler as stat_input_compiler_module
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.engines.combat_stat_derivation import build_canonical_wave_snapshot
 from tower_sim.engines.stat_engine import StatEngine
@@ -244,11 +246,43 @@ def test_stage_lineage_includes_workshop_formula_levels() -> None:
 
     workshop_formula_rows = [
         row
+        for row in result.base_stage.contributors
         for row in result.start_stage.contributors
         if row.provenance.startswith("workshop_formula:")
     ]
     assert workshop_formula_rows
     assert all(row.level is not None for row in workshop_formula_rows)
+
+
+
+
+def test_stage_lineage_has_no_null_levels_for_modeled_level_sources() -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    modeled_prefixes = (
+        "workshop_table:",
+        "workshop_alias:",
+        "workshop_formula:",
+        "uw_section:",
+        "cards:",
+    )
+    modeled_rows = [
+        row
+        for row in result.start_stage.contributors
+        if any(row.provenance.startswith(prefix) for prefix in modeled_prefixes)
+    ]
+
+    assert modeled_rows
+    null_rows = [row for row in modeled_rows if row.level is None]
+    assert not null_rows
 
 
 def test_at_wave_required_stat_completeness_fail_closed(monkeypatch) -> None:
@@ -340,3 +374,275 @@ def test_stage_golden_stat_values_for_pinned_tournament_specs(spec_path: Path) -
     expected_at_wave["ehls_pct"] = 0.205
     for stat_id, expected in expected_at_wave.items():
         assert result.at_wave_stage.values[stat_id] == pytest.approx(expected, rel=0.0, abs=1e-12)
+
+
+@pytest.mark.parametrize(
+    "spec_path",
+    [
+        Path("tests/fixtures/specs/sample_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+    ],
+)
+def test_stage_lineage_modeled_level_sources_no_nulls_across_specs(spec_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    modeled_prefixes = (
+        "workshop_table:",
+        "workshop_alias:",
+        "workshop_formula:",
+        "uw_section:",
+        "cards:",
+    )
+    modeled_rows = [
+        row
+        for row in result.start_stage.contributors
+        if any(row.provenance.startswith(prefix) for prefix in modeled_prefixes)
+    ]
+
+    assert modeled_rows
+    assert all(row.level is not None for row in modeled_rows)
+
+
+@pytest.mark.parametrize(
+    "spec_path",
+    [
+        Path("tests/fixtures/specs/sample_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+    ],
+)
+def test_card_provenance_keys_are_mapped_for_pinned_specs(spec_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    observed_card_keys = {
+        row.provenance.split(":", 1)[1].strip()
+        for row in result.start_stage.contributors
+        if row.provenance.startswith("cards:")
+    }
+    assert observed_card_keys
+    mapped_keys = set(stat_pipeline_module._CARD_PROVENANCE_TO_NAME.keys())
+    assert observed_card_keys <= mapped_keys
+
+
+@pytest.mark.parametrize(
+    "spec_path",
+    [
+        Path("tests/fixtures/specs/sample_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+    ],
+)
+def test_workshop_formula_stat_ids_are_mapped_for_pinned_specs(spec_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    observed_formula_ids = {
+        row.stat_id
+        for row in result.base_stage.contributors
+        if row.provenance.startswith("workshop_formula:")
+    }
+    assert observed_formula_ids
+    mapped_formula_ids = set(stat_pipeline_module._WORKSHOP_FORMULA_STAT_TO_WORKSHOP_NAME.keys())
+    assert observed_formula_ids <= mapped_formula_ids
+
+
+@pytest.mark.parametrize(
+    "spec_path",
+    [
+        Path("tests/fixtures/specs/sample_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+        Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+    ],
+)
+def test_workshop_formula_lineage_values_match_compiled_inputs(spec_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    formula_rows = [
+        row
+        for row in result.base_stage.contributors
+        if row.provenance.startswith("workshop_formula:")
+    ]
+    assert formula_rows
+
+    compiled = stat_input_compiler_module.compile_full_stat_inputs(snapshot)
+    compiled_formula_values: dict[str, set[float]] = {}
+    for item in compiled.stat_inputs:
+        if not (item.provenance or "").startswith("workshop_formula:"):
+            continue
+        value = stat_pipeline_module._resolved_stat_input_value(item)
+        compiled_formula_values.setdefault(item.stat_id, set()).add(float(value))
+
+    for row in formula_rows:
+        expected_values = compiled_formula_values.get(row.stat_id)
+        assert expected_values is not None
+        assert row.resolved_value in expected_values
+
+
+@pytest.mark.parametrize(
+    ("spec_path", "expected_at_wave_delta_ids"),
+    [
+        (
+            Path("tests/fixtures/specs/sample_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "knockback_mult",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "knockback_mult",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+    ],
+)
+def test_stage3_wave_deltas_are_pinned_for_key_specs(
+    spec_path: Path,
+    expected_at_wave_delta_ids: set[str],
+) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    assert result.at_wave_stage is not None
+    differing_ids = {
+        stat_id
+        for stat_id, start_value in result.start_stage.values.items()
+        if stat_id in result.at_wave_stage.values
+        and abs(result.at_wave_stage.values[stat_id] - start_value) > 1e-12
+    }
+    assert differing_ids == expected_at_wave_delta_ids
+
+
+@pytest.mark.parametrize(
+    ("spec_path", "expected_stage2_delta_ids"),
+    [
+        (
+            Path("tests/fixtures/specs/sample_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_cash_bonus",
+                "workshop_coins_per_kill_bonus",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_package_chance",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_package_chance",
+            },
+        ),
+    ],
+)
+def test_stage2_deltas_are_pinned_for_key_specs(
+    spec_path: Path,
+    expected_stage2_delta_ids: set[str],
+) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    differing_ids = {
+        stat_id
+        for stat_id, base_value in result.base_stage.values.items()
+        if stat_id in result.start_stage.values
+        and abs(result.start_stage.values[stat_id] - base_value) > 1e-12
+    }
+    assert differing_ids == expected_stage2_delta_ids

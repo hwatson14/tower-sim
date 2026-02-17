@@ -363,6 +363,7 @@ _CARD_PROVENANCE_TO_NAME = {
     "attack_speed": "Attack Speed",
     "cash": "Cash",
     "coins": "Coins",
+    "critical_chance": "Critical Chance",
     "extra_defense": "Extra Defense",
     "free_upgrades": "Free Upgrades",
     "health": "Health",
