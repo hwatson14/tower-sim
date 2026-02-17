@@ -10,7 +10,13 @@ from tower_sim.run.runner import run
 
 def _parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Canonical TowerSim runner entrypoint.")
-    parser.add_argument("task", choices=[TASK_MAX_WAVE], help="Deterministic runner task.")
+    parser.add_argument(
+        "task",
+        nargs="?",
+        choices=[TASK_MAX_WAVE],
+        default=TASK_MAX_WAVE,
+        help=argparse.SUPPRESS,
+    )
     parser.add_argument("--spec", type=Path, required=True, help="Problem spec YAML path.")
     parser.add_argument(
         "--patch",
