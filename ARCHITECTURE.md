@@ -618,6 +618,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Allow root GAME_OVERVIEW.md and PROJECT_INTENT.md in REPO_MAP allowed files.
 - [x] Consolidate tier battle condition loaders onto step1 table parser + shim legacy loader.
 - [x] Wire Tier BC `more_bosses` as a supported v1 no-op (keeps fail-closed for unsupported BC families).
+- [x] Implement canonical stat pipeline orchestrator stages (base/start/at-wave) and route MAX_WAVE preflight through the unified pipeline entrypoint.
 - [x] Fix MAX_WAVE canonical stat input pipeline defects (MW-01 preset resolution, SK-01 skip constants, MW-02 survivability base seeds) with fail-closed regression tests.
 - [x] Wire lineage manifest reachability for EALS/EHLS, wave indices, and eDamage-derived tower stats; leave only workshop unlock stats blocked pending authoritative tables.
 - [x] Add identifier resolver with fail-closed eHP ledger closure guard.
@@ -680,3 +681,28 @@ Any of the following must stop work and ask for clarification:
 - [x] Align workshop at-wave progression outputs with canonical survivability IDs (including derived wall HP/regen) so per-wave snapshots consume canonical values instead of source-only `workshop_*` IDs.
 - [x] Add deterministic wiring-health scorecard audit (`python -m tower_sim.audit.wiring_health_check`) to gate naming contract, stat-lineage manifest summaries, and mechanics manifest resolution in one payload.
 - [x] Add stat-pipeline bypass guardrail audit (`python -m tower_sim.audit.stat_pipeline_guardrails`) with allowlist ratchet to block new direct runtime calls to low-level stat compilers during canonical-pipeline migration.
+- [x] Implement canonical stat pipeline orchestrator stages (base/start/at-wave) with a typed runtime entrypoint scaffold in `tower_sim/engines/stat_pipeline.py`.
+- [x] Honor explicit `build_canonical_stat_pipeline(..., preset=...)` wrapper input by wiring it into `ScenarioSpec.preset` for deterministic loadout selection.
+- [x] Route MAX_WAVE evaluate scenario-wave statbook/snapshot build through canonical stat pipeline stage materialization (retain existing search loop pending full convergence).
+- [x] Route MAX_WAVE search-loop per-wave stat materialization through canonical stat pipeline entrypoint (wave-specific stage builds) while preserving fail-closed search diagnostics.
+- [x] Add canonical pipeline lineage/golden-presence contract tests for pinned snapshot (workshop level lineage + staged stat presence/progression assertions).
+- [x] Add fail-closed stage-boundary required-stat completeness checks in canonical pipeline outputs (start-stage required MAX_WAVE stats and at-wave required combat stats).
+- [x] Add pinned golden-value stage assertions for canonical stat pipeline outputs (start-stage + at-wave) on sample snapshot fixture.
+- [x] Extend canonical contributor lineage to include UW track levels from `_IDS.csv` UW section provenance in stage contributor records.
+- [x] Extend canonical contributor lineage to include card levels from `cards:*` provenance using pinned snapshot card inventory levels.
+- [x] Add fail-closed at-wave required-stat completeness regression test by simulating missing required combat stat in canonical at-wave snapshot assembly.
+- [x] Align canonical stage-2 materialization source to canonical stat-input build output (avoid parallel loadout recompute path during stage builds).
+- [x] Add deterministic stat-pipeline guardrail progress report mode (`python -m tower_sim.audit.stat_pipeline_guardrails --progress-report`) to quantify remaining non-orchestrator low-level compiler callsites during Phase C burn-down.
+- [x] Eliminate all non-orchestrator runtime calls to low-level stat compilers (`compile_full_stat_inputs`, `compile_survivability_base_stat_inputs`, `compile_survivability_loadout_stat_inputs`) and ratchet guardrail allowlist to `tower_sim/engines/stat_pipeline.py` only.
+- [x] Replace dynamic globals-based stat-compiler indirection with explicit module-level aliases and update monkeypatch contract tests accordingly.
+- [x] Add pinned golden-value stage assertions for tournament Champion/Legend specs in canonical stat-pipeline tests.
+- [x] Populate canonical contributor lineage levels for `workshop_formula:*` provenance by mapping formula stat IDs to workshop coin levels, with pinned coverage.
+- [x] Add pinned contract asserting no null lineage levels for modeled level-bearing contributor provenance families (workshop table/alias/formula, UW section, cards).
+- [x] Expand pinned non-null lineage-level contract to sample + tournament Champion/Legend specs for modeled contributor provenance families.
+- [x] Extend card provenance lineage mapping to include `cards:critical_chance` so tournament card-driven contributors resolve deterministic levels.
+- [x] Add pinned cross-spec contract ensuring observed `cards:*` provenance keys are explicitly covered by canonical card lineage mapping.
+- [x] Add pinned cross-spec contract ensuring observed `workshop_formula:*` contributor stat IDs are explicitly covered by canonical workshop-formula lineage mapping.
+- [x] Add pinned cross-spec contract for `workshop_formula:*` lineage values to match compiled workshop-formula stat input values for mapped stat IDs.
+- [x] Add pinned Stage-3 delta contract for sample + tournament Champion/Legend specs, asserting exact at-wave delta stat ID sets versus start-stage values.
+- [x] Add pinned Stage-2 delta contract for sample + tournament Champion/Legend specs, asserting exact start-vs-base delta stat ID sets.
+- [x] Align crit-stat naming in pinned canonical stage goldens to canonical IDs (`tower_crit_chance`, `tower_crit_multiplier`) and pin tournament Stage-2 deltas accordingly.

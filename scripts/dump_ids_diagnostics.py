@@ -32,6 +32,8 @@ from tower_sim.loaders.account_snapshot_compiler import (
 from tower_sim.loaders.ids_parser import parse_ids, resolve_ids_path
 from tower_sim.util.account_snapshot import PRESET_NAMES
 
+_compile_full = compile_full_stat_inputs
+
 
 def _to_jsonable(value: Any) -> Any:
     if is_dataclass(value):
@@ -127,7 +129,7 @@ def _build_pipeline_bundle(
     pipeline["ids_raw_index"] = raw_index
     stage_hashes["ids_raw_index"] = raw_index["hash"]
 
-    compiled = compile_full_stat_inputs(snapshot)
+    compiled = _compile_full(snapshot)
     compiled_obj: Dict[str, Any] = {
         "stat_inputs": [_serialize_stat_input(i) for i in compiled.stat_inputs],
         "missing": list(compiled.missing),

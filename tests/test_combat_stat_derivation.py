@@ -135,11 +135,11 @@ def test_build_canonical_stat_inputs_blocks_core_override_in_strict_mode(monkeyp
         )()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [],
     )
 
@@ -172,11 +172,11 @@ def test_build_canonical_stat_inputs_allows_core_override_in_explicit_mode(monke
         )()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [],
     )
 
@@ -209,11 +209,11 @@ def test_build_canonical_stat_inputs_ignores_workshop_alias_collisions(monkeypat
         )()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [],
     )
 
@@ -237,11 +237,11 @@ def test_build_canonical_stat_inputs_uses_mode_specific_module_context(monkeypat
         return []
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         _fake_loadout,
     )
 
@@ -341,11 +341,11 @@ def test_build_canonical_stat_inputs_skips_unsupported_cards_but_keeps_loadout(m
         ]
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         _fake_loadout,
     )
 
@@ -437,11 +437,11 @@ def test_build_canonical_stat_inputs_rebases_wall_stats_from_resolved_tower_valu
         )()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [],
     )
     monkeypatch.setattr(
@@ -490,11 +490,11 @@ def test_build_canonical_stat_inputs_blocks_non_core_base_override_in_strict_mod
         )()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [],
     )
 
@@ -528,11 +528,11 @@ def test_build_canonical_stat_inputs_allows_core_loadout_delta_in_strict_mode(mo
         return type("_Compiled", (), {"stat_inputs": [], "missing": []})()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [
             StatInput(
                 stat_id="def_pct",
@@ -576,11 +576,11 @@ def test_build_canonical_stat_inputs_requires_base_or_derived_for_required_stat(
         return type("_Compiled", (), {"stat_inputs": [], "missing": []})()
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         _fake_compile,
     )
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_survivability_loadout_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_survivability_loadout",
         lambda *_args, **_kwargs: [
             StatInput(
                 stat_id="tower_hp",

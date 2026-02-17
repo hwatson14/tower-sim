@@ -39,6 +39,9 @@ from tower_sim.loaders.wiki.module_rules import max_active_substats_for_module_l
 from tower_sim.libs.labs_lib import load_labs_values
 
 
+_compile_full = compile_full_stat_inputs
+
+
 class SurvivabilityPipelineError(RuntimeError):
     pass
 
@@ -150,7 +153,7 @@ def build_survivability_report(
         selected_cards=selected_cards,
         allow_provisional=allow_provisional,
     )
-    compiled = compile_full_stat_inputs(ids_snapshot)
+    compiled = _compile_full(ids_snapshot)
     if compiled.missing:
         if not allow_provisional:
             raise SurvivabilityPipelineError(

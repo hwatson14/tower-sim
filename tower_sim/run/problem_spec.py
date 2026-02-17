@@ -68,6 +68,7 @@ class ScenarioSpec:
     mode: str
     tier: int
     league: Optional[str] = None
+    preset: Optional[str] = None
     wave: int = 1
     wave_damage_tier: Optional[str] = None
     eals_ramp: Optional[SkipRampSpec] = None
