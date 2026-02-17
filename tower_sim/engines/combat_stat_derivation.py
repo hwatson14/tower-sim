@@ -34,6 +34,10 @@ from tower_sim.registry.stat_registry import Phase
 from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
 from tower_sim.loaders.wiki.module_rules import apply_hard_cap
 
+_compile_full = compile_full_stat_inputs
+_compile_survivability_base = compile_survivability_base_stat_inputs
+_compile_survivability_loadout = compile_survivability_loadout_stat_inputs
+
 
 @dataclass(frozen=True)
 class CombatStatContribution:
@@ -66,11 +70,11 @@ def build_canonical_stat_inputs(
     registry,
 ) -> CanonicalStatInputBuild:
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
-    compiled = compile_full_stat_inputs(ids_snapshot)
+    compiled = _compile_full(ids_snapshot)
     base_inputs: List[StatInput] = []
     base_missing: List[str] = []
     try:
-        base_inputs = compile_survivability_base_stat_inputs(ids_snapshot, allow_provisional=True)
+        base_inputs = _compile_survivability_base(ids_snapshot, allow_provisional=True)
     except Exception as exc:  # noqa: BLE001
         base_missing.append(f"survivability_base:{exc}")
     module_context, selected_cards, preset_resolution_errors = _resolve_preset_context(
@@ -277,7 +281,7 @@ def _compile_survivability_loadout_inputs_resilient(
             }
             if selected_cards is not None:
                 kwargs["selected_cards"] = selected_cards
-            inputs = compile_survivability_loadout_stat_inputs(
+            inputs = _compile_survivability_loadout(
                 ids_snapshot,
                 **kwargs,
             )

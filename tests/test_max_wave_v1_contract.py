@@ -20,6 +20,7 @@ from tower_sim.engines.combat_stat_derivation import (
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot, resolve_loadout
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.engines.stat_pipeline import build_canonical_stat_pipeline_for_problem_spec
 from tower_sim.run.problem_spec import (
     BossStatsSpec,
     BossSurvivabilitySpec,
@@ -266,7 +267,7 @@ def test_override_collisions_are_reported_outside_missing(monkeypatch) -> None:
         ]
 
     monkeypatch.setattr(
-        "tower_sim.engines.combat_stat_derivation.compile_full_stat_inputs",
+        "tower_sim.engines.combat_stat_derivation._compile_full",
         lambda _ids: _Compiled(),
     )
     result = MaxWaveEvaluator().evaluate(base_problem, _snapshot())
@@ -489,3 +490,23 @@ def test_preflight_fails_closed_for_unmapped_workshop_stat_name_drift() -> None:
         for item in result["missing"]
     )
 
+
+
+def test_evaluate_materializes_stages_via_canonical_pipeline(monkeypatch) -> None:
+    calls = []
+    original = build_canonical_stat_pipeline_for_problem_spec
+
+    def _wrapped(*args, **kwargs):
+        calls.append(bool(kwargs.get("materialize_stages", True)))
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        "tower_sim.evaluators.max_wave.build_canonical_stat_pipeline_for_problem_spec",
+        _wrapped,
+    )
+    result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
+
+    assert result["fail_closed"] is False
+    assert False in calls  # preflight
+    assert True in calls  # evaluate materialized stage build
+    assert len(calls) >= 3  # scenario wave + at least one search-loop wave

@@ -9,10 +9,11 @@ from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.util.statbook import StatBook, StatRow
 
 PHASE_START = Phase.START_OF_RUN
+_compile_full = compile_full_stat_inputs
 
 
 def build_statbook(snapshot: AccountSnapshot) -> StatBook:
-    compiled = compile_full_stat_inputs(snapshot)
+    compiled = _compile_full(snapshot)
     start_inputs = {
         stat_input.stat_id: stat_input
         for stat_input in compiled.stat_inputs

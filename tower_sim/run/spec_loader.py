@@ -55,6 +55,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
         required={"mode", "tier"},
         optional={
             "league",
+            "preset",
             "wave",
             "wave_damage_tier",
             "eals_ramp",
@@ -67,6 +68,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
     mode = str(data["mode"])
     tier = int(data["tier"])
     league = _optional_str(data.get("league"))
+    preset = _optional_str(data.get("preset"))
     wave = int(data.get("wave", 1))
     wave_damage_tier = _optional_str(data.get("wave_damage_tier"))
     eals_ramp = _parse_skip_ramp(data.get("eals_ramp"), "eals_ramp")
@@ -78,6 +80,7 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
         mode=mode,
         tier=tier,
         league=league,
+        preset=preset,
         wave=wave,
         wave_damage_tier=wave_damage_tier,
         eals_ramp=eals_ramp,
