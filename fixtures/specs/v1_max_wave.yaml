@@ -1,0 +1,83 @@
+evaluator: max_wave
+scenario:
+  mode: farming
+  tier: 14
+  wave: 100
+  eals_ramp:
+    start: 0.0
+    end: 0.0
+    ramp_waves: 1000
+  ehls_ramp:
+    start: 0.0
+    end: 0.0
+    ramp_waves: 1000
+  boss_survivability:
+    boss:
+      hp: 1.0
+      attack: 1.0
+      attack_interval: 1.0
+      enrage_mult: 1.0
+    tower:
+      dr_frac: 0.0
+      regen_per_sec: 0.0
+      shields: 0.0
+    combat_params:
+      hit_interval_id: default
+      defense_abs: 0.0
+      damage_reduction: 0.0
+      pc_frac: 0.0
+      pc_boss_mult: 1.0
+      orb_damage_frac: 0.0
+      electrons_damage_frac: 0.0
+    bc_params:
+      boss_hp_mult: 1.0
+      boss_attack_mult: 1.0
+stat_inputs:
+  - stat_id: tower_hp
+    phase: start_of_run
+    base_value: 1000000000000.0
+    provenance: fixture_v1
+  - stat_id: tower_regen
+    phase: start_of_run
+    base_value: 1000000000.0
+    provenance: fixture_v1
+  - stat_id: def_pct
+    phase: start_of_run
+    base_value: 0.98
+    provenance: fixture_v1
+  - stat_id: wall_hp
+    phase: start_of_run
+    base_value: 1000000000000.0
+    provenance: fixture_v1
+  - stat_id: wall_regen
+    phase: start_of_run
+    base_value: 1000000000.0
+    provenance: fixture_v1
+  - stat_id: thorns_damage_mult
+    phase: start_of_run
+    base_value: 1.0
+    provenance: fixture_v1
+  - stat_id: eals_pct
+    phase: start_of_run
+    base_value: 0.0
+    provenance: fixture_v1
+  - stat_id: ehls_pct
+    phase: start_of_run
+    base_value: 0.0
+    provenance: fixture_v1
+  - stat_id: orb_damage_mult
+    phase: start_of_run
+    base_value: 1.0
+    provenance: fixture_v1
+  - stat_id: death_ray_damage_mult
+    phase: start_of_run
+    base_value: 1.0
+    provenance: fixture_v1
+  - stat_id: plasma_cannon_damage_mult
+    phase: start_of_run
+    base_value: 1.0
+    provenance: fixture_v1
+  - stat_id: knockback_mult
+    phase: start_of_run
+    base_value: 1.0
+    provenance: fixture_v1

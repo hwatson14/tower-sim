@@ -9,46 +9,49 @@ import pytest
 from tower_sim.run import runner
 
 
-def test_runner_fixture_result_shape() -> None:
-    result = runner.run()
-    assert result["evaluator"] == "max_wave"
-    assert "fail_closed" in result
-    assert isinstance(result.get("missing"), list)
+def _ids_fixture() -> Path:
+    return Path("tests/fixtures/tower-sim-data/_IDS.csv")
 
 
-def test_runner_requires_explicit_paths_when_fixture_defaults_missing(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(
-        runner,
-        "_resolve_default_fixture_paths",
-        lambda: (_missing("_IDS.csv"), _missing("sample_spec.yaml")),
-    )
-    with pytest.raises(FileNotFoundError, match="IDS CSV not found"):
-        runner.run()
+def _spec_fixture() -> Path:
+    return Path("fixtures/specs/v1_max_wave.yaml")
 
 
-def test_runner_accepts_explicit_paths() -> None:
-    repo_root = Path(__file__).resolve().parents[1]
-    ids_path = repo_root / "tests" / "fixtures" / "tower-sim-data" / "_IDS.csv"
-    spec_path = repo_root / "tests" / "fixtures" / "specs" / "sample_spec.yaml"
-    result = runner.run(ids_path=ids_path, spec_path=spec_path)
-    assert result["evaluator"] == "max_wave"
+def test_runner_executes_max_wave_and_writes_artifacts() -> None:
+    result = runner.run(spec_path=_spec_fixture(), ids_path=_ids_fixture())
+    assert result["task"] == "MAX_WAVE"
+    assert result["ok"] is True
+    assert (Path("out") / "max_wave_latest.json").exists()
+    assert (Path("out") / "lineage_manifest_latest.json").exists()
+
+
+def test_runner_applies_yaml_overlay_patch() -> None:
+    patch_path = Path("tests/fixtures/specs/v1_patch_override.yaml")
+    result = runner.run(spec_path=_spec_fixture(), patch_path=patch_path, ids_path=_ids_fixture())
+    assert result["task"] == "MAX_WAVE"
+
+
+def test_runner_requires_existing_paths() -> None:
+    with pytest.raises(FileNotFoundError, match="Problem spec not found"):
+        runner.run(spec_path=Path("fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
 
 
 def test_runner_script_mode_executes_from_repo_root() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     script_path = repo_root / "tower_sim" / "run" / "runner.py"
     proc = subprocess.run(
-        [sys.executable, str(script_path), "--strict"],
+        [
+            sys.executable,
+            str(script_path),
+            "--spec",
+            "fixtures/specs/v1_max_wave.yaml",
+            "--ids",
+            "tests/fixtures/tower-sim-data/_IDS.csv",
+        ],
         cwd=repo_root,
         check=False,
         capture_output=True,
         text=True,
     )
     assert proc.returncode == 0, proc.stderr
-    assert "Wrote" in proc.stdout
-
-
-def _missing(name: str) -> Path:
-    return Path("/tmp") / f"missing-{name}"
+    assert "Wrote out/max_wave_latest.json" in proc.stdout
