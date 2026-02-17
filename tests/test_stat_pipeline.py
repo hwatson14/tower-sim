@@ -507,3 +507,67 @@ def test_workshop_formula_lineage_values_match_compiled_inputs(spec_path: Path) 
         expected_values = compiled_formula_values.get(row.stat_id)
         assert expected_values is not None
         assert row.resolved_value in expected_values
+
+
+@pytest.mark.parametrize(
+    ("spec_path", "expected_at_wave_delta_ids"),
+    [
+        (
+            Path("tests/fixtures/specs/sample_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "knockback_mult",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+            {
+                "death_ray_damage_mult",
+                "eals_pct",
+                "ehls_pct",
+                "knockback_mult",
+                "orb_damage_mult",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+            },
+        ),
+    ],
+)
+def test_stage3_wave_deltas_are_pinned_for_key_specs(
+    spec_path: Path,
+    expected_at_wave_delta_ids: set[str],
+) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    assert result.at_wave_stage is not None
+    differing_ids = {
+        stat_id
+        for stat_id, start_value in result.start_stage.values.items()
+        if stat_id in result.at_wave_stage.values
+        and abs(result.at_wave_stage.values[stat_id] - start_value) > 1e-12
+    }
+    assert differing_ids == expected_at_wave_delta_ids
