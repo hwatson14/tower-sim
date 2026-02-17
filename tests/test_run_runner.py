@@ -28,6 +28,7 @@ def test_runner_executes_max_wave_and_writes_artifacts(tmp_path: Path, monkeypat
 
     result = runner.run(spec_path=spec_path, ids_path=ids_path)
     assert result["task"] == "MAX_WAVE"
+    assert result["ok"] is True
     assert (tmp_path / "out" / "max_wave_latest.json").exists()
     assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
 
