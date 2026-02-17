@@ -705,3 +705,4 @@ Any of the following must stop work and ask for clarification:
 - [x] Add pinned cross-spec contract for `workshop_formula:*` lineage values to match compiled workshop-formula stat input values for mapped stat IDs.
 - [x] Add pinned Stage-3 delta contract for sample + tournament Champion/Legend specs, asserting exact at-wave delta stat ID sets versus start-stage values.
 - [x] Add pinned Stage-2 delta contract for sample + tournament Champion/Legend specs, asserting exact start-vs-base delta stat ID sets.
+- [x] Align crit-stat naming in pinned canonical stage goldens to canonical IDs (`tower_crit_chance`, `tower_crit_multiplier`) and pin tournament Stage-2 deltas accordingly.

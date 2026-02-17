@@ -148,6 +148,8 @@ _WORKSHOP_CANONICAL_ALIASES: Dict[str, str] = {
     "Thorn Damage": "thorns_damage_mult",
     "Enemy Attack Level Skip": "eals_pct",
     "Enemy Health Level Skip": "ehls_pct",
+    "Critical Chance": "tower_crit_chance",
+    "Critical Factor": "tower_crit_multiplier",
 }
 
 
