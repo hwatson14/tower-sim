@@ -4,12 +4,33 @@ import json
 from pathlib import Path
 
 from tower_sim.audit.wiring_health_check import run_wiring_health_check
+from tower_sim.registry.combat_stat_contract import (
+    required_max_wave_stat_input_ids,
+    stat_lineage_status_lists,
+)
 
 
-def test_wiring_health_check_is_ok_without_thresholds() -> None:
+def _lineage_manifest_path(tmp_path: Path) -> Path:
+    path = tmp_path / "lineage_manifest.json"
+    payload = {
+        "required_max_wave_stat_input_ids": list(required_max_wave_stat_input_ids()),
+        "status_lists": {
+            stat_id: {
+                "wired_up": list(status.wired_up),
+                "not_expected_to_be_wired_up": list(status.not_expected_to_be_wired_up),
+                "still_requires_wiring_up": list(status.still_requires_wiring_up),
+            }
+            for stat_id, status in stat_lineage_status_lists().items()
+        },
+    }
+    path.write_text(json.dumps(payload), encoding="utf-8")
+    return path
+
+
+def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
     result = run_wiring_health_check(
         ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
-        lineage_manifest_path=Path("out/stat_lineage_manifest_latest.json"),
+        lineage_manifest_path=_lineage_manifest_path(tmp_path),
     )
 
     assert result["status"] == "ok"
@@ -19,10 +40,10 @@ def test_wiring_health_check_is_ok_without_thresholds() -> None:
     assert result["checks"]["lineage_summary"]["stats_total"] > 0
 
 
-def test_wiring_health_check_respects_threshold_violations() -> None:
+def test_wiring_health_check_respects_threshold_violations(tmp_path: Path) -> None:
     result = run_wiring_health_check(
         ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
-        lineage_manifest_path=Path("out/stat_lineage_manifest_latest.json"),
+        lineage_manifest_path=_lineage_manifest_path(tmp_path),
         max_required_max_wave_gaps=0,
     )
 

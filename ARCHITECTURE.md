@@ -578,6 +578,7 @@ Any of the following must stop work and ask for clarification:
 - [x] Implement module main-effect multiplier formula (MODSTAT_*).
 - [x] Add boss hit-interval table for survivability (boss_hit_interval_v1.csv).
 - [x] Document run API task routing for agent usage.
+- [x] Introduce canonical MAX_WAVE runner spine (`tower_sim/run/runner.py`) with YAML spec + optional overlay patch and latest artifact outputs.
 - [ ] (v2) Populate vault stats table entries for eHP/vault multipliers (vault_stats_v1.csv).
 - [ ] (v2) Populate WSE preset mapping table entries for eHP stats (wse_presets_v1.csv).
 - [x] Add runtime evaluator for EP formula registry LAMBDAs (EPH_* execution wiring).

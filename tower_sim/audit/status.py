@@ -172,7 +172,7 @@ def _components() -> list[ComponentStatus]:
             name="CLI",
             status="partial",
             evidence=[
-                "`tower_sim/run/runner.py`: fixture runner CLI entrypoint",
+                "`python -m tower_sim.run`: canonical MAX_WAVE runner entrypoint",
                 "`tower_sim/run/api.py`: allowlisted deterministic task dispatcher",
             ],
             tests=[
