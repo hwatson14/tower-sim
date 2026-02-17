@@ -14,7 +14,7 @@ def _ids_fixture() -> Path:
 
 
 def _spec_fixture() -> Path:
-    return Path("fixtures/specs/v1_max_wave.yaml")
+    return Path("fixtures/specs/max_wave.yaml")
 
 
 def test_runner_executes_max_wave_and_writes_artifacts() -> None:
@@ -36,15 +36,16 @@ def test_runner_requires_existing_paths() -> None:
         runner.run(spec_path=Path("fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
 
 
-def test_runner_script_mode_executes_from_repo_root() -> None:
+def test_runner_module_mode_executes_from_repo_root() -> None:
     repo_root = Path(__file__).resolve().parents[1]
-    script_path = repo_root / "tower_sim" / "run" / "runner.py"
     proc = subprocess.run(
         [
             sys.executable,
-            str(script_path),
+            "-m",
+            "tower_sim.run",
+            "MAX_WAVE",
             "--spec",
-            "fixtures/specs/v1_max_wave.yaml",
+            "fixtures/specs/max_wave.yaml",
             "--ids",
             "tests/fixtures/tower-sim-data/_IDS.csv",
         ],
@@ -54,4 +55,5 @@ def test_runner_script_mode_executes_from_repo_root() -> None:
         text=True,
     )
     assert proc.returncode == 0, proc.stderr
-    assert "Wrote out/max_wave_latest.json" in proc.stdout
+    assert (Path("out") / "max_wave_latest.json").exists()
+    assert (Path("out") / "lineage_manifest_latest.json").exists()
