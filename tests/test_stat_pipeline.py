@@ -571,3 +571,77 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
         and abs(result.at_wave_stage.values[stat_id] - start_value) > 1e-12
     }
     assert differing_ids == expected_at_wave_delta_ids
+
+
+@pytest.mark.parametrize(
+    ("spec_path", "expected_stage2_delta_ids"),
+    [
+        (
+            Path("tests/fixtures/specs/sample_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_cash_bonus",
+                "workshop_coins_per_kill_bonus",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_package_chance",
+            },
+        ),
+        (
+            Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
+            {
+                "def_pct",
+                "eals_pct",
+                "ehls_pct",
+                "plasma_cannon_damage_mult",
+                "thorns_damage_mult",
+                "tower_hp",
+                "tower_regen",
+                "wall_hp",
+                "wall_regen",
+                "workshop_package_chance",
+            },
+        ),
+    ],
+)
+def test_stage2_deltas_are_pinned_for_key_specs(
+    spec_path: Path,
+    expected_stage2_delta_ids: set[str],
+) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(spec_path)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    differing_ids = {
+        stat_id
+        for stat_id, base_value in result.base_stage.values.items()
+        if stat_id in result.start_stage.values
+        and abs(result.start_stage.values[stat_id] - base_value) > 1e-12
+    }
+    assert differing_ids == expected_stage2_delta_ids
