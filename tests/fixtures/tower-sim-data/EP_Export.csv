@@ -30,7 +30,7 @@ ehp,wall_health,Wall Health,89.55 T,89.55 T
 ehp,wall_fortification,Wall Fortification,931.32 T,931.32 T
 ehp,wall_regen,Wall Regen,230.54 T,230.54 T
 ehp,max_recovery,Max Recovery,122.18 T,122.18 T
-eecon,cpk_average,Average CpK,42.89 M,42.89 M
+eecon,cpk_average,Average CpK,46.99 M,46.99 M
 eecon,coins_per_kill_bonus,Coins / Kill Bonus,40.215136500000014,40.215136500000014
 eecon,free_attack_upgrade,Free Attack Upgrade,1.0773840000000001,1.0773840000000001
 eecon,free_defense_upgrade,Free Defense Upgrade,1.046892,1.046892

@@ -113,8 +113,8 @@ def test_stage_golden_stat_presence_and_progression_contract() -> None:
         "eals_pct",
         "ehls_pct",
         "tower_attack_speed",
-        "tower_crit_chance",
-        "tower_crit_multiplier",
+        "workshop_critical_chance",
+        "workshop_critical_factor",
         "wall_hp",
         "uw_smart_missiles_cooldown",
     }
@@ -183,8 +183,8 @@ def test_stage_golden_stat_values_for_pinned_snapshot() -> None:
         "eals_pct": 0.18,
         "ehls_pct": 0.16,
         "tower_attack_speed": 0.0,
-        "tower_crit_chance": 0.8,
-        "tower_crit_multiplier": 5.169785043140672e16,
+        "workshop_critical_chance": 0.8,
+        "workshop_critical_factor": 5.169785043140672e16,
         "wall_hp": 1.2965581939439062e16,
         "uw_smart_missiles_cooldown": 0.0,
     }
@@ -247,6 +247,7 @@ def test_stage_lineage_includes_workshop_formula_levels() -> None:
     workshop_formula_rows = [
         row
         for row in result.base_stage.contributors
+        for row in result.start_stage.contributors
         if row.provenance.startswith("workshop_formula:")
     ]
     assert workshop_formula_rows
@@ -359,8 +360,8 @@ def test_stage_golden_stat_values_for_pinned_tournament_specs(spec_path: Path) -
         "eals_pct": 0.27,
         "ehls_pct": 0.22999999999999998,
         "tower_attack_speed": 0.0,
-        "tower_crit_chance": 0.91,
-        "tower_crit_multiplier": 5.169785043140672e16,
+        "workshop_critical_chance": 0.8,
+        "workshop_critical_factor": 5.169785043140672e16,
         "wall_hp": 6497353.745225208,
         "uw_smart_missiles_cooldown": 0.0,
     }
@@ -604,7 +605,6 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_regen",
                 "wall_hp",
                 "wall_regen",
-                "tower_crit_chance",
                 "workshop_package_chance",
             },
         ),
@@ -620,7 +620,6 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_regen",
                 "wall_hp",
                 "wall_regen",
-                "tower_crit_chance",
                 "workshop_package_chance",
             },
         ),
