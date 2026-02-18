@@ -13,9 +13,10 @@ class WorkshopTables:
 
 
 
+_REPO_ROOT = Path(__file__).resolve().parents[2]
 _FIXTURE_DATA_DIRS = (
-    Path("tests/fixtures/tower-sim-data"),
-    Path("tests/fixtures"),
+    _REPO_ROOT / "tests/fixtures/tower-sim-data",
+    _REPO_ROOT / "tests/fixtures",
 )
 
 

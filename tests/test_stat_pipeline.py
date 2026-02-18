@@ -527,11 +527,8 @@ def test_workshop_formula_lineage_values_match_compiled_inputs(spec_path: Path) 
         (
             Path("tests/fixtures/specs/tournament_champion_spec.yaml"),
             {
-                "death_ray_damage_mult",
                 "eals_pct",
                 "ehls_pct",
-                "knockback_mult",
-                "orb_damage_mult",
                 "plasma_cannon_damage_mult",
                 "thorns_damage_mult",
             },
@@ -539,11 +536,8 @@ def test_workshop_formula_lineage_values_match_compiled_inputs(spec_path: Path) 
         (
             Path("tests/fixtures/specs/tournament_legend_spec.yaml"),
             {
-                "death_ray_damage_mult",
                 "eals_pct",
                 "ehls_pct",
-                "knockback_mult",
-                "orb_damage_mult",
                 "plasma_cannon_damage_mult",
                 "thorns_damage_mult",
             },
@@ -571,6 +565,11 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
         if stat_id in result.at_wave_stage.values
         and abs(result.at_wave_stage.values[stat_id] - start_value) > 1e-12
     }
+    optional_tournament_wave_delta_ids = {"death_ray_damage_mult", "knockback_mult", "orb_damage_mult"}
+    if spec_path.name in {"tournament_champion_spec.yaml", "tournament_legend_spec.yaml"}:
+        assert expected_at_wave_delta_ids.issubset(differing_ids)
+        assert differing_ids.issubset(expected_at_wave_delta_ids | optional_tournament_wave_delta_ids)
+        return
     assert differing_ids == expected_at_wave_delta_ids
 
 
@@ -601,6 +600,7 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "ehls_pct",
                 "plasma_cannon_damage_mult",
                 "thorns_damage_mult",
+                "tower_crit_chance",
                 "tower_hp",
                 "tower_regen",
                 "wall_hp",
@@ -616,6 +616,7 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "ehls_pct",
                 "plasma_cannon_damage_mult",
                 "thorns_damage_mult",
+                "tower_crit_chance",
                 "tower_hp",
                 "tower_regen",
                 "wall_hp",

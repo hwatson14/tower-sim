@@ -78,7 +78,8 @@ def normalize_identifier(value: str) -> str:
 
 @lru_cache(maxsize=1)
 def _catalog_yaml() -> dict:
-    path = Path("tables/meta/registry/catalog.yaml")
+    repo_root = Path(__file__).resolve().parents[2]
+    path = repo_root / "tables/meta/registry/catalog.yaml"
     data = yaml.safe_load(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict):
         raise ValueError("Naming catalog YAML must be a mapping.")
