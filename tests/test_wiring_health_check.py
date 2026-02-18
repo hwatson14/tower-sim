@@ -1,6 +1,9 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
+import sys
 from dataclasses import asdict
 from pathlib import Path
 
@@ -11,7 +14,46 @@ from tower_sim.registry.combat_stat_contract import (
 )
 
 
-def _write_lineage_manifest(path: Path) -> None:
+def _repo_root() -> Path:
+    return Path(__file__).resolve().parents[1]
+
+
+def _ids_path() -> Path:
+    return (_repo_root() / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+
+
+def _run_blessed_max_wave(tmp_path: Path) -> None:
+    repo_root = _repo_root()
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = _ids_path()
+    out_dir = tmp_path / "out"
+    out_dir.mkdir(parents=True, exist_ok=True)
+
+    env = dict(os.environ)
+    pythonpath = env.get("PYTHONPATH")
+    env["PYTHONPATH"] = str(repo_root) if not pythonpath else f"{repo_root}:{pythonpath}"
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "tower_sim.run",
+            "MAX_WAVE",
+            "--spec",
+            str(spec_path),
+            "--ids",
+            str(ids_path),
+        ],
+        cwd=tmp_path,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    assert proc.returncode == 0, proc.stderr
+
+
+def _write_stat_lineage_manifest(path: Path) -> None:
     payload = {
         "required_max_wave_stat_input_ids": list(required_max_wave_stat_input_ids()),
         "status_lists": {
@@ -23,11 +65,12 @@ def _write_lineage_manifest(path: Path) -> None:
 
 
 def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
-    lineage_manifest = tmp_path / "stat_lineage_manifest_latest.json"
-    _write_lineage_manifest(lineage_manifest)
+    _run_blessed_max_wave(tmp_path)
+    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest_latest.json"
+    _write_stat_lineage_manifest(lineage_manifest)
 
     result = run_wiring_health_check(
-        ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+        ids_path=_ids_path(),
         lineage_manifest_path=lineage_manifest,
     )
 
@@ -39,11 +82,12 @@ def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
 
 
 def test_wiring_health_check_respects_threshold_violations(tmp_path: Path) -> None:
-    lineage_manifest = tmp_path / "stat_lineage_manifest_latest.json"
-    _write_lineage_manifest(lineage_manifest)
+    _run_blessed_max_wave(tmp_path)
+    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest_latest.json"
+    _write_stat_lineage_manifest(lineage_manifest)
 
     result = run_wiring_health_check(
-        ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+        ids_path=_ids_path(),
         lineage_manifest_path=lineage_manifest,
         max_required_max_wave_gaps=0,
     )
@@ -61,7 +105,7 @@ def test_wiring_health_check_fails_closed_for_invalid_manifest(tmp_path: Path) -
 
     try:
         run_wiring_health_check(
-            ids_path=Path("tests/fixtures/tower-sim-data/_IDS.csv"),
+            ids_path=_ids_path(),
             lineage_manifest_path=invalid_manifest,
         )
     except ValueError as exc:
