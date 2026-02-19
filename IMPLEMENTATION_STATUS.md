@@ -144,3 +144,48 @@ Source for current component state: `audit/implementation_status_report.md`.
 - [x] Convert immediate next steps into release-focused tasks instead of stale implementation milestones.
 - [x] Lock and automate a single parity threshold policy for reference-sheet validation in release-gate tests (`tests/test_max_wave_v1_contract.py`, `tests/test_release_gate_tournament_fixtures.py`).
 - [ ] Keep assumptions-manifest tolerances calibrated with reference-sheet drift data and document updates each release.
+
+## Operational quick reference (status/ops, non-authority)
+This section captures practical run/artifact details previously kept in README so operators and agents can execute and validate workflows without expanding the authoritative doc surface.
+
+### Published/expected output artifacts
+- `out/ids_dump_latest.json` (canonical IDS dump snapshot payload)
+- `out/base_stats_latest.json`
+- `out/inventory_latest.json`
+- `out/loadout_latest.json`
+- `out/base_stats_components_latest.json`
+- `out/inventory_components_latest.json`
+- `out/run_stats_latest.json`
+- `out/max_wave_latest.json`
+- `out/lineage_manifest_latest.json`
+- `out/runner_output_latest.json` (CI-published runner payload when workflow emits it)
+
+### Canonical local commands
+Run deterministic MAX_WAVE spine:
+```bash
+python -m tower_sim.run --spec fixtures/specs/max_wave.yaml
+```
+
+Stat lineage burn-down report:
+```bash
+python -m tower_sim.audit.stat_lineage_report \
+  --manifest out/stat_lineage_manifest_latest.json \
+  --json-out out/stat_lineage_report_latest.json
+```
+
+Wiring health scorecard:
+```bash
+python -m tower_sim.audit.wiring_health_check \
+  --ids tests/fixtures/tower-sim-data/_IDS.csv \
+  --lineage-manifest out/stat_lineage_manifest_latest.json \
+  --output out/wiring_health_check.json
+```
+
+### Agent routing hints (task-level)
+- `BASE_STATS`: deterministic base statbook projection.
+- `INVENTORY`: deterministic inventory snapshot output.
+- `LOADOUT`: deterministic resolved loadout output.
+- `MAX_WAVE`: deterministic max-wave objective evaluation.
+
+If required IDS/spec inputs are missing, tasks should fail closed with explicit missing-input diagnostics.
+

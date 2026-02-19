@@ -11,13 +11,13 @@ architecture contract and repo hygiene rules.
 - Cache and metadata tables live under `tables/cache/` and `tables/meta/`; deprecated tables live in `tables/legacy/`.
 - Quarantined tests go in `tests/`.
 
-See `REPO_STRUCTURE.md` for the full allowed tree.
+See `CONTRACT.md` and `REPO_MAP.yaml` for the authoritative structure contract.
 
 ## File creation policy (Edit existing first)
 - Default to **modifying an existing module/file** instead of creating a new one.
 - Before creating a new file, you **must**:
   - List the existing files you checked and why they were insufficient.
-  - Justify the new file’s placement against the `ARCHITECTURE.md` planes.
+  - Justify the new file’s placement against the architecture planes defined in `CONTRACT.md`.
   - Update `REPO_MAP.yaml` if the repo contract changes.
 - **Codex and contributors must follow this policy; fail closed if unsure.**
 
