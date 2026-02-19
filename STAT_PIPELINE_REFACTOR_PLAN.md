@@ -1,5 +1,11 @@
 > **Role:** Normative migration plan for canonical stat-pipeline unification.
 
+> TEMPORARY MIGRATION PLAN.
+> Non-authoritative implementation aid.
+> Must be deleted once implemented.
+> See `CONTRACT.md` for authority.
+
+
 # Canonical Stat Pipeline Refactor Plan
 
 ## Objective

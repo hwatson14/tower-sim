@@ -168,3 +168,4 @@ exceptions:
   allow_paths:
     - "tables/registry/ep_formulas/STATUS.md"
     - ".github/requirements-ci.txt"
+    - "out/contract_diagram_v35_draft/README.md"
