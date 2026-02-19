@@ -34,5 +34,8 @@ Out of scope:
 python -m tower_sim.run --spec fixtures/specs/max_wave.yaml
 ```
 
+## Operational quickstart
+For published artifact inventory, run-task routing hints, and operational commands beyond the blessed run command, see **Operational quick reference** in [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md).
+
 ## Notes for agent-driven development
 This project is intentionally agent-driven and contract-governed. For implementation decisions, follow `CONTRACT.md` first, use explicit provenance for mechanics/tables, and fail closed if required authoritative inputs are missing.

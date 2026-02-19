@@ -143,3 +143,23 @@ If a PR modifies `CONTRACT.md`, include a dedicated section titled **"Contract c
 - **2026-02:** Consolidated legacy authority docs into a single `CONTRACT.md` authority model.
 - **2026-02:** Kept `IMPLEMENTATION_STATUS.md` separate from the contract (normative vs. status split).
 - **2026-02:** Restored detailed guidance in `CONTRACT.md`, `AGENTS.md`, and `README.md` while preserving minimal doc count.
+
+## Appendix A) Game context narrative (non-normative, explanatory only)
+This appendix is explanatory context for humans and coding agents. It is **not** a source of new mechanics authority; normative rules remain in the numbered sections above.
+
+### A.1 High-level game framing
+*The Tower — Idle Tower Defense* combines persistent progression (labs, workshop, inventory/loadout systems) with run-time wave scaling pressure. In TowerSim v1, the practical question is not frame-perfect combat replay, but whether a fully specified build survives progressively stronger wave pressure long enough to reach higher waves.
+
+### A.2 Why `MAX_WAVE` is the v1 objective
+`MAX_WAVE` is a defensible deterministic objective because it can be derived from explicit stat inputs, deterministic mechanics, and authoritative tables without introducing sampling-based uncertainty. This keeps outcomes reproducible and auditable for the single-user workflow.
+
+### A.3 How to read survivability outcomes
+Survivability is interpreted through explicit envelopes and deterministic transforms, not hidden simulation. Where timing alignment uncertainty exists (for example, overlap-sensitive defensive effects), TowerSim treats uncertainty as bounded envelopes rather than stochastic trials.
+
+### A.4 Guidance for Codex/ChatGPT implementations
+When implementing or modifying behavior:
+- treat this appendix as orientation only,
+- source formulas/tables from authoritative hierarchy only,
+- fail closed if required source data is missing,
+- avoid inventing mechanics implied by narrative language.
+
