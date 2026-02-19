@@ -105,14 +105,9 @@ Top-level structure is machine-enforced by:
 
 ### 7.3 Architecture diagram (draft)
 - v35 architecture diagram is directional only and may be wrong/incomplete.
-- Canonical files:
-  - `out/contract_diagram_v35_draft/towersim_contract_diagram_v35_draft.png` (generated output path)
-  - `out/contract_diagram_v35_draft/generate_contract_diagram_v35.py`
-  - `out/contract_diagram_v35_draft/README.md`
-- Regenerate with: `python out/contract_diagram_v35_draft/generate_contract_diagram_v35.py --out out/contract_diagram_v35_draft/towersim_contract_diagram_v35_draft.png`.
-- `matplotlib` is required only to regenerate the draft PNG; it is not a TowerSim runtime dependency.
-- If PR tooling cannot handle binaries, commit the generator+README and regenerate the PNG from this canonical path locally.
-- Wiring changes must update diagram output and generator in the same PR.
+- Canonical source file: `contract_assets/architecture/v35_draft/diagram.mmd`.
+- Companion context: `contract_assets/architecture/v35_draft/README.md`.
+- Rendered SVG/PNG are produced by `.github/workflows/render-contract-diagram.yml` and published as workflow artifacts only (not committed).
 
 ### 7.4 Migration plans are temporary
 - `STAT_PIPELINE_REFACTOR_PLAN.md` is a migration aid and non-authoritative.

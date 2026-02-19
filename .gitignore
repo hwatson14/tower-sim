@@ -3,5 +3,3 @@ out/*
 !out/.gitkeep
 __pycache__/
 *.py[cod]
-!out/contract_diagram_v35_draft/
-!out/contract_diagram_v35_draft/*
