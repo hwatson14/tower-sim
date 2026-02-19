@@ -698,6 +698,8 @@ Any of the following must stop work and ask for clarification:
 - [x] Replace dynamic globals-based stat-compiler indirection with explicit module-level aliases and update monkeypatch contract tests accordingly.
 - [x] Add pinned golden-value stage assertions for tournament Champion/Legend specs in canonical stat-pipeline tests.
 - [x] Populate canonical contributor lineage levels for `workshop_formula:*` provenance by mapping formula stat IDs to workshop coin levels, with pinned coverage.
+- [x] Fix max-wave CI runner invocation to align with `tower_sim.run.runner` (`--spec` + `--ids` required) and normalize task-envelope output into `out/runner_output.json` for parity checks.
+- [x] Remove max-wave CI auto-commit of generated `out/*_latest.json` and publish artifacts only to avoid merge-conflict churn.
 - [x] Add pinned contract asserting no null lineage levels for modeled level-bearing contributor provenance families (workshop table/alias/formula, UW section, cards).
 - [x] Expand pinned non-null lineage-level contract to sample + tournament Champion/Legend specs for modeled contributor provenance families.
 - [x] Extend card provenance lineage mapping to include `cards:critical_chance` so tournament card-driven contributors resolve deterministic levels.

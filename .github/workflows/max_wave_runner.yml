@@ -11,7 +11,7 @@ jobs:
   run-max-wave:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
+      contents: read
 
     steps:
       - name: Checkout
@@ -49,7 +49,24 @@ jobs:
 
       - name: Run MaxWaveEvaluator runner
         run: |
-          python -m tower_sim.run.runner --output out/runner_output.json
+          python -m tower_sim.run.runner \
+            --spec /workspace/tower-sim/fixtures/specs/max_wave.yaml \
+            --ids /workspace/tower-sim/tests/fixtures/tower-sim-data/_IDS.csv
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          payload = json.loads(Path("out/max_wave_latest.json").read_text(encoding="utf-8"))
+          if payload.get("task") != "MAX_WAVE":
+              raise SystemExit(f"Unexpected runner task envelope: {payload.get('task')!r}")
+          result = payload.get("result")
+          if not isinstance(result, dict):
+              raise SystemExit("Runner output envelope missing dict 'result' payload.")
+          Path("out/runner_output.json").write_text(
+              json.dumps(result, indent=2, sort_keys=True),
+              encoding="utf-8",
+          )
+          PY
 
       - name: Validate runner output schema
         run: |
@@ -181,24 +198,6 @@ jobs:
             out/stat_lineage_manifest_latest.json
             out/stat_lineage_contract_gate_latest.json
           if-no-files-found: error
-
-      - name: Commit latest max-wave artifacts to main
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add \
-            out/runner_output_latest.json \
-            out/ep_export_final_stats_report_latest.json \
-            out/stat_lineage_manifest_latest.json \
-            out/stat_lineage_contract_gate_latest.json
-          if git diff --cached --quiet; then
-            echo "No max-wave latest artifact changes to commit."
-            exit 0
-          fi
-          git commit -m "Update latest max-wave runner artifacts"
-          git push origin HEAD
 
       - name: Verify EP export max-wave targets (fail-closed)
         run: |
