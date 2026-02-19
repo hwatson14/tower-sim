@@ -50,8 +50,8 @@ jobs:
       - name: Run MaxWaveEvaluator runner
         run: |
           python -m tower_sim.run.runner \
-            --spec /workspace/tower-sim/fixtures/specs/max_wave.yaml \
-            --ids /workspace/tower-sim/tests/fixtures/tower-sim-data/_IDS.csv
+            --spec "${{ github.workspace }}/fixtures/specs/max_wave.yaml" \
+            --ids "${{ github.workspace }}/tests/fixtures/tower-sim-data/_IDS.csv"
           python - <<'PY'
           import json
           from pathlib import Path

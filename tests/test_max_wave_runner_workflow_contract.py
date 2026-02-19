@@ -10,8 +10,9 @@ def test_max_wave_workflow_invokes_runner_module_with_explicit_hermetic_paths() 
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
 
     assert "python -m tower_sim.run.runner" in text
-    assert "--spec /workspace/tower-sim/fixtures/specs/max_wave.yaml" in text
-    assert "--ids /workspace/tower-sim/tests/fixtures/tower-sim-data/_IDS.csv" in text
+    assert '--spec "${{ github.workspace }}/fixtures/specs/max_wave.yaml"' in text
+    assert '--ids "${{ github.workspace }}/tests/fixtures/tower-sim-data/_IDS.csv"' in text
+    assert "/workspace/tower-sim/" not in text
     assert "--output out/runner_output.json" not in text
 
 
