@@ -1,0 +1,41 @@
+name: Render contract diagram
+
+on:
+  push:
+    paths:
+      - "contract_assets/architecture/**"
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Mermaid CLI
+        run: npm install -g @mermaid-js/mermaid-cli
+
+      - name: Render diagram SVG
+        run: |
+          mkdir -p out/contract_diagram_render
+          mmdc \
+            -i contract_assets/architecture/v35_draft/diagram.mmd \
+            -o out/contract_diagram_render/diagram.svg
+
+      - name: Render diagram PNG
+        run: |
+          mmdc \
+            -i contract_assets/architecture/v35_draft/diagram.mmd \
+            -o out/contract_diagram_render/diagram.png
+
+      - name: Upload rendered diagram artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: contract-diagram-render
+          path: out/contract_diagram_render/

@@ -11,6 +11,7 @@ top_level:
     - worker
     - out
     - fixtures
+    - contract_assets
 
   allowed_files:
     - README.md
@@ -113,6 +114,11 @@ scripts:
     - "**/*.py"
     - "**/*.md"
 
+contract_assets:
+  allowed_file_globs:
+    - "architecture/v35_draft/README.md"
+    - "architecture/v35_draft/diagram.mmd"
+
 generated_artifacts:
   forbidden_name_globs:
     - "**/*report*.md"
@@ -168,4 +174,5 @@ exceptions:
   allow_paths:
     - "tables/registry/ep_formulas/STATUS.md"
     - ".github/requirements-ci.txt"
-    - "out/contract_diagram_v35_draft/README.md"
+    - ".github/workflows/render-contract-diagram.yml"
+    - "contract_assets/architecture/v35_draft/README.md"
