@@ -12,7 +12,7 @@ Refactor TowerSim so all runtime stat computation follows one canonical pipeline
 4. **At-wave stage** (wave progression + tier/BC/heat application)
 5. Evaluators consume canonical stage outputs only
 
-This preserves the frozen composition order in `ARCHITECTURE.md` and removes bypasses that can silently omit stats.
+This preserves the frozen composition order in `CONTRACT.md` and removes bypasses that can silently omit stats.
 
 ## Scope guardrails
 

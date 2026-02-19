@@ -14,10 +14,7 @@ top_level:
 
   allowed_files:
     - README.md
-    - GAME_OVERVIEW.md
-    - PROJECT_INTENT.md
-    - ARCHITECTURE.md
-    - REPO_STRUCTURE.md
+    - CONTRACT.md
     - TESTING.md
     - CONTRIBUTING.md
     - REPO_MAP.yaml
