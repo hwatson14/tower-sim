@@ -257,7 +257,7 @@ def _run_preflight(
         snapshot=ids_snapshot,
         problem_spec=problem_spec,
         wave=problem_spec.scenario.wave,
-        include_perk_timeline=False,
+        include_perk_timeline=True,
         materialize_stages=False,
         precomputed_canonical_inputs=canonical_inputs,
     )

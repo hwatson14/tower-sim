@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import pytest
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from tower_sim.engines.stat_pipeline import (
 )
 import tower_sim.engines.stat_pipeline as stat_pipeline_module
 import tower_sim.engines.stat_input_compiler as stat_input_compiler_module
+from dataclasses import replace
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.engines.combat_stat_derivation import build_canonical_wave_snapshot
 from tower_sim.engines.stat_engine import StatEngine
@@ -647,3 +649,101 @@ def test_stage2_deltas_are_pinned_for_key_specs(
         and abs(result.start_stage.values[stat_id] - base_value) > 1e-12
     }
     assert differing_ids == expected_stage2_delta_ids
+
+
+def test_pipeline_reports_runtime_dag_contract_metadata() -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    runtime_dag = result.diagnostics["runtime_dag"]
+    assert runtime_dag["enabled"] is True
+    assert runtime_dag["node_count"] > 0
+
+
+def test_pipeline_fails_closed_when_runtime_dag_table_missing(monkeypatch) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+
+    def _raise_missing():
+        raise FileNotFoundError("missing dag")
+
+    monkeypatch.setattr("tower_sim.engines.stat_pipeline.load_dag_table", _raise_missing)
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=False,
+    )
+
+    assert "dag_runtime_binding:missing_dag_table" in result.missing
+    assert result.diagnostics["missing_dag_runtime_binding"] == [
+        "dag_runtime_binding:missing_dag_table"
+    ]
+
+
+def test_perk_timeline_uses_precomputed_effect_table(tmp_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+    perk_table_path = tmp_path / "perk_effects.json"
+    perk_table_path.write_text(
+        json.dumps(
+            [
+                {
+                    "wave": 1,
+                    "stat_id": "tower_hp",
+                    "phase": "start_of_run",
+                    "enhancement_multiplier": 1.05,
+                    "provenance": "perk_engine_table",
+                }
+            ]
+        ),
+        encoding="utf-8",
+    )
+    problem_spec = replace(
+        problem_spec,
+        scenario=replace(problem_spec.scenario, perk_timeline_path=str(perk_table_path)),
+    )
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=True,
+    )
+
+    perk_diag = result.diagnostics["perk_timeline"]
+    assert perk_diag["enabled"] is True
+    assert perk_diag["mode"] == "precomputed_table"
+    assert perk_diag["rows_applied"] == 1
+
+
+def test_perk_timeline_rejects_legacy_perk_event_format(tmp_path: Path) -> None:
+    snapshot = _snapshot()
+    problem_spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
+    legacy_path = tmp_path / "legacy_perk_timeline.json"
+    legacy_path.write_text(
+        json.dumps([{"wave": 1, "perk_taken": "x1.20 Max Health"}]),
+        encoding="utf-8",
+    )
+    problem_spec = replace(
+        problem_spec,
+        scenario=replace(problem_spec.scenario, perk_timeline_path=str(legacy_path)),
+    )
+
+    result = build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=snapshot,
+        problem_spec=problem_spec,
+        wave=problem_spec.scenario.wave,
+        include_perk_timeline=True,
+    )
+
+    assert "perk_timeline:invalid_precomputed_table" in result.missing
+    assert result.diagnostics["perk_timeline"]["reason"] == "invalid_precomputed_table"

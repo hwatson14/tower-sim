@@ -56,18 +56,14 @@ Explicitly NOT included:
 ### Core Architecture Gaps
 - Legacy snapshot loader does not fetch/pull remotes (local git dir only).
 
-### Stat Engine + StatBook
-- Stat engine scaffolding and StatBook export exist, but composition is incomplete.
+### Partially Implemented Areas (fail-closed where applicable)
+- Stat engine scaffolding and StatBook export exist, but derived stat composition remains incomplete.
+- Tier BC + heat application is wired into canonical at-wave stat composition for supported BC families.
+- Unsupported BC families intentionally fail closed via `SUPPORTED_BC` allowlist until authoritative handling is added.
+- Validation harness tooling exists, but parity threshold policy/tolerance calibration against Harry reference sheets remains in progress.
 
-### Tier Rules / Battle Conditions
-- `tower_sim/engines/battle_conditions.py` exists, but the Tier BC loader is not yet wired into per-wave stat composition or applied in frozen order.
-- Tournament run rules (perks disabled, permanent BCs) not fully wired; perks gate helper exists in `tower_sim/engines/perks_gate.py`.
 ### Missing (Explicit)
-- Tier BC application in per-wave stat composition (loader exists but is not yet integrated).
-- Per-wave stat composition (progression + skip mapping not yet feeding stat snapshots).
-- Boss combat wave-search integration (death wave root-find / binary search) is still missing.
-- Validation harness against Harry’s reference sheets.
-- Deterministic intent compiler (user intent → ProblemSpec) and evaluator layer (objective metrics).
+- Non-boss combat loop remains out of scope for v1 MAX_WAVE and is not implemented.
 - Optimisers that consume evaluators only (loadout, perk policy, stone spend).
 - Deterministic perk-offer model (explicit envelope cases driven by policy; no sampling).
 - Economy model tables for deterministic farming metrics (coins/hr, cells/hr).
@@ -78,14 +74,15 @@ sources. This list maps each missing mechanic in the current sim to the
 corresponding Step1 part file(s):
 
 #### Combat Engines (boss + nonboss)
-- **Missing mechanic:** combat resolution engines (boss survivability + nonboss
-  combat loop).
+- **Current state:** boss survivability combat resolution is implemented for v1;
+  nonboss combat loop remains missing.
 - **Reference location:** `tables/step1_dump_docs/part3_refs_tests_docs/docs/RECOVERY_GAPS.md`
-  (explicit missing `sim/engines/combat_engine.py` and
-  `sim/engines/nonboss_combat_engine.py`).
+  (historical recovery inventory including nonboss loop gaps).
 
 #### Tier Battle Conditions + Heat
-- **Missing mechanic:** tier BC application in frozen order + heat scaling.
+- **Current state:** tier BC application + heat scaling are implemented for
+  supported BC families in canonical at-wave pipeline; unresolved families fail
+  closed.
 - **Reference locations:**
   - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (`battle_conditions.csv`,
     `heat.csv` runtime inputs).
@@ -99,8 +96,8 @@ corresponding Step1 part file(s):
     (partial Tier 14–21 farming BC magnitudes; tiers 1–13 have none).
 
 #### Tournament Battle Conditions
-- **Missing mechanic:** tournament BC magnitudes (per-wave) and league-specific
-  boss frequency.
+- **Current state:** tournament BC magnitudes are partially implemented with
+  fail-closed behavior for unresolved families.
 - **Reference locations:**
   - `tables/step1_dump_docs/part2_data/tournament_bc_magnitudes_from_player_and_stuff.csv`
   - `tables/step1_dump_docs/part2_data/tournament_more_bosses_static.csv`
@@ -112,8 +109,7 @@ corresponding Step1 part file(s):
   with log-linear interpolation between anchor waves.
 
 #### Runtime DAG / Derived Pipeline Inputs
-- **Missing mechanic:** DAG-defined derived stat pipeline (tiers.csv + dag.json
-  binding).
+- **Current state:** DAG table (`dag.json`) is validated and bound into canonical runtime stat pipeline diagnostics with fail-closed missing/invalid handling.
 - **Reference locations:**
   - `tables/step1_dump_docs/part1_core/DATA_BINDING.md` (`tiers.csv` + `dag.json`).
   - `tables/step1_dump_docs/part2_data/dag.json`.
@@ -122,14 +118,7 @@ corresponding Step1 part file(s):
 - Boss-only combat model (PC + thorns + regen + DR) implemented in
   `tower_sim/engines/combat/boss_engine.py` with v1 minimal mechanics (percent-current
   PC + thorns, defense/DR mitigation, regen + package heal expectation).
-- Fail-closed boss combat engine scaffold exists in `tower_sim/engines/combat/boss_engine.py`.
-- No root-find / binary search to find death wave.
-
-### Validation Harness
-- No harness comparing outputs to Harry’s reference sheets.
-
-### Optimisers (Later)
-- Loadout optimiser and stone spending optimiser not implemented.
+- Boss survivability integration is wired through evaluator search (`exponential_binary` and `grid_refine` strategies) in `tower_sim/evaluators/max_wave.py`.
 
 ## Immediate Next Steps (Codex PR sequence)
 1. Reconcile this document with `audit/implementation_status_report.md` on every release cut.
@@ -188,4 +177,3 @@ python -m tower_sim.audit.wiring_health_check \
 - `MAX_WAVE`: deterministic max-wave objective evaluation.
 
 If required IDS/spec inputs are missing, tasks should fail closed with explicit missing-input diagnostics.
-
