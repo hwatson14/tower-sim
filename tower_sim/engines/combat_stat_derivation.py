@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 import re
@@ -13,7 +13,7 @@ from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, comp
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.engines.survivability_pipeline import (
     compile_survivability_base_stat_inputs,
-    compile_survivability_loadout_stat_inputs,
+    compile_survivability_loadout_stat_inputs_with_diagnostics,
 )
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
@@ -36,7 +36,7 @@ from tower_sim.loaders.wiki.module_rules import apply_hard_cap
 
 _compile_full = compile_full_stat_inputs
 _compile_survivability_base = compile_survivability_base_stat_inputs
-_compile_survivability_loadout = compile_survivability_loadout_stat_inputs
+_compile_survivability_loadout = compile_survivability_loadout_stat_inputs_with_diagnostics
 
 
 @dataclass(frozen=True)
@@ -61,7 +61,37 @@ class CanonicalStatInputBuild:
     compiled_missing: List[str]
     preset_resolution_errors: List[str]
     core_stat_override_policy: str
+    module_contribution_ledger: List[Dict[str, object]] = field(default_factory=list)
+    module_unmapped_by_layer: Dict[str, List[str]] = field(default_factory=dict)
 
+
+
+
+def _module_unmapped_by_layer(
+    *,
+    layer_gaps: List[str],
+    module_contribution_ledger: List[Dict[str, object]],
+) -> Dict[str, List[str]]:
+    main_unmapped = sorted(
+        {
+            f"{row.get('slot')}:{row.get('placement')}:{row.get('module')}:{row.get('target')}"
+            for row in module_contribution_ledger
+            if row.get("layer") == "primary"
+            and row.get("kind") == "behavior_binding"
+            and str(row.get("target", "")).startswith("module_primary_effect:")
+        }
+    )
+    unique_unmapped = sorted(
+        {item for item in layer_gaps if item.startswith("module_unique_unmapped:")}
+    )
+    substat_unmapped = sorted(
+        {item for item in layer_gaps if item.startswith("module_substat_unmapped:")}
+    )
+    return {
+        "main": main_unmapped,
+        "unique": unique_unmapped,
+        "substats": substat_unmapped,
+    }
 
 def build_canonical_stat_inputs(
     *,
@@ -83,14 +113,16 @@ def build_canonical_stat_inputs(
     )
     loadout_inputs: List[StatInput] = []
     loadout_missing: List[str] = []
+    module_contribution_ledger: List[Dict[str, object]] = []
     if not preset_resolution_errors:
         try:
-            loadout_inputs, skipped_cards = _compile_survivability_loadout_inputs_resilient(
+            loadout_inputs, skipped_cards, module_contribution_ledger, layer_gaps = _compile_survivability_loadout_inputs_resilient(
                 ids_snapshot,
                 module_context=module_context,
                 selected_cards=selected_cards,
             )
             loadout_missing.extend(skipped_cards)
+            loadout_missing.extend(layer_gaps)
         except Exception as exc:  # noqa: BLE001
             loadout_missing.append(f"survivability_loadout:{exc}")
 
@@ -108,6 +140,11 @@ def build_canonical_stat_inputs(
     )
     filtered_inputs, invalid = _filter_known_stat_inputs(merged_inputs, registry)
     missing_required = _missing_required_stat_inputs(filtered_inputs)
+    module_unmapped_by_layer = _module_unmapped_by_layer(
+        layer_gaps=loadout_missing,
+        module_contribution_ledger=module_contribution_ledger,
+    )
+
     return CanonicalStatInputBuild(
         stat_inputs=filtered_inputs,
         blocked_core_overrides=blocked,
@@ -118,6 +155,8 @@ def build_canonical_stat_inputs(
         core_stat_override_policy=(
             "strict_fail_closed" if strict_core_stat_overrides else "explicit_override_mode"
         ),
+        module_contribution_ledger=module_contribution_ledger,
+        module_unmapped_by_layer=module_unmapped_by_layer,
     )
 
 
@@ -271,7 +310,7 @@ def _compile_survivability_loadout_inputs_resilient(
     *,
     module_context: str,
     selected_cards: List[str] | None = None,
-) -> Tuple[List[StatInput], List[str]]:
+) -> Tuple[List[StatInput], List[str], List[Dict[str, object]], List[str]]:
     skipped: List[str] = []
     while True:
         try:
@@ -281,11 +320,18 @@ def _compile_survivability_loadout_inputs_resilient(
             }
             if selected_cards is not None:
                 kwargs["selected_cards"] = selected_cards
-            inputs = _compile_survivability_loadout(
+            raw_result = _compile_survivability_loadout(
                 ids_snapshot,
                 **kwargs,
             )
-            return inputs, skipped
+            if hasattr(raw_result, "stat_inputs"):
+                return (
+                    raw_result.stat_inputs,
+                    skipped,
+                    list(getattr(raw_result, "module_contribution_ledger", [])),
+                    list(getattr(raw_result, "layer_gaps", [])),
+                )
+            return raw_result, skipped, [], []
         except Exception as exc:  # noqa: BLE001
             message = str(exc)
             match = _UNSUPPORTED_CARD_RE.search(message)

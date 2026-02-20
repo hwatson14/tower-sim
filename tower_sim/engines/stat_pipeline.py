@@ -136,6 +136,9 @@ def build_canonical_stat_pipeline_for_problem_spec(
             registry=registry,
         )
     diagnostics["core_stat_override_policy"] = canonical_inputs.core_stat_override_policy
+    if canonical_inputs.module_contribution_ledger:
+        diagnostics["module_contribution_ledger"] = canonical_inputs.module_contribution_ledger
+    diagnostics["module_unmapped_by_layer"] = canonical_inputs.module_unmapped_by_layer
 
     dag_contract, dag_missing = _load_runtime_dag_contract()
     if dag_contract is not None:

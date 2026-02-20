@@ -757,3 +757,66 @@ def test_tournament_heat_bc_ids_match_registry_csv_order() -> None:
                 derived.append(bc_id)
                 seen.add(bc_id)
     assert tuple(derived) == TOURNAMENT_HEAT_BC_IDS
+
+
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.ids_parser import parse_ids
+from tower_sim.run.spec_loader import load_problem_spec
+from tower_sim.engines.survivability_pipeline import compile_survivability_loadout_stat_inputs_with_diagnostics
+
+
+def test_canonical_module_contribution_ledger_captures_primary_unique_and_substats() -> None:
+    ids_snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    problem = load_problem_spec(Path("tests/fixtures/specs/sample_spec.json"))
+
+    loadout = compile_survivability_loadout_stat_inputs_with_diagnostics(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+
+    assert loadout.module_contribution_ledger
+    assert not loadout.layer_gaps
+
+    by_target: dict[str, list[dict[str, object]]] = {}
+    for row in loadout.module_contribution_ledger:
+        by_target.setdefault(str(row["target"]), []).append(row)
+
+    assert "tower_hp" in by_target
+    assert "wall_regen" in by_target
+    assert "def_pct" in by_target
+    assert any(row["layer"] == "primary" for row in by_target["tower_hp"])
+    assert any(row["layer"] == "unique" for row in by_target["wall_regen"])
+    assert any(row["layer"] == "substat" for row in by_target["def_pct"])
+
+    stat_by_id = {item.stat_id: item for item in loadout.stat_inputs}
+
+    tower_hp_product = 1.0
+    for row in by_target.get("tower_hp", []):
+        if row["kind"] == "multiplier":
+            tower_hp_product *= float(row["value"])
+    assert stat_by_id["tower_hp"].enhancement_multiplier == pytest.approx(tower_hp_product, rel=1e-9)
+
+    wall_regen_product = 1.0
+    for row in by_target.get("wall_regen", []):
+        if row["kind"] == "multiplier":
+            wall_regen_product *= float(row["value"])
+    assert stat_by_id["wall_regen"].enhancement_multiplier == pytest.approx(wall_regen_product, rel=1e-9)
+
+    def_pct_delta = 0.0
+    for row in by_target.get("def_pct", []):
+        if row["kind"] == "delta":
+            def_pct_delta += float(row["value"])
+    assert stat_by_id["def_pct"].loadout_delta == pytest.approx(def_pct_delta, rel=1e-9)
+
+    built = build_canonical_stat_inputs(
+        problem_spec=problem,
+        ids_snapshot=ids_snapshot,
+        registry=default_registry(),
+    )
+    assert built.module_contribution_ledger
+    assert set(built.module_unmapped_by_layer.keys()) == {"main", "unique", "substats"}
+    assert built.module_unmapped_by_layer["main"]
+    assert built.module_unmapped_by_layer["unique"] == []
+    assert built.module_unmapped_by_layer["substats"] == []

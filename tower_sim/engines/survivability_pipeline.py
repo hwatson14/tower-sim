@@ -32,7 +32,7 @@ from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import BossSurvivabilitySpec, ProblemSpec, ScenarioSpec
 from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot
-from tower_sim.libs.assist_efficiency import compute_efficiencies
+from tower_sim.libs.assist_efficiency import apply_bonus_eff_to_main_effect, compute_efficiencies
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
 from tower_sim.loaders.wiki.module_rules import max_active_substats_for_module_level
@@ -77,6 +77,13 @@ class ModuleLoadout:
 class ModuleBlock:
     loadout_by_context: Dict[str, ModuleLoadout]
     inventory: Dict[str, ModuleRecord]
+
+
+@dataclass(frozen=True)
+class LoadoutCompileResult:
+    stat_inputs: List[StatInput]
+    module_contribution_ledger: List[Dict[str, object]]
+    layer_gaps: List[str]
 
 
 @dataclass(frozen=True)
@@ -146,13 +153,18 @@ def build_survivability_report(
     base_inputs = _compile_base_stat_inputs(
         ids_snapshot, allow_provisional=allow_provisional
     )
-    loadout_inputs = _compile_loadout_stat_inputs(
+    loadout_result = _compile_loadout_stat_inputs(
         ids_snapshot,
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
         allow_provisional=allow_provisional,
     )
+    if loadout_result.layer_gaps:
+        warnings["module_layer_gaps"] = sorted(set(loadout_result.layer_gaps))
+    if loadout_result.module_contribution_ledger:
+        warnings["module_contribution_ledger"] = loadout_result.module_contribution_ledger
+
     compiled = _compile_full(ids_snapshot)
     if compiled.missing:
         if not allow_provisional:
@@ -160,7 +172,7 @@ def build_survivability_report(
                 "Missing workshop/UW stat inputs: " + ", ".join(compiled.missing)
             )
         warnings["missing_stat_inputs"] = sorted(compiled.missing)
-    stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
+    stat_inputs = _merge_stat_inputs(base_inputs, loadout_result.stat_inputs)
     stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
 
     registry = default_registry()
@@ -638,8 +650,9 @@ def _compile_loadout_stat_inputs(
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
     selected_cards: Iterable[str] | None,
     allow_provisional: bool,
-) -> List[StatInput]:
+) -> LoadoutCompileResult:
     accumulator = _StatAccumulator()
+    layer_gaps: List[str] = []
     module_blocks = _parse_module_blocks(ids_snapshot)
     for block in module_blocks.values():
         if module_context not in block.loadout_by_context:
@@ -664,7 +677,8 @@ def _compile_loadout_stat_inputs(
         else:
             assist = None
 
-        _apply_module_effects(
+        layer_gaps.extend(
+            _apply_module_effects(
             accumulator,
             primary=primary,
             assist=assist,
@@ -673,6 +687,8 @@ def _compile_loadout_stat_inputs(
             assist_cap=assist_cap,
             ids_snapshot=ids_snapshot,
             allow_provisional=allow_provisional,
+            slot=loadout.slot,
+        )
         )
 
     _apply_card_effects(
@@ -682,7 +698,11 @@ def _compile_loadout_stat_inputs(
         selected_cards=selected_cards,
     )
 
-    return accumulator.to_stat_inputs()
+    return LoadoutCompileResult(
+        stat_inputs=accumulator.to_stat_inputs(),
+        module_contribution_ledger=accumulator.module_contribution_ledger(),
+        layer_gaps=layer_gaps,
+    )
 
 
 def _resolve_skip_stat(ids_snapshot: AccountSnapshot, lab_name: str) -> float:
@@ -1298,9 +1318,11 @@ def _apply_module_effects(
     assist_cap: Optional[Rarity],
     ids_snapshot: AccountSnapshot,
     allow_provisional: bool,
-) -> None:
+    slot: str,
+) -> List[str]:
     if primary is None and assist is None:
-        return
+        return []
+    layer_gaps: List[str] = []
     assist_eff = _resolve_assist_efficiencies(
         labs=ids_snapshot.labs,
         slot=primary.slot if primary else assist.slot,
@@ -1317,15 +1339,42 @@ def _apply_module_effects(
             allow_provisional=allow_provisional,
         )
         accumulator.multiply("tower_hp", multiplier, "modules:armor_main_effect")
+        accumulator.record_module_contribution(slot=slot, placement="primary", module_name=primary.name, layer="primary", target="tower_hp", value=multiplier, kind="multiplier")
 
     if primary is not None:
-        _apply_module_substats(accumulator, primary, is_assist=False, efficiency=1.0)
-        _apply_unique_effects(accumulator, primary, is_assist=False, assist_cap=assist_cap)
-    if assist is not None and assist_enabled:
-        _apply_module_substats(
-            accumulator, assist, is_assist=True, efficiency=substat_eff
+        if primary.slot != "Armor":
+            accumulator.record_module_contribution(slot=slot, placement="primary", module_name=primary.name, layer="primary", target=f"module_primary_effect:{primary.slot}", value=primary.main_effect, kind="behavior_binding")
+        layer_gaps.extend(
+            _apply_module_substats(
+                accumulator,
+                primary,
+                is_assist=False,
+                efficiency=1.0,
+                slot=slot,
+                placement="primary",
+            )
         )
-        _apply_unique_effects(accumulator, assist, is_assist=True, assist_cap=assist_cap)
+        if not _apply_unique_effects(accumulator, primary, is_assist=False, assist_cap=assist_cap, slot=slot, placement="primary"):
+            layer_gaps.append(f"module_unique_unmapped:{slot}:primary:{primary.name}")
+    if assist is not None and assist_enabled:
+        assist_main_effect = apply_bonus_eff_to_main_effect(
+            assist.main_effect,
+            assist_eff.bonus_eff,
+        )
+        accumulator.record_module_contribution(slot=slot, placement="assist", module_name=assist.name, layer="primary", target=f"module_primary_effect:{assist.slot}", value=assist_main_effect, kind="behavior_binding")
+        layer_gaps.extend(
+            _apply_module_substats(
+                accumulator,
+                assist,
+                is_assist=True,
+                efficiency=substat_eff,
+                slot=slot,
+                placement="assist",
+            )
+        )
+        if not _apply_unique_effects(accumulator, assist, is_assist=True, assist_cap=assist_cap, slot=slot, placement="assist"):
+            layer_gaps.append(f"module_unique_unmapped:{slot}:assist:{assist.name}")
+    return layer_gaps
 
 
 def _apply_module_substats(
@@ -1334,24 +1383,49 @@ def _apply_module_substats(
     *,
     is_assist: bool,
     efficiency: float,
-) -> None:
+    slot: str,
+    placement: str,
+) -> List[str]:
     active_count = max_active_substats_for_module_level(module.level)
+    if active_count <= 0:
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="substat",
+            target="substats:none_active",
+            value=0.0,
+            kind="noop",
+        )
+        return []
+    unmapped: List[str] = []
     for substat in module.substats[:active_count]:
         value = substat.value * (efficiency if is_assist else 1.0)
         if substat.name == "Health Regen":
             accumulator.multiply("tower_regen", 1.0 + value, "modules:health_regen")
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="tower_regen", value=1.0 + value, kind="multiplier")
         elif substat.name == "Defense":
             accumulator.add("def_pct", value, "modules:defense")
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="def_pct", value=value, kind="delta")
         elif substat.name == "Wall Health":
             accumulator.multiply("wall_hp", 1.0 + value, "modules:wall_health")
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="wall_hp", value=1.0 + value, kind="multiplier")
         elif substat.name == "Thorns Damage":
             accumulator.add(
                 "thorns_damage_mult", value, "modules:thorns_damage"
             )
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="thorns_damage_mult", value=value, kind="delta")
         elif substat.name == "Enemy Attack Level Skip":
             accumulator.add("eals_pct", value, "modules:eals")
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="eals_pct", value=value, kind="delta")
         elif substat.name == "Enemy Health Level Skip":
             accumulator.add("ehls_pct", value, "modules:ehls")
+            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="ehls_pct", value=value, kind="delta")
+        else:
+            unmapped.append(
+                f"module_substat_unmapped:{slot}:{placement}:{module.name}:{substat.name}"
+            )
+    return unmapped
 
 
 def _apply_unique_effects(
@@ -1360,18 +1434,24 @@ def _apply_unique_effects(
     *,
     is_assist: bool,
     assist_cap: Optional[Rarity],
-) -> None:
+    slot: str,
+    placement: str,
+) -> bool:
     effect = UNIQUE_EFFECTS.get(module.name)
     if effect is None:
-        return
+        return False
     if effect.effect_name != "wall_health_regen_mult_x":
-        return
+        accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target=f"uw_behavior:{effect.effect_name}", value=effect.value[_cap_rarity(module.rarity, assist_cap) if is_assist and assist_cap is not None else module.rarity], kind="behavior_binding")
+        return True
     rarity = module.rarity
     if is_assist and assist_cap is not None:
         rarity = _cap_rarity(rarity, assist_cap)
     multiplier = effect.value[rarity]
     accumulator.multiply("wall_hp", multiplier, "modules:unique:wall_health")
     accumulator.multiply("wall_regen", multiplier, "modules:unique:wall_regen")
+    accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target="wall_hp", value=multiplier, kind="multiplier")
+    accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target="wall_regen", value=multiplier, kind="multiplier")
+    return True
 
 
 def _resolve_assist_efficiencies(
@@ -1629,6 +1709,7 @@ def _resolve_card_effect(
 class _StatAccumulator:
     def __init__(self) -> None:
         self._stats: Dict[str, Dict[str, float]] = {}
+        self._module_ledger: List[Dict[str, object]] = []
 
     def add(self, stat_id: str, delta: float, provenance: str) -> None:
         entry = self._stats.setdefault(stat_id, {"delta": 0.0, "mult": 1.0})
@@ -1639,6 +1720,31 @@ class _StatAccumulator:
         entry = self._stats.setdefault(stat_id, {"delta": 0.0, "mult": 1.0})
         entry["mult"] *= float(multiplier)
         entry["provenance"] = provenance
+
+
+    def record_module_contribution(
+        self,
+        *,
+        slot: str,
+        placement: str,
+        module_name: str,
+        layer: str,
+        target: str,
+        value: float,
+        kind: str,
+    ) -> None:
+        self._module_ledger.append({
+            "slot": slot,
+            "placement": placement,
+            "module": module_name,
+            "layer": layer,
+            "target": target,
+            "kind": kind,
+            "value": float(value),
+        })
+
+    def module_contribution_ledger(self) -> List[Dict[str, object]]:
+        return list(self._module_ledger)
 
     def to_stat_inputs(self) -> List[StatInput]:
         inputs: List[StatInput] = []
@@ -1714,14 +1820,14 @@ def compile_survivability_base_stat_inputs(
     return _compile_base_stat_inputs(ids_snapshot, allow_provisional=allow_provisional)
 
 
-def compile_survivability_loadout_stat_inputs(
+def compile_survivability_loadout_stat_inputs_with_diagnostics(
     ids_snapshot: AccountSnapshot,
     *,
     module_context: str = "Testing",
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None = None,
     selected_cards: Iterable[str] | None = None,
     allow_provisional: bool = True,
-) -> List[StatInput]:
+) -> LoadoutCompileResult:
     return _compile_loadout_stat_inputs(
         ids_snapshot,
         module_context=module_context,
@@ -1731,9 +1837,27 @@ def compile_survivability_loadout_stat_inputs(
     )
 
 
+def compile_survivability_loadout_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+    *,
+    module_context: str = "Testing",
+    module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None = None,
+    selected_cards: Iterable[str] | None = None,
+    allow_provisional: bool = True,
+) -> List[StatInput]:
+    return compile_survivability_loadout_stat_inputs_with_diagnostics(
+        ids_snapshot,
+        module_context=module_context,
+        module_overrides=module_overrides,
+        selected_cards=selected_cards,
+        allow_provisional=allow_provisional,
+    ).stat_inputs
+
+
 __all__ = [
     "SurvivabilityPipelineError",
     "build_survivability_report",
     "compile_survivability_base_stat_inputs",
     "compile_survivability_loadout_stat_inputs",
+    "compile_survivability_loadout_stat_inputs_with_diagnostics",
 ]
