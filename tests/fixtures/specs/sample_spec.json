@@ -39,7 +39,8 @@
         "boss_hp_mult": 1.0,
         "boss_attack_mult": 1.0
       }
-    }
+    },
+    "perk_timeline_path": "tests/fixtures/perks/precomputed_empty.json"
   },
   "stat_inputs": [
     {

@@ -30,8 +30,10 @@ from tower_sim.registry.combat_stat_contract import (
 from tower_sim.loaders.table_paths import resolve_table_path
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
 from tower_sim.registry.stat_registry import Phase, default_registry
+from tower_sim.libs.step1_tables import load_dag_table
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import ProblemSpec
+from tower_sim.loaders.perk_timeline_loader import PerkTimelineError
 
 
 class StatPipelineError(RuntimeError):
@@ -134,6 +136,13 @@ def build_canonical_stat_pipeline_for_problem_spec(
             registry=registry,
         )
     diagnostics["core_stat_override_policy"] = canonical_inputs.core_stat_override_policy
+
+    dag_contract, dag_missing = _load_runtime_dag_contract()
+    if dag_contract is not None:
+        diagnostics["runtime_dag"] = dag_contract
+    if dag_missing:
+        diagnostics["missing_dag_runtime_binding"] = dag_missing
+        missing.extend(dag_missing)
     if canonical_inputs.compiled_missing:
         diagnostics["compiled_missing"] = canonical_inputs.compiled_missing
     if canonical_inputs.blocked_core_overrides:
@@ -211,13 +220,23 @@ def build_canonical_stat_pipeline_for_problem_spec(
         if wave_state is not None:
             wave_inputs = stage2_inputs
             if include_perk_timeline:
-                wave_inputs, perk_diag = canonical_stat_inputs_for_wave(
-                    registry=registry,
-                    stat_inputs=stage2_inputs,
-                    scenario=problem_spec.scenario,
-                    wave=target_wave,
-                )
-                diagnostics["perk_timeline"] = perk_diag
+                try:
+                    wave_inputs, perk_diag = canonical_stat_inputs_for_wave(
+                        registry=registry,
+                        stat_inputs=stage2_inputs,
+                        scenario=problem_spec.scenario,
+                        wave=target_wave,
+                    )
+                    diagnostics["perk_timeline"] = perk_diag
+                except PerkTimelineError as exc:
+                    reason = getattr(exc, "reason", "invalid_precomputed_table")
+                    diagnostics["perk_timeline"] = {
+                        "enabled": False,
+                        "reason": reason,
+                        "error": str(exc),
+                    }
+                    missing.append(f"perk_timeline:{reason}")
+                    wave_inputs = stage2_inputs
 
             wave_row, wave_row_missing = build_canonical_wave_row(
                 problem_spec,
@@ -281,6 +300,24 @@ def build_canonical_stat_pipeline_for_problem_spec(
         start_engine_result=start_result,
     )
 
+
+
+def _load_runtime_dag_contract() -> tuple[Optional[Dict[str, Any]], List[str]]:
+    try:
+        dag_payload = load_dag_table()
+    except FileNotFoundError:
+        return None, ["dag_runtime_binding:missing_dag_table"]
+    except ValueError:
+        return None, ["dag_runtime_binding:invalid_dag_table"]
+
+    nodes = dag_payload.get("nodes", {})
+    if not isinstance(nodes, dict) or not nodes:
+        return None, ["dag_runtime_binding:missing_nodes"]
+
+    return {
+        "enabled": True,
+        "node_count": len(nodes),
+    }, []
 
 
 def _missing_required_stage_stats(values: Dict[str, float], *, required: List[str]) -> List[str]:
@@ -509,4 +546,3 @@ def _load_tier_rules(problem_spec: ProblemSpec, run_context: RunContext):
         missing.append("tier_battle_conditions_unsupported")
         return None, missing
     return rules, missing
-

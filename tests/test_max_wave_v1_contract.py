@@ -50,7 +50,7 @@ def _problem(mode: str = "farming", wave: int = 20) -> ProblemSpec:
         wave=wave,
         eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
-        perk_timeline_path="tests/fixtures/does_not_exist.json",
+        perk_timeline_path="tests/fixtures/perks/precomputed_empty.json",
         boss_survivability=BossSurvivabilitySpec(
             boss=BossStatsSpec(hp=1.0, attack=1.0, attack_interval=1.0, enrage_mult=1.0),
             tower=TowerDefenseSpec(dr_frac=0.0, regen_per_sec=0.0, shields=0.0),
@@ -113,6 +113,29 @@ def test_tournament_mode_disables_perk_timeline_application() -> None:
     assert diag["enabled"] is False
     assert diag["reason"] == "tournament_mode"
 
+
+
+
+
+
+def test_preflight_fails_closed_when_external_perk_table_missing() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path="tests/fixtures/does_not_exist.json"))
+
+    result = MaxWaveEvaluator().preflight(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+    assert result["diagnostics"]["perk_timeline"]["reason"] == "missing_precomputed_table"
+
+def test_farming_mode_requires_external_perk_table_path() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path="tests/fixtures/does_not_exist.json"))
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+    assert result["diagnostics"]["perk_timeline"]["reason"] == "missing_precomputed_table"
 
 def test_repo_has_no_rej_artifacts() -> None:
     assert not list(Path(".").glob("**/*.rej"))

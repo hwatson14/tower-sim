@@ -11,6 +11,7 @@ scenario:
     start: 0.0
     end: 0.0
     ramp_waves: 1000
+  perk_timeline_path: tests/fixtures/perks/precomputed_empty.json
   boss_survivability:
     boss:
       hp: 1.0
