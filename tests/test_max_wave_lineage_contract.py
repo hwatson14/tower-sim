@@ -106,7 +106,18 @@ def test_stat_lineage_manifest_has_every_registry_stat_and_sources() -> None:
     registry_ids = {definition.stat_id for definition in default_registry().all_defs()}
 
     assert set(manifest) == registry_ids
-    expected_sources = {"workshop", "lab", "card", "module", "relic", "perk", "bc", "uw"}
+    expected_sources = {
+        "workshop",
+        "enhancement",
+        "lab",
+        "card",
+        "module",
+        "bot",
+        "relic",
+        "perk",
+        "bc",
+        "uw",
+    }
     for stat_id, entries in manifest.items():
         assert {entry.contributor for entry in entries} == expected_sources, stat_id
 
@@ -258,7 +269,18 @@ def test_stat_lineage_status_lists_partition_contributors_for_all_stats() -> Non
     manifest = stat_lineage_manifest()
     assert set(statuses) == set(manifest)
 
-    expected_contributors = {"workshop", "lab", "card", "module", "relic", "perk", "bc", "uw"}
+    expected_contributors = {
+        "workshop",
+        "enhancement",
+        "lab",
+        "card",
+        "module",
+        "bot",
+        "relic",
+        "perk",
+        "bc",
+        "uw",
+    }
     for stat_id, status in statuses.items():
         partition = (
             set(status.wired_up)

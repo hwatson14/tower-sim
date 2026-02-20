@@ -99,9 +99,11 @@ _CANONICAL_COVERAGE: Dict[str, CombatContributorCoverage] = {
 
 _CONTRIBUTORS: Tuple[str, ...] = (
     "workshop",
+    "enhancement",
     "lab",
     "card",
     "module",
+    "bot",
     "relic",
     "perk",
     "bc",
@@ -135,29 +137,30 @@ def _build_reaches_stat_input() -> Dict[str, Tuple[str, ...]]:
     # workshop stat-input compiler path for mapped workshop stats.
     for stat_id in _compiled_workshop_stat_ids():
         reaches.setdefault(stat_id, set()).add("lab")
+        reaches.setdefault(stat_id, set()).add("enhancement")
 
     # Core survivability and BC multiplier stat inputs used by MAX_WAVE.
-    reaches["tower_hp"] = {"workshop", "lab", "card", "module", "perk"}
-    reaches["tower_regen"] = {"workshop", "lab", "card", "module", "perk"}
-    reaches["wall_hp"] = {"workshop", "lab", "module"}
-    reaches["wall_regen"] = {"workshop", "lab", "module"}
+    reaches["tower_hp"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk"}
+    reaches["tower_regen"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk"}
+    reaches["wall_hp"] = {"workshop", "enhancement", "lab", "module", "relic"}
+    reaches["wall_regen"] = {"workshop", "enhancement", "lab", "module", "relic"}
     reaches["def_pct"] = {"workshop", "lab", "card", "module", "relic", "perk", "bc"}
-    reaches["thorns_damage_mult"] = {"workshop", "lab", "module", "relic", "bc"}
+    reaches["thorns_damage_mult"] = {"workshop", "enhancement", "lab", "module", "relic", "bc"}
     reaches["orb_damage_mult"] = {"bc"}
     reaches["death_ray_damage_mult"] = {"bc"}
     reaches["plasma_cannon_damage_mult"] = {"bc", "card"}
     reaches["knockback_mult"] = {"bc"}
-    reaches["eals_pct"] = {"workshop", "lab", "module"}
-    reaches["ehls_pct"] = {"workshop", "lab", "module"}
-    reaches["wave_attack_index"] = {"workshop", "lab", "module"}
-    reaches["wave_health_index"] = {"workshop", "lab", "module"}
+    reaches["eals_pct"] = {"workshop", "enhancement", "lab", "module", "relic"}
+    reaches["ehls_pct"] = {"workshop", "enhancement", "lab", "module", "relic"}
+    reaches["wave_attack_index"] = {"workshop", "enhancement", "lab", "module"}
+    reaches["wave_health_index"] = {"workshop", "enhancement", "lab", "module"}
 
     # Effective-paths eDamage outputs include these contributor families.
-    reaches["tower_damage"] = {"workshop", "lab", "card", "module", "relic", "perk"}
-    reaches["tower_attack_speed"] = {"workshop", "lab", "card", "module", "relic"}
-    reaches["tower_crit_chance"] = {"workshop", "card", "module", "relic"}
-    reaches["tower_crit_multiplier"] = {"workshop", "module"}
-    reaches["tower_dps"] = {"workshop", "lab", "card", "module", "relic", "perk"}
+    reaches["tower_damage"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk", "bot"}
+    reaches["tower_attack_speed"] = {"workshop", "enhancement", "lab", "card", "module", "relic"}
+    reaches["tower_crit_chance"] = {"workshop", "enhancement", "card", "module", "relic"}
+    reaches["tower_crit_multiplier"] = {"workshop", "enhancement", "module"}
+    reaches["tower_dps"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk", "bot"}
 
     return {stat_id: tuple(sorted(contributors)) for stat_id, contributors in reaches.items()}
 
@@ -168,6 +171,15 @@ _REACHES_STAT_INPUT: Dict[str, Tuple[str, ...]] = _build_reaches_stat_input()
 
 
 def _excluded_reason(contributor: str, stat_id: str) -> str:
+    workshop_reaches = set(_REACHES_STAT_INPUT.get(stat_id, tuple()))
+    if contributor == "workshop" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_workshop_mapping_for_stat"
+    if contributor == "relic" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_relic_mapping_for_stat"
+    if contributor == "enhancement" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_enhancement_mapping_for_stat"
+    if contributor == "bot" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_bot_mapping_for_stat"
     if contributor == "bc":
         return "excluded:no_authoritative_bc_mapping_for_stat"
     if contributor == "uw":
@@ -200,9 +212,11 @@ for stat_def in default_registry().all_defs():
 # IDS section linkage for contributor-name contract gates.
 _CONTRIBUTOR_IDS_SECTIONS: Dict[str, Tuple[str, ...]] = {
     "workshop": ("WS", "WS+"),
+    "enhancement": ("WS+",),
     "lab": ("Labs",),
     "card": ("Cards",),
     "module": ("Modules",),
+    "bot": ("Bots",),
     "relic": ("Relics",),
     "perk": tuple(),
     "bc": tuple(),
@@ -285,6 +299,10 @@ def stat_lineage_status_lists() -> Mapping[str, StatLineageStatus]:
                 if not entry.reaches_stat_input
                 and entry.exclusion_reason
                 in (
+                    "excluded:no_authoritative_workshop_mapping_for_stat",
+                    "excluded:no_authoritative_enhancement_mapping_for_stat",
+                    "excluded:no_authoritative_bot_mapping_for_stat",
+                    "excluded:no_authoritative_relic_mapping_for_stat",
                     "excluded:no_authoritative_bc_mapping_for_stat",
                     "excluded:no_authoritative_uw_mapping_for_stat",
                 )
