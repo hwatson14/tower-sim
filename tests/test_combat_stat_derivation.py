@@ -820,3 +820,14 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     assert built.module_unmapped_by_layer["main"]
     assert built.module_unmapped_by_layer["unique"] == []
     assert built.module_unmapped_by_layer["substats"] == []
+    assert set(built.canonical_unmapped_by_source.keys()) == {
+        "modules",
+        "cards",
+        "labs",
+        "enhancements",
+        "workshop",
+        "ultimate_weapons",
+        "relics",
+        "other",
+    }
+    assert built.canonical_unmapped_by_source["modules"]

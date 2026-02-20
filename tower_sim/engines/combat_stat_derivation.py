@@ -63,6 +63,7 @@ class CanonicalStatInputBuild:
     core_stat_override_policy: str
     module_contribution_ledger: List[Dict[str, object]] = field(default_factory=list)
     module_unmapped_by_layer: Dict[str, List[str]] = field(default_factory=dict)
+    canonical_unmapped_by_source: Dict[str, List[str]] = field(default_factory=dict)
 
 
 
@@ -92,6 +93,47 @@ def _module_unmapped_by_layer(
         "unique": unique_unmapped,
         "substats": substat_unmapped,
     }
+
+
+def _canonical_unmapped_by_source(
+    *,
+    compiled_missing: List[str],
+    module_unmapped_by_layer: Dict[str, List[str]],
+) -> Dict[str, List[str]]:
+    buckets: Dict[str, set[str]] = {
+        "modules": set(),
+        "cards": set(),
+        "labs": set(),
+        "enhancements": set(),
+        "workshop": set(),
+        "ultimate_weapons": set(),
+        "relics": set(),
+        "other": set(),
+    }
+
+    for layer, items in module_unmapped_by_layer.items():
+        for item in items:
+            buckets["modules"].add(f"{layer}:{item}")
+
+    for item in compiled_missing:
+        if item.startswith("module_"):
+            buckets["modules"].add(item)
+        elif "unsupported_card" in item or "unknown_card" in item or item.startswith("cards:"):
+            buckets["cards"].add(item)
+        elif item.startswith("lab_") or item.startswith("lab:") or ":lab_" in item:
+            buckets["labs"].add(item)
+        elif "enhancement" in item:
+            buckets["enhancements"].add(item)
+        elif item.startswith("workshop"):
+            buckets["workshop"].add(item)
+        elif item.startswith("uw") or item.startswith("uw_"):
+            buckets["ultimate_weapons"].add(item)
+        elif item.startswith("relic"):
+            buckets["relics"].add(item)
+        else:
+            buckets["other"].add(item)
+
+    return {key: sorted(values) for key, values in buckets.items()}
 
 def build_canonical_stat_inputs(
     *,
@@ -144,6 +186,10 @@ def build_canonical_stat_inputs(
         layer_gaps=loadout_missing,
         module_contribution_ledger=module_contribution_ledger,
     )
+    canonical_unmapped_by_source = _canonical_unmapped_by_source(
+        compiled_missing=sorted(compiled.missing + base_missing + loadout_missing),
+        module_unmapped_by_layer=module_unmapped_by_layer,
+    )
 
     return CanonicalStatInputBuild(
         stat_inputs=filtered_inputs,
@@ -157,6 +203,7 @@ def build_canonical_stat_inputs(
         ),
         module_contribution_ledger=module_contribution_ledger,
         module_unmapped_by_layer=module_unmapped_by_layer,
+        canonical_unmapped_by_source=canonical_unmapped_by_source,
     )
 
 

@@ -176,7 +176,13 @@ def _safe_build_loadout_breakdown(
         return None
 
     compiled = _compile_full(ids_snapshot)
-    stat_inputs = _merge_stat_inputs(base_inputs, loadout_inputs)
+    loadout_stat_inputs = (
+        loadout_inputs.stat_inputs
+        if hasattr(loadout_inputs, "stat_inputs")
+        else loadout_inputs
+    )
+
+    stat_inputs = _merge_stat_inputs(base_inputs, loadout_stat_inputs)
     stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
     registry = default_registry()
     stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
@@ -189,7 +195,7 @@ def _safe_build_loadout_breakdown(
 
     return {
         "base_stat_inputs": [_serialize_stat_input(row) for row in base_inputs],
-        "loadout_stat_inputs": [_serialize_stat_input(row) for row in loadout_inputs],
+        "loadout_stat_inputs": [_serialize_stat_input(row) for row in loadout_stat_inputs],
         "compiled_stat_inputs": [_serialize_stat_input(row) for row in compiled.stat_inputs],
         "compiled_missing": compiled.missing,
         "invalid_stat_inputs": invalid_stat_inputs,
@@ -459,4 +465,3 @@ def _format_optional_decimal(value: Decimal | None) -> str | None:
     if value is None:
         return None
     return format(value, "f")
-

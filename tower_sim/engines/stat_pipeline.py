@@ -139,6 +139,7 @@ def build_canonical_stat_pipeline_for_problem_spec(
     if canonical_inputs.module_contribution_ledger:
         diagnostics["module_contribution_ledger"] = canonical_inputs.module_contribution_ledger
     diagnostics["module_unmapped_by_layer"] = canonical_inputs.module_unmapped_by_layer
+    diagnostics["canonical_unmapped_by_source"] = canonical_inputs.canonical_unmapped_by_source
 
     dag_contract, dag_missing = _load_runtime_dag_contract()
     if dag_contract is not None:
@@ -238,7 +239,9 @@ def build_canonical_stat_pipeline_for_problem_spec(
                         "reason": reason,
                         "error": str(exc),
                     }
-                    missing.append(f"perk_timeline:{reason}")
+                    explicit_perk_table = getattr(problem_spec.scenario, "perk_timeline_path", None)
+                    if reason != "missing_precomputed_table" or explicit_perk_table:
+                        missing.append(f"perk_timeline:{reason}")
                     wave_inputs = stage2_inputs
 
             wave_row, wave_row_missing = build_canonical_wave_row(
