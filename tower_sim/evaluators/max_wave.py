@@ -107,7 +107,7 @@ class MaxWaveEvaluator:
                 snapshot=ids_snapshot,
                 problem_spec=problem_spec,
                 wave=problem_spec.scenario.wave,
-                include_perk_timeline=True,
+                include_perk_timeline=_should_include_perk_timeline(problem_spec),
                 materialize_stages=True,
             )
             diagnostics.update(pipeline_eval.diagnostics)
@@ -257,7 +257,7 @@ def _run_preflight(
         snapshot=ids_snapshot,
         problem_spec=problem_spec,
         wave=problem_spec.scenario.wave,
-        include_perk_timeline=True,
+        include_perk_timeline=_should_include_perk_timeline(problem_spec),
         materialize_stages=False,
         precomputed_canonical_inputs=canonical_inputs,
     )
@@ -327,6 +327,15 @@ def _run_preflight(
 
 
 
+def _should_include_perk_timeline(problem_spec: ProblemSpec) -> bool:
+    scenario = problem_spec.scenario
+    mode = (scenario.mode or "").strip().lower()
+    if mode == "tournament":
+        return False
+    path = getattr(scenario, "perk_timeline_path", None)
+    return bool(path and str(path).strip())
+
+
 def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
     scenario = problem_spec.scenario
     mode = (scenario.mode or "").strip().lower()
@@ -341,8 +350,8 @@ def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
             "perk_timeline_external_only": True,
         },
         "perk_timeline": {
-            "required": not is_tournament,
-            "enabled": not is_tournament,
+            "required": _should_include_perk_timeline(problem_spec),
+            "enabled": _should_include_perk_timeline(problem_spec),
             "source": None if is_tournament else getattr(scenario, "perk_timeline_path", None),
         },
         "tournament": {
@@ -578,7 +587,7 @@ def _search_wmax(
                 snapshot=ids_snapshot,
                 problem_spec=wave_problem_spec,
                 wave=wave,
-                include_perk_timeline=True,
+                include_perk_timeline=_should_include_perk_timeline(wave_problem_spec),
                 materialize_stages=True,
                 precomputed_canonical_inputs=wave_canonical_inputs,
             )
