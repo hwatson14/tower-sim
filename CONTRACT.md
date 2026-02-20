@@ -110,9 +110,9 @@ Top-level structure is machine-enforced by:
 - Rendered SVG/PNG are produced by `.github/workflows/render-contract-diagram.yml` and published as workflow artifacts only (not committed).
 
 ### 7.4 Migration plans are temporary
-- `STAT_PIPELINE_REFACTOR_PLAN.md` is a migration aid and non-authoritative.
-- Once pipeline refactor implementation is complete, `STAT_PIPELINE_REFACTOR_PLAN.md` MUST be deleted in the same PR as the final implementation step (or immediately after).
-- Precedence: `CONTRACT.md` overrides migration plans; migration plans override draft diagrams.
+- The pipeline migration plan has been retired after canonical stat-pipeline convergence.
+- If a future migration plan is introduced, it is non-authoritative and must be removed when migration is complete.
+- Precedence: `CONTRACT.md` overrides temporary migration plans; temporary migration plans override draft diagrams while active.
 
 ## 8) Required behavior for coding agents
 - No scope creep: only implement requested scope.

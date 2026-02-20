@@ -25,7 +25,6 @@ top_level:
     - pytest.ini
     - .gitignore
     - .gitmodules
-    - STAT_PIPELINE_REFACTOR_PLAN.md
 
   forbidden_dirs:
     - docs

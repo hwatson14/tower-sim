@@ -9,4 +9,4 @@ Rendered outputs are not committed.
 A GitHub Action renders SVG+PNG and publishes them as workflow artifacts.
 
 Precedence remains:
-`CONTRACT.md` > `STAT_PIPELINE_REFACTOR_PLAN.md` > this draft diagram.
+`CONTRACT.md` > this draft diagram.
