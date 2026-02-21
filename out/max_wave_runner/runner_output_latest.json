@@ -227,54 +227,10 @@
       "cards": [],
       "enhancements": [],
       "labs": [],
-      "modules": [
-        "main:Armor:assist:Orbital Augment:module_primary_effect:Armor",
-        "main:Cannon:primary:Amplifying Strike:module_primary_effect:Cannon",
-        "main:Core:assist:Dimension Core:module_primary_effect:Core",
-        "main:Core:primary:Primordial Collapse:module_primary_effect:Core",
-        "main:Generator:assist:Pulsar Harvester:module_primary_effect:Generator",
-        "main:Generator:primary:Singularity Harness:module_primary_effect:Generator"
-      ],
+      "modules": [],
       "other": [],
       "relics": [],
-      "ultimate_weapons": [
-        "uw_level_missing:Black Hole:Consume",
-        "uw_level_missing:Chain Lightning:Smite",
-        "uw_level_missing:Chrono Field:Chrono Loop",
-        "uw_level_missing:Death Wave:Kill Wall",
-        "uw_level_missing:Golden Tower:Golden Combo",
-        "uw_level_missing:Inner Land Mines:Charged Mines",
-        "uw_level_missing:Poison Swamp:Death Creep",
-        "uw_level_missing:Smart Missiles:Cover Fire",
-        "uw_level_missing:Spotlight:Light Range",
-        "uw_table:Golden Tower:Duration:7",
-        "uw_value_mismatch:Black Hole:Cooldown:15",
-        "uw_value_mismatch:Black Hole:Duration:17",
-        "uw_value_mismatch:Black Hole:Size:9",
-        "uw_value_mismatch:Chain Lightning:Chance:8",
-        "uw_value_mismatch:Chain Lightning:Damage:19",
-        "uw_value_mismatch:Chain Lightning:Quantity:3",
-        "uw_value_mismatch:Chrono Field:Cooldown:12",
-        "uw_value_mismatch:Chrono Field:Duration:12",
-        "uw_value_mismatch:Chrono Field:Speed Reduction:2",
-        "uw_value_mismatch:Death Wave:Cooldown:12",
-        "uw_value_mismatch:Death Wave:Damage:8",
-        "uw_value_mismatch:Death Wave:Quantity:2",
-        "uw_value_mismatch:Golden Tower:Cooldown:12",
-        "uw_value_mismatch:Golden Tower:Multiplier:12",
-        "uw_value_mismatch:Inner Land Mines:Cooldown:0",
-        "uw_value_mismatch:Inner Land Mines:Damage:0",
-        "uw_value_mismatch:Inner Land Mines:Quantity:0",
-        "uw_value_mismatch:Poison Swamp:Cooldown:0",
-        "uw_value_mismatch:Poison Swamp:Damage:0",
-        "uw_value_mismatch:Poison Swamp:Duration:0",
-        "uw_value_mismatch:Smart Missiles:Cooldown:0",
-        "uw_value_mismatch:Smart Missiles:Damage:0",
-        "uw_value_mismatch:Smart Missiles:Quantity:0",
-        "uw_value_mismatch:Spotlight:Angle:8",
-        "uw_value_mismatch:Spotlight:Multiplier:8",
-        "uw_value_mismatch:Spotlight:Quantity:2"
-      ],
+      "ultimate_weapons": [],
       "workshop": []
     },
     "combat_snapshot_sources_scenario_wave": {
@@ -297,44 +253,6 @@
         "at_wave_snapshot"
       ]
     },
-    "compiled_missing": [
-      "uw_level_missing:Black Hole:Consume",
-      "uw_level_missing:Chain Lightning:Smite",
-      "uw_level_missing:Chrono Field:Chrono Loop",
-      "uw_level_missing:Death Wave:Kill Wall",
-      "uw_level_missing:Golden Tower:Golden Combo",
-      "uw_level_missing:Inner Land Mines:Charged Mines",
-      "uw_level_missing:Poison Swamp:Death Creep",
-      "uw_level_missing:Smart Missiles:Cover Fire",
-      "uw_level_missing:Spotlight:Light Range",
-      "uw_table:Golden Tower:Duration:7",
-      "uw_value_mismatch:Black Hole:Cooldown:15",
-      "uw_value_mismatch:Black Hole:Duration:17",
-      "uw_value_mismatch:Black Hole:Size:9",
-      "uw_value_mismatch:Chain Lightning:Chance:8",
-      "uw_value_mismatch:Chain Lightning:Damage:19",
-      "uw_value_mismatch:Chain Lightning:Quantity:3",
-      "uw_value_mismatch:Chrono Field:Cooldown:12",
-      "uw_value_mismatch:Chrono Field:Duration:12",
-      "uw_value_mismatch:Chrono Field:Speed Reduction:2",
-      "uw_value_mismatch:Death Wave:Cooldown:12",
-      "uw_value_mismatch:Death Wave:Damage:8",
-      "uw_value_mismatch:Death Wave:Quantity:2",
-      "uw_value_mismatch:Golden Tower:Cooldown:12",
-      "uw_value_mismatch:Golden Tower:Multiplier:12",
-      "uw_value_mismatch:Inner Land Mines:Cooldown:0",
-      "uw_value_mismatch:Inner Land Mines:Damage:0",
-      "uw_value_mismatch:Inner Land Mines:Quantity:0",
-      "uw_value_mismatch:Poison Swamp:Cooldown:0",
-      "uw_value_mismatch:Poison Swamp:Damage:0",
-      "uw_value_mismatch:Poison Swamp:Duration:0",
-      "uw_value_mismatch:Smart Missiles:Cooldown:0",
-      "uw_value_mismatch:Smart Missiles:Damage:0",
-      "uw_value_mismatch:Smart Missiles:Quantity:0",
-      "uw_value_mismatch:Spotlight:Angle:8",
-      "uw_value_mismatch:Spotlight:Multiplier:8",
-      "uw_value_mismatch:Spotlight:Quantity:2"
-    ],
     "core_stat_override_policy": "strict_fail_closed",
     "margin_trace": [
       {
@@ -375,12 +293,12 @@
     ],
     "module_contribution_ledger": [
       {
-        "kind": "behavior_binding",
+        "kind": "multiplier",
         "layer": "primary",
         "module": "Amplifying Strike",
         "placement": "primary",
         "slot": "Cannon",
-        "target": "module_primary_effect:Cannon",
+        "target": "tower_damage",
         "value": 7.88
       },
       {
@@ -456,15 +374,6 @@
         "value": 2.5
       },
       {
-        "kind": "behavior_binding",
-        "layer": "primary",
-        "module": "Orbital Augment",
-        "placement": "assist",
-        "slot": "Armor",
-        "target": "module_primary_effect:Armor",
-        "value": 5.33984
-      },
-      {
         "kind": "delta",
         "layer": "substat",
         "module": "Orbital Augment",
@@ -510,12 +419,12 @@
         "value": 2.0
       },
       {
-        "kind": "behavior_binding",
+        "kind": "multiplier",
         "layer": "primary",
         "module": "Singularity Harness",
         "placement": "primary",
         "slot": "Generator",
-        "target": "module_primary_effect:Generator",
+        "target": "workshop_coins_per_kill_bonus",
         "value": 1.59
       },
       {
@@ -546,12 +455,12 @@
         "value": 15.0
       },
       {
-        "kind": "behavior_binding",
+        "kind": "multiplier",
         "layer": "primary",
         "module": "Pulsar Harvester",
         "placement": "assist",
         "slot": "Generator",
-        "target": "module_primary_effect:Generator",
+        "target": "workshop_coins_per_kill_bonus",
         "value": 1.614
       },
       {
@@ -582,12 +491,48 @@
         "value": 1.0
       },
       {
-        "kind": "behavior_binding",
+        "kind": "multiplier",
         "layer": "primary",
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "module_primary_effect:Core",
+        "target": "uw_chain_lightning_damage",
+        "value": 9.586
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "uw_smart_missiles_damage",
+        "value": 9.586
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "uw_death_wave_damage",
+        "value": 9.586
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "uw_inner_land_mines_damage",
+        "value": 9.586
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "uw_poison_swamp_damage",
         "value": 9.586
       },
       {
@@ -600,12 +545,48 @@
         "value": 80.0
       },
       {
-        "kind": "behavior_binding",
+        "kind": "multiplier",
         "layer": "primary",
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "module_primary_effect:Core",
+        "target": "uw_chain_lightning_damage",
+        "value": 8.95
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "uw_smart_missiles_damage",
+        "value": 8.95
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "uw_death_wave_damage",
+        "value": 8.95
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "uw_inner_land_mines_damage",
+        "value": 8.95
+      },
+      {
+        "kind": "multiplier",
+        "layer": "primary",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "uw_poison_swamp_damage",
         "value": 8.95
       },
       {
@@ -619,14 +600,7 @@
       }
     ],
     "module_unmapped_by_layer": {
-      "main": [
-        "Armor:assist:Orbital Augment:module_primary_effect:Armor",
-        "Cannon:primary:Amplifying Strike:module_primary_effect:Cannon",
-        "Core:assist:Dimension Core:module_primary_effect:Core",
-        "Core:primary:Primordial Collapse:module_primary_effect:Core",
-        "Generator:assist:Pulsar Harvester:module_primary_effect:Generator",
-        "Generator:primary:Singularity Harness:module_primary_effect:Generator"
-      ],
+      "main": [],
       "substats": [],
       "unique": []
     },
@@ -634,14 +608,14 @@
       "enabled": false,
       "reason": "not_requested"
     },
-    "preflight_ms": 141.96709399999463,
+    "preflight_ms": 152.04650500000128,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
     },
     "stages_materialized": false,
     "start_stage_source": "canonical_stat_inputs",
-    "statbook_rows": 114,
+    "statbook_rows": 126,
     "timing_uptime": {
       "bot_effect_scalars": {
         "bot_bonus_multiplier": 1.0,
@@ -655,23 +629,25 @@
         "contract_status": "consumed",
         "reason": "consumed:timing_uptime_expected_damage_taken_feeds_max_wave_survivability"
       },
-      "expected_coin_multiplier": 2.0810000000000004,
-      "expected_damage_multiplier": 1.4166666666666667,
+      "expected_coin_multiplier": 7.255800000000001,
+      "expected_damage_multiplier": 1.4166666666666665,
       "expected_damage_taken": 1.0,
       "gcomp_enabled": false,
       "gcomp_rarity": null,
       "gcomp_seconds_per_package": 0.0,
-      "gt_bh_overlap": 0.0,
+      "gt_bh_overlap": 0.1,
       "package_chance_missing": false,
       "package_chance_stat_id": "workshop_package_chance",
       "package_event_count": 4,
       "package_event_model": "uniform_from_rate",
       "packages_per_second": 0.00797138477261114,
       "uw_interval_counts": {
-        "uw_black_hole": 40,
-        "uw_chrono_field": 50,
+        "uw_black_hole": 12,
+        "uw_chrono_field": 10,
         "uw_death_wave": 0,
-        "uw_golden_tower": 0
+        "uw_golden_tower": 4,
+        "uw_inner_land_mines": 0,
+        "uw_smart_missiles": 0
       },
       "wa_reduction": 0.54,
       "wave_seconds": 39.14,
