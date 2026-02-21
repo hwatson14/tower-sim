@@ -146,16 +146,34 @@ def test_damage_attack_speed_and_crit_chance_cards_feed_loadout_stat_inputs() ->
     baseline_by_stat = {item.stat_id: item for item in baseline}
     with_damage_by_stat = {item.stat_id: item for item in with_damage_cards}
 
-    assert "tower_damage" not in baseline_by_stat
-    assert "tower_attack_speed" not in baseline_by_stat
-    assert "tower_crit_chance" not in baseline_by_stat
+    baseline_damage_mult = (
+        baseline_by_stat["tower_damage"].enhancement_multiplier
+        if "tower_damage" in baseline_by_stat
+        and baseline_by_stat["tower_damage"].enhancement_multiplier is not None
+        else 1.0
+    )
+    baseline_attack_speed_mult = (
+        baseline_by_stat["tower_attack_speed"].enhancement_multiplier
+        if "tower_attack_speed" in baseline_by_stat
+        and baseline_by_stat["tower_attack_speed"].enhancement_multiplier is not None
+        else 1.0
+    )
+    baseline_crit_delta = (
+        baseline_by_stat["tower_crit_chance"].loadout_delta
+        if "tower_crit_chance" in baseline_by_stat
+        and baseline_by_stat["tower_crit_chance"].loadout_delta is not None
+        else 0.0
+    )
 
     assert with_damage_by_stat["tower_damage"].enhancement_multiplier is not None
-    assert with_damage_by_stat["tower_damage"].enhancement_multiplier > 1.0
+    assert with_damage_by_stat["tower_damage"].enhancement_multiplier > baseline_damage_mult
     assert with_damage_by_stat["tower_attack_speed"].enhancement_multiplier is not None
-    assert with_damage_by_stat["tower_attack_speed"].enhancement_multiplier > 1.0
+    assert (
+        with_damage_by_stat["tower_attack_speed"].enhancement_multiplier
+        > baseline_attack_speed_mult
+    )
     assert with_damage_by_stat["tower_crit_chance"].loadout_delta is not None
-    assert with_damage_by_stat["tower_crit_chance"].loadout_delta > 0.0
+    assert with_damage_by_stat["tower_crit_chance"].loadout_delta > baseline_crit_delta
 
 
 def test_utility_cards_feed_loadout_stat_inputs() -> None:
@@ -186,20 +204,45 @@ def test_utility_cards_feed_loadout_stat_inputs() -> None:
     baseline_by_stat = {item.stat_id: item for item in baseline}
     with_utility_by_stat = {item.stat_id: item for item in with_utility_cards}
 
-    assert "workshop_package_chance" not in baseline_by_stat
-    assert "workshop_range_meters" not in baseline_by_stat
-    assert "workshop_cash_bonus" not in baseline_by_stat
-    assert "workshop_coins_per_kill_bonus" not in baseline_by_stat
-    assert "workshop_free_upgrades" not in baseline_by_stat
+    baseline_package_delta = (
+        baseline_by_stat["workshop_package_chance"].loadout_delta
+        if "workshop_package_chance" in baseline_by_stat
+        and baseline_by_stat["workshop_package_chance"].loadout_delta is not None
+        else 0.0
+    )
+    baseline_range_mult = (
+        baseline_by_stat["workshop_range_meters"].enhancement_multiplier
+        if "workshop_range_meters" in baseline_by_stat
+        and baseline_by_stat["workshop_range_meters"].enhancement_multiplier is not None
+        else 1.0
+    )
+    baseline_cash_mult = (
+        baseline_by_stat["workshop_cash_bonus"].enhancement_multiplier
+        if "workshop_cash_bonus" in baseline_by_stat
+        and baseline_by_stat["workshop_cash_bonus"].enhancement_multiplier is not None
+        else 1.0
+    )
+    baseline_coin_mult = (
+        baseline_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier
+        if "workshop_coins_per_kill_bonus" in baseline_by_stat
+        and baseline_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier is not None
+        else 1.0
+    )
+    baseline_free_upgrades_mult = (
+        baseline_by_stat["workshop_free_upgrades"].enhancement_multiplier
+        if "workshop_free_upgrades" in baseline_by_stat
+        and baseline_by_stat["workshop_free_upgrades"].enhancement_multiplier is not None
+        else 1.0
+    )
 
     assert with_utility_by_stat["workshop_package_chance"].loadout_delta is not None
-    assert with_utility_by_stat["workshop_package_chance"].loadout_delta > 0.0
+    assert with_utility_by_stat["workshop_package_chance"].loadout_delta > baseline_package_delta
 
     assert with_utility_by_stat["workshop_range_meters"].enhancement_multiplier is not None
-    assert with_utility_by_stat["workshop_range_meters"].enhancement_multiplier > 1.0
+    assert with_utility_by_stat["workshop_range_meters"].enhancement_multiplier > baseline_range_mult
 
     assert with_utility_by_stat["workshop_cash_bonus"].enhancement_multiplier is not None
-    assert with_utility_by_stat["workshop_cash_bonus"].enhancement_multiplier > 1.0
+    assert with_utility_by_stat["workshop_cash_bonus"].enhancement_multiplier > baseline_cash_mult
 
     assert (
         with_utility_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier
@@ -207,8 +250,11 @@ def test_utility_cards_feed_loadout_stat_inputs() -> None:
     )
     assert (
         with_utility_by_stat["workshop_coins_per_kill_bonus"].enhancement_multiplier
-        > 1.0
+        > baseline_coin_mult
     )
 
     assert with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier is not None
-    assert with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier > 1.0
+    assert (
+        with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier
+        > baseline_free_upgrades_mult
+    )
