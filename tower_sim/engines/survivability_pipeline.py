@@ -1342,8 +1342,14 @@ def _apply_module_effects(
         accumulator.record_module_contribution(slot=slot, placement="primary", module_name=primary.name, layer="primary", target="tower_hp", value=multiplier, kind="multiplier")
 
     if primary is not None:
-        if primary.slot != "Armor":
-            accumulator.record_module_contribution(slot=slot, placement="primary", module_name=primary.name, layer="primary", target=f"module_primary_effect:{primary.slot}", value=primary.main_effect, kind="behavior_binding")
+        _apply_slot_main_effect(
+            accumulator,
+            slot=slot,
+            placement="primary",
+            module_name=primary.name,
+            module_slot=primary.slot,
+            main_effect=primary.main_effect,
+        )
         layer_gaps.extend(
             _apply_module_substats(
                 accumulator,
@@ -1361,7 +1367,14 @@ def _apply_module_effects(
             assist.main_effect,
             assist_eff.bonus_eff,
         )
-        accumulator.record_module_contribution(slot=slot, placement="assist", module_name=assist.name, layer="primary", target=f"module_primary_effect:{assist.slot}", value=assist_main_effect, kind="behavior_binding")
+        _apply_slot_main_effect(
+            accumulator,
+            slot=slot,
+            placement="assist",
+            module_name=assist.name,
+            module_slot=assist.slot,
+            main_effect=assist_main_effect,
+        )
         layer_gaps.extend(
             _apply_module_substats(
                 accumulator,
@@ -1375,6 +1388,45 @@ def _apply_module_effects(
         if not _apply_unique_effects(accumulator, assist, is_assist=True, assist_cap=assist_cap, slot=slot, placement="assist"):
             layer_gaps.append(f"module_unique_unmapped:{slot}:assist:{assist.name}")
     return layer_gaps
+
+
+def _apply_slot_main_effect(
+    accumulator: "_StatAccumulator",
+    *,
+    slot: str,
+    placement: str,
+    module_name: str,
+    module_slot: str,
+    main_effect: float,
+) -> None:
+    if module_slot == "Armor":
+        return
+    targets: tuple[str, ...]
+    if module_slot == "Cannon":
+        targets = ("tower_damage",)
+    elif module_slot == "Generator":
+        targets = ("workshop_coins_per_kill_bonus",)
+    elif module_slot == "Core":
+        targets = (
+            "uw_chain_lightning_damage",
+            "uw_smart_missiles_damage",
+            "uw_death_wave_damage",
+            "uw_inner_land_mines_damage",
+            "uw_poison_swamp_damage",
+        )
+    else:
+        return
+    for target in targets:
+        accumulator.multiply(target, main_effect, f"modules:{module_slot.lower()}_main_effect")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module_name,
+            layer="primary",
+            target=target,
+            value=main_effect,
+            kind="multiplier",
+        )
 
 
 def _apply_module_substats(

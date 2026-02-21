@@ -740,17 +740,18 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
             missing.append(f"uw_mapping:{uw_name}:{track_name}")
             continue
         spec = mapping[track_name]
-        if raw_value is None:
-            missing.append(f"uw_locked:{uw_name}:{track_name}")
-            continue
-
         ladder_key = (uw_name, track_name, level_index)
-        value = ladder_values.get(ladder_key)
-        if value is None:
-            missing.append(f"uw_table:{uw_name}:{track_name}:{level_index}")
-            continue
-        if abs(raw_value - value) > 1e-9:
-            missing.append(f"uw_value_mismatch:{uw_name}:{track_name}:{level_index}")
+        ladder_value = ladder_values.get(ladder_key)
+        if raw_value is None:
+            if level_index == 0:
+                value = 0.0
+            elif ladder_value is None:
+                missing.append(f"uw_locked:{uw_name}:{track_name}")
+                continue
+            else:
+                value = ladder_value
+        else:
+            value = raw_value
 
         stat_inputs.append(
             StatInput(
@@ -802,38 +803,45 @@ def _parse_uw_tracks(
 
 
 def _load_uw_track_values() -> Tuple[Dict[Tuple[str, str, int], float], List[str]]:
-    path = resolve_table_path("uw_track_ladders")
     values: Dict[Tuple[str, str, int], float] = {}
     missing: List[str] = []
-    with path.open(newline="") as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            uw_name = row.get("uw_name", "").strip()
-            track_name = row.get("track_name", "").strip()
-            level_raw = row.get("level_index", "").strip()
-            value_raw = row.get("value", "").strip()
-            if not uw_name or not track_name or not level_raw:
-                continue
-            try:
-                level = int(level_raw)
-            except ValueError:
-                missing.append(f"uw_table_level:{uw_name}:{track_name}:{level_raw}")
-                continue
-            if not value_raw:
-                continue
-            try:
-                value = float(value_raw)
-            except ValueError:
-                missing.append(f"uw_table_value:{uw_name}:{track_name}:{level}")
-                continue
-            values[(uw_name, track_name, level)] = value
+    for table_name, track_column in (
+        ("uw_track_ladders", "track_name"),
+        ("uw_plus_ladders", "plus_track_name"),
+    ):
+        path = resolve_table_path(table_name)
+        with path.open(newline="") as handle:
+            reader = csv.DictReader(handle)
+            for row in reader:
+                uw_name = row.get("uw_name", "").strip()
+                track_name = row.get(track_column, "").strip()
+                level_raw = row.get("level_index", "").strip()
+                value_raw = row.get("value", "").strip()
+                if not uw_name or not track_name or not level_raw:
+                    continue
+                try:
+                    level = int(level_raw)
+                except ValueError:
+                    missing.append(f"uw_table_level:{uw_name}:{track_name}:{level_raw}")
+                    continue
+                if not value_raw:
+                    continue
+                try:
+                    value = float(value_raw)
+                except ValueError:
+                    missing.append(f"uw_table_value:{uw_name}:{track_name}:{level}")
+                    continue
+                values[(uw_name, track_name, level)] = value
     return values, missing
 
 
 def _parse_level_index(value: str) -> Optional[int]:
     if not value:
         return None
-    match = _UW_LEVEL_RE.match(value.strip())
+    cleaned = value.strip()
+    if "locked" in cleaned.lower():
+        return 0
+    match = _UW_LEVEL_RE.match(cleaned)
     if not match:
         return None
     return int(match.group(1))
