@@ -1,0 +1,74 @@
+[
+  {
+    "wave": 200,
+    "perk_taken": "Orbs +1",
+    "effect": "+1 Orb",
+    "effect_stat_id": null,
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "Orbs +1",
+      "x1.20 Max Health"
+    ]
+  },
+  {
+    "wave": 400,
+    "perk_taken": "x1.75 Health Regen",
+    "effect": "Health Regen multiplier \u00d71.75",
+    "effect_stat_id": "tower_regen",
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "x1.75 Health Regen",
+      "x1.15 Cash Bonus"
+    ]
+  },
+  {
+    "wave": 600,
+    "perk_taken": "Increase Max Game Speed by +1.00",
+    "effect": "+1.00 to max game speed",
+    "effect_stat_id": null,
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "Increase Max Game Speed by +1.00",
+      "Orbs +1"
+    ]
+  },
+  {
+    "wave": 800,
+    "perk_taken": "x1.50 Tower Damage, but Bosses Have 8x Health",
+    "effect": "Tower Damage \u00d71.50 / Boss Health \u00d78",
+    "effect_stat_id": null,
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "x1.50 Tower Damage, but Bosses Have 8x Health",
+      "x1.15 Damage"
+    ]
+  },
+  {
+    "wave": 1000,
+    "perk_taken": "Free Upgrade Chance for All +5.0%",
+    "effect": "+5.0 percentage points to free upgrade chance (all)",
+    "effect_stat_id": null,
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "Free Upgrade Chance for All +5.0%",
+      "x1.20 Max Health"
+    ]
+  },
+  {
+    "wave": 1200,
+    "perk_taken": "x1.15 Cash Bonus",
+    "effect": "Cash bonus multiplier \u00d71.15",
+    "effect_stat_id": null,
+    "stacking_type": null,
+    "quantity": 1,
+    "offered": [
+      "x1.15 Cash Bonus",
+      "Bounce Shot +2"
+    ]
+  }
+]
