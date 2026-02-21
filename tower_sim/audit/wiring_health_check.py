@@ -10,6 +10,10 @@ from tower_sim.audit.stat_lineage_report import load_manifest, summarize_manifes
 from tower_sim.registry.ep_formula_registry import MechanicsManifestError, load_active_mechanics_pack
 
 
+_LEGACY_DEFAULT_LINEAGE_MANIFEST = Path("out/stat_lineage_manifest_latest.json")
+_RUNNER_LINEAGE_MANIFEST = Path("out/lineage_manifest_latest.json")
+
+
 def run_wiring_health_check(
     *,
     ids_path: Path,
@@ -84,7 +88,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--lineage-manifest",
         type=Path,
-        default=Path("out/stat_lineage_manifest_latest.json"),
+        default=_LEGACY_DEFAULT_LINEAGE_MANIFEST,
         help="Path to stat lineage manifest JSON.",
     )
     parser.add_argument(
@@ -104,11 +108,20 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _resolve_lineage_manifest_path(path: Path) -> Path:
+    if path.exists():
+        return path
+    if path == _LEGACY_DEFAULT_LINEAGE_MANIFEST and _RUNNER_LINEAGE_MANIFEST.exists():
+        return _RUNNER_LINEAGE_MANIFEST
+    return path
+
+
 def main() -> int:
     args = _parse_args()
+    lineage_manifest_path = _resolve_lineage_manifest_path(args.lineage_manifest)
     result = run_wiring_health_check(
         ids_path=args.ids,
-        lineage_manifest_path=args.lineage_manifest,
+        lineage_manifest_path=lineage_manifest_path,
         max_required_max_wave_gaps=args.max_required_max_wave_gaps,
         max_total_missing_pairs=args.max_total_missing_pairs,
     )

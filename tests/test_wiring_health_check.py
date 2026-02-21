@@ -7,7 +7,12 @@ import sys
 from dataclasses import asdict
 from pathlib import Path
 
-from tower_sim.audit.wiring_health_check import run_wiring_health_check
+from tower_sim.audit.wiring_health_check import (
+    _LEGACY_DEFAULT_LINEAGE_MANIFEST,
+    _RUNNER_LINEAGE_MANIFEST,
+    _resolve_lineage_manifest_path,
+    run_wiring_health_check,
+)
 from tower_sim.registry.combat_stat_contract import (
     required_max_wave_stat_input_ids,
     stat_lineage_status_lists,
@@ -112,3 +117,24 @@ def test_wiring_health_check_fails_closed_for_invalid_manifest(tmp_path: Path) -
         assert "required_max_wave_stat_input_ids" in str(exc)
     else:
         raise AssertionError("Expected fail-closed ValueError for invalid lineage manifest")
+
+
+def test_resolve_lineage_manifest_path_falls_back_to_runner_output(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    out_dir = tmp_path / "out"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    runner_manifest = out_dir / "lineage_manifest_latest.json"
+    runner_manifest.write_text("{}", encoding="utf-8")
+
+    resolved = _resolve_lineage_manifest_path(_LEGACY_DEFAULT_LINEAGE_MANIFEST)
+
+    assert resolved == _RUNNER_LINEAGE_MANIFEST
+
+
+def test_resolve_lineage_manifest_path_preserves_explicit_missing_path(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.chdir(tmp_path)
+    explicit_path = Path("out/custom_manifest.json")
+
+    resolved = _resolve_lineage_manifest_path(explicit_path)
+
+    assert resolved == explicit_path
