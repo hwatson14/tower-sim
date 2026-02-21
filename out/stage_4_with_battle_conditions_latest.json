@@ -1,0 +1,35 @@
+{
+  "description": "Tier battle conditions and scenario context",
+  "fail_closed": true,
+  "league": null,
+  "missing": [
+    "boss_survivability",
+    "skip_ramp:eals",
+    "skip_ramp:ehls"
+  ],
+  "missing_heat": [],
+  "missing_tier_rules": [],
+  "mode": "farming",
+  "name": "battle_conditions",
+  "problem_spec": {
+    "evaluator": "max_wave",
+    "scenario": {
+      "allow_core_stat_overrides": false,
+      "boss_survivability": null,
+      "eals_ramp": null,
+      "ehls_ramp": null,
+      "league": null,
+      "mode": "farming",
+      "perk_timeline_path": null,
+      "preset": null,
+      "tier": 12,
+      "wave": 1000,
+      "wave_damage_tier": null
+    },
+    "stat_inputs": []
+  },
+  "tier": 12,
+  "wave": 1000,
+  "wave_rows": {},
+  "wave_state": null
+}

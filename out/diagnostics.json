@@ -1,0 +1,31 @@
+{
+  "ids_path": "tests/fixtures/tower-sim-data/_IDS.csv",
+  "max_wave": {
+    "diagnostics": {},
+    "enabled": false,
+    "fail_closed": false,
+    "missing": []
+  },
+  "run_stats": {
+    "fail_closed": false,
+    "missing": [],
+    "row_count": 84
+  },
+  "schema_version": 5,
+  "stages": {
+    "stage_4_battle_conditions": {
+      "fail_closed": true,
+      "missing": [
+        "boss_survivability",
+        "skip_ramp:eals",
+        "skip_ramp:ehls"
+      ],
+      "missing_heat": [],
+      "missing_tier_rules": []
+    },
+    "stage_5_end_of_run": {
+      "fail_closed": false,
+      "missing": []
+    }
+  }
+}

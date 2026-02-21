@@ -1,0 +1,590 @@
+[
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "death_ray_damage_mult"
+  },
+  {
+    "base_value": null,
+    "final_value": "0.04",
+    "phase": "start_of_run",
+    "provenance": "relics:defense",
+    "stat_id": "def_pct"
+  },
+  {
+    "base_value": null,
+    "final_value": "0.02",
+    "phase": "start_of_run",
+    "provenance": "relics:eals",
+    "stat_id": "eals_pct"
+  },
+  {
+    "base_value": null,
+    "final_value": "0.02",
+    "phase": "start_of_run",
+    "provenance": "relics:ehls",
+    "stat_id": "ehls_pct"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "knockback_mult"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "orb_damage_mult"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "plasma_cannon_damage_mult"
+  },
+  {
+    "base_value": "0.99",
+    "final_value": "0.99",
+    "phase": "start_of_run",
+    "provenance": "workshop_alias:Thorn Damage->thorns_damage_mult",
+    "stat_id": "thorns_damage_mult"
+  },
+  {
+    "base_value": null,
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "relics:health",
+    "stat_id": "tower_hp"
+  },
+  {
+    "base_value": null,
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "relics:health_regen",
+    "stat_id": "tower_regen"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_black_hole_consume"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_black_hole_consume_next_cost"
+  },
+  {
+    "base_value": "15.0",
+    "final_value": "15.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_black_hole_cooldown"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_black_hole_cooldown_next_cost"
+  },
+  {
+    "base_value": "17.0",
+    "final_value": "17.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_black_hole_duration"
+  },
+  {
+    "base_value": "308.0",
+    "final_value": "308.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_black_hole_duration_next_cost"
+  },
+  {
+    "base_value": "9.0",
+    "final_value": "9.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_black_hole_size"
+  },
+  {
+    "base_value": "89.0",
+    "final_value": "89.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_black_hole_size_next_cost"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_chance"
+  },
+  {
+    "base_value": "152.0",
+    "final_value": "152.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_chance_next_cost"
+  },
+  {
+    "base_value": "19.0",
+    "final_value": "19.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_damage"
+  },
+  {
+    "base_value": "362.0",
+    "final_value": "362.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_damage_next_cost"
+  },
+  {
+    "base_value": "3.0",
+    "final_value": "3.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_quantity"
+  },
+  {
+    "base_value": "400.0",
+    "final_value": "400.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chain_lightning_quantity_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_chain_lightning_smite"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_chain_lightning_smite_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_chrono_field_chrono_loop"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_chrono_field_chrono_loop_next_cost"
+  },
+  {
+    "base_value": "12.0",
+    "final_value": "12.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chrono_field_cooldown"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_chrono_field_cooldown_next_cost"
+  },
+  {
+    "base_value": "12.0",
+    "final_value": "12.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chrono_field_duration"
+  },
+  {
+    "base_value": "113.0",
+    "final_value": "113.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chrono_field_duration_next_cost"
+  },
+  {
+    "base_value": "2.0",
+    "final_value": "2.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chrono_field_speed_reduction"
+  },
+  {
+    "base_value": "40.0",
+    "final_value": "40.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_chrono_field_speed_reduction_next_cost"
+  },
+  {
+    "base_value": "12.0",
+    "final_value": "12.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_cooldown"
+  },
+  {
+    "base_value": "200.0",
+    "final_value": "200.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_cooldown_next_cost"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_damage"
+  },
+  {
+    "base_value": "53.0",
+    "final_value": "53.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_damage_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_death_wave_kill_wall"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_death_wave_kill_wall_next_cost"
+  },
+  {
+    "base_value": "2.0",
+    "final_value": "2.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_quantity"
+  },
+  {
+    "base_value": "850.0",
+    "final_value": "850.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_death_wave_quantity_next_cost"
+  },
+  {
+    "base_value": "12.0",
+    "final_value": "12.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_golden_tower_cooldown"
+  },
+  {
+    "base_value": "226.0",
+    "final_value": "226.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_golden_tower_cooldown_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_golden_tower_duration"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_golden_tower_duration_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_golden_tower_golden_combo"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_golden_tower_golden_combo_next_cost"
+  },
+  {
+    "base_value": "12.0",
+    "final_value": "12.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_golden_tower_multiplier"
+  },
+  {
+    "base_value": "250.0",
+    "final_value": "250.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_golden_tower_multiplier_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_inner_land_mines_charged_mines"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_inner_land_mines_charged_mines_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_cooldown"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_cooldown_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_damage"
+  },
+  {
+    "base_value": "5.0",
+    "final_value": "5.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_damage_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_quantity"
+  },
+  {
+    "base_value": "50.0",
+    "final_value": "50.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_inner_land_mines_quantity_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_cooldown"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_cooldown_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_damage"
+  },
+  {
+    "base_value": "5.0",
+    "final_value": "5.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_damage_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_poison_swamp_death_creep"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_poison_swamp_death_creep_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_duration"
+  },
+  {
+    "base_value": "10.0",
+    "final_value": "10.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_poison_swamp_duration_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_cooldown"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_cooldown_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_smart_missiles_cover_fire"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_smart_missiles_cover_fire_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_damage"
+  },
+  {
+    "base_value": "5.0",
+    "final_value": "5.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_damage_next_cost"
+  },
+  {
+    "base_value": "0.0",
+    "final_value": "0.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_quantity"
+  },
+  {
+    "base_value": "4.0",
+    "final_value": "4.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_smart_missiles_quantity_next_cost"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_angle"
+  },
+  {
+    "base_value": "93.0",
+    "final_value": "93.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_angle_next_cost"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_spotlight_light_range"
+  },
+  {
+    "base_value": null,
+    "final_value": null,
+    "phase": "start_of_run",
+    "provenance": "missing:stat_input",
+    "stat_id": "uw_spotlight_light_range_next_cost"
+  },
+  {
+    "base_value": "8.0",
+    "final_value": "8.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_multiplier"
+  },
+  {
+    "base_value": "95.0",
+    "final_value": "95.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_multiplier_next_cost"
+  },
+  {
+    "base_value": "2.0",
+    "final_value": "2.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_quantity"
+  },
+  {
+    "base_value": "2500.0",
+    "final_value": "2500.0",
+    "phase": "start_of_run",
+    "provenance": "uw_section:_IDS.csv",
+    "stat_id": "uw_spotlight_quantity_next_cost"
+  },
+  {
+    "base_value": "108097431176.007",
+    "final_value": "108097431176.007",
+    "phase": "start_of_run",
+    "provenance": "workshop_alias:Wall Health->wall_hp",
+    "stat_id": "wall_hp"
+  },
+  {
+    "base_value": "103889185141.49606",
+    "final_value": "103889185141.49606",
+    "phase": "start_of_run",
+    "provenance": "workshop_alias:Wall Regen->wall_regen",
+    "stat_id": "wall_regen"
+  }
+]
