@@ -589,8 +589,8 @@
       "stat_id": "wall_regen"
     }
   ],
-  "created_utc": "2026-02-21T06:45:11.999021+00:00",
-  "git_sha": "ddc967b1ca79dc609a5629af93b414fa87baecf1",
+  "created_utc": "2026-02-21T07:30:40.365120+00:00",
+  "git_sha": "d656dada398427ac604c66bc4eda8bb597054bc1",
   "ids_path": "tests/fixtures/tower-sim-data/_IDS.csv",
   "inventory": {
     "bots": [
