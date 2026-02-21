@@ -89,11 +89,11 @@
         "stat_id": "tower_regen"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_black_hole_consume"
       },
       {
@@ -105,11 +105,11 @@
         "stat_id": "uw_black_hole_consume_next_cost"
       },
       {
-        "end_of_run": "15.0",
+        "end_of_run": "50.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "15.0",
+        "start_of_run": "50.0",
         "stat_id": "uw_black_hole_cooldown"
       },
       {
@@ -121,11 +121,11 @@
         "stat_id": "uw_black_hole_cooldown_next_cost"
       },
       {
-        "end_of_run": "17.0",
+        "end_of_run": "32.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "17.0",
+        "start_of_run": "32.0",
         "stat_id": "uw_black_hole_duration"
       },
       {
@@ -137,11 +137,11 @@
         "stat_id": "uw_black_hole_duration_next_cost"
       },
       {
-        "end_of_run": "9.0",
+        "end_of_run": "48.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "9.0",
+        "start_of_run": "48.0",
         "stat_id": "uw_black_hole_size"
       },
       {
@@ -153,11 +153,11 @@
         "stat_id": "uw_black_hole_size_next_cost"
       },
       {
-        "end_of_run": "8.0",
+        "end_of_run": "0.17",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "8.0",
+        "start_of_run": "0.17",
         "stat_id": "uw_chain_lightning_chance"
       },
       {
@@ -169,11 +169,11 @@
         "stat_id": "uw_chain_lightning_chance_next_cost"
       },
       {
-        "end_of_run": "19.0",
+        "end_of_run": "898.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "19.0",
+        "start_of_run": "898.0",
         "stat_id": "uw_chain_lightning_damage"
       },
       {
@@ -185,11 +185,11 @@
         "stat_id": "uw_chain_lightning_damage_next_cost"
       },
       {
-        "end_of_run": "3.0",
+        "end_of_run": "4.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "3.0",
+        "start_of_run": "4.0",
         "stat_id": "uw_chain_lightning_quantity"
       },
       {
@@ -201,11 +201,11 @@
         "stat_id": "uw_chain_lightning_quantity_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_chain_lightning_smite"
       },
       {
@@ -217,11 +217,11 @@
         "stat_id": "uw_chain_lightning_smite_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_chrono_field_chrono_loop"
       },
       {
@@ -233,11 +233,11 @@
         "stat_id": "uw_chrono_field_chrono_loop_next_cost"
       },
       {
-        "end_of_run": "12.0",
+        "end_of_run": "60.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "12.0",
+        "start_of_run": "60.0",
         "stat_id": "uw_chrono_field_cooldown"
       },
       {
@@ -249,11 +249,11 @@
         "stat_id": "uw_chrono_field_cooldown_next_cost"
       },
       {
-        "end_of_run": "12.0",
+        "end_of_run": "17.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "12.0",
+        "start_of_run": "17.0",
         "stat_id": "uw_chrono_field_duration"
       },
       {
@@ -265,11 +265,11 @@
         "stat_id": "uw_chrono_field_duration_next_cost"
       },
       {
-        "end_of_run": "2.0",
+        "end_of_run": "0.3",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "2.0",
+        "start_of_run": "0.3",
         "stat_id": "uw_chrono_field_speed_reduction"
       },
       {
@@ -281,11 +281,11 @@
         "stat_id": "uw_chrono_field_speed_reduction_next_cost"
       },
       {
-        "end_of_run": "12.0",
+        "end_of_run": "180.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "12.0",
+        "start_of_run": "180.0",
         "stat_id": "uw_death_wave_cooldown"
       },
       {
@@ -297,11 +297,11 @@
         "stat_id": "uw_death_wave_cooldown_next_cost"
       },
       {
-        "end_of_run": "8.0",
+        "end_of_run": "63.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "8.0",
+        "start_of_run": "63.0",
         "stat_id": "uw_death_wave_damage"
       },
       {
@@ -313,11 +313,11 @@
         "stat_id": "uw_death_wave_damage_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_death_wave_kill_wall"
       },
       {
@@ -329,11 +329,11 @@
         "stat_id": "uw_death_wave_kill_wall_next_cost"
       },
       {
-        "end_of_run": "2.0",
+        "end_of_run": "3.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "2.0",
+        "start_of_run": "3.0",
         "stat_id": "uw_death_wave_quantity"
       },
       {
@@ -345,11 +345,11 @@
         "stat_id": "uw_death_wave_quantity_next_cost"
       },
       {
-        "end_of_run": "12.0",
+        "end_of_run": "180.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "12.0",
+        "start_of_run": "180.0",
         "stat_id": "uw_golden_tower_cooldown"
       },
       {
@@ -361,27 +361,27 @@
         "stat_id": "uw_golden_tower_cooldown_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "22.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "22.0",
         "stat_id": "uw_golden_tower_duration"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "68.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "68.0",
         "stat_id": "uw_golden_tower_duration_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_golden_tower_golden_combo"
       },
       {
@@ -393,11 +393,11 @@
         "stat_id": "uw_golden_tower_golden_combo_next_cost"
       },
       {
-        "end_of_run": "12.0",
+        "end_of_run": "14.600000000000005",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "12.0",
+        "start_of_run": "14.600000000000005",
         "stat_id": "uw_golden_tower_multiplier"
       },
       {
@@ -409,11 +409,11 @@
         "stat_id": "uw_golden_tower_multiplier_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_inner_land_mines_charged_mines"
       },
       {
@@ -425,11 +425,11 @@
         "stat_id": "uw_inner_land_mines_charged_mines_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "200.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "200.0",
         "stat_id": "uw_inner_land_mines_cooldown"
       },
       {
@@ -441,11 +441,11 @@
         "stat_id": "uw_inner_land_mines_cooldown_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "10.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "10.0",
         "stat_id": "uw_inner_land_mines_damage"
       },
       {
@@ -457,11 +457,11 @@
         "stat_id": "uw_inner_land_mines_damage_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "3.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "3.0",
         "stat_id": "uw_inner_land_mines_quantity"
       },
       {
@@ -473,11 +473,11 @@
         "stat_id": "uw_inner_land_mines_quantity_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "125.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "125.0",
         "stat_id": "uw_poison_swamp_cooldown"
       },
       {
@@ -489,11 +489,11 @@
         "stat_id": "uw_poison_swamp_cooldown_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "10.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "10.0",
         "stat_id": "uw_poison_swamp_damage"
       },
       {
@@ -505,11 +505,11 @@
         "stat_id": "uw_poison_swamp_damage_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_poison_swamp_death_creep"
       },
       {
@@ -521,11 +521,11 @@
         "stat_id": "uw_poison_swamp_death_creep_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "30.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "30.0",
         "stat_id": "uw_poison_swamp_duration"
       },
       {
@@ -537,11 +537,11 @@
         "stat_id": "uw_poison_swamp_duration_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "180.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "180.0",
         "stat_id": "uw_smart_missiles_cooldown"
       },
       {
@@ -553,11 +553,11 @@
         "stat_id": "uw_smart_missiles_cooldown_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_smart_missiles_cover_fire"
       },
       {
@@ -569,11 +569,11 @@
         "stat_id": "uw_smart_missiles_cover_fire_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "10.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "10.0",
         "stat_id": "uw_smart_missiles_damage"
       },
       {
@@ -585,11 +585,11 @@
         "stat_id": "uw_smart_missiles_damage_next_cost"
       },
       {
-        "end_of_run": "0.0",
+        "end_of_run": "5.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "0.0",
+        "start_of_run": "5.0",
         "stat_id": "uw_smart_missiles_quantity"
       },
       {
@@ -601,11 +601,11 @@
         "stat_id": "uw_smart_missiles_quantity_next_cost"
       },
       {
-        "end_of_run": "8.0",
+        "end_of_run": "38.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "8.0",
+        "start_of_run": "38.0",
         "stat_id": "uw_spotlight_angle"
       },
       {
@@ -617,11 +617,11 @@
         "stat_id": "uw_spotlight_angle_next_cost"
       },
       {
-        "end_of_run": null,
+        "end_of_run": "0.0",
         "loadout_delta": null,
         "phase": "start_of_run",
-        "provenance": "missing:stat_input",
-        "start_of_run": null,
+        "provenance": "uw_section:_IDS.csv",
+        "start_of_run": "0.0",
         "stat_id": "uw_spotlight_light_range"
       },
       {
@@ -633,11 +633,11 @@
         "stat_id": "uw_spotlight_light_range_next_cost"
       },
       {
-        "end_of_run": "8.0",
+        "end_of_run": "19.2",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "8.0",
+        "start_of_run": "19.2",
         "stat_id": "uw_spotlight_multiplier"
       },
       {
@@ -649,11 +649,11 @@
         "stat_id": "uw_spotlight_multiplier_next_cost"
       },
       {
-        "end_of_run": "2.0",
+        "end_of_run": "3.0",
         "loadout_delta": null,
         "phase": "start_of_run",
         "provenance": "uw_section:_IDS.csv",
-        "start_of_run": "2.0",
+        "start_of_run": "3.0",
         "stat_id": "uw_spotlight_quantity"
       },
       {
@@ -683,7 +683,7 @@
     ]
   },
   "stat_engine": {
-    "hash": "cba23ecf37580dcc7d52a9aa66e80d7f4a86fb30a2b142a9b5654c89e05d58ab",
+    "hash": "e469f92f93035edf84493a0b8c3e5e8ade9455d41554229caa0fea9c34941ee5",
     "run_stats_base": {
       "start_of_run": {
         "def_pct": 0.04,
@@ -694,55 +694,66 @@
         "tower_crit_multiplier": 5.169785043140672e+16,
         "tower_hp": 0.0,
         "tower_regen": 0.0,
-        "uw_black_hole_cooldown": 15.0,
-        "uw_black_hole_duration": 17.0,
+        "uw_black_hole_consume": 0.0,
+        "uw_black_hole_cooldown": 50.0,
+        "uw_black_hole_duration": 32.0,
         "uw_black_hole_duration_next_cost": 308.0,
-        "uw_black_hole_size": 9.0,
+        "uw_black_hole_size": 48.0,
         "uw_black_hole_size_next_cost": 89.0,
-        "uw_chain_lightning_chance": 8.0,
+        "uw_chain_lightning_chance": 0.17,
         "uw_chain_lightning_chance_next_cost": 152.0,
-        "uw_chain_lightning_damage": 19.0,
+        "uw_chain_lightning_damage": 898.0,
         "uw_chain_lightning_damage_next_cost": 362.0,
-        "uw_chain_lightning_quantity": 3.0,
+        "uw_chain_lightning_quantity": 4.0,
         "uw_chain_lightning_quantity_next_cost": 400.0,
-        "uw_chrono_field_cooldown": 12.0,
-        "uw_chrono_field_duration": 12.0,
+        "uw_chain_lightning_smite": 0.0,
+        "uw_chrono_field_chrono_loop": 0.0,
+        "uw_chrono_field_cooldown": 60.0,
+        "uw_chrono_field_duration": 17.0,
         "uw_chrono_field_duration_next_cost": 113.0,
-        "uw_chrono_field_speed_reduction": 2.0,
+        "uw_chrono_field_speed_reduction": 0.3,
         "uw_chrono_field_speed_reduction_next_cost": 40.0,
-        "uw_death_wave_cooldown": 12.0,
+        "uw_death_wave_cooldown": 180.0,
         "uw_death_wave_cooldown_next_cost": 200.0,
-        "uw_death_wave_damage": 8.0,
+        "uw_death_wave_damage": 63.0,
         "uw_death_wave_damage_next_cost": 53.0,
-        "uw_death_wave_quantity": 2.0,
+        "uw_death_wave_kill_wall": 0.0,
+        "uw_death_wave_quantity": 3.0,
         "uw_death_wave_quantity_next_cost": 850.0,
-        "uw_golden_tower_cooldown": 12.0,
+        "uw_golden_tower_cooldown": 180.0,
         "uw_golden_tower_cooldown_next_cost": 226.0,
-        "uw_golden_tower_multiplier": 12.0,
+        "uw_golden_tower_duration": 22.0,
+        "uw_golden_tower_duration_next_cost": 68.0,
+        "uw_golden_tower_golden_combo": 0.0,
+        "uw_golden_tower_multiplier": 14.600000000000005,
         "uw_golden_tower_multiplier_next_cost": 250.0,
-        "uw_inner_land_mines_cooldown": 0.0,
+        "uw_inner_land_mines_charged_mines": 0.0,
+        "uw_inner_land_mines_cooldown": 200.0,
         "uw_inner_land_mines_cooldown_next_cost": 8.0,
-        "uw_inner_land_mines_damage": 0.0,
+        "uw_inner_land_mines_damage": 10.0,
         "uw_inner_land_mines_damage_next_cost": 5.0,
-        "uw_inner_land_mines_quantity": 0.0,
+        "uw_inner_land_mines_quantity": 3.0,
         "uw_inner_land_mines_quantity_next_cost": 50.0,
-        "uw_poison_swamp_cooldown": 0.0,
+        "uw_poison_swamp_cooldown": 125.0,
         "uw_poison_swamp_cooldown_next_cost": 8.0,
-        "uw_poison_swamp_damage": 0.0,
+        "uw_poison_swamp_damage": 10.0,
         "uw_poison_swamp_damage_next_cost": 5.0,
-        "uw_poison_swamp_duration": 0.0,
+        "uw_poison_swamp_death_creep": 0.0,
+        "uw_poison_swamp_duration": 30.0,
         "uw_poison_swamp_duration_next_cost": 10.0,
-        "uw_smart_missiles_cooldown": 0.0,
+        "uw_smart_missiles_cooldown": 180.0,
         "uw_smart_missiles_cooldown_next_cost": 8.0,
-        "uw_smart_missiles_damage": 0.0,
+        "uw_smart_missiles_cover_fire": 0.0,
+        "uw_smart_missiles_damage": 10.0,
         "uw_smart_missiles_damage_next_cost": 5.0,
-        "uw_smart_missiles_quantity": 0.0,
+        "uw_smart_missiles_quantity": 5.0,
         "uw_smart_missiles_quantity_next_cost": 4.0,
-        "uw_spotlight_angle": 8.0,
+        "uw_spotlight_angle": 38.0,
         "uw_spotlight_angle_next_cost": 93.0,
-        "uw_spotlight_multiplier": 8.0,
+        "uw_spotlight_light_range": 0.0,
+        "uw_spotlight_multiplier": 19.2,
         "uw_spotlight_multiplier_next_cost": 95.0,
-        "uw_spotlight_quantity": 2.0,
+        "uw_spotlight_quantity": 3.0,
         "uw_spotlight_quantity_next_cost": 2500.0,
         "wall_hp": 108097431176.007,
         "wall_regen": 103889185141.49606,

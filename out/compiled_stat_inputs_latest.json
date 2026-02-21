@@ -1,44 +1,7 @@
 {
-  "fail_closed": true,
-  "hash": "62f9f2ba1a80f05dc3c398105b15f40b14ef1d2940593359ca07401e85a92fb8",
-  "missing": [
-    "uw_level_missing:Black Hole:Consume",
-    "uw_level_missing:Chain Lightning:Smite",
-    "uw_level_missing:Chrono Field:Chrono Loop",
-    "uw_level_missing:Death Wave:Kill Wall",
-    "uw_level_missing:Golden Tower:Golden Combo",
-    "uw_level_missing:Inner Land Mines:Charged Mines",
-    "uw_level_missing:Poison Swamp:Death Creep",
-    "uw_level_missing:Smart Missiles:Cover Fire",
-    "uw_level_missing:Spotlight:Light Range",
-    "uw_table:Golden Tower:Duration:7",
-    "uw_value_mismatch:Black Hole:Cooldown:15",
-    "uw_value_mismatch:Black Hole:Duration:17",
-    "uw_value_mismatch:Black Hole:Size:9",
-    "uw_value_mismatch:Chain Lightning:Chance:8",
-    "uw_value_mismatch:Chain Lightning:Damage:19",
-    "uw_value_mismatch:Chain Lightning:Quantity:3",
-    "uw_value_mismatch:Chrono Field:Cooldown:12",
-    "uw_value_mismatch:Chrono Field:Duration:12",
-    "uw_value_mismatch:Chrono Field:Speed Reduction:2",
-    "uw_value_mismatch:Death Wave:Cooldown:12",
-    "uw_value_mismatch:Death Wave:Damage:8",
-    "uw_value_mismatch:Death Wave:Quantity:2",
-    "uw_value_mismatch:Golden Tower:Cooldown:12",
-    "uw_value_mismatch:Golden Tower:Multiplier:12",
-    "uw_value_mismatch:Inner Land Mines:Cooldown:0",
-    "uw_value_mismatch:Inner Land Mines:Damage:0",
-    "uw_value_mismatch:Inner Land Mines:Quantity:0",
-    "uw_value_mismatch:Poison Swamp:Cooldown:0",
-    "uw_value_mismatch:Poison Swamp:Damage:0",
-    "uw_value_mismatch:Poison Swamp:Duration:0",
-    "uw_value_mismatch:Smart Missiles:Cooldown:0",
-    "uw_value_mismatch:Smart Missiles:Damage:0",
-    "uw_value_mismatch:Smart Missiles:Quantity:0",
-    "uw_value_mismatch:Spotlight:Angle:8",
-    "uw_value_mismatch:Spotlight:Multiplier:8",
-    "uw_value_mismatch:Spotlight:Quantity:2"
-  ],
+  "fail_closed": false,
+  "hash": "391d0558cf23424d8ab727031743c30a287f2efe697d08b7121ca807b4485c00",
+  "missing": [],
   "stat_inputs": [
     {
       "base_value": 58302638.14,
@@ -679,7 +642,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 19.0,
+      "base_value": 898.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -701,7 +664,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.0,
+      "base_value": 4.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -723,7 +686,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 8.0,
+      "base_value": 0.17,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -751,6 +714,17 @@
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_chain_lightning_smite",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_smart_missiles_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
@@ -767,7 +741,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 5.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -789,7 +763,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 180.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -811,7 +785,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 8.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_smart_missiles_cover_fire",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 63.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -833,7 +818,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 2.0,
+      "base_value": 3.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -855,7 +840,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 12.0,
+      "base_value": 180.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -877,7 +862,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 12.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_death_wave_kill_wall",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 17.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -899,7 +895,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 2.0,
+      "base_value": 0.3,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -921,7 +917,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 12.0,
+      "base_value": 60.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -933,6 +929,17 @@
     },
     {
       "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_chrono_field_chrono_loop",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -954,7 +961,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 3.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -976,7 +983,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 200.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -998,7 +1005,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 12.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_inner_land_mines_charged_mines",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 14.600000000000005,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1020,7 +1038,29 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 12.0,
+      "base_value": 22.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_golden_tower_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 68.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_golden_tower_duration_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 180.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1048,6 +1088,17 @@
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_golden_tower_golden_combo",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_poison_swamp_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
@@ -1064,7 +1115,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 30.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1086,7 +1137,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.0,
+      "base_value": 125.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1108,7 +1159,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 9.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_poison_swamp_death_creep",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 48.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1130,7 +1192,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 17.0,
+      "base_value": 32.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1152,7 +1214,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 15.0,
+      "base_value": 50.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1163,7 +1225,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 8.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_black_hole_consume",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 19.2,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1185,7 +1258,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 8.0,
+      "base_value": 38.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1207,7 +1280,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 2.0,
+      "base_value": 3.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1225,6 +1298,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_spotlight_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_section:_IDS.csv",
+      "stat_id": "uw_spotlight_light_range",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },

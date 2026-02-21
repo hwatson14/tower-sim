@@ -70,10 +70,10 @@
     "stat_id": "tower_regen"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_black_hole_consume"
   },
   {
@@ -84,8 +84,8 @@
     "stat_id": "uw_black_hole_consume_next_cost"
   },
   {
-    "base_value": "15.0",
-    "final_value": "15.0",
+    "base_value": "50.0",
+    "final_value": "50.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_black_hole_cooldown"
@@ -98,8 +98,8 @@
     "stat_id": "uw_black_hole_cooldown_next_cost"
   },
   {
-    "base_value": "17.0",
-    "final_value": "17.0",
+    "base_value": "32.0",
+    "final_value": "32.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_black_hole_duration"
@@ -112,8 +112,8 @@
     "stat_id": "uw_black_hole_duration_next_cost"
   },
   {
-    "base_value": "9.0",
-    "final_value": "9.0",
+    "base_value": "48.0",
+    "final_value": "48.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_black_hole_size"
@@ -126,8 +126,8 @@
     "stat_id": "uw_black_hole_size_next_cost"
   },
   {
-    "base_value": "8.0",
-    "final_value": "8.0",
+    "base_value": "0.17",
+    "final_value": "0.17",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chain_lightning_chance"
@@ -140,8 +140,8 @@
     "stat_id": "uw_chain_lightning_chance_next_cost"
   },
   {
-    "base_value": "19.0",
-    "final_value": "19.0",
+    "base_value": "898.0",
+    "final_value": "898.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chain_lightning_damage"
@@ -154,8 +154,8 @@
     "stat_id": "uw_chain_lightning_damage_next_cost"
   },
   {
-    "base_value": "3.0",
-    "final_value": "3.0",
+    "base_value": "4.0",
+    "final_value": "4.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chain_lightning_quantity"
@@ -168,10 +168,10 @@
     "stat_id": "uw_chain_lightning_quantity_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chain_lightning_smite"
   },
   {
@@ -182,10 +182,10 @@
     "stat_id": "uw_chain_lightning_smite_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chrono_field_chrono_loop"
   },
   {
@@ -196,8 +196,8 @@
     "stat_id": "uw_chrono_field_chrono_loop_next_cost"
   },
   {
-    "base_value": "12.0",
-    "final_value": "12.0",
+    "base_value": "60.0",
+    "final_value": "60.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chrono_field_cooldown"
@@ -210,8 +210,8 @@
     "stat_id": "uw_chrono_field_cooldown_next_cost"
   },
   {
-    "base_value": "12.0",
-    "final_value": "12.0",
+    "base_value": "17.0",
+    "final_value": "17.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chrono_field_duration"
@@ -224,8 +224,8 @@
     "stat_id": "uw_chrono_field_duration_next_cost"
   },
   {
-    "base_value": "2.0",
-    "final_value": "2.0",
+    "base_value": "0.3",
+    "final_value": "0.3",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chrono_field_speed_reduction"
@@ -238,8 +238,8 @@
     "stat_id": "uw_chrono_field_speed_reduction_next_cost"
   },
   {
-    "base_value": "12.0",
-    "final_value": "12.0",
+    "base_value": "180.0",
+    "final_value": "180.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_death_wave_cooldown"
@@ -252,8 +252,8 @@
     "stat_id": "uw_death_wave_cooldown_next_cost"
   },
   {
-    "base_value": "8.0",
-    "final_value": "8.0",
+    "base_value": "63.0",
+    "final_value": "63.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_death_wave_damage"
@@ -266,10 +266,10 @@
     "stat_id": "uw_death_wave_damage_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_death_wave_kill_wall"
   },
   {
@@ -280,8 +280,8 @@
     "stat_id": "uw_death_wave_kill_wall_next_cost"
   },
   {
-    "base_value": "2.0",
-    "final_value": "2.0",
+    "base_value": "3.0",
+    "final_value": "3.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_death_wave_quantity"
@@ -294,8 +294,8 @@
     "stat_id": "uw_death_wave_quantity_next_cost"
   },
   {
-    "base_value": "12.0",
-    "final_value": "12.0",
+    "base_value": "180.0",
+    "final_value": "180.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_golden_tower_cooldown"
@@ -308,24 +308,24 @@
     "stat_id": "uw_golden_tower_cooldown_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "22.0",
+    "final_value": "22.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_golden_tower_duration"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "68.0",
+    "final_value": "68.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_golden_tower_duration_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_golden_tower_golden_combo"
   },
   {
@@ -336,8 +336,8 @@
     "stat_id": "uw_golden_tower_golden_combo_next_cost"
   },
   {
-    "base_value": "12.0",
-    "final_value": "12.0",
+    "base_value": "14.600000000000005",
+    "final_value": "14.600000000000005",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_golden_tower_multiplier"
@@ -350,10 +350,10 @@
     "stat_id": "uw_golden_tower_multiplier_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_inner_land_mines_charged_mines"
   },
   {
@@ -364,8 +364,8 @@
     "stat_id": "uw_inner_land_mines_charged_mines_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "200.0",
+    "final_value": "200.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_inner_land_mines_cooldown"
@@ -378,8 +378,8 @@
     "stat_id": "uw_inner_land_mines_cooldown_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "10.0",
+    "final_value": "10.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_inner_land_mines_damage"
@@ -392,8 +392,8 @@
     "stat_id": "uw_inner_land_mines_damage_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "3.0",
+    "final_value": "3.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_inner_land_mines_quantity"
@@ -406,8 +406,8 @@
     "stat_id": "uw_inner_land_mines_quantity_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "125.0",
+    "final_value": "125.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_poison_swamp_cooldown"
@@ -420,8 +420,8 @@
     "stat_id": "uw_poison_swamp_cooldown_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "10.0",
+    "final_value": "10.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_poison_swamp_damage"
@@ -434,10 +434,10 @@
     "stat_id": "uw_poison_swamp_damage_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_poison_swamp_death_creep"
   },
   {
@@ -448,8 +448,8 @@
     "stat_id": "uw_poison_swamp_death_creep_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "30.0",
+    "final_value": "30.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_poison_swamp_duration"
@@ -462,8 +462,8 @@
     "stat_id": "uw_poison_swamp_duration_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "180.0",
+    "final_value": "180.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_smart_missiles_cooldown"
@@ -476,10 +476,10 @@
     "stat_id": "uw_smart_missiles_cooldown_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_smart_missiles_cover_fire"
   },
   {
@@ -490,8 +490,8 @@
     "stat_id": "uw_smart_missiles_cover_fire_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "10.0",
+    "final_value": "10.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_smart_missiles_damage"
@@ -504,8 +504,8 @@
     "stat_id": "uw_smart_missiles_damage_next_cost"
   },
   {
-    "base_value": "0.0",
-    "final_value": "0.0",
+    "base_value": "5.0",
+    "final_value": "5.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_smart_missiles_quantity"
@@ -518,8 +518,8 @@
     "stat_id": "uw_smart_missiles_quantity_next_cost"
   },
   {
-    "base_value": "8.0",
-    "final_value": "8.0",
+    "base_value": "38.0",
+    "final_value": "38.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_angle"
@@ -532,10 +532,10 @@
     "stat_id": "uw_spotlight_angle_next_cost"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_light_range"
   },
   {
@@ -546,8 +546,8 @@
     "stat_id": "uw_spotlight_light_range_next_cost"
   },
   {
-    "base_value": "8.0",
-    "final_value": "8.0",
+    "base_value": "19.2",
+    "final_value": "19.2",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_multiplier"
@@ -560,8 +560,8 @@
     "stat_id": "uw_spotlight_multiplier_next_cost"
   },
   {
-    "base_value": "2.0",
-    "final_value": "2.0",
+    "base_value": "3.0",
+    "final_value": "3.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_quantity"
