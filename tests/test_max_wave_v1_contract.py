@@ -251,6 +251,17 @@ def test_sample_spec_fixture_produces_nonzero_max_wave() -> None:
     assert result["w_max"] > 0
 
 
+def test_max_wave_fixture_has_zero_mapping_debt_diagnostics() -> None:
+    spec = load_problem_spec(Path("fixtures/specs/max_wave.yaml"))
+    result = MaxWaveEvaluator().evaluate(spec, _snapshot())
+
+    diagnostics = result["diagnostics"]
+    assert diagnostics["module_unmapped_by_layer"]["main"] == []
+    assert diagnostics["canonical_unmapped_by_source"]["modules"] == []
+    assert diagnostics["canonical_unmapped_by_source"]["ultimate_weapons"] == []
+    assert diagnostics.get("compiled_missing", []) == []
+
+
 def test_preflight_returns_validation_only() -> None:
     evaluator = MaxWaveEvaluator()
     result = evaluator.preflight(_problem(mode="farming", wave=10), _snapshot())

@@ -117,7 +117,7 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     assert uw_cost_input.base_value == next_cost
 
 
-def test_compile_full_stat_inputs_reports_uw_value_mismatch() -> None:
+def test_compile_full_stat_inputs_prefers_ids_uw_track_value() -> None:
     workshop_entries = {
         "Damage": WorkshopEntrySnapshot(
             name="Damage",
@@ -138,7 +138,11 @@ def test_compile_full_stat_inputs_reports_uw_value_mismatch() -> None:
 
     compiled = compile_full_stat_inputs(snapshot)
 
-    assert "uw_value_mismatch:Golden Tower:Multiplier:1" in compiled.missing
+    assert "uw_value_mismatch:Golden Tower:Multiplier:1" not in compiled.missing
+    uw_input = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "uw_golden_tower_multiplier"
+    )
+    assert uw_input.base_value == 5.8
 
 
 def test_compile_full_stat_inputs_compiles_bounce_shot_range_formula() -> None:

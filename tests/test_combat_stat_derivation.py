@@ -817,7 +817,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
     assert built.module_contribution_ledger
     assert set(built.module_unmapped_by_layer.keys()) == {"main", "unique", "substats"}
-    assert built.module_unmapped_by_layer["main"]
+    assert built.module_unmapped_by_layer["main"] == []
     assert built.module_unmapped_by_layer["unique"] == []
     assert built.module_unmapped_by_layer["substats"] == []
     assert set(built.canonical_unmapped_by_source.keys()) == {
@@ -830,4 +830,18 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
         "relics",
         "other",
     }
-    assert built.canonical_unmapped_by_source["modules"]
+    assert built.canonical_unmapped_by_source["modules"] == []
+
+    primary_rows = [
+        row
+        for row in built.module_contribution_ledger
+        if row.get("layer") == "primary"
+    ]
+    assert primary_rows
+    assert not any(
+        str(row.get("target", "")).startswith("module_primary_effect:")
+        for row in primary_rows
+    )
+    assert any(row.get("target") == "tower_damage" for row in primary_rows)
+    assert any(row.get("target") == "workshop_coins_per_kill_bonus" for row in primary_rows)
+    assert any(row.get("target") == "uw_death_wave_damage" for row in primary_rows)
