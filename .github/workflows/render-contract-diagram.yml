@@ -5,13 +5,20 @@ on:
     paths:
       - "contract_assets/architecture/**"
 
+permissions:
+  contents: write
+
 jobs:
   render:
     runs-on: ubuntu-latest
+    env:
+      ARTIFACTS_BRANCH: artifacts
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -39,3 +46,32 @@ jobs:
         with:
           name: contract-diagram-render
           path: out/contract_diagram_render/
+
+      - name: Commit rendered diagram outputs to artifacts branch
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/contract-diagram-artifacts
+          cp out/contract_diagram_render/diagram.svg /tmp/contract-diagram-artifacts/
+          cp out/contract_diagram_render/diagram.png /tmp/contract-diagram-artifacts/
+
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git fetch origin "${ARTIFACTS_BRANCH}" || true
+          if git show-ref --verify --quiet "refs/remotes/origin/${ARTIFACTS_BRANCH}"; then
+            git checkout -B "${ARTIFACTS_BRANCH}" "origin/${ARTIFACTS_BRANCH}"
+          else
+            git checkout --orphan "${ARTIFACTS_BRANCH}"
+            git rm -rf . || true
+          fi
+
+          mkdir -p out/contract_diagram_render
+          cp /tmp/contract-diagram-artifacts/diagram.svg out/contract_diagram_render/diagram.svg
+          cp /tmp/contract-diagram-artifacts/diagram.png out/contract_diagram_render/diagram.png
+
+          git add out/contract_diagram_render/diagram.svg out/contract_diagram_render/diagram.png
+          if git diff --cached --quiet; then
+            echo "No contract diagram artifact changes to commit."
+            exit 0
+          fi
+          git commit -m "Update contract diagram render artifacts"
+          git push origin "${ARTIFACTS_BRANCH}"
