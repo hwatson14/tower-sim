@@ -608,7 +608,7 @@
       "enabled": false,
       "reason": "not_requested"
     },
-    "preflight_ms": 149.43645999983346,
+    "preflight_ms": 145.0308889999974,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
