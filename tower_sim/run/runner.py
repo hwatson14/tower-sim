@@ -35,6 +35,8 @@ def run(
 ) -> Dict[str, Any]:
     if not spec_path.exists():
         raise FileNotFoundError(f"Problem spec not found: {spec_path}")
+    if ids_path is not None and not ids_path.exists():
+        raise FileNotFoundError(f"IDS snapshot not found: {ids_path}")
     if patch_path is not None and not patch_path.exists():
         raise FileNotFoundError(f"Patch spec not found: {patch_path}")
 
@@ -49,6 +51,9 @@ def run(
         {"problem_spec": asdict(parsed_spec)},
         ids_path=ids_path,
     )
+    if not bool(result.get("ok")):
+        missing = result.get("missing", [])
+        raise RuntimeError(f"MAX_WAVE runner fail-closed. Missing inputs: {missing}")
     _write_json(_OUT_MAX_WAVE_PATH, result)
     _write_json(_OUT_LINEAGE_PATH, _lineage_manifest_payload())
     return result
