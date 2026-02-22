@@ -51,6 +51,11 @@ def test_runner_applies_yaml_overlay_patch(tmp_path: Path, monkeypatch: pytest.M
 def test_runner_requires_existing_paths() -> None:
     with pytest.raises(FileNotFoundError, match="Problem spec not found"):
         runner.run(spec_path=Path("fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
+    with pytest.raises(FileNotFoundError, match="IDS snapshot not found"):
+        runner.run(
+            spec_path=_spec_fixture(),
+            ids_path=Path("tests/fixtures/tower-sim-data/does_not_exist.csv"),
+        )
 
 
 def test_runner_module_mode_writes_outputs_under_cwd(tmp_path: Path) -> None:
