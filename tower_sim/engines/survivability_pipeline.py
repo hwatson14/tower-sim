@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
+import re
 
 from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Mapping, Optional
@@ -102,14 +103,52 @@ class SurvivabilityVerdict:
 
 STAT_IDS_SURVIVABILITY = required_survivability_stat_ids(include_optional_offense=True)
 
-_RELEVANT_SUBSTATS = {
-    "Health Regen",
-    "Defense",
-    "Wall Health",
-    "Thorns Damage",
-    "Enemy Attack Level Skip",
-    "Enemy Health Level Skip",
+_SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
+    "Attack Speed": ("tower_attack_speed", "multiplier"),
+    "Cash Bonus": ("cash_bonus", "delta"),
+    "Chain Lightning - Chance": ("chain_lightning_chance", "delta"),
+    "Chain Lightning - Damage": ("chain_lightning_damage", "delta"),
+    "Chain Lightning - Quantity": ("chain_lightning_quantity", "delta"),
+    "Chrono Field - Cooldown": ("chrono_field_cooldown", "delta"),
+    "Chrono Field - Duration": ("chrono_field_duration", "delta"),
+    "Chrono Field - Speed Reduction": ("chrono_field_speed_reduction", "delta"),
+    "Crit Chance": ("tower_crit_chance", "delta"),
+    "Crit Factor": ("tower_crit_multiplier", "delta"),
+    "Damage / Meter": ("damage_per_meter", "delta"),
+    "Death Wave - Cooldown": ("death_wave_cooldown", "delta"),
+    "Death Wave - Damage": ("death_wave_damage", "delta"),
+    "Death Wave - Quantity": ("death_wave_quantity", "delta"),
+    "Defense": ("def_pct", "delta"),
+    "Defense Absolute": ("defense_absolute", "delta"),
+    "Enemy Attack Level Skip": ("eals_pct", "delta"),
+    "Enemy Health Level Skip": ("ehls_pct", "delta"),
+    "Free Attack Upgrade": ("free_attack_upgrade", "delta"),
+    "Free Defense Upgrade": ("free_defense_upgrade", "delta"),
+    "Free Utility Upgrade": ("free_utility_upgrade", "delta"),
+    "Golden Tower - Bonus": ("golden_tower_multiplier", "delta"),
+    "Golden Tower - Cooldown": ("golden_tower_cooldown", "delta"),
+    "Golden Tower - Duration": ("golden_tower_duration", "delta"),
+    "Health Regen": ("tower_regen", "multiplier"),
+    "Inner Land Mines - Cooldown": ("inner_land_mines_cooldown", "delta"),
+    "Inner Land Mines - Damage": ("inner_land_mines_damage", "delta"),
+    "Inner Land Mines - Quantity": ("inner_land_mines_quantity", "delta"),
+    "Orb Speed": ("orb_speed", "delta"),
+    "Poison Swamp - Cooldown": ("poison_swamp_cooldown", "delta"),
+    "Poison Swamp - Damage": ("poison_swamp_damage", "delta"),
+    "Poison Swamp - Duration": ("poison_swamp_duration", "delta"),
+    "Recovery Amount": ("recovery_amount", "delta"),
+    "Smart Missiles - Cooldown": ("smart_missiles_cooldown", "delta"),
+    "Smart Missiles - Damage": ("smart_missiles_damage", "delta"),
+    "Smart Missiles - Quantity": ("smart_missiles_quantity", "delta"),
+    "Spotlight - Angle": ("spotlight_angle", "delta"),
+    "Spotlight - Bonus": ("spotlight_multiplier", "delta"),
+    "Super Crit Chance": ("super_crit_chance", "delta"),
+    "Super Crit Multi": ("super_crit_mult", "delta"),
+    "Thorns Damage": ("thorns_damage_mult", "delta"),
+    "Wall Health": ("wall_hp", "multiplier"),
+    "Wall Rebuild": ("wall_rebuild", "delta"),
 }
+
 
 _WORKSHOP_THORNS_MAX_LEVEL = 99  # Wiki excerpt in prompt: 99 upgrades at +1% each.
 _WORKSHOP_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: +1% per workshop level.
@@ -1142,18 +1181,21 @@ def _module_record_from_snapshot(
         if not substat.stat_name:
             continue
         normalized = _normalize_substat_name(substat.stat_name)
-        if normalized not in _RELEVANT_SUBSTATS:
-            continue
         if substat.rarity is None:
-            raise SurvivabilityPipelineError(
-                f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
-            )
-        rarity_value = _parse_rarity(substat.rarity)
-        if rarity_value is None:
-            raise SurvivabilityPipelineError(
-                f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
-            )
-        substat_value = _resolve_substat_value(slot_name, normalized, rarity_value)
+            raw_value = substat.value_num
+            if raw_value is None:
+                raw_value = _parse_substat_display_number(substat.value_display)
+            if raw_value is None:
+                continue
+            rarity_value = Rarity.COMMON
+            substat_value = _coerce_substat_value_from_number(slot_name, normalized, raw_value)
+        else:
+            rarity_value = _parse_rarity(substat.rarity)
+            if rarity_value is None:
+                raise SurvivabilityPipelineError(
+                    f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
+                )
+            substat_value = _resolve_substat_value(slot_name, normalized, rarity_value)
         substats.append(
             ModuleSubstat(
                 name=normalized,
@@ -1234,9 +1276,6 @@ def _parse_module_block(rows: List[List[str]], slot_name: str) -> ModuleBlock:
                     continue
                 if candidate:
                     normalized = _normalize_substat_name(candidate)
-                    if normalized not in _RELEVANT_SUBSTATS:
-                        i += 1
-                        continue
                     rarity_value = _parse_rarity(rows[i][1])
                     if rarity_value is None:
                         raise SurvivabilityPipelineError(
@@ -1324,6 +1363,33 @@ def _resolve_substat_value(slot: str, substat_name: str, rarity: Rarity) -> floa
         return float(raw)
     if entry.unit == "sec":
         return float(raw)
+    raise SurvivabilityPipelineError(
+        f"Unsupported unit {entry.unit!r} for substat {substat_name!r}."
+    )
+
+
+def _parse_substat_display_number(value_display: str | None) -> Optional[float]:
+    if value_display is None:
+        return None
+    match = re.search(r"[-+]?[0-9]+(?:\.[0-9]+)?", value_display)
+    if match is None:
+        return None
+    return float(match.group(0))
+
+
+def _coerce_substat_value_from_number(slot: str, substat_name: str, raw_value: float) -> float:
+    if slot not in SUBSTAT_TABLES:
+        raise SurvivabilityPipelineError(f"Missing substat table for slot {slot!r}.")
+    slot_table = SUBSTAT_TABLES[slot]
+    if substat_name not in slot_table:
+        raise SurvivabilityPipelineError(
+            f"Unknown substat {substat_name!r} for slot {slot!r}."
+        )
+    entry = slot_table[substat_name]
+    if entry.unit == "pct":
+        return float(raw_value) / 100.0
+    if entry.unit in {"mult", "flat", "count", "sec"}:
+        return float(raw_value)
     raise SurvivabilityPipelineError(
         f"Unsupported unit {entry.unit!r} for substat {substat_name!r}."
     )
@@ -1426,7 +1492,16 @@ def _apply_slot_main_effect(
     if module_slot == "Cannon":
         targets = ("tower_damage",)
     elif module_slot == "Generator":
-        targets = ("workshop_coins_per_kill_bonus",)
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module_name,
+            layer="primary",
+            target="module_primary_effect:generator_main_effect",
+            value=main_effect,
+            kind="behavior_binding",
+        )
+        return
     elif module_slot == "Core":
         targets = (
             "chain_lightning_damage",
@@ -1474,30 +1549,36 @@ def _apply_module_substats(
     unmapped: List[str] = []
     for substat in module.substats[:active_count]:
         value = substat.value * (efficiency if is_assist else 1.0)
-        if substat.name == "Health Regen":
-            accumulator.multiply("tower_regen", 1.0 + value, "modules:health_regen")
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="tower_regen", value=1.0 + value, kind="multiplier")
-        elif substat.name == "Defense":
-            accumulator.add("def_pct", value, "modules:defense")
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="def_pct", value=value, kind="delta")
-        elif substat.name == "Wall Health":
-            accumulator.multiply("wall_hp", 1.0 + value, "modules:wall_health")
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="wall_hp", value=1.0 + value, kind="multiplier")
-        elif substat.name == "Thorns Damage":
-            accumulator.add(
-                "thorns_damage_mult", value, "modules:thorns_damage"
-            )
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="thorns_damage_mult", value=value, kind="delta")
-        elif substat.name == "Enemy Attack Level Skip":
-            accumulator.add("eals_pct", value, "modules:eals")
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="eals_pct", value=value, kind="delta")
-        elif substat.name == "Enemy Health Level Skip":
-            accumulator.add("ehls_pct", value, "modules:ehls")
-            accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="substat", target="ehls_pct", value=value, kind="delta")
-        else:
+        mapping = _SUBSTAT_MAPPINGS.get(substat.name)
+        if mapping is None:
             unmapped.append(
                 f"module_substat_unmapped:{slot}:{placement}:{module.name}:{substat.name}"
             )
+            continue
+        stat_id, kind = mapping
+        if kind == "multiplier":
+            resolved = 1.0 + value
+            accumulator.multiply(stat_id, resolved, f"modules:{stat_id}")
+            accumulator.record_module_contribution(
+                slot=slot,
+                placement=placement,
+                module_name=module.name,
+                layer="substat",
+                target=stat_id,
+                value=resolved,
+                kind="multiplier",
+            )
+            continue
+        accumulator.add(stat_id, value, f"modules:{stat_id}")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="substat",
+            target=stat_id,
+            value=value,
+            kind="delta",
+        )
     return unmapped
 
 
@@ -1513,12 +1594,28 @@ def _apply_unique_effects(
     effect = UNIQUE_EFFECTS.get(module.name)
     if effect is None:
         return False
-    if effect.effect_name != "wall_health_regen_mult_x":
-        accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target=f"uw_behavior:{effect.effect_name}", value=effect.value[_cap_rarity(module.rarity, assist_cap) if is_assist and assist_cap is not None else module.rarity], kind="behavior_binding")
-        return True
     rarity = module.rarity
     if is_assist and assist_cap is not None:
         rarity = _cap_rarity(rarity, assist_cap)
+
+    if effect.effect_name == "bot_range_bonus_m":
+        value = effect.value[rarity]
+        accumulator.add("bot_range", value, "modules:unique:bot_range")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="unique",
+            target="bot_range",
+            value=value,
+            kind="delta",
+        )
+        return True
+
+    if effect.effect_name != "wall_health_regen_mult_x":
+        accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target=f"uw_behavior:{effect.effect_name}", value=effect.value[rarity], kind="behavior_binding")
+        return True
+
     multiplier = effect.value[rarity]
     accumulator.multiply("wall_hp", multiplier, "modules:unique:wall_health")
     accumulator.multiply("wall_regen", multiplier, "modules:unique:wall_regen")

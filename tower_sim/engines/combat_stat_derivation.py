@@ -393,6 +393,8 @@ def derive_canonical_combat_snapshot(
             value = float(from_wave)
             if stat_id == "def_pct":
                 value = apply_hard_cap("Defense %", value)
+            if stat_id == "thorns_damage_mult":
+                value = min(max(value, 0.0), 1.0)
             values[stat_id] = value
             contributions[stat_id] = [
                 CombatStatContribution(
@@ -408,6 +410,8 @@ def derive_canonical_combat_snapshot(
             value = float(from_start)
             if stat_id == "def_pct":
                 value = apply_hard_cap("Defense %", value)
+            if stat_id == "thorns_damage_mult":
+                value = min(max(value, 0.0), 1.0)
             values[stat_id] = value
             contributions[stat_id] = [
                 CombatStatContribution(
