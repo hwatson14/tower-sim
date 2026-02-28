@@ -6,10 +6,14 @@ import pytest
 import pandas as pd
 
 from tower_sim.engines.survivability_pipeline import (
+    _StatAccumulator,
+    _apply_unique_effects,
     _parse_module_blocks,
+    ModuleRecord,
     build_survivability_report,
     compile_survivability_loadout_stat_inputs,
 )
+from tower_sim.libs.modules_library import Rarity, UNIQUE_EFFECTS
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
@@ -384,3 +388,78 @@ def test_berserker_and_ultimate_crit_cards_feed_tower_damage() -> None:
     boosted = with_damage_by_stat["tower_damage"].enhancement_multiplier
     assert boosted is not None
     assert boosted > baseline_mult * 8.0
+
+
+def test_all_module_unique_effects_are_wired_into_unique_layer() -> None:
+    assert len(UNIQUE_EFFECTS) == 24
+
+    for module_name, effect in UNIQUE_EFFECTS.items():
+        module = ModuleRecord(
+            name=module_name,
+            slot=effect.slot,
+            rarity=Rarity.ANCESTRAL,
+            level=1,
+            main_effect=1.0,
+            substats=[],
+        )
+        accumulator = _StatAccumulator()
+        applied = _apply_unique_effects(
+            accumulator,
+            module,
+            is_assist=False,
+            assist_cap=None,
+            slot=effect.slot,
+            placement="primary",
+        )
+        assert applied is True
+        ledger = accumulator.module_contribution_ledger()
+
+        if effect.effect_name == "wall_health_regen_mult_x":
+            by_target = {row["target"]: row for row in ledger}
+            assert set(by_target.keys()) == {"wall_hp", "wall_regen"}
+            assert by_target["wall_hp"]["kind"] == "multiplier"
+            assert by_target["wall_regen"]["kind"] == "multiplier"
+            assert by_target["wall_hp"]["value"] == pytest.approx(effect.value[Rarity.ANCESTRAL])
+            assert by_target["wall_regen"]["value"] == pytest.approx(effect.value[Rarity.ANCESTRAL])
+        elif effect.effect_name == "bot_range_bonus_m":
+            assert len(ledger) == 1
+            row = ledger[0]
+            assert row["layer"] == "unique"
+            assert row["kind"] == "delta"
+            assert row["target"] == "bot_range"
+            assert row["value"] == pytest.approx(effect.value[Rarity.ANCESTRAL])
+        else:
+            assert len(ledger) == 1
+            row = ledger[0]
+            assert row["layer"] == "unique"
+            assert row["kind"] == "behavior_binding"
+            assert row["target"] == f"uw_behavior:{effect.effect_name}"
+            assert row["value"] == pytest.approx(effect.value[Rarity.ANCESTRAL])
+
+
+def test_assist_unique_effects_obey_rarity_cap_when_wired() -> None:
+    module = ModuleRecord(
+        name="Galaxy Compressor",
+        slot="Generator",
+        rarity=Rarity.ANCESTRAL,
+        level=1,
+        main_effect=1.0,
+        substats=[],
+    )
+    accumulator = _StatAccumulator()
+
+    applied = _apply_unique_effects(
+        accumulator,
+        module,
+        is_assist=True,
+        assist_cap=Rarity.EPIC,
+        slot="Generator",
+        placement="assist",
+    )
+
+    assert applied is True
+    ledger = accumulator.module_contribution_ledger()
+    assert len(ledger) == 1
+    row = ledger[0]
+    assert row["target"] == "uw_behavior:uw_cooldown_reduction_per_package_s"
+    assert row["value"] == pytest.approx(UNIQUE_EFFECTS["Galaxy Compressor"].value[Rarity.EPIC])

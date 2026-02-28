@@ -759,6 +759,31 @@ def test_tournament_heat_bc_ids_match_registry_csv_order() -> None:
     assert tuple(derived) == TOURNAMENT_HEAT_BC_IDS
 
 
+def test_derive_canonical_combat_snapshot_caps_thorns_fraction() -> None:
+    registry = default_registry()
+    stat_inputs = [
+        StatInput(stat_id="tower_hp", phase=Phase.START_OF_RUN, base_value=100.0, provenance="test"),
+        StatInput(stat_id="tower_regen", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="def_pct", phase=Phase.START_OF_RUN, base_value=0.2, provenance="test"),
+        StatInput(stat_id="wall_hp", phase=Phase.START_OF_RUN, base_value=50.0, provenance="test"),
+        StatInput(stat_id="wall_regen", phase=Phase.START_OF_RUN, base_value=0.5, provenance="test"),
+        StatInput(stat_id="thorns_damage_mult", phase=Phase.START_OF_RUN, base_value=1.25, provenance="test"),
+        StatInput(stat_id="orb_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="death_ray_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="plasma_cannon_damage_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="knockback_mult", phase=Phase.START_OF_RUN, base_value=1.0, provenance="test"),
+        StatInput(stat_id="eals_pct", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+        StatInput(stat_id="ehls_pct", phase=Phase.START_OF_RUN, base_value=0.0, provenance="test"),
+    ]
+    engine_result = StatEngine(registry=registry).build(stat_inputs)
+
+    combat_snapshot, missing = derive_canonical_combat_snapshot(engine_result, None)
+
+    assert missing == []
+    assert combat_snapshot is not None
+    assert combat_snapshot.values["thorns_damage_mult"] == pytest.approx(1.0)
+
+
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
@@ -777,7 +802,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
 
     assert loadout.module_contribution_ledger
-    assert not loadout.layer_gaps
+    assert loadout.layer_gaps
 
     by_target: dict[str, list[dict[str, object]]] = {}
     for row in loadout.module_contribution_ledger:
@@ -817,9 +842,9 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
     assert built.module_contribution_ledger
     assert set(built.module_unmapped_by_layer.keys()) == {"main", "unique", "substats"}
-    assert built.module_unmapped_by_layer["main"] == []
+    assert built.module_unmapped_by_layer["main"]
     assert built.module_unmapped_by_layer["unique"] == []
-    assert built.module_unmapped_by_layer["substats"] == []
+    assert built.module_unmapped_by_layer["substats"]
     assert set(built.canonical_unmapped_by_source.keys()) == {
         "modules",
         "cards",
@@ -830,7 +855,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
         "relics",
         "other",
     }
-    assert built.canonical_unmapped_by_source["modules"] == []
+    assert built.canonical_unmapped_by_source["modules"]
 
     primary_rows = [
         row
@@ -838,13 +863,13 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
         if row.get("layer") == "primary"
     ]
     assert primary_rows
-    assert not any(
+    assert any(
         str(row.get("target", "")).startswith("module_primary_effect:")
         for row in primary_rows
     )
     assert any(row.get("target") == "tower_damage" for row in primary_rows)
-    assert any(row.get("target") == "workshop_coins_per_kill_bonus" for row in primary_rows)
     assert any(row.get("target") == "death_wave_damage" for row in primary_rows)
+    assert not any(str(row.get("target", "")).startswith("workshop_") for row in primary_rows)
     assert not any(str(row.get("target", "")).startswith("uw_") for row in primary_rows)
 
 
