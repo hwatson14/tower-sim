@@ -118,46 +118,16 @@ def contributor_families() -> Tuple[str, ...]:
 _CONTRIBUTORS: Tuple[str, ...] = contributor_families()
 
 
-def _canonicalize_stat_id(stat_id: str) -> str:
-    registry_ids = {definition.stat_id for definition in default_registry().all_defs()}
-    if stat_id in registry_ids:
-        return stat_id
-
-    candidates = []
-    if stat_id.startswith("uw_"):
-        candidates.append(stat_id[len("uw_"):])
-    if stat_id.startswith("workshop_"):
-        candidates.append(stat_id[len("workshop_"):])
-
-    alias_overrides = {
-        "health": "tower_hp",
-        "health_regen": "tower_regen",
-        "defense_percent": "def_pct",
-        "thorn_damage": "thorns_damage_mult",
-        "wall_health": "wall_hp",
-        "wall_regen": "wall_regen",
-    }
-    for candidate in list(candidates):
-        if candidate in alias_overrides:
-            candidates.append(alias_overrides[candidate])
-
-    for candidate in candidates:
-        if candidate in registry_ids:
-            return candidate
-    return stat_id
-
-
 def _compiled_workshop_stat_ids() -> Tuple[str, ...]:
-    return tuple(sorted({_canonicalize_stat_id(spec.stat_id) for spec in _WORKSHOP_STAT_SPECS.values()}))
+    return tuple(sorted({spec.stat_id for spec in _WORKSHOP_STAT_SPECS.values()}))
 
 
 def _compiled_uw_stat_ids() -> Tuple[str, ...]:
     stat_ids = set()
     for tracks in _UW_TRACK_SPECS.values():
         for spec in tracks.values():
-            canonical = _canonicalize_stat_id(spec.stat_id)
-            stat_ids.add(canonical)
-            stat_ids.add(_canonicalize_stat_id(f"{spec.stat_id}_next_cost"))
+            stat_ids.add(spec.stat_id)
+            stat_ids.add(f"{spec.stat_id}_next_cost")
     return tuple(sorted(stat_ids))
 
 

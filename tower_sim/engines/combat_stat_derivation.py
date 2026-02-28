@@ -74,7 +74,6 @@ def _module_unmapped_by_layer(
     layer_gaps: List[str],
     module_contribution_ledger: List[Dict[str, object]],
 ) -> Dict[str, List[str]]:
-    known_behavior_bindings = {"module_primary_effect:generator_main_effect"}
     main_unmapped = sorted(
         {
             f"{row.get('slot')}:{row.get('placement')}:{row.get('module')}:{row.get('target')}"
@@ -82,7 +81,6 @@ def _module_unmapped_by_layer(
             if row.get("layer") == "primary"
             and row.get("kind") == "behavior_binding"
             and str(row.get("target", "")).startswith("module_primary_effect:")
-            and str(row.get("target")) not in known_behavior_bindings
         }
     )
     unique_unmapped = sorted(

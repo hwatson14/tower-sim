@@ -105,13 +105,6 @@ STAT_IDS_SURVIVABILITY = required_survivability_stat_ids(include_optional_offens
 
 _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
     "Attack Speed": ("tower_attack_speed", "multiplier"),
-    "Black Hole - Cooldown": ("black_hole_cooldown", "delta"),
-    "Black Hole - Duration": ("black_hole_duration", "delta"),
-    "Bounce Shot Chance": ("workshop_bounce_shot_chance", "delta"),
-    "Coins / Kill Bonus": ("workshop_coins_per_kill_bonus", "delta"),
-    "Land Mine Chance": ("workshop_land_mine_chance", "delta"),
-    "Multishot Targets": ("workshop_multishot_targets", "delta"),
-    "Recovery Package Chance": ("workshop_package_chance", "delta"),
     "Cash Bonus": ("cash_bonus", "delta"),
     "Chain Lightning - Chance": ("chain_lightning_chance", "delta"),
     "Chain Lightning - Damage": ("chain_lightning_damage", "delta"),
