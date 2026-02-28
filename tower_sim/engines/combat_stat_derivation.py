@@ -26,6 +26,7 @@ from tower_sim.loaders.tournament_bc_enrichment import (
     map_tournament_heat_bc_to_stat_magnitudes,
 )
 from tower_sim.registry.combat_stat_contract import (
+    contributor_families,
     required_combat_stat_ids,
     required_max_wave_stat_input_ids,
 )
@@ -63,6 +64,7 @@ class CanonicalStatInputBuild:
     module_contribution_ledger: List[Dict[str, object]] = field(default_factory=list)
     module_unmapped_by_layer: Dict[str, List[str]] = field(default_factory=dict)
     canonical_unmapped_by_source: Dict[str, List[str]] = field(default_factory=dict)
+    observed_contributors_by_stat_input_id: Dict[str, List[str]] = field(default_factory=dict)
 
 
 
@@ -189,6 +191,9 @@ def build_canonical_stat_inputs(
         compiled_missing=sorted(compiled.missing + base_missing + loadout_missing),
         module_unmapped_by_layer=module_unmapped_by_layer,
     )
+    observed_contributors_by_stat_input_id = _observed_contributors_by_stat_input_id(
+        stat_inputs=compiled.stat_inputs + base_inputs + loadout_inputs,
+    )
 
     return CanonicalStatInputBuild(
         stat_inputs=filtered_inputs,
@@ -203,7 +208,71 @@ def build_canonical_stat_inputs(
         module_contribution_ledger=module_contribution_ledger,
         module_unmapped_by_layer=module_unmapped_by_layer,
         canonical_unmapped_by_source=canonical_unmapped_by_source,
+        observed_contributors_by_stat_input_id=observed_contributors_by_stat_input_id,
     )
+
+
+def _observed_contributors_by_stat_input_id(*, stat_inputs: List[StatInput]) -> Dict[str, List[str]]:
+    observed: Dict[str, set[str]] = {}
+    for stat_input in stat_inputs:
+        if not _is_non_trivial_stat_input(stat_input):
+            continue
+        families = _families_from_stat_input(stat_input)
+        if not families:
+            continue
+        observed.setdefault(stat_input.stat_id, set()).update(families)
+    return {
+        stat_id: sorted(families)
+        for stat_id, families in sorted(observed.items())
+    }
+
+
+def _is_non_trivial_stat_input(stat_input: StatInput) -> bool:
+    if stat_input.base_value is not None and float(stat_input.base_value) != 0.0:
+        return True
+    if stat_input.derived_value is not None and float(stat_input.derived_value) != 0.0:
+        return True
+    if stat_input.loadout_delta is not None and float(stat_input.loadout_delta) != 0.0:
+        return True
+    if stat_input.enhancement_multiplier is not None and float(stat_input.enhancement_multiplier) != 1.0:
+        return True
+    if stat_input.tier_rule_delta is not None and float(stat_input.tier_rule_delta) != 0.0:
+        return True
+    if stat_input.tier_rule_multiplier is not None and float(stat_input.tier_rule_multiplier) != 1.0:
+        return True
+    return False
+
+
+def _families_from_stat_input(stat_input: StatInput) -> set[str]:
+    provenance = str(stat_input.provenance or "").lower()
+    families: set[str] = set()
+
+    if "workshop" in provenance or provenance.startswith("base:"):
+        families.add("workshop")
+    if "labs" in provenance or "lab_" in provenance or "lab:" in provenance:
+        families.add("lab")
+    if "cards:" in provenance or ":card" in provenance:
+        families.add("card")
+    if "modules:" in provenance or "module_" in provenance:
+        families.add("module")
+    if provenance.startswith("relic"):
+        families.add("relic")
+    if provenance.startswith("bot"):
+        families.add("bot")
+    if provenance.startswith("uw"):
+        families.add("uw")
+    if "perk" in provenance:
+        families.add("perk")
+    if "bc" in provenance or "battle_condition" in provenance or "heat_" in provenance:
+        families.add("bc")
+    if (
+        stat_input.enhancement_multiplier is not None
+        and float(stat_input.enhancement_multiplier) != 1.0
+        and ("workshop" in provenance or provenance.startswith("base:"))
+    ):
+        families.add("enhancement")
+
+    return {family for family in families if family in contributor_families()}
 
 
 def _resolve_preset_context(problem_spec, ids_snapshot) -> tuple[str, List[str] | None, List[str]]:

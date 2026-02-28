@@ -131,3 +131,28 @@ def test_summarize_manifest_supports_lineage_manifest_v1_shape(tmp_path: Path) -
     assert row["contributors"]["workshop"] == "wired"
     assert row["contributors"]["card"] == "missing"
     assert row["contributors"]["uw"] == "not_expected"
+
+
+def test_summarize_manifest_reports_observed_vs_declared_mismatch(tmp_path: Path) -> None:
+    manifest_path = tmp_path / "manifest_observed.json"
+    _write_manifest(
+        manifest_path,
+        {
+            "required_max_wave_stat_input_ids": ["tower_hp"],
+            "status_lists": {
+                "tower_hp": {
+                    "wired_up": ["lab", "card"],
+                    "not_expected_to_be_wired_up": [],
+                    "still_requires_wiring_up": [],
+                },
+            },
+            "observed_contributors_by_stat_input_id": {
+                "tower_hp": ["card"],
+            },
+        },
+    )
+
+    summary = summarize_manifest(load_manifest(manifest_path))
+
+    assert summary["observed_vs_declared_mismatch_count"] == 1
+    assert summary["observed_vs_declared_mismatches"]["tower_hp"]["declared_but_not_observed"] == ["lab"]

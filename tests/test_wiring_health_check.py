@@ -138,3 +138,38 @@ def test_resolve_lineage_manifest_path_preserves_explicit_missing_path(tmp_path:
     resolved = _resolve_lineage_manifest_path(explicit_path)
 
     assert resolved == explicit_path
+
+
+def test_wiring_health_check_respects_observed_vs_declared_threshold(tmp_path: Path) -> None:
+    lineage_manifest = tmp_path / "manifest.json"
+    lineage_manifest.write_text(
+        json.dumps(
+            {
+                "required_max_wave_stat_input_ids": ["tower_hp"],
+                "status_lists": {
+                    "tower_hp": {
+                        "wired_up": ["lab", "card"],
+                        "not_expected_to_be_wired_up": [],
+                        "still_requires_wiring_up": [],
+                    }
+                },
+                "observed_contributors_by_stat_input_id": {
+                    "tower_hp": ["card"],
+                },
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    result = run_wiring_health_check(
+        ids_path=_ids_path(),
+        lineage_manifest_path=lineage_manifest,
+        max_observed_vs_declared_mismatches=0,
+    )
+
+    assert result["status"] == "error"
+    assert any(
+        item.startswith("lineage_observed_vs_declared_mismatch_count")
+        for item in result["violations"]
+    )
+    assert "tower_hp: declared {card, lab} but observed {card}" in result["violations"]
