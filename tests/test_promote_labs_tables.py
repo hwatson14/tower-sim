@@ -19,9 +19,12 @@ def test_promote_labs_tables_builds_expected_csv(tmp_path: Path) -> None:
 
     assert output_path.exists()
     rows = _load_rows(output_path)
-    assert len(rows) == 340
+    assert len(rows) == 619
 
     expected_counts = {
+        "LAB_ATTACK_SPEED": 99,
+        "LAB_CHRONO_FIELD_DURATION": 30,
+        "LAB_DEFENSE_PERCENT": 50,
         "LAB_ENEMY_ATTACK_LEVEL_SKIP": 20,
         "LAB_ENEMY_HEALTH_LEVEL_SKIP": 20,
         "LAB_HEALTH": 100,
@@ -29,6 +32,7 @@ def test_promote_labs_tables_builds_expected_csv(tmp_path: Path) -> None:
         "LAB_RECOVERY_PACKAGE_CHANCE": 20,
         "LAB_WALL_HEALTH": 50,
         "LAB_WALL_REGEN": 30,
+        "LAB_WAVES_REQUIRED": 100,
     }
     counts: dict[str, int] = {}
     for row in rows:

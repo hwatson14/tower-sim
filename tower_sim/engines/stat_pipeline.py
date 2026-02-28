@@ -404,16 +404,19 @@ _WORKSHOP_FORMULA_STAT_TO_WORKSHOP_NAME = {
 
 _CARD_PROVENANCE_TO_NAME = {
     "attack_speed": "Attack Speed",
+    "berserker": "Berserker",
     "cash": "Cash",
     "coins": "Coins",
     "critical_chance": "Critical Chance",
     "extra_defense": "Extra Defense",
+    "fortress": "Fortress",
     "free_upgrades": "Free Upgrades",
     "health": "Health",
     "health_regen": "Health Regen",
     "plasma_cannon": "Plasma Cannon",
     "range": "Range",
     "recovery_package_chance": "Recovery Package Chance",
+    "ultimate_crit": "Ultimate Crit",
     "damage": "Damage",
 }
 

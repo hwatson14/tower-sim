@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 from tower_sim.engines.survivability_pipeline import (
     _parse_module_blocks,
@@ -12,6 +13,7 @@ from tower_sim.engines.survivability_pipeline import (
 from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
+from tower_sim.registry.naming_contract import resolve_named_entity
 
 
 def test_survivability_pipeline_snapshots() -> None:
@@ -258,3 +260,127 @@ def test_utility_cards_feed_loadout_stat_inputs() -> None:
         with_utility_by_stat["workshop_free_upgrades"].enhancement_multiplier
         > baseline_free_upgrades_mult
     )
+
+
+def test_fortress_card_feeds_defense_absolute_loadout_stat_input() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    baseline = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+    with_fortress = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon", "Fortress"],
+        allow_provisional=True,
+    )
+
+    baseline_by_stat = {item.stat_id: item for item in baseline}
+    with_fortress_by_stat = {item.stat_id: item for item in with_fortress}
+
+    baseline_def_abs_mult = (
+        baseline_by_stat["defense_absolute"].enhancement_multiplier
+        if "defense_absolute" in baseline_by_stat
+        and baseline_by_stat["defense_absolute"].enhancement_multiplier is not None
+        else 1.0
+    )
+
+    assert with_fortress_by_stat["defense_absolute"].enhancement_multiplier is not None
+    assert with_fortress_by_stat["defense_absolute"].enhancement_multiplier > baseline_def_abs_mult
+
+
+def test_tourney_card_set_with_unmodeled_cards_is_deterministic_noop_not_error() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    compiled = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Tourney",
+        allow_provisional=True,
+    )
+
+    assert compiled
+
+
+def test_all_cached_cards_are_explicitly_classified_for_survivability_pipeline() -> None:
+    from tower_sim.engines import survivability_pipeline as pipeline
+
+    cache_dir = Path("tables/cache/wiki")
+    frames = [
+        pd.read_csv(cache_dir / "cards_common.csv"),
+        pd.read_csv(cache_dir / "cards_rare.csv"),
+        pd.read_csv(cache_dir / "cards_epic.csv"),
+    ]
+    names = sorted(set(pd.concat(frames, ignore_index=True)["Name"].astype(str)))
+
+    mapped_canonicals = {
+        "CARD_ATTACK_SPEED",
+        "CARD_BERSERKER",
+        "CARD_CASH",
+        "CARD_COINS",
+        "CARD_CRITICAL_CHANCE",
+        "CARD_DAMAGE",
+        "CARD_EXTRA_DEFENSE",
+        "CARD_FORTRESS",
+        "CARD_FREE_UPGRADES",
+        "CARD_HEALTH",
+        "CARD_HEALTH_REGEN",
+        "CARD_PLASMA_CANNON",
+        "CARD_RANGE",
+        "CARD_RECOVERY_PACKAGE_CHANCE",
+        "CARD_ULTIMATE_CRIT",
+    }
+    classified = mapped_canonicals | set(pipeline._CARD_NOOP_CANONICALS)
+
+    unresolved: list[str] = []
+    unclassified: list[str] = []
+    for name in names:
+        lookup = "Plasma Cannon" if name == "Plasma Canon" else name
+        try:
+            canonical = resolve_named_entity("cards", lookup)
+        except KeyError:
+            unresolved.append(name)
+            continue
+        if canonical not in classified:
+            unclassified.append(f"{name}:{canonical}")
+
+    assert unresolved == []
+    assert unclassified == []
+
+
+def test_berserker_and_ultimate_crit_cards_feed_tower_damage() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    baseline = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon"],
+        allow_provisional=True,
+    )
+    with_damage_cards = compile_survivability_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        selected_cards=["Plasma Cannon", "Berserker", "Ultimate Crit"],
+        allow_provisional=True,
+    )
+
+    baseline_by_stat = {item.stat_id: item for item in baseline}
+    with_damage_by_stat = {item.stat_id: item for item in with_damage_cards}
+
+    baseline_mult = (
+        baseline_by_stat["tower_damage"].enhancement_multiplier
+        if "tower_damage" in baseline_by_stat
+        and baseline_by_stat["tower_damage"].enhancement_multiplier is not None
+        else 1.0
+    )
+    boosted = with_damage_by_stat["tower_damage"].enhancement_multiplier
+    assert boosted is not None
+    assert boosted > baseline_mult * 8.0

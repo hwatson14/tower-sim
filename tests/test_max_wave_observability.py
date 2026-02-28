@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from tower_sim.evaluators.max_wave import (
     MaxWaveEvaluator,
     _compose_damage_reduction,
@@ -182,3 +184,47 @@ def test_resolve_runtime_bot_effects_rejects_non_positive() -> None:
     else:
         raise AssertionError("Expected ValueError for non-positive bot scalar")
 
+
+
+def test_resolve_runtime_bot_effects_prefers_canonical_snapshot_values() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    effects, _scalars = resolve_runtime_bot_effects(
+        ids_snapshot=ids_snapshot,
+        snapshot_values={
+            "bot_flame_damage": 99.0,
+            "bot_flame_cooldown": 50.0,
+            "bot_flame_damage_reduction": 1.5,
+            "bot_duration_multiplier": 2.0,
+            "bot_cooldown_multiplier": 0.5,
+            "bot_bonus_multiplier": 1.2,
+            "flame_bot_damage_reduction_multiplier": 1.1,
+        },
+    )
+    flame = {effect["name"]: effect for effect in effects}["Flame Bot"]
+    assert flame["duration_s"] == pytest.approx(198.0)
+    assert flame["cooldown_s"] == pytest.approx(25.0)
+    assert flame["damage_reduction"] == pytest.approx(1.98)
+
+
+def test_resolve_runtime_bot_effects_rejects_incomplete_canonical_bot_profile() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    with pytest.raises(ValueError, match="Incomplete canonical bot profile"):
+        resolve_runtime_bot_effects(
+            ids_snapshot=ids_snapshot,
+            snapshot_values={"bot_golden_duration": 10.0, "bot_golden_cooldown": 20.0},
+        )
+
+
+def test_max_wave_timing_uses_wave_accelerator_reduction_from_cards() -> None:
+    problem = _build_problem_spec()
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+    result = MaxWaveEvaluator().evaluate(problem, ids_snapshot)
+
+    timing = result["diagnostics"]["timing_uptime"]
+    assert timing["wa_reduction"] == pytest.approx(0.54, rel=1e-12)

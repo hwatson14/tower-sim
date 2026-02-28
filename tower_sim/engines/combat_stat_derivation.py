@@ -17,7 +17,6 @@ from tower_sim.engines.survivability_pipeline import (
 )
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
-from tower_sim.libs.labs_lib import load_labs_values
 from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
 from tower_sim.libs.wave_damage_strict import EnemyWaveDamageLib
 from tower_sim.libs.bots_lib import get_bot_attribute
@@ -251,7 +250,6 @@ def _wall_ratio_from_ids(
     stat_inputs: List[StatInput],
 ) -> tuple[Optional[float], Optional[float], List[str]]:
     missing: List[str] = []
-    labs = load_labs_values()
 
     by_key = {(item.stat_id, item.phase): item for item in stat_inputs}
     wall_health_input = by_key.get(("workshop_wall_health", Phase.START_OF_RUN))
@@ -260,43 +258,12 @@ def _wall_ratio_from_ids(
         return None, None, missing
     wall_health_ratio = _resolved_stat_input_value(wall_health_input)
 
-    wall_health_lab = ids_snapshot.labs.get("Wall Health")
-    if wall_health_lab is None:
-        missing.append("lab_level:Wall Health")
-        wall_health_lab = 0
-    if wall_health_lab > 0:
-        lab = labs.get("Wall Health")
-        if lab is None:
-            missing.append("lab_table:Wall Health")
-            return None, None, missing
-        if wall_health_lab not in lab.levels:
-            missing.append(f"lab_table:Wall Health:{wall_health_lab}")
-            return None, None, missing
-        if lab.unit not in {"percent", "percent_points"}:
-            missing.append(f"lab_unit:Wall Health:{lab.unit}")
-            return None, None, missing
-        wall_health_ratio += float(lab.levels[wall_health_lab]) / 100.0
-
     wall_regen_input = by_key.get(("workshop_wall_regen", Phase.START_OF_RUN))
-    wall_regen_ratio = (
-        _resolved_stat_input_value(wall_regen_input) if wall_regen_input is not None else 0.0
-    )
-    wall_regen_lab = ids_snapshot.labs.get("Wall Regen")
-    if wall_regen_lab is None:
-        missing.append("lab_level:Wall Regen")
-        wall_regen_lab = 0
-    if wall_regen_lab > 0:
-        lab = labs.get("Wall Regen")
-        if lab is None:
-            missing.append("lab_table:Wall Regen")
-            return None, None, missing
-        if wall_regen_lab not in lab.levels:
-            missing.append(f"lab_table:Wall Regen:{wall_regen_lab}")
-            return None, None, missing
-        if lab.unit not in {"percent", "percent_points"}:
-            missing.append(f"lab_unit:Wall Regen:{lab.unit}")
-            return None, None, missing
-        wall_regen_ratio += float(lab.levels[wall_regen_lab]) / 100.0
+    if wall_regen_input is None:
+        missing.append("workshop_alias_missing:workshop_wall_regen")
+        return None, None, missing
+    wall_regen_ratio = _resolved_stat_input_value(wall_regen_input)
+
     return wall_health_ratio, wall_regen_ratio, missing
 
 
@@ -819,8 +786,8 @@ def resolve_runtime_bot_effects(
 ) -> Tuple[List[Dict[str, float]], Dict[str, float]]:
     """Resolve canonical bot runtime effects before timing-uptime aggregation.
 
-    Bot table levels and stat-engine-composed scalar channels are resolved here so
-    the timing engine only consumes effective duration/cooldown/effect values.
+    Preferred source is canonical stat-input channels in ``snapshot_values``.
+    IDS bot levels remain as a compatibility fallback while migration completes.
     """
 
     def _scalar(stat_id: str) -> float:
@@ -832,6 +799,50 @@ def resolve_runtime_bot_effects(
             raise ValueError(f"{stat_id} must be > 0, got {value}.")
         return value
 
+    def _read_optional(stat_id: str) -> Optional[float]:
+        raw = snapshot_values.get(stat_id)
+        if raw is None:
+            return None
+        return float(raw)
+
+    def _read_profile_from_snapshot(
+        *,
+        bot_name: str,
+        duration_id: str,
+        cooldown_id: str,
+        effect_id: str,
+        effect_kind: str,
+        effect_scale: float,
+    ) -> Optional[Dict[str, float]]:
+        duration = _read_optional(duration_id)
+        cooldown = _read_optional(cooldown_id)
+        effect = _read_optional(effect_id)
+        present_count = sum(value is not None for value in (duration, cooldown, effect))
+        if present_count == 0:
+            return None
+        if present_count != 3:
+            raise ValueError(
+                f"Incomplete canonical bot profile for {bot_name}: expected {duration_id}, {cooldown_id}, {effect_id}."
+            )
+        assert duration is not None and cooldown is not None and effect is not None
+        if duration <= 0.0:
+            raise ValueError(f"{duration_id} must be > 0, got {duration}.")
+        if cooldown <= 0.0:
+            raise ValueError(f"{cooldown_id} must be > 0, got {cooldown}.")
+        if effect <= 0.0:
+            raise ValueError(f"{effect_id} must be > 0, got {effect}.")
+
+        profile = {
+            "name": bot_name,
+            "duration_s": duration * scalars["bot_duration_multiplier"],
+            "cooldown_s": cooldown * scalars["bot_cooldown_multiplier"],
+            "damage_reduction": 0.0,
+            "coin_multiplier": 1.0,
+            "damage_multiplier": 1.0,
+        }
+        profile[effect_kind] = effect * effect_scale
+        return profile
+
     scalars = {
         "bot_duration_multiplier": _scalar("bot_duration_multiplier"),
         "bot_cooldown_multiplier": _scalar("bot_cooldown_multiplier"),
@@ -840,12 +851,49 @@ def resolve_runtime_bot_effects(
     }
 
     profiles: List[Dict[str, float]] = []
+
+    flame_from_snapshot = _read_profile_from_snapshot(
+        bot_name="Flame Bot",
+        duration_id="bot_flame_damage",
+        cooldown_id="bot_flame_cooldown",
+        effect_id="bot_flame_damage_reduction",
+        effect_kind="damage_reduction",
+        effect_scale=scalars["bot_bonus_multiplier"] * scalars["flame_bot_damage_reduction_multiplier"],
+    )
+    if flame_from_snapshot is not None:
+        profiles.append(flame_from_snapshot)
+
+    golden_from_snapshot = _read_profile_from_snapshot(
+        bot_name="Golden Bot",
+        duration_id="bot_golden_duration",
+        cooldown_id="bot_golden_cooldown",
+        effect_id="bot_golden_bonus",
+        effect_kind="coin_multiplier",
+        effect_scale=scalars["bot_bonus_multiplier"],
+    )
+    if golden_from_snapshot is not None:
+        profiles.append(golden_from_snapshot)
+
+    amplify_from_snapshot = _read_profile_from_snapshot(
+        bot_name="Amplify Bot",
+        duration_id="bot_amplify_duration",
+        cooldown_id="bot_amplify_cooldown",
+        effect_id="bot_amplify_bonus",
+        effect_kind="damage_multiplier",
+        effect_scale=scalars["bot_bonus_multiplier"],
+    )
+    if amplify_from_snapshot is not None:
+        profiles.append(amplify_from_snapshot)
+
+    if profiles:
+        return profiles, scalars
+
     bot_levels = ids_snapshot.bot_upgrades
 
     if "Flame Bot" in bot_levels:
         bot = bot_levels["Flame Bot"]
-        if {"Duration", "Cooldown", "Damage R."}.issubset(bot):
-            duration, _, _ = get_bot_attribute("Flame Bot", "Duration", bot["Duration"])
+        if {"Damage", "Cooldown", "Damage R."}.issubset(bot):
+            duration, _, _ = get_bot_attribute("Flame Bot", "Damage", bot["Damage"])
             cooldown, _, _ = get_bot_attribute("Flame Bot", "Cooldown", bot["Cooldown"])
             damage_r, _, _ = get_bot_attribute("Flame Bot", "Damage R.", bot["Damage R."])
             profiles.append(

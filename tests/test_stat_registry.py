@@ -54,7 +54,7 @@ def test_registry_export_stable() -> None:
     registry = default_registry()
     stat_ids = [definition.stat_id for definition in registry.all_defs()]
     assert stat_ids == sorted(stat_ids)
-    required = {"tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen"}
+    required = {"tower_hp", "tower_regen", "def_pct", "wall_hp", "wall_regen", "bot_flame_damage", "golden_tower_duration"}
     assert required.issubset(stat_ids)
 
 

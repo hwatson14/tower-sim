@@ -844,4 +844,21 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
     assert any(row.get("target") == "tower_damage" for row in primary_rows)
     assert any(row.get("target") == "workshop_coins_per_kill_bonus" for row in primary_rows)
-    assert any(row.get("target") == "uw_death_wave_damage" for row in primary_rows)
+    assert any(row.get("target") == "death_wave_damage" for row in primary_rows)
+    assert not any(str(row.get("target", "")).startswith("uw_") for row in primary_rows)
+
+
+def test_wall_ratio_from_ids_uses_compiled_workshop_ratios_only(monkeypatch: pytest.MonkeyPatch) -> None:
+    from tower_sim.engines import combat_stat_derivation as derivation
+
+    ids_snapshot = type("_Ids", (), {"labs": {"Wall Health": 1, "Wall Regen": 1}})()
+    stat_inputs = [
+        StatInput(stat_id="workshop_wall_health", phase=Phase.START_OF_RUN, base_value=0.2, enhancement_multiplier=2.0, provenance="test"),
+        StatInput(stat_id="workshop_wall_regen", phase=Phase.START_OF_RUN, base_value=0.1, enhancement_multiplier=3.0, provenance="test"),
+    ]
+
+    wall_hp_ratio, wall_regen_ratio, missing = derivation._wall_ratio_from_ids(ids_snapshot, stat_inputs)
+
+    assert wall_hp_ratio == pytest.approx(0.4)
+    assert wall_regen_ratio == pytest.approx(0.3)
+    assert missing == []

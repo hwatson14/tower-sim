@@ -111,10 +111,20 @@ def test_compile_full_stat_inputs_includes_workshop_and_uw() -> None:
     )
     assert uw_input.base_value == value
 
+    canonical_uw_input = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "golden_tower_multiplier"
+    )
+    assert canonical_uw_input.base_value == value
+
     uw_cost_input = next(
         stat for stat in compiled.stat_inputs if stat.stat_id == "uw_golden_tower_multiplier_next_cost"
     )
     assert uw_cost_input.base_value == next_cost
+
+    canonical_uw_cost_input = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "golden_tower_multiplier_next_cost"
+    )
+    assert canonical_uw_cost_input.base_value == next_cost
 
 
 def test_compile_full_stat_inputs_prefers_ids_uw_track_value() -> None:
@@ -143,6 +153,11 @@ def test_compile_full_stat_inputs_prefers_ids_uw_track_value() -> None:
         stat for stat in compiled.stat_inputs if stat.stat_id == "uw_golden_tower_multiplier"
     )
     assert uw_input.base_value == 5.8
+
+    canonical_uw_input = next(
+        stat for stat in compiled.stat_inputs if stat.stat_id == "golden_tower_multiplier"
+    )
+    assert canonical_uw_input.base_value == 5.8
 
 
 def test_compile_full_stat_inputs_compiles_bounce_shot_range_formula() -> None:
@@ -341,7 +356,7 @@ def test_compile_workshop_values_at_wave_progresses_damage_deterministically() -
     assert at_wave_values["workshop_damage"] > start_damage
 
 
-def test_compile_workshop_values_at_wave_emits_canonical_survivability_ids(monkeypatch) -> None:
+def test_compile_workshop_values_at_wave_emits_canonical_survivability_ids() -> None:
     workshop_entries = {
         "Health": WorkshopEntrySnapshot(
             name="Health",
@@ -402,31 +417,19 @@ def test_compile_workshop_values_at_wave_emits_canonical_survivability_ids(monke
     }
     snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
 
-    from tower_sim.engines import stat_input_compiler as compiler
-
-    real_resolve = compiler._resolve_workshop_value
-
-    def _patched_resolve(tables, spec, *, level):
-        if spec.stat_id == "workshop_wall_regen":
-            return 0.2
-        return real_resolve(tables, spec, level=level)
-
-    monkeypatch.setattr(compiler, "_resolve_workshop_value", _patched_resolve)
-
     at_wave_values, missing = compile_workshop_values_at_wave(snapshot, wave=1)
 
-    assert missing == []
+    assert "workshop_definition:Wall Regen" not in missing
     assert at_wave_values["tower_hp"] == pytest.approx(at_wave_values["workshop_health"])
     assert at_wave_values["tower_regen"] == pytest.approx(at_wave_values["workshop_health_regen"])
     assert at_wave_values["wall_hp"] == pytest.approx(
         at_wave_values["tower_hp"] * at_wave_values["workshop_wall_health"]
     )
-    assert at_wave_values["wall_regen"] == pytest.approx(
-        at_wave_values["tower_regen"] * at_wave_values["workshop_wall_regen"]
-    )
+    assert at_wave_values["workshop_wall_regen"] == pytest.approx(1.0)
+    assert at_wave_values["wall_regen"] == pytest.approx(at_wave_values["tower_regen"])
 
 
-def test_compile_full_stat_inputs_wall_regen_alias_uses_workshop_ratio_without_lab(monkeypatch) -> None:
+def test_compile_full_stat_inputs_wall_regen_alias_uses_workshop_ratio_without_lab() -> None:
     workshop_entries = {
         "Health": WorkshopEntrySnapshot(
             name="Health",
@@ -463,23 +466,12 @@ def test_compile_full_stat_inputs_wall_regen_alias_uses_workshop_ratio_without_l
     }
     snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
 
-    from tower_sim.engines import stat_input_compiler as compiler
-
-    real_resolve = compiler._resolve_workshop_value
-
-    def _patched_resolve(tables, spec, *, level):
-        if spec.stat_id == "workshop_wall_regen":
-            return 0.2
-        return real_resolve(tables, spec, level=level)
-
-    monkeypatch.setattr(compiler, "_resolve_workshop_value", _patched_resolve)
-
     compiled = compile_full_stat_inputs(snapshot)
 
     by_id = {item.stat_id: item for item in compiled.stat_inputs}
-    assert by_id["wall_regen"].base_value == pytest.approx(
-        by_id["tower_regen"].base_value * by_id["workshop_wall_regen"].base_value
-    )
+    assert "workshop_definition:Wall Regen" not in compiled.missing
+    assert by_id["workshop_wall_regen"].base_value == pytest.approx(1.0)
+    assert by_id["wall_regen"].base_value == pytest.approx(by_id["tower_regen"].base_value)
 
 
 def test_compile_full_stat_inputs_applies_health_lab_multiplier() -> None:
@@ -536,13 +528,15 @@ def test_compile_full_stat_inputs_emits_canonical_survivability_aliases() -> Non
         "tower_regen",
         "def_pct",
         "wall_hp",
-        "wall_regen",
         "thorns_damage_mult",
         "eals_pct",
         "ehls_pct",
     ):
         assert stat_id in by_id
         assert by_id[stat_id].base_value is not None
+
+    assert "workshop_definition:Wall Regen" not in compiled.missing
+    assert "workshop_alias_missing:workshop_wall_regen" not in compiled.missing
 
 
 def test_compile_full_stat_inputs_wall_aliases_use_resolved_values_not_raw_levels() -> None:
@@ -609,3 +603,400 @@ def test_compile_full_stat_inputs_includes_relic_modifiers() -> None:
     assert by_id["def_pct"].loadout_delta == 0.04
     assert by_id["eals_pct"].loadout_delta == 0.02
     assert by_id["ehls_pct"].loadout_delta == 0.02
+
+def test_compile_full_stat_inputs_requires_workshop_max_level() -> None:
+    workshop_entries = {
+        "Damage": WorkshopEntrySnapshot(
+            name="Damage",
+            unlocked=None,
+            coin_level=1,
+            end_level=1,
+            max_level=None,
+            category=None,
+        )
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "workshop_max_level:Damage" in compiled.missing
+
+
+def test_compile_full_stat_inputs_rejects_workshop_level_bounds() -> None:
+    workshop_entries = {
+        "Damage": WorkshopEntrySnapshot(
+            name="Damage",
+            unlocked=None,
+            coin_level=5,
+            end_level=5,
+            max_level=4,
+            category=None,
+        )
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "workshop_level_bounds:Damage" in compiled.missing
+
+
+def test_compile_workshop_values_at_wave_emits_wall_thorns_mult() -> None:
+    workshop_entries = {
+        "Wall Thorns": WorkshopEntrySnapshot(
+            name="Wall Thorns",
+            unlocked=None,
+            coin_level=13,
+            end_level=13,
+            max_level=20,
+            category="Defense",
+        ),
+        "Free Attack Upgrade": WorkshopEntrySnapshot(name="Free Attack Upgrade", unlocked=None, coin_level=0, end_level=0, max_level=99, category="Utility"),
+        "Free Defense Upgrade": WorkshopEntrySnapshot(name="Free Defense Upgrade", unlocked=None, coin_level=0, end_level=0, max_level=99, category="Utility"),
+        "Free Utility Upgrade": WorkshopEntrySnapshot(name="Free Utility Upgrade", unlocked=None, coin_level=0, end_level=0, max_level=99, category="Utility"),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    at_wave_values, _missing = compile_workshop_values_at_wave(snapshot, wave=1)
+
+    assert at_wave_values["wall_thorns_mult"] == pytest.approx(0.13)
+
+
+def test_compile_full_stat_inputs_emits_wall_thorns_mult_when_present() -> None:
+    workshop_entries = {
+        "Health": WorkshopEntrySnapshot(name="Health", coin_level=1, end_level=1, max_level=6000, unlocked=None, category=None),
+        "Health Regen": WorkshopEntrySnapshot(name="Health Regen", coin_level=1, end_level=1, max_level=6000, unlocked=None, category=None),
+        "Wall Health": WorkshopEntrySnapshot(name="Wall Health", coin_level=1, end_level=1, max_level=1800, unlocked=None, category=None),
+        "Wall Thorns": WorkshopEntrySnapshot(name="Wall Thorns", coin_level=13, end_level=13, max_level=20, unlocked=None, category=None),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["wall_thorns_mult"].base_value == pytest.approx(0.13)
+
+
+def test_compile_full_stat_inputs_compiles_wall_fortification_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Wall Fortification": WorkshopEntrySnapshot(name="Wall Fortification", coin_level=10, end_level=10, max_level=60, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_wall_fortification"].base_value == pytest.approx(2.0)
+
+
+def test_compile_full_stat_inputs_compiles_recovery_package_chance_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Recovery Package Chance": WorkshopEntrySnapshot(name="Recovery Package Chance", coin_level=10, end_level=10, max_level=60, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_recovery_packages"].base_value == pytest.approx(0.096)
+
+
+
+
+
+def test_compile_full_stat_inputs_rejects_mismatched_health_lab_canonical_mapping(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _Lab:
+        def __init__(self, canonical_id: str, unit: str, levels: dict[int, float]) -> None:
+            self.canonical_id = canonical_id
+            self.unit = unit
+            self.levels = levels
+
+    monkeypatch.setattr(
+        "tower_sim.engines.stat_input_compiler.load_labs_values",
+        lambda: {"Health": _Lab("LAB_WRONG", "percent", {1: 10.0})},
+    )
+
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Health": WorkshopEntrySnapshot(name="Health", coin_level=1, end_level=1, max_level=6000, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Health": 1}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert "lab_mapping:Health:Health:LAB_WRONG:LAB_HEALTH" in compiled.missing
+    assert by_id["workshop_health"].enhancement_multiplier is None
+
+
+def test_compile_full_stat_inputs_rejects_mismatched_eals_lab_canonical_mapping(monkeypatch: pytest.MonkeyPatch) -> None:
+    class _Lab:
+        def __init__(self, canonical_id: str, unit: str, levels: dict[int, float]) -> None:
+            self.canonical_id = canonical_id
+            self.unit = unit
+            self.levels = levels
+
+    monkeypatch.setattr(
+        "tower_sim.engines.stat_input_compiler.load_labs_values",
+        lambda: {"Enemy Attack Level Skip": _Lab("LAB_WRONG", "percent_points", {1: 10.0})},
+    )
+
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Enemy Attack Level Skip": WorkshopEntrySnapshot(
+                name="Enemy Attack Level Skip", coin_level=1, end_level=1, max_level=99, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Enemy Attack Level Skip": 1}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert "lab_mapping:Enemy Attack Level Skip:Enemy Attack Level Skip:LAB_WRONG:LAB_ENEMY_ATTACK_LEVEL_SKIP" in compiled.missing
+    assert by_id["workshop_enemy_attack_level_skip"].base_value == pytest.approx(workshop_level_to_chance(1))
+
+
+
+
+def test_compile_full_stat_inputs_applies_attack_speed_lab_multiplier() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Attack Speed": WorkshopEntrySnapshot(name="Attack Speed", coin_level=10, end_level=10, max_level=99, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Attack Speed": 5}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_attack_speed"].base_value == pytest.approx(1.5)
+    assert by_id["workshop_attack_speed"].enhancement_multiplier == pytest.approx(1.1)
+
+
+def test_compile_full_stat_inputs_applies_defense_percent_lab_as_delta() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Defense %": WorkshopEntrySnapshot(name="Defense %", coin_level=10, end_level=10, max_level=200, unlocked=None, category=None),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Defense %": 5}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_defense_percent"].base_value == pytest.approx(0.06)
+
+
+def test_compile_full_stat_inputs_applies_chrono_field_duration_lab_additive() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={},
+        uw_rows=[["Chrono Field", "", "Duration", "10", "03 | x10 | Cost 5 ? | Next 13 ?"]],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Chrono Field Duration": 3}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["uw_chrono_field_duration"].base_value == pytest.approx(13.0)
+    assert by_id["chrono_field_duration"].base_value == pytest.approx(13.0)
+
+
+def test_compile_full_stat_inputs_reports_active_unmapped_labs() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={},
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Game Speed": 5}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "lab_table_unmapped:Game Speed:LAB_GAME_SPEED" in compiled.missing
+
+
+
+
+def test_compile_full_stat_inputs_reports_active_unmapped_labs_with_aliases() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={},
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Wall Thorns": 3}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "lab_table_unmapped:Wall Thorns:LAB_WALL_THORN" in compiled.missing
+
+
+def test_workshop_canonical_mapping_uses_unprefixed_combat_stat_ids() -> None:
+    from tower_sim.engines import stat_input_compiler as compiler
+
+    assert all(not stat_id.startswith("workshop_") for stat_id in compiler._WORKSHOP_CANONICAL_ALIASES.values())
+
+
+def test_compile_full_stat_inputs_emits_combat_alias_for_emitted_subset() -> None:
+    from tower_sim.engines import stat_input_compiler as compiler
+
+    workshop_entries = {
+        "Health": WorkshopEntrySnapshot(name="Health", unlocked=None, coin_level=1, end_level=1, max_level=6000, category=None),
+        "Health Regen": WorkshopEntrySnapshot(name="Health Regen", unlocked=None, coin_level=1, end_level=1, max_level=6000, category=None),
+        "Damage": WorkshopEntrySnapshot(name="Damage", unlocked=None, coin_level=1, end_level=1, max_level=6000, category=None),
+        "Attack Speed": WorkshopEntrySnapshot(name="Attack Speed", unlocked=None, coin_level=1, end_level=1, max_level=99, category=None),
+    }
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries=workshop_entries, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id for item in compiled.stat_inputs}
+
+    assert "tower_hp" in by_id
+    assert "tower_regen" in by_id
+    assert "tower_damage" in by_id
+    assert "tower_attack_speed" in by_id
+    assert "tower_hp" in by_id
+
+
+def test_compile_full_stat_inputs_relics_emit_combat_stat_ids_only() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "relics": {
+                "Health": 0.1,
+                "Damage": 0.2,
+                "Defense Absolute": 0.05,
+                "Orb Speed": 0.03,
+                "Thorns": 0.07,
+            },
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    relic_ids = {
+        item.stat_id
+        for item in compiled.stat_inputs
+        if (item.provenance or "").startswith("relics:")
+    }
+
+    assert all(not stat_id.startswith("workshop_") for stat_id in relic_ids)
+    assert "tower_hp" in relic_ids
+    assert "tower_damage" in relic_ids
+    assert "defense_absolute" in relic_ids
+
+
+def test_uw_canonical_mapping_exists_for_all_uw_track_stats() -> None:
+    from tower_sim.engines import stat_input_compiler as compiler
+
+    expected = set()
+    for track_specs in compiler._UW_TRACK_SPECS.values():
+        for spec in track_specs.values():
+            expected.add(spec.stat_id)
+            expected.add(f"{spec.stat_id}_next_cost")
+
+    assert expected <= set(compiler._UW_CANONICAL_ALIASES)
+    assert all(not target.startswith("uw_") for target in compiler._UW_CANONICAL_ALIASES.values())
+
+
+
+def test_compile_full_stat_inputs_emits_canonical_bot_stats_from_bot_table() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "bot_upgrades": {
+                "Flame Bot": {"Damage": 1, "Cooldown": 1, "Damage R.": 1},
+                "Golden Bot": {"Duration": 1, "Cooldown": 1, "Bonus": 1},
+                "Amplify Bot": {"Duration": 1, "Cooldown": 1, "Bonus": 1},
+            },
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert "bot_flame_damage" in by_id
+    assert "bot_flame_cooldown" in by_id
+    assert "bot_flame_damage_reduction" in by_id
+    assert "bot_golden_duration" in by_id
+    assert "bot_golden_cooldown" in by_id
+    assert "bot_golden_bonus" in by_id
+    assert "bot_amplify_duration" in by_id
+    assert "bot_amplify_cooldown" in by_id
+    assert "bot_amplify_bonus" in by_id
+    assert all((by_id[key].provenance or "").startswith("bot_table:") for key in by_id if key.startswith("bot_"))
+
+
+def test_compile_full_stat_inputs_reports_invalid_bot_track_levels() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "bot_upgrades": {
+                "Flame Bot": {"Damage": 999},
+            },
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+
+    assert "bot_level_invalid:Flame Bot:Damage:999" in compiled.missing
+    assert "bot_level_missing:Flame Bot:Cooldown" in compiled.missing
+    assert "bot_level_missing:Flame Bot:Damage R." in compiled.missing
+
+
+def test_bot_track_specs_cover_authoritative_bot_upgrade_table() -> None:
+    from tower_sim.engines import stat_input_compiler as compiler
+    from tower_sim.libs.bots_lib import load_bot_upgrades
+
+    table = load_bot_upgrades()
+    expected = {(bot_name, attr_name) for bot_name, attrs in table.items() for attr_name in attrs}
+    assert expected <= set(compiler._BOT_TRACK_SPECS)
+
+
+def test_fixture_uw_inputs_emit_canonical_aliases_for_all_emitted_uw_stats() -> None:
+    from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+    from tower_sim.loaders.ids_parser import parse_ids
+
+    snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    compiled = compile_full_stat_inputs(snapshot)
+    emitted = {item.stat_id for item in compiled.stat_inputs}
+
+    source_ids = {stat_id for stat_id in emitted if stat_id.startswith("uw_")}
+    assert source_ids
+    for source_id in source_ids:
+        target_id = source_id[len("uw_") :]
+        assert target_id in emitted
+
+
+def test_fixture_raw_uw_tracks_are_fully_mapped_and_emit_canonical_aliases() -> None:
+    from tower_sim.engines import stat_input_compiler as compiler
+    from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+    from tower_sim.loaders.ids_parser import parse_ids
+
+    snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+    uw_rows = snapshot.raw_sections.get("UWs", [])
+    tracks, parse_missing = compiler._parse_uw_tracks(uw_rows)
+    assert parse_missing == []
+
+    compiled = compile_full_stat_inputs(snapshot)
+    emitted = {item.stat_id for item in compiled.stat_inputs}
+
+    for uw_name, track_name, _level_index, _raw_value, next_cost in tracks:
+        spec = compiler._UW_TRACK_SPECS.get(uw_name, {}).get(track_name)
+        assert spec is not None, f"Unmapped UW track: {uw_name}:{track_name}"
+
+        source_stat_id = spec.stat_id
+        canonical_stat_id = compiler._UW_CANONICAL_ALIASES[source_stat_id]
+        assert source_stat_id in emitted
+        assert canonical_stat_id in emitted
+
+        if next_cost is not None:
+            source_cost_stat_id = f"{source_stat_id}_next_cost"
+            canonical_cost_stat_id = compiler._UW_CANONICAL_ALIASES[source_cost_stat_id]
+            assert source_cost_stat_id in emitted
+            assert canonical_cost_stat_id in emitted

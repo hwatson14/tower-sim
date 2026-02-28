@@ -2,16 +2,19 @@ from __future__ import annotations
 
 import csv
 from dataclasses import dataclass
+from functools import lru_cache
 import re
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
 from tower_sim.loaders.table_paths import resolve_table_path
+import yaml
 from tower_sim.registry.stat_registry import Phase
 from tower_sim.util.account_snapshot import AccountSnapshot, WorkshopEntrySnapshot
 from tower_sim.engines.free_upgrades import FreeUpgradeChances
 from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, simulate_workshop_progression, uniform_allocation
+from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.libs.labs_lib import load_labs_values
 from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 
@@ -150,7 +153,12 @@ _WORKSHOP_CANONICAL_ALIASES: Dict[str, str] = {
     "Enemy Health Level Skip": "ehls_pct",
     "Critical Chance": "tower_crit_chance",
     "Critical Factor": "tower_crit_multiplier",
+    "Damage": "tower_damage",
+    "Attack Speed": "tower_attack_speed",
+    "Wall Health": "wall_hp",
+    "Wall Regen": "wall_regen",
 }
+
 
 
 def _canonicalize_workshop_values(values: Dict[str, float]) -> Dict[str, float]:
@@ -175,6 +183,14 @@ def _canonicalize_workshop_values(values: Dict[str, float]) -> Dict[str, float]:
 
 def _pct(value: float) -> float:
     return value / 100.0
+
+
+def _workshop_recovery_package_chance(level: int) -> float | None:
+    if level == 0:
+        return 0.0
+    if level < 0 or level > 60:
+        return None
+    return 0.06 + (0.004 * (level - 1))
 
 
 def _bounded_linear(level: int, *, min_level: int, max_level: int, base: float, per_level: float) -> float | None:
@@ -211,7 +227,10 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Orb Speed": lambda level: 0.4 + 0.15 * level,
     "Recovery Amount": lambda level: 0.1 + 0.01 * level,
     "Package Chance": lambda level: _pct(6 + 0.4 * level),
+    "Recovery Package Chance": _workshop_recovery_package_chance,
     "Wall Rebuild": lambda level: 0.01 + 0.01 * level,
+    "Wall Regen": lambda level: _bounded_linear(level, min_level=0, max_level=30, base=0.0, per_level=0.1),
+    "Wall Fortification": lambda level: _bounded_linear(level, min_level=0, max_level=60, base=0.0, per_level=0.2),
     "Coins per Kill": lambda level: 1 + _pct(0.01 * level),
     "Coin / Kill Bonus": lambda level: 1 + _pct(0.01 * level),
     "Enemy Attack Level Skip": lambda level: workshop_level_to_chance(level),
@@ -257,6 +276,22 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     "Thorn Damage": lambda level: _pct(1 * level),
 }
 
+
+
+
+_WORKSHOP_LAB_DELTA_STATS = {
+    "Enemy Attack Level Skip",
+    "Enemy Health Level Skip",
+    "Defense %",
+}
+
+_UW_LAB_ADDITIVE_STATS = {
+    "uw_chrono_field_duration": "Chrono Field Duration",
+}
+
+_UW_LAB_CANONICAL_ID = {
+    "uw_chrono_field_duration": "LAB_CHRONO_FIELD_DURATION",
+}
 
 _UW_TRACK_SPECS: Dict[str, Dict[str, UWTrackSpec]] = {
     "Chain Lightning": {
@@ -328,6 +363,20 @@ _UW_TRACK_SPECS: Dict[str, Dict[str, UWTrackSpec]] = {
 }
 
 
+def _uw_canonical_aliases() -> Dict[str, str]:
+    aliases: Dict[str, str] = {}
+    for track_specs in _UW_TRACK_SPECS.values():
+        for spec in track_specs.values():
+            source = spec.stat_id
+            target = source[len("uw_") :] if source.startswith("uw_") else source
+            aliases[source] = target
+            aliases[f"{source}_next_cost"] = f"{target}_next_cost"
+    return aliases
+
+
+_UW_CANONICAL_ALIASES: Dict[str, str] = _uw_canonical_aliases()
+
+
 def compile_full_stat_inputs(
     ids_snapshot: AccountSnapshot,
     *,
@@ -349,6 +398,10 @@ def compile_full_stat_inputs(
 
     relic_inputs = _compile_relic_stat_inputs(ids_snapshot)
     stat_inputs.extend(relic_inputs)
+
+    bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
+    stat_inputs.extend(bot_inputs)
+    missing.extend(bot_missing)
 
     return CompiledStatInputs(
         stat_inputs=stat_inputs,
@@ -376,9 +429,29 @@ def _compile_relic_stat_inputs(ids_snapshot: AccountSnapshot) -> List[StatInput]
         (("Health Regen",), "tower_regen", "mult", "relics:health_regen"),
         (("Wall Health",), "wall_hp", "mult", "relics:wall_health"),
         (("Wall Regen",), "wall_regen", "mult", "relics:wall_regen"),
-        (("Defense", "Defense %"), "def_pct", "delta", "relics:defense"),
+        (("Defense", "Defense %"), "def_pct", "delta", "relics:defense_percent"),
+        (("Defense Absolute",), "defense_absolute", "mult", "relics:defense_absolute"),
         (("Enemy Attack Level Skip",), "eals_pct", "delta", "relics:eals"),
         (("Enemy Health Level Skip",), "ehls_pct", "delta", "relics:ehls"),
+        (("Damage",), "tower_damage", "mult", "relics:damage"),
+        (("Attack Speed",), "tower_attack_speed", "mult", "relics:attack_speed"),
+        (("Crit Chance",), "tower_crit_chance", "delta", "relics:crit_chance"),
+        (("Crit Factor",), "tower_crit_multiplier", "mult", "relics:crit_factor"),
+        (("Damage / Meter",), "damage_per_meter", "mult", "relics:damage_per_meter"),
+        (("Free Attack Upgrade",), "free_attack_upgrade", "delta", "relics:free_attack_upgrade"),
+        (("Free Defense Upgrade",), "free_defense_upgrade", "delta", "relics:free_defense_upgrade"),
+        (("Free Utility Upgrade",), "free_utility_upgrade", "delta", "relics:free_utility_upgrade"),
+        (("Recovery Amount",), "recovery_amount", "mult", "relics:recovery_amount"),
+        (("Super Critical Chance",), "super_crit_chance", "delta", "relics:super_crit_chance"),
+        (("Super Critical Mult",), "super_crit_mult", "mult", "relics:super_crit_mult"),
+        (("Thorns",), "thorns_damage_mult", "mult", "relics:thorns"),
+        (("Orb Speed",), "orb_speed", "mult", "relics:orb_speed"),
+        (("Wall Rebuild",), "wall_rebuild", "mult", "relics:wall_rebuild"),
+        (("Cash",), "cash_bonus", "mult", "relics:cash"),
+        (("Coins",), "coins_bonus", "mult", "relics:coins"),
+        (("Ultimate Damage",), "ultimate_damage", "mult", "relics:ultimate_damage"),
+        (("Lab Speed",), "lab_speed", "mult", "relics:lab_speed"),
+        (("Bot Range",), "bot_range", "mult", "relics:bot_range"),
     )
 
     inputs: List[StatInput] = []
@@ -406,6 +479,56 @@ def _compile_relic_stat_inputs(ids_snapshot: AccountSnapshot) -> List[StatInput]
             )
     return inputs
 
+
+_BOT_TRACK_SPECS: Dict[tuple[str, str], str] = {
+    ("Flame Bot", "Damage"): "bot_flame_damage",
+    ("Flame Bot", "Cooldown"): "bot_flame_cooldown",
+    ("Flame Bot", "Damage R."): "bot_flame_damage_reduction",
+    ("Flame Bot", "Range"): "bot_flame_range",
+    ("Thunder Bot", "Cooldown"): "bot_thunder_cooldown",
+    ("Thunder Bot", "Duration"): "bot_thunder_duration",
+    ("Thunder Bot", "Linger"): "bot_thunder_linger",
+    ("Thunder Bot", "Range"): "bot_thunder_range",
+    ("Golden Bot", "Duration"): "bot_golden_duration",
+    ("Golden Bot", "Cooldown"): "bot_golden_cooldown",
+    ("Golden Bot", "Bonus"): "bot_golden_bonus",
+    ("Golden Bot", "Range"): "bot_golden_range",
+    ("Amplify Bot", "Duration"): "bot_amplify_duration",
+    ("Amplify Bot", "Cooldown"): "bot_amplify_cooldown",
+    ("Amplify Bot", "Bonus"): "bot_amplify_bonus",
+    ("Amplify Bot", "Range"): "bot_amplify_range",
+}
+
+
+def _compile_bot_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInput], List[str]]:
+    stat_inputs: List[StatInput] = []
+    missing: List[str] = []
+
+    for (bot_name, track_name), stat_id in _BOT_TRACK_SPECS.items():
+        bot_tracks = ids_snapshot.bot_upgrades.get(bot_name)
+        if bot_tracks is None:
+            continue
+        level = bot_tracks.get(track_name)
+        if level is None:
+            missing.append(f"bot_level_missing:{bot_name}:{track_name}")
+            continue
+        try:
+            value, _, _ = get_bot_attribute(bot_name, track_name, int(level))
+        except (KeyError, ValueError):
+            missing.append(f"bot_level_invalid:{bot_name}:{track_name}:{level}")
+            continue
+
+        stat_inputs.append(
+            StatInput(
+                stat_id=stat_id,
+                phase=Phase.START_OF_RUN,
+                base_value=float(value),
+                provenance=f"bot_table:{bot_name}:{track_name}",
+            )
+        )
+
+    return stat_inputs, missing
+
 def _compile_workshop_stat_inputs(
     ids_snapshot: AccountSnapshot,
 ) -> Tuple[List[StatInput], List[str]]:
@@ -414,17 +537,30 @@ def _compile_workshop_stat_inputs(
     enhancement_map, enhancement_missing = _parse_workshop_enhancement_multipliers(ids_snapshot)
     stat_inputs: List[StatInput] = []
     missing: List[str] = list(enhancement_missing)
+    missing.extend(_collect_unmapped_active_lab_levels(ids_snapshot, labs))
 
     for name, entry in ids_snapshot.workshop.items():
         if entry.coin_level is None:
             missing.append(f"workshop_level:{name}")
             continue
+        if entry.max_level is None:
+            missing.append(f"workshop_max_level:{name}")
+            continue
+        if entry.coin_level < 0:
+            missing.append(f"workshop_level_bounds:{name}")
+            continue
+        if entry.coin_level > entry.max_level:
+            missing.append(f"workshop_level_bounds:{name}")
+            continue
         spec = _WORKSHOP_STAT_SPECS.get(name)
         if spec is None:
             missing.append(f"workshop_mapping:{name}")
             continue
+        if not _has_authoritative_workshop_definition(name, spec, workshop_tables):
+            missing.append(f"workshop_definition:{name}")
+            continue
         formula = _WORKSHOP_FORMULAS.get(name)
-        if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
+        if name in _WORKSHOP_LAB_DELTA_STATS:
             lab_delta = _resolve_lab_delta(name, ids_snapshot, labs, missing)
             enhancement_multiplier = enhancement_map.get(spec.stat_id)
         else:
@@ -439,8 +575,10 @@ def _compile_workshop_stat_inputs(
                 missing.append(f"workshop_unsupported:{name}")
                 continue
             value_f = float(value)
-            if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
-                value_f = min(max(value_f + lab_delta, 0.0), 1.0)
+            if name in _WORKSHOP_LAB_DELTA_STATS:
+                value_f = value_f + lab_delta
+                if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
+                    value_f = min(max(value_f, 0.0), 1.0)
             stat_inputs.append(
                 StatInput(
                     stat_id=spec.stat_id,
@@ -546,6 +684,14 @@ def _compile_wall_survivability_aliases(
         wall_health_ratio += float(lab.levels[wall_health_lab]) / 100.0
 
     wall_regen_ratio_input = by_id.get("workshop_wall_regen")
+    wall_regen_entry = ids_snapshot.workshop.get("Wall Regen")
+    wall_regen_blocked = (
+        wall_regen_entry is not None
+        and wall_regen_entry.coin_level is not None
+        and wall_regen_ratio_input is None
+    )
+    if wall_regen_blocked:
+        missing.append("workshop_alias_missing:workshop_wall_regen")
     wall_regen_ratio = (
         _resolved_stat_input_value(wall_regen_ratio_input)
         if wall_regen_ratio_input is not None
@@ -569,21 +715,37 @@ def _compile_wall_survivability_aliases(
         wall_regen_ratio += float(lab.levels[wall_regen_lab]) / 100.0
 
     wall_hp = _resolved_stat_input_value(tower_hp) * wall_health_ratio
-    wall_regen = _resolved_stat_input_value(tower_regen) * wall_regen_ratio
-    return [
+    outputs = [
         StatInput(
             stat_id="wall_hp",
             phase=Phase.START_OF_RUN,
             base_value=wall_hp,
             provenance="workshop_alias:Wall Health->wall_hp",
-        ),
+        )
+    ]
+    wall_regen = _resolved_stat_input_value(tower_regen) * wall_regen_ratio
+    outputs.append(
         StatInput(
             stat_id="wall_regen",
             phase=Phase.START_OF_RUN,
             base_value=wall_regen,
             provenance="workshop_alias:Wall Regen->wall_regen",
-        ),
-    ], missing
+        )
+    )
+    wall_thorns_entry = ids_snapshot.workshop.get("Wall Thorns")
+    if wall_thorns_entry is not None and wall_thorns_entry.coin_level is not None:
+        if wall_thorns_entry.coin_level < 0:
+            missing.append("workshop_level_bounds:Wall Thorns")
+        else:
+            outputs.append(
+                StatInput(
+                    stat_id="wall_thorns_mult",
+                    phase=Phase.START_OF_RUN,
+                    base_value=float(wall_thorns_entry.coin_level) / 100.0,
+                    provenance="workshop_alias:Wall Thorns->wall_thorns_mult",
+                )
+            )
+    return outputs, missing
 
 
 def _resolved_stat_input_value(stat_input: StatInput) -> float:
@@ -606,6 +768,91 @@ _WORKSHOP_TO_LAB_NAME = {
 }
 
 
+_WORKSHOP_TO_LAB_CANONICAL_ID = {
+    "Health": "LAB_HEALTH",
+    "Health Regen": "LAB_HEALTH_REGEN",
+    "Attack Speed": "LAB_ATTACK_SPEED",
+    "Defense %": "LAB_DEFENSE_PERCENT",
+    "Wall Health": "LAB_WALL_HEALTH",
+    "Wall Regen": "LAB_WALL_REGEN",
+    "Recovery Package Chance": "LAB_RECOVERY_PACKAGE_CHANCE",
+    "Package Chance": "LAB_RECOVERY_PACKAGE_CHANCE",
+    "Enemy Attack Level Skip": "LAB_ENEMY_ATTACK_LEVEL_SKIP",
+    "Enemy Health Level Skip": "LAB_ENEMY_HEALTH_LEVEL_SKIP",
+}
+
+
+_LAB_NAME_ALIASES = {
+    "Black Hole Coin Bonus": "Black Hole Coins Bonus",
+    "Cash / Wave": "Cash Per Wave",
+    "Coins / Kill Bonus": "Coins Per Kill Bonus",
+    "Coins / Wave": "Coins Per Wave",
+    "Damage / Meter": "Damage Per Meter",
+    "Death Wave Cells Bonus": "Death Wave Cell Bonus",
+    "Flame Bot - Cooldown": "Flame Bot Cooldown",
+    "Improve Trade-off Perks": "Improve Trade-Off Perks",
+    "Module Shards Cost": "Module Shard Costs",
+    "Orbs Speed": "Orb Speed",
+    "Reroll Daily Mission": "Reroll Daily Missions",
+    "Wall Thorns": "Wall Thorn",
+    "Workshop Enhancements": "Workshop Enhancement",
+}
+
+
+@lru_cache(maxsize=1)
+def _load_labs_catalog_primary_names() -> Dict[str, str]:
+    registry_dir = resolve_table_path("registry_dir", runtime_mode=False)
+    catalog_path = registry_dir / "catalog.yaml"
+    payload = yaml.safe_load(catalog_path.read_text(encoding="utf-8"))
+    categories = payload.get("categories") if isinstance(payload, dict) else None
+    labs_entries = categories.get("labs") if isinstance(categories, dict) else None
+    if not isinstance(labs_entries, list):
+        raise ValueError("Lab catalog missing categories.labs list")
+
+    mapping: Dict[str, str] = {}
+    for entry in labs_entries:
+        if not isinstance(entry, dict):
+            continue
+        primary_name = str(entry.get("primary_name", "")).strip()
+        canonical_id = str(entry.get("canonical_id", "")).strip()
+        if not primary_name or not canonical_id:
+            continue
+        mapping[primary_name] = canonical_id
+    if not mapping:
+        raise ValueError("Lab catalog has no primary_name/canonical_id mappings")
+    return mapping
+
+
+def _validate_lab_canonical_mapping(workshop_name: str, lab_name: str, lab, missing: List[str]) -> bool:
+    expected_lab_id = _WORKSHOP_TO_LAB_CANONICAL_ID.get(workshop_name)
+    if expected_lab_id is None:
+        return True
+    actual_lab_id = str(getattr(lab, "canonical_id", "")).strip()
+    if actual_lab_id == expected_lab_id:
+        return True
+    missing.append(
+        f"lab_mapping:{workshop_name}:{lab_name}:{actual_lab_id or 'missing'}:{expected_lab_id}"
+    )
+    return False
+
+
+def _collect_unmapped_active_lab_levels(ids_snapshot: AccountSnapshot, labs) -> List[str]:
+    missing: List[str] = []
+    catalog = _load_labs_catalog_primary_names()
+    for lab_name, level in ids_snapshot.labs.items():
+        if level is None or level <= 0:
+            continue
+        normalized_name = _LAB_NAME_ALIASES.get(lab_name, lab_name)
+        canonical_id = catalog.get(normalized_name)
+        if canonical_id is None:
+            missing.append(f"lab_catalog_missing:{lab_name}")
+            continue
+        if normalized_name in labs:
+            continue
+        missing.append(f"lab_table_unmapped:{lab_name}:{canonical_id}")
+    return missing
+
+
 def _resolve_lab_multiplier(
     workshop_name: str,
     ids_snapshot: AccountSnapshot,
@@ -622,6 +869,8 @@ def _resolve_lab_multiplier(
     if level <= 0:
         return None
     lab = labs[lab_name]
+    if not _validate_lab_canonical_mapping(workshop_name, lab_name, lab, missing):
+        return None
     if level not in lab.levels:
         missing.append(f"lab_table:{lab_name}:{level}")
         return None
@@ -652,6 +901,8 @@ def _resolve_lab_delta(
     if level <= 0:
         return 0.0
     lab = labs[lab_name]
+    if not _validate_lab_canonical_mapping(workshop_name, lab_name, lab, missing):
+        return 0.0
     if level not in lab.levels:
         missing.append(f"lab_table:{lab_name}:{level}")
         return 0.0
@@ -721,9 +972,59 @@ def _resolve_workshop_value(
     raise KeyError("Missing workshop table entry.")
 
 
+def _has_authoritative_workshop_definition(
+    stat_name: str,
+    spec: WorkshopStatSpec,
+    workshop_tables: WorkshopTables,
+) -> bool:
+    if spec.wsvalues_key and spec.wsvalues_key in workshop_tables.wsvalues:
+        return True
+    for key in spec.dvt_keys:
+        if key in workshop_tables.dvt_sections.get("Workshop", {}):
+            return True
+        if key in workshop_tables.dvt_sections.get("Workshop +", {}):
+            return True
+    return stat_name in _WORKSHOP_FORMULAS
+
+
 def _workshop_provenance(name: str) -> str:
     return f"workshop_table:{name}"
 
+
+
+
+def _resolve_uw_lab_additive(
+    *,
+    stat_id: str,
+    ids_snapshot: AccountSnapshot,
+    labs,
+    missing: List[str],
+) -> float:
+    lab_name = _UW_LAB_ADDITIVE_STATS.get(stat_id)
+    if lab_name is None:
+        return 0.0
+    lab = labs.get(lab_name)
+    if lab is None:
+        missing.append(f"lab_table:{lab_name}")
+        return 0.0
+    expected = _UW_LAB_CANONICAL_ID.get(stat_id)
+    actual = str(getattr(lab, "canonical_id", "")).strip()
+    if expected is not None and actual != expected:
+        missing.append(f"lab_mapping:{stat_id}:{lab_name}:{actual or 'missing'}:{expected}")
+        return 0.0
+    level = ids_snapshot.labs.get(lab_name)
+    if level is None:
+        missing.append(f"lab_level:{lab_name}")
+        return 0.0
+    if level <= 0:
+        return 0.0
+    if level not in lab.levels:
+        missing.append(f"lab_table:{lab_name}:{level}")
+        return 0.0
+    if lab.unit != "raw_number":
+        missing.append(f"lab_unit:{lab_name}:{lab.unit}")
+        return 0.0
+    return float(lab.levels[level])
 
 def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInput], List[str]]:
     stat_inputs: List[StatInput] = []
@@ -732,6 +1033,7 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
     missing.extend(ladder_missing)
 
     uw_tracks, uw_missing = _parse_uw_tracks(ids_snapshot.raw_sections.get("UWs", []))
+    labs = load_labs_values()
     missing.extend(uw_missing)
 
     for uw_name, track_name, level_index, raw_value, next_cost in uw_tracks:
@@ -753,23 +1055,53 @@ def _compile_uw_stat_inputs(ids_snapshot: AccountSnapshot) -> Tuple[List[StatInp
         else:
             value = raw_value
 
+        value += _resolve_uw_lab_additive(
+            stat_id=spec.stat_id,
+            ids_snapshot=ids_snapshot,
+            labs=labs,
+            missing=missing,
+        )
+
+        source_stat_id = spec.stat_id
+        canonical_stat_id = _UW_CANONICAL_ALIASES.get(source_stat_id)
+
         stat_inputs.append(
             StatInput(
-                stat_id=spec.stat_id,
+                stat_id=source_stat_id,
                 phase=Phase.START_OF_RUN,
                 base_value=value,
                 provenance=_uw_provenance(spec),
             )
         )
-        if next_cost is not None:
+        if canonical_stat_id is not None:
             stat_inputs.append(
                 StatInput(
-                    stat_id=f"{spec.stat_id}_next_cost",
+                    stat_id=canonical_stat_id,
+                    phase=Phase.START_OF_RUN,
+                    base_value=value,
+                    provenance=f"uw_alias:{source_stat_id}->{canonical_stat_id}",
+                )
+            )
+        if next_cost is not None:
+            source_cost_stat_id = f"{source_stat_id}_next_cost"
+            stat_inputs.append(
+                StatInput(
+                    stat_id=source_cost_stat_id,
                     phase=Phase.START_OF_RUN,
                     base_value=next_cost,
                     provenance=_uw_provenance(spec),
                 )
             )
+            canonical_cost_stat_id = _UW_CANONICAL_ALIASES.get(source_cost_stat_id)
+            if canonical_cost_stat_id is not None:
+                stat_inputs.append(
+                    StatInput(
+                        stat_id=canonical_cost_stat_id,
+                        phase=Phase.START_OF_RUN,
+                        base_value=next_cost,
+                        provenance=f"uw_alias:{source_cost_stat_id}->{canonical_cost_stat_id}",
+                    )
+                )
     return stat_inputs, missing
 
 
@@ -887,9 +1219,20 @@ def compile_workshop_values_at_wave(
 
     for name, entry in ids_snapshot.workshop.items():
         if entry.coin_level is None:
+            missing.append(f"workshop_level:{name}")
+            continue
+        if entry.max_level is None:
+            missing.append(f"workshop_max_level:{name}")
+            continue
+        if entry.coin_level < 0 or entry.coin_level > entry.max_level:
+            missing.append(f"workshop_level_bounds:{name}")
             continue
         spec = _WORKSHOP_STAT_SPECS.get(name)
         if spec is None:
+            missing.append(f"workshop_mapping:{name}")
+            continue
+        if not _has_authoritative_workshop_definition(name, spec, workshop_tables):
+            missing.append(f"workshop_definition:{name}")
             continue
         category = _workshop_category(entry.category)
         if category is None:
@@ -897,7 +1240,13 @@ def compile_workshop_values_at_wave(
         target_level = entry.end_level if entry.end_level is not None else entry.max_level
         if target_level is None:
             continue
+        if target_level < 0:
+            missing.append(f"workshop_level_bounds:{name}")
+            continue
         max_level = entry.max_level if entry.max_level is not None else target_level
+        if target_level > max_level:
+            missing.append(f"workshop_level_bounds:{name}")
+            continue
         stat = WorkshopStat(
             name=name,
             category=category,
@@ -966,7 +1315,18 @@ def compile_workshop_values_at_wave(
             ):
                 wall_health_ratio += float(wall_health_data.levels[wall_health_lab]) / 100.0
 
-        wall_regen_ratio = canonical_values.get("workshop_wall_regen", 0.0)
+        wall_regen_ratio = canonical_values.get("workshop_wall_regen")
+        wall_regen_entry = ids_snapshot.workshop.get("Wall Regen")
+        wall_regen_blocked = (
+            wall_regen_entry is not None
+            and wall_regen_entry.coin_level is not None
+            and wall_regen_ratio is None
+        )
+        if wall_regen_blocked:
+            missing.append("workshop_alias_missing:workshop_wall_regen")
+            wall_regen_ratio = 0.0
+        elif wall_regen_ratio is None:
+            wall_regen_ratio = 0.0
         wall_regen_lab = ids_snapshot.labs.get("Wall Regen") or 0
         if wall_regen_lab > 0:
             labs = load_labs_values()
@@ -980,6 +1340,14 @@ def compile_workshop_values_at_wave(
 
         canonical_values["wall_hp"] = float(tower_hp) * float(wall_health_ratio)
         canonical_values["wall_regen"] = float(tower_regen) * float(wall_regen_ratio)
+
+
+    wall_thorns_entry = ids_snapshot.workshop.get("Wall Thorns")
+    if wall_thorns_entry is not None and wall_thorns_entry.coin_level is not None:
+        if wall_thorns_entry.coin_level < 0:
+            missing.append("workshop_level_bounds:Wall Thorns")
+        else:
+            canonical_values["wall_thorns_mult"] = float(wall_thorns_entry.coin_level) / 100.0
 
     return canonical_values, sorted(set(missing))
 
