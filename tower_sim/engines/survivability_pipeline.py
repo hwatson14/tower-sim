@@ -117,6 +117,27 @@ _WALL_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: lab % shown is applied 
 _BOSS_THORNS_MULT = 0.5  # Wiki excerpt in prompt: bosses take 50% thorns damage.
 
 
+_CARD_NOOP_CANONICALS = {
+    # Known cards whose mechanics are modeled in other surfaces (runtime/events/econ)
+    # and therefore intentionally contribute no start-of-run survivability scalar here.
+    "CARD_AREA_OF_EFFECT",
+        "CARD_CRITICAL_COIN",
+    "CARD_DEATH_RAY",
+    "CARD_DEMON_MODE",
+    "CARD_ENEMY_BALANCE",
+    "CARD_ENERGY_NET",
+    "CARD_ENERGY_SHIELD",
+    "CARD_EXTRA_ORBS",
+    "CARD_INTRO_SPRINT",
+    "CARD_LAND_MINE_STUN",
+    "CARD_NUKE",
+    "CARD_SECOND_WIND",
+    "CARD_SLOW_AURA",
+    "CARD_SUPER_TOWER",
+        "CARD_WAVE_ACCELERATOR",
+    "CARD_WAVE_SKIP",
+}
+
 SLOT_ORDER = {
     0: "Cannon",
     1: "Armor",
@@ -1408,11 +1429,11 @@ def _apply_slot_main_effect(
         targets = ("workshop_coins_per_kill_bonus",)
     elif module_slot == "Core":
         targets = (
-            "uw_chain_lightning_damage",
-            "uw_smart_missiles_damage",
-            "uw_death_wave_damage",
-            "uw_inner_land_mines_damage",
-            "uw_poison_swamp_damage",
+            "chain_lightning_damage",
+            "smart_missiles_damage",
+            "death_wave_damage",
+            "inner_land_mines_damage",
+            "poison_swamp_damage",
         )
     else:
         return
@@ -1619,6 +1640,15 @@ def _apply_card_effects(
                     f"Damage card has unsupported unit {effect.unit!r}."
                 )
             accumulator.multiply("tower_damage", effect.value, "cards:damage")
+        elif effect.card == "Berserker":
+            # Simplified deterministic modeling per product direction: cap to x8 damage while equipped.
+            accumulator.multiply("tower_damage", 8.0, "cards:berserker")
+        elif effect.card == "Ultimate Crit":
+            if effect.unit != "percent":
+                raise SurvivabilityPipelineError(
+                    f"Ultimate Crit card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_damage", 1.0 + effect.value, "cards:ultimate_crit")
         elif effect.card == "Attack Speed":
             if effect.unit == "percent":
                 multiplier = 1.0 + effect.value
@@ -1677,6 +1707,12 @@ def _apply_card_effects(
                     f"Extra Defense card has unsupported unit {effect.unit!r}."
                 )
             accumulator.add("def_pct", effect.value, "cards:extra_defense")
+        elif effect.card == "Fortress":
+            if effect.unit != "mult":
+                raise SurvivabilityPipelineError(
+                    f"Fortress card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("defense_absolute", effect.value, "cards:fortress")
         else:
             try:
                 card_canonical = resolve_named_entity("cards", effect.card)
@@ -1692,16 +1728,7 @@ def _apply_card_effects(
                 accumulator.add(
                     "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
                 )
-            elif card_canonical in {
-                "CARD_ENEMY_BALANCE",
-                "CARD_CRITICAL_COIN",
-                "CARD_EXTRA_ORBS",
-                "CARD_ENERGY_SHIELD",
-                "CARD_LAND_MINE_STUN",
-                "CARD_SECOND_WIND",
-                "CARD_WAVE_ACCELERATOR",
-                "CARD_WAVE_SKIP",
-            }:
+            elif card_canonical in _CARD_NOOP_CANONICALS:
                 # These cards do not currently map to canonical survivability stat inputs.
                 # Their mechanics are handled in other pipeline surfaces (spawn/wave pacing,
                 # shield event handling, etc.) and are therefore a deterministic no-op here.
@@ -1737,16 +1764,7 @@ def _resolve_card_effect(
             canonical = resolve_named_entity("cards", card_name)
         except KeyError:
             raise exc
-        if canonical in {
-            "CARD_ENEMY_BALANCE",
-            "CARD_CRITICAL_COIN",
-            "CARD_EXTRA_ORBS",
-            "CARD_ENERGY_SHIELD",
-            "CARD_LAND_MINE_STUN",
-            "CARD_SECOND_WIND",
-            "CARD_WAVE_ACCELERATOR",
-            "CARD_WAVE_SKIP",
-        }:
+        if canonical in _CARD_NOOP_CANONICALS:
             return CardEffect(
                 card=card_name,
                 rarity="Unknown",

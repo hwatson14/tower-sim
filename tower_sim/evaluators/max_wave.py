@@ -995,17 +995,17 @@ def _build_timing_uptime_diagnostics(
         snapshot_values=snapshot_values,
     )
 
-    gt_cooldown = float(snapshot_values.get("uw_golden_tower_cooldown", 0.0) or 0.0)
-    gt_duration = float(snapshot_values.get("uw_golden_tower_duration", 0.0) or 0.0)
-    gt_mult = float(snapshot_values.get("uw_golden_tower_multiplier", 1.0) or 1.0)
+    gt_cooldown = float(snapshot_values.get("golden_tower_cooldown", 0.0) or 0.0)
+    gt_duration = float(snapshot_values.get("golden_tower_duration", 0.0) or 0.0)
+    gt_mult = float(snapshot_values.get("golden_tower_multiplier", 1.0) or 1.0)
 
     uw_pairs = [
-        ("uw_smart_missiles", "uw_smart_missiles_cooldown", None),
-        ("uw_death_wave", "uw_death_wave_cooldown", None),
-        ("uw_chrono_field", "uw_chrono_field_cooldown", "uw_chrono_field_duration"),
-        ("uw_inner_land_mines", "uw_inner_land_mines_cooldown", None),
-        ("uw_golden_tower", "uw_golden_tower_cooldown", "uw_golden_tower_duration"),
-        ("uw_black_hole", "uw_black_hole_cooldown", "uw_black_hole_duration"),
+        ("smart_missiles", "smart_missiles_cooldown", None),
+        ("death_wave", "death_wave_cooldown", None),
+        ("chrono_field", "chrono_field_cooldown", "chrono_field_duration"),
+        ("inner_land_mines", "inner_land_mines_cooldown", None),
+        ("golden_tower", "golden_tower_cooldown", "golden_tower_duration"),
+        ("black_hole", "black_hole_cooldown", "black_hole_duration"),
     ]
 
     uw_intervals: Dict[str, Any] = {}
@@ -1054,11 +1054,11 @@ def _build_timing_uptime_diagnostics(
             "expected_coin_multiplier": 1.0,
             "expected_damage_taken": 1.0,
             "expected_damage_multiplier": 1.0,
-            "missing": ["uw_golden_tower_cooldown"],
+            "missing": ["golden_tower_cooldown"],
         }
 
-    gt_intervals = uw_intervals.get("uw_golden_tower", tuple())
-    bh_intervals = uw_intervals.get("uw_black_hole", tuple())
+    gt_intervals = uw_intervals.get("golden_tower", tuple())
+    bh_intervals = uw_intervals.get("black_hole", tuple())
 
     effects = [TimedEffect(name="GT", activation_intervals=gt_intervals, coin_multiplier=gt_mult)]
     bot_diag = "present" if resolved_bot_effects else "missing"
@@ -1088,7 +1088,7 @@ def _build_timing_uptime_diagnostics(
         "uw_interval_counts": {name: len(intervals) for name, intervals in uw_intervals.items()},
     }
     if gcomp_enabled and not bh_intervals:
-        output.setdefault("warnings", []).append("uw_black_hole_intervals_missing")
+        output.setdefault("warnings", []).append("black_hole_intervals_missing")
     return output
 
 

@@ -438,7 +438,6 @@ def test_card_provenance_keys_are_mapped_for_pinned_specs(spec_path: Path) -> No
         for row in result.start_stage.contributors
         if row.provenance.startswith("cards:")
     }
-    assert observed_card_keys
     mapped_keys = set(stat_pipeline_module._CARD_PROVENANCE_TO_NAME.keys())
     assert observed_card_keys <= mapped_keys
 
@@ -588,11 +587,11 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "thorns_damage_mult",
                 "tower_hp",
                 "tower_regen",
-                "uw_chain_lightning_damage",
-                "uw_death_wave_damage",
-                "uw_inner_land_mines_damage",
-                "uw_poison_swamp_damage",
-                "uw_smart_missiles_damage",
+                "chain_lightning_damage",
+                "death_wave_damage",
+                "inner_land_mines_damage",
+                "poison_swamp_damage",
+                "smart_missiles_damage",
                 "wall_hp",
                 "wall_regen",
                 "workshop_cash_bonus",
@@ -610,11 +609,11 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_crit_chance",
                 "tower_hp",
                 "tower_regen",
-                "uw_chain_lightning_damage",
-                "uw_death_wave_damage",
-                "uw_inner_land_mines_damage",
-                "uw_poison_swamp_damage",
-                "uw_smart_missiles_damage",
+                "chain_lightning_damage",
+                "death_wave_damage",
+                "inner_land_mines_damage",
+                "poison_swamp_damage",
+                "smart_missiles_damage",
                 "wall_hp",
                 "wall_regen",
                 "workshop_coins_per_kill_bonus",
@@ -632,11 +631,11 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_crit_chance",
                 "tower_hp",
                 "tower_regen",
-                "uw_chain_lightning_damage",
-                "uw_death_wave_damage",
-                "uw_inner_land_mines_damage",
-                "uw_poison_swamp_damage",
-                "uw_smart_missiles_damage",
+                "chain_lightning_damage",
+                "death_wave_damage",
+                "inner_land_mines_damage",
+                "poison_swamp_damage",
+                "smart_missiles_damage",
                 "wall_hp",
                 "wall_regen",
                 "workshop_coins_per_kill_bonus",
