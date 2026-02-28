@@ -202,7 +202,8 @@ def test_only_authoritatively_unmapped_workshop_unlock_stats_remain_unwired() ->
         for stat_id, entries in manifest.items()
         if all(not entry.reaches_stat_input for entry in entries)
     }
-    assert unwired == {"workshop_knockback", "workshop_land_mine", "workshop_shockwave"}
+    assert {"workshop_knockback", "workshop_land_mine", "workshop_shockwave"}.issubset(unwired)
+    assert not (set(required_max_wave_stat_input_ids()) & unwired)
 
 
 

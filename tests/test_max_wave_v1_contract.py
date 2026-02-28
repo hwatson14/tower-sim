@@ -259,7 +259,7 @@ def test_max_wave_fixture_has_zero_mapping_debt_diagnostics() -> None:
     assert diagnostics["module_unmapped_by_layer"]["main"] == []
     assert diagnostics["canonical_unmapped_by_source"]["modules"] == []
     assert diagnostics["canonical_unmapped_by_source"]["ultimate_weapons"] == []
-    assert diagnostics.get("compiled_missing", []) == []
+    assert diagnostics.get("missing_stat_inputs", []) == []
 
 
 def test_preflight_returns_validation_only() -> None:
