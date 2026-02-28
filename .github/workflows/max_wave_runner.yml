@@ -86,6 +86,16 @@ jobs:
           print("Runner output validated.")
           PY
 
+
+      - name: Run strict wiring health check
+        run: |
+          python -m tower_sim.audit.wiring_health_check --strict --max-required-max-wave-gaps 0
+
+      - name: Export lineage full table
+        run: |
+          python -m tower_sim.audit.stat_lineage_report \
+            --manifest out/lineage_manifest_latest.json \
+            --full-table-out out/lineage_full_table_latest.json
       - name: Validate runner max-wave against EP export targets
         run: |
           python -m tower_sim.audit.max_wave_ep_parity \
@@ -201,6 +211,7 @@ jobs:
             out/ep_export_final_stats_report_latest.json
             out/stat_lineage_manifest_latest.json
             out/stat_lineage_contract_gate_latest.json
+            out/lineage_full_table_latest.json
           if-no-files-found: error
 
       - name: Commit max-wave outputs to artifacts branch
@@ -212,6 +223,7 @@ jobs:
           cp out/ep_export_final_stats_report_latest.json /tmp/max-wave-artifacts/
           cp out/stat_lineage_manifest_latest.json /tmp/max-wave-artifacts/
           cp out/stat_lineage_contract_gate_latest.json /tmp/max-wave-artifacts/
+          cp out/lineage_full_table_latest.json /tmp/max-wave-artifacts/
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
@@ -228,6 +240,7 @@ jobs:
           cp /tmp/max-wave-artifacts/ep_export_final_stats_report_latest.json out/max_wave_runner/
           cp /tmp/max-wave-artifacts/stat_lineage_manifest_latest.json out/max_wave_runner/
           cp /tmp/max-wave-artifacts/stat_lineage_contract_gate_latest.json out/max_wave_runner/
+          cp /tmp/max-wave-artifacts/lineage_full_table_latest.json out/max_wave_runner/
 
           git add out/max_wave_runner/*.json
           if git diff --cached --quiet; then
@@ -259,6 +272,7 @@ jobs:
           cp out/ep_export_final_stats_report_latest.json /tmp/max-wave-artifacts/
           cp out/stat_lineage_manifest_latest.json /tmp/max-wave-artifacts/
           cp out/stat_lineage_contract_gate_latest.json /tmp/max-wave-artifacts/
+          cp out/lineage_full_table_latest.json /tmp/max-wave-artifacts/
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
@@ -275,6 +289,7 @@ jobs:
           cp /tmp/max-wave-artifacts/ep_export_final_stats_report_latest.json out/max_wave_runner/
           cp /tmp/max-wave-artifacts/stat_lineage_manifest_latest.json out/max_wave_runner/
           cp /tmp/max-wave-artifacts/stat_lineage_contract_gate_latest.json out/max_wave_runner/
+          cp /tmp/max-wave-artifacts/lineage_full_table_latest.json out/max_wave_runner/
 
           git add out/max_wave_runner/*.json
           if git diff --cached --quiet; then

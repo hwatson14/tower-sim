@@ -15,6 +15,7 @@ if __package__ in {None, ""}:
     if repo_root_str not in sys.path:
         sys.path.insert(0, repo_root_str)
 
+from tower_sim.audit.stat_lineage_report import load_manifest, summarize_manifest  # noqa: E402
 from tower_sim.registry.combat_stat_contract import (  # noqa: E402
     required_max_wave_stat_input_ids,
     stat_lineage_manifest,
@@ -55,7 +56,7 @@ def run(
         missing = result.get("missing", [])
         raise RuntimeError(f"MAX_WAVE runner fail-closed. Missing inputs: {missing}")
     _write_json(_OUT_MAX_WAVE_PATH, result)
-    _write_json(_OUT_LINEAGE_PATH, _lineage_manifest_payload())
+    _write_json(_OUT_LINEAGE_PATH, _lineage_manifest_payload(result))
     return result
 
 
@@ -77,15 +78,49 @@ def _overlay_mapping(base: Mapping[str, Any], patch: Mapping[str, Any]) -> Dict[
     return merged
 
 
-def _lineage_manifest_payload() -> Dict[str, Any]:
+def _lineage_manifest_payload(run_result: Mapping[str, Any]) -> Dict[str, Any]:
     lineage = stat_lineage_manifest()
+    observed = _extract_observed_contributors_map(run_result)
     return {
         "schema": "lineage_manifest.v1",
         "required_max_wave_stat_input_ids": list(required_max_wave_stat_input_ids()),
+        "observed_contributors_by_stat_input_id": observed,
         "stats": {
             stat_id: [_to_dict(entry) for entry in entries]
             for stat_id, entries in lineage.items()
         },
+    }
+
+
+def _extract_observed_contributors_map(run_result: Mapping[str, Any]) -> Dict[str, list[str]]:
+    result_payload = run_result.get("result")
+    if not isinstance(result_payload, Mapping):
+        return {}
+    diagnostics = result_payload.get("diagnostics")
+    if not isinstance(diagnostics, Mapping):
+        return {}
+    observed = diagnostics.get("observed_contributors_by_stat_input_id")
+    if not isinstance(observed, Mapping):
+        return {}
+
+    normalized: Dict[str, list[str]] = {}
+    for stat_id, contributors_raw in observed.items():
+        if not isinstance(contributors_raw, list):
+            continue
+        normalized[str(stat_id)] = sorted({str(item) for item in contributors_raw})
+    return dict(sorted(normalized.items()))
+
+
+def _required_stat_wiring_summary(manifest_path: Path) -> Dict[str, int]:
+    manifest = load_manifest(manifest_path)
+    summary = summarize_manifest(manifest)
+    required_total = len(manifest.get("required_max_wave_stat_input_ids", []))
+    mismatch_count = int(summary.get("observed_vs_declared_mismatch_count", 0))
+    fully_wired = max(required_total - mismatch_count, 0)
+    return {
+        "required_stats": required_total,
+        "fully_wired": fully_wired,
+        "mismatch": mismatch_count,
     }
 
 
@@ -130,6 +165,10 @@ def main() -> None:
     print(json.dumps(result, indent=2, sort_keys=True))
     print(f"Wrote {_OUT_MAX_WAVE_PATH}")
     print(f"Wrote {_OUT_LINEAGE_PATH}")
+    wiring = _required_stat_wiring_summary(_OUT_LINEAGE_PATH)
+    print(f"Required stats: {wiring['required_stats']}")
+    print(f"Fully wired: {wiring['fully_wired']}")
+    print(f"Mismatch: {wiring['mismatch']}")
 
 
 if __name__ == "__main__":

@@ -14,12 +14,19 @@ _LEGACY_DEFAULT_LINEAGE_MANIFEST = Path("out/stat_lineage_manifest_latest.json")
 _RUNNER_LINEAGE_MANIFEST = Path("out/lineage_manifest_latest.json")
 
 
+def _format_mismatch_detail(stat_id: str, mismatch: Dict[str, Any]) -> str:
+    declared = ", ".join(sorted(str(item) for item in mismatch.get("declared_wired", [])))
+    observed = ", ".join(sorted(str(item) for item in mismatch.get("observed", [])))
+    return f"{stat_id}: declared {{{declared}}} but observed {{{observed}}}"
+
+
 def run_wiring_health_check(
     *,
     ids_path: Path,
     lineage_manifest_path: Path,
     max_required_max_wave_gaps: int | None = None,
     max_total_missing_pairs: int | None = None,
+    max_observed_vs_declared_mismatches: int | None = None,
 ) -> Dict[str, Any]:
     checks: Dict[str, Any] = {}
 
@@ -65,6 +72,21 @@ def run_wiring_health_check(
                 f"({total_missing_pairs}>{max_total_missing_pairs})"
             )
 
+    if max_observed_vs_declared_mismatches is not None:
+        mismatch_count = int(lineage_summary.get("observed_vs_declared_mismatch_count", 0))
+        if mismatch_count > max_observed_vs_declared_mismatches:
+            violations.append(
+                "lineage_observed_vs_declared_mismatch_count"
+                f"({mismatch_count}>{max_observed_vs_declared_mismatches})"
+            )
+            mismatches = lineage_summary.get("observed_vs_declared_mismatches", {})
+            if isinstance(mismatches, dict):
+                for stat_id in sorted(mismatches):
+                    mismatch = mismatches.get(stat_id)
+                    if not isinstance(mismatch, dict):
+                        continue
+                    violations.append(_format_mismatch_detail(str(stat_id), mismatch))
+
     return {
         "status": "ok" if not violations else "error",
         "violations": violations,
@@ -103,6 +125,12 @@ def _parse_args() -> argparse.Namespace:
         default=None,
         help="Optional fail threshold for total_missing_pairs.",
     )
+    parser.add_argument(
+        "--max-observed-vs-declared-mismatches",
+        type=int,
+        default=None,
+        help="Optional fail threshold for observed_vs_declared_mismatch_count.",
+    )
     parser.add_argument("--output", type=Path, default=None)
     parser.add_argument("--strict", action="store_true")
     return parser.parse_args()
@@ -119,11 +147,15 @@ def _resolve_lineage_manifest_path(path: Path) -> Path:
 def main() -> int:
     args = _parse_args()
     lineage_manifest_path = _resolve_lineage_manifest_path(args.lineage_manifest)
+    if args.strict and args.max_observed_vs_declared_mismatches is None:
+        args.max_observed_vs_declared_mismatches = 0
+
     result = run_wiring_health_check(
         ids_path=args.ids,
         lineage_manifest_path=lineage_manifest_path,
         max_required_max_wave_gaps=args.max_required_max_wave_gaps,
         max_total_missing_pairs=args.max_total_missing_pairs,
+        max_observed_vs_declared_mismatches=args.max_observed_vs_declared_mismatches,
     )
     payload = json.dumps(result, indent=2, sort_keys=True)
     print(payload)

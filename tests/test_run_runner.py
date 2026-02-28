@@ -31,6 +31,8 @@ def test_runner_executes_max_wave_and_writes_artifacts(tmp_path: Path, monkeypat
     assert result["ok"] is True
     assert (tmp_path / "out" / "max_wave_latest.json").exists()
     assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
+    lineage = (tmp_path / "out" / "lineage_manifest_latest.json").read_text()
+    assert "observed_contributors_by_stat_input_id" in lineage
 
 
 def test_runner_applies_yaml_overlay_patch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -84,6 +86,9 @@ def test_runner_module_mode_writes_outputs_under_cwd(tmp_path: Path) -> None:
     assert proc.returncode == 0, proc.stderr
     assert (tmp_path / "out" / "max_wave_latest.json").exists()
     assert (tmp_path / "out" / "lineage_manifest_latest.json").exists()
+    assert "Required stats:" in proc.stdout
+    assert "Fully wired:" in proc.stdout
+    assert "Mismatch:" in proc.stdout
 
 
 def test_runner_module_mode_accepts_legacy_max_wave_task_arg(tmp_path: Path) -> None:

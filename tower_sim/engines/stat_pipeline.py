@@ -140,6 +140,9 @@ def build_canonical_stat_pipeline_for_problem_spec(
         diagnostics["module_contribution_ledger"] = canonical_inputs.module_contribution_ledger
     diagnostics["module_unmapped_by_layer"] = canonical_inputs.module_unmapped_by_layer
     diagnostics["canonical_unmapped_by_source"] = canonical_inputs.canonical_unmapped_by_source
+    diagnostics["observed_contributors_by_stat_input_id"] = (
+        canonical_inputs.observed_contributors_by_stat_input_id
+    )
 
     dag_contract, dag_missing = _load_runtime_dag_contract()
     if dag_contract is not None:

@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any, Mapping
 
+from tower_sim.registry.combat_stat_contract import contributor_families
+
 _REQUIRED_MANIFEST_KEYS = (
     "required_max_wave_stat_input_ids",
 )
@@ -14,18 +16,7 @@ _REQUIRED_STATUS_KEYS = (
     "not_expected_to_be_wired_up",
 )
 
-_FOCUS_CONTRIBUTORS = (
-    "workshop",
-    "relic",
-    "card",
-    "lab",
-    "module",
-    "enhancement",
-    "bot",
-    "perk",
-    "bc",
-    "uw",
-)
+_FOCUS_CONTRIBUTORS = contributor_families()
 
 
 def _expect_mapping(value: Any, *, context: str) -> Mapping[str, Any]:
@@ -51,6 +42,11 @@ def load_manifest(path: Path) -> Mapping[str, Any]:
     _status_lists(manifest)
 
     _expect_list(manifest["required_max_wave_stat_input_ids"], context="required_max_wave_stat_input_ids")
+    if "observed_contributors_by_stat_input_id" in manifest:
+        _expect_mapping(
+            manifest["observed_contributors_by_stat_input_id"],
+            context="observed_contributors_by_stat_input_id",
+        )
     return manifest
 
 
@@ -94,6 +90,28 @@ def _status_lists(manifest: Mapping[str, Any]) -> Mapping[str, Any]:
     return normalized
 
 
+def _declared_wired_by_stat(status_lists: Mapping[str, Any]) -> dict[str, set[str]]:
+    declared: dict[str, set[str]] = {}
+    for stat_id in sorted(status_lists):
+        status = _expect_mapping(status_lists[stat_id], context=f"status_lists[{stat_id}]")
+        declared[str(stat_id)] = {
+            str(item) for item in _expect_list(status["wired_up"], context=f"status_lists[{stat_id}].wired_up")
+        }
+    return declared
+
+
+def _observed_by_stat(manifest: Mapping[str, Any]) -> dict[str, set[str]]:
+    raw = manifest.get("observed_contributors_by_stat_input_id")
+    if raw is None:
+        return {}
+    mapping = _expect_mapping(raw, context="observed_contributors_by_stat_input_id")
+    observed: dict[str, set[str]] = {}
+    for stat_id, contributors_raw in mapping.items():
+        contributors = _expect_list(contributors_raw, context=f"observed_contributors_by_stat_input_id[{stat_id}]")
+        observed[str(stat_id)] = {str(item) for item in contributors}
+    return observed
+
+
 def summarize_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
     status_lists = _status_lists(manifest)
     required_ids = _expect_list(
@@ -128,6 +146,21 @@ def summarize_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
 
     contributor_totals = _summarize_contributor_totals(status_lists)
 
+    declared = _declared_wired_by_stat(status_lists)
+    observed = _observed_by_stat(manifest)
+    observed_vs_declared_mismatches: dict[str, dict[str, list[str]]] = {}
+    for stat_id in sorted(required_id_set):
+        declared_contributors = declared.get(stat_id, set())
+        observed_contributors = observed.get(stat_id, set())
+        missing = sorted(declared_contributors - observed_contributors)
+        if not missing:
+            continue
+        observed_vs_declared_mismatches[stat_id] = {
+            "declared_wired": sorted(declared_contributors),
+            "observed": sorted(observed_contributors),
+            "declared_but_not_observed": missing,
+        }
+
     return {
         "stats_total": len(status_lists),
         "stats_with_missing": len(missing_by_stat),
@@ -139,6 +172,8 @@ def summarize_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
         "contributor_totals": contributor_totals,
         "focus_section_status": _focus_section_status(contributor_totals),
         "full_table": _build_full_table(status_lists, required_id_set=required_id_set),
+        "observed_vs_declared_mismatch_count": len(observed_vs_declared_mismatches),
+        "observed_vs_declared_mismatches": observed_vs_declared_mismatches,
     }
 
 
@@ -245,6 +280,7 @@ def render_report(summary: Mapping[str, Any]) -> str:
         f"- stats_with_missing: {summary['stats_with_missing']}",
         f"- total_missing_pairs: {summary['total_missing_pairs']}",
         f"- required_max_wave_gap_count: {summary['required_max_wave_gap_count']}",
+        f"- observed_vs_declared_mismatch_count: {summary['observed_vs_declared_mismatch_count']}",
         "- missing_by_contributor:",
     ]
     for contributor, count in summary["missing_by_contributor"].items():
@@ -253,6 +289,14 @@ def render_report(summary: Mapping[str, Any]) -> str:
     lines.append("- required_max_wave_gaps:")
     for stat_id, missing in summary["required_max_wave_gaps"].items():
         lines.append(f"  - {stat_id}: {', '.join(missing)}")
+
+    lines.append("- observed_vs_declared_mismatches:")
+    for stat_id, mismatch in summary["observed_vs_declared_mismatches"].items():
+        lines.append(
+            "  - "
+            + f"{stat_id}: declared wired {{{', '.join(mismatch['declared_wired'])}}} "
+            + f"but observed missing {{{', '.join(mismatch['declared_but_not_observed'])}}}"
+        )
 
     lines.append("- missing_by_stat:")
     for stat_id, missing in summary["missing_by_stat"].items():
@@ -268,6 +312,24 @@ def render_report(summary: Mapping[str, Any]) -> str:
 
     lines.append(f"- full_table_rows: {len(summary['full_table'])}")
 
+    return "\n".join(lines)
+
+
+def _explain_stat_input(manifest: Mapping[str, Any], stat_input_id: str) -> str:
+    status_lists = _status_lists(manifest)
+    status = _expect_mapping(status_lists.get(stat_input_id, {}), context=f"status_lists[{stat_input_id}]")
+    declared_wired = sorted(
+        str(item)
+        for item in _expect_list(status.get("wired_up", []), context=f"status_lists[{stat_input_id}].wired_up")
+    )
+    observed = sorted(_observed_by_stat(manifest).get(stat_input_id, set()))
+    missing = sorted(set(declared_wired) - set(observed))
+    lines = [
+        f"StatInput explain: {stat_input_id}",
+        f"- declared wired contributors: {', '.join(declared_wired) if declared_wired else '(none)'}",
+        f"- observed contributors: {', '.join(observed) if observed else '(none)'}",
+        f"- declared-but-not-observed: {', '.join(missing) if missing else '(none)'}",
+    ]
     return "\n".join(lines)
 
 
@@ -294,10 +356,21 @@ def main() -> int:
         type=Path,
         help="Optional path to write full per-stat contributor status table JSON.",
     )
+    parser.add_argument(
+        "--explain-stat-input-id",
+        type=str,
+        default=None,
+        help="Optional stat_input_id to print declared vs observed contributor details.",
+    )
     args = parser.parse_args()
 
-    summary = summarize_manifest(load_manifest(args.manifest))
+    manifest = load_manifest(args.manifest)
+    summary = summarize_manifest(manifest)
     print(render_report(summary))
+
+    if args.explain_stat_input_id:
+        print()
+        print(_explain_stat_input(manifest, args.explain_stat_input_id))
 
     if args.json_out is not None:
         args.json_out.parent.mkdir(parents=True, exist_ok=True)

@@ -97,18 +97,25 @@ _CANONICAL_COVERAGE: Dict[str, CombatContributorCoverage] = {
 }
 
 
-_CONTRIBUTORS: Tuple[str, ...] = (
+_CONTRIBUTOR_FAMILIES: Tuple[str, ...] = (
     "workshop",
-    "enhancement",
     "lab",
     "card",
     "module",
-    "bot",
+    "enhancement",
     "relic",
     "perk",
-    "bc",
+    "bot",
     "uw",
+    "bc",
 )
+
+
+def contributor_families() -> Tuple[str, ...]:
+    return _CONTRIBUTOR_FAMILIES
+
+
+_CONTRIBUTORS: Tuple[str, ...] = contributor_families()
 
 
 def _compiled_workshop_stat_ids() -> Tuple[str, ...]:
@@ -338,6 +345,7 @@ __all__ = [
     "CombatContributorCoverage",
     "StatContributorContract",
     "StatLineageStatus",
+    "contributor_families",
     "contributor_ids_sections",
     "declared_combat_stat_coverage",
     "missing_required_combat_stats",
