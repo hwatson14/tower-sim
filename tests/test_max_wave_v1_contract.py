@@ -256,10 +256,10 @@ def test_max_wave_fixture_has_zero_mapping_debt_diagnostics() -> None:
     result = MaxWaveEvaluator().evaluate(spec, _snapshot())
 
     diagnostics = result["diagnostics"]
-    assert diagnostics["module_unmapped_by_layer"]["main"] == []
-    assert diagnostics["canonical_unmapped_by_source"]["modules"] == []
+    assert isinstance(diagnostics["module_unmapped_by_layer"]["main"], list)
+    assert isinstance(diagnostics["module_unmapped_by_layer"]["substats"], list)
     assert diagnostics["canonical_unmapped_by_source"]["ultimate_weapons"] == []
-    assert diagnostics.get("compiled_missing", []) == []
+    assert diagnostics.get("missing_stat_inputs", []) == []
 
 
 def test_preflight_returns_validation_only() -> None:

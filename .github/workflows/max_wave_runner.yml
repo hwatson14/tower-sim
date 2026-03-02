@@ -214,42 +214,6 @@ jobs:
             out/lineage_full_table_latest.json
           if-no-files-found: error
 
-      - name: Commit max-wave outputs to artifacts branch
-        if: github.event_name != 'pull_request'
-        run: |
-          set -euo pipefail
-          mkdir -p /tmp/max-wave-artifacts
-          cp out/runner_output_latest.json /tmp/max-wave-artifacts/
-          cp out/ep_export_final_stats_report_latest.json /tmp/max-wave-artifacts/
-          cp out/stat_lineage_manifest_latest.json /tmp/max-wave-artifacts/
-          cp out/stat_lineage_contract_gate_latest.json /tmp/max-wave-artifacts/
-          cp out/lineage_full_table_latest.json /tmp/max-wave-artifacts/
-
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git fetch origin "${ARTIFACTS_BRANCH}" || true
-          if git show-ref --verify --quiet "refs/remotes/origin/${ARTIFACTS_BRANCH}"; then
-            git checkout -B "${ARTIFACTS_BRANCH}" "origin/${ARTIFACTS_BRANCH}"
-          else
-            git checkout --orphan "${ARTIFACTS_BRANCH}"
-            git rm -rf . || true
-          fi
-
-          mkdir -p out/max_wave_runner
-          cp /tmp/max-wave-artifacts/runner_output_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/ep_export_final_stats_report_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/stat_lineage_manifest_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/stat_lineage_contract_gate_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/lineage_full_table_latest.json out/max_wave_runner/
-
-          git add out/max_wave_runner/*.json
-          if git diff --cached --quiet; then
-            echo "No max-wave artifact changes to commit."
-            exit 0
-          fi
-          git commit -m "Update max-wave runner artifacts"
-          git push origin "${ARTIFACTS_BRANCH}"
-
       - name: Verify EP export max-wave targets (fail-closed)
         run: |
           python - <<'PY'
@@ -298,4 +262,3 @@ jobs:
           fi
           git commit -m "Update max-wave runner artifacts"
           git push origin "${ARTIFACTS_BRANCH}"
-

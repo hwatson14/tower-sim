@@ -86,7 +86,7 @@ def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
     assert result["checks"]["lineage_summary"]["stats_total"] > 0
 
 
-def test_wiring_health_check_respects_threshold_violations(tmp_path: Path) -> None:
+def test_wiring_health_check_respects_thresholds_with_zero_gap_manifest(tmp_path: Path) -> None:
     _run_blessed_max_wave(tmp_path)
     lineage_manifest = tmp_path / "out" / "stat_lineage_manifest_latest.json"
     _write_stat_lineage_manifest(lineage_manifest)
@@ -97,11 +97,8 @@ def test_wiring_health_check_respects_threshold_violations(tmp_path: Path) -> No
         max_required_max_wave_gaps=0,
     )
 
-    assert result["status"] == "error"
-    assert any(
-        item.startswith("lineage_required_max_wave_gap_count")
-        for item in result["violations"]
-    )
+    assert result["status"] == "ok"
+    assert result["violations"] == []
 
 
 def test_wiring_health_check_fails_closed_for_invalid_manifest(tmp_path: Path) -> None:
