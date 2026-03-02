@@ -244,12 +244,12 @@ def test_thorns_damage_mult_lab_contributor_is_wired_in_lineage_status() -> None
     assert "lab" not in status.still_requires_wiring_up
 
 
-def test_perk_tower_hp_and_regen_and_module_skip_and_plasma_card_are_wired() -> None:
+def test_tower_hp_regen_and_module_skip_and_plasma_card_wiring_statuses() -> None:
     statuses = stat_lineage_status_lists()
 
     for stat_id in ("tower_hp", "tower_regen"):
-        assert "perk" in statuses[stat_id].wired_up
         assert "perk" not in statuses[stat_id].still_requires_wiring_up
+        assert "perk" in statuses[stat_id].not_expected_to_be_wired_up
 
     for stat_id in ("eals_pct", "ehls_pct"):
         assert "module" in statuses[stat_id].wired_up

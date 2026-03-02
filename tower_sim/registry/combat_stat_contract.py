@@ -147,16 +147,16 @@ def _build_reaches_stat_input() -> Dict[str, Tuple[str, ...]]:
         reaches.setdefault(stat_id, set()).add("enhancement")
 
     # Core survivability and BC multiplier stat inputs used by MAX_WAVE.
-    reaches["tower_hp"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk"}
-    reaches["tower_regen"] = {"workshop", "enhancement", "lab", "card", "module", "relic", "perk"}
-    reaches["wall_hp"] = {"workshop", "enhancement", "lab", "module", "relic"}
-    reaches["wall_regen"] = {"workshop", "enhancement", "lab", "module", "relic"}
-    reaches["def_pct"] = {"workshop", "lab", "card", "module", "relic", "perk", "bc"}
-    reaches["thorns_damage_mult"] = {"workshop", "enhancement", "lab", "module", "relic", "bc"}
-    reaches["orb_damage_mult"] = {"bc"}
-    reaches["death_ray_damage_mult"] = {"bc"}
-    reaches["plasma_cannon_damage_mult"] = {"bc", "card"}
-    reaches["knockback_mult"] = {"bc"}
+    reaches["tower_hp"] = {"workshop", "enhancement", "lab", "card", "relic"}
+    reaches["tower_regen"] = {"workshop", "enhancement", "lab", "card", "relic"}
+    reaches["wall_hp"] = {"workshop", "enhancement", "lab", "module"}
+    reaches["wall_regen"] = {"workshop", "lab", "module"}
+    reaches["def_pct"] = {"workshop", "lab", "card", "relic"}
+    reaches["thorns_damage_mult"] = {"workshop", "enhancement", "lab", "module", "relic"}
+    reaches["orb_damage_mult"] = {"workshop"}
+    reaches["death_ray_damage_mult"] = {"workshop"}
+    reaches["plasma_cannon_damage_mult"] = {"card"}
+    reaches["knockback_mult"] = {"workshop"}
     reaches["eals_pct"] = {"workshop", "enhancement", "lab", "module", "relic"}
     reaches["ehls_pct"] = {"workshop", "enhancement", "lab", "module", "relic"}
     reaches["wave_attack_index"] = {"workshop", "enhancement", "lab", "module"}
@@ -187,6 +187,14 @@ def _excluded_reason(contributor: str, stat_id: str) -> str:
         return "excluded:no_authoritative_enhancement_mapping_for_stat"
     if contributor == "bot" and contributor not in workshop_reaches:
         return "excluded:no_authoritative_bot_mapping_for_stat"
+    if contributor == "card" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_card_mapping_for_stat"
+    if contributor == "lab" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_lab_mapping_for_stat"
+    if contributor == "module" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_module_mapping_for_stat"
+    if contributor == "perk" and contributor not in workshop_reaches:
+        return "excluded:no_authoritative_perk_mapping_for_stat"
     if contributor == "bc":
         return "excluded:no_authoritative_bc_mapping_for_stat"
     if contributor == "uw":
@@ -305,14 +313,18 @@ def stat_lineage_status_lists() -> Mapping[str, StatLineageStatus]:
                 for entry in entries
                 if not entry.reaches_stat_input
                 and entry.exclusion_reason
-                in (
-                    "excluded:no_authoritative_workshop_mapping_for_stat",
-                    "excluded:no_authoritative_enhancement_mapping_for_stat",
-                    "excluded:no_authoritative_bot_mapping_for_stat",
-                    "excluded:no_authoritative_relic_mapping_for_stat",
-                    "excluded:no_authoritative_bc_mapping_for_stat",
-                    "excluded:no_authoritative_uw_mapping_for_stat",
-                )
+                    in (
+                        "excluded:no_authoritative_workshop_mapping_for_stat",
+                        "excluded:no_authoritative_enhancement_mapping_for_stat",
+                        "excluded:no_authoritative_bot_mapping_for_stat",
+                        "excluded:no_authoritative_card_mapping_for_stat",
+                        "excluded:no_authoritative_lab_mapping_for_stat",
+                        "excluded:no_authoritative_module_mapping_for_stat",
+                        "excluded:no_authoritative_perk_mapping_for_stat",
+                        "excluded:no_authoritative_relic_mapping_for_stat",
+                        "excluded:no_authoritative_bc_mapping_for_stat",
+                        "excluded:no_authoritative_uw_mapping_for_stat",
+                    )
             )
         )
         still_requires = tuple(
