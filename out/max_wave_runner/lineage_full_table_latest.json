@@ -1,0 +1,4082 @@
+[
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_consume"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_consume_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_size"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "black_hole_size_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_amplify_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_amplify_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_amplify_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_amplify_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_flame_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_flame_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_flame_damage_reduction"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_flame_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_golden_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_golden_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_golden_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_golden_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_thunder_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_thunder_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_thunder_linger"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "bot_thunder_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "cash_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_chance_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_smite"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chain_lightning_smite_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_chrono_loop"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_chrono_loop_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_speed_reduction"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "chrono_field_speed_reduction_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "coins_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "damage_per_meter"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "death_ray_damage_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_kill_wall"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_kill_wall_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "death_wave_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "not_expected",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "def_pct"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "defense_absolute"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "eals_pct"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "ehls_pct"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "free_attack_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "free_defense_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "free_utility_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_golden_combo"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_golden_combo_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_multiplier"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "golden_tower_multiplier_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_charged_mines"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_charged_mines_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "inner_land_mines_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "knockback_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "lab_speed"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "orb_damage_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "orb_speed"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": true,
+    "stat_id": "plasma_cannon_damage_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_death_creep"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_death_creep_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "poison_swamp_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "recovery_amount"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_cover_fire"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_cover_fire_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "smart_missiles_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_angle"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_angle_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_light_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_light_range_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_multiplier"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_multiplier_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "spotlight_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "super_crit_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "super_crit_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "thorns_damage_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "tower_attack_speed"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "not_expected",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "tower_crit_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "not_expected",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "tower_crit_multiplier"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "wired",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "wired",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "tower_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "wired",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "wired",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "tower_dps"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "tower_hp"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "wired",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "wired",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "tower_regen"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "ultimate_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_consume"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_consume_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_size"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_black_hole_size_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_chance_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_smite"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chain_lightning_smite_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_chrono_loop"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_chrono_loop_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_speed_reduction"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_chrono_field_speed_reduction_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_kill_wall"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_kill_wall_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_death_wave_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_golden_combo"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_golden_combo_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_multiplier"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_golden_tower_multiplier_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_charged_mines"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_charged_mines_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_inner_land_mines_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_death_creep"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_death_creep_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_poison_swamp_duration_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_cooldown"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_cooldown_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_cover_fire"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_cover_fire_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_damage_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_smart_missiles_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_angle"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_angle_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_light_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_light_range_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_multiplier"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_multiplier_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_quantity"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "wired",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "uw_spotlight_quantity_next_cost"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "wall_hp"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "wall_rebuild"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": true,
+    "stat_id": "wall_regen"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "wall_thorns_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "wave_attack_index"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "wired",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "wave_health_index"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_attack_speed"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_bounce_shot_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_bounce_shot_range"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_bounce_shot_targets"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_cash_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_cash_per_wave"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_cells_per_kill_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_coins_per_kill_bonus"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_coins_per_wave"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_critical_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_critical_factor"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_damage_per_meter"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_death_defy"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_defense_absolute"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_defense_percent"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_enemy_attack_level_skip"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_enemy_health_level_skip"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_enemy_level_skip"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_free_attack_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_free_defense_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_free_upgrades"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_free_utility_upgrade"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_health"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_health_regen"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_interest"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_knockback"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_knockback_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_knockback_force"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_land_mine"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_land_mine_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_land_mine_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_land_mine_radius"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_lifesteal"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_max_recovery"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_multishot_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_multishot_targets"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_orb_size"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_orb_speed"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_orbs"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_package_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_range_meters"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_rapid_fire_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_rapid_fire_duration"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_recovery_amount"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_recovery_packages"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_rend_armor"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_rend_armor_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_rend_armor_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "not_expected",
+      "lab": "not_expected",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "not_expected"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_shockwave"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_shockwave_frequency"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_shockwave_size"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_super_crit_chance"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_super_crit_mult"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_super_crit_mult_alt"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_thorn_damage"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_wall_fortification"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_wall_health"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_wall_rebuild"
+  },
+  {
+    "contributors": {
+      "bc": "not_expected",
+      "bot": "not_expected",
+      "card": "not_expected",
+      "enhancement": "wired",
+      "lab": "wired",
+      "module": "not_expected",
+      "perk": "not_expected",
+      "relic": "not_expected",
+      "uw": "not_expected",
+      "workshop": "wired"
+    },
+    "required_max_wave": false,
+    "stat_id": "workshop_wall_regen"
+  }
+]

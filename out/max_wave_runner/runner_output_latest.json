@@ -37,39 +37,156 @@
     },
     "at_wave_stage_skipped": "stages_not_materialized",
     "boss_survivability": {
-      "hits_to_death": 21005.0,
-      "hits_to_kill": 2,
+      "hits_to_death": 4631.0,
+      "hits_to_kill": 1,
       "outcome": "tower_kills_boss",
-      "ttd_seconds": 42010.0,
-      "ttk_seconds": 4.0
+      "ttd_seconds": 9262.0,
+      "ttk_seconds": 2.0
     },
     "canonical_naming_contract": {
       "aliases": {
+        "amplify bot bonus": "bot_amplify_bonus",
+        "amplify bot cooldown": "bot_amplify_cooldown",
+        "amplify bot duration": "bot_amplify_duration",
+        "amplify bot range": "bot_amplify_range",
+        "black hole consume": "black_hole_consume",
+        "black hole consume next cost": "black_hole_consume_next_cost",
+        "black hole cooldown": "black_hole_cooldown",
+        "black hole cooldown next cost": "black_hole_cooldown_next_cost",
+        "black hole duration": "black_hole_duration",
+        "black hole duration next cost": "black_hole_duration_next_cost",
+        "black hole size": "black_hole_size",
+        "black hole size next cost": "black_hole_size_next_cost",
+        "bot amplify bonus": "bot_amplify_bonus",
+        "bot amplify cooldown": "bot_amplify_cooldown",
+        "bot amplify duration": "bot_amplify_duration",
+        "bot amplify range": "bot_amplify_range",
+        "bot flame cooldown": "bot_flame_cooldown",
+        "bot flame damage": "bot_flame_damage",
+        "bot flame damage reduction": "bot_flame_damage_reduction",
+        "bot flame range": "bot_flame_range",
+        "bot golden bonus": "bot_golden_bonus",
+        "bot golden cooldown": "bot_golden_cooldown",
+        "bot golden duration": "bot_golden_duration",
+        "bot golden range": "bot_golden_range",
+        "bot range": "bot_range",
+        "bot thunder cooldown": "bot_thunder_cooldown",
+        "bot thunder duration": "bot_thunder_duration",
+        "bot thunder linger": "bot_thunder_linger",
+        "bot thunder range": "bot_thunder_range",
+        "cash bonus": "cash_bonus",
+        "chain lightning chance": "chain_lightning_chance",
+        "chain lightning chance next cost": "chain_lightning_chance_next_cost",
+        "chain lightning damage": "chain_lightning_damage",
+        "chain lightning damage next cost": "chain_lightning_damage_next_cost",
+        "chain lightning quantity": "chain_lightning_quantity",
+        "chain lightning quantity next cost": "chain_lightning_quantity_next_cost",
+        "chain lightning smite": "chain_lightning_smite",
+        "chain lightning smite next cost": "chain_lightning_smite_next_cost",
+        "chrono field chrono loop": "chrono_field_chrono_loop",
+        "chrono field chrono loop next cost": "chrono_field_chrono_loop_next_cost",
+        "chrono field cooldown": "chrono_field_cooldown",
+        "chrono field cooldown next cost": "chrono_field_cooldown_next_cost",
+        "chrono field duration": "chrono_field_duration",
+        "chrono field duration next cost": "chrono_field_duration_next_cost",
+        "chrono field speed reduction": "chrono_field_speed_reduction",
+        "chrono field speed reduction next cost": "chrono_field_speed_reduction_next_cost",
+        "coins bonus": "coins_bonus",
+        "damage per meter": "damage_per_meter",
         "death ray damage mult": "death_ray_damage_mult",
         "death ray damage multiplier": "death_ray_damage_mult",
+        "death wave cooldown": "death_wave_cooldown",
+        "death wave cooldown next cost": "death_wave_cooldown_next_cost",
+        "death wave damage": "death_wave_damage",
+        "death wave damage next cost": "death_wave_damage_next_cost",
+        "death wave kill wall": "death_wave_kill_wall",
+        "death wave kill wall next cost": "death_wave_kill_wall_next_cost",
+        "death wave quantity": "death_wave_quantity",
+        "death wave quantity next cost": "death_wave_quantity_next_cost",
         "def pct": "def_pct",
         "defence %": "def_pct",
         "defense": "def_pct",
         "defense %": "def_pct",
+        "defense absolute": "defense_absolute",
         "eals pct": "eals_pct",
         "ehls pct": "ehls_pct",
         "enemy attack level skip": "eals_pct",
         "enemy health level skip": "ehls_pct",
+        "flame bot cooldown": "bot_flame_cooldown",
+        "flame bot damage": "bot_flame_damage",
+        "flame bot damage reduction": "bot_flame_damage_reduction",
+        "flame bot range": "bot_flame_range",
+        "free attack upgrade": "free_attack_upgrade",
+        "free defense upgrade": "free_defense_upgrade",
+        "free utility upgrade": "free_utility_upgrade",
+        "golden bot bonus": "bot_golden_bonus",
+        "golden bot cooldown": "bot_golden_cooldown",
+        "golden bot duration": "bot_golden_duration",
+        "golden bot range": "bot_golden_range",
+        "golden tower cooldown": "golden_tower_cooldown",
+        "golden tower cooldown next cost": "golden_tower_cooldown_next_cost",
+        "golden tower duration": "golden_tower_duration",
+        "golden tower duration next cost": "golden_tower_duration_next_cost",
+        "golden tower golden combo": "golden_tower_golden_combo",
+        "golden tower golden combo next cost": "golden_tower_golden_combo_next_cost",
+        "golden tower multiplier": "golden_tower_multiplier",
+        "golden tower multiplier next cost": "golden_tower_multiplier_next_cost",
         "health": "tower_hp",
         "health regen": "tower_regen",
         "hp": "tower_hp",
         "hpregen": "tower_regen",
+        "inner land mines charged mines": "inner_land_mines_charged_mines",
+        "inner land mines charged mines next cost": "inner_land_mines_charged_mines_next_cost",
+        "inner land mines cooldown": "inner_land_mines_cooldown",
+        "inner land mines cooldown next cost": "inner_land_mines_cooldown_next_cost",
+        "inner land mines damage": "inner_land_mines_damage",
+        "inner land mines damage next cost": "inner_land_mines_damage_next_cost",
+        "inner land mines quantity": "inner_land_mines_quantity",
+        "inner land mines quantity next cost": "inner_land_mines_quantity_next_cost",
         "knockback mult": "knockback_mult",
         "knockback multiplier": "knockback_mult",
+        "lab speed": "lab_speed",
         "max amount": "workshop_max_recovery",
         "orb damage mult": "orb_damage_mult",
         "orb damage multiplier": "orb_damage_mult",
+        "orb speed": "orb_speed",
         "plasma cannon damage mult": "plasma_cannon_damage_mult",
         "plasma cannon damage multiplier": "plasma_cannon_damage_mult",
+        "poison swamp cooldown": "poison_swamp_cooldown",
+        "poison swamp cooldown next cost": "poison_swamp_cooldown_next_cost",
+        "poison swamp damage": "poison_swamp_damage",
+        "poison swamp damage next cost": "poison_swamp_damage_next_cost",
+        "poison swamp death creep": "poison_swamp_death_creep",
+        "poison swamp death creep next cost": "poison_swamp_death_creep_next_cost",
+        "poison swamp duration": "poison_swamp_duration",
+        "poison swamp duration next cost": "poison_swamp_duration_next_cost",
+        "recovery amount": "recovery_amount",
+        "smart missiles cooldown": "smart_missiles_cooldown",
+        "smart missiles cooldown next cost": "smart_missiles_cooldown_next_cost",
+        "smart missiles cover fire": "smart_missiles_cover_fire",
+        "smart missiles cover fire next cost": "smart_missiles_cover_fire_next_cost",
+        "smart missiles damage": "smart_missiles_damage",
+        "smart missiles damage next cost": "smart_missiles_damage_next_cost",
+        "smart missiles quantity": "smart_missiles_quantity",
+        "smart missiles quantity next cost": "smart_missiles_quantity_next_cost",
+        "spotlight angle": "spotlight_angle",
+        "spotlight angle next cost": "spotlight_angle_next_cost",
+        "spotlight light range": "spotlight_light_range",
+        "spotlight light range next cost": "spotlight_light_range_next_cost",
+        "spotlight multiplier": "spotlight_multiplier",
+        "spotlight multiplier next cost": "spotlight_multiplier_next_cost",
+        "spotlight quantity": "spotlight_quantity",
+        "spotlight quantity next cost": "spotlight_quantity_next_cost",
+        "super crit chance": "super_crit_chance",
+        "super crit mult": "super_crit_mult",
         "thorn damage": "thorns_damage_mult",
         "thorns": "thorns_damage_mult",
         "thorns damage mult": "thorns_damage_mult",
         "thorns damage multiplier": "thorns_damage_mult",
+        "thunder bot cooldown": "bot_thunder_cooldown",
+        "thunder bot duration": "bot_thunder_duration",
+        "thunder bot linger": "bot_thunder_linger",
+        "thunder bot range": "bot_thunder_range",
         "tower attack speed": "tower_attack_speed",
         "tower crit chance": "tower_crit_chance",
         "tower crit multiplier": "tower_crit_multiplier",
@@ -79,6 +196,7 @@
         "tower health regen": "tower_regen",
         "tower hp": "tower_hp",
         "tower regen": "tower_regen",
+        "ultimate damage": "ultimate_damage",
         "uw black hole consume": "uw_black_hole_consume",
         "uw black hole consume next cost": "uw_black_hole_consume_next_cost",
         "uw black hole cooldown": "uw_black_hole_cooldown",
@@ -153,7 +271,9 @@
         "uw spotlight quantity next cost": "uw_spotlight_quantity_next_cost",
         "wall health": "wall_hp",
         "wall hp": "wall_hp",
+        "wall rebuild": "wall_rebuild",
         "wall regen": "wall_regen",
+        "wall thorns mult": "wall_thorns_mult",
         "wave attack index": "wave_attack_index",
         "wave health index": "wave_health_index",
         "workshop attack speed": "workshop_attack_speed",
@@ -226,8 +346,109 @@
     "canonical_unmapped_by_source": {
       "cards": [],
       "enhancements": [],
-      "labs": [],
-      "modules": [],
+      "labs": [
+        "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
+        "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
+        "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
+        "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
+        "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
+        "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+        "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
+        "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
+        "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
+        "lab_table_unmapped:Chain Lightning Shock:LAB_CHAIN_LIGHTNING_SHOCK",
+        "lab_table_unmapped:Chain Thunder:LAB_CHAIN_THUNDER",
+        "lab_table_unmapped:Chrono Field Damage Reduction:LAB_CHRONO_FIELD_DAMAGE_REDUCTION",
+        "lab_table_unmapped:Chrono Field Range:LAB_CHRONO_FIELD_RANGE",
+        "lab_table_unmapped:Chrono Field Reduction %:LAB_CHRONO_FIELD_REDUCTION_PERCENT",
+        "lab_table_unmapped:Coins / Kill Bonus:LAB_COINS_PER_KILL_BONUS",
+        "lab_table_unmapped:Coins / Wave:LAB_COINS_PER_WAVE",
+        "lab_table_unmapped:Common Drop Chance:LAB_COMMON_DROP_CHANCE",
+        "lab_table_unmapped:Core Effect Bans:LAB_CORE_EFFECT_BANS",
+        "lab_table_unmapped:Critical Factor:LAB_CRITICAL_FACTOR",
+        "lab_table_unmapped:Daily Mission Shards:LAB_DAILY_MISSION_SHARDS",
+        "lab_table_unmapped:Damage / Meter:LAB_DAMAGE_PER_METER",
+        "lab_table_unmapped:Damage:LAB_DAMAGE",
+        "lab_table_unmapped:Death Wave Cells Bonus:LAB_DEATH_WAVE_CELL_BONUS",
+        "lab_table_unmapped:Death Wave Coin Bonus:LAB_DEATH_WAVE_COIN_BONUS",
+        "lab_table_unmapped:Death Wave Health:LAB_DEATH_WAVE_HEALTH",
+        "lab_table_unmapped:Defense Absolute:LAB_DEFENSE_ABSOLUTE",
+        "lab_table_unmapped:Energy Shield Extra Hit:LAB_ENERGY_SHIELD_EXTRA_HIT",
+        "lab_table_unmapped:Extra Black Hole:LAB_EXTRA_BLACK_HOLE",
+        "lab_table_unmapped:Extra Extra Orbs:LAB_EXTRA_EXTRA_ORBS",
+        "lab_table_unmapped:Extra Orb Adjuster:LAB_EXTRA_ORB_ADJUSTER",
+        "lab_table_unmapped:First Perk Choice:LAB_FIRST_PERK_CHOICE",
+        "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
+        "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
+        "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+        "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
+        "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
+        "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
+        "lab_table_unmapped:Golden Tower Duration:LAB_GOLDEN_TOWER_DURATION",
+        "lab_table_unmapped:Improve Trade-off Perks:LAB_IMPROVE_TRADE_OFF_PERKS",
+        "lab_table_unmapped:Interest:LAB_INTEREST",
+        "lab_table_unmapped:Labs Coin Discount:LAB_LABS_COIN_DISCOUNT",
+        "lab_table_unmapped:Labs Speed:LAB_LABS_SPEED",
+        "lab_table_unmapped:Light Speed Shots:LAB_LIGHT_SPEED_SHOTS",
+        "lab_table_unmapped:Lightning Amplifier - Scatter:LAB_LIGHTNING_AMPLIFIER_SCATTER",
+        "lab_table_unmapped:Max Interest:LAB_MAX_INTEREST",
+        "lab_table_unmapped:Module Shards Cost:LAB_MODULE_SHARD_COSTS",
+        "lab_table_unmapped:More Round Stats:LAB_MORE_ROUND_STATS",
+        "lab_table_unmapped:Orb Boss Hit:LAB_ORB_BOSS_HIT",
+        "lab_table_unmapped:Orbs Speed:LAB_ORB_SPEED",
+        "lab_table_unmapped:Package After Boss:LAB_PACKAGE_AFTER_BOSS",
+        "lab_table_unmapped:Perk Option Quantity:LAB_PERK_OPTION_QUANTITY",
+        "lab_table_unmapped:Range:LAB_RANGE",
+        "lab_table_unmapped:Rare Drop Chance:LAB_RARE_DROP_CHANCE",
+        "lab_table_unmapped:Recharge Demon Mode:LAB_RECHARGE_DEMON_MODE",
+        "lab_table_unmapped:Recharge Second Wind:LAB_RECHARGE_SECOND_WIND",
+        "lab_table_unmapped:Recovery Package Chance Mastery:LAB_RECOVERY_PACKAGE_CHANCE_MASTERY",
+        "lab_table_unmapped:Reroll Daily Mission:LAB_REROLL_DAILY_MISSIONS",
+        "lab_table_unmapped:Reroll Shards:LAB_REROLL_SHARDS",
+        "lab_table_unmapped:Second Wind Blast:LAB_SECOND_WIND_BLAST",
+        "lab_table_unmapped:Shatter Shards:LAB_SHATTER_SHARDS",
+        "lab_table_unmapped:Shock Chance:LAB_SHOCK_CHANCE",
+        "lab_table_unmapped:Shock Multiplier:LAB_SHOCK_MULTIPLIER",
+        "lab_table_unmapped:Spotlight Coin Bonus:LAB_SPOTLIGHT_COIN_BONUS",
+        "lab_table_unmapped:Spotlight Missiles:LAB_SPOTLIGHT_MISSILES",
+        "lab_table_unmapped:Standard Perks Bonus:LAB_STANDARD_PERKS_BONUS",
+        "lab_table_unmapped:Starting Cash:LAB_STARTING_CASH",
+        "lab_table_unmapped:Super Crit Chance:LAB_SUPER_CRIT_CHANCE",
+        "lab_table_unmapped:Super Crit Multi:LAB_SUPER_CRIT_MULTI",
+        "lab_table_unmapped:Target Priority:LAB_TARGET_PRIORITY",
+        "lab_table_unmapped:Unlock Perks:LAB_UNLOCK_PERKS",
+        "lab_table_unmapped:Unmerge Module:LAB_UNMERGE_MODULE",
+        "lab_table_unmapped:Wall Fortification:LAB_WALL_FORTIFICATION",
+        "lab_table_unmapped:Wall Rebuild:LAB_WALL_REBUILD",
+        "lab_table_unmapped:Wall Thorns:LAB_WALL_THORN",
+        "lab_table_unmapped:Workshop Attack Discount:LAB_WORKSHOP_ATTACK_DISCOUNT",
+        "lab_table_unmapped:Workshop Defense Discount:LAB_WORKSHOP_DEFENSE_DISCOUNT",
+        "lab_table_unmapped:Workshop Enhancements:LAB_WORKSHOP_ENHANCEMENT",
+        "lab_table_unmapped:Workshop Respec:LAB_WORKSHOP_RESPEC",
+        "lab_table_unmapped:Workshop Utility Discount:LAB_WORKSHOP_UTILITY_DISCOUNT"
+      ],
+      "modules": [
+        "main:Generator:assist:Pulsar Harvester:module_primary_effect:generator_main_effect",
+        "main:Generator:primary:Singularity Harness:module_primary_effect:generator_main_effect",
+        "module_substat_unmapped:Armor:primary:Sharp Fortitude:Land Mine Chance",
+        "module_substat_unmapped:Cannon:primary:Amplifying Strike:Bounce Shot Chance",
+        "module_substat_unmapped:Cannon:primary:Amplifying Strike:Multishot Targets",
+        "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Cooldown",
+        "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Duration",
+        "module_substat_unmapped:Generator:assist:Pulsar Harvester:Coins / Kill Bonus",
+        "module_substat_unmapped:Generator:assist:Pulsar Harvester:Recovery Package Chance",
+        "module_substat_unmapped:Generator:primary:Singularity Harness:Coins / Kill Bonus",
+        "module_substat_unmapped:Generator:primary:Singularity Harness:Recovery Package Chance",
+        "substats:module_substat_unmapped:Armor:primary:Sharp Fortitude:Land Mine Chance",
+        "substats:module_substat_unmapped:Cannon:primary:Amplifying Strike:Bounce Shot Chance",
+        "substats:module_substat_unmapped:Cannon:primary:Amplifying Strike:Multishot Targets",
+        "substats:module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Cooldown",
+        "substats:module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Duration",
+        "substats:module_substat_unmapped:Generator:assist:Pulsar Harvester:Coins / Kill Bonus",
+        "substats:module_substat_unmapped:Generator:assist:Pulsar Harvester:Recovery Package Chance",
+        "substats:module_substat_unmapped:Generator:primary:Singularity Harness:Coins / Kill Bonus",
+        "substats:module_substat_unmapped:Generator:primary:Singularity Harness:Recovery Package Chance"
+      ],
       "other": [],
       "relics": [],
       "ultimate_weapons": [],
@@ -253,41 +474,131 @@
         "at_wave_snapshot"
       ]
     },
+    "compiled_missing": [
+      "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
+      "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
+      "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
+      "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
+      "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
+      "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+      "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
+      "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
+      "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
+      "lab_table_unmapped:Chain Lightning Shock:LAB_CHAIN_LIGHTNING_SHOCK",
+      "lab_table_unmapped:Chain Thunder:LAB_CHAIN_THUNDER",
+      "lab_table_unmapped:Chrono Field Damage Reduction:LAB_CHRONO_FIELD_DAMAGE_REDUCTION",
+      "lab_table_unmapped:Chrono Field Range:LAB_CHRONO_FIELD_RANGE",
+      "lab_table_unmapped:Chrono Field Reduction %:LAB_CHRONO_FIELD_REDUCTION_PERCENT",
+      "lab_table_unmapped:Coins / Kill Bonus:LAB_COINS_PER_KILL_BONUS",
+      "lab_table_unmapped:Coins / Wave:LAB_COINS_PER_WAVE",
+      "lab_table_unmapped:Common Drop Chance:LAB_COMMON_DROP_CHANCE",
+      "lab_table_unmapped:Core Effect Bans:LAB_CORE_EFFECT_BANS",
+      "lab_table_unmapped:Critical Factor:LAB_CRITICAL_FACTOR",
+      "lab_table_unmapped:Daily Mission Shards:LAB_DAILY_MISSION_SHARDS",
+      "lab_table_unmapped:Damage / Meter:LAB_DAMAGE_PER_METER",
+      "lab_table_unmapped:Damage:LAB_DAMAGE",
+      "lab_table_unmapped:Death Wave Cells Bonus:LAB_DEATH_WAVE_CELL_BONUS",
+      "lab_table_unmapped:Death Wave Coin Bonus:LAB_DEATH_WAVE_COIN_BONUS",
+      "lab_table_unmapped:Death Wave Health:LAB_DEATH_WAVE_HEALTH",
+      "lab_table_unmapped:Defense Absolute:LAB_DEFENSE_ABSOLUTE",
+      "lab_table_unmapped:Energy Shield Extra Hit:LAB_ENERGY_SHIELD_EXTRA_HIT",
+      "lab_table_unmapped:Extra Black Hole:LAB_EXTRA_BLACK_HOLE",
+      "lab_table_unmapped:Extra Extra Orbs:LAB_EXTRA_EXTRA_ORBS",
+      "lab_table_unmapped:Extra Orb Adjuster:LAB_EXTRA_ORB_ADJUSTER",
+      "lab_table_unmapped:First Perk Choice:LAB_FIRST_PERK_CHOICE",
+      "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
+      "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
+      "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+      "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
+      "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
+      "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
+      "lab_table_unmapped:Golden Tower Duration:LAB_GOLDEN_TOWER_DURATION",
+      "lab_table_unmapped:Improve Trade-off Perks:LAB_IMPROVE_TRADE_OFF_PERKS",
+      "lab_table_unmapped:Interest:LAB_INTEREST",
+      "lab_table_unmapped:Labs Coin Discount:LAB_LABS_COIN_DISCOUNT",
+      "lab_table_unmapped:Labs Speed:LAB_LABS_SPEED",
+      "lab_table_unmapped:Light Speed Shots:LAB_LIGHT_SPEED_SHOTS",
+      "lab_table_unmapped:Lightning Amplifier - Scatter:LAB_LIGHTNING_AMPLIFIER_SCATTER",
+      "lab_table_unmapped:Max Interest:LAB_MAX_INTEREST",
+      "lab_table_unmapped:Module Shards Cost:LAB_MODULE_SHARD_COSTS",
+      "lab_table_unmapped:More Round Stats:LAB_MORE_ROUND_STATS",
+      "lab_table_unmapped:Orb Boss Hit:LAB_ORB_BOSS_HIT",
+      "lab_table_unmapped:Orbs Speed:LAB_ORB_SPEED",
+      "lab_table_unmapped:Package After Boss:LAB_PACKAGE_AFTER_BOSS",
+      "lab_table_unmapped:Perk Option Quantity:LAB_PERK_OPTION_QUANTITY",
+      "lab_table_unmapped:Range:LAB_RANGE",
+      "lab_table_unmapped:Rare Drop Chance:LAB_RARE_DROP_CHANCE",
+      "lab_table_unmapped:Recharge Demon Mode:LAB_RECHARGE_DEMON_MODE",
+      "lab_table_unmapped:Recharge Second Wind:LAB_RECHARGE_SECOND_WIND",
+      "lab_table_unmapped:Recovery Package Chance Mastery:LAB_RECOVERY_PACKAGE_CHANCE_MASTERY",
+      "lab_table_unmapped:Reroll Daily Mission:LAB_REROLL_DAILY_MISSIONS",
+      "lab_table_unmapped:Reroll Shards:LAB_REROLL_SHARDS",
+      "lab_table_unmapped:Second Wind Blast:LAB_SECOND_WIND_BLAST",
+      "lab_table_unmapped:Shatter Shards:LAB_SHATTER_SHARDS",
+      "lab_table_unmapped:Shock Chance:LAB_SHOCK_CHANCE",
+      "lab_table_unmapped:Shock Multiplier:LAB_SHOCK_MULTIPLIER",
+      "lab_table_unmapped:Spotlight Coin Bonus:LAB_SPOTLIGHT_COIN_BONUS",
+      "lab_table_unmapped:Spotlight Missiles:LAB_SPOTLIGHT_MISSILES",
+      "lab_table_unmapped:Standard Perks Bonus:LAB_STANDARD_PERKS_BONUS",
+      "lab_table_unmapped:Starting Cash:LAB_STARTING_CASH",
+      "lab_table_unmapped:Super Crit Chance:LAB_SUPER_CRIT_CHANCE",
+      "lab_table_unmapped:Super Crit Multi:LAB_SUPER_CRIT_MULTI",
+      "lab_table_unmapped:Target Priority:LAB_TARGET_PRIORITY",
+      "lab_table_unmapped:Unlock Perks:LAB_UNLOCK_PERKS",
+      "lab_table_unmapped:Unmerge Module:LAB_UNMERGE_MODULE",
+      "lab_table_unmapped:Wall Fortification:LAB_WALL_FORTIFICATION",
+      "lab_table_unmapped:Wall Rebuild:LAB_WALL_REBUILD",
+      "lab_table_unmapped:Wall Thorns:LAB_WALL_THORN",
+      "lab_table_unmapped:Workshop Attack Discount:LAB_WORKSHOP_ATTACK_DISCOUNT",
+      "lab_table_unmapped:Workshop Defense Discount:LAB_WORKSHOP_DEFENSE_DISCOUNT",
+      "lab_table_unmapped:Workshop Enhancements:LAB_WORKSHOP_ENHANCEMENT",
+      "lab_table_unmapped:Workshop Respec:LAB_WORKSHOP_RESPEC",
+      "lab_table_unmapped:Workshop Utility Discount:LAB_WORKSHOP_UTILITY_DISCOUNT",
+      "module_substat_unmapped:Armor:primary:Sharp Fortitude:Land Mine Chance",
+      "module_substat_unmapped:Cannon:primary:Amplifying Strike:Bounce Shot Chance",
+      "module_substat_unmapped:Cannon:primary:Amplifying Strike:Multishot Targets",
+      "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Cooldown",
+      "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Duration",
+      "module_substat_unmapped:Generator:assist:Pulsar Harvester:Coins / Kill Bonus",
+      "module_substat_unmapped:Generator:assist:Pulsar Harvester:Recovery Package Chance",
+      "module_substat_unmapped:Generator:primary:Singularity Harness:Coins / Kill Bonus",
+      "module_substat_unmapped:Generator:primary:Singularity Harness:Recovery Package Chance"
+    ],
     "core_stat_override_policy": "strict_fail_closed",
     "margin_trace": [
       {
-        "margin_seconds": 1321168.0,
+        "margin_seconds": 413350.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 1321172.0,
-        "ttk_seconds": 4.0,
+        "ttd_seconds": 413352.0,
+        "ttk_seconds": 2.0,
         "wave": 4
       },
       {
-        "margin_seconds": 742822.0,
+        "margin_seconds": 224210.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 742826.0,
-        "ttk_seconds": 4.0,
+        "ttd_seconds": 224212.0,
+        "ttk_seconds": 2.0,
         "wave": 8
       },
       {
-        "margin_seconds": 324726.0,
+        "margin_seconds": 91464.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 324730.0,
-        "ttk_seconds": 4.0,
+        "ttd_seconds": 91466.0,
+        "ttk_seconds": 2.0,
         "wave": 16
       },
       {
-        "margin_seconds": 116576.0,
+        "margin_seconds": 29304.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 116580.0,
-        "ttk_seconds": 4.0,
+        "ttd_seconds": 29306.0,
+        "ttk_seconds": 2.0,
         "wave": 32
       },
       {
-        "margin_seconds": 42006.0,
+        "margin_seconds": 9260.0,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 42010.0,
-        "ttk_seconds": 4.0,
+        "ttd_seconds": 9262.0,
+        "ttk_seconds": 2.0,
         "wave": 64
       }
     ],
@@ -300,6 +611,33 @@
         "slot": "Cannon",
         "target": "tower_damage",
         "value": 7.88
+      },
+      {
+        "kind": "multiplier",
+        "layer": "substat",
+        "module": "Amplifying Strike",
+        "placement": "primary",
+        "slot": "Cannon",
+        "target": "tower_attack_speed",
+        "value": 1.03
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Amplifying Strike",
+        "placement": "primary",
+        "slot": "Cannon",
+        "target": "tower_crit_multiplier",
+        "value": 15.0
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Amplifying Strike",
+        "placement": "primary",
+        "slot": "Cannon",
+        "target": "super_crit_mult",
+        "value": 5.0
       },
       {
         "kind": "behavior_binding",
@@ -419,13 +757,22 @@
         "value": 2.0
       },
       {
-        "kind": "multiplier",
+        "kind": "behavior_binding",
         "layer": "primary",
         "module": "Singularity Harness",
         "placement": "primary",
         "slot": "Generator",
-        "target": "workshop_coins_per_kill_bonus",
+        "target": "module_primary_effect:generator_main_effect",
         "value": 1.59
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Singularity Harness",
+        "placement": "primary",
+        "slot": "Generator",
+        "target": "free_utility_upgrade",
+        "value": 0.1
       },
       {
         "kind": "delta",
@@ -446,22 +793,31 @@
         "value": 0.08
       },
       {
-        "kind": "behavior_binding",
+        "kind": "delta",
         "layer": "unique",
         "module": "Singularity Harness",
         "placement": "primary",
         "slot": "Generator",
-        "target": "uw_behavior:bot_range_bonus_m",
+        "target": "bot_range",
         "value": 15.0
       },
       {
-        "kind": "multiplier",
+        "kind": "behavior_binding",
         "layer": "primary",
         "module": "Pulsar Harvester",
         "placement": "assist",
         "slot": "Generator",
-        "target": "workshop_coins_per_kill_bonus",
+        "target": "module_primary_effect:generator_main_effect",
         "value": 1.614
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Pulsar Harvester",
+        "placement": "assist",
+        "slot": "Generator",
+        "target": "free_utility_upgrade",
+        "value": 0.12
       },
       {
         "kind": "delta",
@@ -496,7 +852,7 @@
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "uw_chain_lightning_damage",
+        "target": "chain_lightning_damage",
         "value": 9.586
       },
       {
@@ -505,7 +861,7 @@
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "uw_smart_missiles_damage",
+        "target": "smart_missiles_damage",
         "value": 9.586
       },
       {
@@ -514,7 +870,7 @@
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "uw_death_wave_damage",
+        "target": "death_wave_damage",
         "value": 9.586
       },
       {
@@ -523,7 +879,7 @@
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "uw_inner_land_mines_damage",
+        "target": "inner_land_mines_damage",
         "value": 9.586
       },
       {
@@ -532,8 +888,26 @@
         "module": "Primordial Collapse",
         "placement": "primary",
         "slot": "Core",
-        "target": "uw_poison_swamp_damage",
+        "target": "poison_swamp_damage",
         "value": 9.586
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "death_wave_quantity",
+        "value": 2.0
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Primordial Collapse",
+        "placement": "primary",
+        "slot": "Core",
+        "target": "spotlight_angle",
+        "value": 15.0
       },
       {
         "kind": "behavior_binding",
@@ -550,7 +924,7 @@
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "uw_chain_lightning_damage",
+        "target": "chain_lightning_damage",
         "value": 8.95
       },
       {
@@ -559,7 +933,7 @@
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "uw_smart_missiles_damage",
+        "target": "smart_missiles_damage",
         "value": 8.95
       },
       {
@@ -568,7 +942,7 @@
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "uw_death_wave_damage",
+        "target": "death_wave_damage",
         "value": 8.95
       },
       {
@@ -577,7 +951,7 @@
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "uw_inner_land_mines_damage",
+        "target": "inner_land_mines_damage",
         "value": 8.95
       },
       {
@@ -586,8 +960,53 @@
         "module": "Dimension Core",
         "placement": "assist",
         "slot": "Core",
-        "target": "uw_poison_swamp_damage",
+        "target": "poison_swamp_damage",
         "value": 8.95
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "chain_lightning_chance",
+        "value": 0.12
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "spotlight_angle",
+        "value": 11.0
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "spotlight_multiplier",
+        "value": 15.0
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "chain_lightning_quantity",
+        "value": 3.0
+      },
+      {
+        "kind": "delta",
+        "layer": "substat",
+        "module": "Dimension Core",
+        "placement": "assist",
+        "slot": "Core",
+        "target": "chain_lightning_damage",
+        "value": 50.0
       },
       {
         "kind": "behavior_binding",
@@ -600,22 +1019,705 @@
       }
     ],
     "module_unmapped_by_layer": {
-      "main": [],
-      "substats": [],
+      "main": [
+        "Generator:assist:Pulsar Harvester:module_primary_effect:generator_main_effect",
+        "Generator:primary:Singularity Harness:module_primary_effect:generator_main_effect"
+      ],
+      "substats": [
+        "module_substat_unmapped:Armor:primary:Sharp Fortitude:Land Mine Chance",
+        "module_substat_unmapped:Cannon:primary:Amplifying Strike:Bounce Shot Chance",
+        "module_substat_unmapped:Cannon:primary:Amplifying Strike:Multishot Targets",
+        "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Cooldown",
+        "module_substat_unmapped:Core:primary:Primordial Collapse:Black Hole - Duration",
+        "module_substat_unmapped:Generator:assist:Pulsar Harvester:Coins / Kill Bonus",
+        "module_substat_unmapped:Generator:assist:Pulsar Harvester:Recovery Package Chance",
+        "module_substat_unmapped:Generator:primary:Singularity Harness:Coins / Kill Bonus",
+        "module_substat_unmapped:Generator:primary:Singularity Harness:Recovery Package Chance"
+      ],
       "unique": []
+    },
+    "observed_contributors_by_stat_input_id": {
+      "black_hole_cooldown": [
+        "uw"
+      ],
+      "black_hole_duration": [
+        "uw"
+      ],
+      "black_hole_duration_next_cost": [
+        "uw"
+      ],
+      "black_hole_size": [
+        "uw"
+      ],
+      "black_hole_size_next_cost": [
+        "uw"
+      ],
+      "bot_amplify_bonus": [
+        "bot"
+      ],
+      "bot_amplify_cooldown": [
+        "bot"
+      ],
+      "bot_amplify_duration": [
+        "bot"
+      ],
+      "bot_amplify_range": [
+        "bot"
+      ],
+      "bot_flame_cooldown": [
+        "bot"
+      ],
+      "bot_flame_damage": [
+        "bot"
+      ],
+      "bot_flame_damage_reduction": [
+        "bot"
+      ],
+      "bot_flame_range": [
+        "bot"
+      ],
+      "bot_golden_bonus": [
+        "bot"
+      ],
+      "bot_golden_cooldown": [
+        "bot"
+      ],
+      "bot_golden_duration": [
+        "bot"
+      ],
+      "bot_golden_range": [
+        "bot"
+      ],
+      "bot_range": [
+        "module",
+        "relic"
+      ],
+      "bot_thunder_cooldown": [
+        "bot"
+      ],
+      "bot_thunder_duration": [
+        "bot"
+      ],
+      "bot_thunder_linger": [
+        "bot"
+      ],
+      "bot_thunder_range": [
+        "bot"
+      ],
+      "cash_bonus": [
+        "relic"
+      ],
+      "chain_lightning_chance": [
+        "module",
+        "uw"
+      ],
+      "chain_lightning_chance_next_cost": [
+        "uw"
+      ],
+      "chain_lightning_damage": [
+        "module",
+        "uw"
+      ],
+      "chain_lightning_damage_next_cost": [
+        "uw"
+      ],
+      "chain_lightning_quantity": [
+        "module",
+        "uw"
+      ],
+      "chain_lightning_quantity_next_cost": [
+        "uw"
+      ],
+      "chrono_field_cooldown": [
+        "uw"
+      ],
+      "chrono_field_duration": [
+        "uw"
+      ],
+      "chrono_field_duration_next_cost": [
+        "uw"
+      ],
+      "chrono_field_speed_reduction": [
+        "uw"
+      ],
+      "chrono_field_speed_reduction_next_cost": [
+        "uw"
+      ],
+      "coins_bonus": [
+        "relic"
+      ],
+      "damage_per_meter": [
+        "relic"
+      ],
+      "death_ray_damage_mult": [
+        "workshop"
+      ],
+      "death_wave_cooldown": [
+        "uw"
+      ],
+      "death_wave_cooldown_next_cost": [
+        "uw"
+      ],
+      "death_wave_damage": [
+        "module",
+        "uw"
+      ],
+      "death_wave_damage_next_cost": [
+        "uw"
+      ],
+      "death_wave_quantity": [
+        "module",
+        "uw"
+      ],
+      "death_wave_quantity_next_cost": [
+        "uw"
+      ],
+      "def_pct": [
+        "card",
+        "lab",
+        "relic",
+        "workshop"
+      ],
+      "defense_absolute": [
+        "relic"
+      ],
+      "eals_pct": [
+        "enhancement",
+        "lab",
+        "module",
+        "relic",
+        "workshop"
+      ],
+      "ehls_pct": [
+        "enhancement",
+        "lab",
+        "module",
+        "relic",
+        "workshop"
+      ],
+      "free_attack_upgrade": [
+        "relic"
+      ],
+      "free_defense_upgrade": [
+        "relic"
+      ],
+      "free_utility_upgrade": [
+        "module",
+        "relic"
+      ],
+      "golden_tower_cooldown": [
+        "uw"
+      ],
+      "golden_tower_cooldown_next_cost": [
+        "uw"
+      ],
+      "golden_tower_duration": [
+        "uw"
+      ],
+      "golden_tower_duration_next_cost": [
+        "uw"
+      ],
+      "golden_tower_multiplier": [
+        "uw"
+      ],
+      "golden_tower_multiplier_next_cost": [
+        "uw"
+      ],
+      "inner_land_mines_cooldown": [
+        "uw"
+      ],
+      "inner_land_mines_cooldown_next_cost": [
+        "uw"
+      ],
+      "inner_land_mines_damage": [
+        "module",
+        "uw"
+      ],
+      "inner_land_mines_damage_next_cost": [
+        "uw"
+      ],
+      "inner_land_mines_quantity": [
+        "uw"
+      ],
+      "inner_land_mines_quantity_next_cost": [
+        "uw"
+      ],
+      "knockback_mult": [
+        "workshop"
+      ],
+      "lab_speed": [
+        "lab",
+        "relic"
+      ],
+      "orb_damage_mult": [
+        "workshop"
+      ],
+      "orb_speed": [
+        "relic"
+      ],
+      "plasma_cannon_damage_mult": [
+        "card"
+      ],
+      "poison_swamp_cooldown": [
+        "uw"
+      ],
+      "poison_swamp_cooldown_next_cost": [
+        "uw"
+      ],
+      "poison_swamp_damage": [
+        "module",
+        "uw"
+      ],
+      "poison_swamp_damage_next_cost": [
+        "uw"
+      ],
+      "poison_swamp_duration": [
+        "uw"
+      ],
+      "poison_swamp_duration_next_cost": [
+        "uw"
+      ],
+      "recovery_amount": [
+        "relic"
+      ],
+      "smart_missiles_cooldown": [
+        "uw"
+      ],
+      "smart_missiles_cooldown_next_cost": [
+        "uw"
+      ],
+      "smart_missiles_damage": [
+        "module",
+        "uw"
+      ],
+      "smart_missiles_damage_next_cost": [
+        "uw"
+      ],
+      "smart_missiles_quantity": [
+        "uw"
+      ],
+      "smart_missiles_quantity_next_cost": [
+        "uw"
+      ],
+      "spotlight_angle": [
+        "module",
+        "uw"
+      ],
+      "spotlight_angle_next_cost": [
+        "uw"
+      ],
+      "spotlight_multiplier": [
+        "module",
+        "uw"
+      ],
+      "spotlight_multiplier_next_cost": [
+        "uw"
+      ],
+      "spotlight_quantity": [
+        "uw"
+      ],
+      "spotlight_quantity_next_cost": [
+        "uw"
+      ],
+      "super_crit_chance": [
+        "relic"
+      ],
+      "super_crit_mult": [
+        "module",
+        "relic"
+      ],
+      "thorns_damage_mult": [
+        "enhancement",
+        "lab",
+        "module",
+        "relic",
+        "workshop"
+      ],
+      "tower_attack_speed": [
+        "card",
+        "enhancement",
+        "relic",
+        "workshop"
+      ],
+      "tower_crit_chance": [
+        "relic",
+        "workshop"
+      ],
+      "tower_crit_multiplier": [
+        "enhancement",
+        "module",
+        "relic",
+        "workshop"
+      ],
+      "tower_damage": [
+        "enhancement",
+        "module",
+        "relic",
+        "workshop"
+      ],
+      "tower_hp": [
+        "card",
+        "enhancement",
+        "lab",
+        "relic",
+        "workshop"
+      ],
+      "tower_regen": [
+        "card",
+        "enhancement",
+        "lab",
+        "relic",
+        "workshop"
+      ],
+      "ultimate_damage": [
+        "relic"
+      ],
+      "uw_black_hole_cooldown": [
+        "uw"
+      ],
+      "uw_black_hole_duration": [
+        "uw"
+      ],
+      "uw_black_hole_duration_next_cost": [
+        "uw"
+      ],
+      "uw_black_hole_size": [
+        "uw"
+      ],
+      "uw_black_hole_size_next_cost": [
+        "uw"
+      ],
+      "uw_chain_lightning_chance": [
+        "uw"
+      ],
+      "uw_chain_lightning_chance_next_cost": [
+        "uw"
+      ],
+      "uw_chain_lightning_damage": [
+        "uw"
+      ],
+      "uw_chain_lightning_damage_next_cost": [
+        "uw"
+      ],
+      "uw_chain_lightning_quantity": [
+        "uw"
+      ],
+      "uw_chain_lightning_quantity_next_cost": [
+        "uw"
+      ],
+      "uw_chrono_field_cooldown": [
+        "uw"
+      ],
+      "uw_chrono_field_duration": [
+        "uw"
+      ],
+      "uw_chrono_field_duration_next_cost": [
+        "uw"
+      ],
+      "uw_chrono_field_speed_reduction": [
+        "uw"
+      ],
+      "uw_chrono_field_speed_reduction_next_cost": [
+        "uw"
+      ],
+      "uw_death_wave_cooldown": [
+        "uw"
+      ],
+      "uw_death_wave_cooldown_next_cost": [
+        "uw"
+      ],
+      "uw_death_wave_damage": [
+        "uw"
+      ],
+      "uw_death_wave_damage_next_cost": [
+        "uw"
+      ],
+      "uw_death_wave_quantity": [
+        "uw"
+      ],
+      "uw_death_wave_quantity_next_cost": [
+        "uw"
+      ],
+      "uw_golden_tower_cooldown": [
+        "uw"
+      ],
+      "uw_golden_tower_cooldown_next_cost": [
+        "uw"
+      ],
+      "uw_golden_tower_duration": [
+        "uw"
+      ],
+      "uw_golden_tower_duration_next_cost": [
+        "uw"
+      ],
+      "uw_golden_tower_multiplier": [
+        "uw"
+      ],
+      "uw_golden_tower_multiplier_next_cost": [
+        "uw"
+      ],
+      "uw_inner_land_mines_cooldown": [
+        "uw"
+      ],
+      "uw_inner_land_mines_cooldown_next_cost": [
+        "uw"
+      ],
+      "uw_inner_land_mines_damage": [
+        "uw"
+      ],
+      "uw_inner_land_mines_damage_next_cost": [
+        "uw"
+      ],
+      "uw_inner_land_mines_quantity": [
+        "uw"
+      ],
+      "uw_inner_land_mines_quantity_next_cost": [
+        "uw"
+      ],
+      "uw_poison_swamp_cooldown": [
+        "uw"
+      ],
+      "uw_poison_swamp_cooldown_next_cost": [
+        "uw"
+      ],
+      "uw_poison_swamp_damage": [
+        "uw"
+      ],
+      "uw_poison_swamp_damage_next_cost": [
+        "uw"
+      ],
+      "uw_poison_swamp_duration": [
+        "uw"
+      ],
+      "uw_poison_swamp_duration_next_cost": [
+        "uw"
+      ],
+      "uw_smart_missiles_cooldown": [
+        "uw"
+      ],
+      "uw_smart_missiles_cooldown_next_cost": [
+        "uw"
+      ],
+      "uw_smart_missiles_damage": [
+        "uw"
+      ],
+      "uw_smart_missiles_damage_next_cost": [
+        "uw"
+      ],
+      "uw_smart_missiles_quantity": [
+        "uw"
+      ],
+      "uw_smart_missiles_quantity_next_cost": [
+        "uw"
+      ],
+      "uw_spotlight_angle": [
+        "uw"
+      ],
+      "uw_spotlight_angle_next_cost": [
+        "uw"
+      ],
+      "uw_spotlight_multiplier": [
+        "uw"
+      ],
+      "uw_spotlight_multiplier_next_cost": [
+        "uw"
+      ],
+      "uw_spotlight_quantity": [
+        "uw"
+      ],
+      "uw_spotlight_quantity_next_cost": [
+        "uw"
+      ],
+      "wall_hp": [
+        "enhancement",
+        "lab",
+        "module",
+        "workshop"
+      ],
+      "wall_rebuild": [
+        "relic"
+      ],
+      "wall_regen": [
+        "lab",
+        "module",
+        "workshop"
+      ],
+      "workshop_attack_speed": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_bounce_shot_chance": [
+        "workshop"
+      ],
+      "workshop_bounce_shot_range": [
+        "workshop"
+      ],
+      "workshop_bounce_shot_targets": [
+        "workshop"
+      ],
+      "workshop_cash_bonus": [
+        "card",
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_cash_per_wave": [
+        "workshop"
+      ],
+      "workshop_coins_per_kill_bonus": [
+        "card",
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_coins_per_wave": [
+        "workshop"
+      ],
+      "workshop_critical_chance": [
+        "workshop"
+      ],
+      "workshop_critical_factor": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_damage": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_damage_per_meter": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_death_defy": [
+        "workshop"
+      ],
+      "workshop_defense_absolute": [
+        "workshop"
+      ],
+      "workshop_defense_percent": [
+        "workshop"
+      ],
+      "workshop_enemy_attack_level_skip": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_enemy_health_level_skip": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_free_attack_upgrade": [
+        "workshop"
+      ],
+      "workshop_free_defense_upgrade": [
+        "workshop"
+      ],
+      "workshop_free_upgrades": [
+        "card"
+      ],
+      "workshop_free_utility_upgrade": [
+        "workshop"
+      ],
+      "workshop_health": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_health_regen": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_interest": [
+        "workshop"
+      ],
+      "workshop_knockback_chance": [
+        "workshop"
+      ],
+      "workshop_knockback_force": [
+        "workshop"
+      ],
+      "workshop_land_mine_chance": [
+        "workshop"
+      ],
+      "workshop_land_mine_damage": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_land_mine_radius": [
+        "workshop"
+      ],
+      "workshop_lifesteal": [
+        "workshop"
+      ],
+      "workshop_max_recovery": [
+        "workshop"
+      ],
+      "workshop_multishot_chance": [
+        "workshop"
+      ],
+      "workshop_multishot_targets": [
+        "workshop"
+      ],
+      "workshop_orb_speed": [
+        "workshop"
+      ],
+      "workshop_orbs": [
+        "workshop"
+      ],
+      "workshop_package_chance": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_range_meters": [
+        "workshop"
+      ],
+      "workshop_rapid_fire_chance": [
+        "workshop"
+      ],
+      "workshop_rapid_fire_duration": [
+        "workshop"
+      ],
+      "workshop_recovery_amount": [
+        "workshop"
+      ],
+      "workshop_rend_armor_chance": [
+        "workshop"
+      ],
+      "workshop_rend_armor_mult": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_shockwave_frequency": [
+        "workshop"
+      ],
+      "workshop_shockwave_size": [
+        "workshop"
+      ],
+      "workshop_super_crit_chance": [
+        "workshop"
+      ],
+      "workshop_super_crit_mult_alt": [
+        "workshop"
+      ],
+      "workshop_thorn_damage": [
+        "workshop"
+      ],
+      "workshop_wall_health": [
+        "enhancement",
+        "workshop"
+      ],
+      "workshop_wall_rebuild": [
+        "workshop"
+      ]
     },
     "perk_timeline_scenario_wave": {
       "enabled": false,
       "reason": "not_requested"
     },
-    "preflight_ms": 144.64649900000381,
+    "preflight_ms": 257.07168799999636,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
     },
     "stages_materialized": false,
     "start_stage_source": "canonical_stat_inputs",
-    "statbook_rows": 126,
+    "statbook_rows": 218,
     "timing_uptime": {
       "bot_effect_scalars": {
         "bot_bonus_multiplier": 1.0,
@@ -629,9 +1731,9 @@
         "contract_status": "consumed",
         "reason": "consumed:timing_uptime_expected_damage_taken_feeds_max_wave_survivability"
       },
-      "expected_coin_multiplier": 7.255800000000001,
-      "expected_damage_multiplier": 1.4166666666666665,
-      "expected_damage_taken": 1.0,
+      "expected_coin_multiplier": 7.2558,
+      "expected_damage_multiplier": 1.416666666666667,
+      "expected_damage_taken": 0.56,
       "gcomp_enabled": false,
       "gcomp_rarity": null,
       "gcomp_seconds_per_package": 0.0,
@@ -642,12 +1744,12 @@
       "package_event_model": "uniform_from_rate",
       "packages_per_second": 0.00797138477261114,
       "uw_interval_counts": {
-        "uw_black_hole": 12,
-        "uw_chrono_field": 10,
-        "uw_death_wave": 0,
-        "uw_golden_tower": 4,
-        "uw_inner_land_mines": 0,
-        "uw_smart_missiles": 0
+        "black_hole": 12,
+        "chrono_field": 10,
+        "death_wave": 0,
+        "golden_tower": 4,
+        "inner_land_mines": 0,
+        "smart_missiles": 0
       },
       "wa_reduction": 0.54,
       "wave_seconds": 39.14,
@@ -938,11 +2040,11 @@
       },
       "evaluated_waves": 14,
       "last_wave_result": {
-        "hits_to_death": 21005.0,
-        "hits_to_kill": 2,
+        "hits_to_death": 4631.0,
+        "hits_to_kill": 1,
         "outcome": "tower_kills_boss",
-        "ttd_seconds": 42010.0,
-        "ttk_seconds": 4.0
+        "ttd_seconds": 9262.0,
+        "ttk_seconds": 2.0
       },
       "max_wave": 100,
       "monotonic": true,

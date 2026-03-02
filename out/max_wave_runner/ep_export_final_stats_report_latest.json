@@ -33,18 +33,18 @@
       "within_tolerance": true
     },
     {
-      "actual": 1.2965581939439062e+16,
+      "actual": 9724000000000.0,
       "expected": 89550000000000.0,
       "key": "wall_health",
-      "relative_delta": 143.78595130585217,
+      "relative_delta": 0.8914126186487995,
       "verification_path": "ehp_eval.stats.wall_hp",
       "within_tolerance": false
     },
     {
-      "actual": 293993700000.0,
+      "actual": 2500000000.0,
       "expected": 230540000000000.0,
       "key": "wall_regen",
-      "relative_delta": 0.9987247605621584,
+      "relative_delta": 0.9999891558948556,
       "verification_path": "ehp_eval.stats.wall_regen",
       "within_tolerance": false
     }
