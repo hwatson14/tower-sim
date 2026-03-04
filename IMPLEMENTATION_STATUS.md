@@ -57,7 +57,7 @@ Explicitly NOT included:
 - Legacy snapshot loader does not fetch/pull remotes (local git dir only).
 
 ### Partially Implemented Areas (fail-closed where applicable)
-- Stat engine scaffolding and StatBook export exist, but derived stat composition remains incomplete.
+- Stat engine scaffolding and StatBook export exist; canonical stat-input component composition is implemented (including AT_WAVE extraction), but broader derived DPS/stat-path coverage remains incomplete.
 - Tier BC + heat application is wired into canonical at-wave stat composition for supported BC families.
 - Unsupported BC families intentionally fail closed via `SUPPORTED_BC` allowlist until authoritative handling is added.
 - Validation harness tooling exists, but parity threshold policy/tolerance calibration against Harry reference sheets remains in progress.
@@ -122,7 +122,7 @@ corresponding Step1 part file(s):
 
 ## Immediate Next Steps (Codex PR sequence)
 1. Reconcile this document with `audit/implementation_status_report.md` on every release cut.
-2. Define and enforce a single v1 release-gate parity policy (fixture matrix + tolerances) for Harry-sheet validation.
+2. Keep the v1 release-gate parity policy enforced and calibrated against Harry-sheet drift data each release.
 3. Keep tournament scenario coverage explicit (Champion + Legend BC/heat fixtures) and fail closed on unresolved BC families.
 
 ## V1 Closeout Task Board

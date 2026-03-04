@@ -56,29 +56,13 @@ jobs:
           python -m tower_sim.run.runner \
             --spec "${{ github.workspace }}/fixtures/specs/max_wave.yaml" \
             --ids "${{ github.workspace }}/tests/fixtures/tower-sim-data/_IDS.csv"
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          payload = json.loads(Path("out/max_wave_latest.json").read_text(encoding="utf-8"))
-          if payload.get("task") != "MAX_WAVE":
-              raise SystemExit(f"Unexpected runner task envelope: {payload.get('task')!r}")
-          result = payload.get("result")
-          if not isinstance(result, dict):
-              raise SystemExit("Runner output envelope missing dict 'result' payload.")
-          Path("out/runner_output.json").write_text(
-              json.dumps(result, indent=2, sort_keys=True),
-              encoding="utf-8",
-          )
-          PY
-
       - name: Validate runner output schema
         run: |
           python - <<'PY'
           import json
           from pathlib import Path
 
-          payload = json.loads(Path("out/runner_output.json").read_text(encoding="utf-8"))
+          payload = json.loads(Path("out/max_wave_runner/max_wave_latest.json").read_text(encoding="utf-8"))
           required = {"evaluator", "fail_closed", "missing", "w_max", "diagnostics"}
           missing = required - set(payload.keys())
           if missing:
@@ -99,7 +83,7 @@ jobs:
       - name: Validate runner max-wave against EP export targets
         run: |
           python -m tower_sim.audit.max_wave_ep_parity \
-            --runner-output out/runner_output.json \
+            --runner-output out/max_wave_runner/max_wave_latest.json \
             --suite ehp \
             --allow-missing-targets
 
@@ -107,8 +91,9 @@ jobs:
         run: |
           python -m tower_sim.audit.ep_export_final_stats_parity \
             --ids tests/fixtures/tower-sim-data/_IDS.csv \
-            --spec tests/fixtures/specs/sample_spec.yaml \
+            --spec tests/fixtures/specs/real_build_pipeline_spec.yaml \
             --suite ehp \
+            --compiled-core-only \
             --tolerance 0.01 \
             --output out/ep_export_final_stats_report.json
 
@@ -195,23 +180,13 @@ jobs:
           print("Wrote out/stat_lineage_manifest.json and out/stat_lineage_contract_gate.json")
           PY
 
-      - name: Promote max-wave outputs to latest artifact names
-        run: |
-          cp out/runner_output.json out/runner_output_latest.json
-          cp out/ep_export_final_stats_report.json out/ep_export_final_stats_report_latest.json
-          cp out/stat_lineage_manifest.json out/stat_lineage_manifest_latest.json
-          cp out/stat_lineage_contract_gate.json out/stat_lineage_contract_gate_latest.json
-
       - name: Upload runner output artifact
         uses: actions/upload-artifact@v4
         with:
           name: max-wave-runner-output
           path: |
-            out/runner_output_latest.json
-            out/ep_export_final_stats_report_latest.json
-            out/stat_lineage_manifest_latest.json
-            out/stat_lineage_contract_gate_latest.json
-            out/lineage_full_table_latest.json
+            out/max_wave_runner/runner_output_latest.json
+            out/max_wave_runner/max_wave_latest.json
           if-no-files-found: error
 
       - name: Verify EP export max-wave targets (fail-closed)
@@ -232,11 +207,8 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p /tmp/max-wave-artifacts
-          cp out/runner_output_latest.json /tmp/max-wave-artifacts/
-          cp out/ep_export_final_stats_report_latest.json /tmp/max-wave-artifacts/
-          cp out/stat_lineage_manifest_latest.json /tmp/max-wave-artifacts/
-          cp out/stat_lineage_contract_gate_latest.json /tmp/max-wave-artifacts/
-          cp out/lineage_full_table_latest.json /tmp/max-wave-artifacts/
+          cp out/max_wave_runner/runner_output_latest.json /tmp/max-wave-artifacts/
+          cp out/max_wave_runner/max_wave_latest.json /tmp/max-wave-artifacts/
 
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
@@ -250,12 +222,9 @@ jobs:
 
           mkdir -p out/max_wave_runner
           cp /tmp/max-wave-artifacts/runner_output_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/ep_export_final_stats_report_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/stat_lineage_manifest_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/stat_lineage_contract_gate_latest.json out/max_wave_runner/
-          cp /tmp/max-wave-artifacts/lineage_full_table_latest.json out/max_wave_runner/
+          cp /tmp/max-wave-artifacts/max_wave_latest.json out/max_wave_runner/
 
-          git add out/max_wave_runner/*.json
+          git add out/max_wave_runner/runner_output_latest.json out/max_wave_runner/max_wave_latest.json
           if git diff --cached --quiet; then
             echo "No max-wave artifact changes to commit."
             exit 0

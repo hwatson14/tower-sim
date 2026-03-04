@@ -607,7 +607,7 @@ from tower_sim.run.problem_spec import BossStatsSpec, BossSurvivabilitySpec, Tow
 
 def test_resolve_canonical_wave_damage_for_attack_wave() -> None:
     problem = ProblemSpec(
-        scenario=ScenarioSpec(mode="farming", tier=1, wave=10),
+        scenario=ScenarioSpec(mode="farming", tier=1, wave_probe=10, wave_max=10),
         stat_inputs=[],
     )
     damage, missing = resolve_canonical_wave_damage_for_attack_wave(
@@ -677,7 +677,8 @@ def test_tournament_heat_missing_is_fail_closed(monkeypatch) -> None:
             mode="tournament",
             tier=12,
             league="champion",
-            wave=10,
+            wave_probe=10,
+            wave_max=10,
             eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
             ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ),

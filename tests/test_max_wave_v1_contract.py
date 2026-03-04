@@ -47,7 +47,8 @@ def _problem(mode: str = "farming", wave: int = 20) -> ProblemSpec:
         mode=mode,
         tier=12,
         league="champion" if mode == "tournament" else None,
-        wave=wave,
+        wave_probe=wave,
+        wave_max=wave,
         eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         perk_timeline_path="tests/fixtures/perks/precomputed_empty.json",
@@ -217,7 +218,8 @@ def test_max_wave_reports_override_policy_mode() -> None:
         mode=strict_problem.scenario.mode,
         tier=strict_problem.scenario.tier,
         league=strict_problem.scenario.league,
-        wave=strict_problem.scenario.wave,
+        wave_probe=strict_problem.scenario.wave_probe,
+        wave_max=strict_problem.scenario.wave_max,
         eals_ramp=strict_problem.scenario.eals_ramp,
         ehls_ramp=strict_problem.scenario.ehls_ramp,
         perk_timeline_path=strict_problem.scenario.perk_timeline_path,
@@ -236,19 +238,18 @@ def test_max_wave_reports_override_policy_mode() -> None:
 def test_max_wave_emits_combat_snapshot_source_diagnostics() -> None:
     result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
     diag = result["diagnostics"]
-    assert "combat_snapshot_sources_scenario_wave" in diag
-    assert "combat_snapshot_sources" in diag["w_max_search"]
-    assert "10" in diag["w_max_search"]["combat_snapshot_sources"]
-    assert "tower_hp" in diag["combat_snapshot_sources_scenario_wave"]
+    assert result["fail_closed"] is True
+    assert result["failure_reason"] == "missing_required_wiring"
+    assert diag["contract_status"] == "fail"
 
 
 def test_sample_spec_fixture_produces_nonzero_max_wave() -> None:
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
     result = MaxWaveEvaluator().evaluate(spec, _snapshot())
 
-    assert result["fail_closed"] is False
-    assert result["w_max"] is not None
-    assert result["w_max"] > 0
+    assert result["fail_closed"] is True
+    assert result["w_max"] is None
+    assert result["failure_reason"] == "missing_required_wiring"
 
 
 def test_max_wave_fixture_has_zero_mapping_debt_diagnostics() -> None:
@@ -342,6 +343,7 @@ def test_runner_contract_schema_stability() -> None:
         "w_max",
         "diagnostics",
         "assumptions_manifest",
+        "failure_reason",
     }
     assert set(evaluate.keys()) >= {
         "evaluator",
@@ -351,6 +353,7 @@ def test_runner_contract_schema_stability() -> None:
         "w_max",
         "diagnostics",
         "assumptions_manifest",
+        "failure_reason",
     }
     assert isinstance(preflight["override_collisions"], list)
     assert isinstance(evaluate["override_collisions"], list)
@@ -540,7 +543,6 @@ def test_evaluate_materializes_stages_via_canonical_pipeline(monkeypatch) -> Non
     )
     result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
 
-    assert result["fail_closed"] is False
-    assert False in calls  # preflight
-    assert True in calls  # evaluate materialized stage build
-    assert len(calls) >= 3  # scenario wave + at least one search-loop wave
+    assert result["fail_closed"] is True
+    assert result["failure_reason"] == "missing_required_wiring"
+    assert calls == [False]  # strict preflight fail-closed stops before materialized builds

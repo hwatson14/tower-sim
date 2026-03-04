@@ -800,7 +800,7 @@ def resolve_canonical_wave_damage(
         return None, missing, diagnostics
 
     lib = EnemyWaveDamageLib.from_repo_tables()
-    wave = scenario.wave if wave_state is None else wave_state.W_attack
+    wave = scenario.wave_probe if wave_state is None else wave_state.W_attack
     try:
         damage = lib.wave_damage(wave_tier, wave)
     except KeyError as exc:

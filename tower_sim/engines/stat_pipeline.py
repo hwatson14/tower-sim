@@ -215,7 +215,7 @@ def build_canonical_stat_pipeline_for_problem_spec(
 
     wave_state: Optional[RunWaveState] = None
     at_wave_stage: Optional[AtWaveStage] = None
-    target_wave = problem_spec.scenario.wave if wave is None else wave
+    target_wave = problem_spec.scenario.wave_probe if wave is None else wave
     if target_wave is not None:
         wave_state, wave_state_missing = _build_wave_state(problem_spec, wave=target_wave)
         if wave_state_missing:

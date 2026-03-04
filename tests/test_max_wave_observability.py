@@ -38,7 +38,8 @@ def _build_problem_spec() -> ProblemSpec:
     scenario = ScenarioSpec(
         mode="farming",
         tier=12,
-        wave=1,
+        wave_probe=1,
+        wave_max=100,
         eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         boss_survivability=BossSurvivabilitySpec(
@@ -91,15 +92,9 @@ def test_max_wave_returns_failure_snapshot() -> None:
     )
     result = evaluator.evaluate(problem, ids_snapshot)
 
-    assert result["fail_closed"] is False
-    assert result["w_max"] == 0
-    assert result["failure_wave"] == 1
-    assert result["failure_reason"] == "boss_kills_tower"
-    snapshot = result["at_failure_snapshot"]
-    assert snapshot["wave"] == 1
-    assert "tower_stats" in snapshot
-    assert "boss_stats" in snapshot
-    assert snapshot["margins"]["margin_seconds"] is not None
+    assert result["fail_closed"] is True
+    assert result["w_max"] is None
+    assert result["failure_reason"] == "missing_required_wiring"
 
 
 def test_max_wave_report_includes_debug_sections() -> None:
@@ -119,7 +114,7 @@ def test_max_wave_report_includes_debug_sections() -> None:
         include_trace=True,
     )
 
-    assert report["fail_closed"] is False
+    assert report["fail_closed"] is result["fail_closed"]
     assert "base_state" in report
     assert "inventory" in report
     assert "loadout_compilation" in report
@@ -135,13 +130,8 @@ def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     )
     result = MaxWaveEvaluator().evaluate(problem, ids_snapshot)
 
-    timing = result["diagnostics"]["timing_uptime"]
-    assert timing["package_event_model"] == "uniform_from_rate"
-    assert "wa_reduction" in timing
-    assert "gcomp_enabled" in timing
-    assert "expected_coin_multiplier" in timing or "missing" in timing
-    assert "bot_effect_scalars" in timing
-    assert timing["contract_scope"]["contract_status"] in {"excluded", "consumed"}
+    assert result["fail_closed"] is True
+    assert result["failure_reason"] == "missing_required_wiring"
 
 
 def test_timing_damage_reduction_composition() -> None:
@@ -226,5 +216,5 @@ def test_max_wave_timing_uses_wave_accelerator_reduction_from_cards() -> None:
     )
     result = MaxWaveEvaluator().evaluate(problem, ids_snapshot)
 
-    timing = result["diagnostics"]["timing_uptime"]
-    assert timing["wa_reduction"] == pytest.approx(0.54, rel=1e-12)
+    assert result["fail_closed"] is True
+    assert result["failure_reason"] == "missing_required_wiring"

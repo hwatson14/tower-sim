@@ -156,19 +156,28 @@ def _resolve_at_wave_value(
 def _extract_value(stat_input: StatInput, engine_result: StatEngineResult) -> float:
     if stat_input.derived_value is not None:
         return float(stat_input.derived_value)
-    if stat_input.base_value is not None:
-        return float(stat_input.base_value)
-    if stat_input.loadout_delta is not None:
-        return float(stat_input.loadout_delta)
-    if stat_input.enhancement_multiplier is not None:
-        return float(stat_input.enhancement_multiplier)
-    if stat_input.tier_rule_delta is not None:
-        return float(stat_input.tier_rule_delta)
-    if stat_input.tier_rule_multiplier is not None:
-        return float(stat_input.tier_rule_multiplier)
-    raise StatSnapshotError(
-        f"Missing value for AT_WAVE stat input {stat_input.stat_id}."
+
+    has_components = any(
+        value is not None
+        for value in (
+            stat_input.base_value,
+            stat_input.loadout_delta,
+            stat_input.enhancement_multiplier,
+            stat_input.tier_rule_delta,
+            stat_input.tier_rule_multiplier,
+        )
     )
+    if not has_components:
+        raise StatSnapshotError(
+            f"Missing value for AT_WAVE stat input {stat_input.stat_id}."
+        )
+
+    base_value = float(stat_input.base_value or 0.0)
+    loadout_delta = float(stat_input.loadout_delta or 0.0)
+    enhancement_multiplier = float(stat_input.enhancement_multiplier or 1.0)
+    tier_delta = float(stat_input.tier_rule_delta or 0.0)
+    tier_multiplier = float(stat_input.tier_rule_multiplier or 1.0)
+    return ((base_value + loadout_delta) * enhancement_multiplier + tier_delta) * tier_multiplier
 
 
 def _build_engine_with_rules(

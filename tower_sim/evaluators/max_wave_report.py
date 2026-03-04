@@ -105,10 +105,14 @@ def build_max_wave_report(
         if trace is not None:
             report["trace"] = trace
 
+    result_missing = max_wave_result.get("missing", [])
+    if isinstance(result_missing, list):
+        missing.extend(str(item) for item in result_missing)
+
     missing = sorted(set(missing))
     report["missing"] = missing
     report["errors"] = errors
-    report["fail_closed"] = bool(missing)
+    report["fail_closed"] = bool(max_wave_result.get("fail_closed")) or bool(missing)
     return report
 
 
@@ -211,7 +215,7 @@ def _build_wave_mapping_report(
     errors: List[Dict[str, str]],
 ) -> Optional[Dict[str, Any]]:
     scenario = problem_spec.scenario
-    waves = {scenario.wave}
+    waves = {scenario.wave_probe}
     failure_wave = max_wave_result.get("failure_wave")
     if isinstance(failure_wave, int):
         waves.add(failure_wave)

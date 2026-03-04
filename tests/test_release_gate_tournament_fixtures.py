@@ -37,13 +37,12 @@ def test_release_gate_tournament_fixture_matrix(league: str, spec_path: Path) ->
     payload = result["result"]
     manifest = payload["assumptions_manifest"]
 
-    assert payload["fail_closed"] is False
-    assert payload["w_max"] is not None
-    assert payload["missing"] == []
-    assert payload["diagnostics"]["w_max_search"]["search_strategy"] in {
-        "exponential_binary",
-        "grid_refine",
-    }
+    assert payload["fail_closed"] is True
+    assert payload["failure_reason"] == "missing_required_wiring"
+    assert payload["w_max"] is None
+    assert payload["missing"]
+    assert payload["diagnostics"]["contract_status"] == "fail"
+    assert payload["diagnostics"]["unmapped_hard_count"] >= 1
     assert manifest["tournament"]["league"] == league
     assert manifest["tournament"]["supported_leagues"] == ["champion", "legend"]
     assert manifest["tournament"]["heat_required"] is True

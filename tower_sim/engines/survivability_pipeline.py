@@ -257,7 +257,7 @@ def build_survivability_report(
         tier_rules=tier_rules,
         battle_conditions=None,
         wave_state=wave_state,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         run_context=RunContext.from_mode(
             problem_spec.scenario.mode,
             tier=str(problem_spec.scenario.tier),
@@ -862,7 +862,7 @@ def _build_wave_state(scenario: ScenarioSpec, start_snapshot: Mapping[str, float
         eals = SkipRamp(start=float(eals_pct), end=float(eals_pct), ramp_waves=1)
         ehls = SkipRamp(start=float(ehls_pct), end=float(ehls_pct), ramp_waves=1)
 
-    return make_wave_state(scenario.wave, eals, ehls)
+    return make_wave_state(scenario.wave_probe, eals, ehls)
 
 
 def _load_tier_rules(
@@ -936,7 +936,7 @@ def _resolve_heat_magnitudes(
     bundle = load_heat_bundle(heat_path, magnitudes_path)
 
     league = scenario.league.lower()
-    wave = scenario.wave
+    wave = scenario.wave_probe
     scalars = [row for row in bundle.heat_scalars if row.league == league and row.wave == wave]
     if not scalars:
         raise SurvivabilityPipelineError("Missing heat scalar for league/wave.")
@@ -1010,7 +1010,7 @@ def _resolve_survivability_verdict(
         }
     )
     ctx = BossContext(
-        wave=scenario.wave,
+        wave=scenario.wave_probe,
         tier=scenario.tier,
         league=scenario.league or "",
         boss=boss,

@@ -78,6 +78,7 @@ class MaxWaveEvaluator:
             "w_max": None,
             "diagnostics": preflight.diagnostics,
             "assumptions_manifest": preflight.assumptions_manifest,
+            "failure_reason": "missing_required_wiring" if preflight.hard_missing else None,
         }
 
     def evaluate(
@@ -95,6 +96,7 @@ class MaxWaveEvaluator:
                 "w_max": None,
                 "diagnostics": preflight.diagnostics,
                 "assumptions_manifest": preflight.assumptions_manifest,
+                "failure_reason": "missing_required_wiring" if preflight.hard_missing else "preflight_missing",
             }
 
         diagnostics = dict(preflight.diagnostics)
@@ -106,7 +108,7 @@ class MaxWaveEvaluator:
             pipeline_eval = build_canonical_stat_pipeline_for_problem_spec(
                 snapshot=ids_snapshot,
                 problem_spec=problem_spec,
-                wave=problem_spec.scenario.wave,
+                wave=problem_spec.scenario.wave_probe,
                 include_perk_timeline=_should_include_perk_timeline(problem_spec),
                 materialize_stages=True,
             )
@@ -124,7 +126,7 @@ class MaxWaveEvaluator:
             )
             wave_snapshot = _at_wave_snapshot_from_stage(
                 pipeline_eval.at_wave_stage,
-                wave=problem_spec.scenario.wave,
+                wave=problem_spec.scenario.wave_probe,
             )
         except Exception as exc:  # noqa: BLE001
             diagnostics["stat_engine_error"] = str(exc)
@@ -219,7 +221,7 @@ class MaxWaveEvaluator:
             "override_collisions": [],
             "w_max": w_max if not fail_closed else None,
             "failure_wave": None if fail_closed else failure_wave,
-            "failure_reason": None if fail_closed else failure_reason,
+            "failure_reason": ("missing_required_wiring" if fail_closed and diagnostics.get("unmapped_hard_count", 0) > 0 else (None if fail_closed else failure_reason)),
             "at_failure_snapshot": None if fail_closed else failure_snapshot,
             "diagnostics": diagnostics,
             "assumptions_manifest": preflight.assumptions_manifest,
@@ -229,6 +231,7 @@ class MaxWaveEvaluator:
 @dataclass(frozen=True)
 class _PreflightResult:
     missing: List[str]
+    hard_missing: List[str]
     override_collisions: List[str]
     diagnostics: Dict[str, Any]
     assumptions_manifest: Dict[str, Any]
@@ -256,7 +259,7 @@ def _run_preflight(
     pipeline = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=ids_snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=_should_include_perk_timeline(problem_spec),
         materialize_stages=False,
         precomputed_canonical_inputs=canonical_inputs,
@@ -285,6 +288,14 @@ def _run_preflight(
         diagnostics["unsupported_decisive_items"] = unsupported_items
         missing.extend(f"ids_unmapped_or_unsupported:{item}" for item in unsupported_items)
 
+    hard_missing: List[str] = []
+    hard_missing.extend(canonical_inputs.missing_required_stat_inputs)
+    hard_missing.extend(
+        item for item in canonical_inputs.compiled_missing if item.startswith("module_substat_unmapped:")
+    )
+    if hard_missing:
+        missing.extend(hard_missing)
+
     wave_damage, wave_damage_missing, wave_damage_diag = resolve_canonical_wave_damage(
         problem_spec=problem_spec,
         wave_state=wave_state,
@@ -304,17 +315,20 @@ def _run_preflight(
     _, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
         problem_spec=problem_spec,
         registry=registry,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
     )
     if heat_row is not None:
-        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave)] = heat_row
+        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave_probe)] = heat_row
     if heat_missing:
         diagnostics["missing_heat"] = heat_missing
         missing.extend(heat_missing)
 
+    diagnostics["unmapped_hard_count"] = len(set(hard_missing))
+    diagnostics["contract_status"] = "fail" if hard_missing else "ok"
     diagnostics["preflight_ms"] = (time.perf_counter() - preflight_started) * 1000.0
     return _PreflightResult(
         missing=sorted(set(missing)),
+        hard_missing=sorted(set(hard_missing)),
         override_collisions=sorted(set(override_collisions)),
         diagnostics=diagnostics,
         assumptions_manifest=_build_assumptions_manifest(problem_spec),
@@ -420,7 +434,7 @@ def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], L
         end=scenario.ehls_ramp.end,
         ramp_waves=scenario.ehls_ramp.ramp_waves,
     )
-    return make_wave_state(scenario.wave, eals, ehls), missing
+    return make_wave_state(scenario.wave_probe, eals, ehls), missing
 
 
 def _probe_boss_combat(
@@ -436,7 +450,7 @@ def _probe_boss_combat(
         if combat_missing or combat_snapshot is None:
             return "boss_combat_inputs"
         inputs = BossCombatInputs(
-            wave=problem_spec.scenario.wave,
+            wave=problem_spec.scenario.wave_probe,
             wave_damage=wave_damage,
             tower_hp=combat_snapshot.values["tower_hp"],
             tower_regen=combat_snapshot.values["tower_regen"],
@@ -490,21 +504,21 @@ def _resolve_wave_snapshot(
     heat_magnitudes, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
         problem_spec=problem_spec,
         registry=registry,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
     )
     if heat_row is not None:
-        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave)] = heat_row
+        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave_probe)] = heat_row
     if heat_missing:
         missing.extend(heat_missing)
     try:
         wave_row = {
-            "wave": int(problem_spec.scenario.wave),
-            "enemy_attack_wave": int(wave_state.W_attack) if wave_state is not None else int(problem_spec.scenario.wave),
-            "enemy_health_wave": int(wave_state.W_health) if wave_state is not None else int(problem_spec.scenario.wave),
+            "wave": int(problem_spec.scenario.wave_probe),
+            "enemy_attack_wave": int(wave_state.W_attack) if wave_state is not None else int(problem_spec.scenario.wave_probe),
+            "enemy_health_wave": int(wave_state.W_health) if wave_state is not None else int(problem_spec.scenario.wave_probe),
         }
         wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
             ids_snapshot=ids_snapshot,
-            wave=problem_spec.scenario.wave,
+            wave=problem_spec.scenario.wave_probe,
             stat_inputs=stat_inputs,
             engine_result=engine_result,
             registry=registry,
@@ -551,7 +565,7 @@ def _search_wmax(
         return None, None, None, None, [], {}, ["boss_survivability_inputs"]
     if engine_result is None:
         return None, None, None, None, [], {}, ["stat_engine"]
-    max_wave = int(scenario.wave)
+    max_wave = int(scenario.wave_max)
     if max_wave <= 0:
         return None, None, None, None, [], {}, ["wave_limit"]
 
@@ -569,7 +583,7 @@ def _search_wmax(
             return entry, success, []
 
         wave_problem_spec = ProblemSpec(
-            scenario=replace(scenario, wave=wave),
+            scenario=replace(scenario, wave_probe=wave),
             stat_inputs=problem_spec.stat_inputs,
             evaluator=problem_spec.evaluator,
         )

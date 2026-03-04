@@ -3,7 +3,6 @@
   "scenario": {
     "mode": "farming",
     "tier": 14,
-    "wave": 100,
     "eals_ramp": {
       "start": 0.0,
       "end": 0.0,
@@ -40,7 +39,9 @@
         "boss_attack_mult": 1.0
       }
     },
-    "perk_timeline_path": "tests/fixtures/perks/precomputed_empty.json"
+    "perk_timeline_path": "tests/fixtures/perks/precomputed_empty.json",
+    "wave_probe": 100,
+    "wave_max": 100
   },
   "stat_inputs": [
     {

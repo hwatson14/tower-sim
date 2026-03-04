@@ -7,12 +7,24 @@ from typing import Any, Dict
 
 from tower_sim.loaders.ep_export_loader import extract_max_wave_targets, load_ep_export_dataset
 
+def _resolve_wmax_tolerance(payload: Dict[str, Any], explicit_tolerance: float | None) -> float:
+    if explicit_tolerance is not None:
+        return float(explicit_tolerance)
+
+    manifest = payload.get("assumptions_manifest")
+    if not isinstance(manifest, dict):
+        raise ValueError("Runner output missing assumptions_manifest for parity tolerance resolution.")
+    tolerances = manifest.get("parity_tolerances")
+    if not isinstance(tolerances, dict) or "wmax_wave_relative" not in tolerances:
+        raise ValueError("Runner assumptions_manifest missing parity_tolerances.wmax_wave_relative")
+    return float(tolerances["wmax_wave_relative"])
+
 
 def validate_runner_against_ep_export(
     *,
     runner_output_path: Path,
     suite: str,
-    tolerance: float = 0.0,
+    tolerance: float | None = None,
     allow_missing_targets: bool = True,
 ) -> Dict[str, Any]:
     payload = json.loads(runner_output_path.read_text(encoding="utf-8"))
@@ -20,6 +32,7 @@ def validate_runner_against_ep_export(
         raise ValueError(f"Runner output missing required key 'w_max': {runner_output_path}")
 
     runner_wmax = float(payload["w_max"])
+    resolved_tolerance = _resolve_wmax_tolerance(payload, tolerance)
 
     dataset = load_ep_export_dataset()
     targets = extract_max_wave_targets(dataset)
@@ -41,10 +54,10 @@ def validate_runner_against_ep_export(
 
     target_wmax = float(targets[suite])
     delta = abs(runner_wmax - target_wmax)
-    if delta > tolerance:
+    if delta > resolved_tolerance:
         raise ValueError(
             f"Max-wave parity mismatch for suite {suite!r}: runner={runner_wmax}, "
-            f"ep_export={target_wmax}, tolerance={tolerance}"
+            f"ep_export={target_wmax}, tolerance={resolved_tolerance}"
         )
 
     return {
@@ -53,7 +66,7 @@ def validate_runner_against_ep_export(
         "runner_w_max": runner_wmax,
         "ep_export_w_max": target_wmax,
         "delta": delta,
-        "tolerance": tolerance,
+        "tolerance": resolved_tolerance,
     }
 
 
@@ -63,7 +76,7 @@ def _parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--runner-output", type=Path, required=True)
     parser.add_argument("--suite", default="ehp")
-    parser.add_argument("--tolerance", type=float, default=0.0)
+    parser.add_argument("--tolerance", type=float, default=None)
     parser.add_argument(
         "--allow-missing-targets",
         action="store_true",

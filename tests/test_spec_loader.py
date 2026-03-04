@@ -25,7 +25,7 @@ def test_loads_yaml_spec() -> None:
     assert isinstance(spec, ProblemSpec)
     assert spec.scenario.mode == "farming"
     assert spec.scenario.tier == 14
-    assert spec.scenario.wave == 100
+    assert spec.scenario.wave_probe == 100
     assert len(spec.stat_inputs) == 12
 
 
@@ -64,6 +64,8 @@ scenario:
   mode: farming
   tier: 14
   allow_core_stat_overrides: true
+  wave_probe: 100
+  wave_max: 1000
 stat_inputs: []
 """
     )
@@ -73,7 +75,7 @@ stat_inputs: []
 
 def test_load_problem_spec_supports_scenario_preset(tmp_path: Path) -> None:
     payload = {
-        "scenario": {"mode": "farming", "tier": 1, "preset": "Farming"},
+        "scenario": {"mode": "farming", "tier": 1, "preset": "Farming", "wave_probe": 1, "wave_max": 100},
         "stat_inputs": [],
     }
     path = tmp_path / "with_preset.yaml"
@@ -81,6 +83,8 @@ def test_load_problem_spec_supports_scenario_preset(tmp_path: Path) -> None:
   mode: farming
   tier: 1
   preset: Farming
+  wave_probe: 1
+  wave_max: 100
 stat_inputs: []
 """)
 
