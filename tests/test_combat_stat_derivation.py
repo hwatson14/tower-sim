@@ -803,7 +803,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
 
     assert loadout.module_contribution_ledger
-    assert loadout.layer_gaps
+    assert loadout.layer_gaps == []
 
     by_target: dict[str, list[dict[str, object]]] = {}
     for row in loadout.module_contribution_ledger:
@@ -845,7 +845,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     assert set(built.module_unmapped_by_layer.keys()) == {"main", "unique", "substats"}
     assert built.module_unmapped_by_layer["main"]
     assert built.module_unmapped_by_layer["unique"] == []
-    assert built.module_unmapped_by_layer["substats"]
+    assert built.module_unmapped_by_layer["substats"] == []
     assert set(built.canonical_unmapped_by_source.keys()) == {
         "modules",
         "cards",

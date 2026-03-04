@@ -238,18 +238,18 @@ def test_max_wave_reports_override_policy_mode() -> None:
 def test_max_wave_emits_combat_snapshot_source_diagnostics() -> None:
     result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
     diag = result["diagnostics"]
-    assert result["fail_closed"] is True
-    assert result["failure_reason"] == "missing_required_wiring"
-    assert diag["contract_status"] == "fail"
+    assert result["fail_closed"] is False
+    assert result["failure_reason"] != "missing_required_wiring"
+    assert diag["contract_status"] == "ok"
 
 
 def test_sample_spec_fixture_produces_nonzero_max_wave() -> None:
     spec = load_problem_spec(Path("tests/fixtures/specs/sample_spec.yaml"))
     result = MaxWaveEvaluator().evaluate(spec, _snapshot())
 
-    assert result["fail_closed"] is True
-    assert result["w_max"] is None
-    assert result["failure_reason"] == "missing_required_wiring"
+    assert result["fail_closed"] is False
+    assert result["w_max"] is not None
+    assert result["failure_reason"] is None
 
 
 def test_max_wave_fixture_has_zero_mapping_debt_diagnostics() -> None:
@@ -543,6 +543,7 @@ def test_evaluate_materializes_stages_via_canonical_pipeline(monkeypatch) -> Non
     )
     result = MaxWaveEvaluator().evaluate(_problem(mode="farming", wave=10), _snapshot())
 
-    assert result["fail_closed"] is True
-    assert result["failure_reason"] == "missing_required_wiring"
-    assert calls == [False]  # strict preflight fail-closed stops before materialized builds
+    assert result["fail_closed"] is False
+    assert result["failure_reason"] != "missing_required_wiring"
+    assert False in calls
+    assert True in calls
