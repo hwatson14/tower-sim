@@ -33,3 +33,10 @@ def test_max_wave_workflow_commits_only_canonical_latest_outputs() -> None:
     text = WORKFLOW_PATH.read_text(encoding="utf-8")
 
     assert "git add out/max_wave_runner/runner_output_latest.json out/max_wave_runner/max_wave_latest.json" in text
+
+
+def test_max_wave_workflow_exports_lineage_from_stat_lineage_manifest() -> None:
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+
+    assert "--manifest out/stat_lineage_manifest.json" in text
+    assert "--manifest out/lineage_manifest_latest.json" not in text

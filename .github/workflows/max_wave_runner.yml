@@ -75,11 +75,6 @@ jobs:
         run: |
           python -m tower_sim.audit.wiring_health_check --strict --max-required-max-wave-gaps 0
 
-      - name: Export lineage full table
-        run: |
-          python -m tower_sim.audit.stat_lineage_report \
-            --manifest out/lineage_manifest_latest.json \
-            --full-table-out out/lineage_full_table_latest.json
       - name: Validate runner max-wave against EP export targets
         run: |
           python -m tower_sim.audit.max_wave_ep_parity \
@@ -179,6 +174,12 @@ jobs:
               raise SystemExit(f"Lineage contract gate failed: {gate['missing_required']}")
           print("Wrote out/stat_lineage_manifest.json and out/stat_lineage_contract_gate.json")
           PY
+
+      - name: Export lineage full table
+        run: |
+          python -m tower_sim.audit.stat_lineage_report \
+            --manifest out/stat_lineage_manifest.json \
+            --full-table-out out/lineage_full_table_latest.json
 
       - name: Upload runner output artifact
         uses: actions/upload-artifact@v4
