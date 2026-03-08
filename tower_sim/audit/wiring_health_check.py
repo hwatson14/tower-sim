@@ -10,8 +10,7 @@ from tower_sim.audit.stat_lineage_report import load_manifest, summarize_manifes
 from tower_sim.registry.ep_formula_registry import MechanicsManifestError, load_active_mechanics_pack
 
 
-_LEGACY_DEFAULT_LINEAGE_MANIFEST = Path("out/stat_lineage_manifest_latest.json")
-_RUNNER_LINEAGE_MANIFEST = Path("out/lineage_manifest_latest.json")
+_DEFAULT_LINEAGE_MANIFEST = Path("out/stat_lineage_manifest.json")
 
 
 def _format_mismatch_detail(stat_id: str, mismatch: Dict[str, Any]) -> str:
@@ -110,7 +109,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--lineage-manifest",
         type=Path,
-        default=_LEGACY_DEFAULT_LINEAGE_MANIFEST,
+        default=_DEFAULT_LINEAGE_MANIFEST,
         help="Path to stat lineage manifest JSON.",
     )
     parser.add_argument(
@@ -137,10 +136,6 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _resolve_lineage_manifest_path(path: Path) -> Path:
-    if path.exists():
-        return path
-    if path == _LEGACY_DEFAULT_LINEAGE_MANIFEST and _RUNNER_LINEAGE_MANIFEST.exists():
-        return _RUNNER_LINEAGE_MANIFEST
     return path
 
 

@@ -64,7 +64,7 @@ def _components() -> list[ComponentStatus]:
                 "`tests/test_stat_snapshots.py`",
             ],
             known_gaps=[
-                "Derived stat composition/DPS formulas are incomplete; see "
+                "Derived stat composition is implemented for canonical stat-input component folding (including AT_WAVE extraction), but broader DPS/stat-path coverage remains incomplete; see "
                 "[Effective Paths mechanics comparison]"
                 "(audit/effective_paths_mechanics_comparison.md#effective-paths-v50001-master-workbook).",
             ],
@@ -200,7 +200,7 @@ def _components() -> list[ComponentStatus]:
                 "`tests/test_reference_completeness.py`",
             ],
             known_gaps=[
-                "Reference-sheet parity pass/fail thresholds need a single release-gate policy.",
+                "Release-gate parity threshold policy is locked in assumptions manifest (`tolerance_version=v1`), but tolerance calibration against reference-sheet drift remains ongoing.",
             ],
         ),
     ]
@@ -209,7 +209,7 @@ def _components() -> list[ComponentStatus]:
 def _critical_path() -> list[str]:
     return [
         "Reconcile `IMPLEMENTATION_STATUS.md`, architecture checklist state, and this generated report each release cycle.",
-        "Define v1 release-gate parity thresholds against Harry reference sheets (fixtures + tolerances).",
+        "Keep v1 release-gate parity thresholds enforced and calibrated against Harry reference sheets each release.",
         "Tune assumptions-manifest parity tolerances over time using reference-sheet drift data.",
         "Harden tournament scenario coverage with explicit BC/heat fixtures and fail-closed checks.",
         "Keep economy and optional table expansions (`vault_stats_v1.csv`, `wse_presets_v1.csv`) scoped to v2 unless promoted by source data.",

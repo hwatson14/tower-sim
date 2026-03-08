@@ -336,15 +336,15 @@ def _explain_stat_input(manifest: Mapping[str, Any], stat_input_id: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=(
-            "Summarize stat lineage gaps from out/lineage_manifest_latest.json "
+            "Summarize stat lineage gaps from out/stat_lineage_manifest.json "
             "with fail-closed manifest-shape validation."
         )
     )
     parser.add_argument(
         "--manifest",
         type=Path,
-        default=Path("out/lineage_manifest_latest.json"),
-        help="Path to stat lineage manifest JSON (default: out/lineage_manifest_latest.json).",
+        default=Path("out/stat_lineage_manifest.json"),
+        help="Path to stat lineage manifest JSON (default: out/stat_lineage_manifest.json).",
     )
     parser.add_argument(
         "--json-out",

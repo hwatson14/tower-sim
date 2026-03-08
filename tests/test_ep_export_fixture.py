@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import json
+from pathlib import Path
+
 import pytest
 
 from tower_sim.loaders.ep_export_loader import (
@@ -53,3 +56,26 @@ def test_extract_max_wave_targets_returns_empty_when_rows_are_missing() -> None:
     dataset = load_ep_export_dataset()
 
     assert extract_max_wave_targets(dataset) == {}
+
+
+def test_ep_export_loader_uses_default_presets_when_manifest_mapping_missing(
+    tmp_path: Path,
+) -> None:
+    manifest_path = tmp_path / "manifest.json"
+    manifest = {
+        "files": {
+            "EP_Export.csv": {
+                "github_path": "tests/fixtures/tower-sim-data/EP_Export.csv",
+                "sheet": "EP Export",
+            }
+        }
+    }
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+
+    dataset = load_ep_export_dataset(manifest_path=manifest_path)
+
+    assert dataset.verification_presets == {
+        "edmg": "tournament",
+        "ehp": "farming",
+        "eecon": "farming",
+    }

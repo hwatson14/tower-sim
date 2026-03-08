@@ -52,11 +52,10 @@ def _parse_problem_spec(data: Mapping[str, Any]) -> ProblemSpec:
 def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
     _validate_keys(
         data,
-        required={"mode", "tier"},
+        required={"mode", "tier", "wave_probe", "wave_max"},
         optional={
             "league",
             "preset",
-            "wave",
             "wave_damage_tier",
             "eals_ramp",
             "ehls_ramp",
@@ -69,7 +68,8 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
     tier = int(data["tier"])
     league = _optional_str(data.get("league"))
     preset = _optional_str(data.get("preset"))
-    wave = int(data.get("wave", 1))
+    wave_probe = int(data["wave_probe"])
+    wave_max = int(data["wave_max"])
     wave_damage_tier = _optional_str(data.get("wave_damage_tier"))
     eals_ramp = _parse_skip_ramp(data.get("eals_ramp"), "eals_ramp")
     ehls_ramp = _parse_skip_ramp(data.get("ehls_ramp"), "ehls_ramp")
@@ -81,7 +81,8 @@ def _parse_scenario(data: Mapping[str, Any]) -> ScenarioSpec:
         tier=tier,
         league=league,
         preset=preset,
-        wave=wave,
+        wave_probe=wave_probe,
+        wave_max=wave_max,
         wave_damage_tier=wave_damage_tier,
         eals_ramp=eals_ramp,
         ehls_ramp=ehls_ramp,

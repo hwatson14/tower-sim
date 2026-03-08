@@ -83,7 +83,7 @@ def _build_ids_raw_index(ids_raw: Any) -> Dict[str, Any]:
 
 def _default_problem_spec() -> ProblemSpec:
     # Deterministic baseline spec for debug bundle runs.
-    return ProblemSpec(scenario=ScenarioSpec(mode="farming", tier=12, wave=1000), stat_inputs=[])
+    return ProblemSpec(scenario=ScenarioSpec(mode="farming", tier=12, wave_probe=1000, wave_max=8000), stat_inputs=[])
 
 
 def _filter_statbook_rows(rows: list[Any], allowlist: Optional[Set[str]]) -> list[Dict[str, Any]]:
@@ -373,7 +373,8 @@ def _build_staged_outputs(
         "mode": resolved_spec.scenario.mode,
         "tier": resolved_spec.scenario.tier,
         "league": resolved_spec.scenario.league,
-        "wave": resolved_spec.scenario.wave,
+        "wave_probe": resolved_spec.scenario.wave_probe,
+        "wave_max": resolved_spec.scenario.wave_max,
         "wave_state": diagnostics.get("wave_state"),
         "wave_rows": diagnostics.get("wave_rows", {}),
         "missing_tier_rules": diagnostics.get("missing_tier_rules", []),

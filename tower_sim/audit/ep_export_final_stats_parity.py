@@ -16,6 +16,7 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ep_export_loader import load_ep_export_dataset
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.context import RunContext
+from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.spec_loader import load_problem_spec
 from tower_sim.registry.naming_contract import resolve_stat_id, validate_registry_parity
 from tower_sim.registry.stat_registry import Phase, default_registry
@@ -45,7 +46,7 @@ def _resolve_stat_input_value(stat_input) -> float:
     return ((base_value + loadout_delta) * enhancement_multiplier + tier_delta) * tier_multiplier
 
 
-def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Dict[str, float]]:
+def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Dict[str, float], object]:
     registry = default_registry()
     canonical = build_canonical_stat_inputs(
         problem_spec=spec,
@@ -69,12 +70,12 @@ def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Di
             continue
         stat_input_values[stat_input.stat_id] = _resolve_stat_input_value(stat_input)
 
-    wave_row, wave_missing = build_canonical_wave_row(spec, registry, wave=spec.scenario.wave)
+    wave_row, wave_missing = build_canonical_wave_row(spec, registry, wave=spec.scenario.wave_probe)
     if wave_missing or wave_row is None:
         raise ValueError(f"Canonical wave-row build failed for parity run: {wave_missing}")
     wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
         ids_snapshot=ids_snapshot,
-        wave=spec.scenario.wave,
+        wave=spec.scenario.wave_probe,
         stat_inputs=canonical.stat_inputs,
         engine_result=engine_result,
         registry=registry,
@@ -97,7 +98,20 @@ def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Di
             "Canonical combat snapshot build failed for parity run: "
             + ", ".join(sorted(set(combat_missing)))
         )
-    return stat_input_values, combat_snapshot.values
+    return stat_input_values, combat_snapshot.values, canonical
+
+
+def _normalized_problem_spec(*, spec: ProblemSpec, compiled_core_only: bool) -> ProblemSpec:
+    if not compiled_core_only:
+        return spec
+    scenario = spec.scenario
+    if not scenario.allow_core_stat_overrides:
+        from dataclasses import replace
+
+        scenario = replace(scenario, allow_core_stat_overrides=True)
+    return ProblemSpec(scenario=scenario, stat_inputs=[], evaluator=spec.evaluator)
+
+
 
 
 def verify_final_stats_against_ep_export(
@@ -106,6 +120,7 @@ def verify_final_stats_against_ep_export(
     spec_path: Path,
     suite: str = "ehp",
     tolerance: float = 0.01,
+    compiled_core_only: bool = False,
 ) -> Dict[str, Any]:
     dataset = load_ep_export_dataset()
     parity_errors = validate_registry_parity(default_registry())
@@ -114,7 +129,7 @@ def verify_final_stats_against_ep_export(
     if suite not in dataset.verification_presets:
         raise ValueError(f"Unknown EP export suite {suite!r}.")
 
-    spec = load_problem_spec(spec_path)
+    spec = _normalized_problem_spec(spec=load_problem_spec(spec_path), compiled_core_only=compiled_core_only)
     expected_preset = dataset.verification_presets[suite]
     scenario_mode = spec.scenario.mode.lower()
     if scenario_mode != expected_preset:
@@ -124,7 +139,7 @@ def verify_final_stats_against_ep_export(
         )
 
     ids_snapshot = compile_account_snapshot(parse_ids(ids_path))
-    stat_input_values, combat_stats = _build_canonical_stat_maps(ids_snapshot, spec)
+    stat_input_values, combat_stats, canonical = _build_canonical_stat_maps(ids_snapshot, spec)
 
     compared: List[Dict[str, Any]] = []
     unresolved: List[Dict[str, Any]] = []
@@ -208,6 +223,13 @@ def verify_final_stats_against_ep_export(
         if lineage_errors:
             raise ValueError(f"Decisive lineage gate failed: {lineage_errors}")
 
+    compared_keys = {item["key"] for item in compared}
+    contributor_trace = {
+        key: canonical.observed_contributors_by_stat_input_id.get(resolve_stat_id(_DECISIVE_EHP_KEYS[key]), [])
+        for key in sorted(_DECISIVE_EHP_KEYS)
+        if key in compared_keys
+    } if suite == "ehp" else {}
+
     return {
         "suite": suite,
         "preset": expected_preset,
@@ -219,6 +241,8 @@ def verify_final_stats_against_ep_export(
         "mismatch_count": len(mismatches),
         "matched_count": len(compared) - len(mismatches),
         "status": "validated" if not mismatches else "mismatch",
+        "compiled_core_only": compiled_core_only,
+        "contributor_trace": contributor_trace,
     }
 
 
@@ -230,6 +254,11 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--spec", type=Path, required=True)
     parser.add_argument("--suite", default="ehp")
     parser.add_argument("--tolerance", type=float, default=0.01)
+    parser.add_argument(
+        "--compiled-core-only",
+        action="store_true",
+        help="Ignore spec stat_inputs and run parity against fully compiled core stat inputs.",
+    )
     parser.add_argument("--strict", action="store_true")
     parser.add_argument("--output", type=Path, default=None)
     return parser.parse_args()
@@ -242,6 +271,7 @@ def main() -> None:
         spec_path=args.spec,
         suite=args.suite,
         tolerance=args.tolerance,
+        compiled_core_only=args.compiled_core_only,
     )
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

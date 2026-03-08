@@ -27,7 +27,7 @@ def test_verify_final_stats_enforces_preset_mapping() -> None:
 def test_verify_final_stats_returns_comparison_report() -> None:
     report = verify_final_stats_against_ep_export(
         ids_path=_ids_path(),
-        spec_path=_spec_path("sample_spec.yaml"),
+        spec_path=_spec_path("real_build_pipeline_spec.yaml"),
         suite="ehp",
     )
 
@@ -36,6 +36,24 @@ def test_verify_final_stats_returns_comparison_report() -> None:
     assert report["matched_count"] + report["mismatch_count"] == len(report["compared_rows"])
     assert len(report["compared_rows"]) > 0
     assert {entry["key"] for entry in report["decisive_lineage"]} == {
+        "health",
+        "health_regen",
+        "defense_percent",
+        "wall_health",
+        "wall_regen",
+    }
+
+
+def test_verify_final_stats_real_build_mode_exposes_contributor_trace() -> None:
+    report = verify_final_stats_against_ep_export(
+        ids_path=_ids_path(),
+        spec_path=_spec_path("real_build_pipeline_spec.yaml"),
+        suite="ehp",
+        compiled_core_only=True,
+    )
+
+    assert report["compiled_core_only"] is True
+    assert set(report["contributor_trace"]) == {
         "health",
         "health_regen",
         "defense_percent",

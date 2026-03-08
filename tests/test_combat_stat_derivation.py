@@ -607,7 +607,7 @@ from tower_sim.run.problem_spec import BossStatsSpec, BossSurvivabilitySpec, Tow
 
 def test_resolve_canonical_wave_damage_for_attack_wave() -> None:
     problem = ProblemSpec(
-        scenario=ScenarioSpec(mode="farming", tier=1, wave=10),
+        scenario=ScenarioSpec(mode="farming", tier=1, wave_probe=10, wave_max=10),
         stat_inputs=[],
     )
     damage, missing = resolve_canonical_wave_damage_for_attack_wave(
@@ -677,7 +677,8 @@ def test_tournament_heat_missing_is_fail_closed(monkeypatch) -> None:
             mode="tournament",
             tier=12,
             league="champion",
-            wave=10,
+            wave_probe=10,
+            wave_max=10,
             eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
             ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ),
@@ -802,7 +803,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     )
 
     assert loadout.module_contribution_ledger
-    assert loadout.layer_gaps
+    assert loadout.layer_gaps == []
 
     by_target: dict[str, list[dict[str, object]]] = {}
     for row in loadout.module_contribution_ledger:
@@ -844,7 +845,7 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
     assert set(built.module_unmapped_by_layer.keys()) == {"main", "unique", "substats"}
     assert built.module_unmapped_by_layer["main"]
     assert built.module_unmapped_by_layer["unique"] == []
-    assert built.module_unmapped_by_layer["substats"]
+    assert built.module_unmapped_by_layer["substats"] == []
     assert set(built.canonical_unmapped_by_source.keys()) == {
         "modules",
         "cards",

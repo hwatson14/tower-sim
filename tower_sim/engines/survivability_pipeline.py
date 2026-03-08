@@ -105,6 +105,9 @@ STAT_IDS_SURVIVABILITY = required_survivability_stat_ids(include_optional_offens
 
 _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
     "Attack Speed": ("tower_attack_speed", "multiplier"),
+    "Black Hole - Cooldown": ("uw_black_hole_cooldown", "delta"),
+    "Black Hole - Duration": ("uw_black_hole_duration", "delta"),
+    "Bounce Shot Chance": ("workshop_bounce_shot_chance", "delta"),
     "Cash Bonus": ("cash_bonus", "delta"),
     "Chain Lightning - Chance": ("chain_lightning_chance", "delta"),
     "Chain Lightning - Damage": ("chain_lightning_damage", "delta"),
@@ -132,11 +135,14 @@ _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
     "Inner Land Mines - Cooldown": ("inner_land_mines_cooldown", "delta"),
     "Inner Land Mines - Damage": ("inner_land_mines_damage", "delta"),
     "Inner Land Mines - Quantity": ("inner_land_mines_quantity", "delta"),
+    "Land Mine Chance": ("workshop_land_mine_chance", "delta"),
+    "Multishot Targets": ("workshop_multishot_targets", "delta"),
     "Orb Speed": ("orb_speed", "delta"),
     "Poison Swamp - Cooldown": ("poison_swamp_cooldown", "delta"),
     "Poison Swamp - Damage": ("poison_swamp_damage", "delta"),
     "Poison Swamp - Duration": ("poison_swamp_duration", "delta"),
     "Recovery Amount": ("recovery_amount", "delta"),
+    "Recovery Package Chance": ("workshop_package_chance", "delta"),
     "Smart Missiles - Cooldown": ("smart_missiles_cooldown", "delta"),
     "Smart Missiles - Damage": ("smart_missiles_damage", "delta"),
     "Smart Missiles - Quantity": ("smart_missiles_quantity", "delta"),
@@ -147,6 +153,7 @@ _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
     "Thorns Damage": ("thorns_damage_mult", "delta"),
     "Wall Health": ("wall_hp", "multiplier"),
     "Wall Rebuild": ("wall_rebuild", "delta"),
+    "Coins / Kill Bonus": ("workshop_coins_per_kill_bonus", "delta"),
 }
 
 
@@ -257,7 +264,7 @@ def build_survivability_report(
         tier_rules=tier_rules,
         battle_conditions=None,
         wave_state=wave_state,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         run_context=RunContext.from_mode(
             problem_spec.scenario.mode,
             tier=str(problem_spec.scenario.tier),
@@ -862,7 +869,7 @@ def _build_wave_state(scenario: ScenarioSpec, start_snapshot: Mapping[str, float
         eals = SkipRamp(start=float(eals_pct), end=float(eals_pct), ramp_waves=1)
         ehls = SkipRamp(start=float(ehls_pct), end=float(ehls_pct), ramp_waves=1)
 
-    return make_wave_state(scenario.wave, eals, ehls)
+    return make_wave_state(scenario.wave_probe, eals, ehls)
 
 
 def _load_tier_rules(
@@ -936,7 +943,7 @@ def _resolve_heat_magnitudes(
     bundle = load_heat_bundle(heat_path, magnitudes_path)
 
     league = scenario.league.lower()
-    wave = scenario.wave
+    wave = scenario.wave_probe
     scalars = [row for row in bundle.heat_scalars if row.league == league and row.wave == wave]
     if not scalars:
         raise SurvivabilityPipelineError("Missing heat scalar for league/wave.")
@@ -1010,7 +1017,7 @@ def _resolve_survivability_verdict(
         }
     )
     ctx = BossContext(
-        wave=scenario.wave,
+        wave=scenario.wave_probe,
         tier=scenario.tier,
         league=scenario.league or "",
         boss=boss,

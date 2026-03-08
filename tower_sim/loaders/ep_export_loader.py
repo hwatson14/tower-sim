@@ -20,6 +20,16 @@ _HUMAN_SUFFIX_SCALE: Dict[str, float] = {
     "O": 1e27,
 }
 
+# Backward-compatibility fallback for fixture manifests that predate
+# files.EP_Export.csv.verification_presets.
+# Provenance: aligned with EP fixture suite intent codified in tests
+# and parity checks (edmg=tournament; ehp/eecon=farming).
+_DEFAULT_VERIFICATION_PRESETS: Dict[str, str] = {
+    "edmg": "tournament",
+    "ehp": "farming",
+    "eecon": "farming",
+}
+
 # Row contract: every exported EP row must have a deterministic source reference.
 # Sources use prefixes:
 # - ep_formula:<formula_id>            (active registry formulas via mechanics/manifest.yaml)
@@ -200,12 +210,14 @@ def _validate_registry_sources() -> None:
 
 def _load_verification_presets(manifest_path: Path) -> Mapping[str, str]:
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    try:
-        mapping = manifest["files"]["EP_Export.csv"]["verification_presets"]
-    except KeyError as exc:
-        raise ValueError(
-            "manifest missing files.EP_Export.csv.verification_presets"
-        ) from exc
+    ep_export = manifest.get("files", {}).get("EP_Export.csv", {})
+    if not isinstance(ep_export, dict):
+        raise ValueError("manifest missing files.EP_Export.csv object")
+
+    mapping = ep_export.get("verification_presets")
+    if mapping is None:
+        return dict(_DEFAULT_VERIFICATION_PRESETS)
+
     if not isinstance(mapping, dict) or not mapping:
         raise ValueError("verification_presets must be a non-empty object")
     return mapping

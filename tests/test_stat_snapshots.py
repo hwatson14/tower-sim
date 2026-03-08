@@ -15,7 +15,7 @@ from tower_sim.engines.battle_conditions import BCRow, BattleConditions  # noqa:
 from tower_sim.run.context import RunContext  # noqa: E402
 from tower_sim.engines.stat_engine import StatEngine, StatInput  # noqa: E402
 from tower_sim.registry.stat_registry import Phase, default_registry  # noqa: E402
-from tower_sim.engines.stat_snapshots import build_at_wave_snapshot  # noqa: E402
+from tower_sim.engines.stat_snapshots import _extract_value, build_at_wave_snapshot  # noqa: E402
 from tower_sim.engines.tier_rules import TierRulesResult  # noqa: E402
 from tower_sim.loaders.tier_battle_conditions import TierBattleCondition  # noqa: E402
 from tower_sim.engines.wave_engine import RunWaveState  # noqa: E402
@@ -138,3 +138,21 @@ def test_build_at_wave_snapshot_applies_tier_rules_before_bc_then_heat() -> None
     assert snapshot.applied_heat["orb_damage_mult"] == pytest.approx(0.3)
     assert snapshot.values["orb_damage_mult"] == pytest.approx(0.3)
 
+
+
+
+def test_extract_value_composes_stat_input_components() -> None:
+    value = _extract_value(
+        StatInput(
+            stat_id="wave_attack_index",
+            phase=Phase.AT_WAVE,
+            base_value=2.0,
+            loadout_delta=1.0,
+            enhancement_multiplier=2.0,
+            tier_rule_delta=0.5,
+            tier_rule_multiplier=2.0,
+        ),
+        engine_result=StatEngine(registry=default_registry()).build([]),
+    )
+
+    assert value == pytest.approx(13.0)

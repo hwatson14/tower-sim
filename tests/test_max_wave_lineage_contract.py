@@ -40,7 +40,8 @@ def _problem_spec() -> ProblemSpec:
         scenario=ScenarioSpec(
             mode="farming",
             tier=12,
-            wave=100,
+            wave_probe=100,
+            wave_max=100,
             eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
             ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
             boss_survivability=BossSurvivabilitySpec(

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 
 from tower_sim.run.api import TASK_MAX_WAVE
-from tower_sim.run.runner import _OUT_LINEAGE_PATH, _required_stat_wiring_summary, run
+from tower_sim.run.runner import run
 
 
 def _parse_args() -> argparse.Namespace:
@@ -37,10 +37,15 @@ def main() -> None:
     args = _parse_args()
     result = run(spec_path=args.spec, patch_path=args.patch, ids_path=args.ids)
     print(json.dumps(result, indent=2, sort_keys=True))
-    wiring = _required_stat_wiring_summary(_OUT_LINEAGE_PATH)
-    print(f"Required stats: {wiring['required_stats']}")
-    print(f"Fully wired: {wiring['fully_wired']}")
-    print(f"Mismatch: {wiring['mismatch']}")
+    payload = result.get("result", {}) if isinstance(result, dict) else {}
+    diagnostics = payload.get("diagnostics", {}) if isinstance(payload, dict) else {}
+    print(
+        "SUMMARY "
+        f"w_max={payload.get('w_max')} "
+        f"contract_status={diagnostics.get('contract_status')} "
+        f"unmapped_hard_count={diagnostics.get('unmapped_hard_count')} "
+        f"fail_closed={payload.get('fail_closed')}"
+    )
 
 
 if __name__ == "__main__":

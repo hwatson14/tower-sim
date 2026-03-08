@@ -30,14 +30,14 @@ def test_build_canonical_stat_pipeline_for_problem_spec_builds_stage_outputs() -
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
     assert "tower_hp" in result.base_stage.values
     assert "tower_hp" in result.start_stage.values
     assert result.at_wave_stage is not None
-    assert result.at_wave_stage.wave_state.W_actual == problem_spec.scenario.wave
+    assert result.at_wave_stage.wave_state.W_actual == problem_spec.scenario.wave_probe
 
 
 def test_build_canonical_stat_pipeline_wrapper_uses_scenario_contract() -> None:
@@ -48,7 +48,7 @@ def test_build_canonical_stat_pipeline_wrapper_uses_scenario_contract() -> None:
         snapshot=snapshot,
         scenario=problem_spec.scenario,
         preset=None,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -66,7 +66,7 @@ def test_build_canonical_stat_pipeline_wrapper_applies_explicit_preset() -> None
         snapshot=snapshot,
         scenario=problem_spec.scenario,
         preset="Farming",
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -80,7 +80,7 @@ def test_stage_lineage_includes_workshop_levels_and_non_level_sources() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -104,7 +104,7 @@ def test_stage_golden_stat_presence_and_progression_contract() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -160,7 +160,7 @@ def test_stage_required_stat_completeness_fail_closed(monkeypatch) -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -174,7 +174,7 @@ def test_stage_golden_stat_values_for_pinned_snapshot() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -208,7 +208,7 @@ def test_stage_lineage_includes_uw_levels_from_snapshot_tracks() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -224,7 +224,7 @@ def test_stage_lineage_includes_card_levels_from_inventory() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -242,7 +242,7 @@ def test_stage_lineage_includes_workshop_formula_levels() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -265,7 +265,7 @@ def test_stage_lineage_has_no_null_levels_for_modeled_level_sources() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -315,7 +315,7 @@ def test_at_wave_required_stat_completeness_fail_closed(monkeypatch) -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -329,7 +329,7 @@ def test_stage_materialization_uses_canonical_inputs_source() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -351,7 +351,7 @@ def test_stage_golden_stat_values_for_pinned_tournament_specs(spec_path: Path) -
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -393,7 +393,7 @@ def test_stage_lineage_modeled_level_sources_no_nulls_across_specs(spec_path: Pa
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -429,7 +429,7 @@ def test_card_provenance_keys_are_mapped_for_pinned_specs(spec_path: Path) -> No
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -457,7 +457,7 @@ def test_workshop_formula_stat_ids_are_mapped_for_pinned_specs(spec_path: Path) 
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -486,7 +486,7 @@ def test_workshop_formula_lineage_values_match_compiled_inputs(spec_path: Path) 
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -555,7 +555,7 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -607,7 +607,13 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "wall_hp",
                 "wall_regen",
                 "workshop_cash_bonus",
+                "workshop_bounce_shot_chance",
                 "workshop_coins_per_kill_bonus",
+                "workshop_land_mine_chance",
+                "uw_black_hole_cooldown",
+                "uw_black_hole_duration",
+                "workshop_multishot_targets",
+                "workshop_package_chance",
             },
         ),
         (
@@ -639,6 +645,9 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_regen",
                 "wall_hp",
                 "wall_regen",
+                "workshop_bounce_shot_chance",
+                "workshop_land_mine_chance",
+                "workshop_multishot_targets",
                 "workshop_package_chance",
             },
         ),
@@ -671,6 +680,9 @@ def test_stage3_wave_deltas_are_pinned_for_key_specs(
                 "tower_regen",
                 "wall_hp",
                 "wall_regen",
+                "workshop_bounce_shot_chance",
+                "workshop_land_mine_chance",
+                "workshop_multishot_targets",
                 "workshop_package_chance",
             },
         ),
@@ -686,7 +698,7 @@ def test_stage2_deltas_are_pinned_for_key_specs(
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -706,7 +718,7 @@ def test_pipeline_reports_runtime_dag_contract_metadata() -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -727,7 +739,7 @@ def test_pipeline_fails_closed_when_runtime_dag_table_missing(monkeypatch) -> No
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=False,
     )
 
@@ -763,7 +775,7 @@ def test_perk_timeline_uses_precomputed_effect_table(tmp_path: Path) -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=True,
     )
 
@@ -789,7 +801,7 @@ def test_perk_timeline_rejects_legacy_perk_event_format(tmp_path: Path) -> None:
     result = build_canonical_stat_pipeline_for_problem_spec(
         snapshot=snapshot,
         problem_spec=problem_spec,
-        wave=problem_spec.scenario.wave,
+        wave=problem_spec.scenario.wave_probe,
         include_perk_timeline=True,
     )
 
