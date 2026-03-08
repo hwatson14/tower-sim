@@ -40,3 +40,17 @@ def test_max_wave_workflow_exports_lineage_from_stat_lineage_manifest() -> None:
 
     assert "--manifest out/stat_lineage_manifest.json" in text
     assert "--manifest out/lineage_manifest_latest.json" not in text
+
+
+def test_max_wave_workflow_runs_wiring_health_check_with_canonical_manifest() -> None:
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+
+    assert "python -m tower_sim.audit.wiring_health_check" in text
+    assert "--lineage-manifest out/stat_lineage_manifest.json" in text
+
+
+def test_max_wave_workflow_emits_observed_contributors_into_stat_lineage_manifest() -> None:
+    text = WORKFLOW_PATH.read_text(encoding="utf-8")
+
+    assert "observed_contributors_by_stat_input_id" in text
+    assert "Runner diagnostics missing observed_contributors_by_stat_input_id." in text

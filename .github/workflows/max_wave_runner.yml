@@ -71,10 +71,6 @@ jobs:
           PY
 
 
-      - name: Run strict wiring health check
-        run: |
-          python -m tower_sim.audit.wiring_health_check --strict --max-required-max-wave-gaps 0
-
       - name: Validate runner max-wave against EP export targets
         run: |
           python -m tower_sim.audit.max_wave_ep_parity \
@@ -108,6 +104,13 @@ jobs:
 
           out_dir = Path("out")
           out_dir.mkdir(parents=True, exist_ok=True)
+
+          runner_payload = json.loads(
+              Path("out/max_wave_runner/max_wave_latest.json").read_text(encoding="utf-8")
+          )
+          observed = runner_payload.get("diagnostics", {}).get("observed_contributors_by_stat_input_id")
+          if not isinstance(observed, dict):
+              raise SystemExit("Runner diagnostics missing observed_contributors_by_stat_input_id.")
 
           manifest = stat_lineage_manifest()
           status_lists = stat_lineage_status_lists()
@@ -145,6 +148,11 @@ jobs:
                   }
                   for stat_id in ordered_stat_ids
               },
+              "observed_contributors_by_stat_input_id": {
+                  str(stat_id): sorted({str(item) for item in contributors})
+                  for stat_id, contributors in observed.items()
+                  if isinstance(contributors, list)
+              },
               "stats": serialized,
           }
           Path("out/stat_lineage_manifest.json").write_text(
@@ -174,6 +182,10 @@ jobs:
               raise SystemExit(f"Lineage contract gate failed: {gate['missing_required']}")
           print("Wrote out/stat_lineage_manifest.json and out/stat_lineage_contract_gate.json")
           PY
+
+      - name: Run strict wiring health check
+        run: |
+          python -m tower_sim.audit.wiring_health_check             --strict             --lineage-manifest out/stat_lineage_manifest.json             --max-required-max-wave-gaps 0
 
       - name: Export lineage full table
         run: |
