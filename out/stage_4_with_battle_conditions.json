@@ -23,13 +23,15 @@
       "perk_timeline_path": null,
       "preset": null,
       "tier": 12,
-      "wave": 1000,
-      "wave_damage_tier": null
+      "wave_damage_tier": null,
+      "wave_max": 8000,
+      "wave_probe": 1000
     },
     "stat_inputs": []
   },
   "tier": 12,
-  "wave": 1000,
+  "wave_max": 8000,
+  "wave_probe": 1000,
   "wave_rows": {},
   "wave_state": null
 }

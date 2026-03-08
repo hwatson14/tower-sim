@@ -10,7 +10,7 @@
     "base_value": null,
     "final_value": "0.04",
     "phase": "start_of_run",
-    "provenance": "relics:defense",
+    "provenance": "relics:defense_percent",
     "stat_id": "def_pct"
   },
   {
@@ -49,10 +49,10 @@
     "stat_id": "plasma_cannon_damage_mult"
   },
   {
-    "base_value": "0.99",
-    "final_value": "0.99",
+    "base_value": null,
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "workshop_alias:Thorn Damage->thorns_damage_mult",
+    "provenance": "relics:thorns",
     "stat_id": "thorns_damage_mult"
   },
   {
@@ -210,8 +210,8 @@
     "stat_id": "uw_chrono_field_cooldown_next_cost"
   },
   {
-    "base_value": "17.0",
-    "final_value": "17.0",
+    "base_value": "47.0",
+    "final_value": "47.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_chrono_field_duration"

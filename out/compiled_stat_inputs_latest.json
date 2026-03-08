@@ -1,7 +1,87 @@
 {
-  "fail_closed": false,
-  "hash": "391d0558cf23424d8ab727031743c30a287f2efe697d08b7121ca807b4485c00",
-  "missing": [],
+  "fail_closed": true,
+  "hash": "41bc9b63f34af2d862b55f8fb161c8bc7b4f31222fc17fc0bd17cf0c96897513",
+  "missing": [
+    "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
+    "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
+    "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
+    "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
+    "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
+    "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+    "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
+    "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
+    "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
+    "lab_table_unmapped:Chain Lightning Shock:LAB_CHAIN_LIGHTNING_SHOCK",
+    "lab_table_unmapped:Chain Thunder:LAB_CHAIN_THUNDER",
+    "lab_table_unmapped:Chrono Field Damage Reduction:LAB_CHRONO_FIELD_DAMAGE_REDUCTION",
+    "lab_table_unmapped:Chrono Field Range:LAB_CHRONO_FIELD_RANGE",
+    "lab_table_unmapped:Chrono Field Reduction %:LAB_CHRONO_FIELD_REDUCTION_PERCENT",
+    "lab_table_unmapped:Coins / Kill Bonus:LAB_COINS_PER_KILL_BONUS",
+    "lab_table_unmapped:Coins / Wave:LAB_COINS_PER_WAVE",
+    "lab_table_unmapped:Common Drop Chance:LAB_COMMON_DROP_CHANCE",
+    "lab_table_unmapped:Core Effect Bans:LAB_CORE_EFFECT_BANS",
+    "lab_table_unmapped:Critical Factor:LAB_CRITICAL_FACTOR",
+    "lab_table_unmapped:Daily Mission Shards:LAB_DAILY_MISSION_SHARDS",
+    "lab_table_unmapped:Damage / Meter:LAB_DAMAGE_PER_METER",
+    "lab_table_unmapped:Damage:LAB_DAMAGE",
+    "lab_table_unmapped:Death Wave Cells Bonus:LAB_DEATH_WAVE_CELL_BONUS",
+    "lab_table_unmapped:Death Wave Coin Bonus:LAB_DEATH_WAVE_COIN_BONUS",
+    "lab_table_unmapped:Death Wave Health:LAB_DEATH_WAVE_HEALTH",
+    "lab_table_unmapped:Defense Absolute:LAB_DEFENSE_ABSOLUTE",
+    "lab_table_unmapped:Energy Shield Extra Hit:LAB_ENERGY_SHIELD_EXTRA_HIT",
+    "lab_table_unmapped:Extra Black Hole:LAB_EXTRA_BLACK_HOLE",
+    "lab_table_unmapped:Extra Extra Orbs:LAB_EXTRA_EXTRA_ORBS",
+    "lab_table_unmapped:Extra Orb Adjuster:LAB_EXTRA_ORB_ADJUSTER",
+    "lab_table_unmapped:First Perk Choice:LAB_FIRST_PERK_CHOICE",
+    "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
+    "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
+    "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+    "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
+    "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
+    "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
+    "lab_table_unmapped:Golden Tower Duration:LAB_GOLDEN_TOWER_DURATION",
+    "lab_table_unmapped:Improve Trade-off Perks:LAB_IMPROVE_TRADE_OFF_PERKS",
+    "lab_table_unmapped:Interest:LAB_INTEREST",
+    "lab_table_unmapped:Labs Coin Discount:LAB_LABS_COIN_DISCOUNT",
+    "lab_table_unmapped:Labs Speed:LAB_LABS_SPEED",
+    "lab_table_unmapped:Light Speed Shots:LAB_LIGHT_SPEED_SHOTS",
+    "lab_table_unmapped:Lightning Amplifier - Scatter:LAB_LIGHTNING_AMPLIFIER_SCATTER",
+    "lab_table_unmapped:Max Interest:LAB_MAX_INTEREST",
+    "lab_table_unmapped:Module Shards Cost:LAB_MODULE_SHARD_COSTS",
+    "lab_table_unmapped:More Round Stats:LAB_MORE_ROUND_STATS",
+    "lab_table_unmapped:Orb Boss Hit:LAB_ORB_BOSS_HIT",
+    "lab_table_unmapped:Orbs Speed:LAB_ORB_SPEED",
+    "lab_table_unmapped:Package After Boss:LAB_PACKAGE_AFTER_BOSS",
+    "lab_table_unmapped:Perk Option Quantity:LAB_PERK_OPTION_QUANTITY",
+    "lab_table_unmapped:Range:LAB_RANGE",
+    "lab_table_unmapped:Rare Drop Chance:LAB_RARE_DROP_CHANCE",
+    "lab_table_unmapped:Recharge Demon Mode:LAB_RECHARGE_DEMON_MODE",
+    "lab_table_unmapped:Recharge Second Wind:LAB_RECHARGE_SECOND_WIND",
+    "lab_table_unmapped:Recovery Package Chance Mastery:LAB_RECOVERY_PACKAGE_CHANCE_MASTERY",
+    "lab_table_unmapped:Reroll Daily Mission:LAB_REROLL_DAILY_MISSIONS",
+    "lab_table_unmapped:Reroll Shards:LAB_REROLL_SHARDS",
+    "lab_table_unmapped:Second Wind Blast:LAB_SECOND_WIND_BLAST",
+    "lab_table_unmapped:Shatter Shards:LAB_SHATTER_SHARDS",
+    "lab_table_unmapped:Shock Chance:LAB_SHOCK_CHANCE",
+    "lab_table_unmapped:Shock Multiplier:LAB_SHOCK_MULTIPLIER",
+    "lab_table_unmapped:Spotlight Coin Bonus:LAB_SPOTLIGHT_COIN_BONUS",
+    "lab_table_unmapped:Spotlight Missiles:LAB_SPOTLIGHT_MISSILES",
+    "lab_table_unmapped:Standard Perks Bonus:LAB_STANDARD_PERKS_BONUS",
+    "lab_table_unmapped:Starting Cash:LAB_STARTING_CASH",
+    "lab_table_unmapped:Super Crit Chance:LAB_SUPER_CRIT_CHANCE",
+    "lab_table_unmapped:Super Crit Multi:LAB_SUPER_CRIT_MULTI",
+    "lab_table_unmapped:Target Priority:LAB_TARGET_PRIORITY",
+    "lab_table_unmapped:Unlock Perks:LAB_UNLOCK_PERKS",
+    "lab_table_unmapped:Unmerge Module:LAB_UNMERGE_MODULE",
+    "lab_table_unmapped:Wall Fortification:LAB_WALL_FORTIFICATION",
+    "lab_table_unmapped:Wall Rebuild:LAB_WALL_REBUILD",
+    "lab_table_unmapped:Wall Thorns:LAB_WALL_THORN",
+    "lab_table_unmapped:Workshop Attack Discount:LAB_WORKSHOP_ATTACK_DISCOUNT",
+    "lab_table_unmapped:Workshop Defense Discount:LAB_WORKSHOP_DEFENSE_DISCOUNT",
+    "lab_table_unmapped:Workshop Enhancements:LAB_WORKSHOP_ENHANCEMENT",
+    "lab_table_unmapped:Workshop Respec:LAB_WORKSHOP_RESPEC",
+    "lab_table_unmapped:Workshop Utility Discount:LAB_WORKSHOP_UTILITY_DISCOUNT"
+  ],
   "stat_inputs": [
     {
       "base_value": 58302638.14,
@@ -15,13 +95,35 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 58302638.14,
+      "derived_value": null,
+      "enhancement_multiplier": 1.56,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_alias:Damage->tower_damage",
+      "stat_id": "tower_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 5.95,
       "derived_value": null,
-      "enhancement_multiplier": 1.13,
+      "enhancement_multiplier": 2.5763999999999996,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_attack_speed",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 5.95,
+      "derived_value": null,
+      "enhancement_multiplier": 2.5763999999999996,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_alias:Attack Speed->tower_attack_speed",
+      "stat_id": "tower_attack_speed",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -257,7 +359,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.495,
+      "base_value": 0.5509999999999999,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -268,7 +370,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.495,
+      "base_value": 0.5509999999999999,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -440,6 +542,17 @@
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_wall_health",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 1.54,
+      "derived_value": null,
+      "enhancement_multiplier": 3.1799999999999997,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "workshop_alias:Wall Health->wall_hp",
+      "stat_id": "wall_hp",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -653,6 +766,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 898.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_damage->chain_lightning_damage",
+      "stat_id": "chain_lightning_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 362.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -660,6 +784,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chain_lightning_damage_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 362.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_damage_next_cost->chain_lightning_damage_next_cost",
+      "stat_id": "chain_lightning_damage_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -675,6 +810,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 4.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_quantity->chain_lightning_quantity",
+      "stat_id": "chain_lightning_quantity",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 400.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -682,6 +828,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chain_lightning_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 400.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_quantity_next_cost->chain_lightning_quantity_next_cost",
+      "stat_id": "chain_lightning_quantity_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -697,6 +854,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 0.17,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_chance->chain_lightning_chance",
+      "stat_id": "chain_lightning_chance",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 152.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -704,6 +872,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chain_lightning_chance_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 152.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_chance_next_cost->chain_lightning_chance_next_cost",
+      "stat_id": "chain_lightning_chance_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -719,6 +898,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chain_lightning_smite->chain_lightning_smite",
+      "stat_id": "chain_lightning_smite",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 10.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -726,6 +916,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_smart_missiles_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_damage->smart_missiles_damage",
+      "stat_id": "smart_missiles_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -746,8 +947,30 @@
       "enhancement_multiplier": null,
       "loadout_delta": null,
       "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_damage_next_cost->smart_missiles_damage_next_cost",
+      "stat_id": "smart_missiles_damage_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 5.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_smart_missiles_quantity",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 5.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_quantity->smart_missiles_quantity",
+      "stat_id": "smart_missiles_quantity",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -763,6 +986,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 4.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_quantity_next_cost->smart_missiles_quantity_next_cost",
+      "stat_id": "smart_missiles_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 180.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -770,6 +1004,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_smart_missiles_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 180.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_cooldown->smart_missiles_cooldown",
+      "stat_id": "smart_missiles_cooldown",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -785,6 +1030,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 8.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_cooldown_next_cost->smart_missiles_cooldown_next_cost",
+      "stat_id": "smart_missiles_cooldown_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -792,6 +1048,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_smart_missiles_cover_fire",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_smart_missiles_cover_fire->smart_missiles_cover_fire",
+      "stat_id": "smart_missiles_cover_fire",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -807,6 +1074,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 63.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_damage->death_wave_damage",
+      "stat_id": "death_wave_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 53.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -814,6 +1092,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_death_wave_damage_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 53.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_damage_next_cost->death_wave_damage_next_cost",
+      "stat_id": "death_wave_damage_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -829,6 +1118,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 3.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_quantity->death_wave_quantity",
+      "stat_id": "death_wave_quantity",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 850.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -836,6 +1136,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_death_wave_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 850.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_quantity_next_cost->death_wave_quantity_next_cost",
+      "stat_id": "death_wave_quantity_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -851,6 +1162,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 180.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_cooldown->death_wave_cooldown",
+      "stat_id": "death_wave_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 200.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -858,6 +1180,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_death_wave_cooldown_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 200.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_cooldown_next_cost->death_wave_cooldown_next_cost",
+      "stat_id": "death_wave_cooldown_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -873,13 +1206,35 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 17.0,
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_death_wave_kill_wall->death_wave_kill_wall",
+      "stat_id": "death_wave_kill_wall",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 47.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chrono_field_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 47.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_duration->chrono_field_duration",
+      "stat_id": "chrono_field_duration",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -895,6 +1250,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 113.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_duration_next_cost->chrono_field_duration_next_cost",
+      "stat_id": "chrono_field_duration_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.3,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -902,6 +1268,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chrono_field_speed_reduction",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.3,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_speed_reduction->chrono_field_speed_reduction",
+      "stat_id": "chrono_field_speed_reduction",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -917,6 +1294,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 40.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_speed_reduction_next_cost->chrono_field_speed_reduction_next_cost",
+      "stat_id": "chrono_field_speed_reduction_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 60.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -924,6 +1312,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_chrono_field_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 60.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_cooldown->chrono_field_cooldown",
+      "stat_id": "chrono_field_cooldown",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -939,6 +1338,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_chrono_field_chrono_loop->chrono_field_chrono_loop",
+      "stat_id": "chrono_field_chrono_loop",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 10.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -946,6 +1356,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_inner_land_mines_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_damage->inner_land_mines_damage",
+      "stat_id": "inner_land_mines_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -961,6 +1382,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 5.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_damage_next_cost->inner_land_mines_damage_next_cost",
+      "stat_id": "inner_land_mines_damage_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 3.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -968,6 +1400,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_inner_land_mines_quantity",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 3.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_quantity->inner_land_mines_quantity",
+      "stat_id": "inner_land_mines_quantity",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -983,6 +1426,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 50.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_quantity_next_cost->inner_land_mines_quantity_next_cost",
+      "stat_id": "inner_land_mines_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 200.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -990,6 +1444,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_inner_land_mines_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 200.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_cooldown->inner_land_mines_cooldown",
+      "stat_id": "inner_land_mines_cooldown",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1005,6 +1470,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 8.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_cooldown_next_cost->inner_land_mines_cooldown_next_cost",
+      "stat_id": "inner_land_mines_cooldown_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1012,6 +1488,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_inner_land_mines_charged_mines",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_inner_land_mines_charged_mines->inner_land_mines_charged_mines",
+      "stat_id": "inner_land_mines_charged_mines",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1027,6 +1514,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 14.600000000000005,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_multiplier->golden_tower_multiplier",
+      "stat_id": "golden_tower_multiplier",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 250.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1034,6 +1532,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_golden_tower_multiplier_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 250.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_multiplier_next_cost->golden_tower_multiplier_next_cost",
+      "stat_id": "golden_tower_multiplier_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1049,6 +1558,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 22.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_duration->golden_tower_duration",
+      "stat_id": "golden_tower_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 68.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1056,6 +1576,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_golden_tower_duration_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 68.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_duration_next_cost->golden_tower_duration_next_cost",
+      "stat_id": "golden_tower_duration_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1071,6 +1602,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 180.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_cooldown->golden_tower_cooldown",
+      "stat_id": "golden_tower_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 226.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1078,6 +1620,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_golden_tower_cooldown_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 226.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_cooldown_next_cost->golden_tower_cooldown_next_cost",
+      "stat_id": "golden_tower_cooldown_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1093,6 +1646,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_golden_tower_golden_combo->golden_tower_golden_combo",
+      "stat_id": "golden_tower_golden_combo",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 10.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1100,6 +1664,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_poison_swamp_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_damage->poison_swamp_damage",
+      "stat_id": "poison_swamp_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1115,6 +1690,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 5.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_damage_next_cost->poison_swamp_damage_next_cost",
+      "stat_id": "poison_swamp_damage_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 30.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1122,6 +1708,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_poison_swamp_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 30.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_duration->poison_swamp_duration",
+      "stat_id": "poison_swamp_duration",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1137,6 +1734,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 10.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_duration_next_cost->poison_swamp_duration_next_cost",
+      "stat_id": "poison_swamp_duration_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 125.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1144,6 +1752,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_poison_swamp_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 125.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_cooldown->poison_swamp_cooldown",
+      "stat_id": "poison_swamp_cooldown",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1159,6 +1778,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 8.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_cooldown_next_cost->poison_swamp_cooldown_next_cost",
+      "stat_id": "poison_swamp_cooldown_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1166,6 +1796,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_poison_swamp_death_creep",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_poison_swamp_death_creep->poison_swamp_death_creep",
+      "stat_id": "poison_swamp_death_creep",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1181,6 +1822,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 48.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_size->black_hole_size",
+      "stat_id": "black_hole_size",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 89.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1188,6 +1840,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_black_hole_size_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 89.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_size_next_cost->black_hole_size_next_cost",
+      "stat_id": "black_hole_size_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1203,6 +1866,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 32.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_duration->black_hole_duration",
+      "stat_id": "black_hole_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 308.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1210,6 +1884,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_black_hole_duration_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 308.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_duration_next_cost->black_hole_duration_next_cost",
+      "stat_id": "black_hole_duration_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1225,6 +1910,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 50.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_cooldown->black_hole_cooldown",
+      "stat_id": "black_hole_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1232,6 +1928,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_black_hole_consume",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_black_hole_consume->black_hole_consume",
+      "stat_id": "black_hole_consume",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1247,6 +1954,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 19.2,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_multiplier->spotlight_multiplier",
+      "stat_id": "spotlight_multiplier",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 95.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1254,6 +1972,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_spotlight_multiplier_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 95.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_multiplier_next_cost->spotlight_multiplier_next_cost",
+      "stat_id": "spotlight_multiplier_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1269,6 +1998,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 38.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_angle->spotlight_angle",
+      "stat_id": "spotlight_angle",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 93.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1276,6 +2016,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_spotlight_angle_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 93.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_angle_next_cost->spotlight_angle_next_cost",
+      "stat_id": "spotlight_angle_next_cost",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1291,6 +2042,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 3.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_quantity->spotlight_quantity",
+      "stat_id": "spotlight_quantity",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 2500.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1302,6 +2064,17 @@
       "tier_rule_multiplier": null
     },
     {
+      "base_value": 2500.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_quantity_next_cost->spotlight_quantity_next_cost",
+      "stat_id": "spotlight_quantity_next_cost",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
       "base_value": 0.0,
       "derived_value": null,
       "enhancement_multiplier": null,
@@ -1309,6 +2082,17 @@
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
       "stat_id": "uw_spotlight_light_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "uw_alias:uw_spotlight_light_range->spotlight_light_range",
+      "stat_id": "spotlight_light_range",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1340,8 +2124,19 @@
       "enhancement_multiplier": null,
       "loadout_delta": 0.04,
       "phase": "start_of_run",
-      "provenance": "relics:defense",
+      "provenance": "relics:defense_percent",
       "stat_id": "def_pct",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.28,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:defense_absolute",
+      "stat_id": "defense_absolute",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
@@ -1364,6 +2159,391 @@
       "phase": "start_of_run",
       "provenance": "relics:ehls",
       "stat_id": "ehls_pct",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.54,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:damage",
+      "stat_id": "tower_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.05,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:attack_speed",
+      "stat_id": "tower_attack_speed",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": 0.06,
+      "phase": "start_of_run",
+      "provenance": "relics:crit_chance",
+      "stat_id": "tower_crit_chance",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.4,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:crit_factor",
+      "stat_id": "tower_crit_multiplier",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.43,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:damage_per_meter",
+      "stat_id": "damage_per_meter",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": 0.060000000000000005,
+      "phase": "start_of_run",
+      "provenance": "relics:free_attack_upgrade",
+      "stat_id": "free_attack_upgrade",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": 0.03,
+      "phase": "start_of_run",
+      "provenance": "relics:free_defense_upgrade",
+      "stat_id": "free_defense_upgrade",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": 0.04,
+      "phase": "start_of_run",
+      "provenance": "relics:free_utility_upgrade",
+      "stat_id": "free_utility_upgrade",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.09,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:recovery_amount",
+      "stat_id": "recovery_amount",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": 0.04,
+      "phase": "start_of_run",
+      "provenance": "relics:super_crit_chance",
+      "stat_id": "super_crit_chance",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.05,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:super_crit_mult",
+      "stat_id": "super_crit_mult",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.09,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:thorns",
+      "stat_id": "thorns_damage_mult",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.12,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:orb_speed",
+      "stat_id": "orb_speed",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 3.0,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:wall_rebuild",
+      "stat_id": "wall_rebuild",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.06,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:cash",
+      "stat_id": "cash_bonus",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.43,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:coins",
+      "stat_id": "coins_bonus",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.22,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:ultimate_damage",
+      "stat_id": "ultimate_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 1.395,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:lab_speed",
+      "stat_id": "lab_speed",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": null,
+      "derived_value": null,
+      "enhancement_multiplier": 10.0,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "relics:bot_range",
+      "stat_id": "bot_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 50.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Flame Bot:Damage",
+      "stat_id": "bot_flame_damage",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 42.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Flame Bot:Cooldown",
+      "stat_id": "bot_flame_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.44,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Flame Bot:Damage R.",
+      "stat_id": "bot_flame_damage_reduction",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 46.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Flame Bot:Range",
+      "stat_id": "bot_flame_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 120.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Thunder Bot:Cooldown",
+      "stat_id": "bot_thunder_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 5.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Thunder Bot:Duration",
+      "stat_id": "bot_thunder_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.2,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Thunder Bot:Linger",
+      "stat_id": "bot_thunder_linger",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 25.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Thunder Bot:Range",
+      "stat_id": "bot_thunder_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 23.5,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Golden Bot:Duration",
+      "stat_id": "bot_golden_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 105.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Golden Bot:Cooldown",
+      "stat_id": "bot_golden_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 5.6,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Golden Bot:Bonus",
+      "stat_id": "bot_golden_bonus",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 50.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Golden Bot:Range",
+      "stat_id": "bot_golden_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 20.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Amplify Bot:Duration",
+      "stat_id": "bot_amplify_duration",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 120.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Amplify Bot:Cooldown",
+      "stat_id": "bot_amplify_cooldown",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 3.5,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Amplify Bot:Bonus",
+      "stat_id": "bot_amplify_bonus",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 25.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "bot_table:Amplify Bot:Range",
+      "stat_id": "bot_amplify_range",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     }
