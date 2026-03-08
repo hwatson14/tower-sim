@@ -8,8 +8,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from tower_sim.audit.wiring_health_check import (
-    _LEGACY_DEFAULT_LINEAGE_MANIFEST,
-    _RUNNER_LINEAGE_MANIFEST,
+    _DEFAULT_LINEAGE_MANIFEST,
     _resolve_lineage_manifest_path,
     run_wiring_health_check,
 )
@@ -71,7 +70,7 @@ def _write_stat_lineage_manifest(path: Path) -> None:
 
 def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
     _run_blessed_max_wave(tmp_path)
-    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest_latest.json"
+    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest.json"
     _write_stat_lineage_manifest(lineage_manifest)
 
     result = run_wiring_health_check(
@@ -88,7 +87,7 @@ def test_wiring_health_check_is_ok_without_thresholds(tmp_path: Path) -> None:
 
 def test_wiring_health_check_respects_thresholds_with_zero_gap_manifest(tmp_path: Path) -> None:
     _run_blessed_max_wave(tmp_path)
-    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest_latest.json"
+    lineage_manifest = tmp_path / "out" / "stat_lineage_manifest.json"
     _write_stat_lineage_manifest(lineage_manifest)
 
     result = run_wiring_health_check(
@@ -116,16 +115,10 @@ def test_wiring_health_check_fails_closed_for_invalid_manifest(tmp_path: Path) -
         raise AssertionError("Expected fail-closed ValueError for invalid lineage manifest")
 
 
-def test_resolve_lineage_manifest_path_falls_back_to_runner_output(tmp_path: Path, monkeypatch) -> None:
-    monkeypatch.chdir(tmp_path)
-    out_dir = tmp_path / "out"
-    out_dir.mkdir(parents=True, exist_ok=True)
-    runner_manifest = out_dir / "lineage_manifest_latest.json"
-    runner_manifest.write_text("{}", encoding="utf-8")
+def test_resolve_lineage_manifest_path_returns_explicit_default_path() -> None:
+    resolved = _resolve_lineage_manifest_path(_DEFAULT_LINEAGE_MANIFEST)
 
-    resolved = _resolve_lineage_manifest_path(_LEGACY_DEFAULT_LINEAGE_MANIFEST)
-
-    assert resolved == _RUNNER_LINEAGE_MANIFEST
+    assert resolved == _DEFAULT_LINEAGE_MANIFEST
 
 
 def test_resolve_lineage_manifest_path_preserves_explicit_missing_path(tmp_path: Path, monkeypatch) -> None:
