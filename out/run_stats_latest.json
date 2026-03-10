@@ -243,35 +243,35 @@
       "stat_id": "uw_chrono_field_cooldown_next_cost"
     },
     {
-      "end_of_run": "47.0",
+      "end_of_run": "50.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "47.0",
+      "start_of_run": "50.0",
       "stat_id": "uw_chrono_field_duration"
     },
     {
-      "end_of_run": "113.0",
+      "end_of_run": "140.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "113.0",
+      "start_of_run": "140.0",
       "stat_id": "uw_chrono_field_duration_next_cost"
     },
     {
-      "end_of_run": "0.3",
+      "end_of_run": "0.5",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "0.3",
+      "start_of_run": "0.5",
       "stat_id": "uw_chrono_field_speed_reduction"
     },
     {
-      "end_of_run": "40.0",
+      "end_of_run": "200.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "40.0",
+      "start_of_run": "200.0",
       "stat_id": "uw_chrono_field_speed_reduction_next_cost"
     },
     {

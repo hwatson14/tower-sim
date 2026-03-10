@@ -350,7 +350,7 @@
     "Amp Bot - Cooldown": 0,
     "Amp Bot - Duration": 0,
     "Area of Effect Mastery": 0,
-    "Armor Effect Bans": 0,
+    "Armor Effect Bans": 2,
     "Armored Enemies": 0,
     "Assist Module Bonus - Armor": 0,
     "Assist Module Bonus - Cannon": 0,
@@ -375,7 +375,7 @@
     "Boss Health": 0,
     "Boss's Ultimate": 0,
     "Buy Multiplier": 3,
-    "Cannon Effect Bans": 0,
+    "Cannon Effect Bans": 1,
     "Card Presets": 1,
     "Cash / Wave": 8,
     "Cash Bonus": 33,
@@ -392,7 +392,7 @@
     "Common Drop Chance": 10,
     "Common Enemy Attack": 0,
     "Common Enemy Health": 0,
-    "Core Effect Bans": 1,
+    "Core Effect Bans": 3,
     "Critical Chance Mastery": 0,
     "Critical Coin Mastery": 0,
     "Critical Factor": 80,
@@ -437,12 +437,12 @@
     "Fast's Ultimate": 0,
     "First Perk Choice": 1,
     "Flame Bot - Burn Stack": 0,
-    "Flame Bot - Cooldown": 21,
+    "Flame Bot - Cooldown": 25,
     "Fortress Mastery": 0,
     "Free Upgrades Mastery": 0,
     "Game Speed": 7,
     "Garlic Thorns": 10,
-    "Generator Effect Bans": 0,
+    "Generator Effect Bans": 2,
     "Gold Bot - Cooldown": 15,
     "Gold Bot - Duration": 8,
     "Golden Tower Bonus": 20,
@@ -460,7 +460,7 @@
     "Intro Sprint Mastery": 0,
     "Knockback Resistance": 0,
     "Labs Coin Discount": 54,
-    "Labs Speed": 81,
+    "Labs Speed": 89,
     "Land Mine Damage": 0,
     "Land Mine Decay": 0,
     "Land Mine Stun Mastery": 0,
@@ -513,7 +513,7 @@
     "Scatter Enemy Health": 0,
     "Second Wind Blast": 4,
     "Second Wind Mastery": 0,
-    "Shatter Shards": 4,
+    "Shatter Shards": 5,
     "Shock Chance": 13,
     "Shock Multiplier": 14,
     "Shockwave Size": 0,
@@ -634,13 +634,13 @@
     "Chrono Field": {
       "end_of_run": [
         "Duration",
-        "17",
-        "12 | 17s | Cost 104 ? | Next 113 ?"
+        "20",
+        "15 | 20s | Cost 131 ? | Next 140 ?"
       ],
       "start_of_run": [
         "Duration",
-        "17",
-        "12 | 17s | Cost 104 ? | Next 113 ?"
+        "20",
+        "15 | 20s | Cost 131 ? | Next 140 ?"
       ],
       "unlocked": null
     },

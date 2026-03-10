@@ -1,13 +1,15 @@
 {
   "fail_closed": true,
-  "hash": "41bc9b63f34af2d862b55f8fb161c8bc7b4f31222fc17fc0bd17cf0c96897513",
+  "hash": "78406d3f5f4efc2b357e7cb118c3f199cea5ba2f88287ba57e2b5a07619843e7",
   "missing": [
+    "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
     "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
     "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
     "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
     "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
     "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
     "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+    "lab_table_unmapped:Cannon Effect Bans:LAB_CANNON_EFFECT_BANS",
     "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
     "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
     "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
@@ -36,6 +38,7 @@
     "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
     "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
     "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+    "lab_table_unmapped:Generator Effect Bans:LAB_GENERATOR_EFFECT_BANS",
     "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
     "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
     "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
@@ -1217,7 +1220,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 47.0,
+      "base_value": 50.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1228,7 +1231,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 47.0,
+      "base_value": 50.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1239,7 +1242,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 113.0,
+      "base_value": 140.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1250,7 +1253,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 113.0,
+      "base_value": 140.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1261,7 +1264,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.3,
+      "base_value": 0.5,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1272,7 +1275,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.3,
+      "base_value": 0.5,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1283,7 +1286,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 40.0,
+      "base_value": 200.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1294,7 +1297,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 40.0,
+      "base_value": 200.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
