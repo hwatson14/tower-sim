@@ -1,0 +1,403 @@
+{
+  "bots": {
+    "names": [
+      "Flame Bot",
+      "Thunder Bot",
+      "Golden Bot",
+      "Amplify Bot"
+    ],
+    "upgrades": {
+      "Amplify Bot": {
+        "Bonus": 0,
+        "Cooldown": 0,
+        "Duration": 0,
+        "Range": 0
+      },
+      "Flame Bot": {
+        "Cooldown": 11,
+        "Damage": 0,
+        "Damage R.": 8,
+        "Range": 4
+      },
+      "Golden Bot": {
+        "Bonus": 18,
+        "Cooldown": 5,
+        "Duration": 7,
+        "Range": 15
+      },
+      "Thunder Bot": {
+        "Cooldown": 0,
+        "Duration": 0,
+        "Linger": 0,
+        "Range": 0
+      }
+    }
+  },
+  "description": "Workshop Coin, Enhancements, Guardians, Bots",
+  "enhancements": {
+    "header": [
+      "Workshop Enhancement",
+      "Column 2",
+      "Farming",
+      "Tourney",
+      "Preset 3",
+      "Preset 4",
+      "Preset 5",
+      "6.61 q"
+    ],
+    "rows": [
+      [
+        "",
+        "",
+        "WS+",
+        "WS+",
+        "WS+",
+        "WS+",
+        "WS+",
+        "Max"
+      ],
+      [
+        "Damage +",
+        "1.56",
+        "56",
+        "56",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Rend Armor Mult +",
+        "1.21",
+        "21",
+        "21",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Critical Factor +",
+        "1.6",
+        "60",
+        "60",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Damage / Meter +",
+        "1.17",
+        "17",
+        "17",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Super Crit Multi +",
+        "1.57",
+        "57",
+        "57",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Attack Speed +",
+        "1.13",
+        "13",
+        "13",
+        "",
+        "",
+        "",
+        "75"
+      ],
+      [
+        "Health +",
+        "1.62",
+        "62",
+        "62",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Health Regen +",
+        "1.6",
+        "60",
+        "60",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Defense Absolute +",
+        "1",
+        "0",
+        "0",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Land Mine Damage +",
+        "2.08",
+        "18",
+        "18",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Wall Health +",
+        "1.5899999999999999",
+        "59",
+        "59",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Orb Size +",
+        "1.2",
+        "20",
+        "20",
+        "",
+        "",
+        "",
+        "200"
+      ],
+      [
+        "Cash Bonus +",
+        "1.44",
+        "44",
+        "44",
+        "",
+        "",
+        "",
+        "400"
+      ],
+      [
+        "Coin Bonus +",
+        "1.32",
+        "32",
+        "32",
+        "",
+        "",
+        "",
+        "200"
+      ],
+      [
+        "Cells / Kill Bonus +",
+        "1.25",
+        "25",
+        "25",
+        "",
+        "",
+        "",
+        "200"
+      ],
+      [
+        "Free Upgrades +",
+        "1.12",
+        "12",
+        "12",
+        "",
+        "",
+        "",
+        "100"
+      ],
+      [
+        "Recovery Package +",
+        "1.42",
+        "42",
+        "42",
+        "",
+        "",
+        "",
+        "200"
+      ],
+      [
+        "Enemy Level Skips +",
+        "1.15",
+        "15",
+        "15",
+        "",
+        "",
+        "",
+        "60"
+      ]
+    ]
+  },
+  "fail_closed": false,
+  "guardians": {
+    "header": [
+      "Attack",
+      "Column 2",
+      "Percentage",
+      "0.01",
+      "00 | 1% | Cost 0 ? | Next 25 ?"
+    ],
+    "rows": [
+      [
+        "",
+        "",
+        "Cooldown",
+        "120",
+        "00 | 120s | Cost 0 ? | Next 1 ?"
+      ],
+      [
+        "true",
+        "Unlocked",
+        "Targets",
+        "1",
+        "00 | 1 | Cost 0 ? | Next 100 ?"
+      ],
+      [
+        "Ally",
+        "",
+        "Recovery Amount",
+        "0.01",
+        "00 | 1% | Cost 0 ? | Next 10 ?"
+      ],
+      [
+        "",
+        "",
+        "Max Recovery",
+        "1.1",
+        "00 | 1.1x | Cost 0 ? | Next 1 ?"
+      ],
+      [
+        "true",
+        "Unlocked",
+        "Cooldown",
+        "120",
+        "00 | 120s | Cost 0 ? | Next 1 ?"
+      ],
+      [
+        "Bounty",
+        "",
+        "Multiplier",
+        "0.01",
+        "00 | 0.01x | Cost 0 ? | Next 1 ?"
+      ],
+      [
+        "",
+        "",
+        "Cooldown",
+        "120",
+        "00 | 120s | Cost 0 ? | Next 2 ?"
+      ],
+      [
+        "false",
+        "Locked",
+        "Targets",
+        "1",
+        "00 | 1 | Cost 0 ? | Next 100 ?"
+      ],
+      [
+        "Fetch",
+        "",
+        "Cooldown",
+        "88",
+        "32 | 88.0s | Cost 64 ? | Next 66 ?"
+      ],
+      [
+        "",
+        "",
+        "Find Chance",
+        "0.3700000000000002",
+        "27 | 37% | Cost 150 ? | Next 155 ?"
+      ],
+      [
+        "true",
+        "Unlocked",
+        "Double Find Chance",
+        "0.10999999999999999",
+        "09 | 11% | Cost 50 ? | Next 55 ?"
+      ],
+      [
+        "Summon",
+        "",
+        "Cooldown",
+        "90",
+        "50 | 90s | Cost 99 ? | Next 101 ?"
+      ],
+      [
+        "",
+        "",
+        "Duration",
+        "24",
+        "19 | 24s| Cost 195 ? | Next 205 ?"
+      ],
+      [
+        "true",
+        "Unlocked",
+        "Cash Bonus",
+        "1",
+        "00 | 1.0x | Cost 0 ? | Next 100 ?"
+      ]
+    ]
+  },
+  "missing": [],
+  "name": "gem_respec_base",
+  "workshop_coin": {
+    "Attack Speed": 99,
+    "Bounce Shot Chance": 85,
+    "Bounce Shot Range": 60,
+    "Bounce Shot Targets": 5,
+    "Cash / Wave": 149,
+    "Cash Bonus": 149,
+    "Coin / Kill Bonus": 149,
+    "Coin / Wave": 149,
+    "Critical Chance": 79,
+    "Critical Factor": 150,
+    "Damage": 5750,
+    "Damage / Meter": 180,
+    "Death Defy": 75,
+    "Defense %": 99,
+    "Defense Absolute": 5000,
+    "Enemy Attack Level Skip": 330,
+    "Enemy Health Level Skip": 320,
+    "Free Attack Upgrade": 99,
+    "Free Defense Upgrade": 99,
+    "Free Utility Upgrade": 99,
+    "Health": 5700,
+    "Health Regen": 6000,
+    "Interest / Wave": 99,
+    "Knockback Chance": 80,
+    "Knockback Force": 40,
+    "Land Mine Chance": 50,
+    "Land Mine Damage": 160,
+    "Land Mine Radius": 50,
+    "Lifesteal": 80,
+    "Max Amount": 300,
+    "Multishot Chance": 99,
+    "Multishot Targets": 7,
+    "Orb Speed": 38,
+    "Orbs": 4,
+    "Package Chance": 60,
+    "Range": 79,
+    "Rapid Fire Chance": 85,
+    "Rapid Fire Duration": 99,
+    "Recovery Amount": 300,
+    "Rend Armor Chance": 80,
+    "Rend Armor Mult": 70,
+    "Shockwave Frequency": 40,
+    "Shockwave Size": 35,
+    "Super Critical Chance": 100,
+    "Super Critical Mult": 100,
+    "Thorn Damage": 99,
+    "Wall Health": 1340,
+    "Wall Rebuild": 250
+  }
+}

@@ -1,0 +1,3642 @@
+[
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Amp Bot - Cooldown"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Amp Bot - Cooldown"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Amp Bot - Duration"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Amp Bot - Duration"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Area of Effect Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Area of Effect Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Armor Effect Bans"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Armor Effect Bans"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Armored Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Armored Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Armor"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Armor"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Cannon"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Cannon"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Core"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Core"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Generator"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Bonus - Generator"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Armor"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Armor"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Cannon"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Cannon"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Core"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Core"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Generator"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Assist Module Substats - Generator"
+  },
+  {
+    "base_value": "64",
+    "final_value": "64",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Attack Speed"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Attack Speed"
+  },
+  {
+    "base_value": "64",
+    "final_value": "64",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Attack Speed"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Attack Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Attack Speed Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Attack Speed Mastery"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Auto Pick Perks"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Auto Pick Perks"
+  },
+  {
+    "base_value": "12",
+    "final_value": "12",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Auto Pick Ranking"
+  },
+  {
+    "base_value": "12",
+    "final_value": "12",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Auto Pick Ranking"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ban Perks"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ban Perks"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Basic's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Basic's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Battle Condition Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Battle Condition Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Berserker Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Berserker Mastery"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Coin Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Coin Bonus"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Damage"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Damage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Disable Ranged Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Black Hole Disable Ranged Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Boss's Ultimate"
+  },
+  {
+    "base_value": "85",
+    "final_value": "85",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Chance"
+  },
+  {
+    "base_value": "85",
+    "final_value": "85",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Chance"
+  },
+  {
+    "base_value": "60",
+    "final_value": "60",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Range"
+  },
+  {
+    "base_value": "60",
+    "final_value": "60",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Range"
+  },
+  {
+    "base_value": "7",
+    "final_value": "7",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Targets"
+  },
+  {
+    "base_value": "5",
+    "final_value": "5",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Bounce Shot Targets"
+  },
+  {
+    "base_value": "3",
+    "final_value": "3",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Buy Multiplier"
+  },
+  {
+    "base_value": "3",
+    "final_value": "3",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Buy Multiplier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cannon Effect Bans"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cannon Effect Bans"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Card Presets"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Card Presets"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash / Wave"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Cash / Wave"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash / Wave"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Cash / Wave"
+  },
+  {
+    "base_value": "33",
+    "final_value": "33",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash Bonus"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Cash Bonus"
+  },
+  {
+    "base_value": "33",
+    "final_value": "33",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash Bonus"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Cash Bonus"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Cash Mastery"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chain Lightning Shock"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chain Lightning Shock"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chain Thunder"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chain Thunder"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Damage Reduction"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Damage Reduction"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Duration"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Duration"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Range"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Range"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Reduction %"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Chrono Field Reduction %"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Coin / Kill Bonus"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Coin / Kill Bonus"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Coin / Wave"
+  },
+  {
+    "base_value": "149",
+    "final_value": "149",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Coin / Wave"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins / Kill Bonus"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins / Kill Bonus"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins / Wave"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins / Wave"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Coins Mastery"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Drop Chance"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Drop Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Common Enemy Health"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Core Effect Bans"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Core Effect Bans"
+  },
+  {
+    "base_value": "79",
+    "final_value": "79",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Critical Chance"
+  },
+  {
+    "base_value": "79",
+    "final_value": "79",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Critical Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Chance Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Chance Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Coin Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Coin Mastery"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Factor"
+  },
+  {
+    "base_value": "150",
+    "final_value": "150",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Critical Factor"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Critical Factor"
+  },
+  {
+    "base_value": "150",
+    "final_value": "150",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Critical Factor"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Daily Mission Shards"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Daily Mission Shards"
+  },
+  {
+    "base_value": "69",
+    "final_value": "69",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage"
+  },
+  {
+    "base_value": "6000",
+    "final_value": "6000",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Damage"
+  },
+  {
+    "base_value": "69",
+    "final_value": "69",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage"
+  },
+  {
+    "base_value": "5750",
+    "final_value": "5750",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Damage"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage / Meter"
+  },
+  {
+    "base_value": "200",
+    "final_value": "200",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Damage / Meter"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage / Meter"
+  },
+  {
+    "base_value": "180",
+    "final_value": "180",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Damage / Meter"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Damage Mastery"
+  },
+  {
+    "base_value": "75",
+    "final_value": "75",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Death Defy"
+  },
+  {
+    "base_value": "75",
+    "final_value": "75",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Death Defy"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Defy Down"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Defy Down"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Ray Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Ray Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Ray Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Ray Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Armor Stripping"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Armor Stripping"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Cells Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Cells Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Coin Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Coin Bonus"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Damage Amplifier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Damage Amplifier"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Health"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Death Wave Health"
+  },
+  {
+    "base_value": "28",
+    "final_value": "28",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Defense %"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Defense %"
+  },
+  {
+    "base_value": "28",
+    "final_value": "28",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Defense %"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Defense %"
+  },
+  {
+    "base_value": "14",
+    "final_value": "14",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Defense Absolute"
+  },
+  {
+    "base_value": "5000",
+    "final_value": "5000",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Defense Absolute"
+  },
+  {
+    "base_value": "14",
+    "final_value": "14",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Defense Absolute"
+  },
+  {
+    "base_value": "5000",
+    "final_value": "5000",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Defense Absolute"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Demon Mode Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Demon Mode Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Double Death Ray"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Double Death Ray"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "END OF ARRAY"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "END OF ARRAY"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Attack Level Skip"
+  },
+  {
+    "base_value": "699",
+    "final_value": "699",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Enemy Attack Level Skip"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Attack Level Skip"
+  },
+  {
+    "base_value": "330",
+    "final_value": "330",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Enemy Attack Level Skip"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Attack Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Attack Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Balance Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Balance Mastery"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Health Level Skip"
+  },
+  {
+    "base_value": "699",
+    "final_value": "699",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Enemy Health Level Skip"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Health Level Skip"
+  },
+  {
+    "base_value": "320",
+    "final_value": "320",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Enemy Health Level Skip"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Level Skip Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Level Skip Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enemy Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Net Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Net Mastery"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shield Extra Hit"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shield Extra Hit"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shield Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shield Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shields Down"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Energy Shields Down"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Attack - Coin Discount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Attack - Coin Discount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Defense - Coin Discount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Defense - Coin Discount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Utility - Coin Discount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Enhancement Utility - Coin Discount"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Black Hole"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Black Hole"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Defense Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Defense Mastery"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Extra Orbs"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Extra Orbs"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Orb Adjuster"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Orb Adjuster"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Orbs Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Extra Orbs Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast Enemy Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fast's Ultimate"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "First Perk Choice"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "First Perk Choice"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Flame Bot - Burn Stack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Flame Bot - Burn Stack"
+  },
+  {
+    "base_value": "21",
+    "final_value": "21",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Flame Bot Cooldown"
+  },
+  {
+    "base_value": "21",
+    "final_value": "21",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Flame Bot Cooldown"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fortress Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Fortress Mastery"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Attack Upgrade"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Attack Upgrade"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Defense Upgrade"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Defense Upgrade"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Free Upgrades Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Free Upgrades Mastery"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Utility Upgrade"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Free Utility Upgrade"
+  },
+  {
+    "base_value": "7",
+    "final_value": "7",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Game Speed"
+  },
+  {
+    "base_value": "7",
+    "final_value": "7",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Game Speed"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Garlic Thorns"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Garlic Thorns"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Generator Effect Bans"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Generator Effect Bans"
+  },
+  {
+    "base_value": "15",
+    "final_value": "15",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Gold Bot - Cooldown"
+  },
+  {
+    "base_value": "15",
+    "final_value": "15",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Gold Bot - Cooldown"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Gold Bot - Duration"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Gold Bot - Duration"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Golden Tower Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Golden Tower Bonus"
+  },
+  {
+    "base_value": "17",
+    "final_value": "17",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Golden Tower Duration"
+  },
+  {
+    "base_value": "17",
+    "final_value": "17",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Golden Tower Duration"
+  },
+  {
+    "base_value": "68",
+    "final_value": "68",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health"
+  },
+  {
+    "base_value": "6000",
+    "final_value": "6000",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Health"
+  },
+  {
+    "base_value": "68",
+    "final_value": "68",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health"
+  },
+  {
+    "base_value": "5700",
+    "final_value": "5700",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Mastery"
+  },
+  {
+    "base_value": "68",
+    "final_value": "68",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Regen"
+  },
+  {
+    "base_value": "6000",
+    "final_value": "6000",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Health Regen"
+  },
+  {
+    "base_value": "68",
+    "final_value": "68",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Regen"
+  },
+  {
+    "base_value": "6000",
+    "final_value": "6000",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Health Regen"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Regen Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Health Regen Mastery"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Improve Trade-off Perks"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Improve Trade-off Perks"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Land Mine - Chrono Jump"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Land Mine - Chrono Jump"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Blast Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Blast Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Rotation Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Rotation Speed"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Stun"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Inner Mine Stun"
+  },
+  {
+    "base_value": "11",
+    "final_value": "11",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Interest"
+  },
+  {
+    "base_value": "11",
+    "final_value": "11",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Interest"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Interest / Wave"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Interest / Wave"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Intro Sprint Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Intro Sprint Mastery"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Knockback Chance"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Knockback Chance"
+  },
+  {
+    "base_value": "40",
+    "final_value": "40",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Knockback Force"
+  },
+  {
+    "base_value": "40",
+    "final_value": "40",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Knockback Force"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Knockback Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Knockback Resistance"
+  },
+  {
+    "base_value": "54",
+    "final_value": "54",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Labs Coin Discount"
+  },
+  {
+    "base_value": "54",
+    "final_value": "54",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Labs Coin Discount"
+  },
+  {
+    "base_value": "81",
+    "final_value": "81",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Labs Speed"
+  },
+  {
+    "base_value": "81",
+    "final_value": "81",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Labs Speed"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Chance"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Damage"
+  },
+  {
+    "base_value": "200",
+    "final_value": "200",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Damage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Damage"
+  },
+  {
+    "base_value": "160",
+    "final_value": "160",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Damage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Decay"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Decay"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Radius"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Land Mine Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Stun Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Land Mine Stun Mastery"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Lifesteal"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Lifesteal"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Light Speed Shots"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Light Speed Shots"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Lightning Amplifier - Scatter"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Lightning Amplifier - Scatter"
+  },
+  {
+    "base_value": "500",
+    "final_value": "500",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Max Amount"
+  },
+  {
+    "base_value": "300",
+    "final_value": "300",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Max Amount"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Max Interest"
+  },
+  {
+    "base_value": "8",
+    "final_value": "8",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Max Interest"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Max Rend Armor Multiplier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Max Rend Armor Multiplier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Amplifier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Amplifier"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Barrage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Barrage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Barrage Quantity"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Barrage Quantity"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Despawn Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Despawn Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missile Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missiles Explosion"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Missiles Explosion"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Module Coin Cost"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Module Coin Cost"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Module Shard Costs"
+  },
+  {
+    "base_value": "30",
+    "final_value": "30",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Module Shard Costs"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "More Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "More Enemies"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "More Round Stats"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "More Round Stats"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Multishot Chance"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Multishot Chance"
+  },
+  {
+    "base_value": "7",
+    "final_value": "7",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Multishot Targets"
+  },
+  {
+    "base_value": "7",
+    "final_value": "7",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Multishot Targets"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Nuke Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Nuke Mastery"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Boss Hit"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Boss Hit"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Resistance"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Speed"
+  },
+  {
+    "base_value": "38",
+    "final_value": "38",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Orb Speed"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Orb Speed"
+  },
+  {
+    "base_value": "38",
+    "final_value": "38",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Orb Speed"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Orbs"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Orbs"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Package After Boss"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Package After Boss"
+  },
+  {
+    "base_value": "60",
+    "final_value": "60",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Package Chance"
+  },
+  {
+    "base_value": "60",
+    "final_value": "60",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Package Chance"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Perk Option Quantity"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Perk Option Quantity"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Plasma Cannon Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Plasma Cannon Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Plasma Cannon Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Plasma Cannon Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Damage Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Damage Reduction"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Protector's Ultimate"
+  },
+  {
+    "base_value": "33",
+    "final_value": "33",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Range"
+  },
+  {
+    "base_value": "79",
+    "final_value": "79",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Range"
+  },
+  {
+    "base_value": "33",
+    "final_value": "33",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Range"
+  },
+  {
+    "base_value": "79",
+    "final_value": "79",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Range"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Range Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Range Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Range"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Enemy Range"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ranged Ultimate"
+  },
+  {
+    "base_value": "85",
+    "final_value": "85",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rapid Fire Chance"
+  },
+  {
+    "base_value": "85",
+    "final_value": "85",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rapid Fire Chance"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rapid Fire Duration"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rapid Fire Duration"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Rare Drop Chance"
+  },
+  {
+    "base_value": "10",
+    "final_value": "10",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Rare Drop Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ray Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ray Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ray Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ray Enemy Health"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Demon Mode"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Demon Mode"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Missile Barrage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Missile Barrage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Nuke"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Nuke"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Second Wind"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recharge Second Wind"
+  },
+  {
+    "base_value": "300",
+    "final_value": "300",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Recovery Amount"
+  },
+  {
+    "base_value": "300",
+    "final_value": "300",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Recovery Amount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Amount"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Amount"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Chance"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Chance"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Chance Mastery"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Chance Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Max"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Recovery Package Max"
+  },
+  {
+    "base_value": "299",
+    "final_value": "299",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rend Armor Chance"
+  },
+  {
+    "base_value": "80",
+    "final_value": "80",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rend Armor Chance"
+  },
+  {
+    "base_value": "299",
+    "final_value": "299",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rend Armor Mult"
+  },
+  {
+    "base_value": "70",
+    "final_value": "70",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Rend Armor Mult"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Reroll Daily Missions"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Reroll Daily Missions"
+  },
+  {
+    "base_value": "100",
+    "final_value": "100",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Reroll Shards"
+  },
+  {
+    "base_value": "100",
+    "final_value": "100",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Reroll Shards"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Scatter Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Scatter Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Scatter Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Scatter Enemy Health"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Second Wind Blast"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Second Wind Blast"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Second Wind Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Second Wind Mastery"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shatter Shards"
+  },
+  {
+    "base_value": "4",
+    "final_value": "4",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shatter Shards"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shock Chance"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shock Chance"
+  },
+  {
+    "base_value": "14",
+    "final_value": "14",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shock Multiplier"
+  },
+  {
+    "base_value": "14",
+    "final_value": "14",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shock Multiplier"
+  },
+  {
+    "base_value": "40",
+    "final_value": "40",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Shockwave Frequency"
+  },
+  {
+    "base_value": "40",
+    "final_value": "40",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Shockwave Frequency"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shockwave Size"
+  },
+  {
+    "base_value": "35",
+    "final_value": "35",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Shockwave Size"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Shockwave Size"
+  },
+  {
+    "base_value": "35",
+    "final_value": "35",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Shockwave Size"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Slow Aura Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Slow Aura Mastery"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Spotlight Coin Bonus"
+  },
+  {
+    "base_value": "20",
+    "final_value": "20",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Spotlight Coin Bonus"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Spotlight Missiles"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Spotlight Missiles"
+  },
+  {
+    "base_value": "25",
+    "final_value": "25",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Standard Perks Bonus"
+  },
+  {
+    "base_value": "25",
+    "final_value": "25",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Standard Perks Bonus"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Starting Cash"
+  },
+  {
+    "base_value": "6",
+    "final_value": "6",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Starting Cash"
+  },
+  {
+    "base_value": "9",
+    "final_value": "9",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Crit Chance"
+  },
+  {
+    "base_value": "9",
+    "final_value": "9",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Crit Chance"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Crit Multi"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Crit Multi"
+  },
+  {
+    "base_value": "100",
+    "final_value": "100",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Super Critical Chance"
+  },
+  {
+    "base_value": "100",
+    "final_value": "100",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Super Critical Chance"
+  },
+  {
+    "base_value": "120",
+    "final_value": "120",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Super Critical Mult"
+  },
+  {
+    "base_value": "100",
+    "final_value": "100",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Super Critical Mult"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Tower Bonus"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Tower Bonus"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Tower Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Super Tower Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Radius"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Rend"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Rend"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Rend - Additional Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Rend - Additional Enemies"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun Chance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Swamp Stun Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank's Ultimate"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Tank's Ultimate"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Target Priority"
+  },
+  {
+    "base_value": "2",
+    "final_value": "2",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Target Priority"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Thorn Damage"
+  },
+  {
+    "base_value": "99",
+    "final_value": "99",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Thorn Damage"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thorns Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thorns Resistance"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thunder Bot - Linger Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thunder Bot - Linger Time"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thunder Bot Cooldown"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Thunder Bot Cooldown"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ultimate Crit Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ultimate Crit Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ultimate Weapon Durations"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Ultimate Weapon Durations"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Unlock Perks"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Unlock Perks"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Unmerge Module"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Unmerge Module"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Vampire Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Vampire Enemy Attack"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Vampire Enemy Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Vampire Enemy Health"
+  },
+  {
+    "base_value": "47",
+    "final_value": "47",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Fortification"
+  },
+  {
+    "base_value": "47",
+    "final_value": "47",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Fortification"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Health"
+  },
+  {
+    "base_value": "1800",
+    "final_value": "1800",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Wall Health"
+  },
+  {
+    "base_value": "50",
+    "final_value": "50",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Health"
+  },
+  {
+    "base_value": "1340",
+    "final_value": "1340",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Wall Health"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Invincibility"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Invincibility"
+  },
+  {
+    "base_value": "5",
+    "final_value": "5",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Rebuild"
+  },
+  {
+    "base_value": "300",
+    "final_value": "300",
+    "phase": "end_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Wall Rebuild"
+  },
+  {
+    "base_value": "5",
+    "final_value": "5",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Rebuild"
+  },
+  {
+    "base_value": "250",
+    "final_value": "250",
+    "phase": "start_of_run",
+    "provenance": "ids:workshop",
+    "stat_id": "Wall Rebuild"
+  },
+  {
+    "base_value": "21",
+    "final_value": "21",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Regen"
+  },
+  {
+    "base_value": "21",
+    "final_value": "21",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Regen"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Thorn"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wall Thorn"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wave Accelerator Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wave Accelerator Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wave Skip Mastery"
+  },
+  {
+    "base_value": "0",
+    "final_value": "0",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Wave Skip Mastery"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Waves Required"
+  },
+  {
+    "base_value": "13",
+    "final_value": "13",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Waves Required"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Attack Discount"
+  },
+  {
+    "base_value": "16",
+    "final_value": "16",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Attack Discount"
+  },
+  {
+    "base_value": "19",
+    "final_value": "19",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Defense Discount"
+  },
+  {
+    "base_value": "19",
+    "final_value": "19",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Defense Discount"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Enhancement"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Enhancement"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Respec"
+  },
+  {
+    "base_value": "1",
+    "final_value": "1",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Respec"
+  },
+  {
+    "base_value": "27",
+    "final_value": "27",
+    "phase": "end_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Utility Discount"
+  },
+  {
+    "base_value": "27",
+    "final_value": "27",
+    "phase": "start_of_run",
+    "provenance": "ids:labs",
+    "stat_id": "Workshop Utility Discount"
+  }
+]
