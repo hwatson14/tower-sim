@@ -94,3 +94,82 @@ identifier resolver files or `tables/runtime` artifacts described in the
 latest merge summary. Re-run this audit after those files are present, as they
 may introduce authoritative mappings that unblock Defense %, Wall Regen base, or
 Wall Fortification.
+
+## Decisive-stat wiring campaign (source → canonical input → at-wave → Wmax)
+
+This section runs an explicit end-to-end trace for a small decisive stat set:
+
+- `tower_hp`
+- `tower_regen`
+- `def_pct`
+- `wall_hp`
+- `wall_regen`
+- `thorns_damage_mult`
+- `uw_black_hole_cooldown` (BH cd)
+
+### Repro command and scenario
+
+```bash
+python - <<'PY'
+from pathlib import Path
+from tower_sim.run.spec_loader import load_problem_spec
+from tower_sim.loaders.ids_parser import parse_ids
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.engines.stat_pipeline import build_canonical_stat_pipeline_for_problem_spec
+from tower_sim.evaluators.max_wave import MaxWaveEvaluator
+
+spec = load_problem_spec(Path('fixtures/specs/max_wave.yaml'))
+ids = parse_ids(Path('tests/fixtures/tower-sim-data/_IDS.csv'))
+snapshot = compile_account_snapshot(ids)
+
+pipeline = build_canonical_stat_pipeline_for_problem_spec(
+    snapshot=snapshot,
+    problem_spec=spec,
+    wave=spec.scenario.wave_probe,
+    include_perk_timeline=False,
+    materialize_stages=True,
+)
+
+result = MaxWaveEvaluator().evaluate(spec, snapshot)
+
+print('wave_probe', spec.scenario.wave_probe)
+print('w_max', result.get('w_max'))
+for stat_id in [
+    'tower_hp', 'tower_regen', 'def_pct', 'wall_hp', 'wall_regen',
+    'thorns_damage_mult', 'uw_black_hole_cooldown',
+]:
+    start = pipeline.start_stage.values.get(stat_id)
+    at_wave = pipeline.at_wave_stage.values.get(stat_id) if pipeline.at_wave_stage else None
+    print(stat_id, 'start=', start, 'at_wave=', at_wave)
+PY
+```
+
+Observed in this workspace run:
+
+- `wave_probe=100`
+- `w_max=1944`
+- `tower_hp`: `226100335680000.0` → `226100335680000.0`
+- `tower_regen`: `55998800000.0` → `55998800000.0`
+- `def_pct`: `1.2412` → `1.2412`
+- `wall_hp`: `9724000000000.0` → `9724000000000.0`
+- `wall_regen`: `2500000000.0` → `2500000000.0`
+- `thorns_damage_mult`: `1.26876` → `1.0150080000000001`
+- `uw_black_hole_cooldown`: `46.0` → `46.0`
+
+### Canonical wiring proof table
+
+| Stat | Source rows / tables | Canonical input wiring | Start-of-run composition ledger | At-wave transform | Final use in evaluator path |
+| --- | --- | --- | --- | --- | --- |
+| `tower_hp` | Source families are tracked in lineage (`workshop`, `lab`, `card`, `relic`, `enhancement`) and observed in canonical diagnostics. | Canonical stat id `tower_hp` in required max-wave inputs. | Canonical `StatInput` uses base + delta + multiplier composition (`base_value * enhancement_multiplier + loadout_delta`), producing the start-stage scalar. | At-wave value is taken from `AtWaveSnapshot` when present; otherwise start-stage fallback is used. | Consumed in boss combat snapshot and copied into boss survivability `combat_params['tower_hp']`. |
+| `tower_regen` | Source families tracked/observed in lineage (`workshop`, `lab`, `card`, `relic`, `enhancement`). | Canonical stat id `tower_regen` in required max-wave inputs. | Same canonical ledger fields (base/delta/multiplier) before start-stage result materialization. | At-wave sourced from snapshot if present. | Consumed as `combat_params['tower_regen']` in boss survivability resolution. |
+| `def_pct` | Source families tracked/observed in lineage (`workshop`, `lab`, `card`, `relic`). | Canonical stat id `def_pct` in required max-wave inputs. | Composed from canonical input record; in fixture run this is base `0.98` plus delta `0.2612`. | At-wave source if present; then hard-capped through `apply_hard_cap("Defense %", value)` in combat snapshot derivation. | Passed as `combat_params['defense_pct']` to boss survivability resolution. |
+| `wall_hp` | Source families tracked/observed in lineage (`workshop`, `lab`, `module`, `enhancement`). | Canonical stat id `wall_hp` in required max-wave inputs. | Canonical ledger composition resolves the start-stage wall HP scalar. | At-wave source if present. | Passed as `combat_params['wall_hp']` into boss survivability. |
+| `wall_regen` | Source families tracked/observed in lineage (`workshop`, `lab`, `module`). | Canonical stat id `wall_regen` in required max-wave inputs. | Canonical ledger composition resolves start-stage wall regen scalar. | At-wave source if present. | Passed as `combat_params['wall_regen']` into boss survivability. |
+| `thorns_damage_mult` | Source families tracked/observed in lineage (`workshop`, `lab`, `module`, `relic`, `enhancement`). | Canonical stat id `thorns_damage_mult` in required max-wave inputs. | Canonical ledger composition resolves start-stage thorns scalar (fixture start `1.26876`). | At-wave scalar is consumed if present, then clamped into `[0,1]` in combat snapshot derivation (fixture at-wave `1.015008...` then final combat snapshot `1.0`). | Passed as `combat_params['thorns_frac']` to boss survivability. |
+| `uw_black_hole_cooldown` (BH cd) | UW track table mapping binds Black Hole cooldown from `AUW_BH_CD_ARRAY.csv`; module substat mapping also supports BH cooldown as canonical delta input. | Canonical stat id is `uw_black_hole_cooldown`; fixture start value resolves to `46.0` from `uw_section:_IDS.csv`. | Canonical ledger composition yields start-stage value and this stat is present in wave snapshot values. | At-wave is unchanged in this fixture run. | Used in timing/uptime diagnostics through `uw_pairs` as `black_hole_cooldown` for interval construction and GT/BH overlap-derived expected damage taken multiplier. This path is diagnostic/auxiliary and not a direct `boss_survivability` combat param field. |
+
+### Scope boundary for this campaign
+
+- This is a wiring proof pass only (source lineage + canonical inputs + stage values + evaluator consumption).
+- No mechanics/formula behavior was changed.
+- No new mechanics packs/files were introduced.

@@ -138,6 +138,84 @@ def test_farming_mode_requires_external_perk_table_path() -> None:
     assert "perk_timeline:missing_precomputed_table" in result["missing"]
     assert result["diagnostics"]["perk_timeline"]["reason"] == "missing_precomputed_table"
 
+
+def test_farming_tier14_wave5500_perk_timeline_is_wired_into_max_wave_pipeline() -> None:
+    problem = _problem(mode="farming", wave=5500)
+    problem = replace(
+        problem,
+        scenario=replace(
+            problem.scenario,
+            tier=14,
+            perk_timeline_path="tests/fixtures/perks/precomputed_empty.json",
+        ),
+    )
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    diagnostics = result["diagnostics"]
+
+    scenario_perk = diagnostics["perk_timeline_scenario_wave"]
+    assert scenario_perk["enabled"] is True
+    assert scenario_perk["mode"] == "precomputed_table"
+    assert scenario_perk["current_wave"] == 5500
+
+    search_perk = diagnostics["w_max_search"]["perk_timeline"]
+    assert search_perk
+    for wave_diag in search_perk.values():
+        assert wave_diag["enabled"] is True
+        assert wave_diag["mode"] == "precomputed_table"
+
+
+def test_milestone_tier14_perk_timeline_is_wired_into_max_wave_pipeline() -> None:
+    problem = _problem(mode="farming", wave=5500)
+    problem = replace(
+        problem,
+        scenario=replace(
+            problem.scenario,
+            mode="milestone",
+            tier=14,
+            perk_timeline_path="tests/fixtures/perks/precomputed_empty.json",
+        ),
+    )
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    diagnostics = result["diagnostics"]
+    assert diagnostics["wave_damage_tier"] == "Tier 14"
+    scenario_perk = diagnostics["perk_timeline_scenario_wave"]
+    assert scenario_perk["enabled"] is True
+    assert scenario_perk["mode"] == "precomputed_table"
+
+    search_perk = diagnostics["w_max_search"]["perk_timeline"]
+    assert search_perk
+    assert all(item["enabled"] is True for item in search_perk.values())
+
+
+
+def test_farming_mode_fails_closed_when_perk_timeline_path_is_missing() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path=None))
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+
+
+def test_milestone_mode_fails_closed_when_perk_timeline_path_is_missing() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(
+        problem,
+        scenario=replace(problem.scenario, mode="milestone", perk_timeline_path=None),
+    )
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+
 def test_repo_has_no_rej_artifacts() -> None:
     assert not list(Path(".").glob("**/*.rej"))
 

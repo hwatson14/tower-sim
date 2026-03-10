@@ -34,3 +34,9 @@ def test_perks_checked_allows_explicit_enablement() -> None:
     context = RunContext.tournament("T1", perks_enabled=True)
     result = apply_standard_perk_bonus_multiplicative_checked(context, 0.2, 1, 0.25)
     assert result == 1.5
+
+
+def test_from_mode_maps_milestone_to_farming_perks_enabled() -> None:
+    context = RunContext.from_mode("milestone", tier="14")
+    assert context.run_type.value == "farming"
+    assert context.perks_enabled is True

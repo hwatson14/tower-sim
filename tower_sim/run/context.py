@@ -20,6 +20,8 @@ class RunContext:
         resolved_tier = tier or mode
         if mode == "tier":
             return cls.farming(resolved_tier)
+        if mode == "milestone":
+            return cls.farming(resolved_tier)
         if mode == RunType.FARMING.value:
             return cls.farming(resolved_tier)
         if mode == RunType.TOURNAMENT.value:
