@@ -911,6 +911,17 @@ def _load_assist_unique_rarity_costs() -> Dict[tuple[str, str], int]:
 
 
 def _apply_snapshot_patch(snapshot: AccountSnapshot, patch: Dict[str, Any]) -> AccountSnapshot:
+    unsupported_sections = [
+        section
+        for section in ("stones", "coins", "lab_time")
+        if patch.get(section)
+    ]
+    if unsupported_sections:
+        raise OptimizerDataError(
+            "Unsupported snapshot_patch sections for resource optimizer candidate inputs: "
+            f"{sorted(unsupported_sections)}"
+        )
+
     patched = snapshot
     for entry in patch.get("labs", []):
         stat_id = entry["stat_id"]

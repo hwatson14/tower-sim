@@ -115,8 +115,113 @@ def test_tournament_mode_disables_perk_timeline_application() -> None:
     assert diag["reason"] == "tournament_mode"
 
 
+def test_tournament_evaluator_never_applies_perk_timeline(monkeypatch) -> None:
+    def _fail_if_called(*args, **kwargs):
+        raise AssertionError("perk timeline application must be disabled for tournament runs")
+
+    monkeypatch.setattr(
+        "tower_sim.engines.stat_pipeline.canonical_stat_inputs_for_wave",
+        _fail_if_called,
+    )
+    problem = load_problem_spec(Path("tests/fixtures/specs/tournament_champion_spec.yaml"))
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    assert result["missing"] == []
+    assert result["diagnostics"]["perk_timeline_scenario_wave"]["enabled"] is False
+    assert result["diagnostics"]["perk_timeline_scenario_wave"]["reason"] == "not_requested"
 
 
+def test_tournament_with_explicit_perk_timeline_path_still_keeps_perks_disabled() -> None:
+    problem = load_problem_spec(Path("tests/fixtures/specs/tournament_champion_spec.yaml"))
+    problem = replace(
+        problem,
+        scenario=replace(problem.scenario, perk_timeline_path="tests/fixtures/perks/precomputed_empty.json"),
+    )
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    scenario_perk = result["diagnostics"]["perk_timeline_scenario_wave"]
+    assert scenario_perk["enabled"] is False
+    assert scenario_perk["reason"] == "not_requested"
+    manifest = result["assumptions_manifest"]
+    assert manifest["perk_timeline"]["enabled"] is False
+    assert manifest["perk_timeline"]["required"] is False
+    assert manifest["perk_timeline"]["source"] is None
+    assert manifest["tournament"]["perks_disabled"] is True
+
+
+
+
+
+
+
+
+def test_tournament_mode_without_perk_timeline_passes_and_marks_not_required() -> None:
+    problem = load_problem_spec(Path("tests/fixtures/specs/tournament_champion_spec.yaml"))
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path=None))
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    scenario_perk = result["diagnostics"]["perk_timeline_scenario_wave"]
+    assert scenario_perk["enabled"] is False
+    assert scenario_perk["reason"] == "not_requested"
+    manifest = result["assumptions_manifest"]["perk_timeline"]
+    assert manifest["required"] is False
+    assert manifest["enabled"] is False
+    assert manifest["source"] is None
+
+
+def test_farming_mode_with_valid_perk_timeline_passes_and_marks_required() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(
+        problem,
+        scenario=replace(problem.scenario, perk_timeline_path="tests/fixtures/perks/precomputed_empty.json"),
+    )
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is False
+    scenario_perk = result["diagnostics"]["perk_timeline_scenario_wave"]
+    assert scenario_perk["enabled"] is True
+    assert scenario_perk["mode"] == "precomputed_table"
+    manifest = result["assumptions_manifest"]["perk_timeline"]
+    assert manifest["required"] is True
+    assert manifest["enabled"] is True
+    assert manifest["source"] == "tests/fixtures/perks/precomputed_empty.json"
+
+
+def test_farming_mode_without_valid_perk_timeline_fails_closed_and_marks_required() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path="tests/fixtures/does_not_exist.json"))
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+    assert result["diagnostics"]["perk_timeline"]["reason"] == "missing_precomputed_table"
+    manifest = result["assumptions_manifest"]["perk_timeline"]
+    assert manifest["required"] is True
+    assert manifest["enabled"] is True
+    assert manifest["source"] == "tests/fixtures/does_not_exist.json"
+
+
+def test_non_tournament_mode_without_perk_timeline_path_fails_closed_and_marks_required() -> None:
+    problem = _problem(mode="farming", wave=10)
+    problem = replace(problem, scenario=replace(problem.scenario, perk_timeline_path=None))
+
+    result = MaxWaveEvaluator().evaluate(problem, _snapshot())
+
+    assert result["fail_closed"] is True
+    assert "perk_timeline:missing_precomputed_table" in result["missing"]
+    assert result["diagnostics"]["perk_timeline"]["reason"] == "missing_precomputed_table"
+    manifest = result["assumptions_manifest"]["perk_timeline"]
+    assert manifest["required"] is True
+    assert manifest["enabled"] is True
+    assert manifest["source"] is None
 
 
 def test_preflight_fails_closed_when_external_perk_table_missing() -> None:
@@ -284,6 +389,7 @@ def test_assumptions_manifest_tournament_leagues() -> None:
     result = MaxWaveEvaluator().evaluate(_problem(mode="tournament", wave=10), _snapshot())
     manifest = result["assumptions_manifest"]
     assert manifest["tournament"]["supported_leagues"] == ["champion", "legend"]
+    assert manifest["tournament"]["perks_disabled"] is True
     assert manifest["perk_timeline"]["required"] is False
 
 

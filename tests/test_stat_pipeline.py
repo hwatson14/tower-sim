@@ -184,6 +184,7 @@ def test_stage_golden_stat_values_for_pinned_snapshot() -> None:
         "def_pct": 1.2412,
         "eals_pct": 0.18,
         "ehls_pct": 0.16,
+        "thorns_damage_mult": 1.26876,
         "tower_attack_speed": 35.644722655500004,
         "workshop_critical_chance": 0.8,
         "workshop_critical_factor": 5.169785043140672e16,
@@ -197,6 +198,7 @@ def test_stage_golden_stat_values_for_pinned_snapshot() -> None:
     expected_at_wave = dict(expected_start)
     expected_at_wave["eals_pct"] = 0.155
     expected_at_wave["ehls_pct"] = 0.135
+    expected_at_wave["thorns_damage_mult"] = 1.0150080000000001
     for stat_id, expected in expected_at_wave.items():
         assert result.at_wave_stage.values[stat_id] == pytest.approx(expected, rel=0.0, abs=1e-12)
 

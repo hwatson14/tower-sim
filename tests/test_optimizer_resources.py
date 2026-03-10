@@ -9,6 +9,7 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.api import TASK_OPTIMIZE_COINS, TASK_OPTIMIZE_LABS, TASK_OPTIMIZE_STONES, run_task
 from tower_sim.run.optimizer_engine import INTERNAL_PRESET_SEQUENCE, _parse_uw_rows
+from tower_sim.util.account_snapshot import AccountSnapshot
 
 
 def _to_jsonable(value):
@@ -186,6 +187,46 @@ def test_snapshot_patch_unknown_stat_fails_closed() -> None:
                 },
             },
         )
+
+
+def test_snapshot_patch_resource_sections_fail_closed_until_supported() -> None:
+    with pytest.raises(ValueError, match="Unsupported snapshot_patch sections"):
+        run_task(
+            TASK_OPTIMIZE_STONES,
+            {
+                "objective": "MAX_WAVE",
+                "account_snapshot": _snapshot_payload(),
+                "snapshot_patch": {
+                    "type": "snapshot_patch",
+                    "stones": [{"target": "uw", "id": "GT", "delta_levels": 1}],
+                },
+            },
+        )
+
+
+def test_optimize_stones_reruns_common_core_with_candidate_snapshots(monkeypatch: pytest.MonkeyPatch) -> None:
+    observed_mastery_counts: list[int] = []
+
+    def _evaluate(_self, _problem_spec, snapshot):
+        assert isinstance(snapshot, AccountSnapshot)
+        mastery_count = sum(1 for card in snapshot.cards_inventory.values() if card.mastery_unlocked)
+        observed_mastery_counts.append(mastery_count)
+        return {"w_max": float(mastery_count)}
+
+    monkeypatch.setattr("tower_sim.evaluators.max_wave.MaxWaveEvaluator.evaluate", _evaluate)
+
+    result = run_task(
+        TASK_OPTIMIZE_STONES,
+        {
+            "objective": "MAX_WAVE",
+            "account_snapshot": _snapshot_payload(),
+            "top_n": 5,
+        },
+    )
+
+    assert result["ok"] is True
+    assert len(observed_mastery_counts) > 1
+    assert max(observed_mastery_counts) > min(observed_mastery_counts)
 
 
 def test_assist_multiplier_and_substat_efficiency_use_same_cost_table(stub_max_wave_evaluator: None) -> None:

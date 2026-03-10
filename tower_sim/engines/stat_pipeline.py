@@ -6,10 +6,12 @@ import re
 
 from tower_sim.engines.combat_stat_derivation import (
     build_canonical_stat_inputs,
+    resolve_canonical_heat_magnitudes,
     build_canonical_wave_snapshot,
     build_canonical_wave_row,
     canonical_stat_inputs_for_wave,
 )
+from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError
 from tower_sim.engines.stat_engine import StatEngine, StatInput
 from tower_sim.engines.stat_input_compiler import (
     _UW_TRACK_SPECS,
@@ -540,6 +542,14 @@ def _build_wave_state(problem_spec: ProblemSpec, *, wave: int) -> tuple[Optional
     return make_wave_state(wave, eals, ehls), missing
 
 
+def build_wave_state_for_problem_spec(
+    problem_spec: ProblemSpec,
+    *,
+    wave: int,
+) -> tuple[Optional[RunWaveState], List[str]]:
+    return _build_wave_state(problem_spec, wave=wave)
+
+
 def _load_tier_rules(problem_spec: ProblemSpec, run_context: RunContext):
     missing: List[str] = []
     if problem_spec.scenario.tier < 14:
@@ -561,3 +571,67 @@ def _load_tier_rules(problem_spec: ProblemSpec, run_context: RunContext):
         missing.append("tier_battle_conditions_unsupported")
         return None, missing
     return rules, missing
+
+
+def load_tier_rules_for_problem_spec(
+    problem_spec: ProblemSpec,
+    run_context: RunContext,
+):
+    return _load_tier_rules(problem_spec, run_context)
+
+
+def resolve_wave_snapshot_for_problem_spec(
+    problem_spec: ProblemSpec,
+    stat_inputs: List[StatInput],
+    engine_result,
+    registry,
+    tier_rules,
+    run_context: RunContext,
+    wave_state,
+    ids_snapshot,
+    missing: List[str],
+    diagnostics: Dict[str, Any],
+) -> Optional[AtWaveSnapshot]:
+    if engine_result is None:
+        missing.append("wave_snapshot_inputs")
+        return None
+
+    heat_magnitudes, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
+        problem_spec=problem_spec,
+        registry=registry,
+        wave=problem_spec.scenario.wave_probe,
+    )
+    if heat_row is not None:
+        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave_probe)] = heat_row
+    if heat_missing:
+        missing.extend(heat_missing)
+
+    try:
+        wave_row = {
+            "wave": int(problem_spec.scenario.wave_probe),
+            "enemy_attack_wave": int(wave_state.W_attack)
+            if wave_state is not None
+            else int(problem_spec.scenario.wave_probe),
+            "enemy_health_wave": int(wave_state.W_health)
+            if wave_state is not None
+            else int(problem_spec.scenario.wave_probe),
+        }
+        wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
+            ids_snapshot=ids_snapshot,
+            wave=problem_spec.scenario.wave_probe,
+            stat_inputs=stat_inputs,
+            engine_result=engine_result,
+            registry=registry,
+            tier_rules=tier_rules,
+            run_context=run_context,
+            heat_magnitudes=heat_magnitudes,
+            wave_row=wave_row,
+        )
+        if wave_snapshot_missing:
+            missing.extend(wave_snapshot_missing)
+            return None
+        return wave_snapshot
+    except StatSnapshotError as exc:
+        missing.append("wave_snapshot")
+        diagnostics["wave_snapshot_error"] = str(exc)
+        return None

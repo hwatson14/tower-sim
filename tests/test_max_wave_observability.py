@@ -40,6 +40,7 @@ def _build_problem_spec() -> ProblemSpec:
         tier=12,
         wave_probe=1,
         wave_max=100,
+        perk_timeline_path="tests/fixtures/perks/precomputed_empty.json",
         eals_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         ehls_ramp=SkipRampSpec(start=0.0, end=0.0, ramp_waves=1000),
         boss_survivability=BossSurvivabilitySpec(
