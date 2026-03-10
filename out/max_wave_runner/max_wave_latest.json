@@ -374,12 +374,14 @@
       "cards": [],
       "enhancements": [],
       "labs": [
+        "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
         "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
         "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
         "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
         "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
         "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
         "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+        "lab_table_unmapped:Cannon Effect Bans:LAB_CANNON_EFFECT_BANS",
         "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
         "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
         "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
@@ -408,6 +410,7 @@
         "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
         "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
         "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+        "lab_table_unmapped:Generator Effect Bans:LAB_GENERATOR_EFFECT_BANS",
         "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
         "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
         "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
@@ -484,12 +487,14 @@
       ]
     },
     "compiled_missing": [
+      "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
       "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
       "lab_table_unmapped:Auto Pick Ranking:LAB_AUTO_PICK_RANKING",
       "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
       "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
       "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
       "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
+      "lab_table_unmapped:Cannon Effect Bans:LAB_CANNON_EFFECT_BANS",
       "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
       "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
       "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
@@ -518,6 +523,7 @@
       "lab_table_unmapped:Flame Bot - Cooldown:LAB_FLAME_BOT_COOLDOWN",
       "lab_table_unmapped:Game Speed:LAB_GAME_SPEED",
       "lab_table_unmapped:Garlic Thorns:LAB_GARLIC_THORNS",
+      "lab_table_unmapped:Generator Effect Bans:LAB_GENERATOR_EFFECT_BANS",
       "lab_table_unmapped:Gold Bot - Cooldown:LAB_GOLD_BOT_COOLDOWN",
       "lab_table_unmapped:Gold Bot - Duration:LAB_GOLD_BOT_DURATION",
       "lab_table_unmapped:Golden Tower Bonus:LAB_GOLDEN_TOWER_BONUS",
@@ -1800,7 +1806,7 @@
       "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
       "rows_applied": 0
     },
-    "preflight_ms": 256.2977820000185,
+    "preflight_ms": 228.23377700001402,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
