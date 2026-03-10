@@ -12,7 +12,6 @@ from tower_sim.engines.stat_engine import StatInput
 from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.engines.survivability_pipeline import (
-    compile_survivability_base_stat_inputs,
     compile_survivability_loadout_stat_inputs_with_diagnostics,
 )
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
@@ -35,7 +34,6 @@ from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_stat
 from tower_sim.loaders.wiki.module_rules import apply_hard_cap
 
 _compile_full = compile_full_stat_inputs
-_compile_survivability_base = compile_survivability_base_stat_inputs
 _compile_survivability_loadout = compile_survivability_loadout_stat_inputs_with_diagnostics
 
 
@@ -144,12 +142,6 @@ def build_canonical_stat_inputs(
 ) -> CanonicalStatInputBuild:
     spec_inputs = [spec.to_stat_input() for spec in problem_spec.stat_inputs]
     compiled = _compile_full(ids_snapshot)
-    base_inputs: List[StatInput] = []
-    base_missing: List[str] = []
-    try:
-        base_inputs = _compile_survivability_base(ids_snapshot, allow_provisional=True)
-    except Exception as exc:  # noqa: BLE001
-        base_missing.append(f"survivability_base:{exc}")
     module_context, selected_cards, preset_resolution_errors = _resolve_preset_context(
         problem_spec,
         ids_snapshot,
@@ -174,12 +166,11 @@ def build_canonical_stat_inputs(
     )
     merged_inputs, blocked = _merge_stat_inputs(
         spec_inputs,
-        compiled.stat_inputs + base_inputs + loadout_inputs,
+        compiled.stat_inputs + loadout_inputs,
         strict_core_stat_overrides=strict_core_stat_overrides,
     )
     merged_inputs = _rebase_wall_stats_from_tower(
         merged_inputs,
-        ids_snapshot=ids_snapshot,
     )
     filtered_inputs, invalid = _filter_known_stat_inputs(merged_inputs, registry)
     missing_required = _missing_required_stat_inputs(filtered_inputs)
@@ -188,11 +179,11 @@ def build_canonical_stat_inputs(
         module_contribution_ledger=module_contribution_ledger,
     )
     canonical_unmapped_by_source = _canonical_unmapped_by_source(
-        compiled_missing=sorted(compiled.missing + base_missing + loadout_missing),
+        compiled_missing=sorted(compiled.missing + loadout_missing),
         module_unmapped_by_layer=module_unmapped_by_layer,
     )
     observed_contributors_by_stat_input_id = _observed_contributors_by_stat_input_id(
-        stat_inputs=compiled.stat_inputs + base_inputs + loadout_inputs,
+        stat_inputs=compiled.stat_inputs + loadout_inputs,
     )
 
     return CanonicalStatInputBuild(
@@ -200,7 +191,7 @@ def build_canonical_stat_inputs(
         blocked_core_overrides=blocked,
         invalid_stat_inputs=invalid,
         missing_required_stat_inputs=missing_required,
-        compiled_missing=sorted(compiled.missing + base_missing + loadout_missing),
+        compiled_missing=sorted(compiled.missing + loadout_missing),
         preset_resolution_errors=sorted(set(preset_resolution_errors)),
         core_stat_override_policy=(
             "strict_fail_closed" if strict_core_stat_overrides else "explicit_override_mode"
@@ -315,45 +306,55 @@ def _resolved_stat_input_value(stat_input: StatInput) -> float:
 
 
 def _wall_ratio_from_ids(
-    ids_snapshot,
     stat_inputs: List[StatInput],
 ) -> tuple[Optional[float], Optional[float], List[str]]:
     missing: List[str] = []
 
     by_key = {(item.stat_id, item.phase): item for item in stat_inputs}
     wall_health_input = by_key.get(("workshop_wall_health", Phase.START_OF_RUN))
+    wall_health_ratio: Optional[float] = None
     if wall_health_input is None:
         missing.append("workshop_alias_missing:workshop_wall_health")
-        return None, None, missing
-    wall_health_ratio = _resolved_stat_input_value(wall_health_input)
+    else:
+        if wall_health_input.base_value is not None:
+            wall_health_ratio = float(wall_health_input.base_value)
+        else:
+            wall_health_ratio = _resolved_stat_input_value(wall_health_input)
 
     wall_regen_input = by_key.get(("workshop_wall_regen", Phase.START_OF_RUN))
+    wall_regen_ratio: Optional[float] = None
     if wall_regen_input is None:
         missing.append("workshop_alias_missing:workshop_wall_regen")
-        return None, None, missing
-    wall_regen_ratio = _resolved_stat_input_value(wall_regen_input)
+    else:
+        if wall_regen_input.base_value is not None:
+            wall_regen_ratio = float(wall_regen_input.base_value)
+        else:
+            wall_regen_ratio = _resolved_stat_input_value(wall_regen_input)
 
     return wall_health_ratio, wall_regen_ratio, missing
 
 
-def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput], *, ids_snapshot) -> List[StatInput]:
+def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput]) -> List[StatInput]:
     by_key = {(item.stat_id, item.phase): item for item in stat_inputs}
     tower_hp = by_key.get(("tower_hp", Phase.START_OF_RUN))
     tower_regen = by_key.get(("tower_regen", Phase.START_OF_RUN))
     wall_hp = by_key.get(("wall_hp", Phase.START_OF_RUN))
     wall_regen = by_key.get(("wall_regen", Phase.START_OF_RUN))
-    if tower_hp is None or tower_regen is None or wall_hp is None or wall_regen is None:
+    if tower_hp is None and tower_regen is None:
         return stat_inputs
 
-    wall_health_ratio, wall_regen_ratio, missing = _wall_ratio_from_ids(
-        ids_snapshot,
+    wall_health_ratio, wall_regen_ratio, _missing = _wall_ratio_from_ids(
         stat_inputs,
     )
-    if missing or wall_health_ratio is None or wall_regen_ratio is None:
-        return stat_inputs
 
-    target_wall_hp_base = _resolved_stat_input_value(tower_hp) * float(wall_health_ratio)
-    target_wall_regen_base = _resolved_stat_input_value(tower_regen) * float(wall_regen_ratio)
+    target_wall_hp_base: Optional[float] = None
+    target_wall_regen_base: Optional[float] = None
+    if tower_hp is not None and wall_hp is not None and wall_health_ratio is not None:
+        target_wall_hp_base = _resolved_stat_input_value(tower_hp) * float(wall_health_ratio)
+    if tower_regen is not None and wall_regen is not None and wall_regen_ratio is not None:
+        target_wall_regen_base = _resolved_stat_input_value(tower_regen) * float(wall_regen_ratio)
+    if target_wall_hp_base is None and target_wall_regen_base is None:
+        return stat_inputs
 
     def _replace_base(item: StatInput, target_base: float) -> StatInput:
         current_base = float(item.base_value or 0.0)
@@ -373,10 +374,11 @@ def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput], *, ids_snapshot)
             provenance=(item.provenance or "") + ":rebased_from_tower",
         )
 
-    replacements = {
-        ("wall_hp", Phase.START_OF_RUN): _replace_base(wall_hp, target_wall_hp_base),
-        ("wall_regen", Phase.START_OF_RUN): _replace_base(wall_regen, target_wall_regen_base),
-    }
+    replacements = {}
+    if target_wall_hp_base is not None and wall_hp is not None:
+        replacements[("wall_hp", Phase.START_OF_RUN)] = _replace_base(wall_hp, target_wall_hp_base)
+    if target_wall_regen_base is not None and wall_regen is not None:
+        replacements[("wall_regen", Phase.START_OF_RUN)] = _replace_base(wall_regen, target_wall_regen_base)
 
     rebased: List[StatInput] = []
     for item in stat_inputs:

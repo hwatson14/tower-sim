@@ -580,6 +580,20 @@ def test_compile_full_stat_inputs_wall_aliases_use_resolved_values_not_raw_level
     )
 
 
+
+
+def test_compile_full_stat_inputs_emits_required_start_of_run_defaults() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["orb_damage_mult"].base_value == pytest.approx(1.0)
+    assert by_id["death_ray_damage_mult"].base_value == pytest.approx(1.0)
+    assert by_id["plasma_cannon_damage_mult"].base_value == pytest.approx(0.0)
+    assert by_id["knockback_mult"].base_value == pytest.approx(1.0)
+
+
 def test_compile_full_stat_inputs_includes_relic_modifiers() -> None:
     snapshot = _snapshot_with_workshop_and_uw(workshop_entries={}, uw_rows=[])
     snapshot = AccountSnapshot(

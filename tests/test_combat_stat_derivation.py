@@ -877,14 +877,39 @@ def test_canonical_module_contribution_ledger_captures_primary_unique_and_substa
 def test_wall_ratio_from_ids_uses_compiled_workshop_ratios_only(monkeypatch: pytest.MonkeyPatch) -> None:
     from tower_sim.engines import combat_stat_derivation as derivation
 
-    ids_snapshot = type("_Ids", (), {"labs": {"Wall Health": 1, "Wall Regen": 1}})()
     stat_inputs = [
         StatInput(stat_id="workshop_wall_health", phase=Phase.START_OF_RUN, base_value=0.2, enhancement_multiplier=2.0, provenance="test"),
         StatInput(stat_id="workshop_wall_regen", phase=Phase.START_OF_RUN, base_value=0.1, enhancement_multiplier=3.0, provenance="test"),
     ]
 
-    wall_hp_ratio, wall_regen_ratio, missing = derivation._wall_ratio_from_ids(ids_snapshot, stat_inputs)
+    wall_hp_ratio, wall_regen_ratio, missing = derivation._wall_ratio_from_ids(stat_inputs)
 
-    assert wall_hp_ratio == pytest.approx(0.4)
-    assert wall_regen_ratio == pytest.approx(0.3)
+    assert wall_hp_ratio == pytest.approx(0.2)
+    assert wall_regen_ratio == pytest.approx(0.1)
     assert missing == []
+
+
+def test_rebase_wall_stats_from_tower_rebases_wall_hp_when_wall_regen_ratio_missing() -> None:
+    from tower_sim.engines import combat_stat_derivation as derivation
+
+    stat_inputs = [
+        StatInput(stat_id="tower_hp", phase=Phase.START_OF_RUN, base_value=100.0, enhancement_multiplier=10.0, provenance="test"),
+        StatInput(stat_id="tower_regen", phase=Phase.START_OF_RUN, base_value=50.0, enhancement_multiplier=2.0, provenance="test"),
+        StatInput(stat_id="workshop_wall_health", phase=Phase.START_OF_RUN, base_value=2.0, provenance="test"),
+        StatInput(stat_id="wall_hp", phase=Phase.START_OF_RUN, base_value=20.0, enhancement_multiplier=3.0, provenance="test"),
+        StatInput(stat_id="wall_regen", phase=Phase.START_OF_RUN, base_value=4.0, enhancement_multiplier=5.0, provenance="test"),
+    ]
+
+    rebased = derivation._rebase_wall_stats_from_tower(stat_inputs)
+    by_key = {(item.stat_id, item.phase): item for item in rebased}
+
+    wall_hp = by_key[("wall_hp", Phase.START_OF_RUN)]
+    wall_regen = by_key[("wall_regen", Phase.START_OF_RUN)]
+
+    assert wall_hp.base_value == pytest.approx(2000.0)
+    assert wall_hp.enhancement_multiplier == pytest.approx(3.0)
+    assert str(wall_hp.provenance).endswith(":rebased_from_tower")
+
+    assert wall_regen.base_value == pytest.approx(4.0)
+    assert wall_regen.enhancement_multiplier == pytest.approx(5.0)
+    assert wall_regen.provenance == "test"

@@ -32,6 +32,30 @@ _DECISIVE_EHP_KEYS: Dict[str, str] = {
     "wall_regen": "Wall Regen",
 }
 
+_DECISIVE_EHP_PATHS: Dict[str, str] = {
+    "health": "ehp_eval.stats.tower_hp",
+    "health_regen": "ehp_eval.stats.tower_regen",
+    "defense_percent": "ehp_eval.stats.def_pct",
+    "wall_health": "ehp_eval.stats.wall_hp",
+    "wall_regen": "ehp_eval.stats.wall_regen",
+}
+
+_SOURCE_REF_SURFACE_PREFIXES: Dict[str, tuple[str, ...]] = {
+    "stat_input:": ("stat_inputs.",),
+    "ehp_eval:": ("ehp_eval.stats.", "ehp_slice.stats."),
+    "ep_formula:": ("ep_formula.",),
+    "ep_mechanic:": ("ehp_eval.stats.", "ehp_slice.stats.", "stat_inputs.", "ep_formula."),
+    "ep_sheet:": ("ep_formula.",),
+}
+
+_REQUIRED_DECISIVE_FAMILIES: Dict[str, tuple[str, ...]] = {
+    "health": ("workshop", "card", "relic"),
+    "health_regen": ("workshop", "card", "relic"),
+    "defense_percent": ("workshop", "card", "relic"),
+    "wall_health": ("workshop",),
+    "wall_regen": ("workshop",),
+}
+
 def _relative_delta(expected: float, actual: float) -> float:
     denom = max(abs(expected), 1.0)
     return abs(expected - actual) / denom
@@ -44,6 +68,23 @@ def _resolve_stat_input_value(stat_input) -> float:
     tier_delta = float(stat_input.tier_rule_delta or 0.0)
     tier_multiplier = float(stat_input.tier_rule_multiplier or 1.0)
     return ((base_value + loadout_delta) * enhancement_multiplier + tier_delta) * tier_multiplier
+
+
+def _verification_surface_matches_source_ref(*, source_ref: str, verification_path: str) -> bool:
+    for prefix, allowed in _SOURCE_REF_SURFACE_PREFIXES.items():
+        if source_ref.startswith(prefix):
+            return any(verification_path.startswith(candidate) for candidate in allowed)
+    return True
+
+
+def _missing_required_families(*, contributor_trace: Dict[str, List[str]]) -> Dict[str, List[str]]:
+    missing: Dict[str, List[str]] = {}
+    for key, required in _REQUIRED_DECISIVE_FAMILIES.items():
+        present = set(contributor_trace.get(key, []))
+        gaps = sorted(family for family in required if family not in present)
+        if gaps:
+            missing[key] = gaps
+    return missing
 
 
 def _build_canonical_stat_maps(ids_snapshot, spec) -> tuple[Dict[str, float], Dict[str, float], object]:
@@ -149,6 +190,18 @@ def verify_final_stats_against_ep_export(
         if row.suite != suite:
             continue
         vp = row.verification_path
+        if not _verification_surface_matches_source_ref(
+            source_ref=row.source_ref,
+            verification_path=vp,
+        ):
+            unresolved.append(
+                {
+                    "key": row.key,
+                    "verification_path": row.verification_path,
+                    "reason": f"surface_contract_mismatch_source:{row.source_ref}",
+                }
+            )
+            continue
         actual: float | None
         if vp.startswith("ehp_slice.stats.") or vp.startswith("ehp_eval.stats."):
             stat_key = vp.split(".")[-1]
@@ -178,6 +231,15 @@ def verify_final_stats_against_ep_export(
 
         if suite == "ehp" and row.key in _DECISIVE_EHP_KEYS:
             expected_stat_id = resolve_stat_id(_DECISIVE_EHP_KEYS[row.key])
+            expected_verification_path = _DECISIVE_EHP_PATHS[row.key]
+            if vp != expected_verification_path:
+                unresolved.append(
+                    {
+                        "key": row.key,
+                        "verification_path": row.verification_path,
+                        "reason": f"lineage_surface_mismatch_expected:{expected_verification_path}",
+                    }
+                )
             if not vp.endswith(f".{expected_stat_id}"):
                 unresolved.append(
                     {
@@ -191,6 +253,7 @@ def verify_final_stats_against_ep_export(
                     "key": row.key,
                     "alias": _DECISIVE_EHP_KEYS[row.key],
                     "expected_stat_id": expected_stat_id,
+                    "expected_verification_path": expected_verification_path,
                     "verification_path": row.verification_path,
                 }
             )
@@ -219,7 +282,12 @@ def verify_final_stats_against_ep_export(
         if present != expected:
             missing_keys = sorted(expected - present)
             raise ValueError(f"Decisive lineage keys missing from parity coverage: {missing_keys}")
-        lineage_errors = [item for item in unresolved if str(item.get("reason", "")).startswith("lineage_mismatch_expected:")]
+        lineage_errors = [
+            item
+            for item in unresolved
+            if str(item.get("reason", "")).startswith("lineage_mismatch_expected:")
+            or str(item.get("reason", "")).startswith("lineage_surface_mismatch_expected:")
+        ]
         if lineage_errors:
             raise ValueError(f"Decisive lineage gate failed: {lineage_errors}")
 
@@ -229,6 +297,7 @@ def verify_final_stats_against_ep_export(
         for key in sorted(_DECISIVE_EHP_KEYS)
         if key in compared_keys
     } if suite == "ehp" else {}
+    contributor_gaps = _missing_required_families(contributor_trace=contributor_trace) if suite == "ehp" else {}
 
     return {
         "suite": suite,
@@ -243,6 +312,7 @@ def verify_final_stats_against_ep_export(
         "status": "validated" if not mismatches else "mismatch",
         "compiled_core_only": compiled_core_only,
         "contributor_trace": contributor_trace,
+        "contributor_family_gaps": contributor_gaps,
     }
 
 

@@ -155,8 +155,6 @@ _WORKSHOP_CANONICAL_ALIASES: Dict[str, str] = {
     "Critical Factor": "tower_crit_multiplier",
     "Damage": "tower_damage",
     "Attack Speed": "tower_attack_speed",
-    "Wall Health": "wall_hp",
-    "Wall Regen": "wall_regen",
 }
 
 
@@ -404,10 +402,67 @@ def compile_full_stat_inputs(
     missing.extend(bot_missing)
 
     return CompiledStatInputs(
-        stat_inputs=stat_inputs,
+        stat_inputs=_with_required_start_of_run_defaults(stat_inputs),
         missing=sorted(set(missing)),
     )
 
+
+
+def _required_start_of_run_defaults() -> List[StatInput]:
+    return [
+        StatInput(
+            stat_id="orb_damage_mult",
+            phase=Phase.START_OF_RUN,
+            base_value=1.0,
+            provenance="compile_full:identity",
+        ),
+        StatInput(
+            stat_id="death_ray_damage_mult",
+            phase=Phase.START_OF_RUN,
+            base_value=1.0,
+            provenance="compile_full:identity",
+        ),
+        StatInput(
+            stat_id="plasma_cannon_damage_mult",
+            phase=Phase.START_OF_RUN,
+            base_value=0.0,
+            provenance="compile_full:cards:plasma_cannon",
+        ),
+        StatInput(
+            stat_id="knockback_mult",
+            phase=Phase.START_OF_RUN,
+            base_value=1.0,
+            provenance="compile_full:identity",
+        ),
+    ]
+
+
+def _with_required_start_of_run_defaults(stat_inputs: List[StatInput]) -> List[StatInput]:
+    existing = {(item.stat_id, item.phase): item for item in stat_inputs}
+    merged = list(stat_inputs)
+    for default in _required_start_of_run_defaults():
+        key = (default.stat_id, default.phase)
+        item = existing.get(key)
+        if item is None:
+            merged.append(default)
+            continue
+        if item.base_value is None and item.derived_value is None:
+            merged_item = StatInput(
+                stat_id=item.stat_id,
+                phase=item.phase,
+                base_value=default.base_value,
+                loadout_delta=item.loadout_delta,
+                enhancement_multiplier=item.enhancement_multiplier,
+                tier_rule_delta=item.tier_rule_delta,
+                tier_rule_multiplier=item.tier_rule_multiplier,
+                derived_value=item.derived_value,
+                provenance=item.provenance or default.provenance,
+            )
+            for idx, current in enumerate(merged):
+                if current.stat_id == item.stat_id and current.phase == item.phase:
+                    merged[idx] = merged_item
+                    break
+    return merged
 
 
 
