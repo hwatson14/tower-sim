@@ -3,7 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 from pathlib import Path
 
-from tower_sim.loaders.table_paths import resolve_table_path
 from math import isfinite
 import time
 from typing import Any, Dict, List, Optional, Tuple
@@ -11,10 +10,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from tower_sim.engines.combat.boss_engine import BossCombatEngine, BossCombatInputs, MissingMechanicError
 from tower_sim.engines.combat_stat_derivation import (
     build_canonical_stat_inputs,
-    build_canonical_wave_row,
-    build_canonical_wave_snapshot,
     cached_tournament_heat_table,
-    canonical_stat_inputs_for_wave,
     derive_canonical_combat_snapshot,
     resolve_canonical_heat_magnitudes,
     resolve_canonical_wave_damage,
@@ -40,11 +36,8 @@ from tower_sim.registry.naming_contract import (
     unsupported_or_unmapped_items,
     validate_registry_parity,
 )
-from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError
+from tower_sim.engines.stat_snapshots import AtWaveSnapshot
 from tower_sim.loaders.tier_battle_conditions import load_tier_battle_conditions
-from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
-from tower_sim.engines.tier_rules import build_tier_rules
-from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_state
 from tower_sim.engines.uptime import (
     TimedEffect,
     aggregate_uptime,
@@ -57,7 +50,12 @@ from tower_sim.engines.uptime import (
 )
 from tower_sim.engines.wave_time import wa_reduction_from_snapshot, wave_seconds
 from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
-from tower_sim.engines.stat_pipeline import build_canonical_stat_pipeline_for_problem_spec
+from tower_sim.engines.stat_pipeline import (
+    build_canonical_stat_pipeline_for_problem_spec,
+    build_wave_state_for_problem_spec,
+    load_tier_rules_for_problem_spec,
+    resolve_wave_snapshot_for_problem_spec,
+)
 
 
 class MaxWaveEvaluator:
@@ -105,11 +103,10 @@ class MaxWaveEvaluator:
         engine_result_base = None
         wave_snapshot: Optional[AtWaveSnapshot] = None
         try:
-            pipeline_eval = build_canonical_stat_pipeline_for_problem_spec(
-                snapshot=ids_snapshot,
+            pipeline_eval = _build_pipeline_for_problem_spec(
+                ids_snapshot=ids_snapshot,
                 problem_spec=problem_spec,
                 wave=problem_spec.scenario.wave_probe,
-                include_perk_timeline=_should_include_perk_timeline(problem_spec),
                 materialize_stages=True,
             )
             diagnostics.update(pipeline_eval.diagnostics)
@@ -256,11 +253,10 @@ def _run_preflight(
         ids_snapshot=ids_snapshot,
         registry=default_registry(),
     )
-    pipeline = build_canonical_stat_pipeline_for_problem_spec(
-        snapshot=ids_snapshot,
+    pipeline = _build_pipeline_for_problem_spec(
+        ids_snapshot=ids_snapshot,
         problem_spec=problem_spec,
         wave=problem_spec.scenario.wave_probe,
-        include_perk_timeline=_should_include_perk_timeline(problem_spec),
         materialize_stages=False,
         precomputed_canonical_inputs=canonical_inputs,
     )
@@ -349,6 +345,24 @@ def _should_include_perk_timeline(problem_spec: ProblemSpec) -> bool:
     return True
 
 
+def _build_pipeline_for_problem_spec(
+    *,
+    ids_snapshot: AccountSnapshot,
+    problem_spec: ProblemSpec,
+    wave: int,
+    materialize_stages: bool,
+    precomputed_canonical_inputs=None,
+):
+    return build_canonical_stat_pipeline_for_problem_spec(
+        snapshot=ids_snapshot,
+        problem_spec=problem_spec,
+        wave=wave,
+        include_perk_timeline=_should_include_perk_timeline(problem_spec),
+        materialize_stages=materialize_stages,
+        precomputed_canonical_inputs=precomputed_canonical_inputs,
+    )
+
+
 def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
     scenario = problem_spec.scenario
     mode = (scenario.mode or "").strip().lower()
@@ -370,6 +384,7 @@ def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
         "tournament": {
             "heat_required": is_tournament,
             "bc_required": is_tournament,
+            "perks_disabled": is_tournament,
             "perks_allowed": not is_tournament,
             "league": league or None,
             "supported_leagues": ["champion", "legend"],
@@ -385,55 +400,11 @@ def _load_tier_rules(
     problem_spec: ProblemSpec,
     run_context: RunContext,
 ) -> Tuple[Optional[Any], List[str]]:
-    missing: List[str] = []
-    if problem_spec.scenario.tier < 14:
-        return None, missing
-    bc_path = _resolve_bc_path(problem_spec)
-    try:
-        catalog = load_tier_battle_conditions(bc_path, allow_incomplete=True)
-    except FileNotFoundError:
-        missing.append("tier_battle_conditions_table")
-        return None, missing
-    try:
-        rules = build_tier_rules(problem_spec.scenario.tier, run_context, catalog)
-    except ValueError:
-        missing.append("tier_battle_conditions")
-        return None, missing
-    unsupported = [
-        condition
-        for condition in rules.conditions
-        if (condition.name, condition.kind, condition.unit) not in SUPPORTED_BC
-    ]
-    if unsupported:
-        missing.append("tier_battle_conditions_unsupported")
-        return None, missing
-    return rules, missing
-
-
-def _resolve_bc_path(problem_spec: ProblemSpec) -> Path:
-    return resolve_table_path("tier_battle_conditions")
+    return load_tier_rules_for_problem_spec(problem_spec, run_context)
 
 
 def _maybe_build_wave_state(problem_spec: ProblemSpec) -> Tuple[Optional[Any], List[str]]:
-    missing: List[str] = []
-    scenario = problem_spec.scenario
-    if scenario.eals_ramp is None:
-        missing.append("skip_ramp:eals")
-    if scenario.ehls_ramp is None:
-        missing.append("skip_ramp:ehls")
-    if scenario.eals_ramp is None or scenario.ehls_ramp is None:
-        return None, missing
-    eals = SkipRamp(
-        start=scenario.eals_ramp.start,
-        end=scenario.eals_ramp.end,
-        ramp_waves=scenario.eals_ramp.ramp_waves,
-    )
-    ehls = SkipRamp(
-        start=scenario.ehls_ramp.start,
-        end=scenario.ehls_ramp.end,
-        ramp_waves=scenario.ehls_ramp.ramp_waves,
-    )
-    return make_wave_state(scenario.wave_probe, eals, ehls), missing
+    return build_wave_state_for_problem_spec(problem_spec, wave=problem_spec.scenario.wave_probe)
 
 
 def _probe_boss_combat(
@@ -497,43 +468,18 @@ def _resolve_wave_snapshot(
     missing: List[str],
     diagnostics: Dict[str, Any],
 ) -> Optional[AtWaveSnapshot]:
-    if engine_result is None:
-        missing.append("wave_snapshot_inputs")
-        return None
-    heat_magnitudes, heat_row, heat_missing = resolve_canonical_heat_magnitudes(
+    return resolve_wave_snapshot_for_problem_spec(
         problem_spec=problem_spec,
+        stat_inputs=stat_inputs,
+        engine_result=engine_result,
         registry=registry,
-        wave=problem_spec.scenario.wave_probe,
+        tier_rules=tier_rules,
+        run_context=run_context,
+        wave_state=wave_state,
+        ids_snapshot=ids_snapshot,
+        missing=missing,
+        diagnostics=diagnostics,
     )
-    if heat_row is not None:
-        diagnostics.setdefault("wave_rows", {})[str(problem_spec.scenario.wave_probe)] = heat_row
-    if heat_missing:
-        missing.extend(heat_missing)
-    try:
-        wave_row = {
-            "wave": int(problem_spec.scenario.wave_probe),
-            "enemy_attack_wave": int(wave_state.W_attack) if wave_state is not None else int(problem_spec.scenario.wave_probe),
-            "enemy_health_wave": int(wave_state.W_health) if wave_state is not None else int(problem_spec.scenario.wave_probe),
-        }
-        wave_snapshot, wave_snapshot_missing = build_canonical_wave_snapshot(
-            ids_snapshot=ids_snapshot,
-            wave=problem_spec.scenario.wave_probe,
-            stat_inputs=stat_inputs,
-            engine_result=engine_result,
-            registry=registry,
-            tier_rules=tier_rules,
-            run_context=run_context,
-            heat_magnitudes=heat_magnitudes,
-            wave_row=wave_row,
-        )
-        if wave_snapshot_missing:
-            missing.extend(wave_snapshot_missing)
-            return None
-        return wave_snapshot
-    except StatSnapshotError as exc:
-        missing.append("wave_snapshot")
-        diagnostics["wave_snapshot_error"] = str(exc)
-        return None
 
 
 def _search_wmax(
@@ -596,11 +542,10 @@ def _search_wmax(
                 f"stat_override:{item}" for item in wave_canonical_inputs.blocked_core_overrides
             ]
         try:
-            pipeline_wave = build_canonical_stat_pipeline_for_problem_spec(
-                snapshot=ids_snapshot,
+            pipeline_wave = _build_pipeline_for_problem_spec(
+                ids_snapshot=ids_snapshot,
                 problem_spec=wave_problem_spec,
                 wave=wave,
-                include_perk_timeline=_should_include_perk_timeline(wave_problem_spec),
                 materialize_stages=True,
                 precomputed_canonical_inputs=wave_canonical_inputs,
             )

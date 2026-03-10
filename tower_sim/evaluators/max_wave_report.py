@@ -17,10 +17,12 @@ from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.util.account_snapshot import AccountSnapshot
 from tower_sim.evaluators.max_wave import (
-    _load_tier_rules,
-    _maybe_build_wave_state,
-    _resolve_wave_snapshot,
     _search_wmax,
+)
+from tower_sim.engines.stat_pipeline import (
+    load_tier_rules_for_problem_spec,
+    build_wave_state_for_problem_spec,
+    resolve_wave_snapshot_for_problem_spec,
 )
 _compile_full = compile_full_stat_inputs
 
@@ -280,10 +282,13 @@ def _safe_build_trace(
             )
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
-    wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
+    wave_state, wave_state_missing = build_wave_state_for_problem_spec(
+        problem_spec,
+        wave=problem_spec.scenario.wave_probe,
+    )
     missing.extend(wave_state_missing)
 
-    tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+    tier_rules, tier_rule_missing = load_tier_rules_for_problem_spec(problem_spec, run_context)
     missing.extend(tier_rule_missing)
 
     if missing:
@@ -347,10 +352,13 @@ def _resolve_survivability_stats_for_report(
         return None, ["stat_inputs_invalid"]
     missing.extend(_missing_required_stat_inputs(stat_inputs))
 
-    wave_state, wave_state_missing = _maybe_build_wave_state(problem_spec)
+    wave_state, wave_state_missing = build_wave_state_for_problem_spec(
+        problem_spec,
+        wave=problem_spec.scenario.wave_probe,
+    )
     missing.extend(wave_state_missing)
 
-    tier_rules, tier_rule_missing = _load_tier_rules(problem_spec, run_context)
+    tier_rules, tier_rule_missing = load_tier_rules_for_problem_spec(problem_spec, run_context)
     missing.extend(tier_rule_missing)
 
     engine = StatEngine(registry=registry)
@@ -366,7 +374,7 @@ def _resolve_survivability_stats_for_report(
         return None, missing
 
     diagnostics: Dict[str, Any] = {}
-    wave_snapshot = _resolve_wave_snapshot(
+    wave_snapshot = resolve_wave_snapshot_for_problem_spec(
         problem_spec,
         stat_inputs,
         engine_result,
