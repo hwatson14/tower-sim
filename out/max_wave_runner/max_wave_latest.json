@@ -10,9 +10,9 @@
       "wmax_wave_relative": 0.1
     },
     "perk_timeline": {
-      "enabled": false,
-      "required": false,
-      "source": null
+      "enabled": true,
+      "required": true,
+      "source": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json"
     },
     "policy_version": "v1",
     "schema_version": "v1",
@@ -1783,11 +1783,23 @@
         "workshop"
       ]
     },
-    "perk_timeline_scenario_wave": {
-      "enabled": false,
-      "reason": "not_requested"
+    "perk_timeline": {
+      "current_wave": 100,
+      "effects_applied": [],
+      "enabled": true,
+      "mode": "precomputed_table",
+      "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+      "rows_applied": 0
     },
-    "preflight_ms": 246.71276600003011,
+    "perk_timeline_scenario_wave": {
+      "current_wave": 100,
+      "effects_applied": [],
+      "enabled": true,
+      "mode": "precomputed_table",
+      "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+      "rows_applied": 0
+    },
+    "preflight_ms": 247.26696199999765,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
@@ -2428,120 +2440,236 @@
       "monotonic": true,
       "perk_timeline": {
         "1": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1024": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1024,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "128": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 128,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1334": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1334,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1536": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1536,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "16": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 16,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1792": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1792,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1920": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1920,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1936": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1936,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1944": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1944,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1945": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1945,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1946": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1946,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1948": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1948,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1952": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1952,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "1984": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 1984,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "2": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 2,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "2048": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 2048,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "256": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 256,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "2667": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 2667,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "32": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 32,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "4": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 4,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "4000": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 4000,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "512": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 512,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "5333": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 5333,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "64": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 64,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "6666": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 6666,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "7999": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 7999,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "8": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 8,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         },
         "8000": {
-          "enabled": false,
-          "reason": "not_requested"
+          "current_wave": 8000,
+          "effects_applied": [],
+          "enabled": true,
+          "mode": "precomputed_table",
+          "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
+          "rows_applied": 0
         }
       },
       "search_strategy": "exponential_binary",
