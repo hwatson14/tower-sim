@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 from dataclasses import asdict, is_dataclass
 import json
 from pathlib import Path
@@ -43,6 +44,22 @@ def run(
     _write_json(OUT_MAX_WAVE_PATH, result)
     _write_json(OUT_LINEAGE_PATH, _lineage_manifest_payload())
     return result
+
+
+def _parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Canonical MAX_WAVE runner.")
+    parser.add_argument("--spec", type=Path, required=True, help="Problem spec YAML path.")
+    parser.add_argument("--patch", type=Path, default=None, help="Optional YAML overlay patch.")
+    parser.add_argument("--ids", type=Path, default=None, help="Path to _IDS.csv.")
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = _parse_args()
+    result = run(spec_path=args.spec, patch_path=args.patch, ids_path=args.ids)
+    print(json.dumps(result, indent=2, sort_keys=True))
+    print(f"Wrote {OUT_MAX_WAVE_PATH}")
+    print(f"Wrote {OUT_LINEAGE_PATH}")
 
 
 def _load_yaml_mapping(path: Path) -> Dict[str, Any]:
@@ -90,3 +107,7 @@ def _to_dict(value: Any) -> Any:
 def _write_json(path: Path, payload: Dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

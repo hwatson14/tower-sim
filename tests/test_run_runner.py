@@ -14,7 +14,7 @@ def _ids_fixture() -> Path:
 
 
 def _spec_fixture() -> Path:
-    return Path("fixtures/specs/max_wave.yaml")
+    return Path("tests/fixtures/specs/sample_spec.yaml")
 
 
 def test_runner_executes_max_wave_and_writes_artifacts() -> None:
@@ -25,27 +25,27 @@ def test_runner_executes_max_wave_and_writes_artifacts() -> None:
     assert (Path("out") / "lineage_manifest_latest.json").exists()
 
 
-def test_runner_applies_yaml_overlay_patch() -> None:
-    patch_path = Path("tests/fixtures/specs/v1_patch_override.yaml")
+def test_runner_applies_yaml_overlay_patch(tmp_path: Path) -> None:
+    patch_path = tmp_path / "patch.yaml"
+    patch_path.write_text("scenario:\n  wave: 200\n")
     result = runner.run(spec_path=_spec_fixture(), patch_path=patch_path, ids_path=_ids_fixture())
     assert result["task"] == "MAX_WAVE"
 
 
 def test_runner_requires_existing_paths() -> None:
     with pytest.raises(FileNotFoundError, match="Problem spec not found"):
-        runner.run(spec_path=Path("fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
+        runner.run(spec_path=Path("tests/fixtures/specs/does_not_exist.yaml"), ids_path=_ids_fixture())
 
 
-def test_runner_blessed_module_invocation_executes_from_repo_root() -> None:
+def test_runner_module_invocation_executes_from_repo_root() -> None:
     repo_root = Path(__file__).resolve().parents[1]
     proc = subprocess.run(
         [
             sys.executable,
             "-m",
-            "tower_sim.run",
-            "MAX_WAVE",
+            "tower_sim.run.runner",
             "--spec",
-            "fixtures/specs/max_wave.yaml",
+            "tests/fixtures/specs/sample_spec.yaml",
             "--ids",
             "tests/fixtures/tower-sim-data/_IDS.csv",
         ],
