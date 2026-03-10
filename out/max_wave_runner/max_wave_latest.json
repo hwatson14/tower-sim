@@ -22,6 +22,7 @@
       "heat_required": false,
       "league": null,
       "perks_allowed": true,
+      "perks_disabled": false,
       "supported_leagues": [
         "champion",
         "legend"
@@ -1799,7 +1800,7 @@
       "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
       "rows_applied": 0
     },
-    "preflight_ms": 246.51699700000052,
+    "preflight_ms": 247.89541699999518,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
