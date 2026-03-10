@@ -12,6 +12,8 @@ If any instruction conflicts with repository docs, [`CONTRACT.md`](./CONTRACT.md
 - optimisers mutate supported candidate inputs only
 - rerun exact common core
 - no direct mutation of derived/internal state
+- one common simulation core and one composition root; do not duplicate pipeline assembly
+- objective scoring must stay thin; mechanics belong in the common core
 
 
 ## 1) Core non-negotiables
