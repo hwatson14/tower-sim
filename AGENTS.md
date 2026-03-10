@@ -4,6 +4,18 @@
 
 If any instruction conflicts with repository docs, [`CONTRACT.md`](./CONTRACT.md) is authoritative.
 
+
+## Locked rules (Step 0)
+- single-user hobby project
+- smallest exact deterministic core
+- no generic frameworks
+- optimisers mutate supported candidate inputs only
+- rerun exact common core
+- no direct mutation of derived/internal state
+- one common simulation core and one composition root; do not duplicate pipeline assembly
+- objective scoring must stay thin; mechanics belong in the common core
+
+
 ## 1) Core non-negotiables
 1. **Deterministic only, except perk-order artifacts**: no RNG, no sampling, no Monte Carlo.
 2. **No invented mechanics**: implement mechanics only with authoritative provenance.
