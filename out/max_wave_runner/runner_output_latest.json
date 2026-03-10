@@ -1805,7 +1805,7 @@
         "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
         "rows_applied": 0
       },
-      "preflight_ms": 226.855530999984,
+      "preflight_ms": 251.01139200000944,
       "runtime_dag": {
         "enabled": true,
         "node_count": 1
