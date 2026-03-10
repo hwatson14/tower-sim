@@ -42,6 +42,7 @@ def run(
         patch_data = _load_yaml_mapping(patch_path)
         spec_data = _overlay_mapping(spec_data, patch_data)
 
+    spec_data = _resolve_spec_relative_paths(spec_data, spec_path=spec_path)
     parsed_spec = parse_problem_spec_data(spec_data)
     result = run_task(
         TASK_MAX_WAVE,
@@ -54,6 +55,29 @@ def run(
     _write_json(_OUT_RUNNER_PATH, result)
     _write_json(_OUT_MAX_WAVE_PATH, result.get("result", {}))
     return result
+
+
+def _resolve_spec_relative_paths(spec_data: Dict[str, Any], *, spec_path: Path) -> Dict[str, Any]:
+    scenario = spec_data.get("scenario")
+    if not isinstance(scenario, Mapping):
+        return spec_data
+    perk_path = scenario.get("perk_timeline_path")
+    if not isinstance(perk_path, str) or not perk_path.strip():
+        return spec_data
+    path_obj = Path(perk_path)
+    if path_obj.is_absolute():
+        return spec_data
+    candidate_from_spec = (spec_path.parent / path_obj).resolve()
+    if candidate_from_spec.exists():
+        resolved = candidate_from_spec
+    else:
+        repo_root = Path(__file__).resolve().parents[2]
+        resolved = (repo_root / path_obj).resolve()
+    updated = dict(spec_data)
+    updated_scenario = dict(scenario)
+    updated_scenario["perk_timeline_path"] = str(resolved)
+    updated["scenario"] = updated_scenario
+    return updated
 
 
 def _load_yaml_mapping(path: Path) -> Dict[str, Any]:

@@ -814,7 +814,7 @@ def resolve_canonical_wave_damage(
 
 
 def default_wave_damage_tier(scenario) -> Optional[str]:
-    if scenario.mode == "farming":
+    if scenario.mode in {"farming", "milestone"}:
         return f"Tier {scenario.tier}"
     if scenario.league:
         return scenario.league

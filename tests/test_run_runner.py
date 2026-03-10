@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 from pathlib import Path
@@ -112,3 +113,82 @@ def test_runner_module_mode_accepts_legacy_max_wave_task_arg(tmp_path: Path) -> 
         text=True,
     )
     assert proc.returncode == 0, proc.stderr
+
+
+def test_runner_output_contains_max_wave_search_contract_fields(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "out").mkdir(parents=True, exist_ok=True)
+
+    result = runner.run(spec_path=spec_path, ids_path=ids_path)
+    assert result["ok"] is True
+
+    max_wave_path = tmp_path / "out" / "max_wave_runner" / "max_wave_latest.json"
+    payload = json.loads(max_wave_path.read_text(encoding="utf-8"))
+
+    assert payload["w_max"] is not None
+    assert payload["fail_closed"] is False
+    assert payload["missing"] == []
+    assert payload["override_collisions"] == []
+    assert payload["failure_wave"] is not None
+    assert payload["failure_reason"] in {"boss_kills_tower", "tower_kills_boss"}
+
+    diagnostics = payload["diagnostics"]
+    assert "w_max_search" in diagnostics
+    assert "margin_trace" in diagnostics
+    assert "boss_survivability" in diagnostics
+
+    search = diagnostics["w_max_search"]
+    assert payload["w_max"] <= search["max_wave"]
+    assert search["search_strategy"] == "exponential_binary"
+    assert isinstance(search["last_wave_result"], dict)
+
+    trace = diagnostics["margin_trace"]
+    assert isinstance(trace, list)
+    assert len(trace) > 0
+    assert {"wave", "outcome", "ttk_seconds", "ttd_seconds", "margin_seconds"}.issubset(trace[0])
+
+
+
+def test_runner_output_enforces_decisive_stat_wiring_diagnostics(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    repo_root = Path(__file__).resolve().parents[1]
+    spec_path = (repo_root / "fixtures/specs/max_wave.yaml").resolve()
+    ids_path = (repo_root / "tests/fixtures/tower-sim-data/_IDS.csv").resolve()
+
+    monkeypatch.chdir(tmp_path)
+    (tmp_path / "out").mkdir(parents=True, exist_ok=True)
+
+    runner.run(spec_path=spec_path, ids_path=ids_path)
+
+    max_wave_path = tmp_path / "out" / "max_wave_runner" / "max_wave_latest.json"
+    payload = json.loads(max_wave_path.read_text(encoding="utf-8"))
+    diagnostics = payload["diagnostics"]
+
+    decisive_ids = (
+        "tower_hp",
+        "tower_regen",
+        "def_pct",
+        "wall_hp",
+        "wall_regen",
+        "thorns_damage_mult",
+    )
+    observed = diagnostics["observed_contributors_by_stat_input_id"]
+    for stat_id in decisive_ids:
+        assert stat_id in observed
+        assert isinstance(observed[stat_id], list)
+        assert len(observed[stat_id]) > 0
+
+    assert "uw_black_hole_cooldown" in observed
+    assert "uw" in observed["uw_black_hole_cooldown"]
+
+    scenario_wave_sources = diagnostics["combat_snapshot_sources_scenario_wave"]
+    for stat_id in decisive_ids:
+        assert scenario_wave_sources[stat_id] == ["at_wave_snapshot"]
+
+    timing = diagnostics["timing_uptime"]
+    assert "uw_interval_counts" in timing
+    assert "black_hole" in timing["uw_interval_counts"]
+    assert timing["uw_interval_counts"]["black_hole"] >= 0

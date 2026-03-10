@@ -243,8 +243,11 @@ def build_canonical_stat_pipeline_for_problem_spec(
                         "error": str(exc),
                     }
                     explicit_perk_table = getattr(problem_spec.scenario, "perk_timeline_path", None)
-                    if reason != "missing_precomputed_table" or explicit_perk_table:
-                        missing.append(f"perk_timeline:{reason}")
+                    if reason == "missing_precomputed_table" and not explicit_perk_table:
+                        diagnostics["perk_timeline"]["error"] = (
+                            "missing_precomputed_table_path_for_non_tournament_mode"
+                        )
+                    missing.append(f"perk_timeline:{reason}")
                     wave_inputs = stage2_inputs
 
             wave_row, wave_row_missing = build_canonical_wave_row(

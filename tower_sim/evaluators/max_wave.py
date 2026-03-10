@@ -346,8 +346,7 @@ def _should_include_perk_timeline(problem_spec: ProblemSpec) -> bool:
     mode = (scenario.mode or "").strip().lower()
     if mode == "tournament":
         return False
-    path = getattr(scenario, "perk_timeline_path", None)
-    return bool(path and str(path).strip())
+    return True
 
 
 def _build_assumptions_manifest(problem_spec: ProblemSpec) -> Dict[str, Any]:
