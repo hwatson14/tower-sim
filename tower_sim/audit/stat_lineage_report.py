@@ -152,13 +152,13 @@ def summarize_manifest(manifest: Mapping[str, Any]) -> dict[str, Any]:
     for stat_id in sorted(required_id_set):
         declared_contributors = declared.get(stat_id, set())
         observed_contributors = observed.get(stat_id, set())
-        missing = sorted(declared_contributors - observed_contributors)
-        if not missing:
+        unexpected = sorted(observed_contributors - declared_contributors)
+        if not unexpected:
             continue
         observed_vs_declared_mismatches[stat_id] = {
             "declared_wired": sorted(declared_contributors),
             "observed": sorted(observed_contributors),
-            "declared_but_not_observed": missing,
+            "observed_but_not_declared": unexpected,
         }
 
     return {

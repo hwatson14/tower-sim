@@ -141,13 +141,13 @@ def test_summarize_manifest_reports_observed_vs_declared_mismatch(tmp_path: Path
             "required_max_wave_stat_input_ids": ["tower_hp"],
             "status_lists": {
                 "tower_hp": {
-                    "wired_up": ["lab", "card"],
+                    "wired_up": ["card"],
                     "not_expected_to_be_wired_up": [],
                     "still_requires_wiring_up": [],
                 },
             },
             "observed_contributors_by_stat_input_id": {
-                "tower_hp": ["card"],
+                "tower_hp": ["card", "lab"],
             },
         },
     )
@@ -155,4 +155,4 @@ def test_summarize_manifest_reports_observed_vs_declared_mismatch(tmp_path: Path
     summary = summarize_manifest(load_manifest(manifest_path))
 
     assert summary["observed_vs_declared_mismatch_count"] == 1
-    assert summary["observed_vs_declared_mismatches"]["tower_hp"]["declared_but_not_observed"] == ["lab"]
+    assert summary["observed_vs_declared_mismatches"]["tower_hp"]["observed_but_not_declared"] == ["lab"]
