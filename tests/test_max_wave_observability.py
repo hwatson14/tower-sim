@@ -123,6 +123,20 @@ def test_max_wave_report_includes_debug_sections() -> None:
     assert "trace" in report
     assert len(report["trace"]) <= 20
 
+    loadout = report["loadout_compilation"]
+    assert "staged_static_values" in loadout
+    assert set(loadout["staged_static_values"].keys()) == {
+        "baseline_account",
+        "baseline_gem_respec",
+        "baseline_loadout",
+    }
+    assert "staged_static_contributors" in loadout
+    assert set(loadout["staged_static_contributors"].keys()) == {
+        "baseline_account",
+        "baseline_gem_respec",
+        "baseline_loadout",
+    }
+
 
 def test_max_wave_includes_timing_uptime_diagnostics() -> None:
     problem = _build_problem_spec()

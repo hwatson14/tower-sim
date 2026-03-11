@@ -209,6 +209,22 @@ def _workshop_recovery_package_chance(level: int) -> float | None:
     return 0.06 + (0.004 * (level - 1))
 
 
+def _workshop_land_mine_chance(level: int) -> float | None:
+    """Return land mine proc chance as a fraction.
+
+    Convention: workshop ``coin_level`` is treated as upgrade-count-applied in [0, 50].
+    At 50 applied upgrades, chance reaches the documented 30.00% cap.
+    """
+
+    return _bounded_linear(
+        level,
+        min_level=0,
+        max_level=50,
+        base=0.0,
+        per_level=0.006,
+    )
+
+
 def _bounded_linear(level: int, *, min_level: int, max_level: int, base: float, per_level: float) -> float | None:
     if level < min_level or level > max_level:
         return None
@@ -231,24 +247,51 @@ _WORKSHOP_FORMULAS: Dict[str, callable] = {
     ),
     "Super Critical Chance": lambda level: _pct(0.2 * level),
     "Super Critical Mult": lambda level: 1.2 + 0.1 * level,
-    "Rend Armor Chance": lambda level: _pct(0.5 + 0.1 * level),
+    "Rend Armor Chance": lambda level: _pct(0.1 + 0.1 * level),
     "Rend Armor Mult": lambda level: 0.001 + 0.001 * level,
     "Knockback Chance": lambda level: _pct(1.0 * level),
-    "Knockback Force": lambda level: 0.4 + 0.15 * level,
+    "Knockback Force": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=40,
+        base=0.4,
+        per_level=0.142,
+    ),
     "Shockwave Size": lambda level: 0.6 + 0.05 * level,
-    "Shockwave Frequency": lambda level: 17 - 0.15 * level,
-    "Land Mine Chance": lambda level: _pct(12 + 6 * level),
+    "Shockwave Frequency": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=40,
+        base=20.0,
+        per_level=-0.15,
+    ),
+    "Land Mine Chance": _workshop_land_mine_chance,
+    "Land Mine Damage": lambda level: 1 + _pct(10.0 * level),
     "Land Mine Radius": lambda level: 0.5 + 0.02 * level,
     "Orbs": lambda level: level,
     "Orb Speed": lambda level: 0.4 + 0.15 * level,
-    "Recovery Amount": lambda level: 0.1 + 0.01 * level,
+    "Recovery Amount": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=300,
+        base=0.14,
+        per_level=0.004,
+    ),
     "Package Chance": lambda level: _pct(6 + 0.4 * level),
     "Recovery Package Chance": _workshop_recovery_package_chance,
-    "Wall Rebuild": lambda level: 0.01 + 0.01 * level,
+    "Wall Rebuild": lambda level: _bounded_linear(
+        level,
+        min_level=0,
+        max_level=300,
+        base=1200.0,
+        per_level=-2.0,
+    ),
     "Wall Regen": lambda level: _bounded_linear(level, min_level=0, max_level=30, base=0.0, per_level=0.1),
     "Wall Fortification": lambda level: _bounded_linear(level, min_level=0, max_level=60, base=0.0, per_level=0.2),
-    "Coins per Kill": lambda level: 1 + _pct(0.01 * level),
-    "Coin / Kill Bonus": lambda level: 1 + _pct(0.01 * level),
+    "Coins per Kill": lambda level: 1 + _pct(1.0 * level),
+    "Coin / Kill Bonus": lambda level: 1 + _pct(1.0 * level),
+    "Cash Bonus": lambda level: 1 + _pct(1.0 * level),
+    "Critical Factor": lambda level: 1.2 + 0.1 * level,
     "Enemy Attack Level Skip": lambda level: workshop_level_to_chance(level),
     "Enemy Health Level Skip": lambda level: workshop_level_to_chance(level),
     "Free Attack Upgrade": lambda level: _pct(0.5 * level),
@@ -1324,11 +1367,36 @@ def compile_baseline_loadout_stat_inputs(
     )
 
 
+def compile_baseline_account_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+) -> CompiledStatInputs:
+    """Compile canonical baseline_account stat inputs (workshop + UW + relics)."""
+    return compile_full_stat_inputs(
+        ids_snapshot,
+        include_workshop=True,
+        include_uw=True,
+        include_bots=False,
+    )
+
+
+def compile_baseline_gem_respec_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+) -> CompiledStatInputs:
+    """Compile canonical baseline_gem_respec stat inputs (baseline_account + bots)."""
+    baseline = compile_baseline_account_stat_inputs(ids_snapshot)
+    bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
+    return CompiledStatInputs(
+        stat_inputs=list(baseline.stat_inputs) + bot_inputs,
+        missing=sorted(set(baseline.missing + bot_missing)),
+    )
+
+
 def compile_full_stat_inputs(
     ids_snapshot: AccountSnapshot,
     *,
     include_workshop: bool = True,
     include_uw: bool = True,
+    include_bots: bool = True,
 ) -> CompiledStatInputs:
     stat_inputs: List[StatInput] = []
     missing: List[str] = []
@@ -1346,9 +1414,10 @@ def compile_full_stat_inputs(
     relic_inputs = _compile_relic_stat_inputs(ids_snapshot)
     stat_inputs.extend(relic_inputs)
 
-    bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
-    stat_inputs.extend(bot_inputs)
-    missing.extend(bot_missing)
+    if include_bots:
+        bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
+        stat_inputs.extend(bot_inputs)
+        missing.extend(bot_missing)
 
     return CompiledStatInputs(
         stat_inputs=_with_required_start_of_run_defaults(stat_inputs),
@@ -1450,7 +1519,7 @@ def _compile_relic_stat_inputs(ids_snapshot: AccountSnapshot) -> List[StatInput]
         (("Super Critical Mult",), "super_crit_mult", "mult", "relics:super_crit_mult"),
         (("Thorns",), "thorns_damage_mult", "mult", "relics:thorns"),
         (("Orb Speed",), "orb_speed", "mult", "relics:orb_speed"),
-        (("Wall Rebuild",), "wall_rebuild", "mult", "relics:wall_rebuild"),
+        (("Wall Rebuild",), "wall_rebuild", "delta_negative", "relics:wall_rebuild"),
         (("Cash",), "cash_bonus", "mult", "relics:cash"),
         (("Coins",), "coins_bonus", "mult", "relics:coins"),
         (("Ultimate Damage",), "ultimate_damage", "mult", "relics:ultimate_damage"),
@@ -1469,6 +1538,15 @@ def _compile_relic_stat_inputs(ids_snapshot: AccountSnapshot) -> List[StatInput]
                     stat_id=stat_id,
                     phase=Phase.START_OF_RUN,
                     enhancement_multiplier=1.0 + total,
+                    provenance=provenance,
+                )
+            )
+        elif mode == "delta_negative":
+            inputs.append(
+                StatInput(
+                    stat_id=stat_id,
+                    phase=Phase.START_OF_RUN,
+                    loadout_delta=-total,
                     provenance=provenance,
                 )
             )
@@ -1578,27 +1656,28 @@ def _compile_workshop_stat_inputs(
             if value is None:
                 missing.append(f"workshop_unsupported:{name}")
                 continue
-            value_f = float(value)
-            if name in _WORKSHOP_LAB_DELTA_STATS:
-                value_f = value_f + lab_delta
-                if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
-                    value_f = min(max(value_f, 0.0), 1.0)
+            workshop_value_f = float(value)
             stat_inputs.append(
                 StatInput(
                     stat_id=spec.stat_id,
                     phase=Phase.START_OF_RUN,
-                    base_value=value_f,
+                    base_value=workshop_value_f,
                     enhancement_multiplier=enhancement_multiplier,
                     provenance="workshop_formula:DVT_WS_VALUE",
                 )
             )
             canonical_stat_id = _WORKSHOP_CANONICAL_ALIASES.get(name)
             if canonical_stat_id is not None:
+                canonical_value_f = workshop_value_f
+                if name in _WORKSHOP_LAB_DELTA_STATS:
+                    canonical_value_f = canonical_value_f + lab_delta
+                    if name in {"Enemy Attack Level Skip", "Enemy Health Level Skip"}:
+                        canonical_value_f = min(max(canonical_value_f, 0.0), 1.0)
                 stat_inputs.append(
                     StatInput(
                         stat_id=canonical_stat_id,
                         phase=Phase.START_OF_RUN,
-                        base_value=value_f,
+                        base_value=canonical_value_f,
                         enhancement_multiplier=enhancement_multiplier,
                         provenance=f"workshop_alias:{name}->{canonical_stat_id}",
                     )
@@ -2204,7 +2283,7 @@ def _uw_provenance(spec: UWTrackSpec) -> str:
     return "uw_section:_IDS.csv"
 
 
-__all__ = ["CompiledBaselineLoadout", "CompiledStatInputs", "compile_baseline_loadout_stat_inputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
+__all__ = ["CompiledBaselineLoadout", "CompiledStatInputs", "compile_baseline_account_stat_inputs", "compile_baseline_gem_respec_stat_inputs", "compile_baseline_loadout_stat_inputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
 
 
 def compile_workshop_values_at_wave(

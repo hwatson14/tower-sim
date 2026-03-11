@@ -16,11 +16,8 @@ from tower_sim.engines.stat_engine import StatEngine, StatInput
 from tower_sim.engines.stat_input_compiler import (
     _UW_TRACK_SPECS,
     _parse_uw_tracks,
+    compile_baseline_gem_respec_stat_inputs,
     compile_baseline_loadout_stat_inputs,
-    compile_full_stat_inputs,
-)
-from tower_sim.engines.survivability_pipeline import (
-    compile_survivability_base_stat_inputs,
 )
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.engines.tier_rules import build_tier_rules
@@ -170,9 +167,10 @@ def build_canonical_stat_pipeline_for_problem_spec(
     stage2_inputs: List[StatInput] = list(canonical_inputs.stat_inputs)
     start_result = None
     if materialize_stages:
-        compiled = compile_full_stat_inputs(snapshot)
-        base_inputs = compile_survivability_base_stat_inputs(snapshot, allow_provisional=True)
-        stage1_inputs = compiled.stat_inputs + base_inputs
+        baseline_gem_respec = compile_baseline_gem_respec_stat_inputs(snapshot)
+        stage1_inputs = list(baseline_gem_respec.stat_inputs)
+        if baseline_gem_respec.missing:
+            diagnostics["baseline_gem_respec_missing"] = baseline_gem_respec.missing
 
         diagnostics["start_stage_source"] = (
             "precomputed_canonical_inputs"

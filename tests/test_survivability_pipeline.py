@@ -5,10 +5,12 @@ from pathlib import Path
 import pytest
 import pandas as pd
 
+from tower_sim.engines.stat_engine import StatInput
 from tower_sim.engines.survivability_pipeline import (
     _StatAccumulator,
     _apply_unique_effects,
     _parse_module_blocks,
+    _prune_compiled_overlaps,
     ModuleRecord,
     build_survivability_report,
     compile_survivability_loadout_stat_inputs,
@@ -18,6 +20,24 @@ from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
 from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.run.spec_loader import load_problem_spec
 from tower_sim.registry.naming_contract import resolve_named_entity
+
+
+def test_prune_compiled_overlaps_drops_duplicate_workshop_alias_and_base_rows() -> None:
+    base_inputs = [
+        StatInput(stat_id="def_pct", phase="start_of_run", base_value=0.551, provenance="base:workshop+labs"),
+    ]
+    compiled_inputs = [
+        StatInput(stat_id="def_pct", phase="start_of_run", base_value=0.551, provenance="workshop_alias:Defense %->def_pct"),
+        StatInput(stat_id="def_pct", phase="start_of_run", base_value=0.551, provenance="base:workshop+labs"),
+        StatInput(stat_id="def_pct", phase="start_of_run", loadout_delta=0.04, provenance="relic:Core Effect:Defense"),
+        StatInput(stat_id="eals_pct", phase="start_of_run", base_value=0.165, provenance="workshop_alias:Enemy Attack Level Skip->eals_pct"),
+    ]
+
+    pruned = _prune_compiled_overlaps(base_inputs, compiled_inputs)
+
+    assert len(pruned) == 2
+    assert pruned[0].provenance == "relic:Core Effect:Defense"
+    assert pruned[1].provenance == "workshop_alias:Enemy Attack Level Skip->eals_pct"
 
 
 def test_survivability_pipeline_snapshots() -> None:
@@ -101,7 +121,7 @@ def test_thorns_and_plasma_cannon_inputs() -> None:
         ids_snapshot, spec, module_context="Testing", allow_provisional=True
     )
     base_only = report["snapshots"]["base_only"]
-    assert base_only["thorns_damage_mult"] == pytest.approx(0.0701415, rel=1e-9)
+    assert base_only["thorns_damage_mult"] == pytest.approx(0.495, rel=1e-9)
 
     plasma_report = build_survivability_report(
         ids_snapshot,

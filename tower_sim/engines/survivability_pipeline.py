@@ -159,7 +159,6 @@ _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
 
 _WORKSHOP_THORNS_MAX_LEVEL = 99  # Wiki excerpt in prompt: 99 upgrades at +1% each.
 _WORKSHOP_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: +1% per workshop level.
-_WALL_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: lab % shown is applied directly.
 _BOSS_THORNS_MULT = 0.5  # Wiki excerpt in prompt: bosses take 50% thorns damage.
 
 
@@ -242,7 +241,8 @@ def build_survivability_report(
             )
         warnings["missing_stat_inputs"] = sorted(compiled.missing)
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_result.stat_inputs)
-    stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
+    compiled_pruned = _prune_compiled_overlaps(base_inputs, compiled.stat_inputs)
+    stat_inputs = _merge_stat_inputs(stat_inputs, compiled_pruned)
 
     registry = default_registry()
     engine = StatEngine(registry=registry)
@@ -329,14 +329,31 @@ def _snapshot_from_phase(engine_result, phase: Phase) -> Dict[str, float]:
     return dict(stats.values)
 
 
+def _prune_compiled_overlaps(base_inputs: Iterable[StatInput], compiled_inputs: Iterable[StatInput]) -> List[StatInput]:
+    """Drop duplicate workshop/base contributors already represented in base_inputs.
+
+    Base survivability inputs are the canonical workshop+lab-composed core for overlapping
+    start-of-run stats. Keep compiled non-overlapping contributors (for example relic deltas
+    and multipliers) but remove duplicate workshop alias/base identity rows on the same key.
+    """
+
+    base_keys = {(item.stat_id, item.phase) for item in base_inputs}
+    out: List[StatInput] = []
+    for item in compiled_inputs:
+        key = (item.stat_id, item.phase)
+        provenance = item.provenance or ""
+        if key in base_keys and (provenance.startswith("workshop_alias:") or provenance.startswith("base:")):
+            continue
+        out.append(item)
+    return out
+
+
 def _merge_stat_inputs(
     base_inputs: Iterable[StatInput],
     loadout_inputs: Iterable[StatInput],
 ) -> List[StatInput]:
     merged: Dict[tuple[str, Phase], StatInput] = {}
-    for stat_input in base_inputs:
-        merged[(stat_input.stat_id, stat_input.phase)] = stat_input
-    for stat_input in loadout_inputs:
+    for stat_input in list(base_inputs) + list(loadout_inputs):
         key = (stat_input.stat_id, stat_input.phase)
         if key not in merged:
             merged[key] = stat_input
@@ -345,14 +362,15 @@ def _merge_stat_inputs(
         merged[key] = StatInput(
             stat_id=base.stat_id,
             phase=base.phase,
-            base_value=base.base_value,
+            base_value=_sum_optional(base.base_value, stat_input.base_value),
             loadout_delta=_sum_optional(base.loadout_delta, stat_input.loadout_delta),
             enhancement_multiplier=_mul_optional(
                 base.enhancement_multiplier, stat_input.enhancement_multiplier
             ),
-            tier_rule_delta=base.tier_rule_delta or stat_input.tier_rule_delta,
-            tier_rule_multiplier=base.tier_rule_multiplier
-            or stat_input.tier_rule_multiplier,
+            tier_rule_delta=_sum_optional(base.tier_rule_delta, stat_input.tier_rule_delta),
+            tier_rule_multiplier=_mul_optional(
+                base.tier_rule_multiplier, stat_input.tier_rule_multiplier
+            ),
             derived_value=base.derived_value or stat_input.derived_value,
             provenance=base.provenance or stat_input.provenance,
         )
@@ -665,25 +683,8 @@ def _resolve_thorns_inputs(
         )
     workshop_thorns = workshop_level * _WORKSHOP_THORNS_PER_LEVEL
 
-    wall_thorns_level = ids_snapshot.labs.get("Wall Thorn")
-    if wall_thorns_level is None:
-        wall_thorns_level = ids_snapshot.labs.get("Wall Thorns")
-    if wall_thorns_level is None:
-        raise SurvivabilityPipelineError("Missing canonical lab level for 'Wall Thorn' in IDS.")
-    if wall_thorns_level < 0:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab level for Wall Thorn: {wall_thorns_level}."
-        )
-    wall_thorns_pct = wall_thorns_level * _WALL_THORNS_PER_LEVEL
-
-    relic_bonus = _sum_relic_bonus(ids_snapshot, ("Thorns", "Thorn Damage"))
-    relic_multiplier = 1.0 + relic_bonus
-
-    multiplier = relic_multiplier * wall_thorns_pct * _BOSS_THORNS_MULT
-    provenance = (
-        "workshop:Thorn Damage + labs:Wall Thorn + relics:Thorns "
-        "(wiki excerpt in prompt)"
-    )
+    multiplier = _BOSS_THORNS_MULT
+    provenance = "workshop:Thorn Damage + boss:thorns_mult"
     return workshop_thorns, multiplier, provenance
 
 
