@@ -159,7 +159,6 @@ _SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
 
 _WORKSHOP_THORNS_MAX_LEVEL = 99  # Wiki excerpt in prompt: 99 upgrades at +1% each.
 _WORKSHOP_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: +1% per workshop level.
-_WALL_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: lab % shown is applied directly.
 _BOSS_THORNS_MULT = 0.5  # Wiki excerpt in prompt: bosses take 50% thorns damage.
 
 
@@ -242,7 +241,8 @@ def build_survivability_report(
             )
         warnings["missing_stat_inputs"] = sorted(compiled.missing)
     stat_inputs = _merge_stat_inputs(base_inputs, loadout_result.stat_inputs)
-    stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
+    compiled_pruned = _prune_compiled_overlaps(base_inputs, compiled.stat_inputs)
+    stat_inputs = _merge_stat_inputs(stat_inputs, compiled_pruned)
 
     registry = default_registry()
     engine = StatEngine(registry=registry)
@@ -327,6 +327,25 @@ def _snapshot_from_phase(engine_result, phase: Phase) -> Dict[str, float]:
     if stats is None:
         raise SurvivabilityPipelineError(f"Missing {phase.value} stats in StatEngine result.")
     return dict(stats.values)
+
+
+def _prune_compiled_overlaps(base_inputs: Iterable[StatInput], compiled_inputs: Iterable[StatInput]) -> List[StatInput]:
+    """Drop duplicate workshop/base contributors already represented in base_inputs.
+
+    Base survivability inputs are the canonical workshop+lab-composed core for overlapping
+    start-of-run stats. Keep compiled non-overlapping contributors (for example relic deltas
+    and multipliers) but remove duplicate workshop alias/base identity rows on the same key.
+    """
+
+    base_keys = {(item.stat_id, item.phase) for item in base_inputs}
+    out: List[StatInput] = []
+    for item in compiled_inputs:
+        key = (item.stat_id, item.phase)
+        provenance = item.provenance or ""
+        if key in base_keys and (provenance.startswith("workshop_alias:") or provenance.startswith("base:")):
+            continue
+        out.append(item)
+    return out
 
 
 def _merge_stat_inputs(
@@ -664,25 +683,8 @@ def _resolve_thorns_inputs(
         )
     workshop_thorns = workshop_level * _WORKSHOP_THORNS_PER_LEVEL
 
-    wall_thorns_level = ids_snapshot.labs.get("Wall Thorn")
-    if wall_thorns_level is None:
-        wall_thorns_level = ids_snapshot.labs.get("Wall Thorns")
-    if wall_thorns_level is None:
-        raise SurvivabilityPipelineError("Missing canonical lab level for 'Wall Thorn' in IDS.")
-    if wall_thorns_level < 0:
-        raise SurvivabilityPipelineError(
-            f"Invalid lab level for Wall Thorn: {wall_thorns_level}."
-        )
-    wall_thorns_pct = wall_thorns_level * _WALL_THORNS_PER_LEVEL
-
-    relic_bonus = _sum_relic_bonus(ids_snapshot, ("Thorns", "Thorn Damage"))
-    relic_multiplier = 1.0 + relic_bonus
-
-    multiplier = relic_multiplier * wall_thorns_pct * _BOSS_THORNS_MULT
-    provenance = (
-        "workshop:Thorn Damage + labs:Wall Thorn + relics:Thorns "
-        "(wiki excerpt in prompt)"
-    )
+    multiplier = _BOSS_THORNS_MULT
+    provenance = "workshop:Thorn Damage + boss:thorns_mult"
     return workshop_thorns, multiplier, provenance
 
 
