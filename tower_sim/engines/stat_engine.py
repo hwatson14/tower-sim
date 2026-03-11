@@ -62,10 +62,7 @@ class StatEngine:
             if row.final_value is not None:
                 phase_values.setdefault(stat_input.phase, {})[stat_input.stat_id] = float(row.final_value)
 
-        run_stats = {
-            phase: RunStats(phase=phase, values=values)
-            for phase, values in phase_values.items()
-        }
+        run_stats = _build_run_stats_from_inputs(resolved_inputs)
         return StatEngineResult(statbook=StatBook(rows=rows), run_stats=run_stats)
 
     def build_with_tier_rules(
@@ -164,6 +161,109 @@ class StatEngine:
                 provenance="derived:wave_engine",
             ),
         ]
+
+
+def _build_run_stats_from_inputs(inputs: list[StatInput]) -> Dict[Phase, RunStats]:
+    merged: Dict[tuple[Phase, str], StatInput] = {}
+    for item in inputs:
+        key = (item.phase, item.stat_id)
+        existing = merged.get(key)
+        if existing is None:
+            merged[key] = item
+            continue
+        merged[key] = _merge_stat_input_for_run_stats(existing, item)
+
+    phase_values: Dict[Phase, Dict[str, float]] = {}
+    for (phase, stat_id), item in merged.items():
+        phase_values.setdefault(phase, {})[stat_id] = _resolve_input_value(item)
+    return {
+        phase: RunStats(phase=phase, values=values)
+        for phase, values in phase_values.items()
+    }
+
+
+def _merge_stat_input_for_run_stats(existing: StatInput, item: StatInput) -> StatInput:
+    if existing.derived_value is not None or item.derived_value is not None:
+        existing_has_components = any(
+            value is not None
+            for value in (
+                existing.base_value,
+                existing.loadout_delta,
+                existing.enhancement_multiplier,
+                existing.tier_rule_delta,
+                existing.tier_rule_multiplier,
+            )
+        )
+        item_has_components = any(
+            value is not None
+            for value in (
+                item.base_value,
+                item.loadout_delta,
+                item.enhancement_multiplier,
+                item.tier_rule_delta,
+                item.tier_rule_multiplier,
+            )
+        )
+        if existing_has_components or item_has_components:
+            raise ValueError(
+                f"Derived stat {existing.stat_id} cannot mix with base/loadout rows."
+            )
+        return StatInput(
+            stat_id=existing.stat_id,
+            phase=existing.phase,
+            derived_value=float(item.derived_value if item.derived_value is not None else existing.derived_value),
+            provenance=item.provenance or existing.provenance,
+        )
+
+    base = None
+    if existing.base_value is not None or item.base_value is not None:
+        base = float(existing.base_value or 0.0) + float(item.base_value or 0.0)
+
+    loadout_delta = None
+    if existing.loadout_delta is not None or item.loadout_delta is not None:
+        loadout_delta = float(existing.loadout_delta or 0.0) + float(item.loadout_delta or 0.0)
+
+    enhancement_multiplier = None
+    if existing.enhancement_multiplier is not None or item.enhancement_multiplier is not None:
+        enhancement_multiplier = float(existing.enhancement_multiplier or 1.0) * float(item.enhancement_multiplier or 1.0)
+
+    tier_rule_delta = None
+    if existing.tier_rule_delta is not None or item.tier_rule_delta is not None:
+        tier_rule_delta = float(existing.tier_rule_delta or 0.0) + float(item.tier_rule_delta or 0.0)
+
+    tier_rule_multiplier = None
+    if existing.tier_rule_multiplier is not None or item.tier_rule_multiplier is not None:
+        tier_rule_multiplier = float(existing.tier_rule_multiplier or 1.0) * float(item.tier_rule_multiplier or 1.0)
+
+    if tier_rule_delta is not None and tier_rule_multiplier is not None:
+        raise ValueError(
+            f"Tier rule cannot be both delta and multiplier for stat_id {existing.stat_id}."
+        )
+
+    return StatInput(
+        stat_id=existing.stat_id,
+        phase=existing.phase,
+        base_value=base,
+        loadout_delta=loadout_delta,
+        enhancement_multiplier=enhancement_multiplier,
+        tier_rule_delta=tier_rule_delta,
+        tier_rule_multiplier=tier_rule_multiplier,
+        provenance=item.provenance or existing.provenance,
+    )
+
+
+def _resolve_input_value(stat_input: StatInput) -> float:
+    if stat_input.derived_value is not None:
+        return float(stat_input.derived_value)
+    base_value = float(stat_input.base_value or 0.0)
+    loadout_delta = float(stat_input.loadout_delta or 0.0)
+    enhancement_multiplier = float(stat_input.enhancement_multiplier or 1.0)
+    enhanced = (base_value + loadout_delta) * enhancement_multiplier
+    return _apply_tier_rule(
+        enhanced,
+        stat_input.tier_rule_delta,
+        stat_input.tier_rule_multiplier,
+    )
 
 
 from decimal import Decimal
