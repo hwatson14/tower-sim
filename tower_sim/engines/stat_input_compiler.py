@@ -414,25 +414,25 @@ def _required_start_of_run_defaults() -> List[StatInput]:
             stat_id="orb_damage_mult",
             phase=Phase.START_OF_RUN,
             base_value=1.0,
-            provenance="compile_full:identity",
+            provenance="base:identity",
         ),
         StatInput(
             stat_id="death_ray_damage_mult",
             phase=Phase.START_OF_RUN,
             base_value=1.0,
-            provenance="compile_full:identity",
+            provenance="base:identity",
         ),
         StatInput(
             stat_id="plasma_cannon_damage_mult",
             phase=Phase.START_OF_RUN,
             base_value=0.0,
-            provenance="compile_full:cards:plasma_cannon",
+            provenance="base:cards:plasma_cannon",
         ),
         StatInput(
             stat_id="knockback_mult",
             phase=Phase.START_OF_RUN,
             base_value=1.0,
-            provenance="compile_full:identity",
+            provenance="base:identity",
         ),
     ]
 

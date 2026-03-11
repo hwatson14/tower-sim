@@ -446,7 +446,7 @@ def test_build_canonical_stat_inputs_rebases_wall_stats_from_resolved_tower_valu
     )
     monkeypatch.setattr(
         "tower_sim.engines.combat_stat_derivation._wall_ratio_from_ids",
-        lambda _ids_snapshot, _stat_inputs: (2.5, 0.5, []),
+        lambda _stat_inputs: (2.5, 0.5, []),
     )
 
     built = build_canonical_stat_inputs(
@@ -884,12 +884,12 @@ def test_wall_ratio_from_ids_uses_compiled_workshop_ratios_only(monkeypatch: pyt
 
     wall_hp_ratio, wall_regen_ratio, missing = derivation._wall_ratio_from_ids(stat_inputs)
 
-    assert wall_hp_ratio == pytest.approx(0.2)
-    assert wall_regen_ratio == pytest.approx(0.1)
+    assert wall_hp_ratio == pytest.approx(0.4)
+    assert wall_regen_ratio == pytest.approx(0.3)
     assert missing == []
 
 
-def test_rebase_wall_stats_from_tower_rebases_wall_hp_when_wall_regen_ratio_missing() -> None:
+def test_rebase_wall_stats_from_tower_skips_rebase_when_wall_regen_ratio_missing() -> None:
     from tower_sim.engines import combat_stat_derivation as derivation
 
     stat_inputs = [
@@ -906,9 +906,9 @@ def test_rebase_wall_stats_from_tower_rebases_wall_hp_when_wall_regen_ratio_miss
     wall_hp = by_key[("wall_hp", Phase.START_OF_RUN)]
     wall_regen = by_key[("wall_regen", Phase.START_OF_RUN)]
 
-    assert wall_hp.base_value == pytest.approx(2000.0)
+    assert wall_hp.base_value == pytest.approx(20.0)
     assert wall_hp.enhancement_multiplier == pytest.approx(3.0)
-    assert str(wall_hp.provenance).endswith(":rebased_from_tower")
+    assert wall_hp.provenance == "test"
 
     assert wall_regen.base_value == pytest.approx(4.0)
     assert wall_regen.enhancement_multiplier == pytest.approx(5.0)

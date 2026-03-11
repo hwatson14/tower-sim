@@ -316,20 +316,14 @@ def _wall_ratio_from_ids(
     if wall_health_input is None:
         missing.append("workshop_alias_missing:workshop_wall_health")
     else:
-        if wall_health_input.base_value is not None:
-            wall_health_ratio = float(wall_health_input.base_value)
-        else:
-            wall_health_ratio = _resolved_stat_input_value(wall_health_input)
+        wall_health_ratio = _resolved_stat_input_value(wall_health_input)
 
     wall_regen_input = by_key.get(("workshop_wall_regen", Phase.START_OF_RUN))
     wall_regen_ratio: Optional[float] = None
     if wall_regen_input is None:
         missing.append("workshop_alias_missing:workshop_wall_regen")
     else:
-        if wall_regen_input.base_value is not None:
-            wall_regen_ratio = float(wall_regen_input.base_value)
-        else:
-            wall_regen_ratio = _resolved_stat_input_value(wall_regen_input)
+        wall_regen_ratio = _resolved_stat_input_value(wall_regen_input)
 
     return wall_health_ratio, wall_regen_ratio, missing
 
@@ -347,14 +341,19 @@ def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput]) -> List[StatInpu
         stat_inputs,
     )
 
-    target_wall_hp_base: Optional[float] = None
-    target_wall_regen_base: Optional[float] = None
-    if tower_hp is not None and wall_hp is not None and wall_health_ratio is not None:
-        target_wall_hp_base = _resolved_stat_input_value(tower_hp) * float(wall_health_ratio)
-    if tower_regen is not None and wall_regen is not None and wall_regen_ratio is not None:
-        target_wall_regen_base = _resolved_stat_input_value(tower_regen) * float(wall_regen_ratio)
-    if target_wall_hp_base is None and target_wall_regen_base is None:
+    if (
+        tower_hp is None
+        or tower_regen is None
+        or wall_hp is None
+        or wall_regen is None
+        or wall_health_ratio is None
+        or wall_regen_ratio is None
+        or _missing
+    ):
         return stat_inputs
+
+    target_wall_hp_base = _resolved_stat_input_value(tower_hp) * float(wall_health_ratio)
+    target_wall_regen_base = _resolved_stat_input_value(tower_regen) * float(wall_regen_ratio)
 
     def _replace_base(item: StatInput, target_base: float) -> StatInput:
         current_base = float(item.base_value or 0.0)
@@ -374,11 +373,10 @@ def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput]) -> List[StatInpu
             provenance=(item.provenance or "") + ":rebased_from_tower",
         )
 
-    replacements = {}
-    if target_wall_hp_base is not None and wall_hp is not None:
-        replacements[("wall_hp", Phase.START_OF_RUN)] = _replace_base(wall_hp, target_wall_hp_base)
-    if target_wall_regen_base is not None and wall_regen is not None:
-        replacements[("wall_regen", Phase.START_OF_RUN)] = _replace_base(wall_regen, target_wall_regen_base)
+    replacements = {
+        ("wall_hp", Phase.START_OF_RUN): _replace_base(wall_hp, target_wall_hp_base),
+        ("wall_regen", Phase.START_OF_RUN): _replace_base(wall_regen, target_wall_regen_base),
+    }
 
     rebased: List[StatInput] = []
     for item in stat_inputs:
