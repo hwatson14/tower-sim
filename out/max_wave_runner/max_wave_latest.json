@@ -1252,7 +1252,6 @@
       ],
       "def_pct": [
         "card",
-        "lab",
         "relic",
         "workshop"
       ],
@@ -1261,14 +1260,12 @@
       ],
       "eals_pct": [
         "enhancement",
-        "lab",
         "module",
         "relic",
         "workshop"
       ],
       "ehls_pct": [
         "enhancement",
-        "lab",
         "module",
         "relic",
         "workshop"
@@ -1405,8 +1402,6 @@
         "relic"
       ],
       "thorns_damage_mult": [
-        "enhancement",
-        "lab",
         "module",
         "relic",
         "workshop"
@@ -1436,14 +1431,12 @@
       "tower_hp": [
         "card",
         "enhancement",
-        "lab",
         "relic",
         "workshop"
       ],
       "tower_regen": [
         "card",
         "enhancement",
-        "lab",
         "relic",
         "workshop"
       ],
@@ -1609,8 +1602,6 @@
         "uw"
       ],
       "wall_hp": [
-        "enhancement",
-        "lab",
         "module",
         "workshop"
       ],
@@ -1618,7 +1609,6 @@
         "relic"
       ],
       "wall_regen": [
-        "lab",
         "module",
         "workshop"
       ],
@@ -1806,7 +1796,7 @@
       "path": "/home/runner/work/tower-sim/tower-sim/tests/fixtures/perks/precomputed_empty.json",
       "rows_applied": 0
     },
-    "preflight_ms": 250.0677289999942,
+    "preflight_ms": 190.44067000000098,
     "runtime_dag": {
       "enabled": true,
       "node_count": 1
