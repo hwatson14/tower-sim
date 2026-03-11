@@ -724,6 +724,134 @@ def test_compile_full_stat_inputs_compiles_recovery_package_chance_formula() -> 
     assert by_id["workshop_recovery_packages"].base_value == pytest.approx(0.096)
 
 
+def test_compile_full_stat_inputs_compiles_workshop_cash_and_crit_formulas() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Cash Bonus": WorkshopEntrySnapshot(name="Cash Bonus", coin_level=149, end_level=149, max_level=200, unlocked=None, category=None),
+            "Coin / Kill Bonus": WorkshopEntrySnapshot(
+                name="Coin / Kill Bonus", coin_level=149, end_level=149, max_level=200, unlocked=None, category=None
+            ),
+            "Critical Factor": WorkshopEntrySnapshot(
+                name="Critical Factor", coin_level=150, end_level=150, max_level=200, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_cash_bonus"].base_value == pytest.approx(2.49)
+    assert by_id["workshop_coins_per_kill_bonus"].base_value == pytest.approx(2.49)
+    assert by_id["workshop_critical_factor"].base_value == pytest.approx(16.2)
+
+
+def test_compile_full_stat_inputs_compiles_workshop_land_mine_and_rend_formulas() -> None:
+    # Convention: workshop coin_level is treated as applied-upgrade count.
+    # Land Mine Chance has 50 upgrades at +0.60% each, so maxed chance is 30.00%.
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Land Mine Chance": WorkshopEntrySnapshot(
+                name="Land Mine Chance", coin_level=50, end_level=50, max_level=50, unlocked=None, category=None
+            ),
+            "Land Mine Damage": WorkshopEntrySnapshot(
+                name="Land Mine Damage", coin_level=160, end_level=160, max_level=200, unlocked=None, category=None
+            ),
+            "Rend Armor Chance": WorkshopEntrySnapshot(
+                name="Rend Armor Chance", coin_level=80, end_level=80, max_level=299, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_land_mine_chance"].base_value == pytest.approx(0.30)
+    assert by_id["workshop_land_mine_damage"].base_value == pytest.approx(17.0)
+    assert by_id["workshop_rend_armor_chance"].base_value == pytest.approx(0.081)
+
+
+def test_compile_full_stat_inputs_compiles_land_mine_chance_zero_at_zero_upgrades() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Land Mine Chance": WorkshopEntrySnapshot(
+                name="Land Mine Chance", coin_level=0, end_level=0, max_level=50, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_land_mine_chance"].base_value == pytest.approx(0.0)
+
+
+def test_compile_full_stat_inputs_compiles_knockback_force_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Knockback Force": WorkshopEntrySnapshot(
+                name="Knockback Force", coin_level=40, end_level=40, max_level=40, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_knockback_force"].base_value == pytest.approx(6.08)
+
+
+def test_compile_full_stat_inputs_compiles_shockwave_frequency_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Shockwave Frequency": WorkshopEntrySnapshot(
+                name="Shockwave Frequency", coin_level=40, end_level=40, max_level=40, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_shockwave_frequency"].base_value == pytest.approx(14.0)
+
+
+def test_compile_full_stat_inputs_compiles_recovery_amount_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Recovery Amount": WorkshopEntrySnapshot(
+                name="Recovery Amount", coin_level=300, end_level=300, max_level=300, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_recovery_amount"].base_value == pytest.approx(1.34)
+
+
+def test_compile_full_stat_inputs_compiles_wall_rebuild_seconds_formula() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Wall Rebuild": WorkshopEntrySnapshot(
+                name="Wall Rebuild", coin_level=250, end_level=250, max_level=300, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_wall_rebuild"].base_value == pytest.approx(700.0)
+
+
 
 
 
@@ -813,8 +941,48 @@ def test_compile_full_stat_inputs_applies_defense_percent_lab_as_delta() -> None
     compiled = compile_full_stat_inputs(snapshot)
     by_id = {item.stat_id: item for item in compiled.stat_inputs}
 
-    assert by_id["workshop_defense_percent"].base_value == pytest.approx(0.06)
+    assert by_id["workshop_defense_percent"].base_value == pytest.approx(0.05)
+    assert by_id["def_pct"].base_value == pytest.approx(0.06)
 
+
+
+def test_compile_full_stat_inputs_applies_wall_rebuild_relic_as_seconds_delta() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={},
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(
+        **{
+            **snapshot.__dict__,
+            "relics": {
+                "Wall Rebuild": 2.0,
+            },
+        }
+    )
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["wall_rebuild"].loadout_delta == pytest.approx(-2.0)
+    assert by_id["wall_rebuild"].enhancement_multiplier is None
+
+
+def test_compile_full_stat_inputs_keeps_raw_workshop_eals_separate_from_lab_delta() -> None:
+    snapshot = _snapshot_with_workshop_and_uw(
+        workshop_entries={
+            "Enemy Attack Level Skip": WorkshopEntrySnapshot(
+                name="Enemy Attack Level Skip", coin_level=10, end_level=10, max_level=99, unlocked=None, category=None
+            ),
+        },
+        uw_rows=[],
+    )
+    snapshot = AccountSnapshot(**{**snapshot.__dict__, "labs": {"Enemy Attack Level Skip": 5}})
+
+    compiled = compile_full_stat_inputs(snapshot)
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+
+    assert by_id["workshop_enemy_attack_level_skip"].base_value == pytest.approx(workshop_level_to_chance(10))
+    assert by_id["eals_pct"].base_value == pytest.approx(workshop_level_to_chance(10) + 0.005)
 
 def test_compile_full_stat_inputs_applies_chrono_field_duration_lab_additive() -> None:
     snapshot = _snapshot_with_workshop_and_uw(
