@@ -4,8 +4,14 @@ from pathlib import Path
 
 import pytest
 
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
+from tower_sim.engines.stat_input_compiler import (
+    compile_baseline_loadout_stat_inputs,
+    compile_full_stat_inputs,
+    compile_workshop_values_at_wave,
+)
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
 from tower_sim.util.account_snapshot import (
     AccountSnapshot,
@@ -1014,3 +1020,96 @@ def test_fixture_raw_uw_tracks_are_fully_mapped_and_emit_canonical_aliases() -> 
             canonical_cost_stat_id = compiler._UW_CANONICAL_ALIASES[source_cost_stat_id]
             assert source_cost_stat_id in emitted
             assert canonical_cost_stat_id in emitted
+
+
+def _fixture_snapshot() -> AccountSnapshot:
+    return compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+
+
+def test_compile_baseline_loadout_stat_inputs_card_only_emits_card_contributors() -> None:
+    snapshot = _fixture_snapshot()
+    compiled = compile_baseline_loadout_stat_inputs(
+        snapshot,
+        module_context="Farming",
+        include_cards=True,
+        include_modules=False,
+    )
+
+    stat_ids = {item.stat_id for item in compiled.stat_inputs}
+    provenances = [str(item.provenance or "") for item in compiled.stat_inputs]
+
+    assert "tower_hp" in stat_ids
+    assert "tower_regen" in stat_ids
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+    # Health card at fixture level contributes x4.0 tower HP multiplier.
+    assert by_id["tower_hp"].enhancement_multiplier == pytest.approx(4.0)
+    # Attack Speed card contributes x2.15 multiplier in fixture loadout.
+    assert by_id["tower_attack_speed"].enhancement_multiplier == pytest.approx(2.15)
+    assert by_id["def_pct"].loadout_delta == pytest.approx(0.11)
+    assert by_id["plasma_cannon_damage_mult"].loadout_delta == pytest.approx(0.54)
+    assert any("cards:" in provenance for provenance in provenances)
+    assert not any("modules:" in provenance for provenance in provenances)
+    assert compiled.module_contribution_ledger == []
+
+
+def test_compile_baseline_loadout_stat_inputs_module_only_emits_module_contributors() -> None:
+    snapshot = _fixture_snapshot()
+    compiled = compile_baseline_loadout_stat_inputs(
+        snapshot,
+        module_context="Farming",
+        include_cards=False,
+        include_modules=True,
+    )
+
+    stat_ids = {item.stat_id for item in compiled.stat_inputs}
+    provenances = [str(item.provenance or "") for item in compiled.stat_inputs]
+
+    assert "chain_lightning_chance" in stat_ids
+    assert "death_wave_damage" in stat_ids
+    by_id = {item.stat_id: item for item in compiled.stat_inputs}
+    # Core module substats contribute +0.12 Chain Lightning chance (fractional).
+    assert by_id["chain_lightning_chance"].loadout_delta == pytest.approx(0.12)
+    # Core main effect stack contributes this deterministic Death Wave damage multiplier.
+    assert by_id["death_wave_damage"].enhancement_multiplier == pytest.approx(85.79469999999999)
+    assert by_id["def_pct"].loadout_delta == pytest.approx(0.1112)
+    assert any("modules:" in provenance for provenance in provenances)
+    assert not any("cards:" in provenance for provenance in provenances)
+    assert compiled.module_contribution_ledger
+
+
+def test_compile_baseline_loadout_stat_inputs_combined_includes_cards_and_modules() -> None:
+    snapshot = _fixture_snapshot()
+    cards_only = compile_baseline_loadout_stat_inputs(
+        snapshot,
+        module_context="Farming",
+        include_cards=True,
+        include_modules=False,
+    )
+    modules_only = compile_baseline_loadout_stat_inputs(
+        snapshot,
+        module_context="Farming",
+        include_cards=False,
+        include_modules=True,
+    )
+    combined = compile_baseline_loadout_stat_inputs(
+        snapshot,
+        module_context="Farming",
+        include_cards=True,
+        include_modules=True,
+    )
+
+    combined_ids = {item.stat_id for item in combined.stat_inputs}
+    card_ids = {item.stat_id for item in cards_only.stat_inputs}
+    module_ids = {item.stat_id for item in modules_only.stat_inputs}
+    combined_provenances = [str(item.provenance or "") for item in combined.stat_inputs]
+
+    assert card_ids.issubset(combined_ids)
+    assert module_ids.issubset(combined_ids)
+    combined_by_id = {item.stat_id: item for item in combined.stat_inputs}
+    # Combined HP multiplier = card and module multiplicative stack in canonical order.
+    assert combined_by_id["tower_hp"].enhancement_multiplier == pytest.approx(162.662112)
+    assert combined_by_id["tower_attack_speed"].enhancement_multiplier == pytest.approx(2.2145)
+    assert combined_by_id["def_pct"].loadout_delta == pytest.approx(0.22119999999999998)
+    assert any("cards:" in provenance for provenance in combined_provenances)
+    assert any("modules:" in provenance for provenance in combined_provenances)
+    assert combined.module_contribution_ledger == modules_only.module_contribution_ledger

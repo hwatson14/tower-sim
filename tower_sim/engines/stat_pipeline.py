@@ -16,11 +16,11 @@ from tower_sim.engines.stat_engine import StatEngine, StatInput
 from tower_sim.engines.stat_input_compiler import (
     _UW_TRACK_SPECS,
     _parse_uw_tracks,
+    compile_baseline_loadout_stat_inputs,
     compile_full_stat_inputs,
 )
 from tower_sim.engines.survivability_pipeline import (
     compile_survivability_base_stat_inputs,
-    compile_survivability_loadout_stat_inputs,
 )
 from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.engines.tier_rules import build_tier_rules
@@ -508,17 +508,17 @@ def _resolve_loadout_inputs(problem_spec: ProblemSpec, snapshot) -> tuple[list[S
     if isinstance(card_presets, dict):
         selected_cards = card_presets.get(module_context)
     try:
-        return (
-            compile_survivability_loadout_stat_inputs(
-                snapshot,
-                module_context=module_context,
-                selected_cards=selected_cards,
-                allow_provisional=True,
-            ),
-            [],
+        compiled = compile_baseline_loadout_stat_inputs(
+            snapshot,
+            module_context=module_context,
+            selected_cards=selected_cards,
+            include_cards=True,
+            include_modules=True,
+            allow_provisional=True,
         )
+        return compiled.stat_inputs, list(compiled.missing) + list(compiled.layer_gaps)
     except Exception as exc:  # noqa: BLE001
-        return [], [f"survivability_loadout:{exc}"]
+        return [], [f"baseline_loadout:{exc}"]
 
 def _build_wave_state(problem_spec: ProblemSpec, *, wave: int) -> tuple[Optional[RunWaveState], List[str]]:
     missing: List[str] = []

@@ -4,7 +4,7 @@ import csv
 from dataclasses import dataclass
 from functools import lru_cache
 import re
-from typing import Dict, Iterable, List, Optional, Tuple
+from typing import Dict, Iterable, List, Mapping, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
 from tower_sim.libs.workshop_lib import WorkshopTables, load_workshop_tables, workshop_value
@@ -17,11 +17,29 @@ from tower_sim.engines.workshop_progression import WSCategory, WorkshopStat, sim
 from tower_sim.libs.bots_lib import get_bot_attribute
 from tower_sim.libs.labs_lib import load_labs_values
 from tower_sim.loaders.wiki.enemy_level_skip import workshop_level_to_chance
+from tower_sim.libs.assist_efficiency import AssistEfficiencyInputs, apply_bonus_eff_to_main_effect, compute_efficiencies
+from tower_sim.libs.modules_library import Rarity, SUBSTAT_TABLES, UNIQUE_EFFECTS
+from tower_sim.loaders.wiki.assist_module_labs import AssistLabLevels
+from tower_sim.loaders.wiki.cards import CardEffect, get_card_effect
+from tower_sim.loaders.wiki.module_rules import max_active_substats_for_module_level
+from tower_sim.util.account_snapshot import ModuleSnapshot
 
 @dataclass(frozen=True)
 class CompiledStatInputs:
     stat_inputs: List[StatInput]
     missing: List[str]
+
+
+@dataclass(frozen=True)
+class CompiledBaselineLoadout:
+    stat_inputs: List[StatInput]
+    missing: List[str]
+    module_contribution_ledger: List[Dict[str, object]]
+    layer_gaps: List[str]
+
+
+class StatInputCompilerError(RuntimeError):
+    pass
 
 
 @dataclass(frozen=True)
@@ -361,6 +379,872 @@ _UW_TRACK_SPECS: Dict[str, Dict[str, UWTrackSpec]] = {
 }
 
 
+@dataclass(frozen=True)
+class ModuleSubstat:
+    name: str
+    rarity: Rarity
+    value: float
+
+
+@dataclass(frozen=True)
+class ModuleRecord:
+    name: str
+    slot: str
+    rarity: Rarity
+    level: int
+    main_effect: float
+    substats: List[ModuleSubstat]
+
+
+@dataclass(frozen=True)
+class ModuleLoadout:
+    slot: str
+    primary: Optional[str]
+    assist: Optional[str]
+    assist_enabled: bool
+    assist_stone_level: int
+    assist_cap_rarity: Optional[Rarity]
+
+
+@dataclass(frozen=True)
+class ModuleBlock:
+    loadout_by_context: Dict[str, ModuleLoadout]
+    inventory: Dict[str, ModuleRecord]
+
+
+_SUBSTAT_MAPPINGS: Dict[str, tuple[str, str]] = {
+    "Attack Speed": ("tower_attack_speed", "multiplier"),
+    "Black Hole - Cooldown": ("uw_black_hole_cooldown", "delta"),
+    "Black Hole - Duration": ("uw_black_hole_duration", "delta"),
+    "Bounce Shot Chance": ("workshop_bounce_shot_chance", "delta"),
+    "Cash Bonus": ("cash_bonus", "delta"),
+    "Chain Lightning - Chance": ("chain_lightning_chance", "delta"),
+    "Chain Lightning - Damage": ("chain_lightning_damage", "delta"),
+    "Chain Lightning - Quantity": ("chain_lightning_quantity", "delta"),
+    "Chrono Field - Cooldown": ("chrono_field_cooldown", "delta"),
+    "Chrono Field - Duration": ("chrono_field_duration", "delta"),
+    "Chrono Field - Speed Reduction": ("chrono_field_speed_reduction", "delta"),
+    "Crit Chance": ("tower_crit_chance", "delta"),
+    "Crit Factor": ("tower_crit_multiplier", "delta"),
+    "Damage / Meter": ("damage_per_meter", "delta"),
+    "Death Wave - Cooldown": ("death_wave_cooldown", "delta"),
+    "Death Wave - Damage": ("death_wave_damage", "delta"),
+    "Death Wave - Quantity": ("death_wave_quantity", "delta"),
+    "Defense": ("def_pct", "delta"),
+    "Defense Absolute": ("defense_absolute", "delta"),
+    "Enemy Attack Level Skip": ("eals_pct", "delta"),
+    "Enemy Health Level Skip": ("ehls_pct", "delta"),
+    "Free Attack Upgrade": ("free_attack_upgrade", "delta"),
+    "Free Defense Upgrade": ("free_defense_upgrade", "delta"),
+    "Free Utility Upgrade": ("free_utility_upgrade", "delta"),
+    "Golden Tower - Bonus": ("golden_tower_multiplier", "delta"),
+    "Golden Tower - Cooldown": ("golden_tower_cooldown", "delta"),
+    "Golden Tower - Duration": ("golden_tower_duration", "delta"),
+    "Health Regen": ("tower_regen", "multiplier"),
+    "Inner Land Mines - Cooldown": ("inner_land_mines_cooldown", "delta"),
+    "Inner Land Mines - Damage": ("inner_land_mines_damage", "delta"),
+    "Inner Land Mines - Quantity": ("inner_land_mines_quantity", "delta"),
+    "Land Mine Chance": ("workshop_land_mine_chance", "delta"),
+    "Multishot Targets": ("workshop_multishot_targets", "delta"),
+    "Orb Speed": ("orb_speed", "delta"),
+    "Poison Swamp - Cooldown": ("poison_swamp_cooldown", "delta"),
+    "Poison Swamp - Damage": ("poison_swamp_damage", "delta"),
+    "Poison Swamp - Duration": ("poison_swamp_duration", "delta"),
+    "Recovery Amount": ("recovery_amount", "delta"),
+    "Recovery Package Chance": ("workshop_package_chance", "delta"),
+    "Smart Missiles - Cooldown": ("smart_missiles_cooldown", "delta"),
+    "Smart Missiles - Damage": ("smart_missiles_damage", "delta"),
+    "Smart Missiles - Quantity": ("smart_missiles_quantity", "delta"),
+    "Spotlight - Angle": ("spotlight_angle", "delta"),
+    "Spotlight - Bonus": ("spotlight_multiplier", "delta"),
+    "Super Crit Chance": ("super_crit_chance", "delta"),
+    "Super Crit Multi": ("super_crit_mult", "delta"),
+    "Thorns Damage": ("thorns_damage_mult", "delta"),
+    "Wall Health": ("wall_hp", "multiplier"),
+    "Wall Rebuild": ("wall_rebuild", "delta"),
+    "Coins / Kill Bonus": ("workshop_coins_per_kill_bonus", "delta"),
+}
+
+
+_WORKSHOP_THORNS_MAX_LEVEL = 99  # Wiki excerpt in prompt: 99 upgrades at +1% each.
+_WORKSHOP_THORNS_PER_LEVEL = 0.01  # Wiki excerpt in prompt: +1% per workshop level.
+
+
+_CARD_NOOP_CANONICALS = {
+    # Known cards whose mechanics are modeled in other surfaces (runtime/events/econ)
+    # and therefore intentionally contribute no start-of-run survivability scalar here.
+    "CARD_AREA_OF_EFFECT",
+        "CARD_CRITICAL_COIN",
+    "CARD_DEATH_RAY",
+    "CARD_DEMON_MODE",
+    "CARD_ENEMY_BALANCE",
+    "CARD_ENERGY_NET",
+    "CARD_ENERGY_SHIELD",
+    "CARD_EXTRA_ORBS",
+    "CARD_INTRO_SPRINT",
+    "CARD_LAND_MINE_STUN",
+    "CARD_NUKE",
+    "CARD_SECOND_WIND",
+    "CARD_SLOW_AURA",
+    "CARD_SUPER_TOWER",
+        "CARD_WAVE_ACCELERATOR",
+    "CARD_WAVE_SKIP",
+}
+
+SLOT_ORDER = {
+    0: "Cannon",
+    1: "Armor",
+    2: "Generator",
+    3: "Core",
+}
+
+
+
+def _parse_module_blocks(ids_snapshot: AccountSnapshot) -> Dict[str, ModuleBlock]:
+    blocks: Dict[str, ModuleBlock] = {}
+    for slot_name in SLOT_ORDER.values():
+        system_state = ids_snapshot.module_system_state.get(slot_name)
+        if system_state is None:
+            raise StatInputCompilerError(
+                f"Missing module system state for {slot_name!r}."
+            )
+        assist_cap = None
+        if system_state.rarity_cap:
+            assist_cap = _parse_rarity(system_state.rarity_cap)
+        loadout_by_context: Dict[str, ModuleLoadout] = {}
+        for preset_name, preset in ids_snapshot.module_presets.items():
+            selection = preset.get(slot_name)
+            if selection is None:
+                raise StatInputCompilerError(
+                    f"Missing module preset {preset_name} for {slot_name!r}."
+                )
+            loadout_by_context[preset_name] = ModuleLoadout(
+                slot=slot_name,
+                primary=selection.primary,
+                assist=selection.assist,
+                assist_enabled=system_state.assist_unlocked,
+                assist_stone_level=system_state.assist_level,
+                assist_cap_rarity=assist_cap,
+            )
+        inventory: Dict[str, ModuleRecord] = {}
+        for name, entry in ids_snapshot.modules_inventory.items():
+            if entry.slot_type != slot_name:
+                continue
+            inventory[name] = _module_record_from_snapshot(entry, slot_name)
+        blocks[slot_name] = ModuleBlock(
+            loadout_by_context=loadout_by_context,
+            inventory=inventory,
+        )
+    return blocks
+
+
+def _module_record_from_snapshot(
+    entry: ModuleSnapshot, slot_name: str
+) -> ModuleRecord:
+    if entry.rarity is None:
+        raise StatInputCompilerError(
+            f"Missing rarity for module {entry.name!r} in {slot_name}."
+        )
+    rarity = _parse_rarity(entry.rarity)
+    if rarity is None:
+        raise StatInputCompilerError(
+            f"Missing rarity for module {entry.name!r} in {slot_name}."
+        )
+    if entry.level is None:
+        raise StatInputCompilerError(
+            f"Missing level for module {entry.name!r} in {slot_name}."
+        )
+    if entry.stat is None:
+        raise StatInputCompilerError(
+            f"Missing main effect for module {entry.name!r} in {slot_name}."
+        )
+    try:
+        main_effect = float(entry.stat)
+    except ValueError as exc:
+        raise StatInputCompilerError(
+            f"Invalid main effect for module {entry.name!r}: {entry.stat!r}"
+        ) from exc
+    substats: List[ModuleSubstat] = []
+    for substat in entry.substats:
+        if not substat.stat_name:
+            continue
+        normalized = _normalize_substat_name(substat.stat_name)
+        if substat.rarity is None:
+            raw_value = substat.value_num
+            if raw_value is None:
+                raw_value = _parse_substat_display_number(substat.value_display)
+            if raw_value is None:
+                continue
+            rarity_value = Rarity.COMMON
+            substat_value = _coerce_substat_value_from_number(slot_name, normalized, raw_value)
+        else:
+            rarity_value = _parse_rarity(substat.rarity)
+            if rarity_value is None:
+                raise StatInputCompilerError(
+                    f"Missing substat rarity for {substat.stat_name!r} in {entry.name!r}."
+                )
+            substat_value = _resolve_substat_value(slot_name, normalized, rarity_value)
+        substats.append(
+            ModuleSubstat(
+                name=normalized,
+                rarity=rarity_value,
+                value=substat_value,
+            )
+        )
+    return ModuleRecord(
+        name=entry.name,
+        slot=slot_name,
+        rarity=rarity,
+        level=entry.level,
+        main_effect=main_effect,
+        substats=substats,
+    )
+
+
+def _resolve_module(
+    module_name: str,
+    slot_name: str,
+    inventory: Mapping[str, ModuleRecord],
+) -> ModuleRecord:
+    if module_name not in inventory:
+        raise StatInputCompilerError(
+            f"Unknown module {module_name!r} for slot {slot_name!r}."
+        )
+    return inventory[module_name]
+
+
+def _resolve_substat_value(slot: str, substat_name: str, rarity: Rarity) -> float:
+    if slot not in SUBSTAT_TABLES:
+        raise StatInputCompilerError(f"Missing substat table for slot {slot!r}.")
+    slot_table = SUBSTAT_TABLES[slot]
+    if substat_name not in slot_table:
+        raise StatInputCompilerError(
+            f"Unknown substat {substat_name!r} for slot {slot!r}."
+        )
+    entry = slot_table[substat_name]
+    if rarity not in entry.value:
+        raise StatInputCompilerError(
+            f"Missing substat rarity {rarity.value!r} for {substat_name!r}."
+        )
+    raw = entry.value[rarity]
+    if entry.unit == "pct":
+        return float(raw) / 100.0
+    if entry.unit == "mult":
+        return float(raw)
+    if entry.unit == "flat":
+        return float(raw)
+    if entry.unit == "count":
+        return float(raw)
+    if entry.unit == "sec":
+        return float(raw)
+    raise StatInputCompilerError(
+        f"Unsupported unit {entry.unit!r} for substat {substat_name!r}."
+    )
+
+
+def _parse_substat_display_number(value_display: str | None) -> Optional[float]:
+    if value_display is None:
+        return None
+    match = re.search(r"[-+]?[0-9]+(?:\.[0-9]+)?", value_display)
+    if match is None:
+        return None
+    return float(match.group(0))
+
+
+def _coerce_substat_value_from_number(slot: str, substat_name: str, raw_value: float) -> float:
+    if slot not in SUBSTAT_TABLES:
+        raise StatInputCompilerError(f"Missing substat table for slot {slot!r}.")
+    slot_table = SUBSTAT_TABLES[slot]
+    if substat_name not in slot_table:
+        raise StatInputCompilerError(
+            f"Unknown substat {substat_name!r} for slot {slot!r}."
+        )
+    entry = slot_table[substat_name]
+    if entry.unit == "pct":
+        return float(raw_value) / 100.0
+    if entry.unit in {"mult", "flat", "count", "sec"}:
+        return float(raw_value)
+    raise StatInputCompilerError(
+        f"Unsupported unit {entry.unit!r} for substat {substat_name!r}."
+    )
+
+
+def _apply_module_effects(
+    accumulator: "_StatAccumulator",
+    *,
+    primary: ModuleRecord | None,
+    assist: ModuleRecord | None,
+    assist_enabled: bool,
+    assist_level: int,
+    assist_cap: Optional[Rarity],
+    ids_snapshot: AccountSnapshot,
+    allow_provisional: bool,
+    slot: str,
+) -> List[str]:
+    if primary is None and assist is None:
+        return []
+    layer_gaps: List[str] = []
+    assist_eff = _resolve_assist_efficiencies(
+        labs=ids_snapshot.labs,
+        slot=primary.slot if primary else assist.slot,
+        assist_level=assist_level,
+    )
+    substat_eff = assist_eff.substat_eff
+
+    if primary is not None and primary.slot == "Armor":
+        multiplier = _armor_module_multiplier(
+            ids_snapshot.labs,
+            primary,
+            assist if assist_enabled else None,
+            assist_level,
+            allow_provisional=allow_provisional,
+        )
+        accumulator.multiply("tower_hp", multiplier, "modules:armor_main_effect")
+        accumulator.record_module_contribution(slot=slot, placement="primary", module_name=primary.name, layer="primary", target="tower_hp", value=multiplier, kind="multiplier")
+
+    if primary is not None:
+        _apply_slot_main_effect(
+            accumulator,
+            slot=slot,
+            placement="primary",
+            module_name=primary.name,
+            module_slot=primary.slot,
+            main_effect=primary.main_effect,
+        )
+        layer_gaps.extend(
+            _apply_module_substats(
+                accumulator,
+                primary,
+                is_assist=False,
+                efficiency=1.0,
+                slot=slot,
+                placement="primary",
+            )
+        )
+        if not _apply_unique_effects(accumulator, primary, is_assist=False, assist_cap=assist_cap, slot=slot, placement="primary"):
+            layer_gaps.append(f"module_unique_unmapped:{slot}:primary:{primary.name}")
+    if assist is not None and assist_enabled:
+        assist_main_effect = apply_bonus_eff_to_main_effect(
+            assist.main_effect,
+            assist_eff.bonus_eff,
+        )
+        _apply_slot_main_effect(
+            accumulator,
+            slot=slot,
+            placement="assist",
+            module_name=assist.name,
+            module_slot=assist.slot,
+            main_effect=assist_main_effect,
+        )
+        layer_gaps.extend(
+            _apply_module_substats(
+                accumulator,
+                assist,
+                is_assist=True,
+                efficiency=substat_eff,
+                slot=slot,
+                placement="assist",
+            )
+        )
+        if not _apply_unique_effects(accumulator, assist, is_assist=True, assist_cap=assist_cap, slot=slot, placement="assist"):
+            layer_gaps.append(f"module_unique_unmapped:{slot}:assist:{assist.name}")
+    return layer_gaps
+
+
+def _apply_slot_main_effect(
+    accumulator: "_StatAccumulator",
+    *,
+    slot: str,
+    placement: str,
+    module_name: str,
+    module_slot: str,
+    main_effect: float,
+) -> None:
+    if module_slot == "Armor":
+        return
+    targets: tuple[str, ...]
+    if module_slot == "Cannon":
+        targets = ("tower_damage",)
+    elif module_slot == "Generator":
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module_name,
+            layer="primary",
+            target="module_primary_effect:generator_main_effect",
+            value=main_effect,
+            kind="behavior_binding",
+        )
+        return
+    elif module_slot == "Core":
+        targets = (
+            "chain_lightning_damage",
+            "smart_missiles_damage",
+            "death_wave_damage",
+            "inner_land_mines_damage",
+            "poison_swamp_damage",
+        )
+    else:
+        return
+    for target in targets:
+        accumulator.multiply(target, main_effect, f"modules:{module_slot.lower()}_main_effect")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module_name,
+            layer="primary",
+            target=target,
+            value=main_effect,
+            kind="multiplier",
+        )
+
+
+def _apply_module_substats(
+    accumulator: "_StatAccumulator",
+    module: ModuleRecord,
+    *,
+    is_assist: bool,
+    efficiency: float,
+    slot: str,
+    placement: str,
+) -> List[str]:
+    active_count = max_active_substats_for_module_level(module.level)
+    if active_count <= 0:
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="substat",
+            target="substats:none_active",
+            value=0.0,
+            kind="noop",
+        )
+        return []
+    unmapped: List[str] = []
+    for substat in module.substats[:active_count]:
+        value = substat.value * (efficiency if is_assist else 1.0)
+        mapping = _SUBSTAT_MAPPINGS.get(substat.name)
+        if mapping is None:
+            unmapped.append(
+                f"module_substat_unmapped:{slot}:{placement}:{module.name}:{substat.name}"
+            )
+            continue
+        stat_id, kind = mapping
+        if kind == "multiplier":
+            resolved = 1.0 + value
+            accumulator.multiply(stat_id, resolved, f"modules:{stat_id}")
+            accumulator.record_module_contribution(
+                slot=slot,
+                placement=placement,
+                module_name=module.name,
+                layer="substat",
+                target=stat_id,
+                value=resolved,
+                kind="multiplier",
+            )
+            continue
+        accumulator.add(stat_id, value, f"modules:{stat_id}")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="substat",
+            target=stat_id,
+            value=value,
+            kind="delta",
+        )
+    return unmapped
+
+
+def _apply_unique_effects(
+    accumulator: "_StatAccumulator",
+    module: ModuleRecord,
+    *,
+    is_assist: bool,
+    assist_cap: Optional[Rarity],
+    slot: str,
+    placement: str,
+) -> bool:
+    effect = UNIQUE_EFFECTS.get(module.name)
+    if effect is None:
+        return False
+    rarity = module.rarity
+    if is_assist and assist_cap is not None:
+        rarity = _cap_rarity(rarity, assist_cap)
+
+    if effect.effect_name == "bot_range_bonus_m":
+        value = effect.value[rarity]
+        accumulator.add("bot_range", value, "modules:unique:bot_range")
+        accumulator.record_module_contribution(
+            slot=slot,
+            placement=placement,
+            module_name=module.name,
+            layer="unique",
+            target="bot_range",
+            value=value,
+            kind="delta",
+        )
+        return True
+
+    if effect.effect_name != "wall_health_regen_mult_x":
+        accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target=f"uw_behavior:{effect.effect_name}", value=effect.value[rarity], kind="behavior_binding")
+        return True
+
+    multiplier = effect.value[rarity]
+    accumulator.multiply("wall_hp", multiplier, "modules:unique:wall_health")
+    accumulator.multiply("wall_regen", multiplier, "modules:unique:wall_regen")
+    accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target="wall_hp", value=multiplier, kind="multiplier")
+    accumulator.record_module_contribution(slot=slot, placement=placement, module_name=module.name, layer="unique", target="wall_regen", value=multiplier, kind="multiplier")
+    return True
+
+
+def _resolve_assist_efficiencies(
+    labs: Mapping[str, Optional[int]], slot: str, assist_level: int
+) -> AssistEfficiencies:
+    bonus_lab_key = f"Assist Module Bonus - {slot}"
+    substat_lab_key = f"Assist Module Substats - {slot}"
+    bonus_level = labs.get(bonus_lab_key)
+    substat_level = labs.get(substat_lab_key)
+    if bonus_level is None or substat_level is None:
+        raise StatInputCompilerError(
+            f"Missing assist lab levels for {slot!r} in IDS."
+        )
+    labs = AssistLabLevels(
+        bonus_level=bonus_level,
+        substat_level=substat_level,
+    )
+    stone_pct = _assist_stone_percent(assist_level)
+    inputs = AssistEfficiencyInputs(
+        stone_bonus_percent=stone_pct,
+        stone_substat_percent=stone_pct,
+        labs=labs,
+    )
+    return compute_efficiencies(inputs)
+
+
+def _armor_module_multiplier(
+    labs: Mapping[str, Optional[int]],
+    primary: ModuleRecord,
+    assist: ModuleRecord | None,
+    assist_level: int,
+    *,
+    allow_provisional: bool,
+) -> float:
+    if primary.slot != "Armor":
+        return 1.0
+    if not allow_provisional:
+        raise StatInputCompilerError(
+            "Armor main-effect formula is EP-derived without a table. "
+            "Set allow_provisional=True to apply it."
+        )
+    prim_bonus = primary.main_effect
+    if assist is None:
+        return prim_bonus
+    if assist.slot != "Armor":
+        raise StatInputCompilerError(
+            f"Assist module {assist.name!r} is not an Armor module."
+        )
+    stone_pct = _assist_stone_percent(assist_level)
+    lab_level = labs.get("Assist Module Bonus - Armor")
+    if lab_level is None:
+        raise StatInputCompilerError(
+            "Missing Assist Module Bonus - Armor lab level in IDS."
+        )
+    labs = AssistLabLevels(
+        bonus_level=lab_level,
+        substat_level=0,
+    )
+    lab_pct = labs.bonus_percent
+    assist_bonus = assist.main_effect
+    assist_multiplier = ((assist_bonus - 1.0) * (1.0 + stone_pct + lab_pct) * 0.01) + 1.0
+    return prim_bonus * assist_multiplier
+
+
+def _assist_stone_percent(level: int) -> float:
+    table_path = resolve_table_path("assist_stone_levels")
+    if not table_path.exists():
+        raise StatInputCompilerError(
+            f"Missing assist stone table: {table_path}"
+        )
+    with table_path.open("r", encoding="utf-8") as handle:
+        header = handle.readline()
+        if not header:
+            raise StatInputCompilerError("Assist stone table is empty.")
+        for line in handle:
+            parts = [cell.strip() for cell in line.split(",")]
+            if len(parts) < 2:
+                continue
+            if int(float(parts[0])) == level:
+                return float(parts[1])
+    raise StatInputCompilerError(
+        f"Assist stone table missing level {level}."
+    )
+
+
+def _apply_card_effects(
+    accumulator: "_StatAccumulator",
+    ids_snapshot: AccountSnapshot,
+    *,
+    module_context: str,
+    selected_cards: Iterable[str] | None,
+) -> None:
+    from tower_sim.registry.naming_contract import resolve_named_entity
+    equipped = list(
+        selected_cards or _resolve_equipped_cards(ids_snapshot, module_context)
+    )
+    for card_name in equipped:
+        effect = _resolve_card_effect(card_name, ids_snapshot)
+        if effect.card == "Health":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Health card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_hp", effect.value, "cards:health")
+        elif effect.card == "Health Regen":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Health Regen card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_regen", effect.value, "cards:health_regen")
+        elif effect.card == "Damage":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Damage card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_damage", effect.value, "cards:damage")
+        elif effect.card == "Berserker":
+            # Simplified deterministic modeling per product direction: cap to x8 damage while equipped.
+            accumulator.multiply("tower_damage", 8.0, "cards:berserker")
+        elif effect.card == "Ultimate Crit":
+            if effect.unit != "percent":
+                raise StatInputCompilerError(
+                    f"Ultimate Crit card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_damage", 1.0 + effect.value, "cards:ultimate_crit")
+        elif effect.card == "Attack Speed":
+            if effect.unit == "percent":
+                multiplier = 1.0 + effect.value
+            elif effect.unit == "mult":
+                multiplier = effect.value
+            else:
+                raise StatInputCompilerError(
+                    f"Attack Speed card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("tower_attack_speed", multiplier, "cards:attack_speed")
+        elif effect.card == "Critical Chance":
+            if effect.unit != "percent":
+                raise StatInputCompilerError(
+                    f"Critical Chance card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add("tower_crit_chance", effect.value, "cards:critical_chance")
+        elif effect.card == "Range":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Range card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("workshop_range_meters", effect.value, "cards:range")
+        elif effect.card == "Cash":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Cash card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("workshop_cash_bonus", effect.value, "cards:cash")
+        elif effect.card == "Coins":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Coins card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply(
+                "workshop_coins_per_kill_bonus", effect.value, "cards:coins"
+            )
+        elif effect.card == "Free Upgrades":
+            if effect.unit != "percent":
+                raise StatInputCompilerError(
+                    f"Free Upgrades card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply(
+                "workshop_free_upgrades", 1.0 + effect.value, "cards:free_upgrades"
+            )
+        elif effect.card == "Recovery Package Chance":
+            if effect.unit != "percent":
+                raise StatInputCompilerError(
+                    f"Recovery Package Chance card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add(
+                "workshop_package_chance", effect.value, "cards:recovery_package_chance"
+            )
+        elif effect.card == "Extra Defense":
+            if effect.unit != "percent":
+                raise StatInputCompilerError(
+                    f"Extra Defense card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.add("def_pct", effect.value, "cards:extra_defense")
+        elif effect.card == "Fortress":
+            if effect.unit != "mult":
+                raise StatInputCompilerError(
+                    f"Fortress card has unsupported unit {effect.unit!r}."
+                )
+            accumulator.multiply("defense_absolute", effect.value, "cards:fortress")
+        else:
+            try:
+                card_canonical = resolve_named_entity("cards", effect.card)
+            except KeyError as exc:
+                raise StatInputCompilerError(
+                    f"Unsupported card for survivability pipeline: {card_name!r}."
+                ) from exc
+            if card_canonical == "CARD_PLASMA_CANNON":
+                if effect.unit != "percent":
+                    raise StatInputCompilerError(
+                        f"Plasma Cannon card has unsupported unit {effect.unit!r}."
+                    )
+                accumulator.add(
+                    "plasma_cannon_damage_mult", effect.value, "cards:plasma_cannon"
+                )
+            elif card_canonical in _CARD_NOOP_CANONICALS:
+                # These cards do not currently map to canonical survivability stat inputs.
+                # Their mechanics are handled in other pipeline surfaces (spawn/wave pacing,
+                # shield event handling, etc.) and are therefore a deterministic no-op here.
+                continue
+            else:
+                raise StatInputCompilerError(
+                    f"Unsupported card for survivability pipeline: {card_name!r}."
+                )
+
+
+def _resolve_equipped_cards(
+    ids_snapshot: AccountSnapshot, module_context: str
+) -> List[str]:
+    if module_context not in ids_snapshot.card_presets:
+        raise StatInputCompilerError(
+            f"Missing card preset {module_context!r} in IDS snapshot."
+        )
+    return list(ids_snapshot.card_presets[module_context])
+
+
+def _resolve_card_effect(
+    card_name: str, ids_snapshot: AccountSnapshot
+) -> CardEffect:
+    from tower_sim.registry.naming_contract import resolve_named_entity
+    entry = ids_snapshot.cards_inventory.get(card_name)
+    if entry is None or entry.level is None:
+        raise StatInputCompilerError(
+            f"Missing card {card_name!r} or card level in IDS."
+        )
+    try:
+        return get_card_effect(card_name, entry.level)
+    except KeyError as exc:
+        try:
+            canonical = resolve_named_entity("cards", card_name)
+        except KeyError:
+            raise exc
+        if canonical in _CARD_NOOP_CANONICALS:
+            return CardEffect(
+                card=card_name,
+                rarity="Unknown",
+                level=int(entry.level),
+                value=0.0,
+                value_raw="0",
+                unit="flat",
+            )
+        raise exc
+
+
+class _StatAccumulator:
+    def __init__(self) -> None:
+        self._stats: Dict[str, Dict[str, float]] = {}
+        self._module_ledger: List[Dict[str, object]] = []
+
+    def add(self, stat_id: str, delta: float, provenance: str) -> None:
+        entry = self._stats.setdefault(stat_id, {"delta": 0.0, "mult": 1.0})
+        entry["delta"] += float(delta)
+        entry["provenance"] = provenance
+
+    def multiply(self, stat_id: str, multiplier: float, provenance: str) -> None:
+        entry = self._stats.setdefault(stat_id, {"delta": 0.0, "mult": 1.0})
+        entry["mult"] *= float(multiplier)
+        entry["provenance"] = provenance
+
+
+    def record_module_contribution(
+        self,
+        *,
+        slot: str,
+        placement: str,
+        module_name: str,
+        layer: str,
+        target: str,
+        value: float,
+        kind: str,
+    ) -> None:
+        self._module_ledger.append({
+            "slot": slot,
+            "placement": placement,
+            "module": module_name,
+            "layer": layer,
+            "target": target,
+            "kind": kind,
+            "value": float(value),
+        })
+
+    def module_contribution_ledger(self) -> List[Dict[str, object]]:
+        return list(self._module_ledger)
+
+    def to_stat_inputs(self) -> List[StatInput]:
+        inputs: List[StatInput] = []
+        for stat_id, entry in self._stats.items():
+            delta = entry["delta"]
+            mult = entry["mult"]
+            inputs.append(
+                StatInput(
+                    stat_id=stat_id,
+                    phase=Phase.START_OF_RUN,
+                    loadout_delta=delta if delta != 0.0 else None,
+                    enhancement_multiplier=mult if mult != 1.0 else None,
+                    provenance=entry.get("provenance"),
+                )
+            )
+        return inputs
+
+
+def _parse_optional_int(value: str) -> Optional[int]:
+    candidate = value.strip()
+    if candidate == "":
+        return None
+    return int(float(candidate))
+
+
+def _parse_rarity(value: str) -> Optional[Rarity]:
+    candidate = value.strip()
+    if candidate == "":
+        return None
+    core = candidate.split()[0].replace("+", "")
+    for rarity in Rarity:
+        if rarity.value.lower() == core.lower():
+            return rarity
+    raise StatInputCompilerError(f"Unknown rarity {value!r} in IDS module data.")
+
+
+def _cap_rarity(current: Rarity, cap: Rarity) -> Rarity:
+    order = [Rarity.EPIC, Rarity.LEGENDARY, Rarity.MYTHIC, Rarity.ANCESTRAL]
+    if current not in order or cap not in order:
+        return current
+    return current if order.index(current) <= order.index(cap) else cap
+
+
+def _normalize_substat_name(name: str) -> str:
+    mapping = {
+        "Critical Factor": "Crit Factor",
+        "MultiShot Chance": "Multishot Chance",
+        "MultiShot Targets": "Multishot Targets",
+        "Defense %": "Defense",
+        "Thorn Damage": "Thorns Damage",
+        "Package Chance": "Recovery Package Chance",
+    }
+    return mapping.get(name, name)
+
+
+
+
 def _uw_canonical_aliases() -> Dict[str, str]:
     aliases: Dict[str, str] = {}
     for track_specs in _UW_TRACK_SPECS.values():
@@ -373,6 +1257,71 @@ def _uw_canonical_aliases() -> Dict[str, str]:
 
 
 _UW_CANONICAL_ALIASES: Dict[str, str] = _uw_canonical_aliases()
+
+
+
+
+def compile_baseline_loadout_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+    *,
+    module_context: str = "Testing",
+    module_overrides: Optional[Dict[str, Dict[str, Optional[str]]]] = None,
+    selected_cards: Optional[Iterable[str]] = None,
+    include_cards: bool = True,
+    include_modules: bool = True,
+    allow_provisional: bool = True,
+) -> CompiledBaselineLoadout:
+    """Compile canonical baseline_loadout stat inputs."""
+    accumulator = _StatAccumulator()
+    layer_gaps: List[str] = []
+
+    if include_cards:
+        _apply_card_effects(
+            accumulator,
+            ids_snapshot,
+            module_context=module_context,
+            selected_cards=selected_cards,
+        )
+
+    if include_modules:
+        module_blocks = _parse_module_blocks(ids_snapshot)
+        for block in module_blocks.values():
+            if module_context not in block.loadout_by_context:
+                continue
+            loadout = block.loadout_by_context[module_context]
+            overrides = (module_overrides or {}).get(loadout.slot, {})
+            primary_name = overrides.get("primary", loadout.primary)
+            assist_name = overrides.get("assist", loadout.assist)
+            assist_enabled = loadout.assist_enabled
+            assist_level = loadout.assist_stone_level
+            assist_cap = loadout.assist_cap_rarity
+            allocation = ids_snapshot.allocation_levels.get(loadout.slot)
+            if allocation is not None:
+                assist_level = allocation.assist_level
+
+            primary = _resolve_module(primary_name, loadout.slot, block.inventory) if primary_name else None
+            assist = _resolve_module(assist_name, loadout.slot, block.inventory) if assist_name else None
+
+            layer_gaps.extend(
+                _apply_module_effects(
+                    accumulator,
+                    primary=primary,
+                    assist=assist,
+                    assist_enabled=assist_enabled,
+                    assist_level=assist_level,
+                    assist_cap=assist_cap,
+                    ids_snapshot=ids_snapshot,
+                    allow_provisional=allow_provisional,
+                    slot=loadout.slot,
+                )
+            )
+
+    return CompiledBaselineLoadout(
+        stat_inputs=accumulator.to_stat_inputs(),
+        missing=[],
+        module_contribution_ledger=accumulator.module_contribution_ledger(),
+        layer_gaps=layer_gaps,
+    )
 
 
 def compile_full_stat_inputs(
@@ -1255,7 +2204,7 @@ def _uw_provenance(spec: UWTrackSpec) -> str:
     return "uw_section:_IDS.csv"
 
 
-__all__ = ["CompiledStatInputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
+__all__ = ["CompiledBaselineLoadout", "CompiledStatInputs", "compile_baseline_loadout_stat_inputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
 
 
 def compile_workshop_values_at_wave(

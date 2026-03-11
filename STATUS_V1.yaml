@@ -1,0 +1,15 @@
+checkpoint: A
+completed:
+  - narrowed canonical baseline_loadout extraction to static card/module helper stack in stat_input_compiler.py
+  - kept survivability pipeline as compatibility consumer-only for baseline_loadout assembly
+  - strengthened numeric truth checks for card-only, module-only, and combined baseline_loadout outputs with contributor reasoning comments
+files_changed:
+  - tower_sim/engines/stat_input_compiler.py
+  - tests/test_stat_input_compiler.py
+tests_run:
+  - "pytest -q tests/test_stat_input_compiler.py tests/test_survivability_pipeline.py tests/test_combat_stat_derivation.py tests/test_stat_pipeline.py"
+outstanding_risks:
+  - survivability_pipeline still contains legacy duplicate helper definitions not on canonical path; safe cleanup remains
+  - offense-side edamage_pipeline static ownership remains separate and is not yet demoted
+  - CODEX_HANDOFF_V1_FULL.md was not present in repository; no deletion action was possible
+next_checkpoint: "Remove duplicated legacy loadout helper definitions from survivability_pipeline after callsite audit, then continue offense-side ownership demotion."
