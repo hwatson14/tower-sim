@@ -138,13 +138,13 @@ def test_wiring_health_check_respects_observed_vs_declared_threshold(tmp_path: P
                 "required_max_wave_stat_input_ids": ["tower_hp"],
                 "status_lists": {
                     "tower_hp": {
-                        "wired_up": ["lab", "card"],
+                        "wired_up": ["card"],
                         "not_expected_to_be_wired_up": [],
                         "still_requires_wiring_up": [],
                     }
                 },
                 "observed_contributors_by_stat_input_id": {
-                    "tower_hp": ["card"],
+                    "tower_hp": ["card", "lab"],
                 },
             }
         ),
@@ -162,4 +162,4 @@ def test_wiring_health_check_respects_observed_vs_declared_threshold(tmp_path: P
         item.startswith("lineage_observed_vs_declared_mismatch_count")
         for item in result["violations"]
     )
-    assert "tower_hp: declared {card, lab} but observed {card}" in result["violations"]
+    assert "tower_hp: declared {card} but observed {card, lab}" in result["violations"]
