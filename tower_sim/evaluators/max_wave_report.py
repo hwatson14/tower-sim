@@ -4,15 +4,18 @@ from decimal import Decimal
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatEngine, StatInput
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
+from tower_sim.engines.stat_input_compiler import (
+    compile_baseline_account_stat_inputs,
+    compile_baseline_gem_respec_stat_inputs,
+    compile_full_stat_inputs,
+)
 from tower_sim.engines.survivability_pipeline import (
     SurvivabilityPipelineError,
     _build_inventory_summary,
-    _compile_base_stat_inputs,
     _compile_loadout_stat_inputs,
     _merge_stat_inputs,
 )
-from tower_sim.registry.stat_registry import default_registry
+from tower_sim.registry.stat_registry import Phase, default_registry
 from tower_sim.run.context import RunContext
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.util.account_snapshot import AccountSnapshot
@@ -167,45 +170,66 @@ def _safe_build_loadout_breakdown(
     errors: List[Dict[str, str]],
 ) -> Optional[Dict[str, Any]]:
     try:
-        base_inputs = _compile_base_stat_inputs(
-            ids_snapshot, allow_provisional=allow_provisional
-        )
+        compiled = _compile_full(ids_snapshot)
+        baseline_account = compile_baseline_account_stat_inputs(ids_snapshot)
+        baseline_gem_respec = compile_baseline_gem_respec_stat_inputs(ids_snapshot)
         loadout_inputs = _compile_loadout_stat_inputs(
             ids_snapshot,
             module_context=module_context,
             module_overrides=module_overrides,
             selected_cards=selected_cards,
+            include_modules=True,
+            include_cards=True,
             allow_provisional=allow_provisional,
         )
     except (SurvivabilityPipelineError, FileNotFoundError, ValueError, KeyError) as exc:
         _record_report_error("loadout_compilation", exc, missing, errors)
         return None
 
-    compiled = _compile_full(ids_snapshot)
     loadout_stat_inputs = (
         loadout_inputs.stat_inputs
         if hasattr(loadout_inputs, "stat_inputs")
         else loadout_inputs
     )
 
-    stat_inputs = _merge_stat_inputs(base_inputs, loadout_stat_inputs)
-    stat_inputs = _merge_stat_inputs(stat_inputs, compiled.stat_inputs)
     registry = default_registry()
-    stat_inputs, invalid_stat_inputs = _filter_known_stat_inputs(stat_inputs, registry)
+    account_inputs = list(baseline_account.stat_inputs)
+    gem_respec_inputs = list(baseline_gem_respec.stat_inputs)
+    loadout_merged_inputs = _merge_stat_inputs(gem_respec_inputs, loadout_stat_inputs)
+
+    account_inputs, account_invalid = _filter_known_stat_inputs(account_inputs, registry)
+    gem_respec_inputs, gem_respec_invalid = _filter_known_stat_inputs(gem_respec_inputs, registry)
+    loadout_merged_inputs, loadout_invalid = _filter_known_stat_inputs(loadout_merged_inputs, registry)
+    invalid_stat_inputs = sorted(set(account_invalid + gem_respec_invalid + loadout_invalid))
+
     engine = StatEngine(registry=registry)
     try:
-        engine_result = engine.build(stat_inputs)
+        baseline_account_result = engine.build(account_inputs)
+        baseline_gem_respec_result = engine.build(gem_respec_inputs)
+        baseline_loadout_result = engine.build(loadout_merged_inputs)
     except Exception as exc:  # noqa: BLE001
         _record_report_error("stat_engine", exc, missing, errors)
         return None
 
     return {
-        "base_stat_inputs": [_serialize_stat_input(row) for row in base_inputs],
+        "base_stat_inputs": [_serialize_stat_input(row) for row in gem_respec_inputs],
         "loadout_stat_inputs": [_serialize_stat_input(row) for row in loadout_stat_inputs],
         "compiled_stat_inputs": [_serialize_stat_input(row) for row in compiled.stat_inputs],
         "compiled_missing": compiled.missing,
+        "baseline_account_missing": baseline_account.missing,
+        "baseline_gem_respec_missing": baseline_gem_respec.missing,
         "invalid_stat_inputs": invalid_stat_inputs,
-        "statbook_rows": [_serialize_statbook_row(row) for row in engine_result.statbook.rows],
+        "statbook_rows": [_serialize_statbook_row(row) for row in baseline_loadout_result.statbook.rows],
+        "staged_static_values": {
+            "baseline_account": _serialize_start_of_run_values(baseline_account_result),
+            "baseline_gem_respec": _serialize_start_of_run_values(baseline_gem_respec_result),
+            "baseline_loadout": _serialize_start_of_run_values(baseline_loadout_result),
+        },
+        "staged_static_contributors": {
+            "baseline_account": [_serialize_stat_input(row) for row in account_inputs],
+            "baseline_gem_respec": [_serialize_stat_input(row) for row in gem_respec_inputs],
+            "baseline_loadout": [_serialize_stat_input(row) for row in loadout_stat_inputs],
+        },
     }
 
 
@@ -395,6 +419,13 @@ def _resolve_survivability_stats_for_report(
     if missing or combat_snapshot is None:
         return None, missing
     return dict(combat_snapshot.values), []
+
+
+def _serialize_start_of_run_values(engine_result) -> Dict[str, float]:
+    start = engine_result.run_stats.get(Phase.START_OF_RUN)
+    if start is None:
+        return {}
+    return {stat_id: float(value) for stat_id, value in start.values.items()}
 
 
 def _serialize_stat_input(stat_input: StatInput) -> Dict[str, Any]:

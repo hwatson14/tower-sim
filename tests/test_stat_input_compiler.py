@@ -5,6 +5,8 @@ from pathlib import Path
 import pytest
 
 from tower_sim.engines.stat_input_compiler import (
+    compile_baseline_account_stat_inputs,
+    compile_baseline_gem_respec_stat_inputs,
     compile_baseline_loadout_stat_inputs,
     compile_full_stat_inputs,
     compile_workshop_values_at_wave,
@@ -1113,3 +1115,54 @@ def test_compile_baseline_loadout_stat_inputs_combined_includes_cards_and_module
     assert any("cards:" in provenance for provenance in combined_provenances)
     assert any("modules:" in provenance for provenance in combined_provenances)
     assert combined.module_contribution_ledger == modules_only.module_contribution_ledger
+
+
+def test_compile_baseline_account_excludes_bots_cards_modules() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    compiled = compile_baseline_account_stat_inputs(ids_snapshot)
+    by_id = {row.stat_id for row in compiled.stat_inputs}
+
+    assert "tower_damage" in by_id
+    assert "bot_flame_damage" not in by_id
+    assert not any((row.provenance or "").startswith("cards:") for row in compiled.stat_inputs)
+    assert not any((row.provenance or "").startswith("modules:") for row in compiled.stat_inputs)
+
+
+def test_compile_baseline_gem_respec_includes_bots_excludes_cards_modules() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    compiled = compile_baseline_gem_respec_stat_inputs(ids_snapshot)
+    by_id = {row.stat_id for row in compiled.stat_inputs}
+
+    assert "tower_damage" in by_id
+    assert "bot_flame_damage" in by_id
+    assert not any((row.provenance or "").startswith("cards:") for row in compiled.stat_inputs)
+    assert not any((row.provenance or "").startswith("modules:") for row in compiled.stat_inputs)
+
+
+def test_compile_baseline_loadout_adds_cards_modules_on_top_of_baseline_gem_respec() -> None:
+    ids_snapshot = compile_account_snapshot(
+        parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv"))
+    )
+
+    baseline = compile_baseline_gem_respec_stat_inputs(ids_snapshot)
+    loadout = compile_baseline_loadout_stat_inputs(
+        ids_snapshot,
+        module_context="Testing",
+        include_cards=True,
+        include_modules=True,
+        allow_provisional=True,
+    )
+
+    baseline_ids = {row.stat_id for row in baseline.stat_inputs}
+    loadout_ids = {row.stat_id for row in loadout.stat_inputs}
+
+    assert "bot_flame_damage" in baseline_ids
+    assert "bot_flame_damage" not in loadout_ids
+    assert any((row.provenance or "").startswith("modules:") for row in loadout.stat_inputs)
+    assert any((row.loadout_delta is not None or row.enhancement_multiplier is not None) for row in loadout.stat_inputs)

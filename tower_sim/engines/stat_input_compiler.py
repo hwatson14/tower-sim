@@ -1324,11 +1324,36 @@ def compile_baseline_loadout_stat_inputs(
     )
 
 
+def compile_baseline_account_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+) -> CompiledStatInputs:
+    """Compile canonical baseline_account stat inputs (workshop + UW + relics)."""
+    return compile_full_stat_inputs(
+        ids_snapshot,
+        include_workshop=True,
+        include_uw=True,
+        include_bots=False,
+    )
+
+
+def compile_baseline_gem_respec_stat_inputs(
+    ids_snapshot: AccountSnapshot,
+) -> CompiledStatInputs:
+    """Compile canonical baseline_gem_respec stat inputs (baseline_account + bots)."""
+    baseline = compile_baseline_account_stat_inputs(ids_snapshot)
+    bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
+    return CompiledStatInputs(
+        stat_inputs=list(baseline.stat_inputs) + bot_inputs,
+        missing=sorted(set(baseline.missing + bot_missing)),
+    )
+
+
 def compile_full_stat_inputs(
     ids_snapshot: AccountSnapshot,
     *,
     include_workshop: bool = True,
     include_uw: bool = True,
+    include_bots: bool = True,
 ) -> CompiledStatInputs:
     stat_inputs: List[StatInput] = []
     missing: List[str] = []
@@ -1346,9 +1371,10 @@ def compile_full_stat_inputs(
     relic_inputs = _compile_relic_stat_inputs(ids_snapshot)
     stat_inputs.extend(relic_inputs)
 
-    bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
-    stat_inputs.extend(bot_inputs)
-    missing.extend(bot_missing)
+    if include_bots:
+        bot_inputs, bot_missing = _compile_bot_stat_inputs(ids_snapshot)
+        stat_inputs.extend(bot_inputs)
+        missing.extend(bot_missing)
 
     return CompiledStatInputs(
         stat_inputs=_with_required_start_of_run_defaults(stat_inputs),
@@ -2204,7 +2230,7 @@ def _uw_provenance(spec: UWTrackSpec) -> str:
     return "uw_section:_IDS.csv"
 
 
-__all__ = ["CompiledBaselineLoadout", "CompiledStatInputs", "compile_baseline_loadout_stat_inputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
+__all__ = ["CompiledBaselineLoadout", "CompiledStatInputs", "compile_baseline_account_stat_inputs", "compile_baseline_gem_respec_stat_inputs", "compile_baseline_loadout_stat_inputs", "compile_full_stat_inputs", "compile_workshop_values_at_wave"]
 
 
 def compile_workshop_values_at_wave(

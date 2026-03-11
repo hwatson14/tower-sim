@@ -117,3 +117,31 @@ def test_stat_engine_wave_state_derivation() -> None:
 
     phases = {row.phase for row in result.statbook.rows}
     assert Phase.AT_WAVE in phases
+
+
+def test_stat_engine_run_stats_aggregates_duplicate_base_and_multiplier_rows() -> None:
+    registry = default_registry()
+    engine = StatEngine(registry=registry)
+    inputs = [
+        StatInput(stat_id="tower_hp", phase=Phase.START_OF_RUN, base_value=100.0),
+        StatInput(stat_id="tower_hp", phase=Phase.START_OF_RUN, enhancement_multiplier=2.0),
+    ]
+
+    result = engine.build(inputs)
+
+    assert len([row for row in result.statbook.rows if row.stat_id == "tower_hp"]) == 2
+    assert result.run_stats[Phase.START_OF_RUN].values["tower_hp"] == pytest.approx(200.0)
+
+
+def test_stat_engine_run_stats_aggregates_duplicate_base_and_delta_rows() -> None:
+    registry = default_registry()
+    engine = StatEngine(registry=registry)
+    inputs = [
+        StatInput(stat_id="def_pct", phase=Phase.START_OF_RUN, base_value=0.55),
+        StatInput(stat_id="def_pct", phase=Phase.START_OF_RUN, loadout_delta=0.04),
+    ]
+
+    result = engine.build(inputs)
+
+    assert len([row for row in result.statbook.rows if row.stat_id == "def_pct"]) == 2
+    assert result.run_stats[Phase.START_OF_RUN].values["def_pct"] == pytest.approx(0.59)

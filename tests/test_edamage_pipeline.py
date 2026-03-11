@@ -1,32 +1,14 @@
 from __future__ import annotations
 
-from tower_sim.engines.edamage_pipeline import (
-    CardConfig,
-    EDamageInputs,
-    ModuleSubstatSelection,
-    PerkConfig,
-    compute_edamage_outputs,
-    lookup_lab_multiplier,
-)
+from tower_sim.engines.edamage_pipeline import EDamageInputError, EDamageInputs, compute_edamage_outputs, inputs_from_canonical_values
 
 
 def test_edamage_baseline_outputs() -> None:
     inputs = EDamageInputs(
-        base_damage=10.0,
-        base_crit_factor=2.0,
-        attack_speed_ws_level=0.0,
-        attack_speed_wsp_level=0.0,
-        attack_speed_lab_level=0.0,
-        crit_chance_ws_level=0.0,
-        damage_lab_level=0.0,
-        damage_ws_plus_multiplier=1.0,
-        relic_attack_speed_bonus=0.0,
-        relic_crit_chance_bonus=0.0,
-        vault_attack_speed_bonus=0.0,
-        vault_crit_chance_bonus=0.0,
-        card_config=CardConfig(),
-        perk_config=PerkConfig(picks={}, standard_perk_bonus=0.0),
-        module_substats=(),
+        tower_damage=10.0,
+        tower_attack_speed=1.0,
+        tower_crit_chance=0.0,
+        tower_crit_factor=2.0,
         being_annihilator_stacks=0.0,
         super_crit_chance=0.0,
         super_crit_mult=0.0,
@@ -48,30 +30,10 @@ def test_edamage_baseline_outputs() -> None:
 
 def test_edamage_with_cards_perks_and_substats() -> None:
     inputs = EDamageInputs(
-        base_damage=10.0,
-        base_crit_factor=2.0,
-        attack_speed_ws_level=0.0,
-        attack_speed_wsp_level=0.0,
-        attack_speed_lab_level=0.0,
-        crit_chance_ws_level=0.0,
-        damage_lab_level=0.0,
-        damage_ws_plus_multiplier=1.0,
-        relic_attack_speed_bonus=0.0,
-        relic_crit_chance_bonus=0.0,
-        vault_attack_speed_bonus=0.0,
-        vault_crit_chance_bonus=0.0,
-        card_config=CardConfig(
-            damage_level=1,
-            attack_speed_level=1,
-        ),
-        perk_config=PerkConfig(picks={"x1.15 Damage": 1}, standard_perk_bonus=0.0),
-        module_substats=(
-            ModuleSubstatSelection(
-                slot="Cannon",
-                substat="Attack Speed",
-                rarity="Common",
-            ),
-        ),
+        tower_damage=17.25,
+        tower_attack_speed=0.9774597775301548,
+        tower_crit_chance=0.0,
+        tower_crit_factor=2.0,
         being_annihilator_stacks=0.0,
         super_crit_chance=0.0,
         super_crit_mult=0.0,
@@ -79,11 +41,15 @@ def test_edamage_with_cards_perks_and_substats() -> None:
     outputs = compute_edamage_outputs(inputs)
 
     expected_attack_speed = 0.9774597775301548
-    expected_damage = 10.0 * 1.5 * 1.15
+    expected_damage = 17.25
 
     assert outputs.attack_speed == expected_attack_speed
     assert outputs.tower_damage == expected_damage
 
-
-def test_lookup_lab_multiplier_health() -> None:
-    assert lookup_lab_multiplier("Health", 1) == 1.03
+def test_inputs_from_canonical_values_missing_stat_errors() -> None:
+    try:
+        inputs_from_canonical_values({"tower_damage": 10.0})
+    except EDamageInputError as exc:
+        assert "Missing canonical edamage stat values" in str(exc)
+    else:
+        raise AssertionError("Expected missing canonical stat error")

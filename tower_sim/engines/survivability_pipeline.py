@@ -334,9 +334,7 @@ def _merge_stat_inputs(
     loadout_inputs: Iterable[StatInput],
 ) -> List[StatInput]:
     merged: Dict[tuple[str, Phase], StatInput] = {}
-    for stat_input in base_inputs:
-        merged[(stat_input.stat_id, stat_input.phase)] = stat_input
-    for stat_input in loadout_inputs:
+    for stat_input in list(base_inputs) + list(loadout_inputs):
         key = (stat_input.stat_id, stat_input.phase)
         if key not in merged:
             merged[key] = stat_input
@@ -345,14 +343,15 @@ def _merge_stat_inputs(
         merged[key] = StatInput(
             stat_id=base.stat_id,
             phase=base.phase,
-            base_value=base.base_value,
+            base_value=_sum_optional(base.base_value, stat_input.base_value),
             loadout_delta=_sum_optional(base.loadout_delta, stat_input.loadout_delta),
             enhancement_multiplier=_mul_optional(
                 base.enhancement_multiplier, stat_input.enhancement_multiplier
             ),
-            tier_rule_delta=base.tier_rule_delta or stat_input.tier_rule_delta,
-            tier_rule_multiplier=base.tier_rule_multiplier
-            or stat_input.tier_rule_multiplier,
+            tier_rule_delta=_sum_optional(base.tier_rule_delta, stat_input.tier_rule_delta),
+            tier_rule_multiplier=_mul_optional(
+                base.tier_rule_multiplier, stat_input.tier_rule_multiplier
+            ),
             derived_value=base.derived_value or stat_input.derived_value,
             provenance=base.provenance or stat_input.provenance,
         )
