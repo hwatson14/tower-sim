@@ -9,11 +9,12 @@ from tower_sim.loaders.table_paths import resolve_table_path
 from typing import Dict, Iterable, List, Optional, Tuple
 
 from tower_sim.engines.stat_engine import StatInput
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs, compile_workshop_values_at_wave
-from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
-from tower_sim.engines.survivability_pipeline import (
-    compile_survivability_loadout_stat_inputs_with_diagnostics,
+from tower_sim.engines.stat_input_compiler import (
+    compile_baseline_loadout_stat_inputs,
+    compile_full_stat_inputs,
+    compile_workshop_values_at_wave,
 )
+from tower_sim.engines.stat_snapshots import AtWaveSnapshot, StatSnapshotError, build_at_wave_snapshot
 from tower_sim.loaders.perk_timeline_loader import apply_perk_timeline_to_inputs
 from tower_sim.loaders.bc_heat_loader import HeatDataError, load_tournament_heat_table
 from tower_sim.loaders.account_snapshot_compiler import resolve_loadout
@@ -34,7 +35,7 @@ from tower_sim.engines.wave_engine import RunWaveState, SkipRamp, make_wave_stat
 from tower_sim.loaders.wiki.module_rules import apply_hard_cap
 
 _compile_full = compile_full_stat_inputs
-_compile_survivability_loadout = compile_survivability_loadout_stat_inputs_with_diagnostics
+_compile_survivability_loadout = compile_baseline_loadout_stat_inputs
 
 
 @dataclass(frozen=True)
@@ -149,6 +150,7 @@ def build_canonical_stat_inputs(
     loadout_inputs: List[StatInput] = []
     loadout_missing: List[str] = []
     module_contribution_ledger: List[Dict[str, object]] = []
+    layer_gaps: List[str] = []
     if not preset_resolution_errors:
         try:
             loadout_inputs, skipped_cards, module_contribution_ledger, layer_gaps = _compile_survivability_loadout_inputs_resilient(
@@ -159,7 +161,7 @@ def build_canonical_stat_inputs(
             loadout_missing.extend(skipped_cards)
             loadout_missing.extend(layer_gaps)
         except Exception as exc:  # noqa: BLE001
-            loadout_missing.append(f"survivability_loadout:{exc}")
+            loadout_missing.append(f"baseline_loadout:{exc}")
 
     strict_core_stat_overrides = not bool(
         getattr(problem_spec.scenario, "allow_core_stat_overrides", False)
@@ -384,6 +386,8 @@ def _rebase_wall_stats_from_tower(stat_inputs: List[StatInput]) -> List[StatInpu
     return rebased
 
 
+
+
 _UNSUPPORTED_CARD_RE = re.compile(r"Unsupported card for survivability pipeline: '([^']+)'")
 _UNKNOWN_CARD_RE = re.compile(r"Unknown card: '([^']+)'")
 
@@ -403,18 +407,15 @@ def _compile_survivability_loadout_inputs_resilient(
             }
             if selected_cards is not None:
                 kwargs["selected_cards"] = selected_cards
-            raw_result = _compile_survivability_loadout(
-                ids_snapshot,
-                **kwargs,
-            )
+            raw_result = _compile_survivability_loadout(ids_snapshot, **kwargs)
             if hasattr(raw_result, "stat_inputs"):
                 return (
-                    raw_result.stat_inputs,
-                    skipped,
+                    list(raw_result.stat_inputs),
+                    list(getattr(raw_result, "missing", [])) + skipped,
                     list(getattr(raw_result, "module_contribution_ledger", [])),
                     list(getattr(raw_result, "layer_gaps", [])),
                 )
-            return raw_result, skipped, [], []
+            return list(raw_result), skipped, [], []
         except Exception as exc:  # noqa: BLE001
             message = str(exc)
             match = _UNSUPPORTED_CARD_RE.search(message)

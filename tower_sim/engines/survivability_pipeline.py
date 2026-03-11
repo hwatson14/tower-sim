@@ -14,7 +14,7 @@ from tower_sim.engines.combat.boss_survivability import (
     resolve_boss_fight,
 )
 from tower_sim.engines.stat_engine import StatEngine, StatInput
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
+from tower_sim.engines.stat_input_compiler import compile_baseline_loadout_stat_inputs, compile_full_stat_inputs
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, build_at_wave_snapshot
 from tower_sim.engines.tier_rules import TierRulesResult, build_tier_rules
 from tower_sim.engines.wave_engine import SkipRamp, make_wave_state
@@ -225,6 +225,8 @@ def build_survivability_report(
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
+        include_modules=True,
+        include_cards=True,
         allow_provisional=allow_provisional,
     )
     if loadout_result.layer_gaps:
@@ -716,59 +718,23 @@ def _compile_loadout_stat_inputs(
     module_context: str,
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None,
     selected_cards: Iterable[str] | None,
+    include_modules: bool,
+    include_cards: bool,
     allow_provisional: bool,
 ) -> LoadoutCompileResult:
-    accumulator = _StatAccumulator()
-    layer_gaps: List[str] = []
-    module_blocks = _parse_module_blocks(ids_snapshot)
-    for block in module_blocks.values():
-        if module_context not in block.loadout_by_context:
-            continue
-        loadout = block.loadout_by_context[module_context]
-        overrides = (module_overrides or {}).get(loadout.slot, {})
-        primary_name = overrides.get("primary", loadout.primary)
-        assist_name = overrides.get("assist", loadout.assist)
-        assist_enabled = loadout.assist_enabled
-        assist_level = loadout.assist_stone_level
-        assist_cap = loadout.assist_cap_rarity
-        allocation = ids_snapshot.allocation_levels.get(loadout.slot)
-        if allocation is not None:
-            assist_level = allocation.assist_level
-
-        if primary_name:
-            primary = _resolve_module(primary_name, loadout.slot, block.inventory)
-        else:
-            primary = None
-        if assist_name:
-            assist = _resolve_module(assist_name, loadout.slot, block.inventory)
-        else:
-            assist = None
-
-        layer_gaps.extend(
-            _apply_module_effects(
-            accumulator,
-            primary=primary,
-            assist=assist,
-            assist_enabled=assist_enabled,
-            assist_level=assist_level,
-            assist_cap=assist_cap,
-            ids_snapshot=ids_snapshot,
-            allow_provisional=allow_provisional,
-            slot=loadout.slot,
-        )
-        )
-
-    _apply_card_effects(
-        accumulator,
+    compiled = compile_baseline_loadout_stat_inputs(
         ids_snapshot,
         module_context=module_context,
+        module_overrides=(dict(module_overrides) if module_overrides is not None else None),
         selected_cards=selected_cards,
+        include_cards=include_cards,
+        include_modules=include_modules,
+        allow_provisional=allow_provisional,
     )
-
     return LoadoutCompileResult(
-        stat_inputs=accumulator.to_stat_inputs(),
-        module_contribution_ledger=accumulator.module_contribution_ledger(),
-        layer_gaps=layer_gaps,
+        stat_inputs=list(compiled.stat_inputs),
+        module_contribution_ledger=list(compiled.module_contribution_ledger),
+        layer_gaps=list(compiled.layer_gaps),
     )
 
 
@@ -2000,6 +1966,8 @@ def compile_survivability_loadout_stat_inputs_with_diagnostics(
     module_context: str = "Testing",
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None = None,
     selected_cards: Iterable[str] | None = None,
+    include_modules: bool = True,
+    include_cards: bool = True,
     allow_provisional: bool = True,
 ) -> LoadoutCompileResult:
     return _compile_loadout_stat_inputs(
@@ -2007,6 +1975,8 @@ def compile_survivability_loadout_stat_inputs_with_diagnostics(
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
+        include_modules=include_modules,
+        include_cards=include_cards,
         allow_provisional=allow_provisional,
     )
 
@@ -2017,6 +1987,8 @@ def compile_survivability_loadout_stat_inputs(
     module_context: str = "Testing",
     module_overrides: Mapping[str, Mapping[str, Optional[str]]] | None = None,
     selected_cards: Iterable[str] | None = None,
+    include_modules: bool = True,
+    include_cards: bool = True,
     allow_provisional: bool = True,
 ) -> List[StatInput]:
     return compile_survivability_loadout_stat_inputs_with_diagnostics(
@@ -2024,6 +1996,8 @@ def compile_survivability_loadout_stat_inputs(
         module_context=module_context,
         module_overrides=module_overrides,
         selected_cards=selected_cards,
+        include_modules=include_modules,
+        include_cards=include_cards,
         allow_provisional=allow_provisional,
     ).stat_inputs
 
