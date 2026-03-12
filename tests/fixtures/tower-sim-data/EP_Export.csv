@@ -14,7 +14,7 @@ edmg,damage_per_meter,Damage / Meter,0.13030102799999999,0.13030102799999999
 edmg,multishot_chance,Multishot Chance,0.495,0.495
 edmg,multishot_targets,Multishot Targets,13,13
 edmg,rapid_fire_chance,Rapid Fire Chance,0.34,0.34
-edmg,rapid_fire_duration,Rapid Fire Duration,5.55,5.55
+edmg,rapid_fire_duration_seconds,Rapid Fire Duration,5.55,5.55
 edmg,bounce_shot_chance,Bounce Shot Chance,0.77,0.77
 edmg,bounce_shot_targets,Bounce Shot Targets,8,8
 edmg,super_crit_chance,Super Crit Chance,0.24900000000000003,0.24900000000000003
@@ -25,7 +25,7 @@ ehp,ehp,eHP,148.8 q,148.8 q
 ehp,health,Health,5.21 T,5.21 T
 ehp,health_regen,Health Regen,43.91 T,43.91 T
 ehp,defense_absolute,Defense Absolute,318.93 M,318.93 M
-ehp,defense_percent,Defense %,0.98,0.98
+ehp,defense_pct,Defense %,0.98,0.98
 ehp,wall_health,Wall Health,89.55 T,89.55 T
 ehp,wall_fortification,Wall Fortification,931.32 T,931.32 T
 ehp,wall_regen,Wall Regen,230.54 T,230.54 T

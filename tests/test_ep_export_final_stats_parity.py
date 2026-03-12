@@ -43,7 +43,7 @@ def test_verify_final_stats_returns_comparison_report() -> None:
     assert {entry["key"] for entry in report["decisive_lineage"]} == {
         "health",
         "health_regen",
-        "defense_percent",
+        "defense_pct",
         "wall_health",
         "wall_regen",
     }
@@ -61,7 +61,7 @@ def test_verify_final_stats_real_build_mode_exposes_contributor_trace() -> None:
     assert set(report["contributor_trace"]) == {
         "health",
         "health_regen",
-        "defense_percent",
+        "defense_pct",
         "wall_health",
         "wall_regen",
     }
@@ -79,7 +79,7 @@ def test_verify_final_stats_real_build_mode_surfaces_decisive_mismatches() -> No
     decisive = {
         "health",
         "health_regen",
-        "defense_percent",
+        "defense_pct",
         "wall_health",
         "wall_regen",
     }
@@ -97,7 +97,7 @@ def test_real_build_parity_trace_shows_no_perk_contributor_for_decisive_stats() 
     assert report["status"] == "mismatch"
     assert "perk" not in report["contributor_trace"]["health"]
     assert "perk" not in report["contributor_trace"]["health_regen"]
-    assert "perk" not in report["contributor_trace"]["defense_percent"]
+    assert "perk" not in report["contributor_trace"]["defense_pct"]
 
 
 def test_real_build_canonical_inputs_missing_wall_regen_ratio_prereq() -> None:

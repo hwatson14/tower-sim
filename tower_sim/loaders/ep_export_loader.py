@@ -39,6 +39,12 @@ _DEFAULT_VERIFICATION_PRESETS: Dict[str, str] = {
 # - ep_sheet:<Sheet!Cell>               (authoritative user-provided EP workbook cell formula)
 _ROWS_WITHOUT_DEFINITIVE_FORMULAS: set[tuple[str, str]] = set()
 
+
+_EP_KEY_ALIASES: Dict[str, str] = {
+    "defense_percent": "defense_pct",
+    "rapid_fire_duration": "rapid_fire_duration_seconds",
+}
+
 _EP_ROW_SOURCES: Dict[tuple[str, str], tuple[str, str]] = {
     ("edmg", "edmg"): ("ep_formula:ep_edamage_ef5", "ep_formula.eval.edmg"),
     ("edmg", "damage"): ("ep_formula:ep_edamage_cr5", "stat_inputs.workshop_damage"),
@@ -50,7 +56,7 @@ _EP_ROW_SOURCES: Dict[tuple[str, str], tuple[str, str]] = {
     ("edmg", "multishot_chance"): ("ep_mechanic:EPD_MSC", "stat_inputs.workshop_multishot_chance"),
     ("edmg", "multishot_targets"): ("ep_mechanic:EPD_MST", "stat_inputs.workshop_multishot_targets"),
     ("edmg", "rapid_fire_chance"): ("ep_mechanic:EPD_RFC", "stat_inputs.workshop_rapid_fire_chance"),
-    ("edmg", "rapid_fire_duration"): ("ep_mechanic:EPD_RFD", "stat_inputs.workshop_rapid_fire_duration"),
+    ("edmg", "rapid_fire_duration_seconds"): ("ep_mechanic:EPD_RFD", "stat_inputs.workshop_rapid_fire_duration"),
     ("edmg", "bounce_shot_chance"): ("ep_mechanic:EPD_BSC", "stat_inputs.workshop_bounce_shot_chance"),
     ("edmg", "bounce_shot_targets"): ("ep_mechanic:EPD_BST", "stat_inputs.workshop_bounce_shot_targets"),
     ("edmg", "super_crit_chance"): ("ep_formula:ep_edamage_dm5", "ep_formula.eval.super_crit_chance"),
@@ -61,7 +67,7 @@ _EP_ROW_SOURCES: Dict[tuple[str, str], tuple[str, str]] = {
     ("ehp", "health"): ("ep_mechanic:EPH_HEALTH", "ehp_eval.stats.tower_hp"),
     ("ehp", "health_regen"): ("ep_mechanic:EPH_REGEN", "ehp_eval.stats.tower_regen"),
     ("ehp", "defense_absolute"): ("ep_mechanic:EPH_DABS", "stat_inputs.workshop_defense_absolute"),
-    ("ehp", "defense_percent"): ("ep_mechanic:EPH_DEF_PCT", "ehp_eval.stats.def_pct"),
+    ("ehp", "defense_pct"): ("ep_mechanic:EPH_DEF_PCT", "ehp_eval.stats.def_pct"),
     ("ehp", "wall_health"): ("ep_mechanic:EPH_WALL_HEALTH", "ehp_eval.stats.wall_hp"),
     ("ehp", "wall_fortification"): ("ep_mechanic:EPH_ARMOR", "ep_formula.eval.wall_fortification"),
     ("ehp", "wall_regen"): ("ep_mechanic:EPH_WALL_REGEN", "ehp_eval.stats.wall_regen"),
@@ -169,7 +175,8 @@ def load_ep_export_dataset(
     rows = []
     for csv_row in reader:
         suite = csv_row["suite"]
-        key = csv_row["key"]
+        raw_key = csv_row["key"]
+        key = _EP_KEY_ALIASES.get(raw_key, raw_key)
         row_key = (suite, key)
         if suite not in verification_presets:
             raise ValueError(f"Suite {suite!r} missing preset mapping in manifest.")
