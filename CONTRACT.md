@@ -102,6 +102,14 @@ Top-level structure is machine-enforced by:
 - `IMPLEMENTATION_STATUS.md` — current implementation status/gap ledger.
 - `TESTING.md` / `CONTRIBUTING.md` — process details.
 
+### 7.2.1 Tiered truth artifacts
+- Tier-2 governance artifacts at repository root: `CODEX_HANDOFF_V1_FULL.md`, `STATUS_V1.yaml`, `REPO_MAP.yaml`.
+- Tier-1 truth artifacts at repository root are governed references, not runtime mechanics loaders:
+  - `towersim_static_ledger_latest.csv` — static contributor truth baseline.
+  - `towersim_static_ledger_naming_contract_v1_10.md` — schema and naming contract for the static ledger.
+  - `towersim_v1_handover_pack.md` — supporting migration/use guidance for the Tier-1 ledger baseline.
+- Presence of a family in the static ledger does **not** by itself imply that family is active V1 execution scope; v1 scope remains controlled by this contract and staged implementation status.
+
 
 ### 7.3 Architecture diagram (draft)
 - v35 architecture diagram is directional only and may be wrong/incomplete.

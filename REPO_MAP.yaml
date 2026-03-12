@@ -177,3 +177,4 @@ exceptions:
     - ".github/requirements-ci.txt"
     - ".github/workflows/render-contract-diagram.yml"
     - "contract_assets/architecture/v35_draft/README.md"
+    - "audit/reference/tower_sim_3_handover/**"

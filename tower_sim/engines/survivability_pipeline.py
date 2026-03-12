@@ -14,7 +14,11 @@ from tower_sim.engines.combat.boss_survivability import (
     resolve_boss_fight,
 )
 from tower_sim.engines.stat_engine import StatEngine, StatInput
-from tower_sim.engines.stat_input_compiler import compile_baseline_loadout_stat_inputs, compile_full_stat_inputs
+from tower_sim.engines.stat_input_compiler import (
+    compile_baseline_account_stat_inputs,
+    compile_baseline_gem_respec_stat_inputs,
+    compile_baseline_loadout_stat_inputs,
+)
 from tower_sim.engines.stat_snapshots import AtWaveSnapshot, build_at_wave_snapshot
 from tower_sim.engines.tier_rules import TierRulesResult, build_tier_rules
 from tower_sim.engines.wave_engine import SkipRamp, make_wave_state
@@ -38,9 +42,6 @@ from tower_sim.engines.tier_rule_apply import SUPPORTED_BC
 from tower_sim.libs.workshop_lib import load_workshop_tables, workshop_value
 from tower_sim.loaders.wiki.module_rules import max_active_substats_for_module_level
 from tower_sim.libs.labs_lib import load_labs_values
-
-
-_compile_full = compile_full_stat_inputs
 
 
 class SurvivabilityPipelineError(RuntimeError):
@@ -216,9 +217,8 @@ def build_survivability_report(
 ) -> Dict[str, object]:
     warnings: Dict[str, object] = {}
     inventory = _build_inventory_summary(ids_snapshot, module_context, module_overrides)
-    base_inputs = _compile_base_stat_inputs(
-        ids_snapshot, allow_provisional=allow_provisional
-    )
+    baseline_account = compile_baseline_account_stat_inputs(ids_snapshot)
+    baseline_gem_respec = compile_baseline_gem_respec_stat_inputs(ids_snapshot)
     loadout_result = _compile_loadout_stat_inputs(
         ids_snapshot,
         module_context=module_context,
@@ -233,16 +233,18 @@ def build_survivability_report(
     if loadout_result.module_contribution_ledger:
         warnings["module_contribution_ledger"] = loadout_result.module_contribution_ledger
 
-    compiled = _compile_full(ids_snapshot)
-    if compiled.missing:
+    if baseline_gem_respec.missing:
         if not allow_provisional:
             raise SurvivabilityPipelineError(
-                "Missing workshop/UW stat inputs: " + ", ".join(compiled.missing)
+                "Missing canonical baseline stat inputs: "
+                + ", ".join(baseline_gem_respec.missing)
             )
-        warnings["missing_stat_inputs"] = sorted(compiled.missing)
-    stat_inputs = _merge_stat_inputs(base_inputs, loadout_result.stat_inputs)
-    compiled_pruned = _prune_compiled_overlaps(base_inputs, compiled.stat_inputs)
-    stat_inputs = _merge_stat_inputs(stat_inputs, compiled_pruned)
+        warnings["missing_stat_inputs"] = sorted(set(baseline_gem_respec.missing))
+    base_inputs = list(baseline_account.stat_inputs)
+    stat_inputs = _merge_stat_inputs(
+        list(baseline_gem_respec.stat_inputs),
+        loadout_result.stat_inputs,
+    )
 
     registry = default_registry()
     engine = StatEngine(registry=registry)
@@ -1958,7 +1960,12 @@ def compile_survivability_base_stat_inputs(
     *,
     allow_provisional: bool = True,
 ) -> List[StatInput]:
-    return _compile_base_stat_inputs(ids_snapshot, allow_provisional=allow_provisional)
+    baseline = compile_baseline_gem_respec_stat_inputs(ids_snapshot)
+    if baseline.missing and not allow_provisional:
+        raise SurvivabilityPipelineError(
+            "Missing canonical baseline stat inputs: " + ", ".join(baseline.missing)
+        )
+    return list(baseline.stat_inputs)
 
 
 def compile_survivability_loadout_stat_inputs_with_diagnostics(

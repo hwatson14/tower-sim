@@ -27,7 +27,7 @@ from tower_sim.registry.stat_registry import Phase, default_registry
 _DECISIVE_EHP_KEYS: Dict[str, str] = {
     "health": "Health",
     "health_regen": "Health Regen",
-    "defense_percent": "Defense %",
+    "defense_pct": "Defense %",
     "wall_health": "Wall Health",
     "wall_regen": "Wall Regen",
 }
@@ -35,7 +35,7 @@ _DECISIVE_EHP_KEYS: Dict[str, str] = {
 _DECISIVE_EHP_PATHS: Dict[str, str] = {
     "health": "ehp_eval.stats.tower_hp",
     "health_regen": "ehp_eval.stats.tower_regen",
-    "defense_percent": "ehp_eval.stats.def_pct",
+    "defense_pct": "ehp_eval.stats.def_pct",
     "wall_health": "ehp_eval.stats.wall_hp",
     "wall_regen": "ehp_eval.stats.wall_regen",
 }
@@ -51,7 +51,7 @@ _SOURCE_REF_SURFACE_PREFIXES: Dict[str, tuple[str, ...]] = {
 _REQUIRED_DECISIVE_FAMILIES: Dict[str, tuple[str, ...]] = {
     "health": ("workshop", "card", "relic"),
     "health_regen": ("workshop", "card", "relic"),
-    "defense_percent": ("workshop", "card", "relic"),
+    "defense_pct": ("workshop", "card", "relic"),
     "wall_health": ("workshop",),
     "wall_regen": ("workshop",),
 }
