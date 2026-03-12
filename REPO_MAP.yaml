@@ -25,6 +25,8 @@ top_level:
     - pytest.ini
     - .gitignore
     - .gitmodules
+    - CODEX_HANDOFF_V1_FULL.md
+    - STATUS_V1.yaml
 
   forbidden_dirs:
     - docs
