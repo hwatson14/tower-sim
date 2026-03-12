@@ -1,14 +1,14 @@
 Oracle Outputs (Effective Paths),,,,
-EP id,1vN2aGpx2bOCZx3tF2QzlmmbGDAKsBhWiQ69gGXsTL2Q,,,
-EP Base URL,https://docs.google.com/spreadsheets/d/1vN2aGpx2bOCZx3tF2QzlmmbGDAKsBhWiQ69gGXsTL2Q,,,
+EP id,1Q8RYXr9nQPxjuIEXtlTzvR63MRb0nGoDoGnKqTpQX5c,,,
+EP Base URL,https://docs.google.com/spreadsheets/d/1Q8RYXr9nQPxjuIEXtlTzvR63MRb0nGoDoGnKqTpQX5c,,,
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,3.34 O,3.34 O
-edmg,damage,Damage,651.02 B,651.02 B
-edmg,attack_speed,Attack Speed,38.166026850000016,38.166026850000016
+edmg,edmg,eDMG,1.82 O,1.82 O
+edmg,damage,Damage,746.86 B,746.86 B
+edmg,attack_speed,Attack Speed,41.505253125,41.505253125
 edmg,crit_chance,Critical Chance,0.9700000000000001,0.9700000000000001
-edmg,crit_factor,Critical Factor,156.9792,156.9792
+edmg,crit_factor,Critical Factor,168.192,168.192
 edmg,range,Range,109.48863512309427,109.48863512309427
 edmg,damage_per_meter,Damage / Meter,0.13030102799999999,0.13030102799999999
 edmg,multishot_chance,Multishot Chance,0.495,0.495
@@ -20,18 +20,18 @@ edmg,bounce_shot_targets,Bounce Shot Targets,8,8
 edmg,super_crit_chance,Super Crit Chance,0.24900000000000003,0.24900000000000003
 edmg,super_crit_multiplier,Super Crit Multiplier,x35.66,x35.66
 edmg,max_rend_mult,Max Rend Mult,9.68,9.68
-edmg,recovery_package_chance,Recovery Package Chance,0.7799999999999999,0.7799999999999999
-ehp,ehp,eHP,148.8 q,148.8 q
-ehp,health,Health,5.21 T,5.21 T
-ehp,health_regen,Health Regen,43.91 T,43.91 T
+edmg,recovery_package_chance,Recovery Package Chance,0.7879999999999999,0.7879999999999999
+ehp,ehp,eHP,189.65 q,189.65 q
+ehp,health,Health,6.65 T,6.65 T
+ehp,health_regen,Health Regen,44.64 T,44.64 T
 ehp,defense_absolute,Defense Absolute,318.93 M,318.93 M
 ehp,defense_percent,Defense %,0.98,0.98
-ehp,wall_health,Wall Health,89.55 T,89.55 T
-ehp,wall_fortification,Wall Fortification,931.32 T,931.32 T
-ehp,wall_regen,Wall Regen,230.54 T,230.54 T
-ehp,max_recovery,Max Recovery,122.18 T,122.18 T
-eecon,cpk_average,Average CpK,46.99 M,46.99 M
-eecon,coins_per_kill_bonus,Coins / Kill Bonus,40.215136500000014,40.215136500000014
+ehp,wall_health,Wall Health,114.13 T,114.13 T
+ehp,wall_fortification,Wall Fortification,1.19 q,1.19 q
+ehp,wall_regen,Wall Regen,234.35 T,234.35 T
+ehp,max_recovery,Max Recovery,155.73 T,155.73 T
+eecon,cpk_average,Average CpK,61.74 M,61.74 M
+eecon,coins_per_kill_bonus,Coins / Kill Bonus,41.83896543750001,41.83896543750001
 eecon,free_attack_upgrade,Free Attack Upgrade,1.0773840000000001,1.0773840000000001
 eecon,free_defense_upgrade,Free Defense Upgrade,1.046892,1.046892
-eecon,free_utility_upgrade,Free Utility Upgrade,1.1875136000000002,1.1875136000000002
+eecon,free_utility_upgrade,Free Utility Upgrade,1.1828544000000003,1.1828544000000003
