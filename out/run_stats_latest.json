@@ -3,11 +3,11 @@
   "missing": [],
   "rows": [
     {
-      "end_of_run": null,
+      "end_of_run": "1.0",
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "missing:stat_input",
-      "start_of_run": null,
+      "provenance": "base:identity",
+      "start_of_run": "1.0",
       "stat_id": "death_ray_damage_mult"
     },
     {
@@ -35,27 +35,27 @@
       "stat_id": "ehls_pct"
     },
     {
-      "end_of_run": null,
+      "end_of_run": "1.0",
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "missing:stat_input",
-      "start_of_run": null,
+      "provenance": "base:identity",
+      "start_of_run": "1.0",
       "stat_id": "knockback_mult"
     },
     {
-      "end_of_run": null,
+      "end_of_run": "1.0",
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "missing:stat_input",
-      "start_of_run": null,
+      "provenance": "base:identity",
+      "start_of_run": "1.0",
       "stat_id": "orb_damage_mult"
     },
     {
-      "end_of_run": null,
+      "end_of_run": "0.0",
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "missing:stat_input",
-      "start_of_run": null,
+      "provenance": "base:cards:plasma_cannon",
+      "start_of_run": "0.0",
       "stat_id": "plasma_cannon_damage_mult"
     },
     {
@@ -595,19 +595,19 @@
       "stat_id": "uw_smart_missiles_quantity_next_cost"
     },
     {
-      "end_of_run": "38.0",
+      "end_of_run": "39.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "38.0",
+      "start_of_run": "39.0",
       "stat_id": "uw_spotlight_angle"
     },
     {
-      "end_of_run": "93.0",
+      "end_of_run": "104.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "93.0",
+      "start_of_run": "104.0",
       "stat_id": "uw_spotlight_angle_next_cost"
     },
     {
@@ -627,19 +627,19 @@
       "stat_id": "uw_spotlight_light_range_next_cost"
     },
     {
-      "end_of_run": "19.2",
+      "end_of_run": "20.599999999999998",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "19.2",
+      "start_of_run": "20.599999999999998",
       "stat_id": "uw_spotlight_multiplier"
     },
     {
-      "end_of_run": "95.0",
+      "end_of_run": "112.0",
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "uw_section:_IDS.csv",
-      "start_of_run": "95.0",
+      "start_of_run": "112.0",
       "stat_id": "uw_spotlight_multiplier_next_cost"
     },
     {

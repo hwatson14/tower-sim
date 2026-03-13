@@ -14,10 +14,10 @@
         "Range": 0
       },
       "Flame Bot": {
-        "Cooldown": 11,
+        "Cooldown": 14,
         "Damage": 0,
-        "Damage R.": 8,
-        "Range": 4
+        "Damage R.": 9,
+        "Range": 6
       },
       "Golden Bot": {
         "Bonus": 18,
@@ -43,7 +43,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "6.61 q"
+      "7 q"
     ],
     "rows": [
       [
@@ -188,9 +188,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.32",
-        "32",
-        "32",
+        "1.33",
+        "33",
+        "33",
         "",
         "",
         "",
@@ -224,7 +224,7 @@
         "",
         "",
         "",
-        "200"
+        "300"
       ],
       [
         "Enemy Level Skips +",
@@ -345,6 +345,27 @@
         "Cash Bonus",
         "1",
         "00 | 1.0x | Cost 0 ? | Next 100 ?"
+      ],
+      [
+        "Scout",
+        "",
+        "Cooldown",
+        "105",
+        "00 | 105s | Cost 0 ? | Next 1 ?"
+      ],
+      [
+        "",
+        "",
+        "Range Bonus",
+        "2",
+        "00 | 2.0x | Cost 0 ? | Next 10 ?"
+      ],
+      [
+        "false",
+        "Locked",
+        "Duration",
+        "5",
+        "00 | 5s | Cost 0 ? | Next 10 ?"
       ]
     ]
   },

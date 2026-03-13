@@ -1,6 +1,6 @@
 {
   "fail_closed": true,
-  "hash": "78406d3f5f4efc2b357e7cb118c3f199cea5ba2f88287ba57e2b5a07619843e7",
+  "hash": "c71a820f6c8182b6d3e31adf488cdd4483e52f1a7879221507a9b985afa04349",
   "missing": [
     "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
     "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
@@ -9,10 +9,10 @@
     "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
     "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
     "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
-    "lab_table_unmapped:Cannon Effect Bans:LAB_CANNON_EFFECT_BANS",
     "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
     "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
     "lab_table_unmapped:Cash Bonus:LAB_CASH_BONUS",
+    "lab_table_unmapped:Cash Mastery:LAB_CASH_MASTERY",
     "lab_table_unmapped:Chain Lightning Shock:LAB_CHAIN_LIGHTNING_SHOCK",
     "lab_table_unmapped:Chain Thunder:LAB_CHAIN_THUNDER",
     "lab_table_unmapped:Chrono Field Damage Reduction:LAB_CHRONO_FIELD_DAMAGE_REDUCTION",
@@ -28,8 +28,10 @@
     "lab_table_unmapped:Damage:LAB_DAMAGE",
     "lab_table_unmapped:Death Wave Cells Bonus:LAB_DEATH_WAVE_CELL_BONUS",
     "lab_table_unmapped:Death Wave Coin Bonus:LAB_DEATH_WAVE_COIN_BONUS",
+    "lab_table_unmapped:Death Wave Damage Amplifier:LAB_DEATH_WAVE_DAMAGE_AMPLIFIER",
     "lab_table_unmapped:Death Wave Health:LAB_DEATH_WAVE_HEALTH",
     "lab_table_unmapped:Defense Absolute:LAB_DEFENSE_ABSOLUTE",
+    "lab_table_unmapped:Double Death Ray:LAB_DOUBLE_DEATH_RAY",
     "lab_table_unmapped:Energy Shield Extra Hit:LAB_ENERGY_SHIELD_EXTRA_HIT",
     "lab_table_unmapped:Extra Black Hole:LAB_EXTRA_BLACK_HOLE",
     "lab_table_unmapped:Extra Extra Orbs:LAB_EXTRA_EXTRA_ORBS",
@@ -47,9 +49,11 @@
     "lab_table_unmapped:Interest:LAB_INTEREST",
     "lab_table_unmapped:Labs Coin Discount:LAB_LABS_COIN_DISCOUNT",
     "lab_table_unmapped:Labs Speed:LAB_LABS_SPEED",
+    "lab_table_unmapped:Land Mine Decay:LAB_LAND_MINE_DECAY",
     "lab_table_unmapped:Light Speed Shots:LAB_LIGHT_SPEED_SHOTS",
     "lab_table_unmapped:Lightning Amplifier - Scatter:LAB_LIGHTNING_AMPLIFIER_SCATTER",
     "lab_table_unmapped:Max Interest:LAB_MAX_INTEREST",
+    "lab_table_unmapped:Module Coin Cost:LAB_MODULE_COIN_COST",
     "lab_table_unmapped:Module Shards Cost:LAB_MODULE_SHARD_COSTS",
     "lab_table_unmapped:More Round Stats:LAB_MORE_ROUND_STATS",
     "lab_table_unmapped:Orb Boss Hit:LAB_ORB_BOSS_HIT",
@@ -59,6 +63,7 @@
     "lab_table_unmapped:Range:LAB_RANGE",
     "lab_table_unmapped:Rare Drop Chance:LAB_RARE_DROP_CHANCE",
     "lab_table_unmapped:Recharge Demon Mode:LAB_RECHARGE_DEMON_MODE",
+    "lab_table_unmapped:Recharge Nuke:LAB_RECHARGE_NUKE",
     "lab_table_unmapped:Recharge Second Wind:LAB_RECHARGE_SECOND_WIND",
     "lab_table_unmapped:Recovery Package Chance Mastery:LAB_RECOVERY_PACKAGE_CHANCE_MASTERY",
     "lab_table_unmapped:Reroll Daily Mission:LAB_REROLL_DAILY_MISSIONS",
@@ -67,6 +72,7 @@
     "lab_table_unmapped:Shatter Shards:LAB_SHATTER_SHARDS",
     "lab_table_unmapped:Shock Chance:LAB_SHOCK_CHANCE",
     "lab_table_unmapped:Shock Multiplier:LAB_SHOCK_MULTIPLIER",
+    "lab_table_unmapped:Shockwave Size:LAB_SHOCKWAVE_SIZE",
     "lab_table_unmapped:Spotlight Coin Bonus:LAB_SPOTLIGHT_COIN_BONUS",
     "lab_table_unmapped:Spotlight Missiles:LAB_SPOTLIGHT_MISSILES",
     "lab_table_unmapped:Standard Perks Bonus:LAB_STANDARD_PERKS_BONUS",
@@ -111,7 +117,7 @@
     {
       "base_value": 5.95,
       "derived_value": null,
-      "enhancement_multiplier": 2.5763999999999996,
+      "enhancement_multiplier": 2.8249999999999997,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
@@ -122,7 +128,7 @@
     {
       "base_value": 5.95,
       "derived_value": null,
-      "enhancement_multiplier": 2.5763999999999996,
+      "enhancement_multiplier": 2.8249999999999997,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "workshop_alias:Attack Speed->tower_attack_speed",
@@ -153,18 +159,18 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.23111565196292e+16,
+      "base_value": 16.2,
       "derived_value": null,
       "enhancement_multiplier": 1.6,
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "workshop_table:Critical Factor",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_critical_factor",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.23111565196292e+16,
+      "base_value": 16.2,
       "derived_value": null,
       "enhancement_multiplier": 1.6,
       "loadout_delta": null,
@@ -296,7 +302,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.085,
+      "base_value": 0.081,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -362,7 +368,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.5509999999999999,
+      "base_value": 0.495,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -439,7 +445,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 6.4,
+      "base_value": 6.08,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -483,7 +489,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 11.0,
+      "base_value": 14.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -494,7 +500,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.12,
+      "base_value": 0.3,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -505,12 +511,12 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 4.73062021252443e+16,
+      "base_value": 17.0,
       "derived_value": null,
       "enhancement_multiplier": 2.08,
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "workshop_table:Land Mine Damage",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_land_mine_damage",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
@@ -549,18 +555,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 1.54,
-      "derived_value": null,
-      "enhancement_multiplier": 3.1799999999999997,
-      "loadout_delta": null,
-      "phase": "start_of_run",
-      "provenance": "workshop_alias:Wall Health->wall_hp",
-      "stat_id": "wall_hp",
-      "tier_rule_delta": null,
-      "tier_rule_multiplier": null
-    },
-    {
-      "base_value": 2.51,
+      "base_value": 700.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -571,12 +566,12 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.10525742997761e+16,
+      "base_value": 2.49,
       "derived_value": null,
       "enhancement_multiplier": 1.44,
       "loadout_delta": null,
       "phase": "start_of_run",
-      "provenance": "workshop_table:Cash Bonus",
+      "provenance": "workshop_formula:DVT_WS_VALUE",
       "stat_id": "workshop_cash_bonus",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
@@ -593,9 +588,9 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 1.0149,
+      "base_value": 2.49,
       "derived_value": null,
-      "enhancement_multiplier": 1.32,
+      "enhancement_multiplier": 1.33,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "workshop_formula:DVT_WS_VALUE",
@@ -659,7 +654,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 3.1,
+      "base_value": 1.3399999999999999,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -692,7 +687,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.185,
+      "base_value": 0.165,
       "derived_value": null,
       "enhancement_multiplier": 1.15,
       "loadout_delta": null,
@@ -714,7 +709,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.18,
+      "base_value": 0.16,
       "derived_value": null,
       "enhancement_multiplier": 1.15,
       "loadout_delta": null,
@@ -1946,7 +1941,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 19.2,
+      "base_value": 20.599999999999998,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1957,7 +1952,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 19.2,
+      "base_value": 20.599999999999998,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1968,7 +1963,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 95.0,
+      "base_value": 112.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1979,7 +1974,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 95.0,
+      "base_value": 112.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -1990,7 +1985,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 38.0,
+      "base_value": 39.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2001,7 +1996,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 38.0,
+      "base_value": 39.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2012,7 +2007,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 93.0,
+      "base_value": 104.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2023,7 +2018,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 93.0,
+      "base_value": 104.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2102,7 +2097,7 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 1.39,
+      "enhancement_multiplier": 1.51,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "relics:health",
@@ -2113,7 +2108,7 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 1.21,
+      "enhancement_multiplier": 1.23,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "relics:health_regen",
@@ -2201,7 +2196,7 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 1.4,
+      "enhancement_multiplier": 1.5,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "relics:crit_factor",
@@ -2256,7 +2251,7 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 1.09,
+      "enhancement_multiplier": 1.11,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "relics:recovery_amount",
@@ -2311,8 +2306,8 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 3.0,
-      "loadout_delta": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": -2.0,
       "phase": "start_of_run",
       "provenance": "relics:wall_rebuild",
       "stat_id": "wall_rebuild",
@@ -2386,7 +2381,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 42.0,
+      "base_value": 33.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2397,7 +2392,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 0.44,
+      "base_value": 0.47,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2408,7 +2403,7 @@
       "tier_rule_multiplier": null
     },
     {
-      "base_value": 46.0,
+      "base_value": 54.0,
       "derived_value": null,
       "enhancement_multiplier": null,
       "loadout_delta": null,
@@ -2547,6 +2542,50 @@
       "phase": "start_of_run",
       "provenance": "bot_table:Amplify Bot:Range",
       "stat_id": "bot_amplify_range",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 1.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "base:identity",
+      "stat_id": "orb_damage_mult",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 1.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "base:identity",
+      "stat_id": "death_ray_damage_mult",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 0.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "base:cards:plasma_cannon",
+      "stat_id": "plasma_cannon_damage_mult",
+      "tier_rule_delta": null,
+      "tier_rule_multiplier": null
+    },
+    {
+      "base_value": 1.0,
+      "derived_value": null,
+      "enhancement_multiplier": null,
+      "loadout_delta": null,
+      "phase": "start_of_run",
+      "provenance": "base:identity",
+      "stat_id": "knockback_mult",
       "tier_rule_delta": null,
       "tier_rule_multiplier": null
     }

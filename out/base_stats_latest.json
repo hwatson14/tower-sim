@@ -1,9 +1,9 @@
 [
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "1.0",
+    "final_value": "1.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "base:identity",
     "stat_id": "death_ray_damage_mult"
   },
   {
@@ -28,24 +28,24 @@
     "stat_id": "ehls_pct"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "1.0",
+    "final_value": "1.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "base:identity",
     "stat_id": "knockback_mult"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "1.0",
+    "final_value": "1.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "base:identity",
     "stat_id": "orb_damage_mult"
   },
   {
-    "base_value": null,
-    "final_value": null,
+    "base_value": "0.0",
+    "final_value": "0.0",
     "phase": "start_of_run",
-    "provenance": "missing:stat_input",
+    "provenance": "base:cards:plasma_cannon",
     "stat_id": "plasma_cannon_damage_mult"
   },
   {
@@ -518,15 +518,15 @@
     "stat_id": "uw_smart_missiles_quantity_next_cost"
   },
   {
-    "base_value": "38.0",
-    "final_value": "38.0",
+    "base_value": "39.0",
+    "final_value": "39.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_angle"
   },
   {
-    "base_value": "93.0",
-    "final_value": "93.0",
+    "base_value": "104.0",
+    "final_value": "104.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_angle_next_cost"
@@ -546,15 +546,15 @@
     "stat_id": "uw_spotlight_light_range_next_cost"
   },
   {
-    "base_value": "19.2",
-    "final_value": "19.2",
+    "base_value": "20.599999999999998",
+    "final_value": "20.599999999999998",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_multiplier"
   },
   {
-    "base_value": "95.0",
-    "final_value": "95.0",
+    "base_value": "112.0",
+    "final_value": "112.0",
     "phase": "start_of_run",
     "provenance": "uw_section:_IDS.csv",
     "stat_id": "uw_spotlight_multiplier_next_cost"

@@ -57,8 +57,8 @@
     },
     "Cash": {
       "level": 7,
-      "mastery_lab_level": 0,
-      "mastery_unlocked": false
+      "mastery_lab_level": 1,
+      "mastery_unlocked": true
     },
     "Coins": {
       "level": 7,
@@ -138,7 +138,7 @@
     "Intro Sprint": {
       "level": 7,
       "mastery_lab_level": 0,
-      "mastery_unlocked": false
+      "mastery_unlocked": true
     },
     "Land Mine Stun": {
       "level": 7,
@@ -162,7 +162,7 @@
     },
     "Recovery Package Chance": {
       "level": 7,
-      "mastery_lab_level": 1,
+      "mastery_lab_level": 3,
       "mastery_unlocked": true
     },
     "Second Wind": {
@@ -211,7 +211,7 @@
         "primary": "Primordial Collapse"
       },
       "Generator": {
-        "assist": "Pulsar Harvester",
+        "assist": "Black Hole Digestor",
         "primary": "Singularity Harness"
       }
     },
@@ -261,8 +261,8 @@
         "primary": "Being Annihilator"
       },
       "Core": {
-        "assist": null,
-        "primary": "Primordial Collapse"
+        "assist": "Om Chip",
+        "primary": "Dimension Core"
       },
       "Generator": {
         "assist": "Restorative Bonus",
@@ -271,16 +271,16 @@
     },
     "Tourney": {
       "Armor": {
-        "assist": "Sharp Fortitude",
-        "primary": "Orbital Augment"
+        "assist": "Anti-Cube Portal",
+        "primary": "Sharp Fortitude"
       },
       "Cannon": {
         "assist": null,
         "primary": "Amplifying Strike"
       },
       "Core": {
-        "assist": "Om Chip",
-        "primary": "Dimension Core"
+        "assist": "Dimension Core",
+        "primary": "Primordial Collapse"
       },
       "Generator": {
         "assist": "Galaxy Compressor",
@@ -290,10 +290,10 @@
   },
   "modules_inventory": {
     "Amplifying Strike": {
-      "level": 157,
+      "level": 164,
       "rarity": "Ancestral",
       "slot_type": "Cannon",
-      "stat": "7.88",
+      "stat": "9.04",
       "substats": [
         {
           "rarity": "Mythic",
@@ -328,10 +328,10 @@
       ]
     },
     "Anti-Cube Portal": {
-      "level": 154,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Armor",
-      "stat": "7.47",
+      "stat": "8.19",
       "substats": [
         {
           "rarity": "Legendary",
@@ -435,17 +435,17 @@
       "substats": []
     },
     "Astral Deliverance": {
-      "level": 157,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Cannon",
-      "stat": "7.83",
+      "stat": "8.19",
       "substats": []
     },
     "Being Annihilator": {
-      "level": 157,
+      "level": 164,
       "rarity": "Ancestral",
       "slot_type": "Cannon",
-      "stat": "7.88",
+      "stat": "9.04",
       "substats": [
         {
           "rarity": "Mythic",
@@ -500,10 +500,10 @@
       ]
     },
     "Death Penalty": {
-      "level": 157,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Cannon",
-      "stat": "7.83",
+      "stat": "8.19",
       "substats": [
         {
           "rarity": "Mythic",
@@ -532,10 +532,10 @@
       ]
     },
     "Dimension Core": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral",
       "slot_type": "Core",
-      "stat": "8.95",
+      "stat": "10.9",
       "substats": [
         {
           "rarity": "Mythic",
@@ -582,10 +582,10 @@
       ]
     },
     "Galaxy Compressor": {
-      "level": 150,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Generator",
-      "stat": "1.585",
+      "stat": "1.665",
       "substats": [
         {
           "rarity": "Legendary",
@@ -608,31 +608,31 @@
       ]
     },
     "Harmony Conductor": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral 5*",
       "slot_type": "Core",
-      "stat": "10.54",
+      "stat": "12.88",
       "substats": []
     },
     "Havoc Bringer": {
-      "level": 157,
+      "level": 164,
       "rarity": "Ancestral",
       "slot_type": "Cannon",
-      "stat": "7.88",
+      "stat": "9.04",
       "substats": []
     },
     "Magnetic Hook": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral",
       "slot_type": "Core",
-      "stat": "8.95",
+      "stat": "10.9",
       "substats": []
     },
     "Multiverse Nexus": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral 2*",
       "slot_type": "Core",
-      "stat": "9.586",
+      "stat": "11.692",
       "substats": [
         {
           "rarity": "Legendary",
@@ -692,10 +692,10 @@
       "substats": []
     },
     "Om Chip": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral",
       "slot_type": "Core",
-      "stat": "8.95",
+      "stat": "10.9",
       "substats": [
         {
           "rarity": "Mythic",
@@ -724,10 +724,10 @@
       ]
     },
     "Orbital Augment": {
-      "level": 154,
+      "level": 163,
       "rarity": "Ancestral 1*",
       "slot_type": "Armor",
-      "stat": "7.781",
+      "stat": "9.154",
       "substats": [
         {
           "rarity": "Ancestral",
@@ -756,10 +756,10 @@
       ]
     },
     "Primordial Collapse": {
-      "level": 146,
+      "level": 159,
       "rarity": "Ancestral 2*",
       "slot_type": "Core",
-      "stat": "9.586",
+      "stat": "11.692",
       "substats": [
         {
           "rarity": "Ancestral",
@@ -788,10 +788,10 @@
       ]
     },
     "Project Funding": {
-      "level": 150,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Generator",
-      "stat": "1.585",
+      "stat": "1.665",
       "substats": [
         {
           "rarity": "Mythic",
@@ -826,10 +826,10 @@
       ]
     },
     "Pulsar Harvester": {
-      "level": 150,
+      "level": 161,
       "rarity": "Ancestral 1*",
       "slot_type": "Generator",
-      "stat": "1.614",
+      "stat": "1.707",
       "substats": [
         {
           "rarity": "Ancestral",
@@ -864,10 +864,10 @@
       ]
     },
     "Restorative Bonus": {
-      "level": 150,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Generator",
-      "stat": "1.585",
+      "stat": "1.665",
       "substats": [
         {
           "rarity": "Mythic",
@@ -896,10 +896,10 @@
       ]
     },
     "Sharp Fortitude": {
-      "level": 154,
+      "level": 163,
       "rarity": "Ancestral",
       "slot_type": "Armor",
-      "stat": "7.52",
+      "stat": "8.84",
       "substats": [
         {
           "rarity": "Ancestral",
@@ -909,15 +909,15 @@
         },
         {
           "rarity": "Mythic",
-          "stat_name": "Defense %",
-          "value_display": "+6%",
-          "value_num": 0.06
+          "stat_name": "Knockback Force",
+          "value_display": "+0.9",
+          "value_num": 0.9
         },
         {
-          "rarity": "Rare",
-          "stat_name": "Land Mine Chance",
-          "value_display": "+2%",
-          "value_num": 0.015
+          "rarity": "Ancestral",
+          "stat_name": "Defense %",
+          "value_display": "+8%",
+          "value_num": 0.08
         },
         {
           "rarity": "Ancestral",
@@ -930,6 +930,12 @@
           "stat_name": "Thorns Damage",
           "value_display": "+10%",
           "value_num": 0.1
+        },
+        {
+          "rarity": "Epic",
+          "stat_name": "Orb Speed",
+          "value_display": "+1",
+          "value_num": 1.0
         }
       ]
     },
@@ -941,10 +947,10 @@
       "substats": []
     },
     "Singularity Harness": {
-      "level": 150,
+      "level": 161,
       "rarity": "Ancestral",
       "slot_type": "Generator",
-      "stat": "1.59",
+      "stat": "1.68",
       "substats": [
         {
           "rarity": "Mythic",
@@ -979,17 +985,17 @@
       ]
     },
     "Space Displacer": {
-      "level": 154,
+      "level": 163,
       "rarity": "Ancestral 2*",
       "slot_type": "Armor",
-      "stat": "8.042",
+      "stat": "9.467",
       "substats": []
     },
     "Wormhole Redirector": {
-      "level": 154,
+      "level": 160,
       "rarity": "Mythic+",
       "slot_type": "Armor",
-      "stat": "7.47",
+      "stat": "8.19",
       "substats": [
         {
           "rarity": "Legendary",
@@ -1014,27 +1020,27 @@
   },
   "shard_allocation": {
     "calculated_shards_per_category": {
-      "Armor": 139926,
-      "Cannon": 146588,
-      "Core": 139176,
-      "Generator": 144176
+      "Armor": 175671,
+      "Cannon": 179338,
+      "Core": 178176,
+      "Generator": 184076
     },
     "slot_levels": {
       "Armor": {
-        "assist_level": 63,
-        "primary_level": 154
+        "assist_level": 41,
+        "primary_level": 163
       },
       "Cannon": {
         "assist_level": 0,
-        "primary_level": 157
+        "primary_level": 164
       },
       "Core": {
-        "assist_level": 110,
-        "primary_level": 146
+        "assist_level": 101,
+        "primary_level": 159
       },
       "Generator": {
-        "assist_level": 103,
-        "primary_level": 150
+        "assist_level": 97,
+        "primary_level": 161
       }
     }
   }

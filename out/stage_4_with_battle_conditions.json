@@ -4,6 +4,7 @@
   "league": null,
   "missing": [
     "boss_survivability",
+    "module_substat_unmapped:Armor:primary:Sharp Fortitude:Knockback Force",
     "skip_ramp:eals",
     "skip_ramp:ehls"
   ],

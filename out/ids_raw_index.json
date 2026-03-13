@@ -1,48 +1,48 @@
 {
-  "hash": "940095b308182274049a437c40d699e944d61947339f6d1850282c7dbd183270",
+  "hash": "59ecd66b2044c776d01a3364c6b9e1decf32551edf76d74101efeb3930e906d7",
   "sections": [
     {
-      "hash": "5227a315fd4514a5f7b056a1e1837e57cc2b9b1890c6f2fd296b4a31a8d10a82",
+      "hash": "2585352889e208c68fb7164a2a4243f0acb114eb7a60b129d5313faae8977e35",
       "name": "Bots",
       "rows": 16
     },
     {
-      "hash": "df7cac905179e471f6c8bf2287e787560eaea6760dd3d3a77a659154897dd49c",
+      "hash": "dc17f3795be665e9a9e42efb35863c1e748011a3a44c3c8b904d1d7f3ab7a2b3",
       "name": "Cards",
       "rows": 31
     },
     {
-      "hash": "b22b850dbc6aff90b9f119270bbcf7d563e65807741a70d0ac18963007b5a61c",
+      "hash": "9993746446b910f5ceb80f95d5f11baec85671467f28f3b2f78fef2f6a38c537",
       "name": "Guardians",
-      "rows": 15
+      "rows": 18
     },
     {
-      "hash": "ad4d9465c0a7d854b620bb0cbb03c7f606ca82990781f96200cd0277ebe62e77",
+      "hash": "31de9fd6fecb32a621a45c57f21596231a8b190013acc212c7f41950780df7dc",
       "name": "Labs",
       "rows": 212
     },
     {
-      "hash": "0884732356bdc8485747071b416aad8677c4a17c03e040160b644176e7547f10",
+      "hash": "f73e3463d0f4760c6060449e9405d863859db73ac40e0219837ec124a806deb3",
       "name": "Modules",
-      "rows": 79
+      "rows": 80
     },
     {
-      "hash": "df5d3933ec8f0622609cef7a9c38e9344fe3d614764ecebbf128e260e47fe30f",
+      "hash": "88f6752080de4aaf2ba95a1a7d32e4d3746f4cd1ac80c811a3a0f8e00387e44e",
       "name": "Player & Stuff",
       "rows": 22
     },
     {
-      "hash": "38ad45025920f89ad96a63c6198f31c55d202fb84a94a7b5d640e3d166e6547f",
+      "hash": "3e0980e46ea6e145d74143deafe4949c4d2ad8369c86e03cea43bba9c75d5e9f",
       "name": "Relics",
-      "rows": 36
+      "rows": 37
     },
     {
-      "hash": "ef3e72e05b5515771648672539c362b62b6ba5cb2fbe25429f88e05b91d511a9",
+      "hash": "3534f35b89fb391dd22bcb5e70c533518cc61eaddc7c2103bf7684a557d554ef",
       "name": "Themes & Songs",
       "rows": 1
     },
     {
-      "hash": "c3943a247b3cd1926cfd7c1a960be92d4ddd3399d9ff56c92b6d91eb9b06071e",
+      "hash": "b35eb1902c86210b7d327afeec0ac1730231d6170ff1fbe61090a583007aa602",
       "name": "UWs",
       "rows": 36
     },
@@ -57,7 +57,7 @@
       "rows": 50
     },
     {
-      "hash": "bdce7567dd7c43fd5e3c99bf6ef701073167bc6e7cb712bffa58a43d7532bb52",
+      "hash": "991ab7093758da5014ad8256301cfa9d2d37c505b38a5e60330b0ac05f9abc98",
       "name": "WS+",
       "rows": 20
     }
