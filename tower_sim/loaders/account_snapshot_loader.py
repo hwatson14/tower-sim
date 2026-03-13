@@ -14,6 +14,7 @@ from tower_sim.util.account_snapshot import (
     ModuleSystemState,
     TableSnapshot,
     UltimateWeaponSnapshot,
+    UwPlusTrackSnapshot,
     WorkshopEntrySnapshot,
 )
 
@@ -81,6 +82,7 @@ def _load_snapshot(data: Dict[str, Any]) -> AccountSnapshot:
         inferred_shard_budgets=_require_dict_of_ints(data, "inferred_shard_budgets"),
         default_preset=_require_str(data, "default_preset"),
         raw_sections=_parse_raw_sections(_require_dict(data, "raw_sections")),
+        uw_plus_tracks=_parse_uw_plus_tracks(data.get("uw_plus_tracks", {})),
     )
 
 
@@ -118,6 +120,23 @@ def _parse_ultimate_weapons(data: Dict[str, Any]) -> Dict[str, UltimateWeaponSna
         )
     return parsed
 
+
+
+
+def _parse_uw_plus_tracks(data: Any) -> Dict[str, UwPlusTrackSnapshot]:
+    if data is None:
+        return {}
+    _ensure_dict(data, "uw_plus_tracks")
+    parsed: Dict[str, UwPlusTrackSnapshot] = {}
+    for key, value in data.items():
+        _ensure_dict(value, f"uw_plus_tracks[{key}]")
+        parsed[str(key)] = UwPlusTrackSnapshot(
+            uw_name=_require_str(value, "uw_name"),
+            plus_track_name=_require_str(value, "plus_track_name"),
+            current_state=_require_str(value, "current_state"),
+            display_token=_require_str(value, "display_token"),
+        )
+    return parsed
 
 def _parse_cards(data: Dict[str, Any]) -> Dict[str, CardSnapshot]:
     parsed = {}

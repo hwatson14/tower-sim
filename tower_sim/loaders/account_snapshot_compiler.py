@@ -19,6 +19,7 @@ from tower_sim.util.account_snapshot import (
     SLOT_TYPES,
     TableSnapshot,
     UltimateWeaponSnapshot,
+    UwPlusTrackSnapshot,
     WorkshopEntrySnapshot,
 )
 from tower_sim.util.ids_raw import IdsRaw
@@ -61,6 +62,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
     workshop = _parse_workshop(raw_sections.get("WS", []), default_preset=default_preset)
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
     ultimate_weapons = _parse_ultimate_weapons(raw_sections.get("UWs", []))
+    uw_plus_tracks = _parse_uw_plus_tracks(raw_sections.get("UWs", []))
     relics = _parse_key_value_float(raw_sections.get("Relics", []))
     vault = _parse_key_value_int(raw_sections.get("Vault", []))
     bots, bot_upgrades = _parse_bots(raw_sections.get("Bots", []))
@@ -105,6 +107,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
         inferred_shard_budgets=inferred_shard_budgets,
         default_preset=default_preset,
         raw_sections=raw_sections,
+        uw_plus_tracks=uw_plus_tracks,
     )
 
     naming_errors = validate_account_snapshot_naming(snapshot)
@@ -213,6 +216,29 @@ def _parse_ultimate_weapons(rows: List[List[str]]) -> Dict[str, UltimateWeaponSn
         )
     return entries
 
+
+
+
+def _parse_uw_plus_tracks(rows: List[List[str]]) -> Dict[str, UwPlusTrackSnapshot]:
+    tracks: Dict[str, UwPlusTrackSnapshot] = {}
+    for i in range(0, len(rows), 4):
+        block = rows[i : i + 4]
+        if len(block) < 4:
+            continue
+        uw_name = _safe_cell(block[0], 0).strip()
+        plus_track_name = _safe_cell(block[3], 2).strip()
+        if not uw_name or not plus_track_name:
+            continue
+        current_state = _safe_cell(block[3], 3).strip()
+        display_token = _safe_cell(block[3], 4).strip()
+        key = f"{uw_name}::{plus_track_name}"
+        tracks[key] = UwPlusTrackSnapshot(
+            uw_name=uw_name,
+            plus_track_name=plus_track_name,
+            current_state=current_state,
+            display_token=display_token,
+        )
+    return tracks
 
 def _parse_key_value_int(rows: List[List[str]]) -> Dict[str, Optional[int]]:
     values: Dict[str, Optional[int]] = {}

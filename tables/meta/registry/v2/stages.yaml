@@ -1,0 +1,9 @@
+v2_stage_applicability:
+  static_stages:
+  - stage: baseline_account
+  - stage: baseline_gem_respec
+  - stage: baseline_loadout
+  required_static_stage_order:
+  - baseline_account
+  - baseline_gem_respec
+  - baseline_loadout
