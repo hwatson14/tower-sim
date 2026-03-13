@@ -1,0 +1,118 @@
+phase_b_source_state_coverage:
+  families:
+  - family: workshop
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: labs
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: relics
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: cards
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: module_main
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: module_sub
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: module_unique
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: ultimate_weapons
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: uw_plus
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: bots
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  - family: perks
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: battle_conditions
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: guardians
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: vault
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: false
+  - family: enhancement
+    in_scope: true
+    adapter_implemented: true
+    blocked_or_deferred: false
+    reason: null
+    expected_canonical_contributors: true
+  readiness:
+    target_crosswalk_file: audit/static_pipeline_v2_phase_b_target_stat_crosswalk.yaml
+    contributor_crosswalk_file: audit/static_pipeline_v2_phase_b_contributor_crosswalk.yaml
+    targets_incomplete_total: 0
+    contributors_incomplete_total: 0
+    targets_partially_blocked_total: 0
+    contributors_explicitly_blocked_total: 0
+    verdict: Phase B source normalization and naming reconciliation complete
+    coverage_accounting_complete: true
+    phase_c_gate_open: true
+    phase_c_gate_reason: all_target_naming_reconciled
+  mapping_backlog:
+    quarantined_contributors_total: 0
+    partially_blocked_targets_total: 0
+    by_source_family: {}
+    by_reason_code: {}
+    blocked_or_unresolved_target_names_total: 0
+    blocked_or_unresolved_by_reason_code: {}
+    legacy_name_backlog_total: 77
+    legacy_name_backlog_by_domain:
+      economy_cost_legacy_name: 72
+      runtime_derived_legacy_name: 5
+    legacy_name_backlog_by_reason_code:
+      outside_v2_target_domain_battle_condition_or_lab_surface: 2
+      outside_v2_target_domain_economy_cost_field: 72
+      outside_v2_target_domain_runtime_derived_field: 3

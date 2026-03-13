@@ -1,0 +1,28 @@
+v2_contributor_operations:
+  allowed_operation_classes:
+  - add
+  - add_chance
+  - add_count
+  - add_duration_seconds
+  - add_pct
+  - add_range_m
+  - add_scalar
+  - apply_ratio
+  - enable
+  - multiply
+  - reduce_cooldown_seconds
+  - reduce_interval_seconds
+  - review_required
+  - set_angle_degrees
+  - set_base
+  - set_chance
+  - set_cooldown_seconds
+  - set_count
+  - set_duration_seconds
+  - set_enabled
+  - set_interval_seconds
+  - set_multiplier
+  - set_pct
+  - set_range_m
+  - set_rotation_rate
+  source: ledger_operation_column

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -31,6 +31,15 @@ class UltimateWeaponSnapshot:
     unlocked: Optional[str]
     track_levels: List[str]
 
+
+
+
+@dataclass(frozen=True)
+class UwPlusTrackSnapshot:
+    uw_name: str
+    plus_track_name: str
+    current_state: str
+    display_token: str
 
 @dataclass(frozen=True)
 class CardSnapshot:
@@ -102,6 +111,7 @@ class AccountSnapshot:
     inferred_shard_budgets: Dict[str, int]
     default_preset: str
     raw_sections: Dict[str, List[List[str]]]
+    uw_plus_tracks: Dict[str, UwPlusTrackSnapshot] = field(default_factory=dict)
 
 
 @dataclass(frozen=True)

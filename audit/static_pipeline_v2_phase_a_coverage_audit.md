@@ -1,0 +1,252 @@
+# Static Pipeline V2 Phase A Coverage Audit
+
+## Required artifact completion
+- v2_target_stats: complete
+- v2_contributor_ids: complete
+- v2_alias_map: complete
+- v2_stage_applicability: complete
+- v2_runtime_field_registry: complete
+- v2_source_state_schema: complete
+- v2_contributor_operations: complete
+- v2_composite_dependencies: complete
+- v2_quarantine_registry: complete
+
+## Registry counts
+- total static target stats discovered: 539
+- total canonical target stats registered: 293
+- total aliased target names: 8
+- total quarantined/blocked target names: 238
+- total static contributors discovered: 479
+- total canonical contributors registered: 373
+- total aliased contributors: 0
+- total quarantined/blocked contributors: 106
+
+## Composite target coverage
+- dependency rule defined: 170
+- dependency rule deferred but blocked: 43
+
+## Unresolved legacy names still blocked
+- `black_hole_consume`
+- `black_hole_consume_next_cost`
+- `black_hole_cooldown`
+- `black_hole_cooldown_next_cost`
+- `black_hole_duration`
+- `black_hole_duration_next_cost`
+- `black_hole_size`
+- `black_hole_size_next_cost`
+- `bot_amplify_bonus`
+- `bot_amplify_cooldown`
+- `bot_amplify_duration`
+- `bot_amplify_range`
+- `bot_flame_cooldown`
+- `bot_flame_damage`
+- `bot_flame_damage_reduction`
+- `bot_flame_range`
+- `bot_golden_bonus`
+- `bot_golden_cooldown`
+- `bot_golden_duration`
+- `bot_golden_range`
+- `bot_range`
+- `bot_thunder_cooldown`
+- `bot_thunder_duration`
+- `bot_thunder_linger`
+- `bot_thunder_range`
+- `cash_bonus`
+- `chain_lightning_chance_next_cost`
+- `chain_lightning_damage`
+- `chain_lightning_damage_next_cost`
+- `chain_lightning_quantity_next_cost`
+- `chain_lightning_smite`
+- `chain_lightning_smite_next_cost`
+- `chrono_field_chrono_loop`
+- `chrono_field_chrono_loop_next_cost`
+- `chrono_field_cooldown`
+- `chrono_field_cooldown_next_cost`
+- `chrono_field_duration`
+- `chrono_field_duration_next_cost`
+- `chrono_field_speed_reduction`
+- `chrono_field_speed_reduction_next_cost`
+- `coins_bonus`
+- `death_ray_damage_mult`
+- `death_wave_cooldown`
+- `death_wave_cooldown_next_cost`
+- `death_wave_damage`
+- `death_wave_damage_next_cost`
+- `death_wave_kill_wall`
+- `death_wave_kill_wall_next_cost`
+- `death_wave_quantity`
+- `death_wave_quantity_next_cost`
+- `eals_pct`
+- `ehls_pct`
+- `free_attack_upgrade`
+- `free_defense_upgrade`
+- `free_utility_upgrade`
+- `golden_tower_cooldown`
+- `golden_tower_cooldown_next_cost`
+- `golden_tower_duration`
+- `golden_tower_duration_next_cost`
+- `golden_tower_golden_combo`
+- `golden_tower_golden_combo_next_cost`
+- `golden_tower_multiplier`
+- `golden_tower_multiplier_next_cost`
+- `inner_land_mines_charged_mines`
+- `inner_land_mines_charged_mines_next_cost`
+- `inner_land_mines_cooldown`
+- `inner_land_mines_cooldown_next_cost`
+- `inner_land_mines_damage`
+- `inner_land_mines_damage_next_cost`
+- `inner_land_mines_quantity_next_cost`
+- `knockback_mult`
+- `lab_speed`
+- `orb_damage_mult`
+- `plasma_cannon_damage_mult`
+- `poison_swamp_cooldown`
+- `poison_swamp_cooldown_next_cost`
+- `poison_swamp_damage`
+- `poison_swamp_damage_next_cost`
+- `poison_swamp_death_creep`
+- `poison_swamp_death_creep_next_cost`
+- `poison_swamp_duration`
+- `poison_swamp_duration_next_cost`
+- `recovery_amount`
+- `smart_missiles_cooldown`
+- `smart_missiles_cooldown_next_cost`
+- `smart_missiles_cover_fire`
+- `smart_missiles_cover_fire_next_cost`
+- `smart_missiles_damage`
+- `smart_missiles_damage_next_cost`
+- `smart_missiles_quantity_next_cost`
+- `spotlight_angle`
+- `spotlight_angle_next_cost`
+- `spotlight_light_range`
+- `spotlight_light_range_next_cost`
+- `spotlight_multiplier`
+- `spotlight_multiplier_next_cost`
+- `spotlight_quantity`
+- `spotlight_quantity_next_cost`
+- `super_crit_mult`
+- `thorns_damage_mult`
+- `tower_dps`
+- `ultimate_damage`
+- `uw_black_hole_consume`
+- `uw_black_hole_consume_next_cost`
+- `uw_black_hole_cooldown`
+- `uw_black_hole_cooldown_next_cost`
+- `uw_black_hole_duration`
+- `uw_black_hole_duration_next_cost`
+- `uw_black_hole_size`
+- `uw_black_hole_size_next_cost`
+- `uw_chain_lightning_chance`
+- `uw_chain_lightning_chance_next_cost`
+- `uw_chain_lightning_damage`
+- `uw_chain_lightning_damage_next_cost`
+- `uw_chain_lightning_quantity`
+- `uw_chain_lightning_quantity_next_cost`
+- `uw_chain_lightning_smite`
+- `uw_chain_lightning_smite_next_cost`
+- `uw_chrono_field_chrono_loop`
+- `uw_chrono_field_chrono_loop_next_cost`
+- `uw_chrono_field_cooldown`
+- `uw_chrono_field_cooldown_next_cost`
+- `uw_chrono_field_duration`
+- `uw_chrono_field_duration_next_cost`
+- `uw_chrono_field_speed_reduction`
+- `uw_chrono_field_speed_reduction_next_cost`
+- `uw_death_wave_cooldown`
+- `uw_death_wave_cooldown_next_cost`
+- `uw_death_wave_damage`
+- `uw_death_wave_damage_next_cost`
+- `uw_death_wave_kill_wall`
+- `uw_death_wave_kill_wall_next_cost`
+- `uw_death_wave_quantity`
+- `uw_death_wave_quantity_next_cost`
+- `uw_golden_tower_cooldown`
+- `uw_golden_tower_cooldown_next_cost`
+- `uw_golden_tower_duration`
+- `uw_golden_tower_duration_next_cost`
+- `uw_golden_tower_golden_combo`
+- `uw_golden_tower_golden_combo_next_cost`
+- `uw_golden_tower_multiplier`
+- `uw_golden_tower_multiplier_next_cost`
+- `uw_inner_land_mines_charged_mines`
+- `uw_inner_land_mines_charged_mines_next_cost`
+- `uw_inner_land_mines_cooldown`
+- `uw_inner_land_mines_cooldown_next_cost`
+- `uw_inner_land_mines_damage`
+- `uw_inner_land_mines_damage_next_cost`
+- `uw_inner_land_mines_quantity`
+- `uw_inner_land_mines_quantity_next_cost`
+- `uw_poison_swamp_cooldown`
+- `uw_poison_swamp_cooldown_next_cost`
+- `uw_poison_swamp_damage`
+- `uw_poison_swamp_damage_next_cost`
+- `uw_poison_swamp_death_creep`
+- `uw_poison_swamp_death_creep_next_cost`
+- `uw_poison_swamp_duration`
+- `uw_poison_swamp_duration_next_cost`
+- `uw_smart_missiles_cooldown`
+- `uw_smart_missiles_cooldown_next_cost`
+- `uw_smart_missiles_cover_fire`
+- `uw_smart_missiles_cover_fire_next_cost`
+- `uw_smart_missiles_damage`
+- `uw_smart_missiles_damage_next_cost`
+- `uw_smart_missiles_quantity`
+- `uw_smart_missiles_quantity_next_cost`
+- `uw_spotlight_angle`
+- `uw_spotlight_angle_next_cost`
+- `uw_spotlight_light_range`
+- `uw_spotlight_light_range_next_cost`
+- `uw_spotlight_multiplier`
+- `uw_spotlight_multiplier_next_cost`
+- `uw_spotlight_quantity`
+- `uw_spotlight_quantity_next_cost`
+- `wall_rebuild`
+- `wall_thorns_mult`
+- `wave_attack_index`
+- `wave_health_index`
+- `workshop_attack_speed`
+- `workshop_bounce_shot_chance`
+- `workshop_bounce_shot_range`
+- `workshop_bounce_shot_targets`
+- `workshop_cash_bonus`
+- `workshop_cash_per_wave`
+- `workshop_cells_per_kill_bonus`
+- `workshop_coins_per_kill_bonus`
+- `workshop_coins_per_wave`
+- `workshop_critical_chance`
+- `workshop_critical_factor`
+- `workshop_damage`
+- `workshop_damage_per_meter`
+- `workshop_death_defy`
+- `workshop_defense_absolute`
+- `workshop_defense_percent`
+- `workshop_enemy_attack_level_skip`
+- `workshop_enemy_health_level_skip`
+- `workshop_free_attack_upgrade`
+- `workshop_free_defense_upgrade`
+- `workshop_free_utility_upgrade`
+- `workshop_health`
+- `workshop_health_regen`
+- `workshop_interest`
+- `workshop_knockback`
+- `workshop_knockback_chance`
+- `workshop_knockback_force`
+- `workshop_land_mine_chance`
+- `workshop_land_mine_damage`
+- `workshop_land_mine_radius`
+- `workshop_lifesteal`
+- `workshop_max_recovery`
+- `workshop_multishot_chance`
+- `workshop_multishot_targets`
+- `workshop_orb_size`
+- `workshop_orb_speed`
+- `workshop_orbs`
+- `workshop_package_chance`
+- `workshop_range_meters`
+
+## Uncovered items
+- uncovered target items: 0
+- uncovered contributor items: 0
+
+## Phase A readiness
+- verdict: Phase A complete, safe to begin Phase B

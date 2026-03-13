@@ -12,6 +12,7 @@ top_level:
     - out
     - fixtures
     - contract_assets
+    - docs
 
   allowed_files:
     - README.md
@@ -29,7 +30,6 @@ top_level:
     - STATUS_V1.yaml
 
   forbidden_dirs:
-    - docs
     - tools
     - naming
     - data
@@ -178,3 +178,9 @@ exceptions:
     - ".github/workflows/render-contract-diagram.yml"
     - "contract_assets/architecture/v35_draft/README.md"
     - "audit/reference/tower_sim_3_handover/**"
+    - "docs/v2/TOWERSIM_V2_MASTER_SPEC.md"
+
+
+docs:
+  allowed_file_globs:
+    - "**/*.md"
