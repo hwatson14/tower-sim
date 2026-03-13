@@ -26,3 +26,8 @@ def test_parse_ids_fixture_sections() -> None:
     assert ids_raw.raw_sections["Themes & Songs"]
     assert ids_raw.raw_sections["Guardians"]
     assert ids_raw.raw_sections["Player & Stuff"]
+
+
+def test_parse_ids_allows_numeric_cards_metadata_header() -> None:
+    ids_raw = parse_ids()
+    assert ids_raw.header[35] == "16"

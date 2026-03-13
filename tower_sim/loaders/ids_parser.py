@@ -72,6 +72,7 @@ def _fail_unknown_sections(rows: List[List[str]]) -> None:
     header = rows[0] if rows else []
     known = {spec.name for spec in SECTION_SPECS}
     allowed_metadata = {""}
+    cards_spec = next(spec for spec in SECTION_SPECS if spec.name == "Cards")
     for spec in SECTION_SPECS:
         if spec.header_col >= len(header):
             raise ValueError(
@@ -95,6 +96,12 @@ def _fail_unknown_sections(rows: List[List[str]]) -> None:
             continue
         row_values = rows[1] if len(rows) > 1 else []
         offending = row_values[idx] if idx < len(row_values) else ""
+        if (
+            cards_spec.start_col <= idx <= cards_spec.end_col
+            and value.isdigit()
+            and offending.strip().startswith("Preset")
+        ):
+            continue
         raise ValueError(
             "Unknown section header in _IDS.csv: "
             f"{value!r} at column {idx}. First row value: {offending!r}"
