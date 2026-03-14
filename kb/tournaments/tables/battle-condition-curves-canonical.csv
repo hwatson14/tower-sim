@@ -1,0 +1,382 @@
+bc_name,bc_key,bc_variant,level_or_heat,value_num,value_unit,value_kind,behavior,source_class
+Armored Enemies,armored_enemies,,0,1.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,20,2.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,40,3.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,60,5.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,80,10.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,100,15.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,150,20.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,200,25.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,250,30.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,300,35.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,350,50.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,400,55.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,450,60.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,500,65.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,600,70.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,700,80.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,800,90.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,900,95.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Armored Enemies,armored_enemies,,1000,100.0,hits,hits_blocked,Enemies block the first x hits,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,0,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,20,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,40,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,60,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,80,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,100,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,150,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,200,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,250,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,300,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,350,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,400,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,450,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,500,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,600,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,700,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,800,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,900,0.01,ratio,probability,,repo_input_curve
+Basic's Ultimate,basic_ultimate,boss,1000,0.01,ratio,probability,,repo_input_curve
+Boss Ultimate,boss_ultimate,,0,0.05,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,20,0.1,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,40,0.15,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,60,0.2,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,80,0.25,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,100,0.3,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,150,0.35,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,200,0.4,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,250,0.45,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,300,0.5,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,350,0.55,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,400,0.6,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,450,0.65,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,500,0.7,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,600,0.75,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,700,0.8,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,800,0.85,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,900,0.9,ratio,multiplier,,repo_input_curve
+Boss Ultimate,boss_ultimate,,1000,1.0,ratio,multiplier,,repo_input_curve
+Death Defy Down,death_defy_down,,0,-0.01,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,20,-0.02,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,40,0.0,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,60,-0.04,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,80,-0.05,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,100,-0.06,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,150,-0.07,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,200,-0.08,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,250,-0.1,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,300,-0.12,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,350,-0.14,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,400,-0.16,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,450,-0.18,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,500,-0.2,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,600,-0.22,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,700,-0.24,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,800,-0.26,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,900,-0.28,ratio,probability_delta,,repo_input_curve
+Death Defy Down,death_defy_down,,1000,-0.3,ratio,probability_delta,,repo_input_curve
+Death Ray Resistance,death_ray_resistance,,0,0.9,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,20,0.8,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,40,0.7,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,60,0.65,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,80,0.6,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,100,0.55,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,150,0.5,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,200,0.45,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,250,0.4,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,300,0.35,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,350,0.3,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,400,0.25,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,450,0.2,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,500,0.15,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,600,0.1,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,700,0.07,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,800,0.04,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,900,0.02,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+Death Ray Resistance,death_ray_resistance,,1000,0.01,ratio,multiplier,"Instead of destroying enemies, death ray deals x% enemy health as damage",repo_input_curve
+ELS Reduction,enemy_level_skip,,0,-0.01,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,20,-0.02,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,40,-0.03,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,60,-0.04,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,80,-0.06,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,100,-0.08,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,150,-0.1,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,200,-0.12,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,250,-0.14,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,300,-0.16,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,350,-0.18,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,400,-0.2,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,450,-0.22,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,500,-0.24,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,600,-0.26,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,700,-0.28,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,800,-0.3,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,900,-0.33,ratio,probability,,repo_input_curve
+ELS Reduction,enemy_level_skip,,1000,-0.3333,ratio,probability,,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,0,0.05,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,20,0.25,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,40,0.5,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,60,0.75,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,80,1.0,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,100,1.25,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,150,1.5,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,200,1.75,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,250,2.0,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,300,2.25,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,350,2.5,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,400,2.75,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,450,3.0,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,500,3.25,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,600,3.5,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,700,4.0,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,800,4.25,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,900,4.5,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Attack Speed,enemy_attack_speed,,1000,5.0,ratio,multiplier,Enemy attack speed is increased by x%,repo_input_curve
+Enemy Speed,enemy_speed,,0,0.2,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,20,0.4,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,40,0.6,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,60,0.7,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,80,0.8,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,100,0.9,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,150,1.0,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,200,1.1,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,250,1.2,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,300,1.3,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,350,1.4,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,400,1.5,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,450,1.6,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,500,1.7,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,600,1.8,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,700,1.86,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,800,1.92,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,900,1.96,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Enemy Speed,enemy_speed,,1000,1.98,ratio,multiplier,Enemies move x% faster,repo_input_curve
+Energy Shields Down,energy_shields_down,,0,0.01,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,20,0.05,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,40,0.1,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,60,0.15,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,80,0.2,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,100,0.25,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,150,0.3,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,200,0.35,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,250,0.4,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,300,0.45,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,350,0.5,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,400,0.55,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,450,0.6,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,500,0.65,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,600,0.7,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,700,0.8,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,800,0.9,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,900,0.95,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Energy Shields Down,energy_shields_down,,1000,1.0,ratio,recharge_time_multiplier_or_delta,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,0,1.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,20,1.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,40,2.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,60,2.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,80,3.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,100,3.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,150,4.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,200,4.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,250,5.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,300,5.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,350,6.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,400,6.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,450,7.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,500,7.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,600,8.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,700,8.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,800,9.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,900,9.0,ratio,unknown,,repo_input_curve
+Fast's Ultimate,fast_ultimate,,1000,10.0,ratio,unknown,,repo_input_curve
+Knockback Resistance,knockback_resistance,,0,0.95,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,20,0.9,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,40,0.8,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,60,0.75,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,80,0.7,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,100,0.65,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,150,0.6,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,200,0.58,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,250,0.56,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,300,0.54,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,350,0.5,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,400,0.45,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,450,0.4,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,500,0.35,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,600,0.3,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,700,0.25,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,800,0.2,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,900,0.15,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Knockback Resistance,knockback_resistance,,1000,0.05,ratio,multiplier,Knockback force applied to enemies is reduced by x%,repo_input_curve
+Mass Enforcement,mass_enforcement,,1,0.02,pct_per_wave,multiplier_delta,Surviving enemies' mass increases by x% per wave they are alive,wiki_public_level_1
+More Bosses,more_bosses,,0,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,20,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,40,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,60,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,80,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,100,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,150,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,200,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,250,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,300,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,350,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,400,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,450,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,500,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,600,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,700,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,800,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,900,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Bosses,more_bosses,,1000,6.0,waves,interval_waves,Bosses spawn every x waves instead of 10,repo_input_curve
+More Enemies,more_enemies,,0,0.01,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,20,0.05,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,40,0.1,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,60,0.15,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,80,0.2,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,100,0.25,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,150,0.3,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,200,0.35,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,250,0.4,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,300,0.45,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,350,0.5,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,400,0.55,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,450,0.6,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,500,0.65,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,600,0.7,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,700,0.8,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,800,0.85,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,900,0.9,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+More Enemies,more_enemies,,1000,1.0,ratio,spawn_rate_delta,x% more enemies spawn,repo_input_curve
+Orb Resistance,orb_resistance,,0,0.9,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,20,0.75,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,40,0.5,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,60,0.4,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,80,0.3,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,100,0.2,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,150,0.17,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,200,0.14,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,250,0.12,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,300,0.1,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,350,0.09,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,400,0.08,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,450,0.07,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,500,0.06,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,600,0.05,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,700,0.04,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,800,0.03,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,900,0.02,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Orb Resistance,orb_resistance,,1000,0.01,ratio,multiplier,"Instead of destroying enemies, orbs deal x% enemy health as damage",repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,0,0.95,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,20,0.9,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,40,0.8,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,60,0.75,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,80,0.7,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,100,0.65,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,150,0.6,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,200,0.58,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,250,0.56,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,300,0.54,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,350,0.5,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,400,0.45,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,450,0.4,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,500,0.35,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,600,0.3,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,700,0.25,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,800,0.2,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,900,0.15,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Plasma Cannon Resistance,plasma_cannon_resistance,,1000,0.05,ratio,multiplier,Plasma Cannon deals x% of normal damage,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,0,3.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,20,15.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,40,30.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,60,45.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,80,60.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,100,75.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,150,90.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,200,105.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,250,120.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,300,135.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,350,150.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,400,165.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,450,180.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,500,195.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,600,210.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,700,240.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,800,270.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,900,285.0,s,duration_or_cooldown,,repo_input_curve
+Protector's Ultimate,protector_s_ultimate,,1000,300.0,s,duration_or_cooldown,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,0,0.1,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,20,0.1,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,40,0.2,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,60,0.2,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,80,0.3,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,100,0.3,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,150,0.4,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,200,0.4,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,250,0.5,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,300,0.5,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,350,0.6,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,400,0.6,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,450,0.7,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,500,0.7,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,600,0.8,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,700,0.8,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,800,0.9,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,900,0.9,s,duration,,repo_input_curve
+Ranged Ultimate,ranged_ultimate,,1000,1.0,s,duration,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,0,3.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,20,15.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,40,30.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,60,45.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,80,60.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,100,75.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,150,90.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,200,105.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,250,120.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,300,135.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,350,150.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,400,165.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,450,180.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,500,210.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,600,225.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,700,240.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,800,255.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,900,270.0,s,duration_or_cooldown,,repo_input_curve
+Tank's Ultimate,tank_s_ultimate,,1000,300.0,s,duration_or_cooldown,,repo_input_curve
+Thorns Resistance,thorns_resistance,,0,0.95,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,20,0.9,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,40,0.8,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,60,0.75,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,80,0.7,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,100,0.65,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,150,0.6,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,200,0.58,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,250,0.56,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,300,0.54,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,350,0.5,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,400,0.45,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,450,0.4,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,500,0.35,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,600,0.3,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,700,0.25,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,800,0.2,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,900,0.15,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Thorns Resistance,thorns_resistance,,1000,0.05,ratio,multiplier,Thorns deals x% damage,repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,0,-1.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,20,-1.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,40,-1.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,60,-2.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,80,-2.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,100,-3.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,150,-3.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,200,-4.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,250,-4.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,300,-5.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,350,-5.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,400,-6.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,450,-6.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,500,-7.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,600,-7.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,700,-8.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,800,-8.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,900,-9.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve
+Ultimate Weapon Durations,ultimate_weapon_durations,,1000,-10.0,s,duration_delta,"Reduce the durations of Chrono Field, Golden Tower, Poison Swamp, and Black Hole by Xs",repo_input_curve

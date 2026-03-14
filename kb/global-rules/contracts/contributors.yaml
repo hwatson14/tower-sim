@@ -1,0 +1,72 @@
+version: v1
+kind: contributors_registry_schema
+purpose: Provenance-rich source rows that resolve into canonical stats, mechanic params, environment params, or capabilities.
+schema:
+  required_fields:
+    - contributor_id
+    - source_family
+    - entity
+    - attribute
+    - measure
+    - destination_object_type
+    - destination_id
+    - resolver
+  optional_fields:
+    - source_page
+    - unlock_gate
+    - notes
+    - status
+rules:
+  - one contributor maps to exactly one destination object
+  - one source affecting multiple destinations must be split into multiple rows
+  - contributor IDs use the grammar source__entity__attribute__measure
+  - contributor names carry provenance, not evaluator identity
+examples:
+  - contributor_id: workshop__tower__health__flat
+    source_family: workshop
+    entity: tower
+    attribute: health
+    measure: flat
+    destination_object_type: canonical_stat
+    destination_id: tower_hp
+    resolver: standard_scalar_stat
+  - contributor_id: lab__tower__health__pct
+    source_family: lab
+    entity: tower
+    attribute: health
+    measure: pct
+    destination_object_type: canonical_stat
+    destination_id: tower_hp
+    resolver: standard_scalar_stat
+  - contributor_id: card__extra_orb__count__count
+    source_family: card
+    entity: extra_orb
+    attribute: count
+    measure: count
+    destination_object_type: canonical_stat
+    destination_id: tower_orb_count
+    resolver: integer_count_stat
+  - contributor_id: lab__golden_tower__duration__seconds
+    source_family: lab
+    entity: golden_tower
+    attribute: duration
+    measure: seconds
+    destination_object_type: mechanic_param
+    destination_id: uw.golden_tower.duration_seconds
+    resolver: uw_duration_param
+  - contributor_id: battle_condition__enemy_attack_speed__modifier__pct
+    source_family: battle_condition
+    entity: enemy_attack_speed
+    attribute: modifier
+    measure: pct
+    destination_object_type: environment_param
+    destination_id: bc.enemy_attack_speed_pct
+    resolver: bc_effective_value
+  - contributor_id: unlock__wall__enabled__boolean
+    source_family: unlock
+    entity: wall
+    attribute: enabled
+    measure: boolean
+    destination_object_type: capability
+    destination_id: capability.wall.enabled
+    resolver: capability_passthrough

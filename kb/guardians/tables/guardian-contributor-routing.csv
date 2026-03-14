@@ -1,0 +1,7 @@
+guardian_id,contributor_family,input_surface,target_stat_id,operation,status
+GUARDIAN_ATTACK,bits,guardian_track_level,guardian_attack_effect,track_lookup,active
+GUARDIAN_ALLY,bits,guardian_track_level,guardian_ally_effect,track_lookup,active
+GUARDIAN_BOUNTY,bits,guardian_track_level,guardian_bounty_effect,track_lookup,active
+GUARDIAN_FETCH,bits,guardian_track_level,guardian_fetch_effect,track_lookup,active
+GUARDIAN_SUMMON,bits,guardian_track_level,guardian_summon_effect,track_lookup,active
+GUARDIAN_SCOUT,bits,guardian_track_level,guardian_scout_effect,track_lookup,active

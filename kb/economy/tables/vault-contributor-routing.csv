@@ -1,0 +1,3 @@
+system_id,input_resource,target_tree_id,operation,status,source,verification_status
+vault,keys,VAULT_POWER,tree_upgrade_spend,active_summary_surface,kb/economy/sources/wiki-economy-and-vault-baselines.md,verified_summary_surface_against_live_wiki_vault_and_keys_pages
+vault,keys,VAULT_HARMONY,tree_upgrade_spend,active_summary_surface,kb/economy/sources/wiki-economy-and-vault-baselines.md,verified_summary_surface_against_live_wiki_vault_and_keys_pages

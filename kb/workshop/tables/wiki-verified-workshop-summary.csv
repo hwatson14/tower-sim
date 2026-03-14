@@ -1,0 +1,5 @@
+workshop_stat,unlock,levels,base_value,increment,max_value,notes
+Cash Bonus,40 coins with Cash/Wave,149,x1.00,0.01 per level,x2.49,Does not increase interest or max interest.
+Coins/Kill Bonus,100 coins with Coins/Wave after Cash Bonus and Cash Per Wave,149,x1.00,0.01 per level,x2.49,Multiplicative with other kill-coin bonuses.
+Health Regen,free with Health,6000,0,nonlinear table on live wiki,see live table,Full 6000-row workshop table still not row-verified in aggregate surface.
+Lifesteal,2000 coins after Thorn Damage,80,0%,see live table,4.46%,Workshop row values exposed on live wiki.

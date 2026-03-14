@@ -1,0 +1,7 @@
+version: v29
+kind: alias_registry_pointer
+purpose: Backward-compatible pointer for callers expecting aliases.yaml.
+canonical_surface: name-aliases.yaml
+notes:
+  - Use name-aliases.yaml as the machine-readable alias surface.
+  - This file exists only as a compatibility breadcrumb to avoid duplicate active payloads.

@@ -1,0 +1,18 @@
+level,time,cost,value_multiplier,status
+1,1d 15h 59m,20000000,1.5,verified_from_wiki_lines
+2,2d 0h 21m,21405405,2.0,verified_from_wiki_lines
+3,2d 8h 53m,23124324,2.5,verified_from_wiki_lines
+4,2d 17h 54m,26627027,3.0,verified_from_wiki_lines
+5,3d 3h 49m,35837838,3.5,verified_from_wiki_lines
+6,3d 15h 6m,58248649,4.0,verified_from_wiki_lines
+7,4d 4h 17m,106162162,4.5,verified_from_wiki_lines
+8,4d 19h 58m,197870270,5.0,verified_from_wiki_lines
+9,5d 14h 49m,358875676,5.5,verified_from_wiki_lines
+10,6d 13h 31m,623091892,6.0,verified_from_wiki_lines
+11,7d 16h 49m,1030000000,6.5,verified_from_wiki_lines
+12,9d 1h 30m,1640000000,7.0,verified_from_wiki_lines
+13,10d 16h 23m,2520000000,7.5,verified_from_wiki_lines
+14,12d 14h 21m,3740000000,8.0,verified_from_wiki_lines
+15,14d 20h 18m,5410000000,8.5,verified_from_wiki_lines
+16,17d 11h 9m,7630000000,9.0,verified_from_wiki_lines
+17,20d 11h 54m,10520000000,9.5,verified_from_wiki_lines

@@ -1,0 +1,247 @@
+eDamage:
+  version: ep_v5.00.01_extract_2026-02-02
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  formulas:
+  - id: ep_edamage_ef5
+    name: EP eDamage EF5
+    sheet: eDamage
+    cell: EF5
+    excel_formula: =CX5*(DD5*DQ5*$DS5+EB5*DE5)*EE$5
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_cx5
+    name: EP eDamage CX5
+    sheet: eDamage
+    cell: CX5
+    excel_formula: "=LET(\n  DMG, CR5,\n  PerkDMG, CS5,\n  TODMG, CT5,\n  Shock, CU5,\n  CardDMMastery, CV5,\n  CannonAssist,\
+      \ CW5,\n\nDMG * PerkDMG * TODMG * Shock * CardDMMastery * CannonAssist)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_cr5
+    name: EP eDamage CR5
+    sheet: eDamage
+    cell: CR5
+    excel_formula: "=LET(\n  Base, $AN$45,\n  Lab, 1+(2%*BN5),\n  WSPlus, $BJ$5,\n  CardDMG, IF(AND($AX$35, $AX$38), $AV$38*IF($AX$39,\
+      \ 1+(0.4*(1+BO5)), 1), 1),\n\nBase * Lab * WSPlus * CardDMG)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_cz5
+    name: EP eDamage CZ5
+    sheet: eDamage
+    cell: CZ5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\nEPD_CRIT_CHANCE($BF$7, AND($AX$35,\
+      \ $AX$43), RIGHT($AU$43, 1), $BK$7, $BL$7, $AM$9 + SubstatAssistCap * $AO$9, $AX$44, BT5))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_da5
+    name: EP eDamage DA5
+    sheet: eDamage
+    cell: DA5
+    excel_formula: "=LET(\n  Base, $AN$48,\n  Lab, 1+(3%*BU5),\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n\
+      \  Substat, $AM$10 + SubstatAssistCap * $AO$10,\n  WSPlus, $BJ$8,\n  Relics, 1+$BK$8,\n  Vault, 1+$BL$8,\n\n(Base *\
+      \ Lab + Substat) * WSPlus * Relics * Vault)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_db5
+    name: EP eDamage DB5
+    sheet: eDamage
+    cell: DB5
+    excel_formula: "=LET(\n  Base, $AN$57,\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n  Substat, $AM$13\
+      \ + SubstatAssistCap * $AO$13,\n  Lab, 0.1%*BV5,\n  CardCCMastery, IF($AX$44, 1%*(1+BT5), 0),\n\nBase + Substat + Lab\
+      \ + CardCCMastery)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dc5
+    name: EP eDamage DC5
+    sheet: eDamage
+    cell: DC5
+    excel_formula: "=LET(\n  Base, $AN$58,\n  Lab, 1+(2%*BW5),\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n\
+      \  Substat, $AM$14 + SubstatAssistCap * $AO$14,\n  WSPlus, $BJ$18,\n  Relics, 1+$BK$18,\n  Vault, 1+$BL$18,\n  CardCCMastery,\
+      \ IF($AX$44, 1+(1%*(1+BT5)), 1),\n\n(Base * Lab + Substat) * WSPlus * Relics * Vault * CardCCMastery)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dd5
+    name: EP eDamage DD5
+    sheet: eDamage
+    cell: DD5
+    excel_formula: =EPD_CRITICAL(CZ5, DA5, DB5, DC5, $AM$7+$AR$7)
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_de5
+    name: EP eDamage DE5
+    sheet: eDamage
+    cell: DE5
+    excel_formula: =EPD_UWCRITICAL(CZ5, DA5, DB5, DC5)
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_df5
+    name: EP eDamage DF5
+    sheet: eDamage
+    cell: DF5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n  \n  EPD_MULTISHOT(\n    EPD_MSC($BF$11,\
+      \ $AM$16 + SubstatAssistCap * $AO$16, $BL$11),\n    EPD_MST($BF$12, $AM$17 + SubstatAssistCap * $AO$17))\n)"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dg5
+    name: EP eDamage DG5
+    sheet: eDamage
+    cell: DG5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n\n  BSC, EPD_BSC($BF$15, $AM$20 +\
+      \ SubstatAssistCap * $AO$20, $BL$15),\n  BST, EPD_BST($BF$16, IF(AND($AX$11, $AX$14), $AW$14, 0), $AM$21 + SubstatAssistCap\
+      \ * $AO$21),\n\nEPD_BOUNCESHOT(BSC, BST, $AM$6+$AR$6))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_di5
+    name: EP eDamage DI5
+    sheet: eDamage
+    cell: DI5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n\n  EPD_RAPIDFIRE(\n    EPD_RFC($BF$13,\
+      \ $AM$18 + SubstatAssistCap * $AO$18, $BL$13),\n    EPD_RFD($BF$14, $AM$19 + SubstatAssistCap * $AO$19),\n    DJ5)\n\
+      )"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dj5
+    name: EP eDamage DJ5
+    sheet: eDamage
+    cell: DJ5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n  ASPD, EPD_ASPD($BF$6, $BH$6, BX5,\
+      \ AND($AX$35, $AX$41), RIGHT($AU$41,1),\n       $AM$8 + SubstatAssistCap * $AO$8, $BK$6, $BL$6, $AX$42, BY5),\n\nBULLET_PER_SECOND(ASPD))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dk5
+    name: EP eDamage DK5
+    sheet: eDamage
+    cell: DK5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n  LabLevel, IF($AL$49, BZ5, 0),\n\
+      EPD_RANGE($BF$9, AND($AX$35, $AX$45), RIGHT($AU$45, 1), LabLevel, $AM$11 + SubstatAssistCap * $AO$11))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dl5
+    name: EP eDamage DL5
+    sheet: eDamage
+    cell: DL5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\nEPD_DPM($BF$10, $BH$10, CA5, $AM$12\
+      \ + SubstatAssistCap * $AO$12, $BK$10, $BL$10, $AX$46, CB5))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dm5
+    name: EP eDamage DM5
+    sheet: eDamage
+    cell: DM5
+    excel_formula: =EPD_RANGEDPM($DK5, $DL5, $AX$23)
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dp5
+    name: EP eDamage DP5
+    sheet: eDamage
+    cell: DP5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n  Substat, $AM$15 + SubstatAssistCap\
+      \ * $AO$15,\n\nEPD_MAXREND($AL$59, CE5, Substat, $BH$19))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_ds5
+    name: EP eDamage DS5
+    sheet: eDamage
+    cell: DS5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  SLQ, $AX$8,\n  SLA, LET(\n    Substat,\
+      \ $AM$29 + SubstatAssistCap * $AO$29,\n    STAT_UW_SL_FINAL_ANGLE($BI$27, Substat)),\n  SLLR, STAT_UW_SL_FINAL_LR($BK$27,\
+      \ DM5),\n  SLB, LET(\n    Substat, $AM$28 + SubstatAssistCap * $AO$28,\n    STAT_UW_SL_FINAL_DMG($BH$27, SLLR, Substat,\
+      \ $BK$32, $BL$32, AND($AX$11, $AX$18))),\n  SLC, EP_UW_SL_COVERAGE(SLQ, SLA),\n\nIF($BG$27, EP_SL_FINAL_BONUS(SLC, SLB),\
+      \ 1))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dt5
+    name: EP eDamage DT5
+    sheet: eDamage
+    cell: DT5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  DWB, LET(\n    Substat, $AM$25\
+      \ + SubstatAssistCap * $AO$25,\n    STAT_UW_DW_FINAL_DMG($BH$24, Substat)),\n  DWQ, LET(\n    Substat, $AM$26 + SubstatAssistCap\
+      \ * $AO$26,\n    STAT_UW_DW_FINAL_QTY($BI$24, Substat, AND($AX$11, $AX$17))),\n  DWC, LET(\n    Substat, $AM$27 + SubstatAssistCap\
+      \ * $AO$27,\n    STAT_UW_DW_FINAL_CD($BJ$24, Substat, $DR$5)),\n\nEP_DW_DPS($BG$24, DWB, DWQ, DWC, CH5))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_du5
+    name: EP eDamage DU5
+    sheet: eDamage
+    cell: DU5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  HasDC, ($AM$24+$AR$24)>0,\n  CLB,\
+      \ LET(\n    Substat, $AM$33 + SubstatAssistCap * $AO$33,\n    STAT_UW_CL_FINAL_DMG($BH$25, Substat, AND($AX$11, $AX$20))),\n\
+      \  CLQ, LET(\n    Substat, $AM$34 + SubstatAssistCap * $AO$34,\n    STAT_UW_CL_FINAL_QTY($BI$25, Substat, HasDC)),\n\
+      \  CLC, LET(\n    Substat, $AM$35 + SubstatAssistCap * $AO$35,\n    STAT_UW_CL_FINAL_CH($BJ$25, Substat)),\n\nIF($BG$25,\
+      \ EP_CL_DPS(CLB, CLQ, CLC, $DF5*$DH5*DI5, DJ5), 0))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dv5
+    name: EP eDamage DV5
+    sheet: eDamage
+    cell: DV5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  SMB, LET(\n    Substat, $AM$30\
+      \ + SubstatAssistCap * $AO$30,\n    STAT_UW_SM_FINAL_DMG($BH$26, Substat)),\n  SMQ, LET(\n    Substat, $AM$31 + SubstatAssistCap\
+      \ * $AO$31,\n    STAT_UW_SM_FINAL_QTY($BI$26, Substat, AND($AX$11, $AX$19))),\n  SMC, LET(\n    Substat, $AM$32 + SubstatAssistCap\
+      \ * $AO$32,\n    STAT_UW_SM_FINAL_CD($BJ$26, Substat, $DR$5)),\n  SMCF, STAT_UW_SM_FINAL_CF(SMB, $BK$26),\n\nIF($BG$26,\
+      \ EP_SM_DPS(SMB, SMQ, SMC, SMCF, DX5, $AX$29), 0))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dw5
+    name: EP eDamage DW5
+    sheet: eDamage
+    cell: DW5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  SLLR, STAT_UW_SL_FINAL_LR($BK$27,\
+      \ DM5),\n  SLB, LET(\n    Substat, $AM$28 + SubstatAssistCap * $AO$28,\n    STAT_UW_SL_FINAL_DMG($BH$27, SLLR, Substat,\
+      \ $BK$32, $BL$32, AND($AX$11, $AX$18))),\n  SMB, LET(\n    Substat, $AM$30 + SubstatAssistCap * $AO$30,\n    STAT_UW_SM_FINAL_DMG(IF($BG$26,\
+      \ $BH$26, 10), Substat)),\n\nIF(AND($BG$27, $BG$28), EP_SLM_DPS(SMB, SLB, 20-CF5, DX5, $AX$29), 0))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_dy5
+    name: EP eDamage DY5
+    sheet: eDamage
+    cell: DY5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$22, $BK$37, CN5),\n  Substat, $AM$36 + SubstatAssistCap\
+      \ * $AO$36,\n\n  PSDmg, $BH$29+Substat,\n  PSDur, $BI$29,\n  PSCD, $BJ$29,\n  PSRend, 1+DP5*CG5*3%,\n\nIF($BG$29, PSDmg\
+      \ * (PSDur / PSCd) * $DZ$5 * $AX$30 * PSRend, 0))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_eb5
+    name: EP eDamage EB5
+    sheet: eDamage
+    cell: EB5
+    excel_formula: "=LET(\n  CardUC, IF(AND($AX$35,$AX$49), 1 + ($AV$49 + IF($AX$50, 0.33%*(1+CJ5), 0)) * (DA5 - 1), 1),\n\
+      \  UWAdditionalDMG, $CQ$6 * EA5,\n\n  DW, DT5,\n  CL, DU5,\n  SM, DV5,\n  SLM, DW5,\n  SL, DS5,\n  PS, DY5,\n\nEP_UW_TOTAL_DAMAGE(DW,\
+      \ CL, SM, SLM, SL, PS, 0, UWAdditionalDMG, DO5, CardUC))"
+    notes: Extracted directly from Effective Paths workbook. References other cells/functions in workbook.
+  - id: ep_edamage_cs5
+    name: EP eDamage CS5
+    sheet: eDamage
+    cell: CS5
+    excel_formula: =EPD_SPB(AND($AX$11, $AX$13), BP5, $AV$13)
+    notes: Dependency cell for eDamage calc.
+  - id: ep_edamage_ct5
+    name: EP eDamage CT5
+    sheet: eDamage
+    cell: CT5
+    excel_formula: =IF(AND($AX$11, $AX$15), 1.5*(1+1%*BQ5), 1)
+    notes: Dependency cell for eDamage calc.
+  - id: ep_edamage_cu5
+    name: EP eDamage CU5
+    sheet: eDamage
+    cell: CU5
+    excel_formula: "=LET(\n  HasDC, ($AM$24+$AR$24)>0,\n\nIF(AND($BG$25, $AL$65), (1+(0.1+(0.04*BR5))*IF(HasDC, 2*($AM$24+$AR$24),\
+      \ 1)), 1))"
+    notes: Dependency cell for eDamage calc.
+  - id: ep_edamage_cv5
+    name: EP eDamage CV5
+    sheet: eDamage
+    cell: CV5
+    excel_formula: =IF($AX$53, 1+(0.5*(1+BS5)), 1)
+    notes: Dependency cell for eDamage calc.
+  - id: ep_edamage_cw5
+    name: EP eDamage CW5
+    sheet: eDamage
+    cell: CW5
+    excel_formula: =EPG_MODULE_BONUS($AM$4, $AN$4, $AO$4, $BK$34, CK5)
+    notes: Dependency cell for eDamage calc.
+  - id: ep_edamage_dh5
+    name: EP eDamage DH5
+    sheet: eDamage
+    cell: DH5
+    excel_formula: "=LET(\n  SubstatAssistCap, EPG_ASSIST_SUB_CAP($AN$4, $BK$35, CL5),\n\n  BSC, EPD_BSC($BF$15, $AM$20 +\
+      \ SubstatAssistCap * $AO$20, $BL$15),\n  BST, EPD_BST($BF$16, IF(AND($AX$11, $AX$14), $AW$14, 0), $AM$21 + SubstatAssistCap\
+      \ * $AO$21),\n\nEPD_BOUNCESHOT(BSC, BST, 0))"
+    notes: Dependency cell for eDamage calc.
+eHP:
+  Defense %:
+    source: effective_paths
+    status: complete
+  Health:
+    source: effective_paths
+    status: complete
+  Regen:
+    source: effective_paths
+    status: complete
+  Wall Health:
+    source: effective_paths
+    status: complete
+  Wall Regen:
+    source: effective_paths
+    status: complete
+_meta:
+  effective_paths_sha256: b40302c6d2645dc2d3cf9d880117c6f5af15189afd8cbfe3c548c577167e70b1
+  generated_at: '2026-02-02'
+  note: Extracted formulas are verbatim strings from workbook (no evaluation).

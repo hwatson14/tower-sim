@@ -1,0 +1,3 @@
+node_id,tree_id,tree_scope,detailed_numeric_ladder_status,owning_domain_for_effects,simulator_handling,source,verification_status
+VAULT_POWER_TREE,power,tower_related_buffs,unsurfaced_in_current_bundle,economy_or_effect_owner_domain,treat as unresolved unless a sourced numeric ladder is later promoted,kb/economy/sources/wiki-economy-and-vault-baselines.md,ownership_boundary_confirmed_numeric_ladders_unresolved
+VAULT_HARMONY_TREE,harmony,non_tower_and_quality_of_life_buffs,unsurfaced_in_current_bundle,economy_or_effect_owner_domain,treat as unresolved unless a sourced numeric ladder is later promoted,kb/economy/sources/wiki-economy-and-vault-baselines.md,ownership_boundary_confirmed_numeric_ladders_unresolved

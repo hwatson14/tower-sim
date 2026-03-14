@@ -1,0 +1,16 @@
+level,cost,value_multiplier,source_ref
+0,Unlocked,0.05,internalized_source_snapshot
+1,400,0.1,internalized_source_snapshot
+2,500,0.15,internalized_source_snapshot
+3,610,0.2,internalized_source_snapshot
+4,730,0.25,internalized_source_snapshot
+5,860,0.3,internalized_source_snapshot
+6,1000,0.35,internalized_source_snapshot
+7,1150,0.4,internalized_source_snapshot
+8,1300,0.45,internalized_source_snapshot
+9,1500,0.5,internalized_source_snapshot
+10,1700,0.55,internalized_source_snapshot
+11,1950,0.6,internalized_source_snapshot
+12,2200,0.65,internalized_source_snapshot
+13,2450,0.7,internalized_source_snapshot
+14,2700,0.75,internalized_source_snapshot

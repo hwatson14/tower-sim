@@ -1,0 +1,8 @@
+stage_order,stage_id,input_signal,operation,output_signal,rule_confidence,token_confidence,notes
+1,stage__incoming_enemy_attack,enemy_attack,read,incoming_attack,LOW,PROVISIONAL,Engine scaffold only; source magnitude comes from Layer 3 tables
+2,stage__apply_def_pct,incoming_attack,multiply_by_(1-def_pct),post_def_pct_attack,HIGH,VERIFIED,Public-source verified: Defense Percent before Defense Absolute.
+3,stage__apply_def_abs,post_def_pct_attack,subtract_def_abs_floor_zero,post_def_abs_attack,HIGH,VERIFIED,Public-source verified anchor stage before separate DR sources.
+4,stage__apply_separate_dr_bundle,post_def_abs_attack,apply_post_def_abs_dr_bundle,post_separate_dr_attack,HIGH,VERIFIED,"Public-source verified post-Defense-Absolute DR bundle. Includes Chrono Field Damage Reduction, Primordial Collapse, Flame Bot, and other separate DR sources verified to occur after Defense Absolute."
+5,stage__route_active_layer,post_separate_dr_attack,route_wall_then_tower_if_applicable,routed_attack,MEDIUM,USER_OBSERVED,"User-observed: wall routes first while alive, then tower once wall is down."
+6,stage__apply_damage,routed_attack,subtract_from_active_health_layer,health_state,MEDIUM,USER_OBSERVED,User-observed routing/damage application on current active layer.
+7,stage__evaluate_contact_effects,health_state,apply_contact_triggers,post_contact_state,MEDIUM,USER_OBSERVED,User-observed: contact can damage active HP layer then resolve thorns on the same event.
