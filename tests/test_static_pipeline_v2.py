@@ -17,6 +17,16 @@ from tower_sim.engines.stat_input_compiler import (
 from tower_sim.engines.static_pipeline_v2 import (
     RuntimeOverlayMaterialization,
     StageMaterialization,
+    audit_static_stage_baselines,
+    build_runtime_execution_plan,
+    execute_runtime_state_pass,
+    materialize_and_execute_runtime_state,
+    materialize_pre_combat_transition_artifact,
+    materialize_runtime_execution_snapshot,
+    materialize_runtime_state_transition_artifact,
+    materialize_runtime_execution_phase_bundle,
+    materialize_runtime_pre_combat_balance_sheet,
+    materialize_runtime_transition_checkpoint,
     materialize_runtime_overlays,
     materialize_runtime_state,
     materialize_static_stages,
@@ -855,3 +865,855 @@ def test_runtime_overlay_fails_closed_when_overlay_table_missing() -> None:
     with patch("tower_sim.engines.static_pipeline_v2._PERKS_TABLE_PATH", Path("tables/inputs/perks/not_real.csv")):
         with pytest.raises(StaticV2ContractError, match="runtime_overlay_missing_table"):
             materialize_runtime_overlays(snapshot)
+
+
+
+def test_runtime_execution_pass_returns_deterministic_artifact() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+
+    artifact = execute_runtime_state_pass(runtime_state)
+
+    assert artifact.executed_overlay_order == required_runtime_overlay_families()
+    assert artifact.applied_overlay_counts == runtime_state.overlay_counts
+    assert len(artifact.execution_trace) == len(required_runtime_overlay_families())
+    assert all(step.startswith("apply_overlay_family:") for step in artifact.execution_trace)
+    assert len(artifact.start_of_run_stat_totals) > 0
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_count_missing() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts={
+            k: v for k, v in runtime_state.overlay_counts.items() if k != "perks"
+        },
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_missing_overlay_count:perks",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_start_values_empty() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken_values = dict(runtime_state.start_of_run_stat_values)
+    first_key = next(iter(broken_values.keys()))
+    broken_values[first_key] = ()
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=broken_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_empty_start_values",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_count_mismatches_rows() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken_counts = dict(runtime_state.overlay_counts)
+    broken_counts["perks"] = broken_counts["perks"] + 1
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=broken_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_overlay_count_mismatch:perks",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_row_stage_is_unexpected() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_row = runtime_state.overlay_rows[0]
+    broken_rows = (
+        first_row.__class__(
+            family=first_row.family,
+            stage="baseline_loadout",
+            payload=first_row.payload,
+            provenance=first_row.provenance,
+        ),
+        *runtime_state.overlay_rows[1:],
+    )
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_plan_overlay_row_stage_unexpected",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_materialization_builds_state_and_execution_artifact() -> None:
+    materialized = materialize_and_execute_runtime_state(_fixture_snapshot())
+
+    assert materialized.runtime_state.overlay_order == required_runtime_overlay_families()
+    assert materialized.execution_pass.executed_overlay_order == required_runtime_overlay_families()
+    assert materialized.execution_pass.applied_overlay_counts == materialized.runtime_state.overlay_counts
+
+
+def test_runtime_execution_pass_fails_closed_when_start_value_count_mismatches_inputs() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_key = next(iter(runtime_state.start_of_run_stat_values.keys()))
+    broken_values = dict(runtime_state.start_of_run_stat_values)
+    broken_values[first_key] = (*broken_values[first_key], 1.0)
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=broken_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_start_value_count_mismatch",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_start_values_missing() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values={},
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_missing_start_of_run_values",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_start_value_stat_unexpected() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken_values = dict(runtime_state.start_of_run_stat_values)
+    broken_values["synthetic_unknown_stat"] = (1.0,)
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=broken_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_unexpected_start_value_stats:synthetic_unknown_stat",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_payload_missing_key() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_row = runtime_state.overlay_rows[0]
+    broken_rows = (
+        first_row.__class__(
+            family=first_row.family,
+            stage=first_row.stage,
+            payload={},
+            provenance=first_row.provenance,
+        ),
+        *runtime_state.overlay_rows[1:],
+    )
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_overlay_payload_missing_key",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_payload_non_finite() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_row = runtime_state.overlay_rows[0]
+    broken_rows = (
+        first_row.__class__(
+            family=first_row.family,
+            stage=first_row.stage,
+            payload={"reference_rows": float("nan")},
+            provenance=first_row.provenance,
+        ),
+        *runtime_state.overlay_rows[1:],
+    )
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_overlay_payload_non_finite",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_pass_fails_closed_when_overlay_row_provenance_missing() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_row = runtime_state.overlay_rows[0]
+    broken_rows = (
+        first_row.__class__(
+            family=first_row.family,
+            stage=first_row.stage,
+            payload=first_row.payload,
+            provenance="   ",
+        ),
+        *runtime_state.overlay_rows[1:],
+    )
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_overlay_row_missing_provenance",
+    ):
+        execute_runtime_state_pass(broken)
+
+
+def test_runtime_execution_plan_builds_ordered_steps_from_overlay_order() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+
+    plan = build_runtime_execution_plan(runtime_state)
+
+    assert len(plan.ordered_steps) == sum(runtime_state.overlay_counts.values())
+    families = [step.family for step in plan.ordered_steps]
+    assert families == list(required_runtime_overlay_families())
+    assert plan.per_family_step_counts == runtime_state.overlay_counts
+
+
+def test_runtime_execution_plan_fails_closed_when_overlay_order_unexpected() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=("perks",),
+        overlay_rows=runtime_state.overlay_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_plan_overlay_order_unexpected",
+    ):
+        build_runtime_execution_plan(broken)
+
+
+def test_runtime_execution_plan_fails_closed_when_overlay_rows_missing_for_family() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    broken_rows = tuple(row for row in runtime_state.overlay_rows if row.family != "perks")
+    broken = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_execution_plan_missing_overlay_rows:perks",
+    ):
+        build_runtime_execution_plan(broken)
+
+
+def test_runtime_execution_snapshot_builds_with_trace_and_totals() -> None:
+    snapshot = materialize_runtime_execution_snapshot(_fixture_snapshot())
+
+    assert snapshot.plan.per_family_step_counts == snapshot.execution_pass.applied_overlay_counts
+    assert len(snapshot.execution_pass.execution_trace) == len(required_runtime_overlay_families())
+    assert snapshot.start_of_run_grand_total > 0.0
+    assert set(snapshot.overlay_numeric_totals_by_family.keys()) == set(required_runtime_overlay_families())
+
+
+def test_runtime_execution_snapshot_fails_closed_when_trace_mismatch() -> None:
+    runtime_snapshot = materialize_runtime_state(_fixture_snapshot())
+
+    class _BrokenPass:
+        executed_overlay_order = required_runtime_overlay_families()
+        start_of_run_stat_totals = {"tower_hp": 1.0}
+        applied_overlay_counts = runtime_snapshot.overlay_counts
+        execution_trace = ("apply_overlay_family:perks:rows=999",)
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_and_execute_runtime_state",
+        return_value=type("_M", (), {"runtime_state": runtime_snapshot, "execution_pass": _BrokenPass()})(),
+    ):
+        with pytest.raises(StaticV2ContractError, match="runtime_execution_snapshot_trace_mismatch"):
+            materialize_runtime_execution_snapshot(_fixture_snapshot())
+
+
+def test_runtime_execution_snapshot_fails_closed_when_overlay_payload_has_non_finite_number() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    first_row = runtime_state.overlay_rows[0]
+    broken_rows = (
+        first_row.__class__(
+            family=first_row.family,
+            stage=first_row.stage,
+            payload={"reference_rows": float("nan")},
+            provenance=first_row.provenance,
+        ),
+        *runtime_state.overlay_rows[1:],
+    )
+    broken_state = runtime_state.__class__(
+        static_stage_order=runtime_state.static_stage_order,
+        stage_stat_inputs_by_stage=runtime_state.stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=runtime_state.stage_stat_values_by_stage,
+        start_of_run_stat_inputs=runtime_state.start_of_run_stat_inputs,
+        start_of_run_stat_values=runtime_state.start_of_run_stat_values,
+        overlay_order=runtime_state.overlay_order,
+        overlay_rows=broken_rows,
+        overlay_counts=runtime_state.overlay_counts,
+    )
+
+    materialized = materialize_and_execute_runtime_state(_fixture_snapshot())
+    broken_materialized = type(
+        "_M",
+        (),
+        {"runtime_state": broken_state, "execution_pass": materialized.execution_pass},
+    )()
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_and_execute_runtime_state",
+        return_value=broken_materialized,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_execution_overlay_payload_non_finite",
+        ):
+            materialize_runtime_execution_snapshot(_fixture_snapshot())
+
+
+def test_pre_combat_transition_artifact_builds_and_matches_snapshot_totals() -> None:
+    artifact = materialize_pre_combat_transition_artifact(_fixture_snapshot())
+
+    assert artifact.start_of_run_grand_total > 0.0
+    assert len(artifact.ordered_transition_steps) > 0
+    assert set(artifact.transition_totals_by_family.keys()) == set(required_runtime_overlay_families())
+
+
+def test_pre_combat_transition_artifact_supports_multi_row_families_and_mixed_payload_shapes() -> None:
+    snapshot = _fixture_snapshot()
+    overlays = materialize_runtime_overlays(snapshot)
+    row_cls = overlays.by_family["perks"][0].__class__
+
+    custom = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            "perks": [
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 3, "bonus": 2.5, "note": "alpha", "flag": True},
+                    provenance="table:custom_perks_a",
+                ),
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 4, "bonus": 1.0, "note": "beta"},
+                    provenance="table:custom_perks_b",
+                ),
+            ],
+            "battle_conditions": [
+                row_cls(
+                    family="battle_conditions",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 5, "meta": "ok"},
+                    provenance="table:custom_bc",
+                )
+            ],
+            "cash_workshop_purchases": [
+                row_cls(
+                    family="cash_workshop_purchases",
+                    stage="runtime_overlay",
+                    payload={
+                        "tracked_stats": 2,
+                        "total_start_coin_level": 10,
+                        "total_end_level": 14,
+                        "total_expected_purchases": 4,
+                        "note": "mixed",
+                    },
+                    provenance="ids:WS",
+                )
+            ],
+            "free_upgrades": [
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.1, "defense": 0.2, "utility": 0.3, "bonus": 1, "flag": False},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.4, "defense": 0.0, "utility": 0.6, "label": "row2"},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+            ],
+            "eals_realized_effect": [
+                row_cls(
+                    family="eals_realized_effect",
+                    stage="runtime_overlay",
+                    payload={"configured_skip_pct": 5.0, "workshop_level": 10, "extra": 1.5},
+                    provenance="static_stage:baseline_gem_respec",
+                )
+            ],
+            "ehls_realized_effect": [
+                row_cls(
+                    family="ehls_realized_effect",
+                    stage="runtime_overlay",
+                    payload={"configured_skip_pct": 6.0, "workshop_level": 11, "extra": 2.5},
+                    provenance="static_stage:baseline_gem_respec",
+                )
+            ],
+        },
+    )
+
+    artifact = materialize_pre_combat_transition_artifact(snapshot, overlays=custom)
+
+    assert len(artifact.ordered_transition_steps) == 8
+    assert artifact.transition_totals_by_family["perks"] == pytest.approx(10.5)
+    assert artifact.transition_totals_by_family["free_upgrades"] == pytest.approx(2.6)
+
+
+def test_pre_combat_transition_artifact_fails_closed_when_family_totals_mismatch_snapshot() -> None:
+    snapshot = _fixture_snapshot()
+    execution_snapshot = materialize_runtime_execution_snapshot(snapshot)
+    broken_totals = dict(execution_snapshot.overlay_numeric_totals_by_family)
+    broken_totals["perks"] = broken_totals["perks"] + 1.0
+    broken_snapshot = execution_snapshot.__class__(
+        plan=execution_snapshot.plan,
+        execution_pass=execution_snapshot.execution_pass,
+        overlay_numeric_totals_by_family=broken_totals,
+        start_of_run_grand_total=execution_snapshot.start_of_run_grand_total,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_runtime_execution_snapshot",
+        return_value=broken_snapshot,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_pre_combat_transition_family_total_mismatch:perks",
+        ):
+            materialize_pre_combat_transition_artifact(snapshot)
+
+
+def test_runtime_state_transition_artifact_builds_from_pre_combat_artifact() -> None:
+    artifact = materialize_runtime_state_transition_artifact(_fixture_snapshot())
+
+    assert artifact.start_of_run_grand_total > 0.0
+    assert artifact.final_pre_combat_total >= artifact.start_of_run_grand_total
+    assert len(artifact.ordered_steps) > 0
+    assert set(artifact.applied_totals_by_family.keys()) == set(required_runtime_overlay_families())
+
+
+def test_runtime_state_transition_artifact_fails_closed_on_family_order_mismatch_with_multi_row_families() -> None:
+    pre = materialize_pre_combat_transition_artifact(_fixture_snapshot())
+    steps = list(pre.ordered_transition_steps)
+    perks_steps = [s for s in steps if s.family == "perks"]
+    free_steps = [s for s in steps if s.family == "free_upgrades"]
+    others = [s for s in steps if s.family not in {"perks", "free_upgrades"}]
+    if not free_steps:
+        free_steps = [
+            pre.ordered_transition_steps[0].__class__(
+                family="free_upgrades",
+                row_index=1,
+                numeric_payload_total=1.0,
+            )
+        ]
+        steps = [
+            pre.ordered_transition_steps[0].__class__(
+                family="perks",
+                row_index=1,
+                numeric_payload_total=1.0,
+            ),
+            *free_steps,
+            *others,
+        ]
+        pre = pre.__class__(
+            start_of_run_grand_total=pre.start_of_run_grand_total,
+            transition_totals_by_family={
+                **pre.transition_totals_by_family,
+                "perks": 1.0,
+                "free_upgrades": 1.0,
+            },
+            ordered_transition_steps=tuple(steps),
+        )
+
+    broken_steps = tuple([free_steps[0], *perks_steps, *others])
+    broken = pre.__class__(
+        start_of_run_grand_total=pre.start_of_run_grand_total,
+        transition_totals_by_family=pre.transition_totals_by_family,
+        ordered_transition_steps=broken_steps,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_pre_combat_transition_artifact",
+        return_value=broken,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_state_transition_family_order_mismatch",
+        ):
+            materialize_runtime_state_transition_artifact(_fixture_snapshot())
+
+
+def test_runtime_state_transition_artifact_fails_closed_on_row_index_mismatch_with_multi_rows() -> None:
+    snapshot = _fixture_snapshot()
+    overlays = materialize_runtime_overlays(snapshot)
+    row_cls = overlays.by_family["perks"][0].__class__
+    custom = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            **overlays.by_family,
+            "perks": [
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 3},
+                    provenance="table:custom_a",
+                ),
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 4},
+                    provenance="table:custom_b",
+                ),
+            ],
+            "free_upgrades": [
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.1, "defense": 0.2, "utility": 0.3},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.4, "defense": 0.5, "utility": 0.6},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+            ],
+        },
+    )
+    pre = materialize_pre_combat_transition_artifact(snapshot, overlays=custom)
+
+    broken_steps = list(pre.ordered_transition_steps)
+    perks_positions = [i for i, s in enumerate(broken_steps) if s.family == "perks"]
+    if len(perks_positions) >= 2:
+        second = broken_steps[perks_positions[1]]
+        broken_steps[perks_positions[1]] = second.__class__(
+            family=second.family,
+            row_index=3,
+            numeric_payload_total=second.numeric_payload_total,
+        )
+    broken = pre.__class__(
+        start_of_run_grand_total=pre.start_of_run_grand_total,
+        transition_totals_by_family=pre.transition_totals_by_family,
+        ordered_transition_steps=tuple(broken_steps),
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_pre_combat_transition_artifact",
+        return_value=broken,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_state_transition_row_index_mismatch:perks",
+        ):
+            materialize_runtime_state_transition_artifact(snapshot)
+
+
+def test_runtime_transition_checkpoint_builds_and_balances_final_total() -> None:
+    checkpoint = materialize_runtime_transition_checkpoint(_fixture_snapshot())
+
+    assert checkpoint.total_delta_from_start >= 0.0
+    assert checkpoint.expected_final_pre_combat_total == pytest.approx(
+        checkpoint.transition.final_pre_combat_total
+    )
+
+
+def test_runtime_state_transition_artifact_fails_closed_on_interleaved_family_order_with_multi_rows() -> None:
+    snapshot = _fixture_snapshot()
+    overlays = materialize_runtime_overlays(snapshot)
+    row_cls = overlays.by_family["perks"][0].__class__
+    custom = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            **overlays.by_family,
+            "perks": [
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 3},
+                    provenance="table:custom_perks_a",
+                ),
+                row_cls(
+                    family="perks",
+                    stage="runtime_overlay",
+                    payload={"reference_rows": 4},
+                    provenance="table:custom_perks_b",
+                ),
+            ],
+            "free_upgrades": [
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.1, "defense": 0.2, "utility": 0.3},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+                row_cls(
+                    family="free_upgrades",
+                    stage="runtime_overlay",
+                    payload={"attack": 0.4, "defense": 0.5, "utility": 0.6},
+                    provenance="static_stage:baseline_gem_respec",
+                ),
+            ],
+        },
+    )
+    pre = materialize_pre_combat_transition_artifact(snapshot, overlays=custom)
+    steps = list(pre.ordered_transition_steps)
+    perks = [s for s in steps if s.family == "perks"]
+    free = [s for s in steps if s.family == "free_upgrades"]
+    others = [s for s in steps if s.family not in {"perks", "free_upgrades"}]
+    assert len(perks) >= 2 and len(free) >= 1
+
+    interleaved = (perks[0], free[0], perks[1], *others, *free[1:])
+    broken = pre.__class__(
+        start_of_run_grand_total=pre.start_of_run_grand_total,
+        transition_totals_by_family=pre.transition_totals_by_family,
+        ordered_transition_steps=interleaved,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_pre_combat_transition_artifact",
+        return_value=broken,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_state_transition_family_order_mismatch:perks",
+        ):
+            materialize_runtime_state_transition_artifact(snapshot)
+
+
+def test_runtime_transition_checkpoint_fails_closed_when_final_total_mismatch() -> None:
+    transition = materialize_runtime_state_transition_artifact(_fixture_snapshot())
+    broken = transition.__class__(
+        start_of_run_grand_total=transition.start_of_run_grand_total,
+        final_pre_combat_total=transition.final_pre_combat_total + 5.0,
+        ordered_steps=transition.ordered_steps,
+        applied_totals_by_family=transition.applied_totals_by_family,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_runtime_state_transition_artifact",
+        return_value=broken,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_transition_checkpoint_final_total_mismatch",
+        ):
+            materialize_runtime_transition_checkpoint(_fixture_snapshot())
+
+
+def test_runtime_pre_combat_balance_sheet_builds_in_required_family_order() -> None:
+    sheet = materialize_runtime_pre_combat_balance_sheet(_fixture_snapshot())
+
+    assert sheet.total_delta >= 0.0
+    assert sheet.final_total == pytest.approx(sheet.start_total + sheet.total_delta)
+    assert [family for family, _ in sheet.family_deltas_in_order] == list(required_runtime_overlay_families())
+
+
+def test_runtime_pre_combat_balance_sheet_fails_closed_when_family_delta_missing() -> None:
+    checkpoint = materialize_runtime_transition_checkpoint(_fixture_snapshot())
+    broken_applied = {
+        k: v for k, v in checkpoint.transition.applied_totals_by_family.items() if k != "perks"
+    }
+    broken_transition = checkpoint.transition.__class__(
+        start_of_run_grand_total=checkpoint.transition.start_of_run_grand_total,
+        final_pre_combat_total=checkpoint.transition.final_pre_combat_total,
+        ordered_steps=checkpoint.transition.ordered_steps,
+        applied_totals_by_family=broken_applied,
+    )
+    broken_checkpoint = checkpoint.__class__(
+        transition=broken_transition,
+        expected_final_pre_combat_total=checkpoint.expected_final_pre_combat_total,
+        total_delta_from_start=checkpoint.total_delta_from_start,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_runtime_transition_checkpoint",
+        return_value=broken_checkpoint,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_pre_combat_balance_sheet_missing_family_delta:perks",
+        ):
+            materialize_runtime_pre_combat_balance_sheet(_fixture_snapshot())
+
+
+def test_runtime_transition_checkpoint_fails_closed_when_cumulative_total_is_non_monotonic() -> None:
+    transition = materialize_runtime_state_transition_artifact(_fixture_snapshot())
+    steps = list(transition.ordered_steps)
+    first = steps[0]
+    steps[0] = first.__class__(
+        family=first.family,
+        row_index=first.row_index,
+        input_total=first.input_total,
+        cumulative_total=transition.start_of_run_grand_total - 1.0,
+    )
+    broken_transition = transition.__class__(
+        start_of_run_grand_total=transition.start_of_run_grand_total,
+        final_pre_combat_total=transition.final_pre_combat_total,
+        ordered_steps=tuple(steps),
+        applied_totals_by_family=transition.applied_totals_by_family,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_runtime_state_transition_artifact",
+        return_value=broken_transition,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_transition_checkpoint_non_monotonic_cumulative_total",
+        ):
+            materialize_runtime_transition_checkpoint(_fixture_snapshot())
+
+
+def test_static_stage_baseline_audit_builds_deterministic_summary() -> None:
+    audit = audit_static_stage_baselines(_fixture_snapshot())
+
+    assert audit.stage_order == required_static_stages()
+    for stage in required_static_stages():
+        assert audit.stat_input_counts_by_stage[stage] > 0
+        assert audit.unique_stat_counts_by_stage[stage] > 0
+        assert audit.stage_total_values[stage] > 0.0
+
+
+def test_static_stage_baseline_audit_fails_closed_when_stage_order_unexpected() -> None:
+    snapshot = _fixture_snapshot()
+    static = materialize_static_stages(snapshot)
+    broken = StageMaterialization(
+        by_stage={
+            "baseline_gem_respec": static.by_stage["baseline_gem_respec"],
+            "baseline_account": static.by_stage["baseline_account"],
+            "baseline_loadout": static.by_stage["baseline_loadout"],
+        },
+        missing=static.missing,
+        families_by_stage=static.families_by_stage,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="static_stage_audit_stage_order_unexpected",
+    ):
+        audit_static_stage_baselines(snapshot, stage_materialization=broken)
+
+
+def test_runtime_execution_phase_bundle_materializes_consistent_artifacts() -> None:
+    bundle = materialize_runtime_execution_phase_bundle(_fixture_snapshot())
+
+    assert bundle.static_stage_audit.stage_order == required_static_stages()
+    assert bundle.execution_plan.per_family_step_counts == bundle.runtime_state.overlay_counts
+    assert bundle.execution_pass.applied_overlay_counts == bundle.runtime_state.overlay_counts
+    assert bundle.execution_snapshot.execution_pass == bundle.execution_pass
+    assert bundle.transition_checkpoint.transition == bundle.runtime_state_transition
+    assert bundle.pre_combat_balance_sheet.final_total == pytest.approx(
+        bundle.transition_checkpoint.expected_final_pre_combat_total
+    )
+
+
+def test_runtime_execution_phase_bundle_fails_closed_when_balance_final_mismatches_checkpoint() -> None:
+    sheet = materialize_runtime_pre_combat_balance_sheet(_fixture_snapshot())
+    broken_sheet = sheet.__class__(
+        start_total=sheet.start_total,
+        final_total=sheet.final_total + 1.0,
+        total_delta=sheet.total_delta,
+        family_deltas_in_order=sheet.family_deltas_in_order,
+    )
+
+    with patch(
+        "tower_sim.engines.static_pipeline_v2.materialize_runtime_pre_combat_balance_sheet",
+        return_value=broken_sheet,
+    ):
+        with pytest.raises(
+            StaticV2ContractError,
+            match="runtime_phase_bundle_final_total_mismatch",
+        ):
+            materialize_runtime_execution_phase_bundle(_fixture_snapshot())
