@@ -13,6 +13,8 @@ top_level:
     - fixtures
     - contract_assets
     - docs
+    - kb
+    - legacy
 
   allowed_files:
     - README.md
@@ -26,8 +28,6 @@ top_level:
     - pytest.ini
     - .gitignore
     - .gitmodules
-    - CODEX_HANDOFF_V1_FULL.md
-    - STATUS_V1.yaml
 
   forbidden_dirs:
     - tools
@@ -179,8 +179,24 @@ exceptions:
     - "contract_assets/architecture/v35_draft/README.md"
     - "audit/reference/tower_sim_3_handover/**"
     - "docs/v2/TOWERSIM_V2_MASTER_SPEC.md"
+    - "legacy/governance_handoff/CODEX_HANDOFF_V1_FULL.md"
+    - "legacy/governance_handoff/STATUS_V1.yaml"
 
 
 docs:
   allowed_file_globs:
     - "**/*.md"
+
+
+kb:
+  allowed_file_globs:
+    - "**/*.md"
+    - "**/*.yaml"
+    - "**/*.yml"
+    - "**/*.json"
+    - "**/*.csv"
+    - "**/*.tsv"
+
+legacy:
+  allowed_file_globs:
+    - "**/*"

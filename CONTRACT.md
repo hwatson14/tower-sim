@@ -13,7 +13,12 @@
 - In documentation refactors, scope is docs plus the minimum enforcement updates needed to keep checks green.
 
 ## 2) Scope and intent (v1 locked)
-TowerSim is a deterministic simulator for *The Tower — Idle Tower Defense*. The v1 objective is to compute **maximum reachable wave (`MAX_WAVE` / `Wmax`)** for a fully specified scenario using explicit, auditable inputs.
+
+### 2.0 Active architecture targeting note
+- Active architecture target: `docs/v2/TOWERSIM_V2_MASTER_SPEC.md`.
+- Executable bridge objective in current repo: deterministic `MAX_WAVE` (`Wmax`) while migration completes.
+
+TowerSim is a deterministic simulator for *The Tower — Idle Tower Defense*. The active architecture target is the v2 model defined in `docs/v2/TOWERSIM_V2_MASTER_SPEC.md`. The currently executable bridge objective is to compute **maximum reachable wave (`MAX_WAVE` / `Wmax`)** for a fully specified scenario using explicit, auditable inputs.
 
 ### 2.1 Non-negotiable philosophy
 - Deterministic outcomes.
@@ -103,7 +108,7 @@ Top-level structure is machine-enforced by:
 - `TESTING.md` / `CONTRIBUTING.md` — process details.
 
 ### 7.2.1 Tiered truth artifacts
-- Tier-2 governance artifacts at repository root: `CODEX_HANDOFF_V1_FULL.md`, `STATUS_V1.yaml`, `REPO_MAP.yaml`.
+- Tier-2 governance artifacts: `legacy/governance_handoff/CODEX_HANDOFF_V1_FULL.md`, `legacy/governance_handoff/STATUS_V1.yaml`, `REPO_MAP.yaml`.
 - Tier-1 truth artifacts at repository root are governed references, not runtime mechanics loaders:
   - `towersim_static_ledger_latest.csv` — static contributor truth baseline.
   - `towersim_static_ledger_naming_contract_v1_10.md` — schema and naming contract for the static ledger.

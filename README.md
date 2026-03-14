@@ -1,6 +1,6 @@
 # TowerSim
 
-TowerSim is a deterministic simulator for *The Tower — Idle Tower Defense* focused on objective, auditable results from explicit inputs. The v1 target is `MAX_WAVE` (`Wmax`) under fail-closed, provenance-first rules.
+TowerSim is a deterministic simulator for *The Tower — Idle Tower Defense* focused on objective, auditable results from explicit inputs. The **active architecture target is v2** (`docs/v2/TOWERSIM_V2_MASTER_SPEC.md`), while the currently executable bridge objective remains deterministic `MAX_WAVE` (`Wmax`) under fail-closed, provenance-first rules.
 
 ## Authoritative documentation
 - **Repository contract (single authority):** [`CONTRACT.md`](./CONTRACT.md)
@@ -16,7 +16,12 @@ TowerSim is a deterministic simulator for *The Tower — Idle Tower Defense* foc
 - Fail-closed over silent fallback.
 - Simple, explicit architecture over abstraction-heavy design.
 
-## v1 scope at a glance
+## Active path and bridge scope at a glance
+Active architecture path:
+- Build toward the v2 canonical contributor-centric architecture in `docs/v2/TOWERSIM_V2_MASTER_SPEC.md`.
+- Keep governance and repository layout aligned to that v2 target.
+
+Bridge-executable scope (temporary, until v2 migration closes):
 In scope:
 - Deterministic stat/mechanics pipeline.
 - Deterministic `MAX_WAVE` objective evaluation.
@@ -38,4 +43,4 @@ python -m tower_sim.run --spec fixtures/specs/max_wave.yaml
 For published artifact inventory, run-task routing hints, and operational commands beyond the blessed run command, see **Operational quick reference** in [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md).
 
 ## Notes for agent-driven development
-This project is intentionally agent-driven and contract-governed. For implementation decisions, follow `CONTRACT.md` first, use explicit provenance for mechanics/tables, and fail closed if required authoritative inputs are missing.
+This project is intentionally agent-driven and contract-governed. For implementation decisions, follow `CONTRACT.md` first, treat v2 architecture docs as the active migration target, use explicit provenance for mechanics/tables, and fail closed if required authoritative inputs are missing.

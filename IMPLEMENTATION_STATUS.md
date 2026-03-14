@@ -4,6 +4,11 @@
 
 This document describes what is implemented in the bundled code at the time of packaging, and what remains stubbed/missing. It is intended to prevent “README optimism”.
 
+## Architecture status framing (authoritative status lens)
+- **Active architecture path (v2 target):** `docs/v2/TOWERSIM_V2_MASTER_SPEC.md` defines the active target architecture.
+- **Bridge-temporary executable surface:** current deterministic v1-compatible execution surfaces (`python -m tower_sim.run --spec fixtures/specs/max_wave.yaml` and associated stat/evaluator paths) remain supported only as a migration bridge until v2 ownership is fully landed.
+- **Legacy/quarantined surfaces:** legacy handoff/status artifacts (for example `legacy/governance_handoff/STATUS_V1.yaml`, `legacy/governance_handoff/CODEX_HANDOFF_V1_FULL.md`) are retained for migration context and auditability, but are non-authoritative relative to `CONTRACT.md` + v2 master spec.
+
 ## Canonical Baseline Used
 Base code assembled from:
 - `towersim_wave_freeupgrades_patch_v2.zip` (primary baseline)
@@ -134,7 +139,7 @@ Source for current component state: `audit/implementation_status_report.md`.
 - [x] Lock and automate a single parity threshold policy for reference-sheet validation in release-gate tests (`tests/test_max_wave_v1_contract.py`, `tests/test_release_gate_tournament_fixtures.py`).
 - [ ] Keep assumptions-manifest tolerances calibrated with reference-sheet drift data and document updates each release.
 
-## Operational quick reference (status/ops, non-authority)
+## Operational quick reference (bridge-temporary status/ops, non-authority)
 This section captures practical run/artifact details previously kept in README so operators and agents can execute and validate workflows without expanding the authoritative doc surface.
 
 ### Published/expected output artifacts
