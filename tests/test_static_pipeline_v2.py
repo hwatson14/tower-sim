@@ -18,6 +18,7 @@ from tower_sim.engines.static_pipeline_v2 import (
     RuntimeOverlayMaterialization,
     StageMaterialization,
     materialize_runtime_overlays,
+    materialize_runtime_state,
     materialize_static_stages,
     required_runtime_overlay_families,
     required_static_stages,
@@ -648,6 +649,12 @@ def test_runtime_overlays_materialize_separately_from_static_stages() -> None:
     assert {item.stat_id for item in static_after.by_stage["baseline_account"]} == baseline_account_ids
 
 
+def test_runtime_overlay_families_are_all_materialized_with_rows() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    assert overlays.order == required_runtime_overlay_families()
+    assert all(len(overlays.by_family[family]) > 0 for family in overlays.order)
+
+
 def test_runtime_overlay_order_is_explicit_and_stable() -> None:
     overlays = materialize_runtime_overlays(_fixture_snapshot())
     assert overlays.order == (
@@ -675,6 +682,173 @@ def test_runtime_overlay_fails_closed_when_required_stat_missing() -> None:
     with pytest.raises(StaticV2ContractError, match="runtime_overlay_missing_required_stat:eals_pct"):
         materialize_runtime_overlays(snapshot, stage_materialization=broken)
 
+
+
+
+def test_runtime_state_materialization_includes_static_and_overlay_orders() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    assert runtime_state.static_stage_order == required_static_stages()
+    assert tuple(runtime_state.stage_stat_inputs_by_stage.keys()) == required_static_stages()
+    assert runtime_state.start_of_run_stat_inputs == runtime_state.stage_stat_inputs_by_stage["baseline_loadout"]
+    assert tuple(runtime_state.stage_stat_values_by_stage.keys()) == required_static_stages()
+    assert runtime_state.start_of_run_stat_values == runtime_state.stage_stat_values_by_stage["baseline_loadout"]
+    assert runtime_state.stage_stat_inputs_by_stage["baseline_account"]
+    assert "tower_hp" in runtime_state.stage_stat_values_by_stage["baseline_account"]
+    assert any(row.stat_id == "eals_pct" for row in runtime_state.stage_stat_inputs_by_stage["baseline_gem_respec"])
+    assert "eals_pct" in runtime_state.stage_stat_values_by_stage["baseline_gem_respec"]
+    assert runtime_state.overlay_order == required_runtime_overlay_families()
+    assert len(runtime_state.overlay_rows) == sum(runtime_state.overlay_counts.values())
+
+
+
+
+
+
+def test_runtime_state_stage_stat_values_preserve_duplicate_contributors() -> None:
+    runtime_state = materialize_runtime_state(_fixture_snapshot())
+    tower_hp_values = runtime_state.stage_stat_values_by_stage["baseline_account"].get("tower_hp")
+    assert tower_hp_values is not None
+    assert len(tower_hp_values) >= 2
+
+
+
+
+
+def test_runtime_state_fails_closed_when_stage_value_is_non_finite() -> None:
+    snapshot = _fixture_snapshot()
+    static = materialize_static_stages(snapshot)
+    bad_input = StatInput(
+        stat_id="tower_damage",
+        phase=Phase.START_OF_RUN,
+        base_value=float("nan"),
+        provenance="synthetic:test",
+        contributor_family="workshop",
+    )
+    broken = StageMaterialization(
+        by_stage={
+            **static.by_stage,
+            "baseline_account": [*static.by_stage["baseline_account"], bad_input],
+        },
+        missing=static.missing,
+        families_by_stage=static.families_by_stage,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_state_non_finite_value:baseline_account:tower_damage",
+    ):
+        materialize_runtime_state(snapshot, stage_materialization=broken)
+
+def test_runtime_state_fails_closed_when_stage_input_phase_is_not_start_of_run() -> None:
+    snapshot = _fixture_snapshot()
+    static = materialize_static_stages(snapshot)
+    bad_input = StatInput(
+        stat_id="tower_damage",
+        phase=Phase.END_OF_RUN,
+        base_value=1.0,
+        provenance="synthetic:test",
+        contributor_family="workshop",
+    )
+    broken = StageMaterialization(
+        by_stage={
+            **static.by_stage,
+            "baseline_account": [*static.by_stage["baseline_account"], bad_input],
+        },
+        missing=static.missing,
+        families_by_stage=static.families_by_stage,
+    )
+
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_state_unexpected_phase:baseline_account:tower_damage:end_of_run",
+    ):
+        materialize_runtime_state(snapshot, stage_materialization=broken)
+
+
+
+def test_runtime_state_fails_closed_when_unexpected_overlay_family_present() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    broken = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            **overlays.by_family,
+            "boss_state": [
+                overlays.by_family["perks"][0].__class__(
+                    family="boss_state",
+                    stage="runtime_overlay",
+                    payload={"note": "unexpected"},
+                    provenance="synthetic:test",
+                )
+            ],
+        },
+    )
+    with pytest.raises(
+        StaticV2ContractError,
+        match="runtime_state_unexpected_overlay_families:boss_state",
+    ):
+        materialize_runtime_state(_fixture_snapshot(), overlays=broken)
+
+def test_runtime_state_fails_closed_when_overlay_family_missing() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    broken = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={k: v for k, v in overlays.by_family.items() if k != "perks"},
+    )
+    with pytest.raises(StaticV2ContractError, match="runtime_state_missing_overlay_family:perks"):
+        materialize_runtime_state(_fixture_snapshot(), overlays=broken)
+
+
+def test_runtime_state_fails_closed_when_overlay_family_empty() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    broken = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={**overlays.by_family, "perks": []},
+    )
+    with pytest.raises(StaticV2ContractError, match="runtime_state_empty_overlay_family:perks"):
+        materialize_runtime_state(_fixture_snapshot(), overlays=broken)
+
+
+
+def test_runtime_state_fails_closed_when_overlay_row_family_mismatches_bucket() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    perks_rows = overlays.by_family["perks"]
+    broken = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            **overlays.by_family,
+            "perks": [
+                perks_rows[0].__class__(
+                    family="battle_conditions",
+                    stage=perks_rows[0].stage,
+                    payload=perks_rows[0].payload,
+                    provenance=perks_rows[0].provenance,
+                )
+            ],
+        },
+    )
+    with pytest.raises(StaticV2ContractError, match="runtime_state_overlay_family_row_mismatch:perks:battle_conditions"):
+        materialize_runtime_state(_fixture_snapshot(), overlays=broken)
+
+
+def test_runtime_state_fails_closed_when_overlay_row_stage_unexpected() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    perks_rows = overlays.by_family["perks"]
+    broken = RuntimeOverlayMaterialization(
+        order=overlays.order,
+        by_family={
+            **overlays.by_family,
+            "perks": [
+                perks_rows[0].__class__(
+                    family=perks_rows[0].family,
+                    stage="baseline_gem_respec",
+                    payload=perks_rows[0].payload,
+                    provenance=perks_rows[0].provenance,
+                )
+            ],
+        },
+    )
+    with pytest.raises(StaticV2ContractError, match="runtime_state_overlay_stage_unexpected:perks:baseline_gem_respec"):
+        materialize_runtime_state(_fixture_snapshot(), overlays=broken)
 
 def test_runtime_overlay_fails_closed_when_overlay_table_missing() -> None:
     snapshot = _fixture_snapshot()

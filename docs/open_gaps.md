@@ -1,33 +1,15 @@
 # Open Gaps
 
 ## Current blocking gap
-### Runtime overlay foundation
+### Combat/runtime-state execution
 - **Severity:** High
 - **Blocking:** Yes
 - **Owner:** Current implementation phase
-- **Target phase:** Runtime overlay foundation
-- **Description:** The repo has static staged outputs, but runtime overlays are not yet materialized as a governed layer.
-
-### Required overlay families
-- perks
-- battle_conditions
-- cash_workshop_purchases / workshop runtime progression
-- free_upgrades
-- eals_realized_effect
-- ehls_realized_effect
+- **Target phase:** Post-overlay runtime work
+- **Description:** Runtime overlays are now materialized as a governed layer, but combat state, boss state, and runtime-state execution semantics are still intentionally unimplemented.
 
 ### Why this matters
-Without a governed runtime overlay layer, the repo cannot safely progress toward runtime-state execution or evaluator integration.
-
----
-
-## Next gap after overlays
-### Combat/runtime-state execution
-- **Severity:** High
-- **Blocking:** Future
-- **Owner:** Later phase
-- **Target phase:** Post-overlay runtime work
-- **Description:** Combat state, boss state, and runtime-state execution are still intentionally unimplemented.
+Without runtime-state execution semantics on top of governed overlays, the repo cannot yet deliver end-to-end runtime behavior or evaluator integration.
 
 ---
 
