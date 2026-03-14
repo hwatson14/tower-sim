@@ -7,7 +7,7 @@
 - `audit/reference/tower_sim_3_handover/towersim_static_ledger_latest.csv`
 - `audit/reference/tower_sim_3_handover/towersim_static_ledger_naming_contract_v1_10.md`
 - `audit/reference/tower_sim_3_handover/towersim_v1_handover_pack.md`
-- `CODEX_HANDOFF_V1_FULL.md`, `STATUS_V1.yaml`, `CONTRACT.md`
+- `legacy/governance_handoff/CODEX_HANDOFF_V1_FULL.md`, `legacy/governance_handoff/STATUS_V1.yaml`, `CONTRACT.md`
 - Runtime evidence surfaces: `tower_sim/engines/{combat,combat_stat_derivation,stat_pipeline,survivability_pipeline,edamage_pipeline}`, `tower_sim/evaluators`, `tower_sim/run`.
 - Static owner surfaces: `tower_sim/engines/stat_input_compiler.py`, `tower_sim/registry/stat_registry.py`, `tower_sim/loaders/ep_export_loader.py`.
 

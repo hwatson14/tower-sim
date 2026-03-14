@@ -370,7 +370,7 @@ Tasks:
 
 ## What Codex should do first
 
-1. Read this file and `STATUS_V1.yaml`
+1. Read this file and `legacy/governance_handoff/STATUS_V1.yaml`
 2. Inspect the current canonical owner files and confirm the stage wrappers / current state
 3. Confirm whether the wall patch from the thread-local work is already present in the target branch; if not, re-derive and apply it cleanly with tests
 4. Implement canonical `baseline_loadout` in `stat_input_compiler.py`

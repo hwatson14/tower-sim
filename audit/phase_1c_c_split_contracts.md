@@ -7,7 +7,7 @@
 - `audit/reference/tower_sim_3_handover/towersim_static_ledger_latest.csv`
 - `audit/reference/tower_sim_3_handover/towersim_static_ledger_naming_contract_v1_10.md`
 - `audit/reference/tower_sim_3_handover/towersim_v1_handover_pack.md`
-- `CODEX_HANDOFF_V1_FULL.md`, `STATUS_V1.yaml`, `CONTRACT.md`
+- `legacy/governance_handoff/CODEX_HANDOFF_V1_FULL.md`, `legacy/governance_handoff/STATUS_V1.yaml`, `CONTRACT.md`
 
 ## 2. Blocker portfolio summary
 - Total gated identifiers: **17**

@@ -1,3 +1,6 @@
+authority_status: "bridge_non_authoritative"
+authority_note: "Legacy v1 status artifact retained for migration context; CONTRACT.md and docs/v2/TOWERSIM_V2_MASTER_SPEC.md are authoritative for active architecture direction."
+
 objective: "Unify TowerSim V1 static stat construction into one canonical staged pipeline"
 current_phase: "Architecture locked; implementation migration underway"
 architecture_locked: true
