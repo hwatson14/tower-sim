@@ -1,9 +1,11 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, fields
 from functools import lru_cache
 from pathlib import Path
 from typing import Mapping
+
+from tower_sim.util.account_snapshot import AccountSnapshot
 
 import yaml
 
@@ -25,6 +27,7 @@ _SOURCE_STATE_SCHEMA_PATH = _REGISTRY_ROOT / "source_state_schema.yaml"
 _CONTRIBUTOR_OPERATIONS_PATH = _REGISTRY_ROOT / "contributor_operations.yaml"
 _COMPOSITE_DEPENDENCIES_PATH = _REGISTRY_ROOT / "composite_dependencies.yaml"
 _QUARANTINE_REGISTRY_PATH = _REGISTRY_ROOT / "quarantine_registry.yaml"
+_IDS_SECTION_ROUTING_PATH = Path("kb/global-rules/contracts/ids-section-routing.yaml")
 
 _PHASE_B_SOURCE_COVERAGE_PATH = Path("audit/static_pipeline_v2_phase_b_source_state_coverage.yaml")
 _PHASE_B_TARGET_CROSSWALK_PATH = Path("audit/static_pipeline_v2_phase_b_target_stat_crosswalk.yaml")
@@ -64,6 +67,9 @@ class StaticV2Contract:
     static_runtime_deny_list: frozenset[str]
     composite_targets: frozenset[str]
     quarantined_contributor_ids: frozenset[str]
+    bridge_contributor_families: frozenset[str]
+    stage_bridge_by_family: Mapping[str, Mapping[str, object]]
+    required_runtime_overlay_order: tuple[str, ...]
 
     def resolve_legacy_alias(self, candidate: str) -> str:
         value = candidate.strip()
@@ -182,6 +188,19 @@ def load_static_v2_contract() -> StaticV2Contract:
     required_stage_order = stage_root.get("required_static_stage_order")
     if not isinstance(required_stage_order, list):
         raise StaticV2ContractError("registry_invalid:required_static_stage_order")
+    static_stages = stage_root.get("static_stages")
+    if not isinstance(static_stages, list):
+        raise StaticV2ContractError("registry_invalid:static_stages")
+    runtime_overlay_stage = str(stage_root.get("runtime_overlay_stage", "")).strip()
+    if runtime_overlay_stage != "runtime_overlay":
+        raise StaticV2ContractError("registry_invalid:runtime_overlay_stage")
+
+    runtime_overlay_families = stage_root.get("runtime_overlay_families")
+    if not isinstance(runtime_overlay_families, list):
+        raise StaticV2ContractError("registry_invalid:runtime_overlay_families")
+    required_runtime_overlay_order = stage_root.get("required_runtime_overlay_order")
+    if not isinstance(required_runtime_overlay_order, list):
+        raise StaticV2ContractError("registry_invalid:required_runtime_overlay_order")
 
     runtime_root = runtime_doc.get("v2_runtime_field_registry")
     if not isinstance(runtime_root, dict):
@@ -203,6 +222,28 @@ def load_static_v2_contract() -> StaticV2Contract:
         raise StaticV2ContractError("registry_invalid:v2_quarantine_registry")
     quarantined_contributor_ids = _validate_quarantine_registry(quarantine_root)
 
+    contributor_families = frozenset(
+        str(row["contributor_family"]).strip() for row in contributor_rows
+    )
+    bridge_families, stage_bridge_by_family = _validate_stage_applicability_bridge(
+        stage_root,
+        contributor_families=contributor_families,
+        static_stage_order=tuple(str(stage).strip() for stage in required_stage_order),
+        contributor_rows=contributor_rows,
+    )
+
+    declared_overlay_families: list[str] = []
+    for row in runtime_overlay_families:
+        if not isinstance(row, dict):
+            raise StaticV2ContractError("registry_invalid:runtime_overlay_family_row")
+        family = str(row.get("family", "")).strip()
+        if not family:
+            raise StaticV2ContractError("registry_invalid:runtime_overlay_family_name")
+        declared_overlay_families.append(family)
+    normalized_required_overlay = [str(value).strip() for value in required_runtime_overlay_order]
+    if tuple(declared_overlay_families) != tuple(normalized_required_overlay):
+        raise StaticV2ContractError("registry_invalid:runtime_overlay_order_mismatch")
+
     return StaticV2Contract(
         canonical_target_stats=canonical_targets,
         runtime_mechanic_parameters=mechanic_parameters,
@@ -217,6 +258,9 @@ def load_static_v2_contract() -> StaticV2Contract:
         static_runtime_deny_list=frozenset(str(item).strip() for item in deny_list),
         composite_targets=composite_targets,
         quarantined_contributor_ids=quarantined_contributor_ids,
+        bridge_contributor_families=bridge_families,
+        stage_bridge_by_family=stage_bridge_by_family,
+        required_runtime_overlay_order=tuple(str(value).strip() for value in required_runtime_overlay_order),
     )
 
 
@@ -395,7 +439,7 @@ def summarize_v2_registry_status() -> dict[str, object]:
     }
 
 
-def _load_named_registry_list(doc: dict, *, key: str, error_code: str) -> frozenset[str]:
+def _load_named_registry_list(doc: dict, *, key: str, error_code: str) -> tuple[frozenset[str], Mapping[str, Mapping[str, object]]]:
     values = doc.get(key)
     if not isinstance(values, list):
         raise StaticV2ContractError(error_code)
@@ -558,6 +602,117 @@ def _validate_contributor_row(
     stages = row.get("stage_applicability")
     if not isinstance(stages, list) or not stages:
         raise StaticV2ContractError("registry_invalid:contributor_missing_stage_applicability")
+
+
+def _validate_stage_applicability_bridge(
+    stage_root: dict,
+    *,
+    contributor_families: frozenset[str],
+    static_stage_order: tuple[str, ...],
+    contributor_rows: list,
+) -> tuple[frozenset[str], Mapping[str, Mapping[str, object]]]:
+    static_stage_names: list[str] = []
+    for row in stage_root.get("static_stages", []):
+        if not isinstance(row, dict):
+            raise StaticV2ContractError("registry_invalid:static_stage_row")
+        name = str(row.get("stage", "")).strip()
+        if not name:
+            raise StaticV2ContractError("registry_invalid:static_stage_name")
+        static_stage_names.append(name)
+
+    if tuple(static_stage_names) != static_stage_order:
+        raise StaticV2ContractError("registry_invalid:static_stage_order_mismatch")
+
+    bridge_rows = stage_root.get("source_family_stage_bridge")
+    if not isinstance(bridge_rows, list) or not bridge_rows:
+        raise StaticV2ContractError("registry_invalid:source_family_stage_bridge")
+
+    routing_doc = _load_yaml(_IDS_SECTION_ROUTING_PATH)
+    routing_sections = routing_doc.get("sections")
+    if not isinstance(routing_sections, dict):
+        raise StaticV2ContractError("registry_invalid:ids_section_routing")
+    ids_source_families = {
+        str(payload.get("source_family", "")).strip()
+        for payload in routing_sections.values()
+        if isinstance(payload, dict)
+    }
+
+    snapshot_fields = {field.name for field in fields(AccountSnapshot)}
+    static_stage_set = set(static_stage_order)
+    rows_by_family: dict[str, dict] = {}
+
+    for row in bridge_rows:
+        if not isinstance(row, dict):
+            raise StaticV2ContractError("registry_invalid:source_family_stage_bridge_row")
+        contributor_family = str(row.get("contributor_family", "")).strip()
+        if not contributor_family:
+            raise StaticV2ContractError("registry_invalid:bridge_missing_contributor_family")
+        if contributor_family in rows_by_family:
+            raise StaticV2ContractError(f"registry_invalid:bridge_duplicate_contributor_family:{contributor_family}")
+        if contributor_family not in contributor_families:
+            raise StaticV2ContractError(f"registry_invalid:bridge_unknown_contributor_family:{contributor_family}")
+
+        kb_source_family = str(row.get("kb_source_family", "")).strip()
+        if not kb_source_family:
+            raise StaticV2ContractError(f"registry_invalid:bridge_missing_kb_source_family:{contributor_family}")
+
+        source_origin = str(row.get("source_origin", "")).strip()
+        if source_origin not in {"ids_section", "table_surface"}:
+            raise StaticV2ContractError(f"registry_invalid:bridge_invalid_source_origin:{contributor_family}")
+        if source_origin == "ids_section" and kb_source_family not in ids_source_families:
+            raise StaticV2ContractError(f"registry_invalid:bridge_ids_source_family_drift:{contributor_family}:{kb_source_family}")
+
+        account_snapshot_field = row.get("account_snapshot_field")
+        if source_origin == "ids_section":
+            field_name = str(account_snapshot_field or "").strip()
+            if not field_name:
+                raise StaticV2ContractError(f"registry_invalid:bridge_missing_account_snapshot_field:{contributor_family}")
+            if field_name not in snapshot_fields:
+                raise StaticV2ContractError(f"registry_invalid:bridge_unknown_account_snapshot_field:{contributor_family}:{field_name}")
+        elif account_snapshot_field is not None:
+            field_name = str(account_snapshot_field).strip()
+            if field_name:
+                raise StaticV2ContractError(f"registry_invalid:bridge_table_surface_must_not_set_account_snapshot_field:{contributor_family}")
+
+        loadout_selection_field = str(row.get("loadout_selection_field", "")).strip()
+        stages = row.get("stage_applicability")
+        if not isinstance(stages, list) or not stages:
+            raise StaticV2ContractError(f"registry_invalid:bridge_missing_stage_applicability:{contributor_family}")
+        stage_set = {str(stage).strip() for stage in stages}
+        if not stage_set.issubset(static_stage_set):
+            raise StaticV2ContractError(f"registry_invalid:bridge_unknown_stage_reference:{contributor_family}")
+
+        if loadout_selection_field:
+            if "baseline_loadout" not in stage_set:
+                raise StaticV2ContractError(f"registry_invalid:bridge_loadout_selector_without_baseline_loadout_stage:{contributor_family}")
+            if loadout_selection_field not in {"card_presets", "module_presets"}:
+                raise StaticV2ContractError(f"registry_invalid:bridge_unknown_loadout_selection_field:{contributor_family}:{loadout_selection_field}")
+        elif "baseline_loadout" in stage_set and contributor_family in {"card", "module_main", "module_sub", "module_unique"}:
+            raise StaticV2ContractError(f"registry_invalid:bridge_missing_loadout_selector:{contributor_family}")
+
+        rows_by_family[contributor_family] = row
+
+    if set(rows_by_family.keys()) != set(contributor_families):
+        raise StaticV2ContractError("registry_invalid:bridge_contributor_family_coverage_mismatch")
+
+    allowed_stages_by_family = {
+        family: {str(item).strip() for item in row.get("stage_applicability", [])}
+        for family, row in rows_by_family.items()
+    }
+    for row in contributor_rows:
+        family = str(row.get("contributor_family", "")).strip()
+        contributor_id = str(row.get("contributor_id", "")).strip()
+        stages = row.get("stage_applicability")
+        contributor_stage_set = {str(item).strip() for item in stages} if isinstance(stages, list) else set()
+        allowed = allowed_stages_by_family.get(family)
+        if not allowed or not contributor_stage_set.issubset(allowed):
+            raise StaticV2ContractError(
+                f"registry_invalid:contributor_stage_not_allowed_by_bridge:{contributor_id}"
+            )
+
+    return frozenset(rows_by_family.keys()), {
+        family: dict(row) for family, row in rows_by_family.items()
+    }
 
 
 def _validate_composite_entries(
