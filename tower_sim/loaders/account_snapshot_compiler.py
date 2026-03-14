@@ -67,7 +67,7 @@ def compile_account_snapshot(ids_raw: IdsRaw, *, default_preset: str = "Farming"
     vault = _parse_key_value_int(raw_sections.get("Vault", []))
     bots, bot_upgrades = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
-    player_meta = _parse_key_value_str(raw_sections.get("Player & Stuff", []))
+    player_meta = _parse_player_meta(raw_sections.get("Player & Stuff", []))
     cards_inventory, card_presets = _parse_cards(raw_sections.get("Cards", []), labs)
 
     module_system_state, module_presets, modules_inventory = _parse_modules(
@@ -202,35 +202,63 @@ def _workshop_level_indices(default_preset: str) -> Tuple[int, int]:
     return indices_by_preset[default_preset]
 
 
+def _iter_uw_blocks(rows: List[List[str]]) -> List[List[List[str]]]:
+    if not rows:
+        return []
+    if len(rows) % 4 != 0:
+        raise ValueError(
+            f"Malformed UWs section: expected 4-row blocks, found {len(rows)} rows."
+        )
+    blocks: List[List[List[str]]] = []
+    for i in range(0, len(rows), 4):
+        block = rows[i : i + 4]
+        uw_name = _safe_cell(block[0], 0).strip()
+        unlocked_label = _safe_cell(block[2], 1).strip()
+        plus_marker = _safe_cell(block[3], 0).strip()
+        if not uw_name:
+            raise ValueError(f"Malformed UWs section block starting at row offset {i}: missing UW name.")
+        if unlocked_label not in {"UW Unlocked", "UW Locked"}:
+            raise ValueError(
+                "Malformed UWs section block for "
+                f"{uw_name!r}: expected row 3 label 'UW Unlocked' or 'UW Locked', got {unlocked_label!r}."
+            )
+        if plus_marker != "UW+":
+            raise ValueError(
+                f"Malformed UWs section block for {uw_name!r}: expected row 4 marker 'UW+', got {plus_marker!r}."
+            )
+        blocks.append(block)
+    return blocks
+
+
 def _parse_ultimate_weapons(rows: List[List[str]]) -> Dict[str, UltimateWeaponSnapshot]:
     entries: Dict[str, UltimateWeaponSnapshot] = {}
-    for row in rows:
-        name = row[0].strip() if row else ""
-        if not name or name == "UW+":
-            continue
-        track_levels = [cell.strip() for cell in row[2:] if cell.strip()]
-        entries[name] = UltimateWeaponSnapshot(
-            name=name,
-            unlocked=_optional_str(_safe_cell(row, 1)),
+    for block in _iter_uw_blocks(rows):
+        uw_name = _safe_cell(block[0], 0).strip()
+        unlocked = _optional_str(_safe_cell(block[2], 0))
+        track_levels: List[str] = []
+        for stat_row in block[:3]:
+            token = _safe_cell(stat_row, 4).strip()
+            if token:
+                level_token = token.split("|", 1)[0].strip()
+                if level_token:
+                    track_levels.append(level_token)
+        entries[uw_name] = UltimateWeaponSnapshot(
+            name=uw_name,
+            unlocked=unlocked,
             track_levels=track_levels,
         )
     return entries
 
 
-
-
 def _parse_uw_plus_tracks(rows: List[List[str]]) -> Dict[str, UwPlusTrackSnapshot]:
     tracks: Dict[str, UwPlusTrackSnapshot] = {}
-    for i in range(0, len(rows), 4):
-        block = rows[i : i + 4]
-        if len(block) < 4:
-            continue
+    for block in _iter_uw_blocks(rows):
         uw_name = _safe_cell(block[0], 0).strip()
         plus_track_name = _safe_cell(block[3], 2).strip()
-        if not uw_name or not plus_track_name:
-            continue
         current_state = _safe_cell(block[3], 3).strip()
         display_token = _safe_cell(block[3], 4).strip()
+        if not plus_track_name:
+            raise ValueError(f"Malformed UWs section block for {uw_name!r}: missing UW+ track name.")
         key = f"{uw_name}::{plus_track_name}"
         tracks[key] = UwPlusTrackSnapshot(
             uw_name=uw_name,
@@ -270,33 +298,58 @@ def _parse_key_value_str(rows: List[List[str]]) -> Dict[str, Optional[str]]:
     return values
 
 
+def _parse_player_meta(rows: List[List[str]]) -> Dict[str, Optional[str]]:
+    values: Dict[str, Optional[str]] = {}
+    for row in rows:
+        if not row:
+            continue
+        left_key = _safe_cell(row, 0).strip()
+        if left_key:
+            values[left_key] = _optional_str(_safe_cell(row, 1))
+        right_key = _safe_cell(row, 4).strip()
+        if right_key:
+            values[right_key] = _optional_str(_safe_cell(row, 5))
+    return values
+
+
 def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]]]:
     bots: List[str] = []
     bot_values: Dict[str, Dict[str, float]] = {}
+    bot_levels: Dict[str, Dict[str, int]] = {}
     current_bot: Optional[str] = None
     for row in rows:
         name = row[0].strip() if row else ""
         attr = row[2].strip() if len(row) > 2 else ""
         raw_value = row[3].strip() if len(row) > 3 else ""
+        display_token = row[4].strip() if len(row) > 4 else ""
 
         if name and name not in {"true", "false"}:
             current_bot = name
             bots.append(name)
-        if current_bot is None or not attr or raw_value == "":
+        if current_bot is None or not attr:
             continue
-        try:
-            bot_values.setdefault(current_bot, {})[attr] = float(raw_value)
-        except ValueError:
-            continue
+        if raw_value != "":
+            try:
+                bot_values.setdefault(current_bot, {})[attr] = float(raw_value)
+            except ValueError:
+                pass
+        token_level = _parse_level_token(display_token)
+        if token_level is not None:
+            bot_levels.setdefault(current_bot, {})[attr] = token_level
 
     table = bots_from_table()
     bot_upgrades: Dict[str, Dict[str, int]] = {}
-    for bot, attrs in bot_values.items():
+    for bot in bots:
+        attrs = set(bot_values.get(bot, {})) | set(bot_levels.get(bot, {}))
         if bot not in table:
             continue
-        for attr, value in attrs.items():
+        for attr in attrs:
             if attr not in table[bot]:
                 continue
+            if attr in bot_levels.get(bot, {}):
+                bot_upgrades.setdefault(bot, {})[attr] = bot_levels[bot][attr]
+                continue
+            value = bot_values[bot][attr]
             levels = table[bot][attr].values
             matched_level: Optional[int] = None
             for level, table_value in levels.items():
@@ -310,6 +363,16 @@ def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, i
             bot_upgrades.setdefault(bot, {})[attr] = matched_level
 
     return bots, bot_upgrades
+
+
+def _parse_level_token(value: str) -> Optional[int]:
+    cleaned = value.strip()
+    if cleaned == "":
+        return None
+    token = cleaned.split("|", 1)[0].strip()
+    if token == "":
+        return None
+    return _parse_optional_int_relaxed(token)
 
 
 def _parse_table(rows: List[List[str]]) -> TableSnapshot:
