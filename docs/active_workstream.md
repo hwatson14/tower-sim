@@ -80,29 +80,30 @@ Runtime overlay foundation is complete. It delivered the minimum governed runtim
   - runtime overlays materialized as a governed layer
   - overlay family ordering and fail-closed validation implemented
   - runtime-state planning surface added (`materialize_runtime_state`) with fail-closed guards
-  - repo-map hygiene blocker removed (`tower_kb_bridge_pack.zip` deleted)
-- **Remaining in this phase (bounded planning closure):**
+  - deterministic execution semantics stack added (`build_runtime_execution_plan`, `execute_runtime_state_pass`)
+  - pre-combat transition/checkpoint/balance-sheet artifacts added with fail-closed consistency checks
+  - static-stage baseline audit surface added (`audit_static_stage_baselines`)
+  - single composition-root bundle for the execution-semantics phase added (`materialize_runtime_execution_phase_bundle`)
+- **Remaining in this phase:**
   - none
-- **Status:** planning-closure complete; ready for the first execution-semantics implementation PR.
+- **Status:** execution-semantics phase complete; ready for next bounded pre-combat state mutation slice.
 
 
-## Immediate next bounded implementation slice (execution semantics PR-1)
-- **Goal:** land the first deterministic runtime execution semantics layer on top of `materialize_runtime_state(...)` without evaluator rewrites.
+## Immediate next bounded implementation slice (pre-combat state mutation PR-1)
+- **Goal:** consume the execution phase bundle and apply deterministic pre-combat state mutations without entering full combat loop/evaluator rewrites.
 - **In scope:**
-  1. define one explicit runtime execution pass that consumes:
-     - `start_of_run_stat_values`
-     - required runtime overlay families (already ordered)
-  2. produce a bounded execution artifact suitable for later combat-state expansion (no full combat loop).
-  3. fail closed on missing execution inputs and unexpected execution-phase wiring.
+  1. consume `RuntimeExecutionPhaseBundle` as the single validated input surface.
+  2. define bounded pre-combat state mutation outputs using ordered transition steps.
+  3. preserve fail-closed checks for stage/overlay ordering and transition totals.
 - **Out of scope:**
   - boss-state implementation
-  - full combat engine
+  - full combat engine loop
   - evaluator migration
   - registry redesign
 - **Acceptance checks for PR-1:**
-  - deterministic execution pass exists behind existing repo-native surfaces
-  - explicit tests for execution ordering + fail-closed invalid input cases
-  - existing `tests/test_static_pipeline_v2.py` runtime-state/overlay checks remain green
+  - bounded pre-combat mutation output exists behind existing repo-native surfaces
+  - explicit tests for mutation ordering + fail-closed invalid input cases
+  - existing `tests/test_static_pipeline_v2.py` execution-semantics checks remain green
 
 ## Success condition for this phase
 The repo has a bounded runtime-state planning surface that preserves current separation and proves:
