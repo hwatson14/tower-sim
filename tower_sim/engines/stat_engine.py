@@ -21,6 +21,7 @@ class StatInput:
     tier_rule_multiplier: Optional[float] = None
     derived_value: Optional[float] = None
     provenance: Optional[str] = None
+    contributor_family: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -213,6 +214,7 @@ def _merge_stat_input_for_run_stats(existing: StatInput, item: StatInput) -> Sta
             phase=existing.phase,
             derived_value=float(item.derived_value if item.derived_value is not None else existing.derived_value),
             provenance=item.provenance or existing.provenance,
+            contributor_family=item.contributor_family or existing.contributor_family,
         )
 
     base = None
@@ -249,6 +251,7 @@ def _merge_stat_input_for_run_stats(existing: StatInput, item: StatInput) -> Sta
         tier_rule_delta=tier_rule_delta,
         tier_rule_multiplier=tier_rule_multiplier,
         provenance=item.provenance or existing.provenance,
+        contributor_family=item.contributor_family or existing.contributor_family,
     )
 
 

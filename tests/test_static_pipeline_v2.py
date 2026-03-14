@@ -6,13 +6,28 @@ from unittest.mock import patch
 
 import pytest
 
-from tower_sim.engines.stat_input_compiler import CompiledBaselineLoadout, CompiledStatInputs
+from tower_sim.engines.stat_engine import StatInput
+from tower_sim.engines.stat_input_compiler import (
+    CompiledBaselineLoadout,
+    CompiledStatInputs,
+    compile_baseline_account_stat_inputs,
+    compile_baseline_gem_respec_stat_inputs,
+    compile_baseline_loadout_stat_inputs,
+)
 from tower_sim.engines.static_pipeline_v2 import (
+    RuntimeOverlayMaterialization,
+    StageMaterialization,
+    materialize_runtime_overlays,
     materialize_static_stages,
+    required_runtime_overlay_families,
     required_static_stages,
+    validate_required_runtime_overlay_families_present,
     validate_required_stages_present,
 )
 from tower_sim.registry import static_v2_contract as contract_module
+from tower_sim.registry.stat_registry import Phase
+from tower_sim.loaders.account_snapshot_compiler import compile_account_snapshot
+from tower_sim.loaders.ids_parser import parse_ids
 from tower_sim.registry.static_v2_contract import (
     StaticV2ContractError,
     load_static_v2_contract,
@@ -395,3 +410,274 @@ def test_all_contributor_ids_follow_section_contract() -> None:
         assert family_prefix == row["contributor_family"]
         assert remainder.strip()
         assert row["destination_object_class"] in allowed_destination_classes
+
+
+def test_stage_bridge_covers_all_contributor_families() -> None:
+    contract = load_static_v2_contract()
+    assert contract.bridge_contributor_families == {
+        "workshop",
+        "lab",
+        "relic",
+        "enhancement",
+        "uw",
+        "uw_plus",
+        "bot",
+        "guardian",
+        "card",
+        "module_main",
+        "module_sub",
+        "module_unique",
+        "perk",
+        "battle_condition",
+    }
+
+
+def test_stage_bridge_rejects_unknown_account_snapshot_field() -> None:
+    stages_doc = contract_module._load_yaml(contract_module._STAGES_PATH)
+    bad_stages_doc = deepcopy(stages_doc)
+    row = bad_stages_doc["v2_stage_applicability"]["source_family_stage_bridge"][0]
+    row["account_snapshot_field"] = "not_a_snapshot_field"
+
+    with patch(
+        "tower_sim.registry.static_v2_contract._load_yaml",
+        side_effect=[
+            contract_module._load_yaml(contract_module._CANONICAL_TARGET_STATS_PATH),
+            contract_module._load_yaml(contract_module._MECHANIC_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._ENVIRONMENT_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._CAPABILITIES_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTORS_PATH),
+            contract_module._load_yaml(contract_module._ALIASES_PATH),
+            bad_stages_doc,
+            contract_module._load_yaml(contract_module._RUNTIME_DOMAINS_PATH),
+            contract_module._load_yaml(contract_module._SOURCE_STATE_SCHEMA_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTOR_OPERATIONS_PATH),
+            contract_module._load_yaml(contract_module._COMPOSITE_DEPENDENCIES_PATH),
+            contract_module._load_yaml(contract_module._QUARANTINE_REGISTRY_PATH),
+            contract_module._load_yaml(contract_module._IDS_SECTION_ROUTING_PATH),
+        ],
+    ):
+        with pytest.raises(StaticV2ContractError, match="bridge_unknown_account_snapshot_field"):
+            contract_module.load_static_v2_contract.__wrapped__()
+
+
+def test_stage_bridge_rejects_ids_source_family_drift() -> None:
+    stages_doc = contract_module._load_yaml(contract_module._STAGES_PATH)
+    bad_stages_doc = deepcopy(stages_doc)
+    row = bad_stages_doc["v2_stage_applicability"]["source_family_stage_bridge"][0]
+    row["kb_source_family"] = "workshop_drift"
+
+    with patch(
+        "tower_sim.registry.static_v2_contract._load_yaml",
+        side_effect=[
+            contract_module._load_yaml(contract_module._CANONICAL_TARGET_STATS_PATH),
+            contract_module._load_yaml(contract_module._MECHANIC_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._ENVIRONMENT_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._CAPABILITIES_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTORS_PATH),
+            contract_module._load_yaml(contract_module._ALIASES_PATH),
+            bad_stages_doc,
+            contract_module._load_yaml(contract_module._RUNTIME_DOMAINS_PATH),
+            contract_module._load_yaml(contract_module._SOURCE_STATE_SCHEMA_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTOR_OPERATIONS_PATH),
+            contract_module._load_yaml(contract_module._COMPOSITE_DEPENDENCIES_PATH),
+            contract_module._load_yaml(contract_module._QUARANTINE_REGISTRY_PATH),
+            contract_module._load_yaml(contract_module._IDS_SECTION_ROUTING_PATH),
+        ],
+    ):
+        with pytest.raises(StaticV2ContractError, match="bridge_ids_source_family_drift"):
+            contract_module.load_static_v2_contract.__wrapped__()
+
+
+def test_stage_bridge_rejects_loadout_family_without_selector() -> None:
+    stages_doc = contract_module._load_yaml(contract_module._STAGES_PATH)
+    bad_stages_doc = deepcopy(stages_doc)
+    for row in bad_stages_doc["v2_stage_applicability"]["source_family_stage_bridge"]:
+        if row.get("contributor_family") == "card":
+            row.pop("loadout_selection_field", None)
+            break
+
+    with patch(
+        "tower_sim.registry.static_v2_contract._load_yaml",
+        side_effect=[
+            contract_module._load_yaml(contract_module._CANONICAL_TARGET_STATS_PATH),
+            contract_module._load_yaml(contract_module._MECHANIC_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._ENVIRONMENT_PARAMETERS_PATH),
+            contract_module._load_yaml(contract_module._CAPABILITIES_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTORS_PATH),
+            contract_module._load_yaml(contract_module._ALIASES_PATH),
+            bad_stages_doc,
+            contract_module._load_yaml(contract_module._RUNTIME_DOMAINS_PATH),
+            contract_module._load_yaml(contract_module._SOURCE_STATE_SCHEMA_PATH),
+            contract_module._load_yaml(contract_module._CONTRIBUTOR_OPERATIONS_PATH),
+            contract_module._load_yaml(contract_module._COMPOSITE_DEPENDENCIES_PATH),
+            contract_module._load_yaml(contract_module._QUARANTINE_REGISTRY_PATH),
+            contract_module._load_yaml(contract_module._IDS_SECTION_ROUTING_PATH),
+        ],
+    ):
+        with pytest.raises(StaticV2ContractError, match="bridge_missing_loadout_selector"):
+            contract_module.load_static_v2_contract.__wrapped__()
+
+
+
+def _fixture_snapshot():
+    return compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
+
+
+def test_materialize_static_stages_emits_stage_family_metadata() -> None:
+    materialized = materialize_static_stages(_fixture_snapshot())
+    assert tuple(materialized.by_stage.keys()) == required_static_stages()
+    assert tuple(materialized.families_by_stage.keys()) == required_static_stages()
+    assert materialized.by_stage["baseline_account"]
+    assert materialized.by_stage["baseline_gem_respec"]
+
+
+def test_stage_materialization_keeps_families_in_compatible_stages() -> None:
+    materialized = materialize_static_stages(_fixture_snapshot())
+
+    baseline_account_families = set(materialized.families_by_stage["baseline_account"])
+    baseline_gem_respec_families = set(materialized.families_by_stage["baseline_gem_respec"])
+    baseline_loadout_families = set(materialized.families_by_stage["baseline_loadout"])
+
+    assert "card" not in baseline_account_families
+    assert "module_main" not in baseline_account_families
+    assert "card" not in baseline_gem_respec_families
+    assert "module_main" not in baseline_gem_respec_families
+    assert baseline_loadout_families <= {"card", "module_main"}
+
+
+def test_inventory_only_families_do_not_appear_in_loadout_stage() -> None:
+    materialized = materialize_static_stages(_fixture_snapshot())
+    loadout_families = set(materialized.families_by_stage["baseline_loadout"])
+    assert loadout_families.isdisjoint({"workshop", "relic", "uw", "bot", "enhancement"})
+
+
+def test_loadout_family_requires_selector_presence() -> None:
+    snapshot = _fixture_snapshot()
+    broken_bridge = deepcopy(contract_module.load_static_v2_contract().stage_bridge_by_family)
+    broken_bridge["module_main"] = {
+        **broken_bridge["module_main"],
+        "loadout_selection_field": "missing_selector_field",
+    }
+
+    with pytest.raises(StaticV2ContractError, match="stage_materialization_missing_loadout_selector"):
+        contract_module.load_static_v2_contract.cache_clear()
+        try:
+            with patch(
+                "tower_sim.engines.static_pipeline_v2.load_static_v2_contract",
+                side_effect=lambda: type("C", (), {
+                    "required_static_stage_order": ("baseline_account", "baseline_gem_respec", "baseline_loadout"),
+                    "stage_bridge_by_family": broken_bridge,
+                })(),
+            ):
+                materialize_static_stages(snapshot)
+        finally:
+            contract_module.load_static_v2_contract.cache_clear()
+
+
+def test_materialized_stage_inputs_emit_explicit_contributor_family_metadata() -> None:
+    materialized = materialize_static_stages(_fixture_snapshot())
+    account_inputs = materialized.by_stage["baseline_account"]
+    assert any(item.contributor_family == "workshop" for item in account_inputs)
+    assert any(item.contributor_family == "uw" for item in account_inputs)
+
+
+def test_stage_validation_fails_for_incompatible_explicit_family_metadata() -> None:
+    contract = load_static_v2_contract()
+    snapshot = _fixture_snapshot()
+    bad = [
+        StatInput(
+            stat_id="tower_damage",
+            phase=Phase.START_OF_RUN,
+            base_value=1.0,
+            provenance="synthetic:test",
+            contributor_family="card",
+        )
+    ]
+    with pytest.raises(StaticV2ContractError, match="stage_materialization_family_not_allowed"):
+        from tower_sim.engines.static_pipeline_v2 import _validate_stage_inputs_against_bridge
+
+        _validate_stage_inputs_against_bridge(
+            contract.stage_bridge_by_family,
+            snapshot=snapshot,
+            stage="baseline_account",
+            stat_inputs=bad,
+        )
+
+
+def test_stage_materialization_outputs_remain_stable_against_compiler_surfaces() -> None:
+    snapshot = _fixture_snapshot()
+    materialized = materialize_static_stages(snapshot)
+
+    account = compile_baseline_account_stat_inputs(snapshot)
+    gem = compile_baseline_gem_respec_stat_inputs(snapshot)
+    loadout = compile_baseline_loadout_stat_inputs(snapshot)
+
+    assert len(materialized.by_stage["baseline_account"]) == len(account.stat_inputs)
+    assert len(materialized.by_stage["baseline_gem_respec"]) == len(gem.stat_inputs)
+    assert len(materialized.by_stage["baseline_loadout"]) == len(loadout.stat_inputs)
+    assert {item.stat_id for item in materialized.by_stage["baseline_account"]} == {
+        item.stat_id for item in account.stat_inputs
+    }
+
+
+
+def test_required_runtime_overlay_order_is_declared_and_valid() -> None:
+    assert required_runtime_overlay_families() == (
+        "perks",
+        "battle_conditions",
+        "cash_workshop_purchases",
+        "free_upgrades",
+        "eals_realized_effect",
+        "ehls_realized_effect",
+    )
+    validate_required_runtime_overlay_families_present()
+
+
+def test_runtime_overlays_materialize_separately_from_static_stages() -> None:
+    snapshot = _fixture_snapshot()
+    static_before = materialize_static_stages(snapshot)
+    baseline_account_ids = {item.stat_id for item in static_before.by_stage["baseline_account"]}
+
+    overlays = materialize_runtime_overlays(snapshot, stage_materialization=static_before)
+
+    assert overlays.order == required_runtime_overlay_families()
+    assert set(overlays.by_family.keys()) == set(required_runtime_overlay_families())
+    assert all(row.stage == "runtime_overlay" for rows in overlays.by_family.values() for row in rows)
+
+    static_after = materialize_static_stages(snapshot)
+    assert {item.stat_id for item in static_after.by_stage["baseline_account"]} == baseline_account_ids
+
+
+def test_runtime_overlay_order_is_explicit_and_stable() -> None:
+    overlays = materialize_runtime_overlays(_fixture_snapshot())
+    assert overlays.order == (
+        "perks",
+        "battle_conditions",
+        "cash_workshop_purchases",
+        "free_upgrades",
+        "eals_realized_effect",
+        "ehls_realized_effect",
+    )
+
+
+def test_runtime_overlay_fails_closed_when_required_stat_missing() -> None:
+    snapshot = _fixture_snapshot()
+    static = materialize_static_stages(snapshot)
+    stripped = [row for row in static.by_stage["baseline_gem_respec"] if row.stat_id != "eals_pct"]
+    broken = StageMaterialization(
+        by_stage={
+            **static.by_stage,
+            "baseline_gem_respec": stripped,
+        },
+        missing=static.missing,
+        families_by_stage=static.families_by_stage,
+    )
+    with pytest.raises(StaticV2ContractError, match="runtime_overlay_missing_required_stat:eals_pct"):
+        materialize_runtime_overlays(snapshot, stage_materialization=broken)
+
+
+def test_runtime_overlay_fails_closed_when_overlay_table_missing() -> None:
+    snapshot = _fixture_snapshot()
+    with patch("tower_sim.engines.static_pipeline_v2._PERKS_TABLE_PATH", Path("tables/inputs/perks/not_real.csv")):
+        with pytest.raises(StaticV2ContractError, match="runtime_overlay_missing_table"):
+            materialize_runtime_overlays(snapshot)
