@@ -1,0 +1,22 @@
+v2_environment_parameters:
+- battle_condition_effect_reduction_pct
+- boss_health_multiplier
+- boss_spawn_interval_waves
+- boss_spawn_overheal_pct
+- boss_speed_multiplier
+- enemy_attack_level_skip
+- enemy_attack_level_skip_pct
+- enemy_attack_speed_pct_bonus
+- enemy_balance_cash_multiplier
+- enemy_balance_spawn_multiplier
+- enemy_damage_multiplier
+- enemy_health_level_skip
+- enemy_health_level_skip_pct
+- enemy_health_multiplier
+- enemy_level_skip_decay_interval_waves
+- enemy_level_skip_decay_pct
+- enemy_mass_pct_per_wave_alive
+- enemy_ranged_attack_distance_multiplier
+- enemy_spawn_rate_pct_bonus
+- enemy_speed_multiplier
+- enemy_speed_pct_bonus

@@ -16,6 +16,7 @@ from tower_sim.registry import static_v2_contract as contract_module
 from tower_sim.registry.static_v2_contract import (
     StaticV2ContractError,
     load_static_v2_contract,
+    summarize_v2_registry_status,
     validate_phase_b_stat_coverage,
 )
 
@@ -26,6 +27,49 @@ def test_registry_completeness_contract_loads() -> None:
     assert contract.canonical_contributor_ids
     assert contract.composite_targets
 
+
+
+
+def test_object_class_registries_are_disjoint_and_cover_object_universe() -> None:
+    contract = load_static_v2_contract()
+
+    assert contract.canonical_target_stats
+    assert contract.runtime_mechanic_parameters
+    assert contract.environment_parameters
+    assert contract.capabilities
+
+    assert contract.canonical_target_stats.isdisjoint(contract.runtime_mechanic_parameters)
+    assert contract.canonical_target_stats.isdisjoint(contract.environment_parameters)
+    assert contract.canonical_target_stats.isdisjoint(contract.capabilities)
+    assert contract.runtime_mechanic_parameters.isdisjoint(contract.environment_parameters)
+    assert contract.runtime_mechanic_parameters.isdisjoint(contract.capabilities)
+    assert contract.environment_parameters.isdisjoint(contract.capabilities)
+
+    assert contract.canonical_object_ids == (
+        contract.canonical_target_stats
+        | contract.runtime_mechanic_parameters
+        | contract.environment_parameters
+        | contract.capabilities
+    )
+
+
+
+def test_registry_status_summary_includes_next_steps() -> None:
+    status = summarize_v2_registry_status()
+    summary = status["summary_status"]
+    next_steps = status["next"]
+
+    assert summary["canonical_object_ids"] == (
+        summary["canonical_target_stats"]
+        + summary["runtime_mechanic_parameters"]
+        + summary["environment_parameters"]
+        + summary["capabilities"]
+    )
+    assert summary["phase_b_coverage_accounting_complete"] is True
+    assert isinstance(summary["blocked_or_unresolved_targets"], int)
+    assert isinstance(summary["blocked_or_unresolved_legacy_names"], int)
+    assert isinstance(next_steps, list)
+    assert len(next_steps) >= 3
 
 def test_alias_direction_is_legacy_to_canonical_only() -> None:
     contract = load_static_v2_contract()
@@ -71,6 +115,7 @@ def test_contributor_missing_required_field_fails_validation() -> None:
         "contributor_id": "workshop__health__base",
         "contributor_family": "workshop",
         "owned_target_stat": "health",
+        "destination_object_class": "canonical_target_stat",
         "operation_class": "set_base",
         # stage_applicability intentionally omitted
         "ownership_role": "direct",
@@ -81,9 +126,41 @@ def test_contributor_missing_required_field_fails_validation() -> None:
         contract_module._validate_contributor_row(
             row,
             canonical_targets=frozenset({"health"}),
+            canonical_target_stats=frozenset({"health"}),
+            mechanic_parameters=frozenset(),
+            environment_parameters=frozenset(),
+            capabilities=frozenset(),
             allowed_operations=frozenset({"set_base"}),
         )
 
+
+
+
+def test_contributor_destination_object_class_mismatch_fails_validation() -> None:
+    row = {
+        "contributor_id": "uw__black_hole.cooldown_seconds",
+        "contributor_family": "uw",
+        "owned_target_stat": "black_hole_cooldown_seconds",
+        "destination_object_class": "canonical_target_stat",
+        "operation_class": "set_base",
+        "stage_applicability": ["baseline_gem_respec"],
+        "ownership_role": "direct",
+        "canonical_status": "canonical",
+        "migration_status": "ledger_seed_phase_a",
+    }
+    with pytest.raises(
+        StaticV2ContractError,
+        match="contributor_destination_object_class_mismatch",
+    ):
+        contract_module._validate_contributor_row(
+            row,
+            canonical_targets=frozenset({"black_hole_cooldown_seconds"}),
+            canonical_target_stats=frozenset(),
+            mechanic_parameters=frozenset({"black_hole_cooldown_seconds"}),
+            environment_parameters=frozenset(),
+            capabilities=frozenset(),
+            allowed_operations=frozenset({"set_base"}),
+        )
 
 def test_phase_b_target_and_contributor_crosswalk_validation_passes_structure() -> None:
     summary = validate_phase_b_stat_coverage()
@@ -203,14 +280,13 @@ def test_legacy_backlog_contains_only_unresolved_names() -> None:
     import yaml
     quarantine_doc = yaml.safe_load(Path("tables/meta/registry/v2/quarantine_registry.yaml").read_text(encoding="utf-8"))
     alias_doc = yaml.safe_load(Path("tables/meta/registry/v2/aliases.yaml").read_text(encoding="utf-8"))
-    target_doc = yaml.safe_load(Path("tables/meta/registry/v2/target_stats.yaml").read_text(encoding="utf-8"))
+    contract = load_static_v2_contract()
 
     unresolved = {row["name"] for row in quarantine_doc["v2_quarantine_registry"]["blocked_or_unresolved_legacy_names"]}
     alias_keys = set(alias_doc["v2_alias_map"].keys())
-    canonical_targets = set(target_doc["v2_target_stats"])
 
     assert unresolved.isdisjoint(alias_keys)
-    assert unresolved.isdisjoint(canonical_targets)
+    assert unresolved.isdisjoint(contract.canonical_object_ids)
 
 
 def test_canonical_target_legacy_review_set_resolved_with_mapping_or_exclusion() -> None:
@@ -305,6 +381,12 @@ def test_all_contributor_ids_follow_section_contract() -> None:
     import yaml
 
     rows = yaml.safe_load(Path("tables/meta/registry/v2/contributors.yaml").read_text(encoding="utf-8"))["v2_contributor_ids"]
+    allowed_destination_classes = {
+        "canonical_target_stat",
+        "runtime_mechanic_parameter",
+        "environment_parameter",
+        "capability",
+    }
     for row in rows:
         contributor_id = row["contributor_id"]
         assert " " not in contributor_id
@@ -312,3 +394,4 @@ def test_all_contributor_ids_follow_section_contract() -> None:
         family_prefix, remainder = contributor_id.split("__", 1)
         assert family_prefix == row["contributor_family"]
         assert remainder.strip()
+        assert row["destination_object_class"] in allowed_destination_classes

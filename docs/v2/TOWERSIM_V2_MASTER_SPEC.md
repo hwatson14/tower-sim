@@ -204,15 +204,21 @@ Max-wave, survivability, econ, and other evaluators consume V2 outputs through s
 
 The following artifacts must exist and be authoritative for V2:
 
-1. `v2_target_stats`
-2. `v2_contributor_ids`
-3. `v2_alias_map`
-4. `v2_source_state_schema`
-5. `v2_stage_applicability`
-6. `v2_contributor_operations`
-7. `v2_composite_dependencies`
-8. `v2_runtime_field_registry`
-9. `v2_quarantine_registry` for explicitly tolerated migration exceptions
+1. `v2_canonical_target_stats`
+2. `v2_mechanic_parameters`
+3. `v2_environment_parameters`
+4. `v2_capabilities`
+5. `v2_contributor_ids`
+6. `v2_alias_map`
+7. `v2_source_state_schema`
+8. `v2_stage_applicability`
+9. `v2_contributor_operations`
+10. `v2_composite_dependencies`
+11. `v2_runtime_field_registry`
+12. `v2_quarantine_registry` for explicitly tolerated migration exceptions
+
+Object-class boundary rule:
+- canonical target stats, mechanic parameters, environment parameters, and capabilities are distinct registry classes and must not be collapsed into one undifferentiated "canonical stats" bucket.
 
 These should be machine-readable where practical.
 
@@ -295,6 +301,23 @@ Runtime fields must not appear in static registries or static target resolution.
 
 Static pipeline must reject runtime-only identifiers such as wave-index fields and combat-state fields.
 
+### 10.4 Canonical target ID normalization guardrails (V2)
+For V2 canonical target IDs, prefer one runtime-facing parameter per semantic concept.
+
+Required guardrails:
+- do not register duplicate semantic IDs for the same concept (example collision: `*.quantity` vs `*.count`)
+- do not register source-surface aliases as canonical IDs (`tower_hp` vs `tower_health` must converge to one canonical target)
+- reserve flat `tower_*` IDs for tower-level canonical targets; do not place subsystem mechanic parameters in canonical target stat registry
+- include units in IDs when the parameter is dimensional (`*_seconds`, `*_m`, `*_pct`)
+- split mechanical enablement flags from numeric magnitudes (`*_enabled` as boolean capability/flag, not overloaded with scalar meaning)
+
+Normalization examples:
+- choose one cardinality suffix per namespace (`count` **or** `quantity`, not both)
+- keep cooldown/duration fields in the mechanic-parameter registry rather than canonical target stats
+- keep composite ownership centralized (`wall_*` derived targets resolved in central resolver, not redefined in evaluators)
+
+These guardrails are intended to prevent canonical drift and evaluator-local reinterpretation while V2 registries are being authored.
+
 ## 11. Migration rules
 
 ### 11.1 V1 isolation
@@ -370,8 +393,17 @@ Recommended V2 ownership surfaces:
 - `docs/v2/TOWERSIM_V2_MASTER_SPEC.md`
   - authoritative architecture and migration contract
 
-- `tower_sim/v2/registry/target_stats.*`
+- `tower_sim/v2/registry/canonical_target_stats.*`
   - canonical target stat registry
+
+- `tower_sim/v2/registry/mechanic_parameters.*`
+  - runtime mechanic parameter registry
+
+- `tower_sim/v2/registry/environment_parameters.*`
+  - environment/tier/tournament parameter registry
+
+- `tower_sim/v2/registry/capabilities.*`
+  - capability/feature-flag registry
 
 - `tower_sim/v2/registry/contributors.*`
   - canonical contributor registry
@@ -405,3 +437,171 @@ Recommended V2 ownership surfaces:
 No further V2 implementation should proceed until this spec is committed and the initial registries are generated from it.
 
 Current provisional V2 scaffold files must be treated as non-authoritative until reconciled against this spec.
+
+## 17. Canonical registry object model and rollout best practices
+
+When substantial mechanics coverage already exists in repository sources, first freeze object classes, then populate only what current evaluators/mechanics actually consume.
+
+### 17.1 Required object classes (do not merge)
+1. **Canonical target stat**: stable evaluator-facing resolved values.
+   - examples: `tower_hp`, `tower_regen`, `tower_damage`, `wall_hp`, `wall_regen`
+2. **Runtime mechanic parameter**: direct knobs consumed by mechanic logic.
+   - examples: `uw.black_hole.duration_seconds`, `guardian.attack.cooldown_seconds`
+3. **Environment parameter**: run/tier/tournament context modifiers.
+   - examples: `bc.enemy_attack_speed_pct`, `tier.enemy_hp_multiplier`
+4. **Capability**: boolean/enum mechanic enablement or branch control.
+   - examples: `capability.wall.enabled`, `capability.black_hole.enabled`
+5. **Contributor**: provenance row from a source family mapped to exactly one destination object.
+   - examples: `workshop.*`, `lab.*`, `card.*`, `module.*`, `perk.*`, `uw_upgrade.*`, `bot_upgrade.*`, `guardian_upgrade.*`
+
+Fail-closed rule:
+- if a value cannot be classified into one object class unambiguously, stop or quarantine explicitly.
+
+### 17.2 State-plane separation
+Do not mix these planes:
+- **account/loadout state** (workshop levels, labs, equipped cards/modules, UW investments, chip levels)
+- **environment state** (tier modifiers, BCs, tournament modifiers)
+- **run state** (current HP/wall HP, cooldown timers, active effect state, wave-local dynamics)
+
+Static registries must not absorb run-state fields.
+
+### 17.3 Inclusion and promotion policy
+Inclusion test for canonical registries:
+- include only if resolver/runtime/evaluator consumes it as an independent semantic input today
+- exclude if it is only a source/UI label, unlock naming surface, or transient helper field
+
+Promotion rule:
+- lab/card/module concepts remain contributors by default
+- promote to mechanic/environment/capability registry only when they introduce a direct consumed runtime parameter
+
+### 17.4 Collision and synonym control
+Before adding a new ID:
+1. detect semantic duplicates (`count` vs `quantity`)
+2. converge source aliases to one canonical (`tower_hp` vs `tower_health`)
+3. map alternates through aliases only
+4. reject parallel canonicals for the same semantic concept
+
+### 17.5 Registry-first implementation order
+1. Freeze object-model registries (`v2_canonical_target_stats`, `v2_mechanic_parameters`, `v2_environment_parameters`, `v2_capabilities`).
+2. Define `v2_contributor_ids` mapping each contributor to exactly one destination object and operation.
+3. Add `v2_composite_dependencies` for central derived/composite ownership.
+4. Enforce static/runtime boundaries through `v2_runtime_field_registry` deny-list checks.
+5. Migrate adapters/emitters/evaluators only after registry validation gates pass.
+
+### 17.6 Deterministic merge gates
+Required gates per scoped migration:
+- Gate A: no duplicate semantics within or across object-class registries
+- Gate B: no unresolved alias leakage into canonical core
+- Gate C: composite ownership remains central (no evaluator-local redefinition)
+- Gate D: unknown identifiers fail closed or explicit quarantine only
+- Gate E: parity/audit outputs emitted for changed domains
+
+### 17.7 Naming contract split
+Use two naming layers intentionally:
+- provenance-rich contributor IDs (source-oriented)
+- concise stable engine IDs for targets/mechanics/environment/capabilities
+
+Do not force one grammar to serve both roles.
+
+This workflow keeps the simulator deterministic and auditable while avoiding an overgrown single-registry model.
+
+
+## 18. Kickoff playbook: how to start implementation
+
+Use this sequence to begin execution without reopening architecture debates.
+
+### 18.1 Week-1 goal (minimum deliverable)
+Deliver a first machine-readable registry cut that covers currently-consumed v1 combat/survivability surfaces only.
+
+Scope lock:
+- include only IDs consumed by existing resolver/runtime/evaluator paths
+- defer unmapped systems to explicit quarantine entries
+- do not expand scope to "all wiki stats" in the first pass
+
+### 18.2 Step-by-step startup sequence
+1. **Inventory current consumers**
+   - enumerate IDs read by evaluator/runtime/composite-resolution entrypoints
+   - classify each ID into one object class: target stat, mechanic parameter, environment parameter, capability, contributor
+2. **Freeze minimal object-model registries**
+   - create initial lists for `v2_canonical_target_stats`, `v2_mechanic_parameters`, `v2_environment_parameters`, `v2_capabilities`
+   - mark each item with provenance source and owner layer
+3. **Define contributor mapping slice**
+   - map only in-scope contributor families to destination object IDs and operations
+   - enforce one contributor -> one destination semantic mapping
+4. **Run collision/alias pass**
+   - collapse duplicates (`count` vs `quantity`, `hp` vs `health`) through aliases
+   - reject unresolved synonym conflicts until explicit decision is recorded
+5. **Wire central dependency/composite rules**
+   - encode `wall_*` and other composite ownership in central dependency registry only
+   - verify no evaluator-local recomputation remains for scoped targets
+6. **Enable fail-closed checks**
+   - unknown IDs must fail or enter quarantine explicitly
+   - no silent fallback to legacy names
+7. **Publish parity snapshot**
+   - produce a scoped parity report between existing outputs and registry-driven outputs for in-scope IDs
+
+### 18.3 Definition of done for first migration slice
+A first slice is complete only if all hold:
+- all in-scope consumed IDs are classified into one object class
+- all canonical IDs are duplicate-free after alias normalization
+- all in-scope contributors map through registry definitions
+- composite ownership for scoped targets is centralized
+- unresolved identifiers are quarantined or rejected explicitly
+- parity/audit output exists and is attached to the migration PR
+
+### 18.4 Recommended PR slicing pattern
+Keep PRs narrow and deterministic:
+1. PR-1: object-model registry skeleton + naming/alias decisions
+2. PR-2: first in-scope contributor mappings + operations
+3. PR-3: composite/dependency wiring + fail-closed guards
+4. PR-4: parity/audit evidence and evaluator cutover for scoped IDs
+
+Do not combine all layers in one migration PR.
+
+
+## 19. Plain-language version (no software jargon)
+
+If the detailed sections feel too technical, use this practical version.
+
+### 19.1 What we are doing
+We are organizing game values into 4 simple buckets so we stop mixing different kinds of things:
+
+1. **Core tower results** (the main values evaluators read)
+   - examples: tower health, tower damage, wall health
+2. **Mechanic settings** (values specific systems use while running)
+   - examples: Black Hole duration, Golden Tower cooldown
+3. **Environment settings** (wave/tier/BC context)
+   - examples: enemy health multiplier, boss speed multiplier
+4. **On/off flags** (feature enabled yes/no)
+   - examples: poison swamp stun enabled
+
+### 19.2 What a contributor row means
+A contributor row is just: "this source value changes that destination value".
+
+It must clearly say which bucket it points to (core result, mechanic setting, environment setting, or on/off flag).
+
+### 19.3 How to work through this (simple order)
+1. Start with values the simulator already uses today.
+2. Put each one into exactly one bucket.
+3. Make sure no value appears in two buckets.
+4. Make sure old names point to one chosen name.
+5. If a value is unclear, block it or quarantine it (do not guess).
+6. Run parity checks and confirm outputs still match for in-scope areas.
+
+### 19.4 What "done" means for a migration slice
+A slice is done when:
+- every in-scope value has one bucket,
+- no duplicates remain,
+- no silent fallback names remain,
+- blocked/unknown items are explicit,
+- parity output is attached to the PR.
+
+### 19.5 Immediate next three steps
+- **Step 1:** review edge IDs and fix any wrong bucket assignments.
+- **Step 2:** expose a simple status report (counts per bucket + blocked items).
+- **Step 3:** migrate downstream consumers off the old single-list assumption.
+
+### 19.6 Current status
+- Step 1 status: in progress (edge-ID review started; selected ultimate-mechanic IDs moved into mechanic settings).
+- Step 2 status: complete (`summarize_v2_registry_status` reports counts plus blocked-item totals and `scripts/v2_registry_status.py` exposes it for users).
+- Step 3 status: complete in static contract loading/tests (no required dependency on legacy single-list target registry for object-universe validation).
