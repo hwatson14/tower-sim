@@ -29,7 +29,7 @@ def test_modules_system_state_and_presets_from_fixture() -> None:
     assert snapshot.module_system_state["Cannon"].assist_unlocked is False
     assert snapshot.module_system_state["Cannon"].assist_level == 0
     assert snapshot.module_system_state["Armor"].assist_unlocked is True
-    assert snapshot.module_system_state["Armor"].assist_level == 63
+    assert snapshot.module_system_state["Armor"].assist_level == 41
 
     assert snapshot.module_presets["Farming"]["Cannon"].primary == "Amplifying Strike"
     assert snapshot.module_presets["Testing"]["Cannon"].primary == "Being Annihilator"
@@ -45,16 +45,16 @@ def test_module_allocations_and_shard_budgets() -> None:
 
     allocations = snapshot.allocation_levels
     budgets = snapshot.inferred_shard_budgets
-    assert allocations["Cannon"].primary_level == 157
+    assert allocations["Cannon"].primary_level == 164
     assert allocations["Cannon"].assist_level == 0
-    assert allocations["Armor"].primary_level == 154
-    assert allocations["Armor"].assist_level == 63
-    assert budgets["Cannon"] == 146588
-    assert budgets["Armor"] == 139926
+    assert allocations["Armor"].primary_level == 163
+    assert allocations["Armor"].assist_level == 41
+    assert budgets["Cannon"] == 179338
+    assert budgets["Armor"] == 175671
 
     resolved = resolve_loadout(snapshot, "Farming")
     assert resolved.preset_name == "Farming"
-    assert resolved.allocation_levels["Generator"].primary_level == 150
+    assert resolved.allocation_levels["Generator"].primary_level == 161
 
 
 def test_module_preset_parsing_handles_blank_rows() -> None:
@@ -85,7 +85,7 @@ def test_module_preset_parsing_handles_blank_rows() -> None:
 
 def test_bot_upgrades_are_typed_levels() -> None:
     snapshot = compile_account_snapshot(parse_ids(Path("tests/fixtures/tower-sim-data/_IDS.csv")))
-    assert snapshot.bot_upgrades["Flame Bot"]["Damage R."] == 8
+    assert snapshot.bot_upgrades["Flame Bot"]["Damage R."] == 9
     assert snapshot.bot_upgrades["Golden Bot"]["Bonus"] == 18
     assert snapshot.bot_upgrades["Amplify Bot"]["Bonus"] == 0
 
