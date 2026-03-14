@@ -37,16 +37,16 @@ The repo now has:
 - v2 stage bridge in native contract surfaces
 - deterministic static staged outputs
 - fail-closed governance around stage compatibility and family routing
+- governed runtime overlay materialization with explicit family ordering
 
 The repo does **not yet** have:
-- runtime overlay materialization as a governed execution layer
 - combat/runtime-state implementation on top of overlays
 - evaluator integration against a fully realized runtime overlay system
 
 ## Current phase
-**Phase: Runtime overlay foundation**
+**Phase: Post-overlay runtime-state execution planning**
 
-This phase should add the minimum governed runtime overlay layer for:
+Runtime overlay foundation is complete. It delivered the minimum governed runtime overlay layer for:
 - perks
 - battle conditions
 - workshop runtime progression / cash workshop purchases
@@ -55,13 +55,12 @@ This phase should add the minimum governed runtime overlay layer for:
 - EHLS realized effect
 
 ## In scope now
-- runtime overlay materialization layer
-- overlay-family routing and validation
-- overlay separation from static stages
-- tests for overlay presence, ordering, and fail-closed behavior
+- post-overlay runtime-state execution planning and sequencing
+- preserving governed separation between static stages and runtime overlays
+- defining the next bounded implementation step without evaluator rewrites
 
 ## Out of scope now
-- full combat engine implementation
+- full combat engine implementation in this step
 - boss-state execution
 - evaluator rewrites
 - broad registry redesign
@@ -75,9 +74,39 @@ This phase should add the minimum governed runtime overlay layer for:
 - Prefer minimal file sprawl.
 - Keep static stages deterministic and unchanged prior to overlay application.
 
+
+## Phase progress snapshot
+- **Completed in this phase:**
+  - runtime overlays materialized as a governed layer
+  - overlay family ordering and fail-closed validation implemented
+  - runtime-state planning surface added (`materialize_runtime_state`) with fail-closed guards
+  - repo-map hygiene blocker removed (`tower_kb_bridge_pack.zip` deleted)
+- **Remaining in this phase (bounded planning closure):**
+  - none
+- **Status:** planning-closure complete; ready for the first execution-semantics implementation PR.
+
+
+## Immediate next bounded implementation slice (execution semantics PR-1)
+- **Goal:** land the first deterministic runtime execution semantics layer on top of `materialize_runtime_state(...)` without evaluator rewrites.
+- **In scope:**
+  1. define one explicit runtime execution pass that consumes:
+     - `start_of_run_stat_values`
+     - required runtime overlay families (already ordered)
+  2. produce a bounded execution artifact suitable for later combat-state expansion (no full combat loop).
+  3. fail closed on missing execution inputs and unexpected execution-phase wiring.
+- **Out of scope:**
+  - boss-state implementation
+  - full combat engine
+  - evaluator migration
+  - registry redesign
+- **Acceptance checks for PR-1:**
+  - deterministic execution pass exists behind existing repo-native surfaces
+  - explicit tests for execution ordering + fail-closed invalid input cases
+  - existing `tests/test_static_pipeline_v2.py` runtime-state/overlay checks remain green
+
 ## Success condition for this phase
-The repo can materialize runtime overlays as a distinct layer, with tests proving:
-- static stages remain stable before overlays
-- overlays are separate and governed
-- overlay ordering is explicit
-- incompatible or missing overlay inputs fail closed
+The repo has a bounded runtime-state planning surface that preserves current separation and proves:
+- static stages and runtime overlays remain explicitly separate
+- runtime-state assembly keeps static and overlay ordering explicit
+- overlay family presence/order validation remains fail-closed
+- the next execution-semantic step is scoped without evaluator rewrites

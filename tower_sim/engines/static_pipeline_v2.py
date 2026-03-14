@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Mapping
@@ -11,6 +12,7 @@ from tower_sim.engines.stat_input_compiler import (
     compile_baseline_gem_respec_stat_inputs,
     compile_baseline_loadout_stat_inputs,
 )
+from tower_sim.registry.stat_registry import Phase
 from tower_sim.registry.static_v2_contract import StaticV2ContractError, load_static_v2_contract
 from tower_sim.util.account_snapshot import AccountSnapshot
 
@@ -34,6 +36,18 @@ class RuntimeOverlayRow:
 class RuntimeOverlayMaterialization:
     order: tuple[str, ...]
     by_family: Mapping[str, list[RuntimeOverlayRow]]
+
+
+@dataclass(frozen=True)
+class RuntimeStateMaterialization:
+    static_stage_order: tuple[str, ...]
+    stage_stat_inputs_by_stage: Mapping[str, tuple[StatInput, ...]]
+    stage_stat_values_by_stage: Mapping[str, Mapping[str, tuple[float, ...]]]
+    start_of_run_stat_inputs: tuple[StatInput, ...]
+    start_of_run_stat_values: Mapping[str, tuple[float, ...]]
+    overlay_order: tuple[str, ...]
+    overlay_rows: tuple[RuntimeOverlayRow, ...]
+    overlay_counts: Mapping[str, int]
 
 
 REQUIRED_STATIC_STAGES = (
@@ -246,6 +260,99 @@ def materialize_runtime_overlays(
     )
 
     return RuntimeOverlayMaterialization(order=overlay_order, by_family=rows_by_family)
+
+
+def materialize_runtime_state(
+    snapshot: AccountSnapshot,
+    *,
+    stage_materialization: StageMaterialization | None = None,
+    overlays: RuntimeOverlayMaterialization | None = None,
+) -> RuntimeStateMaterialization:
+    materialized = stage_materialization or materialize_static_stages(snapshot)
+    overlay_materialized = overlays or materialize_runtime_overlays(
+        snapshot,
+        stage_materialization=materialized,
+    )
+
+    observed_stage_order = tuple(materialized.by_stage.keys())
+    if observed_stage_order != REQUIRED_STATIC_STAGES:
+        raise StaticV2ContractError(
+            f"runtime_state_static_stage_order_unexpected:expected={REQUIRED_STATIC_STAGES}:observed={observed_stage_order}"
+        )
+
+    if overlay_materialized.order != REQUIRED_RUNTIME_OVERLAY_FAMILIES:
+        raise StaticV2ContractError("runtime_state_overlay_order_unexpected")
+
+    unexpected_overlay_families = sorted(
+        set(overlay_materialized.by_family.keys()) - set(REQUIRED_RUNTIME_OVERLAY_FAMILIES)
+    )
+    if unexpected_overlay_families:
+        joined = ",".join(unexpected_overlay_families)
+        raise StaticV2ContractError(f"runtime_state_unexpected_overlay_families:{joined}")
+
+    flattened_rows: list[RuntimeOverlayRow] = []
+    overlay_counts: dict[str, int] = {}
+    for family in REQUIRED_RUNTIME_OVERLAY_FAMILIES:
+        rows = overlay_materialized.by_family.get(family)
+        if rows is None:
+            raise StaticV2ContractError(f"runtime_state_missing_overlay_family:{family}")
+        if len(rows) == 0:
+            raise StaticV2ContractError(f"runtime_state_empty_overlay_family:{family}")
+        for row in rows:
+            if row.family != family:
+                raise StaticV2ContractError(
+                    f"runtime_state_overlay_family_row_mismatch:{family}:{row.family}"
+                )
+            if row.stage != "runtime_overlay":
+                raise StaticV2ContractError(
+                    f"runtime_state_overlay_stage_unexpected:{family}:{row.stage}"
+                )
+        overlay_counts[family] = len(rows)
+        flattened_rows.extend(rows)
+
+    stage_stat_inputs_by_stage = {
+        stage: tuple(inputs)
+        for stage, inputs in materialized.by_stage.items()
+    }
+
+    stage_stat_values_by_stage = {
+        stage: _group_stage_stat_values(inputs, stage=stage)
+        for stage, inputs in materialized.by_stage.items()
+    }
+
+    return RuntimeStateMaterialization(
+        static_stage_order=REQUIRED_STATIC_STAGES,
+        stage_stat_inputs_by_stage=stage_stat_inputs_by_stage,
+        stage_stat_values_by_stage=stage_stat_values_by_stage,
+        start_of_run_stat_inputs=stage_stat_inputs_by_stage["baseline_loadout"],
+        start_of_run_stat_values=stage_stat_values_by_stage["baseline_loadout"],
+        overlay_order=REQUIRED_RUNTIME_OVERLAY_FAMILIES,
+        overlay_rows=tuple(flattened_rows),
+        overlay_counts=overlay_counts,
+    )
+
+
+def _group_stage_stat_values(
+    inputs: list[StatInput],
+    *,
+    stage: str,
+) -> Mapping[str, tuple[float, ...]]:
+    grouped: dict[str, list[float]] = {}
+    for item in inputs:
+        if item.phase != Phase.START_OF_RUN:
+            raise StaticV2ContractError(
+                f"runtime_state_unexpected_phase:{stage}:{item.stat_id}:{item.phase.value}"
+            )
+        base = float(item.base_value or 0.0)
+        delta = float(item.loadout_delta or 0.0)
+        mult = float(item.enhancement_multiplier or 1.0)
+        value = (base + delta) * mult
+        if not math.isfinite(value):
+            raise StaticV2ContractError(
+                f"runtime_state_non_finite_value:{stage}:{item.stat_id}"
+            )
+        grouped.setdefault(item.stat_id, []).append(value)
+    return {stat_id: tuple(values) for stat_id, values in grouped.items()}
 
 
 def _with_explicit_contributor_families(
