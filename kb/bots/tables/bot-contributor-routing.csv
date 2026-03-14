@@ -1,0 +1,7 @@
+entity_id,canonical_name,contributor_family,applies_to,operation,primary_surface,status,note
+BOT_AMPLIFY_BOT,Amplify Bot,bot_upgrade,named_bot_tracks,level_lookup,kb/bots/tables/bot-upgrade-tracks-long.csv,active,Primary medal-funded bot track routing.
+BOT_FLAME_BOT,Flame Bot,bot_upgrade,named_bot_tracks,level_lookup,kb/bots/tables/bot-upgrade-tracks-long.csv,active,Primary medal-funded bot track routing.
+BOT_FLAME_BOT,Flame Bot,lab,named_bot_lab_extension,level_lookup,kb/bots/tables/bot-labs-summary.yaml,active_supporting,Bundled lab extension surface exists for this bot.
+BOT_GOLDEN_BOT,Golden Bot,bot_upgrade,named_bot_tracks,level_lookup,kb/bots/tables/bot-upgrade-tracks-long.csv,active,Primary medal-funded bot track routing.
+BOT_GOLDEN_BOT,Golden Bot,lab,named_bot_lab_extension,level_lookup,kb/bots/tables/bot-labs-summary.yaml,active_supporting,Bundled lab extension surface exists for this bot.
+BOT_THUNDER_BOT,Thunder Bot,bot_upgrade,named_bot_tracks,level_lookup,kb/bots/tables/bot-upgrade-tracks-long.csv,active,Primary medal-funded bot track routing.

@@ -28,6 +28,7 @@ top_level:
     - pytest.ini
     - .gitignore
     - .gitmodules
+    - tower_kb_unified_v56_labs_workshop_massive_sweep.zip
 
   forbidden_dirs:
     - tools
@@ -136,6 +137,9 @@ generated_artifacts:
 
 naming_rules:
   require_snake_case_filenames: true
+
+  non_snake_case_allowed_roots:
+    - kb
 
   forbidden_base_filenames:
     - misc

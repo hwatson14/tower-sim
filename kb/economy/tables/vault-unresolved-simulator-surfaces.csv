@@ -1,0 +1,2 @@
+surface_id,why_unresolved,simulator_handling,status
+VAULT_NUMERIC_NODE_LADDERS,"The current bundle verifies vault tree existence, currency, and spend-path routing, but does not surface per-node numeric effect ladders as active canon.",Do not invent node ladders. Require sourced node tables before applying numeric vault bonuses in simulation.,explicit_unknown_until_sourced

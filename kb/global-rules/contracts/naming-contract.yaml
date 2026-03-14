@@ -1,0 +1,61 @@
+version: v3
+kind: naming_contract
+purpose: Canonical machine-facing identity grammar for KB objects, contributors, and
+  resolver targets.
+status: active
+rules:
+- Canonical object ids use lowercase snake_case when the id is a registry key.
+- Contributor ids use exactly four semantic sections joined by double underscores.
+- Runtime mechanic parameter ids use dotted domain paths to distinguish them from
+  canonical stats.
+- Filenames stay lowercase kebab-case and are not themselves canonical ids.
+- Aliases may improve retrieval, but never create new semantics.
+sections:
+  contributor_id:
+    grammar: source_section__entity_section__attribute_section__metric_section
+    section_definitions:
+      source_section: where the contribution originates, such as workshop, lab, card,
+        relic, vault, module, enhancements, uw_upgrade, bot_upgrade, guardian_upgrade,
+        battle_condition, perk, theme_song, player_stuff, unlock
+      entity_section: the system or object being modified, such as tower, wall, black_hole,
+        chrono_field, golden_bot
+      attribute_section: the property being affected, such as damage, cooldown, range,
+        count, duration, chance, multiplier
+      metric_section: the unit or semantic encoding, such as flat, pct, multiplier,
+        seconds, count, m, rpm, enabled
+    examples:
+    - workshop__tower__health__flat
+    - lab__tower__attack_speed__pct
+    - module__black_hole__size__m
+    - battle_condition__enemy_level_skip__absolute_subtract__pp
+  canonical_stat_id:
+    grammar: object_property_unitstyle when needed
+    notes:
+    - Use snake_case.
+    - Prefer stable engine-facing semantics over source wording.
+    - Examples: tower_hp, wall_hp, tower_range_m, enemy_attack_level_skip_pct
+  runtime_mechanic_param_id:
+    grammar: family.object.parameter_unitstyle
+    notes:
+    - Use dotted family/object structure for non-stat runtime parameters.
+    - Examples: uw.black_hole.duration_seconds, uw.chrono_field.range_m, bot.golden.cooldown_seconds
+  capability_id:
+    grammar: family.object.capability_name or source_object_capability when flat ids
+      already exist
+    notes:
+    - Keep capabilities distinct from scalar parameters.
+    - Examples: uw.chain_lightning.shock_enabled
+policy:
+  canonical_term_preference:
+    enhancements: Enhancements
+    ultimate_weapons: Ultimate Weapons
+    ultimate_weapon_plus: Ultimate Weapon Plus
+  prohibited_patterns:
+  - Do not overload one id to mean both a permanent stat and a runtime parameter.
+  - Do not encode source provenance into canonical stat ids.
+  - Do not create multiple canonical ids for the same mechanic just to satisfy UI
+    wording.
+  alias_policy:
+  - Raw source names stay under sources/raw when exact fidelity matters.
+  - Human shorthand such as BH, GT, EALS, EHLS, and Workshop Plus belongs in alias
+    registries and notes, not as competing canonical ids.

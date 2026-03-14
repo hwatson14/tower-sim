@@ -1,0 +1,7 @@
+guardian_id,runtime_area,material_simulator_status,frame_exact_status,note
+GUARDIAN_ATTACK,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."
+GUARDIAN_ALLY,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."
+GUARDIAN_BOUNTY,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."
+GUARDIAN_FETCH,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."
+GUARDIAN_SUMMON,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."
+GUARDIAN_SCOUT,timed_chip_activation,closed,de_scoped,"Chip cooldown, targets, and named effects are surfaced; exact frame tie-breaks remain out of scope."

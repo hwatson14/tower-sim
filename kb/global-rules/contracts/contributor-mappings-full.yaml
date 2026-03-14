@@ -1,0 +1,1312 @@
+version: v1
+kind: contributor_routing
+purpose: Consolidated live source-to-object routing for the Tower GPT KB.
+notes:
+  - This file replaces one-off migration-pass files as the active routing surface.
+  - Rows are grouped by source family for readability.
+  - One contributor maps to exactly one destination object.
+source_families:
+  workshop:
+    - contributor_id: workshop__tower__health__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__regen__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__damage__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__attack_speed__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__crit_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__crit_multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__range__m
+      destination_object_type: canonical_stat
+      destination_id: tower_range_m
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__damage_per_meter__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_damage_per_meter_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__multishot_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_multishot_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__multishot_targets__count
+      destination_object_type: canonical_stat
+      destination_id: tower_multishot_targets
+      resolver: integer_count_stat
+    - contributor_id: workshop__tower__rapid_fire_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rapid_fire_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__rapid_fire_duration__seconds
+      destination_object_type: canonical_stat
+      destination_id: tower_rapid_fire_duration_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__bounce_shot_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_bounce_shot_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__bounce_shot_targets__count
+      destination_object_type: canonical_stat
+      destination_id: tower_bounce_shot_targets
+      resolver: integer_count_stat
+    - contributor_id: workshop__tower__bounce_shot_range__m
+      destination_object_type: canonical_stat
+      destination_id: tower_bounce_shot_range_m
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__supercrit_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__supercrit_multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__rend_armor_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__rend_armor_multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__defense_pct__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__defense_absolute__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_absolute
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__thorns_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_thorns_damage_pct
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__lifesteal__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_lifesteal_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__knockback_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__knockback_force__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_force
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__orb_speed__rpm
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_speed_rpm
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__orb_count__count
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_count
+      resolver: integer_count_stat
+    - contributor_id: workshop__tower__shockwave_size__m
+      destination_object_type: canonical_stat
+      destination_id: tower_shockwave_size_m
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__shockwave_interval__seconds
+      destination_object_type: canonical_stat
+      destination_id: tower_shockwave_interval_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__land_mine_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_land_mine_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__land_mine_damage__flat
+      destination_object_type: canonical_stat
+      destination_id: tower_land_mine_damage
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__land_mine_radius__m
+      destination_object_type: canonical_stat
+      destination_id: tower_land_mine_radius_m
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__death_defy_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_death_defy_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__cash_kill_bonus__multiplier
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__cash_per_wave__flat
+      destination_object_type: canonical_stat
+      destination_id: cash_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__coin_kill_bonus__multiplier
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__coins_per_wave__flat
+      destination_object_type: canonical_stat
+      destination_id: coins_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__free_attack_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_attack_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__free_defense_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_defense_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__free_utility_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_utility_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__interest_per_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: interest_per_wave_pct
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__recovery_amount__pct
+      destination_object_type: canonical_stat
+      destination_id: recovery_amount_pct
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__max_recovery__multiplier
+      destination_object_type: canonical_stat
+      destination_id: max_recovery_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__tower__package_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: package_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__enemy_attack_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_attack_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__tower__enemy_health_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_health_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: workshop__wall__health__flat
+      destination_object_type: canonical_stat
+      destination_id: wall_hp
+      resolver: standard_scalar_stat
+    - contributor_id: workshop__wall__rebuild__seconds
+      destination_object_type: canonical_stat
+      destination_id: wall_rebuild_seconds
+      resolver: standard_scalar_stat
+  lab:
+    - contributor_id: lab__tower__health__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__regen__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__attack_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__crit_factor__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__coins_kill_bonus__pct
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__cash_bonus__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__orb_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_speed_rpm
+      resolver: standard_scalar_stat
+    - contributor_id: lab__tower__orb_boss_hit__enabled
+      destination_object_type: capability
+      destination_id: capability.orb_boss_hit.enabled
+      resolver: capability_passthrough
+    - contributor_id: lab__wall__health__pct
+      destination_object_type: canonical_stat
+      destination_id: wall_hp
+      resolver: standard_scalar_stat
+    - contributor_id: lab__wall__regen__flat
+      destination_object_type: canonical_stat
+      destination_id: wall_regen
+      resolver: standard_scalar_stat
+    - contributor_id: lab__wall__thorns_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: wall_thorns_damage_pct
+      resolver: standard_scalar_stat
+    - contributor_id: lab__wall__fortification__multiplier
+      destination_object_type: canonical_stat
+      destination_id: wall_fortification_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: lab__golden_tower__bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__golden_tower__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: lab__black_hole__damage__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.damage_pct
+      resolver: standard_scalar_param
+    - contributor_id: lab__black_hole__coin_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.coin_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__black_hole__extra_black_hole__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.black_hole.extra_black_hole
+      resolver: capability_passthrough
+    - contributor_id: lab__black_hole__disable_ranged_enemies__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.black_hole.disable_ranged
+      resolver: capability_passthrough
+    - contributor_id: lab__spotlight__coin_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.coin_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__spotlight__missiles__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.missiles_interval_seconds
+      resolver: cooldown_param
+    - contributor_id: lab__chrono_field__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: lab__chrono_field__damage_reduction__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.chrono_field.damage_reduction.enabled
+      resolver: capability_passthrough
+    - contributor_id: lab__chrono_field__reduction_pct__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.damage_reduction_pct
+      resolver: pct_capped_param
+    - contributor_id: lab__chrono_field__range__m
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.range_m
+      resolver: standard_scalar_param
+    - contributor_id: lab__death_wave__health_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.health_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__death_wave__coin_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.coin_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__death_wave__cell_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.cell_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__death_wave__damage_amplifier__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__death_wave__armor_stripping__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.armor_stripping_pct
+      resolver: pct_capped_param
+    - contributor_id: lab__chain_lightning__shock__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.chain_lightning.shock
+      resolver: capability_passthrough
+    - contributor_id: lab__chain_lightning__shock_chance__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.shock_chance_pct
+      resolver: pct_capped_param
+    - contributor_id: lab__chain_lightning__shock_multiplier__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.shock_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__chain_lightning__chain_thunder__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.chain_thunder_pct
+      resolver: pct_capped_param
+    - contributor_id: lab__poison_swamp__radius__m
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.radius_m
+      resolver: standard_scalar_param
+    - contributor_id: lab__poison_swamp__stun__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.poison_swamp.stun
+      resolver: capability_passthrough
+    - contributor_id: lab__poison_swamp__stun_chance__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.stun_chance_pct
+      resolver: pct_capped_param
+    - contributor_id: lab__poison_swamp__stun_time__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.stun_duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: lab__smart_missiles__despawn_time__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.smart_missiles.despawn_time_seconds
+      resolver: standard_scalar_param
+    - contributor_id: lab__smart_missiles__amplifier__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.smart_missiles.amplifier_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: lab__smart_missiles__explosion__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.smart_missiles.explosion
+      resolver: capability_passthrough
+    - contributor_id: lab__battle_condition_reduction__generic__pct
+      destination_object_type: environment_param
+      destination_id: bc.reduction.generic_pct
+      resolver: environment_scalar
+    - contributor_id: lab__battle_conditions_group_1__reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.reduction.group_1_pct
+      resolver: environment_scalar
+    - contributor_id: lab__battle_conditions_group_2__reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.reduction.group_2_pct
+      resolver: environment_scalar
+    - contributor_id: lab__battle_conditions_group_3__reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.reduction.group_3_pct
+      resolver: environment_scalar
+    - contributor_id: lab__battle_conditions_group_4__reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.reduction.group_4_pct
+      resolver: environment_scalar
+  card:
+    - contributor_id: card__health__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: card__cash__multiplier
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: card__coins__multiplier
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: card__extra_orb__count__count
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_count
+      resolver: integer_count_stat
+    - contributor_id: card__enemy_balance__spawn_count__pct
+      destination_object_type: environment_param
+      destination_id: bc.more_enemies_pct
+      resolver: environment_scalar
+    - contributor_id: card__death_ray__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.death_ray.enabled
+      resolver: capability_passthrough
+    - contributor_id: card__plasma_cannon__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.plasma_cannon.enabled
+      resolver: capability_passthrough
+  perk:
+    - contributor_id: perk__health__multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: perk__coins__multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: perk__cash__multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: perk__black_hole__size__m
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.size_m
+      resolver: standard_scalar_param
+    - contributor_id: perk__tradeoff_health__multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: perk__tradeoff_regen__multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+  module:
+    - contributor_id: module__cannon__damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: module__armor__health__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: module__armor__wall_health__pct
+      destination_object_type: canonical_stat
+      destination_id: wall_hp
+      resolver: standard_scalar_stat
+    - contributor_id: module__armor__wall_regen__pct
+      destination_object_type: canonical_stat
+      destination_id: wall_regen
+      resolver: standard_scalar_stat
+    - contributor_id: module__generator__coins_kill_bonus__pct
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: module__core__black_hole_size__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.size_m
+      resolver: standard_scalar_param
+    - contributor_id: module__core__golden_tower_bonus__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: module__core__spotlight_angle__degrees
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.angle_degrees
+      resolver: standard_scalar_param
+    - contributor_id: module__armor__orbital_augment__electron_count
+      destination_object_type: mechanic_param
+      destination_id: module.orbital_augment.electron_count
+      resolver: integer_count_param
+    - contributor_id: module__armor__wormhole_redirector__max_recovery_heal_pct
+      destination_object_type: mechanic_param
+      destination_id: module.wormhole_redirector.max_recovery_heal_pct
+      resolver: pct_capped_param
+    - contributor_id: module__generator__galaxy_compressor__uw_cooldown_reduction_seconds
+      destination_object_type: mechanic_param
+      destination_id: module.galaxy_compressor.uw_cooldown_reduction_seconds
+      resolver: standard_scalar_param
+    - contributor_id: module__armor__negative_mass_projector__debuff_per_hit_pct
+      destination_object_type: mechanic_param
+      destination_id: module.negative_mass_projector.debuff_per_hit_pct
+      resolver: pct_capped_param
+    - contributor_id: module__armor__anti_cube_portal__damage_multiplier
+      destination_object_type: mechanic_param
+      destination_id: module.anti_cube_portal.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: module__armor__sharp_fortitude__wall_bonus_multiplier
+      destination_object_type: mechanic_param
+      destination_id: module.sharp_fortitude.wall_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: module__core__primordial_collapse__bh_damage_reduction_pct
+      destination_object_type: mechanic_param
+      destination_id: module.primordial_collapse.bh_damage_reduction_pct
+      resolver: pct_capped_param
+    - contributor_id: module__core__harmony_conductor__shock_bonus_pct
+      destination_object_type: mechanic_param
+      destination_id: module.harmony_conductor.shock_bonus_pct
+      resolver: pct_capped_param
+    - contributor_id: module__core__om_chip__boss_spotlight_reflection_multiplier
+      destination_object_type: mechanic_param
+      destination_id: module.om_chip.boss_reflection_multiplier
+      resolver: standard_scalar_param
+  uw_upgrade:
+    - contributor_id: uw_upgrade__golden_tower__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: uw_upgrade__golden_tower__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: uw_upgrade__golden_tower__bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.golden_tower.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__black_hole__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: uw_upgrade__black_hole__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: uw_upgrade__black_hole__size__m
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.size_m
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__black_hole__damage__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.black_hole.damage_pct
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__spotlight__bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__spotlight__angle__degrees
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.angle_degrees
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__spotlight__count__count
+      destination_object_type: mechanic_param
+      destination_id: uw.spotlight.count
+      resolver: integer_count_param
+    - contributor_id: uw_upgrade__chrono_field__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: uw_upgrade__chrono_field__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: uw_upgrade__chrono_field__slow__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.chrono_field.slow_pct
+      resolver: pct_capped_param
+    - contributor_id: uw_upgrade__death_wave__damage__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__death_wave__effect_wave_count__count
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.effect_wave_count
+      resolver: integer_count_param
+    - contributor_id: uw_upgrade__death_wave__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.death_wave.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: uw_upgrade__chain_lightning__damage__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__chain_lightning__quantity__count
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.quantity
+      resolver: integer_count_param
+    - contributor_id: uw_upgrade__chain_lightning__chance__pct
+      destination_object_type: mechanic_param
+      destination_id: uw.chain_lightning.chance_pct
+      resolver: pct_capped_param
+    - contributor_id: uw_upgrade__poison_swamp__damage__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__poison_swamp__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.duration_seconds
+      resolver: uw_duration_param
+    - contributor_id: uw_upgrade__poison_swamp__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.poison_swamp.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: uw_upgrade__smart_missiles__damage__multiplier
+      destination_object_type: mechanic_param
+      destination_id: uw.smart_missiles.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: uw_upgrade__smart_missiles__quantity__count
+      destination_object_type: mechanic_param
+      destination_id: uw.smart_missiles.quantity
+      resolver: integer_count_param
+    - contributor_id: uw_upgrade__smart_missiles__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: uw.smart_missiles.cooldown_seconds
+      resolver: cooldown_param
+  bot_upgrade:
+    - contributor_id: bot_upgrade__golden_bot__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.golden.duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__golden_bot__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.golden.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: bot_upgrade__golden_bot__bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: bot.golden.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__golden_bot__range__m
+      destination_object_type: mechanic_param
+      destination_id: bot.golden.range_m
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__amplify_bot__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.amplify.duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__amplify_bot__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.amplify.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: bot_upgrade__amplify_bot__bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: bot.amplify.bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__amplify_bot__range__m
+      destination_object_type: mechanic_param
+      destination_id: bot.amplify.range_m
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__flame_bot__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.flame.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: bot_upgrade__flame_bot__damage__multiplier
+      destination_object_type: mechanic_param
+      destination_id: bot.flame.damage_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__flame_bot__damage_reduction__pct
+      destination_object_type: mechanic_param
+      destination_id: bot.flame.damage_reduction_pct
+      resolver: pct_capped_param
+    - contributor_id: bot_upgrade__flame_bot__range__m
+      destination_object_type: mechanic_param
+      destination_id: bot.flame.range_m
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__thunder_bot__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.thunder.duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__thunder_bot__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.thunder.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: bot_upgrade__thunder_bot__range__m
+      destination_object_type: mechanic_param
+      destination_id: bot.thunder.range_m
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__thunder_bot__linger_duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: bot.thunder.linger_duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: bot_upgrade__thunder_bot__linger_slow__pct
+      destination_object_type: mechanic_param
+      destination_id: bot.thunder.linger_slow_pct
+      resolver: pct_capped_param
+  guardian_upgrade:
+    - contributor_id: guardian_upgrade__attack__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.attack.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__attack__damage_pct__pct
+      destination_object_type: mechanic_param
+      destination_id: guardian.attack.missing_health_damage_pct
+      resolver: pct_capped_param
+    - contributor_id: guardian_upgrade__attack__targets__count
+      destination_object_type: mechanic_param
+      destination_id: guardian.attack.targets_count
+      resolver: integer_count_param
+    - contributor_id: guardian_upgrade__ally__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.ally.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__ally__recovery_amount__pct
+      destination_object_type: mechanic_param
+      destination_id: guardian.ally.recovery_amount_pct
+      resolver: pct_capped_param
+    - contributor_id: guardian_upgrade__ally__max_recovery__multiplier
+      destination_object_type: mechanic_param
+      destination_id: guardian.ally.max_recovery_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__bounty__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.bounty.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__bounty__coin_multiplier__multiplier
+      destination_object_type: mechanic_param
+      destination_id: guardian.bounty.coin_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__bounty__targets__count
+      destination_object_type: mechanic_param
+      destination_id: guardian.bounty.targets_count
+      resolver: integer_count_param
+    - contributor_id: guardian_upgrade__fetch__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.fetch.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__fetch__find_chance__pct
+      destination_object_type: mechanic_param
+      destination_id: guardian.fetch.find_chance_pct
+      resolver: pct_capped_param
+    - contributor_id: guardian_upgrade__fetch__double_find_chance__pct
+      destination_object_type: mechanic_param
+      destination_id: guardian.fetch.double_find_chance_pct
+      resolver: pct_capped_param
+    - contributor_id: guardian_upgrade__summon__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.summon.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__summon__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.summon.duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__summon__cash_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: guardian.summon.cash_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__scout__cooldown__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.scout.cooldown_seconds
+      resolver: cooldown_param
+    - contributor_id: guardian_upgrade__scout__duration__seconds
+      destination_object_type: mechanic_param
+      destination_id: guardian.scout.duration_seconds
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__scout__range_bonus__multiplier
+      destination_object_type: mechanic_param
+      destination_id: guardian.scout.range_bonus_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: guardian_upgrade__chip_slots__count
+      destination_object_type: mechanic_param
+      destination_id: guardian.meta.chip_slots_count
+      resolver: integer_count_param
+  battle_condition:
+    - contributor_id: battle_condition__enemy_attack_speed__modifier__pct
+      destination_object_type: environment_param
+      destination_id: bc.enemy_attack_speed_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__enemy_speed__modifier__pct
+      destination_object_type: environment_param
+      destination_id: bc.enemy_speed_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__more_enemies__spawn_count__pct
+      destination_object_type: environment_param
+      destination_id: bc.more_enemies_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__more_bosses__boss_wave_interval__waves
+      destination_object_type: environment_param
+      destination_id: bc.more_bosses_interval_waves
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__armored_enemies__blocked_hits__count
+      destination_object_type: environment_param
+      destination_id: bc.armored_enemies_blocked_hits
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__orb_resistance__orb_damage_to_enemy_hp__pct
+      destination_object_type: environment_param
+      destination_id: bc.orb_resistance_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__thorns_resistance__thorns_damage_retained__pct
+      destination_object_type: environment_param
+      destination_id: bc.thorns_resistance_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__plasma_cannon_resistance__damage_retained__pct
+      destination_object_type: environment_param
+      destination_id: bc.plasma_cannon_resistance_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__death_ray_resistance__damage_to_enemy_hp__pct
+      destination_object_type: environment_param
+      destination_id: bc.death_ray_resistance_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__knockback_resistance__knockback_force_reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.knockback_resistance_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__ultimate_weapon_durations__duration_reduction__seconds
+      destination_object_type: environment_param
+      destination_id: bc.uw_duration_reduction_seconds
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__energy_shields_down__recharge_time_increase__pct
+      destination_object_type: environment_param
+      destination_id: bc.energy_shields_down_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__death_defy_down__chance_reduction__pct
+      destination_object_type: environment_param
+      destination_id: bc.death_defy_down_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__boss_ultimate__overheal__pct
+      destination_object_type: environment_param
+      destination_id: bc.boss_ultimate_overheal_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__ranged_ultimate__tower_disable_duration__seconds
+      destination_object_type: environment_param
+      destination_id: bc.ranged_ultimate_disable_seconds
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__fast_ultimate__buffed_nearby_enemies__count
+      destination_object_type: environment_param
+      destination_id: bc.fast_ultimate_buffed_count
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__scatter_ultimate__child_health_bonus__pct
+      destination_object_type: environment_param
+      destination_id: bc.scatter_ultimate_child_health_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__ray_ultimate__attack_speed_bonus__pct
+      destination_object_type: environment_param
+      destination_id: bc.ray_ultimate_attack_speed_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__vampire_ultimate__drain_speed_bonus__pct
+      destination_object_type: environment_param
+      destination_id: bc.vampire_ultimate_drain_speed_pct
+      resolver: bc_effective_value
+    - contributor_id: battle_condition__mass_enforcement__mass_gain_per_wave__pct
+      destination_object_type: environment_param
+      destination_id: bc.mass_enforcement_pct_per_wave
+      resolver: bc_effective_value
+
+  enhancements:
+    - contributor_id: enhancements__tower__damage__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__attack_speed__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__health__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__regen__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__defense_absolute__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_absolute
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__damage_per_meter__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_damage_per_meter_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__supercrit_multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__rend_armor_multiplier__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__wall_health__multiplier
+      destination_object_type: canonical_stat
+      destination_id: wall_hp
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__orb_size__multiplier
+      destination_object_type: runtime_mechanic_param
+      destination_id: tower.orb_size_multiplier
+      resolver: standard_scalar_param
+    - contributor_id: enhancements__tower__cash_bonus__multiplier
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__coin_bonus__multiplier
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__cells_per_kill_bonus__multiplier
+      destination_object_type: canonical_stat
+      destination_id: cells_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__free_upgrades__multiplier
+      destination_object_type: canonical_stat
+      destination_id: free_upgrade_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__recovery_package__multiplier
+      destination_object_type: canonical_stat
+      destination_id: recovery_package_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: enhancements__tower__enemy_attack_level_skip__multiplier
+      destination_object_type: canonical_stat
+      destination_id: enemy_attack_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: enhancements__tower__enemy_health_level_skip__multiplier
+      destination_object_type: canonical_stat
+      destination_id: enemy_health_level_skip_pct
+      resolver: pct_capped_scalar_stat
+  relic:
+    - contributor_id: relic__tower__lab_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: lab_speed_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__bot_range__m
+      destination_object_type: runtime_mechanic_param
+      destination_id: bot.global.range_bonus_m
+      resolver: standard_scalar_param
+    - contributor_id: relic__tower__damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__ultimate_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: ultimate_damage_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__attack_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__crit_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__crit_multiplier__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__damage_per_meter__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage_per_meter_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__supercrit_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__supercrit_multiplier__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__rend_armor_multiplier__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__health__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__health_regen__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__defense_pct__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__defense_absolute__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_absolute
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__thorns__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_thorns_damage_pct
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__knockback_force__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_force
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__orb_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_speed_rpm
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__wall_rebuild_seconds_reduction
+      destination_object_type: canonical_stat
+      destination_id: wall_rebuild_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__cash__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__coins__pct
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__free_attack_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_attack_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__free_defense_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_defense_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__free_utility_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_utility_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__recovery_amount__pct
+      destination_object_type: canonical_stat
+      destination_id: recovery_amount_pct
+      resolver: standard_scalar_stat
+    - contributor_id: relic__tower__enemy_attack_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_attack_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: relic__tower__enemy_health_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_health_level_skip_pct
+      resolver: pct_capped_scalar_stat
+  vault:
+    - contributor_id: vault__tower__bot_range__m
+      destination_object_type: runtime_mechanic_param
+      destination_id: bot.global.range_bonus_m
+      resolver: standard_scalar_param
+    - contributor_id: vault__tower__discount_enhancements__pct
+      destination_object_type: account_flag
+      destination_id: account_flag.discount_enhancements_pct
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__discount_rerolls__pct
+      destination_object_type: account_flag
+      destination_id: account_flag.discount_rerolls_pct
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__additional_card_slot__count
+      destination_object_type: capability
+      destination_id: capability.additional_card_slot.count
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__workshop_respec_discount__pct
+      destination_object_type: account_flag
+      destination_id: account_flag.workshop_respec_discount_pct
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__bot_respec_discount__pct
+      destination_object_type: account_flag
+      destination_id: account_flag.bot_respec_discount_pct
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__ad_gems_stack__multiplier
+      destination_object_type: account_flag
+      destination_id: account_flag.ad_gems_stack_multiplier
+      resolver: capability_passthrough
+    - contributor_id: vault__tower__damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__ultimate_weapon_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: ultimate_damage_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__attack_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__critical_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__critical_factor__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__damage_per_meter__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_damage_per_meter_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__multishot_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_multishot_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__rapid_fire_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rapid_fire_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__bounce_shot_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_bounce_shot_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__super_crit_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__super_crit_mult__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_supercrit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__rend_armor_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__rend_armor_multiplier__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_rend_armor_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__health__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_hp
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__health_regen__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__defense_pct__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__defense_absolute__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_absolute
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__thorn_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_thorns_damage_pct
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__knockback_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__knockback_force__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_force
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__orb_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_speed_rpm
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__orbs__count
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_count
+      resolver: integer_count_stat
+    - contributor_id: vault__tower__shockwave_frequency__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_shockwave_interval_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__death_defy__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_death_defy_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__wall_rebuild__seconds_reduction
+      destination_object_type: canonical_stat
+      destination_id: wall_rebuild_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__cash__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__cash_per_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__coins_per_kill__pct
+      destination_object_type: canonical_stat
+      destination_id: coin_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__coins_per_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: coins_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__free_attack_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_attack_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__free_defense_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_defense_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__free_utility_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_utility_upgrade_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__interest_per_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: interest_per_wave_pct
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__recovery_amount__pct
+      destination_object_type: canonical_stat
+      destination_id: recovery_amount_pct
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__max_recovery__pct
+      destination_object_type: canonical_stat
+      destination_id: max_recovery_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: vault__tower__enemy_attack_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_attack_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__tower__enemy_health_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_health_level_skip_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: vault__unlock__demon_mode_automation__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.demon_mode_automation
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__smart_demon_mode_automation__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.smart_demon_mode_automation
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__free_mission_reroll__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.free_mission_reroll
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__nuke_automation__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.nuke_automation
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__smart_nuke_automation__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.smart_nuke_automation
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__workshop_presets__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.workshop_presets
+      resolver: capability_passthrough
+    - contributor_id: vault__unlock__missile_barrage_automation__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.missile_barrage_automation
+      resolver: capability_passthrough
+  theme_song:
+    - contributor_id: theme_song__global__coin_bonus__multiplier
+      destination_object_type: cosmetic_bonus
+      destination_id: cosmetic_bonus.theme_song_coin_multiplier
+      resolver: standard_scalar_stat
+  player_stuff:
+    - contributor_id: player_stuff__profile__player_id__string
+      destination_object_type: account_context
+      destination_id: account_context.player_id
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__profile__farming_tier__enum
+      destination_object_type: account_context
+      destination_id: account_context.farming_tier
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__profile__tournament_league__enum
+      destination_object_type: account_context
+      destination_id: account_context.tournament_league
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__resource__lifetime_coins__count
+      destination_object_type: account_resource
+      destination_id: account_resource.lifetime_coins
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__resource__stones__count
+      destination_object_type: account_resource
+      destination_id: account_resource.stones
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__resource__gems__count
+      destination_object_type: account_resource
+      destination_id: account_resource.gems
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__flag__premium_packs_unlocked__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.premium_packs_unlocked
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__flag__disable_ads__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.disable_ads
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__flag__starter_pack__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.starter_pack
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__flag__epic_pack__boolean
+      destination_object_type: account_flag
+      destination_id: account_flag.epic_pack
+      resolver: capability_passthrough
+    - contributor_id: player_stuff__derived__coin_multiplier__enum
+      destination_object_type: account_context
+      destination_id: account_context.coin_multiplier_display
+      resolver: capability_passthrough
+  unlock:
+    - contributor_id: unlock__wall__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.wall.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__attack_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.attack.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__ally_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.ally.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__bounty_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.bounty.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__fetch_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.fetch.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__summon_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.summon.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__guardian__scout_chip__enabled__boolean
+      destination_object_type: capability
+      destination_id: capability.guardian.scout.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__uw__golden_tower__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.golden_tower.enabled
+      resolver: capability_passthrough
+    - contributor_id: unlock__uw__black_hole__enabled
+      destination_object_type: capability
+      destination_id: capability.uw.black_hole.enabled
+      resolver: capability_passthrough

@@ -1,0 +1,16 @@
+source_family,routing_status,dedicated_active_surface_present,primary_surface,content_gap_flag,note
+workshop,closed,yes,kb/workshop/tables/workshop-values.csv,no,Dedicated workshop values domain table present.
+enhancements,closed,yes,kb/workshop/tables/enhancements-values.csv,no,Dedicated enhancements values table present.
+lab,closed,yes,kb/labs/tables/lab-values.csv,no,"Dedicated lab ladder, routing, and source-registry tables are present; remaining missing simulator lab is tracked explicitly in the unresolved lab surface list."
+card,closed,yes,kb/cards/tables/card-base-ladders.csv,no,Dedicated card values table present.
+perk,closed,yes,kb/perks/tables/perks.csv,no,Dedicated perk tables present.
+module,closed,yes,kb/modules/tables/module-main-effect-bases.csv,no,Dedicated module tables present.
+uw_upgrade,closed,yes,kb/ultimate-weapons/tables/uw-entity-registry.csv,no,"Dedicated normalized UW entity, track, and contributor-routing surfaces now sit above the ladder tables."
+bot_upgrade,closed,yes,kb/bots/tables/bot-entity-registry.csv,no,"Dedicated normalized bot entity, track, mechanic, and routing surfaces now exist for all four bot families."
+guardian_upgrade,closed,yes,kb/guardians/tables/guardian-upgrades.csv,no,Dedicated guardian tables present.
+battle_condition,closed,yes,kb/tournaments/tables/battle-condition-curves-canonical.csv,no,Dedicated BC and heat tables present.
+vault,closed,partial,kb/economy/tables/vault-tree-registry.csv,no,"Vault now has normalized tree identity and spend-routing summary surfaces, but detailed numeric effect ladders are still unsurfaced."
+relic,closed,partial,kb/global-rules/tables/relic-input-registry.csv,yes,Active input registry now present; per-account relic values remain external instance inputs.
+player_stuff,closed,yes,kb/global-rules/tables/player-stuff-input-registry.csv,no,Active input registry now present for player/account fields.
+theme_song,closed,yes,kb/global-rules/tables/theme-song-input-registry.csv,no,Active input registry now present for cosmetic coin-bonus inputs.
+unlock,closed,yes,kb/global-rules/tables/unlock-input-registry.csv,no,Active input registry now present for capability/unlock booleans.

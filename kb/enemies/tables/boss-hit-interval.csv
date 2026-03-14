@@ -1,0 +1,2 @@
+hit_interval_id,interval_seconds,provenance
+default,2.0,Accepted user-provided model constant: boss hits every 2 seconds.

@@ -132,6 +132,8 @@ def check_naming_rules(
         return
 
     forbidden_basenames = set(naming_rules.get("forbidden_base_filenames", []))
+    non_snake_allowed_globs = naming_rules.get("non_snake_case_allowed_globs", [])
+    non_snake_allowed_roots = set(naming_rules.get("non_snake_case_allowed_roots", []))
     allowed_top_level_files = set(config["top_level"]["allowed_files"])
 
     for path in repo_root.rglob("*"):
@@ -159,8 +161,15 @@ def check_naming_rules(
             errors.append(
                 f"Forbidden filename base '{segments[0]}' at {rel_path.as_posix()}"
             )
+
+        rel_posix = rel_path.as_posix()
+        if rel_path.parts and rel_path.parts[0] in non_snake_allowed_roots:
+            continue
+        if non_snake_allowed_globs and matches_any(rel_posix, non_snake_allowed_globs):
+            continue
+
         if not all(is_snake_segment(segment) for segment in segments):
-            errors.append(f"Non-snake_case filename: {rel_path.as_posix()}")
+            errors.append(f"Non-snake_case filename: {rel_posix}")
 
 
 def check_generated_artifacts(

@@ -1,0 +1,159 @@
+version: v2
+kind: environment_parameters
+purpose: Contextual modifiers from tier, enemy systems, heat, tournaments, and battle conditions.
+notes:
+  - These are not permanent tower stats.
+  - Keep battle conditions, tier multipliers, and tournament settings isolated here.
+  - 'Status meanings: keep_now = source-backed active parameter; retired_synthetic_global = simulator convenience kept only for provenance, not active KB canon; modeled_assumption = explicit assumed value or interpretation.'
+domains:
+  tier:
+    - id: tier.enemy_hp_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: keep_now
+    - id: tier.enemy_damage_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: keep_now
+    - id: tier.enemy_speed_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: retired_synthetic_global
+  heat:
+    - id: heat.enemy_damage_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: keep_now
+    - id: heat.enemy_attack_speed_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+  tournament:
+    - id: tournament.wave_cooldown_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: keep_now
+    - id: tournament.wave_time_seconds
+      unit: seconds
+      resolver: environment_scalar
+      status: keep_now
+  enemy:
+    - id: enemy.base_spawn_rate_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: retired_synthetic_global
+    - id: enemy.attack_speed_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: retired_synthetic_global
+  boss:
+    - id: boss.spawn_interval_waves
+      unit: waves
+      resolver: environment_scalar
+      status: keep_now
+    - id: boss.hp_multiplier
+      unit: multiplier
+      resolver: environment_scalar
+      status: retired_synthetic_global
+  bc:
+    - id: bc.reduction.generic_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+    - id: bc.reduction.group_1_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+    - id: bc.reduction.group_2_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+    - id: bc.reduction.group_3_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+    - id: bc.reduction.group_4_pct
+      unit: pct
+      resolver: environment_scalar
+      status: keep_now
+    - id: bc.enemy_attack_speed_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.enemy_speed_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.more_enemies_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.more_bosses_interval_waves
+      unit: waves
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.armored_enemies_blocked_hits
+      unit: count
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.orb_resistance_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.thorns_resistance_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.death_ray_resistance_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.plasma_cannon_resistance_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.knockback_resistance_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.uw_duration_reduction_seconds
+      unit: seconds
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.energy_shields_down_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.death_defy_down_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.mass_enforcement_pct_per_wave
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.boss_ultimate_overheal_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.ranged_ultimate_disable_seconds
+      unit: seconds
+      resolver: bc_effective_value
+      status: keep_now
+
+    - id: bc.fast_ultimate_buffed_count
+      unit: count
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.scatter_ultimate_child_health_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.ray_ultimate_attack_speed_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
+    - id: bc.vampire_ultimate_drain_speed_pct
+      unit: pct
+      resolver: bc_effective_value
+      status: keep_now
