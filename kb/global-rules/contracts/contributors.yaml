@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: contributors_registry_schema
 purpose: Provenance-rich source rows that resolve into canonical stats, mechanic params, environment params, or capabilities.
 schema:

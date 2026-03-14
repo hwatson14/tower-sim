@@ -9,7 +9,7 @@ These surfaces define simulator-facing card behavior.
 - `kb/cards/tables/wiki-card-slots-and-costs.csv`
 - `kb/cards/tables/card-masteries.csv`
 - `kb/cards/tables/wiki-card-mastery-lab-costs.csv`
-- `kb/cards/tables/card-unresolved-simulator-surfaces.csv`
+- `kb/cards/tables/card-simulator-boundary-registry.csv`
 
 ## Application rules
 - A card effect may apply only when the card is equipped and an active slot is available.
@@ -21,4 +21,4 @@ These surfaces define simulator-facing card behavior.
 ## Prohibited behavior
 - Do not infer missing epic-card or unsurfaced base-card ladders.
 - Do not treat presence of a card mastery row as proof that the full base-card ladder is also surfaced.
-- Do not override the unresolved simulator surfaces registry with advisory notes.
+- Do not override the card boundary registry with advisory notes.

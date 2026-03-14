@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: ids_section_routing
 purpose: Complete routing ownership for uploaded _IDS.csv sections.
 sections:

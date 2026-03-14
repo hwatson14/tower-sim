@@ -9,8 +9,8 @@ Global-rules tables retain only cross-domain tables. Domain-specific UW slices w
 - `wiki-tier-scaling-multipliers.csv`
 - `note-derived-wave-boss-intervals.csv`
 
-## Archived from active tables in v15
-These were moved into `sources/raw/history/rationalized/` to reduce overlap or remove placeholders.
+## Archived from active tables
+These were moved into `sources/raw/history/rationalized/` to reduce overlap or remove superseded helper surfaces.
 - `tables-index.md`
 - `wiki-blackhole-coin-bonus-slice.csv`
 - `wiki-poison-swamp-basic-upgrades-slice.csv`

@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: domain_coverage
 purpose: High-level routing status for KB domains against the live object model.
 domains:
@@ -62,7 +62,7 @@ domains:
       - mechanic_params
       - capabilities
     notes:
-      - Guardian coverage exists but still needed re-verification in v17 baseline.
+      - Guardian coverage exists but still needed re-verification in an earlier baseline.
   battle_conditions:
     status: strong
     routes_to:

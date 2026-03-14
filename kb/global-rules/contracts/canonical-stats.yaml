@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: canonical_target_stats
 purpose: Stable resolved evaluator-facing target stats.
 notes:

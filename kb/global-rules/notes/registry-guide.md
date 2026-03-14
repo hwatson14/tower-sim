@@ -64,4 +64,4 @@ It is the consolidated source-to-object placement file for the KB.
 - Do not mix environment modifiers into permanent tower stats.
 - Promote to `canonical_stats` only if evaluators need the resolved value directly.
 - Promote to `mechanic_params` if the runtime consumes the value as a mechanic knob.
-- Use `capabilities` for unlocks and feature-presence, not fake numeric placeholders.
+- Use `capabilities` for unlocks and feature-presence, not invented numeric stand-ins.

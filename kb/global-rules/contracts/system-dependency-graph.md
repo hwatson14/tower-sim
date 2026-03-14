@@ -8,7 +8,7 @@ This file records high-level dependency relationships between systems.
 - modules -> modify stats and mechanics
 - perks -> temporary run modifiers
 - ultimate_weapons -> active combat / economy abilities
-- guardians -> persistent scaling layer (provisional reconstruction)
+- guardians -> persistent scaling layer
 
 ## Enemy-side
 Difficulty depends on:

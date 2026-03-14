@@ -1,4 +1,4 @@
-version: v3
+schema_revision: 1
 kind: naming_contract
 purpose: Canonical machine-facing identity grammar for KB objects, contributors, and
   resolver targets.

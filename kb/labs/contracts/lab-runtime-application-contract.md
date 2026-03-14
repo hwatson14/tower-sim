@@ -10,14 +10,14 @@ This contract defines how bundled lab ladders are allowed to participate in simu
 - `kb/labs/tables/lab-source-registry.csv`
 - `kb/labs/tables/wiki-game-speed-lab.csv`
 - `kb/labs/tables/module-drop-labs.csv`
-- `kb/labs/tables/lab-unresolved-simulator-surfaces.csv`
+- `kb/labs/tables/lab-simulator-boundary-registry.csv`
 
 ## Rules
 1. `lab-values.csv` is the active numeric ladder surface for bundled generic and wall-related labs.
 2. `lab-application-registry.csv` defines where each lab routes in simulator reasoning.
 3. A consumer may summarize a ladder from `lab-track-summary.csv`, but must resolve exact numeric level lookups from `lab-values.csv`.
 4. A lab may be used in simulation only when its ladder is bundled as an active surface or it is explicitly represented as an external account-state input family.
-5. If a simulator-relevant lab is listed in `lab-unresolved-simulator-surfaces.csv`, the model must fail closed and state that the active KB does not yet bundle a source-backed canonical ladder.
+5. If a simulator-relevant lab is listed in `lab-simulator-boundary-registry.csv`, treat that row as a boundary or package choice registry and fail closed rather than inventing a ladder.
 
 ## Allowed operations
 - multiplicative multipliers for tower or wall stat ladders such as health, regen, and attack speed

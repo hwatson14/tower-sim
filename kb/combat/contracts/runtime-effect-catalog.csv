@@ -1,15 +1,15 @@
 mechanic_id,effect_type,target,behavior,rule_confidence,token_confidence,notes
 mech__contact__thorns,damage,enemy,percent_max_hp_on_contact,HIGH,VERIFIED,Boss reduced via exception handling
-mech__orb__base,kill,enemy,instant_contact_kill,HIGH,PROVISIONAL,Boss/elite/fleet handled in exception matrix
-mech__orb__extra,kill,enemy,separate_orb_family,HIGH,PROVISIONAL,Must not be flattened into base orb family
-mech__uw__black_hole,control,enemy,pull,HIGH,PROVISIONAL,Separate channel from BH damage
-mech__uw__black_hole,damage,enemy,runtime_damage_channel,MEDIUM,PROVISIONAL,Keep behavioral only; exact values in Layer 3
-mech__uw__black_hole,economy,enemy,coin_bonus_window_if_death_inside,MEDIUM,PROVISIONAL,Behavioral economy channel only
-mech__uw__spotlight,multiplier,enemy,non_percent_non_wave_stat_damage_multiplier,HIGH,PROVISIONAL,Do not apply to percent-health or wave-stat damage
-mech__uw__death_wave,tag,enemy,effect_wave_tagging,HIGH,PROVISIONAL,Separate from actual kill/damage channel
-mech__uw__death_wave,economy,enemy,coin_bonus,HIGH,PROVISIONAL,Runtime channel only
-mech__uw__death_wave,buff,tower,health_bonus,HIGH,PROVISIONAL,Runtime effect when eligible enemies are hit/destroyed
-mech__uw__death_wave,debuff,enemy,armor_stripping,HIGH,PROVISIONAL,Separate runtime channel
-mech__uw__poison_swamp,control,enemy,stun_on_entry_once_per_entry,HIGH,PROVISIONAL,Re-entry may stun again; fleet resistance handled separately
+mech__orb__base,kill,enemy,instant_contact_kill,HIGH,PACKAGE_CANON,Boss/elite/fleet handled in exception matrix
+mech__orb__extra,kill,enemy,separate_orb_family,HIGH,PACKAGE_CANON,Must not be flattened into base orb family
+mech__uw__black_hole,control,enemy,pull,HIGH,PACKAGE_CANON,Separate channel from BH damage
+mech__uw__black_hole,damage,enemy,runtime_damage_channel,MEDIUM,PACKAGE_CANON,Keep behavioral only; exact values in Layer 3
+mech__uw__black_hole,economy,enemy,coin_bonus_window_if_death_inside,MEDIUM,PACKAGE_CANON,Behavioral economy channel only
+mech__uw__spotlight,multiplier,enemy,non_percent_non_wave_stat_damage_multiplier,HIGH,PACKAGE_CANON,Do not apply to percent-health or wave-stat damage
+mech__uw__death_wave,tag,enemy,effect_wave_tagging,HIGH,PACKAGE_CANON,Separate from actual kill/damage channel
+mech__uw__death_wave,economy,enemy,coin_bonus,HIGH,PACKAGE_CANON,Runtime channel only
+mech__uw__death_wave,buff,tower,health_bonus,HIGH,PACKAGE_CANON,Runtime effect when eligible enemies are hit/destroyed
+mech__uw__death_wave,debuff,enemy,armor_stripping,HIGH,PACKAGE_CANON,Separate runtime channel
+mech__uw__poison_swamp,control,enemy,stun_on_entry_once_per_entry,HIGH,PACKAGE_CANON,Re-entry may stun again; fleet resistance handled separately
 mech__card__plasma_cannon,damage,boss,percent_hp_hit,HIGH,VERIFIED,Boss-targeting card
 mech__card__energy_net,control,boss,temporary_trap,HIGH,VERIFIED,Boss-targeting card
