@@ -13,7 +13,10 @@ class StaticV2ContractError(RuntimeError):
 
 
 _REGISTRY_ROOT = Path("tables/meta/registry/v2")
-_TARGET_STATS_PATH = _REGISTRY_ROOT / "target_stats.yaml"
+_CANONICAL_TARGET_STATS_PATH = _REGISTRY_ROOT / "canonical_target_stats.yaml"
+_MECHANIC_PARAMETERS_PATH = _REGISTRY_ROOT / "mechanic_parameters.yaml"
+_ENVIRONMENT_PARAMETERS_PATH = _REGISTRY_ROOT / "environment_parameters.yaml"
+_CAPABILITIES_PATH = _REGISTRY_ROOT / "capabilities.yaml"
 _CONTRIBUTORS_PATH = _REGISTRY_ROOT / "contributors.yaml"
 _ALIASES_PATH = _REGISTRY_ROOT / "aliases.yaml"
 _STAGES_PATH = _REGISTRY_ROOT / "stages.yaml"
@@ -37,6 +40,7 @@ _REQUIRED_CONTRIBUTOR_FIELDS = (
     "contributor_id",
     "contributor_family",
     "owned_target_stat",
+    "destination_object_class",
     "operation_class",
     "stage_applicability",
     "ownership_role",
@@ -50,6 +54,10 @@ _CONTRIBUTOR_ID_SECTION_SEPARATOR = "__"
 @dataclass(frozen=True)
 class StaticV2Contract:
     canonical_target_stats: frozenset[str]
+    runtime_mechanic_parameters: frozenset[str]
+    environment_parameters: frozenset[str]
+    capabilities: frozenset[str]
+    canonical_object_ids: frozenset[str]
     canonical_contributor_ids: frozenset[str]
     legacy_to_canonical_aliases: Mapping[str, str]
     required_static_stage_order: tuple[str, ...]
@@ -82,7 +90,10 @@ class StaticV2Contract:
 
 @lru_cache(maxsize=1)
 def load_static_v2_contract() -> StaticV2Contract:
-    target_stats_doc = _load_yaml(_TARGET_STATS_PATH)
+    canonical_targets_doc = _load_yaml(_CANONICAL_TARGET_STATS_PATH)
+    mechanics_doc = _load_yaml(_MECHANIC_PARAMETERS_PATH)
+    environment_doc = _load_yaml(_ENVIRONMENT_PARAMETERS_PATH)
+    capabilities_doc = _load_yaml(_CAPABILITIES_PATH)
     contributors_doc = _load_yaml(_CONTRIBUTORS_PATH)
     aliases_doc = _load_yaml(_ALIASES_PATH)
     stages_doc = _load_yaml(_STAGES_PATH)
@@ -95,10 +106,39 @@ def load_static_v2_contract() -> StaticV2Contract:
     _validate_source_schema(source_schema_doc)
     allowed_operations = _validate_operations_registry(operations_doc)
 
-    target_stats = target_stats_doc.get("v2_target_stats")
-    if not isinstance(target_stats, list):
-        raise StaticV2ContractError("registry_invalid:v2_target_stats")
-    canonical_targets = frozenset(str(item).strip() for item in target_stats)
+    canonical_targets = _load_named_registry_list(
+        canonical_targets_doc,
+        key="v2_canonical_target_stats",
+        error_code="registry_invalid:v2_canonical_target_stats",
+    )
+    mechanic_parameters = _load_named_registry_list(
+        mechanics_doc,
+        key="v2_mechanic_parameters",
+        error_code="registry_invalid:v2_mechanic_parameters",
+    )
+    environment_parameters = _load_named_registry_list(
+        environment_doc,
+        key="v2_environment_parameters",
+        error_code="registry_invalid:v2_environment_parameters",
+    )
+    capabilities = _load_named_registry_list(
+        capabilities_doc,
+        key="v2_capabilities",
+        error_code="registry_invalid:v2_capabilities",
+    )
+
+    _ensure_disjoint_registry_classes(
+        canonical_targets=canonical_targets,
+        mechanic_parameters=mechanic_parameters,
+        environment_parameters=environment_parameters,
+        capabilities=capabilities,
+    )
+    canonical_object_ids = (
+        canonical_targets
+        | mechanic_parameters
+        | environment_parameters
+        | capabilities
+    )
 
     contributor_rows = contributors_doc.get("v2_contributor_ids")
     if not isinstance(contributor_rows, list):
@@ -109,7 +149,11 @@ def load_static_v2_contract() -> StaticV2Contract:
             raise StaticV2ContractError("registry_invalid:contributor_row_not_mapping")
         _validate_contributor_row(
             row,
-            canonical_targets=canonical_targets,
+            canonical_targets=canonical_object_ids,
+            canonical_target_stats=canonical_targets,
+            mechanic_parameters=mechanic_parameters,
+            environment_parameters=environment_parameters,
+            capabilities=capabilities,
             allowed_operations=allowed_operations,
         )
         contributor_ids.append(str(row["contributor_id"]).strip())
@@ -127,7 +171,7 @@ def load_static_v2_contract() -> StaticV2Contract:
             raise StaticV2ContractError(
                 f"alias_direction_violation_canonical_key:{legacy_name}"
             )
-        if canonical_name not in canonical_targets:
+        if canonical_name not in canonical_object_ids:
             raise StaticV2ContractError(
                 f"alias_points_to_unknown_canonical_target:{canonical_name}"
             )
@@ -151,8 +195,8 @@ def load_static_v2_contract() -> StaticV2Contract:
         raise StaticV2ContractError("registry_invalid:v2_composite_dependencies")
     composite_targets = _validate_composite_entries(
         composite_entries,
-        canonical_targets=canonical_targets,
-    )
+            canonical_targets=canonical_object_ids,
+        )
 
     quarantine_root = quarantine_doc.get("v2_quarantine_registry")
     if not isinstance(quarantine_root, dict):
@@ -161,6 +205,10 @@ def load_static_v2_contract() -> StaticV2Contract:
 
     return StaticV2Contract(
         canonical_target_stats=canonical_targets,
+        runtime_mechanic_parameters=mechanic_parameters,
+        environment_parameters=environment_parameters,
+        capabilities=capabilities,
+        canonical_object_ids=canonical_object_ids,
         canonical_contributor_ids=frozenset(contributor_ids),
         legacy_to_canonical_aliases={
             str(key).strip(): str(value).strip() for key, value in alias_map.items()
@@ -234,7 +282,7 @@ def validate_phase_b_stat_coverage() -> dict:
         if not isinstance(row, dict):
             raise StaticV2ContractError("phase_b_invalid:target_crosswalk_row")
         target = str(row.get("target_stat", "")).strip()
-        if target not in contract.canonical_target_stats:
+        if target not in contract.canonical_object_ids:
             raise StaticV2ContractError(
                 f"phase_b_invalid:unknown_canonical_target_in_crosswalk:{target}"
             )
@@ -258,7 +306,7 @@ def validate_phase_b_stat_coverage() -> dict:
                 f"phase_b_invalid:target_composite_status:{composite_status}"
             )
 
-    missing_targets = contract.canonical_target_stats - target_ids_seen
+    missing_targets = contract.canonical_object_ids - target_ids_seen
     if missing_targets:
         raise StaticV2ContractError("phase_b_incomplete:canonical_targets_missing_crosswalk_rows")
 
@@ -314,6 +362,67 @@ def validate_phase_b_stat_coverage() -> dict:
     }
 
 
+
+
+def summarize_v2_registry_status() -> dict[str, object]:
+    contract = load_static_v2_contract()
+    phase_b = validate_phase_b_stat_coverage()
+    quarantine_doc = _load_yaml(_QUARANTINE_REGISTRY_PATH)
+    quarantine_root = quarantine_doc.get("v2_quarantine_registry", {})
+    blocked_targets = quarantine_root.get("blocked_or_unresolved_targets", [])
+    blocked_legacy_names = quarantine_root.get("blocked_or_unresolved_legacy_names", [])
+
+    return {
+        "summary_status": {
+            "canonical_target_stats": len(contract.canonical_target_stats),
+            "runtime_mechanic_parameters": len(contract.runtime_mechanic_parameters),
+            "environment_parameters": len(contract.environment_parameters),
+            "capabilities": len(contract.capabilities),
+            "canonical_object_ids": len(contract.canonical_object_ids),
+            "canonical_contributor_ids": len(contract.canonical_contributor_ids),
+            "composite_targets": len(contract.composite_targets),
+            "blocked_or_unresolved_targets": len(blocked_targets),
+            "blocked_or_unresolved_legacy_names": len(blocked_legacy_names),
+            "phase_b_coverage_accounting_complete": bool(
+                phase_b.get("coverage_accounting_complete", False)
+            ),
+        },
+        "next": [
+            "curate split registry membership semantics for edge IDs (object-class review)",
+            "complete migration of all parity/audit artifacts to split object-class IDs (remove legacy wording)",
+            "wire summary status into user-facing reporting so counts/blocked items are visible by default",
+        ],
+    }
+
+
+def _load_named_registry_list(doc: dict, *, key: str, error_code: str) -> frozenset[str]:
+    values = doc.get(key)
+    if not isinstance(values, list):
+        raise StaticV2ContractError(error_code)
+    return frozenset(str(value).strip() for value in values)
+
+
+def _ensure_disjoint_registry_classes(
+    *,
+    canonical_targets: frozenset[str],
+    mechanic_parameters: frozenset[str],
+    environment_parameters: frozenset[str],
+    capabilities: frozenset[str],
+) -> None:
+    classes = {
+        "v2_canonical_target_stats": canonical_targets,
+        "v2_mechanic_parameters": mechanic_parameters,
+        "v2_environment_parameters": environment_parameters,
+        "v2_capabilities": capabilities,
+    }
+    names = tuple(classes.keys())
+    for index, left_name in enumerate(names):
+        for right_name in names[index + 1 :]:
+            if classes[left_name].intersection(classes[right_name]):
+                raise StaticV2ContractError(
+                    f"registry_invalid:object_class_overlap:{left_name}:{right_name}"
+                )
+
 def _validate_source_schema(source_schema_doc: dict) -> None:
     root = source_schema_doc.get("v2_source_state_schema")
     if not isinstance(root, dict):
@@ -368,6 +477,10 @@ def _validate_contributor_row(
     row: dict,
     *,
     canonical_targets: frozenset[str],
+    canonical_target_stats: frozenset[str],
+    mechanic_parameters: frozenset[str],
+    environment_parameters: frozenset[str],
+    capabilities: frozenset[str],
     allowed_operations: frozenset[str],
 ) -> None:
     for field in _REQUIRED_CONTRIBUTOR_FIELDS:
@@ -407,6 +520,34 @@ def _validate_contributor_row(
     target = str(row.get("owned_target_stat", "")).strip()
     if target not in canonical_targets:
         raise StaticV2ContractError(f"registry_invalid:contributor_unknown_target:{target}")
+
+    destination_object_class = str(row.get("destination_object_class", "")).strip()
+    allowed_classes = {
+        "canonical_target_stat",
+        "runtime_mechanic_parameter",
+        "environment_parameter",
+        "capability",
+    }
+    if destination_object_class not in allowed_classes:
+        raise StaticV2ContractError(
+            f"registry_invalid:contributor_unknown_destination_object_class:{destination_object_class}"
+        )
+
+    expected_class = "canonical_target_stat"
+    if target in mechanic_parameters:
+        expected_class = "runtime_mechanic_parameter"
+    elif target in environment_parameters:
+        expected_class = "environment_parameter"
+    elif target in capabilities:
+        expected_class = "capability"
+    elif target in canonical_target_stats:
+        expected_class = "canonical_target_stat"
+
+    if destination_object_class != expected_class:
+        raise StaticV2ContractError(
+            "registry_invalid:contributor_destination_object_class_mismatch:"
+            f"{contributor_id}:{destination_object_class}:{expected_class}"
+        )
 
     operation_class = str(row.get("operation_class", "")).strip()
     if operation_class not in allowed_operations:

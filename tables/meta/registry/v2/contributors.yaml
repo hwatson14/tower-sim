@@ -8,6 +8,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__basics_ultimate__boss_spawn_chance__chance
   contributor_family: battle_condition
   owned_target_stat: basic_ultimate_boss_spawn_chance
@@ -17,6 +18,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__basics_ultimate__fast_spawn_chance__chance
   contributor_family: battle_condition
   owned_target_stat: basic_ultimate_fast_spawn_chance
@@ -26,6 +28,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__basics_ultimate__protector_spawn_chance__chance
   contributor_family: battle_condition
   owned_target_stat: basic_ultimate_protector_spawn_chance
@@ -35,6 +38,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__basics_ultimate__ranged_spawn_chance__chance
   contributor_family: battle_condition
   owned_target_stat: basic_ultimate_ranged_spawn_chance
@@ -44,6 +48,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__basics_ultimate__tank_spawn_chance__chance
   contributor_family: battle_condition
   owned_target_stat: basic_ultimate_tank_spawn_chance
@@ -53,6 +58,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__bosss_ultimate__overheal_pct
   contributor_family: battle_condition
   owned_target_stat: boss_spawn_overheal_pct
@@ -62,6 +68,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__death_defy_down__pct
   contributor_family: battle_condition
   owned_target_stat: death_defy_reduction_pct
@@ -71,6 +78,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__death_ray_resistance__pct
   contributor_family: battle_condition
   owned_target_stat: death_ray_enemy_health_damage_pct
@@ -80,6 +88,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__enemy_attack_speed__pct
   contributor_family: battle_condition
   owned_target_stat: enemy_attack_speed_pct_bonus
@@ -89,6 +98,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__enemy_speed__pct
   contributor_family: battle_condition
   owned_target_stat: enemy_speed_pct_bonus
@@ -98,6 +108,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__energy_shields_down__pct
   contributor_family: battle_condition
   owned_target_stat: energy_shield_recharge_time_pct_bonus
@@ -107,6 +118,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__fasts_ultimate__count
   contributor_family: battle_condition
   owned_target_stat: fast_ultimate_buffed_enemy_count
@@ -116,6 +128,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__knockback_resistance__pct
   contributor_family: battle_condition
   owned_target_stat: knockback_force_reduction_pct
@@ -125,6 +138,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__mass_enforcement__pct
   contributor_family: battle_condition
   owned_target_stat: enemy_mass_pct_per_wave_alive
@@ -134,6 +148,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__more_bosses__count
   contributor_family: battle_condition
   owned_target_stat: boss_spawn_interval_waves
@@ -143,6 +158,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__more_enemies__pct
   contributor_family: battle_condition
   owned_target_stat: enemy_spawn_rate_pct_bonus
@@ -152,6 +168,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__orb_resistance__pct
   contributor_family: battle_condition
   owned_target_stat: orb_enemy_health_damage_pct
@@ -161,6 +178,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__plasma_cannon_resistance__pct
   contributor_family: battle_condition
   owned_target_stat: plasma_cannon_damage_pct
@@ -170,6 +188,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__protectors_ultimate__cooldown_seconds
   contributor_family: battle_condition
   owned_target_stat: protector_ultimate_cooldown_seconds
@@ -179,6 +198,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__protectors_ultimate__duration_seconds
   contributor_family: battle_condition
   owned_target_stat: protector_ultimate_duration_seconds
@@ -188,6 +208,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__protectors_ultimate__enabled
   contributor_family: battle_condition
   owned_target_stat: protector_ultimate_immunities_enabled
@@ -197,6 +218,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: capability
 - contributor_id: battle_condition__ranged_ultimate__duration_seconds
   contributor_family: battle_condition
   owned_target_stat: ranged_ultimate_tower_disable_duration_seconds
@@ -206,6 +228,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__ray_ultimate__pct
   contributor_family: battle_condition
   owned_target_stat: ray_attack_speed_pct_bonus
@@ -215,6 +238,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__scatter_ultimate__pct
   contributor_family: battle_condition
   owned_target_stat: scatter_child_health_pct_bonus
@@ -224,6 +248,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__skip_decay__pct
   contributor_family: battle_condition
   owned_target_stat: enemy_level_skip_decay_pct
@@ -233,6 +258,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__skip_decay_interval_waves__count
   contributor_family: battle_condition
   owned_target_stat: enemy_level_skip_decay_interval_waves
@@ -242,6 +268,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: battle_condition__tanks_ultimate__cooldown_seconds
   contributor_family: battle_condition
   owned_target_stat: tank_ultimate_cooldown_seconds
@@ -251,6 +278,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__tanks_ultimate__duration_seconds
   contributor_family: battle_condition
   owned_target_stat: tank_ultimate_duration_seconds
@@ -260,6 +288,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__tanks_ultimate__enabled
   contributor_family: battle_condition
   owned_target_stat: tank_ultimate_behavior_enabled
@@ -269,6 +298,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: capability
 - contributor_id: battle_condition__thorns_resistance__pct
   contributor_family: battle_condition
   owned_target_stat: thorns_damage_pct
@@ -278,6 +308,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: battle_condition__ultimate_weapon_durations__black_hole_duration__duration_seconds_reduction
   contributor_family: battle_condition
   owned_target_stat: black_hole_duration_seconds
@@ -287,6 +318,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__ultimate_weapon_durations__chrono_field_duration__duration_seconds_reduction
   contributor_family: battle_condition
   owned_target_stat: chrono_field_duration_seconds
@@ -296,6 +328,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__ultimate_weapon_durations__golden_tower_duration__duration_seconds_reduction
   contributor_family: battle_condition
   owned_target_stat: golden_tower_duration_seconds
@@ -305,6 +338,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__ultimate_weapon_durations__poison_swamp_duration__duration_seconds_reduction
   contributor_family: battle_condition
   owned_target_stat: poison_swamp_duration_seconds
@@ -314,6 +348,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: battle_condition__vampire_ultimate__pct
   contributor_family: battle_condition
   owned_target_stat: vampire_drain_speed_pct_bonus
@@ -323,6 +358,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: bot__amplify_bonus__multiplier
   contributor_family: bot
   owned_target_stat: amplify_bot_bonus_multiplier
@@ -332,6 +368,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__amplify_cooldown__cooldown_seconds
   contributor_family: bot
   owned_target_stat: amplify_bot_cooldown_seconds
@@ -340,6 +377,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__amplify_duration__duration_seconds
   contributor_family: bot
   owned_target_stat: amplify_bot_duration_seconds
@@ -348,6 +386,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__amplify_range__range_m
   contributor_family: bot
   owned_target_stat: amplify_bot_range_m
@@ -356,6 +395,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__flame_cooldown__cooldown_seconds
   contributor_family: bot
   owned_target_stat: flame_bot_cooldown_seconds
@@ -364,6 +404,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__flame_damage__multiplier
   contributor_family: bot
   owned_target_stat: flame_bot_damage_multiplier
@@ -372,6 +413,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__flame_damage_reduction__pct
   contributor_family: bot
   owned_target_stat: flame_bot_damage_reduction_pct
@@ -380,6 +422,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__flame_range__range_m
   contributor_family: bot
   owned_target_stat: flame_bot_range_m
@@ -388,6 +431,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__golden_bonus__multiplier
   contributor_family: bot
   owned_target_stat: golden_bot_bonus_multiplier
@@ -396,6 +440,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__golden_cooldown__cooldown_seconds
   contributor_family: bot
   owned_target_stat: golden_bot_cooldown_seconds
@@ -404,6 +449,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__golden_duration__duration_seconds
   contributor_family: bot
   owned_target_stat: golden_bot_duration_seconds
@@ -412,6 +458,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__golden_range__range_m
   contributor_family: bot
   owned_target_stat: golden_bot_range_m
@@ -420,6 +467,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__thunder_cooldown__cooldown_seconds
   contributor_family: bot
   owned_target_stat: thunder_bot_cooldown_seconds
@@ -428,6 +476,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__thunder_duration__duration_seconds
   contributor_family: bot
   owned_target_stat: thunder_bot_duration_seconds
@@ -436,6 +485,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__thunder_linger__pct
   contributor_family: bot
   owned_target_stat: thunder_bot_linger_slow_pct
@@ -444,6 +494,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: bot__thunder_range__range_m
   contributor_family: bot
   owned_target_stat: thunder_bot_range_m
@@ -452,6 +503,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: card__area_of_effect__pct_bonus
   contributor_family: card
   owned_target_stat: area_of_effect_damage_pct_bonus
@@ -461,6 +513,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__attack_speed__multiplier
   contributor_family: card
   owned_target_stat: attack_speed
@@ -469,6 +522,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__berserker__pct
   contributor_family: card
   owned_target_stat: berserker_absorbed_damage_pct
@@ -477,6 +531,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__cash__multiplier
   contributor_family: card
   owned_target_stat: cash_bonus_multiplier
@@ -485,6 +540,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__coins__multiplier
   contributor_family: card
   owned_target_stat: coins_multiplier
@@ -493,6 +549,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__critical_chance__chance_bonus
   contributor_family: card
   owned_target_stat: critical_chance
@@ -501,6 +558,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__critical_coin__chance
   contributor_family: card
   owned_target_stat: critical_coin_chance
@@ -509,6 +567,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__damage__multiplier
   contributor_family: card
   owned_target_stat: damage
@@ -517,6 +576,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__death_ray__duration_seconds
   contributor_family: card
   owned_target_stat: death_ray_duration_seconds
@@ -525,6 +585,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__demon_mode__duration_seconds
   contributor_family: card
   owned_target_stat: demon_mode_duration_seconds
@@ -533,6 +594,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: card__enemy_balance_cash__multiplier
   contributor_family: card
   owned_target_stat: enemy_balance_cash_multiplier
@@ -541,6 +603,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: card__enemy_balance_spawn__multiplier
   contributor_family: card
   owned_target_stat: enemy_balance_spawn_multiplier
@@ -549,6 +612,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: card__energy_net__duration_seconds
   contributor_family: card
   owned_target_stat: energy_net_duration_seconds
@@ -557,6 +621,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__energy_shield__cooldown_seconds
   contributor_family: card
   owned_target_stat: energy_shield_recharge_cooldown_seconds
@@ -565,6 +630,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__extra_defense__pct_bonus
   contributor_family: card
   owned_target_stat: defense_pct
@@ -573,6 +639,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__extra_orb__enabled
   contributor_family: card
   owned_target_stat: extra_orb_enabled
@@ -581,6 +648,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: card__extra_orb__range_m
   contributor_family: card
   owned_target_stat: extra_orb_speed
@@ -589,6 +657,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__fortress__multiplier
   contributor_family: card
   owned_target_stat: defense_absolute
@@ -597,6 +666,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__free_attack_upgrade__chance_bonus
   contributor_family: card
   owned_target_stat: free_attack_upgrade_chance
@@ -605,6 +675,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__free_defense_upgrade__chance_bonus
   contributor_family: card
   owned_target_stat: free_defense_upgrade_chance
@@ -613,6 +684,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__free_utility_upgrade__chance_bonus
   contributor_family: card
   owned_target_stat: free_utility_upgrade_chance
@@ -621,6 +693,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__health__multiplier
   contributor_family: card
   owned_target_stat: health
@@ -629,6 +702,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__health_regen__multiplier
   contributor_family: card
   owned_target_stat: health_regen
@@ -637,6 +711,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__intro_sprint__count
   contributor_family: card
   owned_target_stat: intro_sprint_waves
@@ -645,6 +720,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__land_mine_stun__duration_seconds
   contributor_family: card
   owned_target_stat: land_mine_stun_duration_seconds
@@ -653,6 +729,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__nuke__pct
   contributor_family: card
   owned_target_stat: nuke_enemy_fraction_pct
@@ -661,6 +738,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__plasma_cannon__pct
   contributor_family: card
   owned_target_stat: plasma_cannon_boss_hp_pct
@@ -669,6 +747,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__range__multiplier
   contributor_family: card
   owned_target_stat: range
@@ -677,6 +756,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__recovery_package_chance__chance_bonus
   contributor_family: card
   owned_target_stat: package_chance
@@ -685,6 +765,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__second_wind__duration_seconds
   contributor_family: card
   owned_target_stat: second_wind_shield_duration_seconds
@@ -693,6 +774,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__slow_aura__pct
   contributor_family: card
   owned_target_stat: slow_aura_pct
@@ -701,6 +783,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__super_tower__multiplier
   contributor_family: card
   owned_target_stat: super_tower_damage_multiplier
@@ -709,6 +792,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__ultimate_crit__chance
   contributor_family: card
   owned_target_stat: ultimate_crit_chance
@@ -717,6 +801,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__wave_accelerator__pct
   contributor_family: card
   owned_target_stat: wave_cooldown_reduction_pct
@@ -725,6 +810,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: card__wave_skip__chance
   contributor_family: card
   owned_target_stat: wave_skip_chance
@@ -733,6 +819,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__attack_speed__multiplier
   contributor_family: enhancement
   owned_target_stat: attack_speed
@@ -742,6 +829,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__cash_bonus__multiplier
   contributor_family: enhancement
   owned_target_stat: cash_bonus_multiplier
@@ -750,6 +838,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__cash_per_wave__multiplier
   contributor_family: enhancement
   owned_target_stat: cash_per_wave
@@ -758,6 +847,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__cells_per_kill_bonus__multiplier
   contributor_family: enhancement
   owned_target_stat: cells_per_kill_bonus
@@ -766,6 +856,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__coin_bonus__multiplier
   contributor_family: enhancement
   owned_target_stat: coin_bonus_multiplier
@@ -774,6 +865,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__coins_per_kill_bonus__multiplier
   contributor_family: enhancement
   owned_target_stat: coins_per_kill_bonus
@@ -782,6 +874,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__critical_factor__multiplier
   contributor_family: enhancement
   owned_target_stat: critical_factor
@@ -790,6 +883,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__damage__multiplier
   contributor_family: enhancement
   owned_target_stat: damage
@@ -798,6 +892,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__damage_per_meter__multiplier
   contributor_family: enhancement
   owned_target_stat: damage_per_meter_multiplier
@@ -806,6 +901,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__defense_absolute__multiplier
   contributor_family: enhancement
   owned_target_stat: defense_absolute
@@ -814,6 +910,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__enemy_attack_level_skip__multiplier
   contributor_family: enhancement
   owned_target_stat: enemy_attack_level_skip
@@ -822,6 +919,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: enhancement__enemy_health_level_skip__multiplier
   contributor_family: enhancement
   owned_target_stat: enemy_health_level_skip
@@ -830,6 +928,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: enhancement__free_attack_upgrade__multiplier
   contributor_family: enhancement
   owned_target_stat: free_attack_upgrade_chance
@@ -838,6 +937,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__free_defense_upgrade__multiplier
   contributor_family: enhancement
   owned_target_stat: free_defense_upgrade_chance
@@ -846,6 +946,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__free_utility_upgrade__multiplier
   contributor_family: enhancement
   owned_target_stat: free_utility_upgrade_chance
@@ -854,6 +955,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__health__multiplier
   contributor_family: enhancement
   owned_target_stat: health
@@ -862,6 +964,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__health_regen__multiplier
   contributor_family: enhancement
   owned_target_stat: health_regen
@@ -870,6 +973,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__interest_per_wave__multiplier
   contributor_family: enhancement
   owned_target_stat: interest_per_wave_pct
@@ -878,6 +982,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__land_mine_damage__multiplier
   contributor_family: enhancement
   owned_target_stat: land_mine_damage_multiplier
@@ -886,6 +991,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__max_interest__multiplier
   contributor_family: enhancement
   owned_target_stat: max_interest_cash
@@ -894,6 +1000,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__max_recovery__multiplier
   contributor_family: enhancement
   owned_target_stat: max_recovery_multiplier
@@ -902,6 +1009,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__orb_size__multiplier
   contributor_family: enhancement
   owned_target_stat: orb_size
@@ -910,6 +1018,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__recovery_amount_pct__multiplier
   contributor_family: enhancement
   owned_target_stat: recovery_amount_pct
@@ -918,6 +1027,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__rend_armor_chance__multiplier
   contributor_family: enhancement
   owned_target_stat: rend_armor_chance
@@ -926,6 +1036,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__rend_armor_max__multiplier
   contributor_family: enhancement
   owned_target_stat: rend_armor_max
@@ -934,6 +1045,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__rend_armor_mult__multiplier
   contributor_family: enhancement
   owned_target_stat: rend_armor_mult
@@ -942,6 +1054,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__super_crit_mult__multiplier
   contributor_family: enhancement
   owned_target_stat: super_crit_multiplier
@@ -950,6 +1063,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: enhancement__wall_health__multiplier
   contributor_family: enhancement
   owned_target_stat: wall_health
@@ -958,6 +1072,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: guardian__ally__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_ally_cooldown_seconds
@@ -967,6 +1082,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__ally_max_recovery__multiplier
   contributor_family: guardian
   owned_target_stat: guardian_ally_max_recovery_multiplier
@@ -976,6 +1092,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__ally_recovery_amount__pct
   contributor_family: guardian
   owned_target_stat: guardian_ally_recovery_amount_pct
@@ -985,6 +1102,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__attack__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_attack_cooldown_seconds
@@ -994,6 +1112,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__attack__targets_count
   contributor_family: guardian
   owned_target_stat: guardian_attack_targets_count
@@ -1003,6 +1122,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__attack_missing_health_damage__pct
   contributor_family: guardian
   owned_target_stat: guardian_attack_missing_health_damage_pct
@@ -1012,6 +1132,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__bounty__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_bounty_cooldown_seconds
@@ -1021,6 +1142,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__bounty__targets_count
   contributor_family: guardian
   owned_target_stat: guardian_bounty_targets_count
@@ -1030,6 +1152,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__bounty_coin__multiplier
   contributor_family: guardian
   owned_target_stat: guardian_bounty_coin_multiplier
@@ -1039,6 +1162,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__chip_slots__count
   contributor_family: guardian
   owned_target_stat: guardian_chip_slots_count
@@ -1048,6 +1172,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__fetch__chance
   contributor_family: guardian
   owned_target_stat: guardian_fetch_find_chance
@@ -1057,6 +1182,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__fetch__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_fetch_cooldown_seconds
@@ -1066,6 +1192,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__fetch_double_find__chance
   contributor_family: guardian
   owned_target_stat: guardian_fetch_double_find_chance
@@ -1075,6 +1202,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__scout__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_scout_cooldown_seconds
@@ -1084,6 +1212,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__scout__duration_seconds
   contributor_family: guardian
   owned_target_stat: guardian_scout_duration_seconds
@@ -1093,6 +1222,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__scout_range_bonus__multiplier
   contributor_family: guardian
   owned_target_stat: guardian_scout_range_bonus_multiplier
@@ -1102,6 +1232,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__summon__cooldown_seconds
   contributor_family: guardian
   owned_target_stat: guardian_summon_cooldown_seconds
@@ -1111,6 +1242,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__summon__duration_seconds
   contributor_family: guardian
   owned_target_stat: guardian_summon_duration_seconds
@@ -1120,6 +1252,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: guardian__summon_cash_bonus__multiplier
   contributor_family: guardian
   owned_target_stat: guardian_summon_cash_bonus_multiplier
@@ -1129,6 +1262,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__amplify_bot_cooldown__cooldown_seconds_reduction
   contributor_family: lab
   owned_target_stat: amplify_bot_cooldown_seconds
@@ -1138,6 +1272,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__amplify_bot_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: amplify_bot_duration_seconds
@@ -1146,6 +1281,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__attack_speed__bonus
   contributor_family: lab
   owned_target_stat: attack_speed
@@ -1154,6 +1290,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__battle_condition_effect_reduction_pct__pct_bonus
   contributor_family: lab
   owned_target_stat: battle_condition_effect_reduction_pct
@@ -1162,6 +1299,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: lab__black_hole_coin_bonus__multiplier
   contributor_family: lab
   owned_target_stat: black_hole_coin_bonus_multiplier
@@ -1170,6 +1308,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__black_hole_damage__pct
   contributor_family: lab
   owned_target_stat: black_hole_damage_pct
@@ -1178,6 +1317,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__black_hole_disable_ranged_enemies__enabled
   contributor_family: lab
   owned_target_stat: black_hole_disable_ranged_enemies_enabled
@@ -1186,6 +1326,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__cash_bonus__bonus
   contributor_family: lab
   owned_target_stat: cash_bonus_multiplier
@@ -1194,6 +1335,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__cash_per_wave__bonus
   contributor_family: lab
   owned_target_stat: cash_per_wave
@@ -1202,6 +1344,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__chain_lightning_scatter_damage__multiplier
   contributor_family: lab
   owned_target_stat: chain_lightning_scatter_damage_multiplier
@@ -1210,6 +1353,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__chain_lightning_shock__enabled
   contributor_family: lab
   owned_target_stat: chain_lightning_shock_enabled
@@ -1218,6 +1362,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__chain_thunder_max_damage_reduction__pct
   contributor_family: lab
   owned_target_stat: chain_thunder_max_damage_reduction_pct
@@ -1226,6 +1371,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__chrono_field_damage_reduction__enabled
   contributor_family: lab
   owned_target_stat: chrono_field_damage_reduction_enabled
@@ -1234,6 +1380,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__chrono_field_damage_reduction__pct
   contributor_family: lab
   owned_target_stat: chrono_field_damage_reduction_pct
@@ -1242,6 +1389,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__chrono_field_damage_reduction__pct_bonus
   contributor_family: lab
   owned_target_stat: chrono_field_damage_reduction_pct
@@ -1250,6 +1398,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__chrono_field_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: chrono_field_duration_seconds
@@ -1258,6 +1407,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__chrono_field_range__range_m_bonus
   contributor_family: lab
   owned_target_stat: chrono_field_range
@@ -1266,6 +1416,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__coins_per_kill_bonus__bonus
   contributor_family: lab
   owned_target_stat: coins_per_kill_bonus_multiplier
@@ -1274,6 +1425,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__coins_per_wave__bonus
   contributor_family: lab
   owned_target_stat: coins_per_wave
@@ -1282,6 +1434,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__critical_factor__bonus
   contributor_family: lab
   owned_target_stat: critical_factor
@@ -1290,6 +1443,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__damage__bonus
   contributor_family: lab
   owned_target_stat: damage
@@ -1298,6 +1452,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__damage_per_meter__bonus
   contributor_family: lab
   owned_target_stat: damage_per_meter_multiplier
@@ -1306,6 +1461,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__death_wave_armor_stripping__count
   contributor_family: lab
   owned_target_stat: death_wave_armor_strip_count
@@ -1314,6 +1470,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__death_wave_cell_bonus__multiplier
   contributor_family: lab
   owned_target_stat: death_wave_cell_bonus_multiplier
@@ -1322,6 +1479,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__death_wave_coin_bonus__multiplier
   contributor_family: lab
   owned_target_stat: death_wave_coin_bonus_multiplier
@@ -1330,6 +1488,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__death_wave_effect_wave_hit_damage__multiplier
   contributor_family: lab
   owned_target_stat: death_wave_effect_wave_hit_damage_multiplier
@@ -1338,6 +1497,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__death_wave_health__multiplier
   contributor_family: lab
   owned_target_stat: death_wave_health_bonus_multiplier
@@ -1346,6 +1506,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__defense_absolute__bonus
   contributor_family: lab
   owned_target_stat: defense_absolute
@@ -1354,6 +1515,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__defense_pct__pct_bonus
   contributor_family: lab
   owned_target_stat: defense_pct
@@ -1362,6 +1524,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__demon_mode_recharge_waves__count
   contributor_family: lab
   owned_target_stat: demon_mode_recharge_waves
@@ -1370,6 +1533,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__enemy_attack_level_skip__pct_bonus
   contributor_family: lab
   owned_target_stat: enemy_attack_level_skip_pct
@@ -1378,6 +1542,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: lab__enemy_health_level_skip__pct_bonus
   contributor_family: lab
   owned_target_stat: enemy_health_level_skip_pct
@@ -1386,6 +1551,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: lab__energy_shield_extra_hit__count_bonus
   contributor_family: lab
   owned_target_stat: energy_shield_charge_count
@@ -1394,6 +1560,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__enhancement_coin_cost_reduction__pct
   contributor_family: lab
   owned_target_stat: enhancement_coin_cost_reduction_pct
@@ -1402,6 +1569,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__extra_black_hole__enabled
   contributor_family: lab
   owned_target_stat: extra_black_hole_enabled
@@ -1410,6 +1578,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__extra_orb_adjuster__enabled
   contributor_family: lab
   owned_target_stat: extra_orb_adjuster_enabled
@@ -1418,6 +1587,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__extra_orb_count__count_bonus
   contributor_family: lab
   owned_target_stat: orbs
@@ -1426,6 +1596,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__flame_bot_burn_stack__count_bonus
   contributor_family: lab
   owned_target_stat: flame_bot_burn_stack_limit
@@ -1434,6 +1605,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__flame_bot_cooldown__cooldown_seconds_reduction
   contributor_family: lab
   owned_target_stat: flame_bot_cooldown_seconds
@@ -1442,6 +1614,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__game_speed__multiplier
   contributor_family: lab
   owned_target_stat: game_speed_multiplier
@@ -1450,6 +1623,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__garlic_thorns__pct
   contributor_family: lab
   owned_target_stat: garlic_thorns_pct
@@ -1458,6 +1632,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__golden_bot_cooldown__cooldown_seconds_reduction
   contributor_family: lab
   owned_target_stat: golden_bot_cooldown_seconds
@@ -1466,6 +1641,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__golden_bot_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: golden_bot_duration_seconds
@@ -1474,6 +1650,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__golden_tower_bonus__bonus
   contributor_family: lab
   owned_target_stat: golden_tower_bonus_multiplier
@@ -1482,6 +1659,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__golden_tower_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: golden_tower_duration_seconds
@@ -1490,6 +1668,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__health__bonus
   contributor_family: lab
   owned_target_stat: health
@@ -1498,6 +1677,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__health_regen__bonus
   contributor_family: lab
   owned_target_stat: health_regen
@@ -1506,6 +1686,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__inner_land_mine_chrono_jump_charge__duration_seconds
   contributor_family: lab
   owned_target_stat: inner_land_mine_chrono_jump_charge_seconds
@@ -1514,6 +1695,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__inner_land_mines_blast_radius__range_m_bonus
   contributor_family: lab
   owned_target_stat: inner_land_mines_blast_radius
@@ -1522,6 +1704,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__inner_land_mines_rotation_rate__rotation_rate
   contributor_family: lab
   owned_target_stat: inner_land_mines_rotation_rate
@@ -1530,6 +1713,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__inner_land_mines_stun__enabled
   contributor_family: lab
   owned_target_stat: inner_land_mines_stun_enabled
@@ -1538,6 +1722,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__inner_land_mines_stun_duration__duration_seconds
   contributor_family: lab
   owned_target_stat: inner_land_mines_stun_duration_seconds
@@ -1546,6 +1731,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__interest__bonus
   contributor_family: lab
   owned_target_stat: interest_per_wave_pct
@@ -1554,6 +1740,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__lab_speed__multiplier
   contributor_family: lab
   owned_target_stat: lab_speed_multiplier
@@ -1562,6 +1749,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__labs_coin_cost_reduction__pct
   contributor_family: lab
   owned_target_stat: lab_coin_cost_reduction_pct
@@ -1570,6 +1758,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__land_mine_damage__pct_bonus
   contributor_family: lab
   owned_target_stat: land_mine_damage_multiplier
@@ -1578,6 +1767,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__land_mine_decay__duration_seconds
   contributor_family: lab
   owned_target_stat: land_mine_decay_seconds
@@ -1586,6 +1776,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__light_speed_shots__enabled
   contributor_family: lab
   owned_target_stat: light_speed_shots_enabled
@@ -1594,6 +1785,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__max_interest_cash__bonus
   contributor_family: lab
   owned_target_stat: max_interest_cash
@@ -1602,6 +1794,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__max_recovery__bonus
   contributor_family: lab
   owned_target_stat: max_recovery_multiplier
@@ -1610,6 +1803,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__missile_barrage__enabled
   contributor_family: lab
   owned_target_stat: missile_barrage_enabled
@@ -1618,6 +1812,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__missile_barrage_missile_count__count
   contributor_family: lab
   owned_target_stat: missile_barrage_missile_count
@@ -1626,6 +1821,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__missile_barrage_recharge_waves__count
   contributor_family: lab
   owned_target_stat: missile_barrage_recharge_waves
@@ -1634,6 +1830,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__missiles_explosion__enabled
   contributor_family: lab
   owned_target_stat: smart_missiles_explosion_enabled
@@ -1642,6 +1839,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__module_shatter_shards__pct_bonus
   contributor_family: lab
   owned_target_stat: module_shatter_shards_pct
@@ -1650,6 +1848,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__nuke_recharge_waves__count
   contributor_family: lab
   owned_target_stat: nuke_recharge_waves
@@ -1658,6 +1857,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__orb_boss_hit_pct__pct
   contributor_family: lab
   owned_target_stat: orb_boss_hit_pct
@@ -1666,6 +1866,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__orb_speed__bonus
   contributor_family: lab
   owned_target_stat: orb_speed
@@ -1674,6 +1875,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__package_after_boss__enabled
   contributor_family: lab
   owned_target_stat: package_after_boss_enabled
@@ -1682,6 +1884,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__package_chance__chance_bonus
   contributor_family: lab
   owned_target_stat: package_chance
@@ -1690,6 +1893,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__poison_swamp_radius__range_m_bonus
   contributor_family: lab
   owned_target_stat: poison_swamp_radius
@@ -1698,6 +1902,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__poison_swamp_rend_additional_enemies__enabled
   contributor_family: lab
   owned_target_stat: poison_swamp_rend_additional_enemies_enabled
@@ -1706,6 +1911,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__poison_swamp_rend_basic_enemies__pct
   contributor_family: lab
   owned_target_stat: poison_swamp_rend_basic_enemies_pct
@@ -1714,6 +1920,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__poison_swamp_stun__enabled
   contributor_family: lab
   owned_target_stat: poison_swamp_stun_enabled
@@ -1722,6 +1929,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: capability
 - contributor_id: lab__poison_swamp_stun_chance__chance
   contributor_family: lab
   owned_target_stat: poison_swamp_stun_chance
@@ -1730,6 +1938,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__poison_swamp_stun_chance__chance_bonus
   contributor_family: lab
   owned_target_stat: poison_swamp_stun_chance
@@ -1738,6 +1947,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__poison_swamp_stun_duration__duration_seconds
   contributor_family: lab
   owned_target_stat: poison_swamp_stun_duration_seconds
@@ -1746,6 +1956,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__poison_swamp_stun_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: poison_swamp_stun_duration_seconds
@@ -1754,6 +1965,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__range_m__range_m_bonus
   contributor_family: lab
   owned_target_stat: range_m
@@ -1762,6 +1974,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__recovery_amount_pct__pct_bonus
   contributor_family: lab
   owned_target_stat: recovery_amount_pct
@@ -1770,6 +1983,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__rend_armor_max__pct_bonus
   contributor_family: lab
   owned_target_stat: rend_armor_max
@@ -1778,6 +1992,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__shock_chance__chance
   contributor_family: lab
   owned_target_stat: shock_chance
@@ -1786,6 +2001,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__shock_multiplier__multiplier
   contributor_family: lab
   owned_target_stat: shock_damage_multiplier
@@ -1794,6 +2010,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__shockwave_size__bonus
   contributor_family: lab
   owned_target_stat: shockwave_size
@@ -1802,6 +2019,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__smart_missiles_chain_hit_damage__multiplier
   contributor_family: lab
   owned_target_stat: smart_missiles_chain_hit_damage_multiplier
@@ -1810,6 +2028,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__smart_missiles_despawn_time__duration_seconds
   contributor_family: lab
   owned_target_stat: smart_missiles_despawn_time_seconds
@@ -1818,6 +2037,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__smart_missiles_explosion_radius__range_m_bonus
   contributor_family: lab
   owned_target_stat: smart_missiles_explosion_radius
@@ -1826,6 +2046,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__spotlight_coin_bonus__multiplier
   contributor_family: lab
   owned_target_stat: spotlight_coin_bonus_multiplier
@@ -1834,6 +2055,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__spotlight_missiles_interval__interval_seconds
   contributor_family: lab
   owned_target_stat: spotlight_missiles_interval_seconds
@@ -1842,6 +2064,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__starting_cash__base
   contributor_family: lab
   owned_target_stat: starting_cash
@@ -1850,6 +2073,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__super_crit_chance__pct_bonus
   contributor_family: lab
   owned_target_stat: super_crit_chance
@@ -1858,6 +2082,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__super_crit_mult__bonus
   contributor_family: lab
   owned_target_stat: super_crit_multiplier
@@ -1866,6 +2091,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__super_tower_bonus__multiplier
   contributor_family: lab
   owned_target_stat: super_tower_damage_multiplier
@@ -1874,6 +2100,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__thunder_bot_cooldown__cooldown_seconds_reduction
   contributor_family: lab
   owned_target_stat: thunder_bot_cooldown_seconds
@@ -1882,6 +2109,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__thunder_bot_linger_duration__duration_seconds_bonus
   contributor_family: lab
   owned_target_stat: thunder_bot_linger_duration_seconds
@@ -1890,6 +2118,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: lab__wall_fortification__pct
   contributor_family: lab
   owned_target_stat: wall_fortification_pct
@@ -1898,6 +2127,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__wall_health__pct_bonus
   contributor_family: lab
   owned_target_stat: wall_health
@@ -1906,6 +2136,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__wall_invincibility__duration_seconds
   contributor_family: lab
   owned_target_stat: wall_invincibility_duration_seconds
@@ -1914,6 +2145,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__wall_rebuild__interval_seconds_reduction
   contributor_family: lab
   owned_target_stat: wall_rebuild_seconds
@@ -1922,6 +2154,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__wall_regen__ratio
   contributor_family: lab
   owned_target_stat: wall_regen
@@ -1930,6 +2163,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__wall_thorns__ratio
   contributor_family: lab
   owned_target_stat: wall_thorns
@@ -1938,6 +2172,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__workshop_attack_cost_reduction__pct
   contributor_family: lab
   owned_target_stat: workshop_attack_cost_reduction_pct
@@ -1946,6 +2181,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__workshop_defense_cost_reduction__pct
   contributor_family: lab
   owned_target_stat: workshop_defense_cost_reduction_pct
@@ -1954,6 +2190,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: lab__workshop_utility_cost_reduction__pct
   contributor_family: lab
   owned_target_stat: workshop_utility_cost_reduction_pct
@@ -1962,6 +2199,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_main__coin_bonus__multiplier
   contributor_family: module_main
   owned_target_stat: coin_bonus_multiplier
@@ -1971,6 +2209,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: module_main__damage__multiplier
   contributor_family: module_main
   owned_target_stat: damage
@@ -1980,6 +2219,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: module_main__health__multiplier
   contributor_family: module_main
   owned_target_stat: health
@@ -1989,6 +2229,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: module_main__ultimate_weapon_damage__multiplier
   contributor_family: module_main
   owned_target_stat: ultimate_weapon_damage_multiplier
@@ -1998,6 +2239,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__attack_range__range_m
   contributor_family: module_sub
   owned_target_stat: range_m
@@ -2007,6 +2249,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__attack_speed__base
   contributor_family: module_sub
   owned_target_stat: attack_speed
@@ -2015,6 +2258,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__black_hole_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: black_hole_cooldown_seconds
@@ -2023,6 +2267,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__black_hole_duration__duration_seconds_bonus
   contributor_family: module_sub
   owned_target_stat: black_hole_duration_seconds
@@ -2031,6 +2276,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__black_hole_size__range_m
   contributor_family: module_sub
   owned_target_stat: black_hole_size_m
@@ -2039,6 +2285,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__bounce_shot_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: bounce_shot_chance
@@ -2047,6 +2294,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__bounce_shot_range__range_m_bonus
   contributor_family: module_sub
   owned_target_stat: bounce_shot_range_m
@@ -2055,6 +2303,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__bounce_shot_targets__count_bonus
   contributor_family: module_sub
   owned_target_stat: bounce_shot_targets
@@ -2063,6 +2312,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__cash_bonus__base
   contributor_family: module_sub
   owned_target_stat: cash_bonus_multiplier
@@ -2071,6 +2321,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__cash_wave__base
   contributor_family: module_sub
   owned_target_stat: cash_per_wave
@@ -2079,6 +2330,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__chain_lightning_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: chain_lightning_chance
@@ -2087,6 +2339,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__chain_lightning_damage__multiplier
   contributor_family: module_sub
   owned_target_stat: chain_lightning_damage_multiplier
@@ -2095,6 +2348,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__chain_lightning_quantity__count_bonus
   contributor_family: module_sub
   owned_target_stat: chain_lightning_quantity
@@ -2103,6 +2357,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__chrono_field_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: chrono_field_cooldown_seconds
@@ -2111,6 +2366,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__chrono_field_duration__duration_seconds_bonus
   contributor_family: module_sub
   owned_target_stat: chrono_field_duration_seconds
@@ -2119,6 +2375,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__chrono_field_speed_reduction__pct_bonus
   contributor_family: module_sub
   owned_target_stat: chrono_field_speed_reduction_pct
@@ -2127,6 +2384,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__coins_kill_bonus__base
   contributor_family: module_sub
   owned_target_stat: coins_per_kill_bonus_multiplier
@@ -2135,6 +2393,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__coins_wave__base
   contributor_family: module_sub
   owned_target_stat: coins_per_wave
@@ -2143,6 +2402,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__crit_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: critical_chance
@@ -2151,6 +2411,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__crit_factor__base
   contributor_family: module_sub
   owned_target_stat: critical_factor
@@ -2159,6 +2420,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__damage_meter__base
   contributor_family: module_sub
   owned_target_stat: damage_per_meter
@@ -2167,6 +2429,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__death_defy__chance_bonus
   contributor_family: module_sub
   owned_target_stat: death_defy_chance
@@ -2175,6 +2438,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__death_wave_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: death_wave_cooldown_seconds
@@ -2183,6 +2447,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__death_wave_damage__multiplier
   contributor_family: module_sub
   owned_target_stat: death_wave_damage_multiplier
@@ -2191,6 +2456,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__death_wave_quantity__count_bonus
   contributor_family: module_sub
   owned_target_stat: death_wave_effect_wave_quantity
@@ -2199,6 +2465,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__defense__pct_bonus
   contributor_family: module_sub
   owned_target_stat: defense_pct
@@ -2207,6 +2474,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__defense_absolute__pct_bonus
   contributor_family: module_sub
   owned_target_stat: defense_absolute
@@ -2215,6 +2483,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__enemy_attack_level_skip__pct_bonus
   contributor_family: module_sub
   owned_target_stat: enemy_attack_level_skip_pct
@@ -2223,6 +2492,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: module_sub__enemy_health_level_skip__pct_bonus
   contributor_family: module_sub
   owned_target_stat: enemy_health_level_skip_pct
@@ -2231,6 +2501,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: module_sub__free_attack_upgrade__chance_bonus
   contributor_family: module_sub
   owned_target_stat: free_attack_upgrade_chance
@@ -2239,6 +2510,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__free_defense_upgrade__chance_bonus
   contributor_family: module_sub
   owned_target_stat: free_defense_upgrade_chance
@@ -2247,6 +2519,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__free_utility_upgrade__chance_bonus
   contributor_family: module_sub
   owned_target_stat: free_utility_upgrade_chance
@@ -2255,6 +2528,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__golden_tower_bonus__base
   contributor_family: module_sub
   owned_target_stat: golden_tower_bonus_multiplier
@@ -2263,6 +2537,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__golden_tower_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: golden_tower_cooldown_seconds
@@ -2271,6 +2546,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__golden_tower_duration__duration_seconds_bonus
   contributor_family: module_sub
   owned_target_stat: golden_tower_duration_seconds
@@ -2279,6 +2555,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__health_regen__pct_bonus
   contributor_family: module_sub
   owned_target_stat: health_regen
@@ -2287,6 +2564,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__inner_land_mines_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: inner_land_mines_cooldown_seconds
@@ -2295,6 +2573,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__inner_land_mines_damage__multiplier
   contributor_family: module_sub
   owned_target_stat: inner_land_mines_damage_multiplier
@@ -2303,6 +2582,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__inner_land_mines_quantity__count_bonus
   contributor_family: module_sub
   owned_target_stat: inner_land_mines_quantity
@@ -2311,6 +2591,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__interest_wave__pct_bonus
   contributor_family: module_sub
   owned_target_stat: interest_per_wave_pct
@@ -2319,6 +2600,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__knockback_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: knockback_chance
@@ -2327,6 +2609,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__knockback_force__base
   contributor_family: module_sub
   owned_target_stat: knockback_force
@@ -2335,6 +2618,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__land_mine_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: land_mine_chance
@@ -2343,6 +2627,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__land_mine_damage__pct_bonus
   contributor_family: module_sub
   owned_target_stat: land_mine_damage
@@ -2351,6 +2636,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__land_mine_radius__base
   contributor_family: module_sub
   owned_target_stat: land_mine_radius
@@ -2359,6 +2645,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__lifesteal__pct_bonus
   contributor_family: module_sub
   owned_target_stat: lifesteal
@@ -2367,6 +2654,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__max_recovery__base
   contributor_family: module_sub
   owned_target_stat: max_recovery_multiplier
@@ -2375,6 +2663,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__max_rend_armor_multi__pct_bonus
   contributor_family: module_sub
   owned_target_stat: rend_armor_max
@@ -2383,6 +2672,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__multishot_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: multishot_chance
@@ -2391,6 +2681,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__multishot_targets__count_bonus
   contributor_family: module_sub
   owned_target_stat: multishot_targets
@@ -2399,6 +2690,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__orb_speed__base
   contributor_family: module_sub
   owned_target_stat: orb_speed
@@ -2407,6 +2699,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__orbs__count_bonus
   contributor_family: module_sub
   owned_target_stat: orbs
@@ -2415,6 +2708,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__package_chance__chance_bonus
   contributor_family: module_sub
   owned_target_stat: package_chance
@@ -2423,6 +2717,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__poison_swamp_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: poison_swamp_cooldown_seconds
@@ -2431,6 +2726,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__poison_swamp_damage__multiplier
   contributor_family: module_sub
   owned_target_stat: poison_swamp_damage_multiplier
@@ -2439,6 +2735,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__poison_swamp_duration__duration_seconds_bonus
   contributor_family: module_sub
   owned_target_stat: poison_swamp_duration_seconds
@@ -2447,6 +2744,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__rapid_fire_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: rapid_fire_chance
@@ -2455,6 +2753,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__rapid_fire_duration__duration_seconds_bonus
   contributor_family: module_sub
   owned_target_stat: rapid_fire_duration_seconds
@@ -2463,6 +2762,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__recovery_amount__pct_bonus
   contributor_family: module_sub
   owned_target_stat: recovery_amount_pct
@@ -2471,6 +2771,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__rend_armor_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: rend_armor_chance
@@ -2479,6 +2780,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__rend_armor_multi__pct_bonus
   contributor_family: module_sub
   owned_target_stat: rend_armor_mult
@@ -2487,6 +2789,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__shockwave_frequency__interval_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: shockwave_interval_seconds
@@ -2495,6 +2798,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__shockwave_size__base
   contributor_family: module_sub
   owned_target_stat: shockwave_size
@@ -2503,6 +2807,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__smart_missiles_cooldown__cooldown_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: smart_missiles_cooldown_seconds
@@ -2511,6 +2816,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__smart_missiles_damage__multiplier
   contributor_family: module_sub
   owned_target_stat: smart_missiles_damage_multiplier
@@ -2519,6 +2825,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__smart_missiles_quantity__count_bonus
   contributor_family: module_sub
   owned_target_stat: smart_missiles_quantity
@@ -2527,6 +2834,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__spotlight_angle__angle_degrees
   contributor_family: module_sub
   owned_target_stat: spotlight_angle_degrees
@@ -2535,6 +2843,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__spotlight_bonus__base
   contributor_family: module_sub
   owned_target_stat: spotlight_bonus_multiplier
@@ -2543,6 +2852,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: module_sub__super_crit_chance__pct_bonus
   contributor_family: module_sub
   owned_target_stat: super_crit_chance
@@ -2551,6 +2861,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__super_crit_multi__base
   contributor_family: module_sub
   owned_target_stat: super_crit_multiplier
@@ -2559,6 +2870,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__thorns_damage__base
   contributor_family: module_sub
   owned_target_stat: thorns
@@ -2567,6 +2879,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__wall_health__pct_bonus
   contributor_family: module_sub
   owned_target_stat: wall_health
@@ -2575,6 +2888,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_sub__wall_rebuild__interval_seconds_reduction
   contributor_family: module_sub
   owned_target_stat: wall_rebuild_seconds
@@ -2583,6 +2897,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__amplifying_strike__duration__duration_seconds
   contributor_family: module_unique
   owned_target_stat: amplifying_strike_duration_seconds
@@ -2592,6 +2907,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__anti_cube_portal__shockwave_vulnerability_multiplier__multiplier
   contributor_family: module_unique
   owned_target_stat: shockwave_vulnerability_multiplier
@@ -2600,6 +2916,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__astral_deliverance__bounce_damage_per_bounce__pct
   contributor_family: module_unique
   owned_target_stat: bounce_shot_damage_per_bounce_pct
@@ -2608,6 +2925,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__astral_deliverance__bounce_shot_range_ratio__ratio
   contributor_family: module_unique
   owned_target_stat: bounce_shot_range_ratio
@@ -2616,6 +2934,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__being_annihilator__guaranteed_super_crit_attacks__count
   contributor_family: module_unique
   owned_target_stat: being_annihilator_guaranteed_supercrit_attacks
@@ -2624,6 +2943,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__black_hole_digestor__free_upgrade_coin_kill_bonus_per_upgrade_pct__pct
   contributor_family: module_unique
   owned_target_stat: free_upgrade_coin_kill_bonus_per_upgrade_pct
@@ -2632,6 +2952,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__death_penalty__death_mark_chance__chance
   contributor_family: module_unique
   owned_target_stat: death_penalty_mark_chance
@@ -2640,6 +2961,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__dimension_core__shock_max_stacks__count
   contributor_family: module_unique
   owned_target_stat: shock_max_stacks
@@ -2648,6 +2970,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__galaxy_compressor__uw_cooldown_reduction_on_package__cooldown_seconds_reduction
   contributor_family: module_unique
   owned_target_stat: uw_cooldown_package_reduction_seconds
@@ -2656,6 +2979,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__harmony_conductor__poison_miss_attack_chance__chance
   contributor_family: module_unique
   owned_target_stat: poison_miss_attack_chance
@@ -2664,6 +2988,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__havoc_bringer__rend_instantly_max_chance__chance
   contributor_family: module_unique
   owned_target_stat: rend_instant_max_chance
@@ -2672,6 +2997,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__multiverse_nexus__synced_uw_cooldown_offset__cooldown_seconds
   contributor_family: module_unique
   owned_target_stat: multiverse_nexus_cooldown_offset_seconds
@@ -2680,6 +3006,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__negative_mass_projector__orb_debuff_per_hit_pct__pct
   contributor_family: module_unique
   owned_target_stat: orb_debuff_per_hit_pct
@@ -2688,6 +3015,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__om_chip__reflected_spotlight_damage_multiplier__multiplier
   contributor_family: module_unique
   owned_target_stat: om_chip_reflected_damage_multiplier
@@ -2696,6 +3024,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__orbital_augment__electron_count__count
   contributor_family: module_unique
   owned_target_stat: electrons
@@ -2704,6 +3033,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__project_funding__damage_per_cash_digit_pct__pct
   contributor_family: module_unique
   owned_target_stat: project_funding_damage_per_digit_pct
@@ -2712,6 +3042,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__pulsar_harvester__els_reduction_proc_chance__chance
   contributor_family: module_unique
   owned_target_stat: pulsar_harvester_proc_chance
@@ -2720,6 +3051,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__restorative_bonus__attack_speed_boost_duration__duration_seconds
   contributor_family: module_unique
   owned_target_stat: restorative_bonus_duration_seconds
@@ -2728,6 +3060,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__sharp_fortitude__wall_health_regen_multiplier__multiplier
   contributor_family: module_unique
   owned_target_stat: wall_health_regen_multiplier
@@ -2736,6 +3069,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__shrink_ray__mass_reduction_pct__pct
   contributor_family: module_unique
   owned_target_stat: shrink_ray_mass_reduction_pct
@@ -2744,6 +3078,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__singularity_harness__bot_range_bonus__range_m_bonus
   contributor_family: module_unique
   owned_target_stat: bot_range_m_bonus
@@ -2752,6 +3087,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__space_displacer__inner_land_mine_spawn_chance__chance
   contributor_family: module_unique
   owned_target_stat: inner_land_mine_spawn_chance
@@ -2760,6 +3096,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: module_unique__wormhole_redirector__package_max_recovery_heal_pct__pct
   contributor_family: module_unique
   owned_target_stat: package_max_recovery_heal_pct
@@ -2768,6 +3105,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__all_coin_bonuses__multiplier
   contributor_family: perk
   owned_target_stat: coin_bonus_multiplier
@@ -2777,6 +3115,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__black_hole_duration__duration_seconds_bonus
   contributor_family: perk
   owned_target_stat: black_hole_duration_seconds
@@ -2786,6 +3125,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__boss_health_negative_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: boss_health_multiplier
@@ -2795,6 +3135,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__boss_health_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: boss_health_multiplier
@@ -2804,6 +3145,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__boss_speed_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: boss_speed_multiplier
@@ -2813,6 +3155,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__bounce_shot_targets__count_bonus
   contributor_family: perk
   owned_target_stat: bounce_shot_targets
@@ -2822,6 +3165,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__cash_bonus__multiplier
   contributor_family: perk
   owned_target_stat: cash_bonus_multiplier
@@ -2831,6 +3175,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__cash_on_kill_tradeoff__enabled
   contributor_family: perk
   owned_target_stat: cash_on_enemy_kill_enabled
@@ -2840,6 +3185,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: capability
 - contributor_id: perk__cash_per_wave_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: cash_per_wave
@@ -2849,6 +3195,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__chain_lightning_damage__multiplier
   contributor_family: perk
   owned_target_stat: chain_lightning_damage_multiplier
@@ -2858,6 +3205,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__chrono_field_duration__duration_seconds_bonus
   contributor_family: perk
   owned_target_stat: chrono_field_duration_seconds
@@ -2867,6 +3215,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__coin_bonus_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: coin_bonus_multiplier
@@ -2876,6 +3225,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__damage__multiplier
   contributor_family: perk
   owned_target_stat: damage
@@ -2885,6 +3235,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__death_wave_effect_wave_quantity__count_bonus
   contributor_family: perk
   owned_target_stat: death_wave_effect_wave_quantity
@@ -2894,6 +3245,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__defense_absolute__multiplier
   contributor_family: perk
   owned_target_stat: defense_absolute
@@ -2903,6 +3255,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__defense_percent__pct_bonus
   contributor_family: perk
   owned_target_stat: defense_pct
@@ -2912,6 +3265,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__enemy_damage_positive_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: enemy_damage_multiplier
@@ -2921,6 +3275,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__enemy_damage_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: enemy_damage_multiplier
@@ -2930,6 +3285,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__enemy_health_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: enemy_health_multiplier
@@ -2939,6 +3295,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__enemy_speed_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: enemy_speed_multiplier
@@ -2948,6 +3305,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__free_attack_upgrade__chance_bonus
   contributor_family: perk
   owned_target_stat: free_attack_upgrade_chance
@@ -2957,6 +3315,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__free_defense_upgrade__chance_bonus
   contributor_family: perk
   owned_target_stat: free_defense_upgrade_chance
@@ -2966,6 +3325,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__free_utility_upgrade__chance_bonus
   contributor_family: perk
   owned_target_stat: free_utility_upgrade_chance
@@ -2975,6 +3335,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__golden_tower_bonus__multiplier
   contributor_family: perk
   owned_target_stat: golden_tower_bonus_multiplier
@@ -2984,6 +3345,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__health_regen__multiplier
   contributor_family: perk
   owned_target_stat: health_regen
@@ -2993,6 +3355,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__health_regen_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: health_regen
@@ -3002,6 +3365,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__inner_land_mines_quantity__count_bonus
   contributor_family: perk
   owned_target_stat: inner_land_mines_quantity
@@ -3011,6 +3375,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__interest__multiplier
   contributor_family: perk
   owned_target_stat: interest_multiplier
@@ -3020,6 +3385,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__knockback_force_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: knockback_force
@@ -3029,6 +3395,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__land_mine_damage__multiplier
   contributor_family: perk
   owned_target_stat: land_mine_damage_multiplier
@@ -3038,6 +3405,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__lifesteal_positive_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: lifesteal_pct
@@ -3047,6 +3415,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__lifesteal_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: lifesteal_pct
@@ -3056,6 +3425,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__max_game_speed__scalar_bonus
   contributor_family: perk
   owned_target_stat: max_game_speed
@@ -3065,6 +3435,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__max_health__multiplier
   contributor_family: perk
   owned_target_stat: health
@@ -3074,6 +3445,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__orbs__count_bonus
   contributor_family: perk
   owned_target_stat: orbs
@@ -3083,6 +3455,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__perk_wave_requirement__pct_bonus
   contributor_family: perk
   owned_target_stat: perk_wave_requirement_pct_reduction
@@ -3092,6 +3465,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__poison_swamp_radius__multiplier
   contributor_family: perk
   owned_target_stat: poison_swamp_radius
@@ -3101,6 +3475,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__random_ultimate_weapon__enabled
   contributor_family: perk
   owned_target_stat: random_ultimate_weapon_unlock_enabled
@@ -3110,6 +3485,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: capability
 - contributor_id: perk__ranged_enemy_attack_distance_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: enemy_ranged_attack_distance_multiplier
@@ -3119,6 +3495,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: environment_parameter
 - contributor_id: perk__smart_missiles_quantity__count_bonus
   contributor_family: perk
   owned_target_stat: smart_missiles_quantity
@@ -3128,6 +3505,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__spotlight_bonus__multiplier
   contributor_family: perk
   owned_target_stat: spotlight_bonus_multiplier
@@ -3137,6 +3515,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: perk__tower_damage_negative_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: damage
@@ -3146,6 +3525,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__tower_damage_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: damage
@@ -3155,6 +3535,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__tower_health_negative_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: health
@@ -3164,6 +3545,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__tower_health_regen_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: health_regen
@@ -3173,6 +3555,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__tower_health_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: health
@@ -3182,6 +3565,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: perk__tower_ranged_enemy_damage_tradeoff__multiplier
   contributor_family: perk
   owned_target_stat: ranged_enemy_damage_multiplier
@@ -3191,6 +3575,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__coins_multiplier__total_pct_bonus
   contributor_family: relic
   owned_target_stat: coins_multiplier
@@ -3200,6 +3585,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__critical_factor__total_pct_bonus
   contributor_family: relic
   owned_target_stat: critical_factor
@@ -3208,6 +3594,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__damage__total_pct_bonus
   contributor_family: relic
   owned_target_stat: damage
@@ -3216,6 +3603,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__damage_per_meter_multiplier__total_pct_bonus
   contributor_family: relic
   owned_target_stat: damage_per_meter_multiplier
@@ -3224,6 +3612,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__defense_absolute__total_pct_bonus
   contributor_family: relic
   owned_target_stat: defense_absolute
@@ -3232,6 +3621,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__health__total_pct_bonus
   contributor_family: relic
   owned_target_stat: health
@@ -3240,6 +3630,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__lab_speed_multiplier__total_pct_bonus
   contributor_family: relic
   owned_target_stat: lab_speed_multiplier
@@ -3248,6 +3639,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__ultimate_damage_multiplier__total_pct_bonus
   contributor_family: relic
   owned_target_stat: ultimate_damage_multiplier
@@ -3256,6 +3648,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: relic__wall_rebuild_seconds__total_interval_seconds_reduction
   contributor_family: relic
   owned_target_stat: wall_rebuild_seconds
@@ -3264,6 +3657,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: uw__black_hole_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: black_hole_cooldown_seconds
@@ -3273,6 +3667,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__black_hole_duration__duration_seconds
   contributor_family: uw
   owned_target_stat: black_hole_duration_seconds
@@ -3281,6 +3676,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__black_hole_size__range_m
   contributor_family: uw
   owned_target_stat: black_hole_size_m
@@ -3289,6 +3685,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chain_lightning_chance__chance
   contributor_family: uw
   owned_target_stat: chain_lightning_chance
@@ -3297,6 +3694,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chain_lightning_damage__multiplier
   contributor_family: uw
   owned_target_stat: chain_lightning_damage_multiplier
@@ -3305,6 +3703,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chain_lightning_quantity__count
   contributor_family: uw
   owned_target_stat: chain_lightning_count
@@ -3313,6 +3712,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chrono_field_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: chrono_field_cooldown_seconds
@@ -3321,6 +3721,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chrono_field_duration__duration_seconds
   contributor_family: uw
   owned_target_stat: chrono_field_duration_seconds
@@ -3329,6 +3730,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__chrono_field_slow__pct
   contributor_family: uw
   owned_target_stat: chrono_field_slow_pct
@@ -3337,6 +3739,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__death_wave_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: death_wave_cooldown_seconds
@@ -3345,6 +3748,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__death_wave_damage__multiplier
   contributor_family: uw
   owned_target_stat: death_wave_damage_multiplier
@@ -3353,6 +3757,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__death_wave_quantity__count
   contributor_family: uw
   owned_target_stat: death_wave_count
@@ -3361,6 +3766,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__golden_tower_bonus__multiplier
   contributor_family: uw
   owned_target_stat: golden_tower_bonus_multiplier
@@ -3369,6 +3775,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__golden_tower_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: golden_tower_cooldown_seconds
@@ -3377,6 +3784,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__golden_tower_duration__duration_seconds
   contributor_family: uw
   owned_target_stat: golden_tower_duration_seconds
@@ -3385,6 +3793,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__inner_land_mines_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: inner_land_mines_cooldown_seconds
@@ -3393,6 +3802,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__inner_land_mines_damage__multiplier
   contributor_family: uw
   owned_target_stat: inner_land_mines_damage_multiplier
@@ -3401,6 +3811,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__inner_land_mines_quantity__count
   contributor_family: uw
   owned_target_stat: inner_land_mines_count
@@ -3409,6 +3820,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__poison_swamp_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: poison_swamp_cooldown_seconds
@@ -3417,6 +3829,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__poison_swamp_damage__multiplier
   contributor_family: uw
   owned_target_stat: poison_swamp_damage_multiplier
@@ -3425,6 +3838,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__poison_swamp_duration__duration_seconds
   contributor_family: uw
   owned_target_stat: poison_swamp_duration_seconds
@@ -3433,6 +3847,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__smart_missiles_cooldown__cooldown_seconds
   contributor_family: uw
   owned_target_stat: smart_missiles_cooldown_seconds
@@ -3441,6 +3856,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__smart_missiles_damage__multiplier
   contributor_family: uw
   owned_target_stat: smart_missiles_damage_multiplier
@@ -3449,6 +3865,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__smart_missiles_quantity__count
   contributor_family: uw
   owned_target_stat: smart_missiles_quantity
@@ -3457,6 +3874,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__spotlight_angle__angle_degrees
   contributor_family: uw
   owned_target_stat: spotlight_angle_degrees
@@ -3465,6 +3883,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__spotlight_bonus__multiplier
   contributor_family: uw
   owned_target_stat: spotlight_bonus_multiplier
@@ -3473,6 +3892,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw__spotlight_quantity__count
   contributor_family: uw
   owned_target_stat: spotlight_count
@@ -3481,6 +3901,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__black_hole_consume__multiplier
   contributor_family: uw_plus
   owned_target_stat: black_hole_consume_wave_hp_multiplier
@@ -3490,6 +3911,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__chain_lightning_smite__multiplier
   contributor_family: uw_plus
   owned_target_stat: chain_lightning_smite_wave_hp_multiplier
@@ -3499,6 +3921,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__chrono_field_chrono_loop__rotation_rate
   contributor_family: uw_plus
   owned_target_stat: chrono_field_chrono_loop_rotation_rate
@@ -3508,6 +3931,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__death_wave_kill_wall__multiplier
   contributor_family: uw_plus
   owned_target_stat: death_wave_kill_wall_bonus_per_hit
@@ -3517,6 +3941,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__golden_tower_golden_combo__pct
   contributor_family: uw_plus
   owned_target_stat: golden_tower_golden_combo_pct_per_kill
@@ -3526,6 +3951,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__inner_land_mines_charged_mine__multiplier
   contributor_family: uw_plus
   owned_target_stat: inner_land_mines_charged_mine_multiplier_per_second
@@ -3535,6 +3961,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__poison_swamp_death_creep__pct
   contributor_family: uw_plus
   owned_target_stat: poison_swamp_death_creep_pct_per_tick
@@ -3544,6 +3971,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__smart_missiles_cover_fire__interval_seconds
   contributor_family: uw_plus
   owned_target_stat: smart_missiles_cover_fire_interval_seconds
@@ -3553,6 +3981,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: uw_plus__spotlight_light_range__multiplier
   contributor_family: uw_plus
   owned_target_stat: spotlight_light_range_damage_per_meter_multiplier
@@ -3562,6 +3991,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: resolved_from_quarantine_phase_b
+  destination_object_class: runtime_mechanic_parameter
 - contributor_id: workshop__attack_speed__base
   contributor_family: workshop
   owned_target_stat: attack_speed
@@ -3571,6 +4001,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__bounce_shot_chance__chance
   contributor_family: workshop
   owned_target_stat: bounce_shot_chance
@@ -3579,6 +4010,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__bounce_shot_range_m__range_m
   contributor_family: workshop
   owned_target_stat: bounce_shot_range_m
@@ -3587,6 +4019,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__bounce_shot_targets__count
   contributor_family: workshop
   owned_target_stat: bounce_shot_targets
@@ -3595,6 +4028,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__cash_bonus__multiplier
   contributor_family: workshop
   owned_target_stat: cash_bonus_multiplier
@@ -3603,6 +4037,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__cash_per_wave__base
   contributor_family: workshop
   owned_target_stat: cash_per_wave
@@ -3611,6 +4046,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__coins_per_kill_bonus__multiplier
   contributor_family: workshop
   owned_target_stat: coins_per_kill_bonus_multiplier
@@ -3619,6 +4055,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__coins_per_wave__base
   contributor_family: workshop
   owned_target_stat: coins_per_wave
@@ -3627,6 +4064,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__critical_chance__chance
   contributor_family: workshop
   owned_target_stat: critical_chance
@@ -3635,6 +4073,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__critical_factor__multiplier
   contributor_family: workshop
   owned_target_stat: critical_factor
@@ -3643,6 +4082,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__damage__base
   contributor_family: workshop
   owned_target_stat: damage
@@ -3651,6 +4091,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__damage_per_meter_multiplier__multiplier
   contributor_family: workshop
   owned_target_stat: damage_per_meter_multiplier
@@ -3659,6 +4100,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__death_defy__chance
   contributor_family: workshop
   owned_target_stat: death_defy
@@ -3667,6 +4109,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__defense_absolute__base
   contributor_family: workshop
   owned_target_stat: defense_absolute
@@ -3675,6 +4118,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__defense_pct__pct
   contributor_family: workshop
   owned_target_stat: defense_pct
@@ -3683,6 +4127,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__enemy_attack_level_skip__chance
   contributor_family: workshop
   owned_target_stat: enemy_attack_level_skip
@@ -3691,6 +4136,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: workshop__enemy_health_level_skip__chance
   contributor_family: workshop
   owned_target_stat: enemy_health_level_skip
@@ -3699,6 +4145,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: environment_parameter
 - contributor_id: workshop__free_attack_upgrade__chance
   contributor_family: workshop
   owned_target_stat: free_attack_upgrade_chance
@@ -3707,6 +4154,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__free_defense_upgrade__chance
   contributor_family: workshop
   owned_target_stat: free_defense_upgrade_chance
@@ -3715,6 +4163,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__free_utility_upgrade__chance
   contributor_family: workshop
   owned_target_stat: free_utility_upgrade_chance
@@ -3723,6 +4172,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__health__base
   contributor_family: workshop
   owned_target_stat: health
@@ -3731,6 +4181,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__health_regen__base
   contributor_family: workshop
   owned_target_stat: health_regen
@@ -3739,6 +4190,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__interest_pct__pct
   contributor_family: workshop
   owned_target_stat: interest_pct
@@ -3747,6 +4199,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__knockback_chance__chance
   contributor_family: workshop
   owned_target_stat: knockback_chance
@@ -3755,6 +4208,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__knockback_force__base
   contributor_family: workshop
   owned_target_stat: knockback_force
@@ -3763,6 +4217,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__land_mine_chance__chance
   contributor_family: workshop
   owned_target_stat: land_mine_chance
@@ -3771,6 +4226,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__land_mine_damage_multiplier__multiplier
   contributor_family: workshop
   owned_target_stat: land_mine_damage_multiplier
@@ -3779,6 +4235,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__land_mine_radius__base
   contributor_family: workshop
   owned_target_stat: land_mine_radius
@@ -3787,6 +4244,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__lifesteal_pct__pct
   contributor_family: workshop
   owned_target_stat: lifesteal_pct
@@ -3795,6 +4253,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__max_interest__base
   contributor_family: workshop
   owned_target_stat: max_interest_cash
@@ -3803,6 +4262,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__max_recovery__multiplier
   contributor_family: workshop
   owned_target_stat: max_recovery_multiplier
@@ -3811,6 +4271,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__multishot_chance__chance
   contributor_family: workshop
   owned_target_stat: multishot_chance
@@ -3819,6 +4280,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__multishot_targets__count
   contributor_family: workshop
   owned_target_stat: multishot_targets
@@ -3827,6 +4289,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__orb_speed_rpm__base
   contributor_family: workshop
   owned_target_stat: orb_speed_rpm
@@ -3835,6 +4298,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__orbs__count
   contributor_family: workshop
   owned_target_stat: orbs
@@ -3843,6 +4307,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__package_chance__chance
   contributor_family: workshop
   owned_target_stat: package_chance
@@ -3851,6 +4316,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__range_m__range_m
   contributor_family: workshop
   owned_target_stat: range_m
@@ -3859,6 +4325,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__rapid_fire_chance__chance
   contributor_family: workshop
   owned_target_stat: rapid_fire_chance
@@ -3867,6 +4334,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__rapid_fire_duration_seconds__duration_seconds
   contributor_family: workshop
   owned_target_stat: rapid_fire_duration_seconds
@@ -3875,6 +4343,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__recovery_amount_pct__pct
   contributor_family: workshop
   owned_target_stat: recovery_amount_pct
@@ -3883,6 +4352,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__rend_armor_chance__chance
   contributor_family: workshop
   owned_target_stat: rend_armor_chance
@@ -3891,6 +4361,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__rend_armor_multiplier__multiplier
   contributor_family: workshop
   owned_target_stat: rend_armor_multiplier
@@ -3899,6 +4370,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__shockwave_interval_seconds__interval_seconds
   contributor_family: workshop
   owned_target_stat: shockwave_interval_seconds
@@ -3907,6 +4379,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__shockwave_size__base
   contributor_family: workshop
   owned_target_stat: shockwave_size
@@ -3915,6 +4388,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__super_crit_chance__chance
   contributor_family: workshop
   owned_target_stat: super_crit_chance
@@ -3923,6 +4397,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__super_crit_multiplier__multiplier
   contributor_family: workshop
   owned_target_stat: super_crit_multiplier
@@ -3931,6 +4406,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__thorn_damage_pct__pct
   contributor_family: workshop
   owned_target_stat: thorn_damage_pct
@@ -3939,6 +4415,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__wall_health__ratio
   contributor_family: workshop
   owned_target_stat: wall_health
@@ -3947,6 +4424,7 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
 - contributor_id: workshop__wall_rebuild_seconds__duration_seconds
   contributor_family: workshop
   owned_target_stat: wall_rebuild_seconds
@@ -3955,3 +4433,4 @@ v2_contributor_ids:
   ownership_role: derived_dependency_input
   canonical_status: canonical
   migration_status: ledger_seed_phase_a
+  destination_object_class: canonical_target_stat
