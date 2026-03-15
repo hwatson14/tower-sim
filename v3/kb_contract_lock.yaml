@@ -1,4 +1,0 @@
-canonical_kb_root: kb
-contracts:
-  kb/global-rules/contracts/ids-section-routing.yaml: 2b4214cae0c8413417be0000f6f7fdf05b6abce216c22b7c35f2eff97ce38af0
-  kb/global-rules/contracts/naming-contract.yaml: 75216b097e9ac7615fd5e58d3202b5629d2372693a5b7c40da7fa6a5cc0730f3
