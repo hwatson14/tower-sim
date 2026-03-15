@@ -1,36 +1,40 @@
-# Tower KB Index (v56 slice)
+# Tower KB index
 
-This repository now hosts a staged v56 KB import under `kb/`, including contracts/indexes/registries plus authoritative simulator-support tables, formula surfaces, and completeness/coverage ledgers.
+This package is organized for **ChatGPT-first simulator use, strategy support, and theorycraft support** for the intended sim scope.
 
-## Entrypoints
-- `kb/global-rules/notes/index.md`
-- `kb/ledgers/notes/index.md`
-- Domain indexes in `kb/*/notes/index.md` and `kb/*/tables/index.md`
+## High-value domains
+- `workshop/`
+- `labs/`
+- `cards/`
+- `modules/`
+- `ultimate-weapons/`
+- `combat/`
+- `enemies/`
+- `economy/`
+- `community/`
+- `advisory/`
+- `ledgers/`
 
-## Canonical routing and naming core
-- `kb/global-rules/contracts/naming-contract.yaml`
-- `kb/global-rules/contracts/name-aliases.yaml`
-- `kb/global-rules/contracts/aliases.yaml`
-- `kb/global-rules/contracts/ids-section-routing.yaml`
-- `kb/global-rules/contracts/contributors.yaml`
-- `kb/global-rules/contracts/contributor-mappings-full.yaml`
-- `kb/global-rules/contracts/resolvers.yaml`
+## Core package boundaries
+- Module main-effect totals are accepted from bundled Effective Paths structured exports as package canon.
+- Vault numeric bonuses may be supplied only through explicit externalized account-input surfaces.
+- Same-tick precedence is intentionally out of scope except for thorns resolving immediately after incoming damage.
+- Tournament BC exact rows marked unknown to community are accepted boundaries, not blockers.
+- Wall Fortification unlock is resolved in-package as **Tier 14 / Wave 60**.
 
-## Registry surfaces in-scope for this pass
-- Account-state input registries:
-  - `kb/global-rules/tables/player-stuff-input-registry.csv`
-  - `kb/global-rules/tables/relic-input-registry.csv`
-  - `kb/global-rules/tables/theme-song-input-registry.csv`
-  - `kb/global-rules/tables/unlock-input-registry.csv`
-- Domain registries/routing:
-  - Bots, Cards, Economy/Vault, Guardians, Labs, Perks, Ultimate Weapons
-- Cross-domain ledgers:
-  - `kb/ledgers/tables/canonical-id-registry.csv`
-  - `kb/ledgers/tables/canonicality-registry.csv`
-  - `kb/ledgers/tables/surface-status-registry.csv`
-  - `kb/ledgers/tables/contributor-routing-closure.csv`
+## First boundary and package-canon surfaces
+- `kb/ledgers/tables/simulator-scope-boundary-ledger.csv`
+- `kb/ledgers/tables/scope-boundary-registry.csv`
+- `kb/modules/tables/module-main-effect-total-multipliers-package-canon.csv`
+- `kb/economy/tables/vault-externalized-simulator-inputs.csv`
 
-## Scope boundary for current import state
-Imported: authoritative tables, formula surfaces, and completeness/coverage/subsystem ledgers used for simulator support.
+## Knowledge layers
+- `tables/` → canonical mechanics
+- `contracts/` → canonical semantics
+- `community/` → community signal and meta observations
+- `advisory/` → strategy guidance and theorycraft frameworks
+- `notes/` and `sources/` → explanation and provenance only
 
-Still intentionally excluded: full validation harness bundles, advisory/community strategy corpora, and release/handoff packaging debris.
+## Canonical content rule
+Use `tables/` first and `contracts/` second inside each domain for mechanics.
+Use `advisory/` and `community/` for strategy, diagnosis, and theorycraft only after grounding them against canonical mechanics and boundary policy.

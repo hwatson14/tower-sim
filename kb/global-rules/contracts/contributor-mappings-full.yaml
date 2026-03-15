@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: contributor_routing
 purpose: Consolidated live source-to-object routing for the Tower GPT KB.
 notes:

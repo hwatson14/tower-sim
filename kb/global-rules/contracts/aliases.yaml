@@ -1,4 +1,4 @@
-version: v29
+schema_revision: 1
 kind: alias_registry_pointer
 purpose: Backward-compatible pointer for callers expecting aliases.yaml.
 canonical_surface: name-aliases.yaml

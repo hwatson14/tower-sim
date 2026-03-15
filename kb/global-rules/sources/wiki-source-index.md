@@ -50,7 +50,7 @@ Purpose: provide high-signal source pages from the Tower wiki that anchor entity
 1. Use wiki pages as primary source for named mechanics, unlock conditions, caps, tables, and public guide recommendations.
 2. Treat guide pages as strategy references, not immutable law.
 3. Where wiki guide advice conflicts with account-specific measured evidence, keep both and label the guide as general guidance.
-4. Keep unresolved or partial quantitative areas in kb/ledgers/notes/explicit-unresolved-quarantine.md rather than filling them with guesses.
+4. Keep boundary or partial quantitative areas in the active scope-boundary registry rather than filling them with guesses.
 
 - WIKI_CARDS_AND_CARD_MASTERIES.md
 - WIKI_MODULES_AND_SUBMODULES.md

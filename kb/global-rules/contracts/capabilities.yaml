@@ -1,4 +1,4 @@
-version: v1
+schema_revision: 1
 kind: capabilities
 purpose: Boolean or enum feature presence for runtime branches.
 notes:

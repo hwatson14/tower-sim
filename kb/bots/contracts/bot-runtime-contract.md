@@ -6,5 +6,5 @@
 - Bot identity is per named bot and must not be flattened into a generic pooled mechanic.
 - Medal-funded tracks come from `bot-upgrade-tracks-long.csv`.
 - Golden Bot and Flame Bot have separate lab extension support from `bot-labs-summary.yaml`.
-- Material runtime behavior may be modeled from the named mechanic channel, but entries listed in `bot-unresolved-runtime-surfaces.csv` must fail closed and must not be silently interpolated.
+- Material runtime behavior may be modeled from the named mechanic channel, but entries listed in `bot-runtime-boundary-registry.csv` are out-of-scope timing boundaries and must not be silently promoted into exact same-tick behavior.
 - Bot unlock order affects unlock cost and belongs to economy/event-shop handling, not per-bot runtime track lookup.

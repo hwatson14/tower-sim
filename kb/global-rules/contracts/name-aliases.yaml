@@ -1,4 +1,4 @@
-version: v2
+schema_revision: 1
 kind: aliases
 purpose: Alias registry mapping human-facing names, abbreviations, and legacy labels
   onto canonical KB objects and concepts.
@@ -14,6 +14,7 @@ alias_groups:
     - Workshop Enhancement
     - Workshop Enhancements
     - WS+
+    - Workshop +
     notes: Canonical KB term is Enhancements even when the wiki page title uses Workshop
       Enhancement.
   - canonical_term: Ultimate Weapons
@@ -137,52 +138,100 @@ alias_groups:
   - canonical_term: Death Penalty
     aliases:
     - DP
+    - death_penalty
   - canonical_term: Astral Deliverance
     aliases:
     - AD
+    - astral_deliverance
   - canonical_term: Being Annihilator
     aliases:
     - BA
+    - being_annihilator
   - canonical_term: Havoc Bringer
     aliases:
     - HB
+    - havoc_bringer
   - canonical_term: Galaxy Compressor
     aliases:
     - GC
     - GComp
+    - galaxy_compressor
   - canonical_term: Black Hole Digestor
     aliases:
     - BHD
+    - black_hole_digestor
   - canonical_term: Dimension Core
     aliases:
     - DC
+    - dimension_core
   - canonical_term: Om Chip
     aliases:
     - OC
+    - om_chip
   - canonical_term: Multiverse Nexus
     aliases:
     - MVN
+    - multiverse_nexus
   - canonical_term: Pulsar Harvester
     aliases:
     - PH
+    - pulsar_harvester
   - canonical_term: Singularity Harness
     aliases:
     - SH
+    - singularity_harness
   - canonical_term: Anti-Cube Portal
     aliases:
     - ACP
   - canonical_term: Nano Intercept
     aliases:
     - NI
+    - nano_intercept
   - canonical_term: Wormhole Redirector
     aliases:
     - WR
+    - wormhole_redirector
   - canonical_term: Space Displacer
     aliases:
     - SD
+    - space_displacer
   - canonical_term: Orbital Augment
     aliases:
     - OA
+    - orbital_augment
   - canonical_term: Harmony Conductor
     aliases:
     - HC
+    - harmony_conductor
+  - canonical_term: Amplifying Strike
+    aliases:
+    - AS
+    - amplifying_strike
+  - canonical_term: Magnetic Hook
+    aliases:
+    - MH
+    - magnetic_hook
+  - canonical_term: Negative Mass Projector
+    aliases:
+    - NMP
+    - negative_mass_projector
+  - canonical_term: Primordial Collapse
+    aliases:
+    - PC
+    - primordial_collapse
+  - canonical_term: Project Funding
+    aliases:
+    - PF
+    - project_funding
+  - canonical_term: Restorative Bonus
+    aliases:
+    - RB
+    - restorative_bonus
+  - canonical_term: Sharp Fortitude
+    aliases:
+    - SF
+    - sharp_fortitude
+  - canonical_term: Shrink Ray
+    aliases:
+    - SR
+    - shrink_ray

@@ -1,4 +1,4 @@
-version: v2
+schema_revision: 1
 kind: environment_parameters
 purpose: Contextual modifiers from tier, enemy systems, heat, tournaments, and battle conditions.
 notes:

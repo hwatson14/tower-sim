@@ -1,18 +1,31 @@
 # Guardians tables index
 
-Guardian active tables now prefer one baseline chip sheet plus upgrade/type references.
+Guardian primary canon now separates:
+- exact linear value tracks in `kb/formulas/tables/canonical-formula-registry.csv`
+- irregular bit-cost-bearing row tables here in `kb/guardians/tables/`
 
 ## Primary active tables
 - `guardian-chip-baselines.csv`
 - `guardian-upgrades.csv`
-- `wiki-guardian-ally-levels-1-31-slice.csv`
-- `wiki-guardian-attack-levels-full.csv`
-- `wiki-guardian-bonus-scaling.csv`
-- `wiki-guardian-types.csv`
+- `wiki-verified-guardian-ally-upgrades.csv`
+- `wiki-verified-guardian-attack-upgrades.csv`
+- `wiki-verified-guardian-bounty-upgrades.csv`
+- `wiki-verified-guardian-fetch-upgrades.csv`
+- `wiki-verified-guardian-summon-upgrades.csv`
+- `wiki-verified-guardian-scout-upgrades.csv`
+- `wiki-verified-guardian-scout-summary.csv`
 
-## Archived from active tables in v15
-These were moved into `sources/raw/history/rationalized/` to reduce overlap or remove placeholders.
-- `wiki-guardian-chip-baselines-expanded.csv`
-- `guardian-entity-registry.csv` — normalized guardian chip identity surface.
-- `guardian-track-registry.csv` — normalized guardian track rows.
-- `guardian-contributor-routing.csv` — guardian chip routing for simulator use.
+## Notes
+These row tables are retained as primary canon because the bit-cost columns are irregular and source-primary, so formula-only storage would lose canonical upgrade-cost information.
+
+
+- See derived/materialized or registry files for non-primary aggregate or bundle-backed surfaces.
+
+- wiki-verified-guardian-bounty-summary.csv
+- wiki-verified-guardian-summon-summary.csv
+
+- wiki-verified-guardian-ally-summary.csv
+- wiki-verified-guardian-attack-summary.csv
+- wiki-verified-guardian-fetch-summary.csv
+
+- wiki-verified-guardian-unlock-and-slots-summary.csv

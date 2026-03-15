@@ -6,7 +6,7 @@ Use the tables first for simulation.
 - `kb/ultimate-weapons/tables/uw-entity-registry.csv`
 - `kb/ultimate-weapons/tables/uw-track-registry.csv`
 - `kb/ultimate-weapons/tables/uw-contributor-routing.csv`
-- `kb/ultimate-weapons/tables/uw-unresolved-runtime-surfaces.csv`
+- `kb/ultimate-weapons/tables/uw-runtime-boundary-registry.csv`
 
 ## Supporting legacy surfaces
 - named ladder tables

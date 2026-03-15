@@ -7,5 +7,5 @@ Use the normalized bot tables first for simulation.
 2. `tables/bot-track-registry.csv`
 3. `tables/bot-mechanic-registry.csv`
 4. `tables/bot-contributor-routing.csv`
-5. `tables/bot-unresolved-runtime-surfaces.csv`
+5. `tables/bot-runtime-boundary-registry.csv`
 6. supporting tables and sources
