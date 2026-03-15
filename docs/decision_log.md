@@ -1,3 +1,15 @@
+## 2026-03-15
+### Decision
+Create a dedicated `v3/` subtree for a clean-slate rebuild track, seeded from the root KB zip artifact.
+
+### Reason
+A clean rebuild path is needed, but replacing the active v2 runtime in-place would create unnecessary migration and governance risk.
+
+### Consequence
+`v3/` is now the isolated workspace for rebuilding from the full KB (`tower_kb_frozen_regenerated.zip`) while keeping the current v2 runtime stable.
+
+---
+
 # Decision Log
 
 ## 2026-03-14
