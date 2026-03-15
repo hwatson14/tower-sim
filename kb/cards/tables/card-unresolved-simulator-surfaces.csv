@@ -1,4 +1,0 @@
-surface_id,domain,why_unresolved,simulator_handling,status
-CARD_FULL_BASE_LADDERS,cards,"Current bundle only contains a verified slice of explicit base-card values, not a complete per-card per-level canonical ladder for all cards.",Use captured base ladders where present; otherwise require explicit external account-state/card values or fail closed.,explicit_partial_bundle_surface
-CARD_LOCK_MICRO_PRECEDENCE,cards,Boss/fleet lock behavior is source-backed at rule level but exact same-tick precedence with spawn/clear transitions is not fully proven in the bundle.,Use rule-level lock semantics; treat same-tick edge ordering as out of frame-exact scope.,de_scoped_micro_precedence
-CARD_FULL_EPIC_BASE_VALUES,cards,"Current bundle states epic rarity exists and captures named unlocks, but does not surface full epic-card level ladders as active canon.",Do not invent epic ladders; require explicit sourced value capture before promotion.,explicit_unknown_until_sourced

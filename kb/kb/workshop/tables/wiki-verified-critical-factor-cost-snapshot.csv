@@ -1,0 +1,9 @@
+level,value_mult,cost,total_cost,source_page
+1,1.30x,50.00,0.00,Critical Hits/Costs
+10,2.20x,593.00,2.65K,Critical Hits/Costs
+20,3.20x,2.28K,16.80K,Critical Hits/Costs
+30,4.20x,5.34K,55.23K,Critical Hits/Costs
+40,5.20x,9.92K,132.54K,Critical Hits/Costs
+50,6.20x,16.15K,264.61K,Critical Hits/Costs
+100,11.20x,80.75K,2.50M,Critical Hits/Costs
+150,16.20x,26.24B,259.20B,Critical Hits/Costs

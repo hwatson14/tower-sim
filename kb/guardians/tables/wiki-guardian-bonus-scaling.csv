@@ -1,2 +1,0 @@
-model,status
-guardian_bonus = base_bonus + (level * scaling_factor),provisional_rebuild

@@ -1,0 +1,2 @@
+lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
+Ranged Enemy Range,ranged,Tier 13 Wave 80,Reduces ranged enemy attack range.,30,-0.50%,-15.00%,Uses a different decrement pattern from the standard enemy health/attack reductions.,Lab/Ranged_Enemy_Range_Lab,row_verified_v62

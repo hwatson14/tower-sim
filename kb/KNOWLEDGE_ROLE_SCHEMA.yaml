@@ -1,0 +1,106 @@
+role_definitions:
+  control_plane_entry:
+    description: Top-level files that define how ChatGPT should load and route the KB.
+    canonical_weight: highest_for_package_loading
+    query_types:
+      - package_loading
+      - routing
+      - trust_order
+  control_plane_metadata:
+    description: Package identity, release-locator, and control-plane metadata surfaces.
+    canonical_weight: high_for_package_state
+    query_types:
+      - package_state
+      - provenance
+  canonical_mechanics:
+    description: Canonical structured mechanics tables for values, identities, ladders, and normalized runtime facts.
+    canonical_weight: highest_for_lookup_and_mechanics
+    query_types:
+      - lookup
+      - mechanics_reasoning
+      - simulator_reasoning
+  canonical_contract:
+    description: Canonical contracts that explain how structured mechanics surfaces should be interpreted.
+    canonical_weight: highest_for_semantics
+    query_types:
+      - mechanics_reasoning
+      - simulator_reasoning
+  package_canon:
+    description: Explicit package-level canonical choices accepted for this KB even when not fully row-verified from a primary source.
+    canonical_weight: high_with_explicit_label
+    query_types:
+      - lookup
+      - mechanics_reasoning
+      - simulator_reasoning
+  boundary_policy:
+    description: Files that define accepted unknowns, out-of-scope edges, fail-closed behavior, and externalized inputs.
+    canonical_weight: highest_for_unknown_handling
+    query_types:
+      - lookup
+      - mechanics_reasoning
+      - simulator_reasoning
+  strategy_guidance:
+    description: Applied strategy, build guidance, progression heuristics, and theorycraft frameworks.
+    canonical_weight: noncanonical_for_mechanics__preferred_for_strategy
+    query_types:
+      - strategy
+      - theorycraft
+      - optimisation
+      - diagnosis
+  community_signal:
+    description: Community observations, Reddit-derived heuristics, and meta signals.
+    canonical_weight: noncanonical_secondary
+    query_types:
+      - strategy
+      - meta
+      - patch_watch
+      - diagnosis
+  provenance_grounding:
+    description: Source-grounding material used to justify or explain canonical surfaces.
+    canonical_weight: secondary_support_only
+    query_types:
+      - provenance
+      - audit
+  derived_nonprimary:
+    description: Derived or materialized surfaces that should not override canonical tables and contracts on first pass.
+    canonical_weight: lower_than_canon
+    query_types:
+      - secondary_lookup
+      - audit
+  explanatory_secondary:
+    description: Explanatory notes and summaries that may help interpretation but must not override structured canon.
+    canonical_weight: secondary_support_only
+    query_types:
+      - explanation
+      - orientation
+  retrieval_operational:
+    description: Prompting and retrieval maps for AI operation.
+    canonical_weight: operational_not_domain_canon
+    query_types:
+      - package_loading
+      - retrieval
+routing_rules:
+  mechanics_questions:
+    prefer:
+      - canonical_mechanics
+      - canonical_contract
+      - package_canon
+      - boundary_policy
+    avoid_first_pass:
+      - strategy_guidance
+      - community_signal
+      - derived_nonprimary
+  strategy_questions:
+    prefer:
+      - strategy_guidance
+      - community_signal
+      - canonical_mechanics
+      - boundary_policy
+    rule: Never let strategy or community advice override canonical mechanics.
+  provenance_or_audit_questions:
+    prefer:
+      - provenance_grounding
+      - explanatory_secondary
+      - control_plane_metadata
+  unknown_handling:
+    rule: When a boundary_policy surface marks something accepted_unknown_boundary or out_of_scope_tick_precedence, report that status directly and stop rather than inferring exact values.

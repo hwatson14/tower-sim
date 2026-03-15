@@ -1,0 +1,54 @@
+package_name: Tower KB
+package_purpose: >
+  Curated AI-facing knowledge base for ChatGPT lookup, mechanics reasoning,
+  theorycraft support, strategy support, and simulator work for the intended simulator scope.
+canonical_scope:
+  claim: simulator-complete for the intended sim scope
+  modelling_target: practical deterministic modelling
+  excluded_target: exact-tick or frame-exact replay simulation
+first_load_order:
+  - START_HERE_FOR_AI.md
+  - CHATGPT_KB_PROFILE.yaml
+  - KNOWLEDGE_ROLE_SCHEMA.yaml
+  - KNOWLEDGE_ROLE_REGISTRY.csv
+  - manifest.json
+  - RETRIEVAL_POLICY.yaml
+  - TASK_ENTRYPOINTS.yaml
+  - SURFACE_EXECUTION_ORDER.yaml
+  - SURFACE_PRIORITY_REGISTRY.csv
+  - MASTER_SURFACE_TRUST_LEDGER.csv
+  - UNKNOWNS_OPERATING_POLICY.csv
+  - kb/index.md
+must_prefer_for_mechanics:
+  - kb/**/tables/**
+  - kb/**/contracts/**
+  - kb/global-rules/contracts/name-aliases.yaml
+must_prefer_for_strategy:
+  - kb/advisory/strategy/**
+  - kb/advisory/reasoning/**
+  - kb/community/**
+  - kb/**/tables/**
+must_not_treat_as_mechanics_canon:
+  - kb/**/derived/**
+  - kb/**/sources/raw/**
+  - kb/community/**
+  - kb/advisory/**
+boundary_surfaces:
+  - kb/ledgers/tables/simulator-scope-boundary-ledger.csv
+  - kb/ledgers/tables/scope-boundary-registry.csv
+  - kb/modules/tables/module-main-effect-total-multipliers-package-canon.csv
+  - kb/economy/tables/vault-externalized-simulator-inputs.csv
+  - kb/tournaments/tables/tier-battle-condition-accepted-unknown-boundary.csv
+knowledge_role_schema: KNOWLEDGE_ROLE_SCHEMA.yaml
+knowledge_role_registry: KNOWLEDGE_ROLE_REGISTRY.csv
+key_scope_decisions:
+  - thorns_after_damage_only_in_scope
+  - broader_same_tick_precedence_out_of_scope
+  - tournament_bc_17_rows_accepted_unknown_boundary
+  - wall_fortification_unlock_t14_w60_package_canon
+  - module_main_effect_totals_ep_verified_package_canon
+response_contract:
+  lookup: use canonical mechanics first and boundary policy when exactness is limited
+  mechanics: explain from contracts and canonical tables, not strategy notes
+  strategy: use advisory and community layers, then ground against canonical mechanics
+  unknowns: report accepted boundary, out-of-scope, or package-canon decision explicitly

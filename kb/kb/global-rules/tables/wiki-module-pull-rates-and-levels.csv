@@ -1,0 +1,20 @@
+category,name,value
+pull_rate,Common,68.5%
+pull_rate,Rare,29%
+pull_rate,Epic,2.5%
+protection,Epic pity,Guaranteed epic by 150 purchases
+protection,10-pull rare,At least 1 rare in every 10-pull
+max_level,Rare,30
+max_level,Rare+,40
+max_level,Epic,60
+max_level,Epic+,80
+max_level,Legendary,100
+max_level,Legendary+,120
+max_level,Mythic,140
+max_level,Mythic+,160
+max_level,Ancestral,200
+max_level,1*,220
+max_level,2*,240
+max_level,3*,260
+max_level,4*,280
+max_level,5*,300

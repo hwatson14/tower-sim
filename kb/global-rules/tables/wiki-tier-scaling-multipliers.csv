@@ -1,6 +1,0 @@
-tier,relative_difficulty,status
-T1,baseline,conceptual_rebuild
-T5,moderate,conceptual_rebuild
-T10,high,conceptual_rebuild
-T15,extreme,conceptual_rebuild
-T20,very_extreme,conceptual_rebuild

@@ -1,0 +1,2 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+range,attack_range,50 coins after Critical Factor,79,30.0m,+0.5m per level,69.5m,Also determines firing distance for ranged enemies.,Attack Upgrades,row-verified-live-wiki

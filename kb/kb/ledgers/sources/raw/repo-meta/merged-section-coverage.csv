@@ -1,0 +1,16 @@
+legacy_section_not_present_in_frozen_package,file_count
+legacy_frozen_omitted::architecture,13
+legacy_frozen_omitted::entities,1
+legacy_frozen_omitted::ledger,3
+legacy_frozen_omitted::mechanics,29
+legacy_frozen_omitted::quant_tables,88
+legacy_frozen_omitted::reasoning,7
+legacy_frozen_omitted::reconciliation,9
+legacy_frozen_omitted::research,4
+legacy_frozen_omitted::sources,10
+legacy_frozen_omitted::strategy,22
+legacy_frozen_omitted::ep_extracts,24
+tables/inputs,33
+tables/cache,14
+tables/meta,7
+tables/legacy,2

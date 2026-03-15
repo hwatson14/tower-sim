@@ -1,0 +1,3 @@
+surface,new_location,primary_status,verification_state,source_basis,notes
+workshop-values.csv,kb/workshop/derived/materialized/workshop-values.csv,derived_nonprimary,child_pages_and_formula_surfaces_partly_verified_but_aggregate_not_row_signed_off,bundled aggregate / derived view,Useful convenience aggregate; not the preferred source of truth now that many child surfaces are verified individually.
+enhancements-values.csv,kb/workshop/derived/materialized/enhancements-values.csv,derived_nonprimary,child_pages_and_formula_surfaces_partly_verified_but_aggregate_not_row_signed_off,bundled aggregate / derived view,Useful convenience aggregate; not the preferred source of truth now that many enhancement child surfaces are verified individually or formula-first.

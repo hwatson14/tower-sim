@@ -1,0 +1,2 @@
+lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
+Ray Enemy Health,ray,Tier 19 Wave 60,Reduces Ray health.,30,-0.40%,-12.00%,Late enemy-research lab using the Tier 19 Wave 60 unlock family.,Lab/Ray_Enemy_Health,row_verified_v62

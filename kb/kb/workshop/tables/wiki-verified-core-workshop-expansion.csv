@@ -1,0 +1,4 @@
+workshop_stat,unlock,levels,value_surface,source_page,topic_page,notes
+Damage,start of game,6000,see live table,workshop ladder page,Damage,"Formula page confirms damage is base state for projectiles, land mines, and many UW calculations."
+Defense Absolute,75 coins after Health and Health Regen with Defense %,5000,see live table,workshop ladder page,Defense_Absolute,Calculated after defense %.
+Health,start of game,6000,see live table,workshop ladder page,Health,Used in eHP formula and package scaling.

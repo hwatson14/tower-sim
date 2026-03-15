@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Free Upgrades,utility,Requires 5 trillion coins to be spent on Utility enhancements to unlock.,x1.0,+0.01,100,x2.00,Multiplier applies to all Free Upgrades.,Workshop_Enhancement/Utility/Free_Upgrades,row_verified_v61

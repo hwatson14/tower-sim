@@ -1,0 +1,16 @@
+level,unlock_cost_stones,value,ability,description,source_status
+1,300,120,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+2,375,190,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+3,475,260,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+4,600,330,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+5,725,400,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+6,925,470,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+7,1150,540,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+8,1450,610,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+9,1800,680,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+10,2200,750,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+11,2650,820,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+12,3150,890,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+13,3700,960,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+14,4300,1030,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70
+15,5000,1110,Poison Swamp - Death Creep,"Every time PS damage ticks, it is increased by x% of its base damage.",live_wiki_row_verified_v70

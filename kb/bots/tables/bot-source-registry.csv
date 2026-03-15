@@ -1,5 +1,0 @@
-canonical_surface,source_type,source_path,coverage_note
-kb/bots/tables/bot-upgrade-tracks-long.csv,effective_paths_sheet_export,kb/bots/sources/raw/effective-paths/sheet-exports/all-bots-values.csv,All four bot families normalized into one long table.
-kb/bots/tables/bot-labs-summary.yaml,wiki_fact,kb/bots/sources/wiki-bot-baselines.md,Lab support only for Golden Bot and Flame Bot in bundled surfaces.
-kb/bots/tables/flame-bot-tracks-and-costs.csv,wiki_fact,kb/bots/sources/wiki-bot-baselines.md,Legacy dedicated bot table retained as supporting evidence.
-kb/bots/tables/golden-bot-tracks.yaml,wiki_fact,kb/bots/sources/wiki-bot-baselines.md,Legacy dedicated bot table retained as supporting evidence.

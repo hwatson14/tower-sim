@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Enemy Level Skips,utility,Requires 500 trillion coins to be spent on Utility enhancements to unlock.,x1.0,+0.01,60,x1.60,Applies to Enemy Health and Enemy Damage Level Skip multiplier.,Workshop_Enhancement/Utility/Enemy_Level_Skips,row_verified_v61

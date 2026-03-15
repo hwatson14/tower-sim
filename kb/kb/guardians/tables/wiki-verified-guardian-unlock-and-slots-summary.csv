@@ -1,0 +1,11 @@
+surface,value,notes,source_status
+guardian_unlock_bits,200,Guardian unlocked for 200 bits in Guild -> Guardian.,live_wiki_row_verified
+starting_chip_slots,1,Unlock grants 1 chip slot.,live_wiki_row_verified
+starting_base_chips,Ally;Attack,Unlock grants 2 base chips: Ally and Attack.,live_wiki_row_verified
+second_slot_bits,200,Published in Guardian Slot Unlocks table.,live_wiki_row_verified
+third_slot_bits,300,Published in Guardian Slot Unlocks table.,live_wiki_row_verified
+fourth_slot_bits,accepted_unknown,Published by the wiki as unknown/undisclosed; treat as accepted unknown boundary rather than a missing value.,live_wiki_row_verified
+bounty_source,Guild Shop (200 Tokens),Published in Guardian chip source table.,live_wiki_row_verified
+fetch_source,Guild Shop (200 Tokens),Published in Guardian chip source table.,live_wiki_row_verified
+summon_source,Guild Shop Season 5 (200 Tokens),Published in Guardian chip source table.,live_wiki_row_verified
+scout_source,Guild Shop Season 7 (200 Tokens),Published in Guardian chip source table.,live_wiki_row_verified

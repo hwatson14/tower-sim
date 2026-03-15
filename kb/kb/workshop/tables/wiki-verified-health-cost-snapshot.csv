@@ -1,0 +1,9 @@
+level,value,cost,total_cost,source_page
+1,10,30,0,Health/Cost
+100,21.56K,77.22K,2.40M,Health/Cost
+200,143.01K,610.35K,31.28M,Health/Cost
+300,431.24K,1.50M,133.83M,Health/Cost
+400,943.90K,2.86M,348.62M,Health/Cost
+500,1.73M,4.70M,723.02M,Health/Cost
+1000,11.44M,22.03M,6.82B,Health/Cost
+1500,34.48M,54.40M,25.29B,Health/Cost

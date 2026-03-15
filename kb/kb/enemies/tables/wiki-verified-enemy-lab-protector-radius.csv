@@ -1,0 +1,2 @@
+lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
+Protector Radius,protector,Tier 9 Wave 20,Reduces protector radius at all waves.,30,-0.30%,-9.00%,Radius reduction is separate from protector health and DR reductions.,Lab/Protector_Radius,row_verified_v62

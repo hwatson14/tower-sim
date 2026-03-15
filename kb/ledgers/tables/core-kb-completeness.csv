@@ -1,8 +1,0 @@
-surface,status,note
-contributor routing destinations,closed,all mapped destinations now registered in canonical registries
-tier battle condition level assignments,closed,tiers 14-21 captured from wiki tier table
-battle condition canonical curve table,mostly_closed,Repo tier exact table and curve tables now resolve most normal-tier BC values; the remaining 17 exact-value rows are explicitly unknown to community.
-tier battle condition resolved values,mostly_closed,Repo exact tier table now resolves most normal-tier BC values directly; 17 exact-value rows remain intentionally marked explicit_unknown_to_community.
-runtime ordering and precedence,closed_for_material_use,Material combat ordering is closed for practical KB use; same-tick and expiry micro-precedence are intentionally de-scoped as low-materiality nuance.
-boss hit interval,closed_user_accepted_model,Boss hit interval is fixed at 2.0s in the active KB as an accepted user-provided model constant.
-chrono field range final assembly,closed_for_kb_scope,Chrono Field additive range bonus and practical semantics are closed for KB use; exact tick-boundary microbehavior is intentionally out of scope.

@@ -1,0 +1,6 @@
+Wave death diagnosis:
+1. Determine death class: boss burst, fleet burst, sustained DPS, protector stall, elite mechanic, control failure, BC pressure
+2. Retrieve combat and tournament tables
+3. Compare enemy pressure vs survivability envelope
+4. Identify breakpoint
+5. Recommend smallest change that shifts the breakpoint

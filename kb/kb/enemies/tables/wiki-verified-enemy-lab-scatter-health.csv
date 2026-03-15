@@ -1,0 +1,2 @@
+lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
+Scatter Enemy Health,scatter,Tier 19 Wave 60,Reduces Scatter health.,30,-0.40%,-12.00%,Scatter enemy research is listed in the enemy research category and enemies page.,Lab_Category/Enemy_Research,row_verified_v62

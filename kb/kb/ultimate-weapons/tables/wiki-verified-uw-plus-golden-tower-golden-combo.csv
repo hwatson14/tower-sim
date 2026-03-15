@@ -1,0 +1,16 @@
+level,unlock_cost_stones,value,ability,description,source_status
+1,300,0.03,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+2,360,0.06,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+3,430,0.09,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+4,510,0.12,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+5,620,0.15,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+6,750,0.18,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+7,900,0.21,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+8,1100,0.24,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+9,1350,0.27,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+10,1650,0.3,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+11,2050,0.33,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+12,2600,0.36,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+13,3300,0.39,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+14,4150,0.42,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70
+15,5200,0.45,Golden Tower - Golden Combo,"After Golden Tower finishes, gain extra cash and coins of x% per enemy killed.",live_wiki_row_verified_v70

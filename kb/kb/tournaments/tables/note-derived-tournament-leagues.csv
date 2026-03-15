@@ -1,0 +1,6 @@
+league,relative_difficulty,status
+bronze,lowest,rebuilt_from_prior_notes
+silver,low,rebuilt_from_prior_notes
+gold,medium,rebuilt_from_prior_notes
+platinum,high,rebuilt_from_prior_notes
+champion,very_high,rebuilt_from_prior_notes

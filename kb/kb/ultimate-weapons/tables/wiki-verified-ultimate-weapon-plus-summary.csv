@@ -1,0 +1,10 @@
+ultimate_weapon,plus_ability,levels,first_value,last_value,value_type,notes
+Chain Lightning,Smite,15,0.05,0.60,scalar,Irregular published ladder retained as child table surface.
+Smart Missiles,Cover Fire,12,13,2,seconds,Irregular published ladder retained as child table surface.
+Poison Swamp,Death Creep,15,120%,1110%,percent,Irregular published ladder retained as child table surface.
+Golden Tower,Golden Combo,15,0.03%,0.45%,percent,Irregular published ladder retained as child table surface.
+Inner Land Mines,Charged Mines,15,0.50,50.9,scalar,Irregular published ladder retained as child table surface.
+Death Wave,Kill Wall,15,3,108,seconds,Irregular published ladder retained as child table surface.
+Black Hole,Consume,15,5,75,percent,Irregular published ladder retained as child table surface.
+Chrono Field,Chrono Loop,15,0.1,0.75,scalar,Irregular published ladder retained as child table surface.
+Spotlight,Light Range,15,0.01,0.15,scalar,Irregular published ladder retained as child table surface.

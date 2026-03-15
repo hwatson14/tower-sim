@@ -1,0 +1,11 @@
+level,time,cost,value,notes
+1,8d 8h 0m 0s,100000000000,1.00,Max armor reduction of 10
+2,10d 10h 52m 48s,225000000000,2.00,Max armor reduction of 10
+3,13d 2h 42m 13s,506250000000,3.00,Max armor reduction of 10
+4,16d 10h 45m 52s,1140000000000,4.00,Max armor reduction of 10
+5,20d 15h 11m 33s,2560000000000,5.00,Max armor reduction of 10
+6,25d 21h 10m 10s,5770000000000,6.00,Max armor reduction of 10
+7,32d 11h 11m 42s,12970000000000,7.00,Max armor reduction of 10
+8,40d 17h 25m 20s,29190000000000,8.00,Max armor reduction of 10
+9,51d 2h 4m 43s,65680000000000,9.00,Max armor reduction of 10
+10,64d 1h 59m 35s,147790000000000,10.00,Max armor reduction of 10
