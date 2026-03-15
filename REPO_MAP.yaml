@@ -15,6 +15,7 @@ top_level:
     - docs
     - kb
     - legacy
+    - v3
 
   allowed_files:
     - README.md
@@ -29,6 +30,7 @@ top_level:
     - .gitignore
     - .gitmodules
     - tower_kb_unified_v56_labs_workshop_massive_sweep.zip
+    - tower_kb_frozen_regenerated.zip
 
   forbidden_dirs:
     - tools
@@ -140,6 +142,7 @@ naming_rules:
 
   non_snake_case_allowed_roots:
     - kb
+    - v3
 
   forbidden_base_filenames:
     - misc
@@ -202,5 +205,10 @@ kb:
     - "**/*.tsv"
 
 legacy:
+  allowed_file_globs:
+    - "**/*"
+
+
+v3:
   allowed_file_globs:
     - "**/*"

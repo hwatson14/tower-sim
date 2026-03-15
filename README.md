@@ -34,6 +34,9 @@ Out of scope:
 - In-core perk probability simulation.
 - Optimizer execution.
 
+## Approved rebuild track
+A separate greenfield rebuild track is now approved under `v3/`, seeded from the complete KB zip at repository root (`tower_kb_frozen_regenerated.zip`). This keeps the active v2 runtime path stable while allowing clean v3 construction in isolation.
+
 ## Blessed run command
 ```bash
 python -m tower_sim.run --spec fixtures/specs/max_wave.yaml

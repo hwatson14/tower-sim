@@ -1,0 +1,35 @@
+name: KB drift nightly
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  kb-drift:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyyaml
+          python -m pip install -e .
+
+      - name: Run KB drift report (strict)
+        run: |
+          python scripts/generate_kb_drift_report.py --strict --output audit/kb_drift_report.json
+
+      - name: Upload KB drift report
+        uses: actions/upload-artifact@v4
+        with:
+          name: kb-drift-report
+          path: audit/kb_drift_report.json

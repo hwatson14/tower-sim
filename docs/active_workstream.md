@@ -1,10 +1,11 @@
 # Active Workstream
 
 ## Project mode
-TowerSim is on the **v2 architecture track**.
-Do not create v3.
-Do not restart from scratch.
-Do not maintain parallel active implementations unless explicitly approved.
+TowerSim is on the **v2 architecture track** for the active runtime.
+A scoped greenfield rebuild track is now explicitly approved under `v3/`.
+Do not restart the active v2 runtime in place.
+Do not mix v2 runtime work and v3 rebuild experiments in the same pipeline surfaces.
+Canonical v3 KB seed artifact: `tower_kb_frozen_regenerated.zip`.
 
 ## Current objective
 Move from:
