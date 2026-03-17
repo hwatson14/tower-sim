@@ -589,8 +589,8 @@
       "stat_id": "wall_regen"
     }
   ],
-  "created_utc": "2026-03-13T14:26:31.718863+00:00",
-  "git_sha": "f5a3c2d90f6a4925d49dcfdf2d84bddd128187dc",
+  "created_utc": "2026-03-17T14:26:48.957156+00:00",
+  "git_sha": "a0b312b758d87abe2f03b1ca8388a9e59f4de040",
   "ids_path": "tests/fixtures/tower-sim-data/_IDS.csv",
   "inventory": {
     "bots": [
@@ -834,7 +834,7 @@
       "Common Drop Chance": 10,
       "Common Enemy Attack": 0,
       "Common Enemy Health": 0,
-      "Core Effect Bans": 3,
+      "Core Effect Bans": 4,
       "Critical Chance Mastery": 0,
       "Critical Coin Mastery": 0,
       "Critical Factor": 80,
@@ -885,8 +885,8 @@
       "Game Speed": 7,
       "Garlic Thorns": 10,
       "Generator Effect Bans": 1,
-      "Gold Bot - Cooldown": 15,
-      "Gold Bot - Duration": 8,
+      "Gold Bot - Cooldown": 18,
+      "Gold Bot - Duration": 11,
       "Golden Tower Bonus": 22,
       "Golden Tower Duration": 19,
       "Health": 68,
@@ -902,7 +902,7 @@
       "Intro Sprint Mastery": 0,
       "Knockback Resistance": 0,
       "Labs Coin Discount": 68,
-      "Labs Speed": 89,
+      "Labs Speed": 91,
       "Land Mine Damage": 0,
       "Land Mine Decay": 13,
       "Land Mine Stun Mastery": 0,
@@ -1809,101 +1809,83 @@
       "Black Hole": {
         "name": "Black Hole",
         "track_levels": [
-          "Size",
-          "48",
-          "09 | 48m | Cost 76 ? | Next 89 ?"
+          "09",
+          "17",
+          "15"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Chain Lightning": {
         "name": "Chain Lightning",
         "track_levels": [
-          "Damage",
-          "898",
-          "19 | x898 | Cost 302 ? | Next 362 ?"
+          "19",
+          "03",
+          "08"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Chrono Field": {
         "name": "Chrono Field",
         "track_levels": [
-          "Duration",
-          "20",
-          "15 | 20s | Cost 131 ? | Next 140 ?"
+          "15",
+          "06",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Death Wave": {
         "name": "Death Wave",
         "track_levels": [
-          "Damage",
-          "63",
-          "08 | x63 | Cost 47 ? | Next 53 ?"
+          "08",
+          "02",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Golden Tower": {
         "name": "Golden Tower",
         "track_levels": [
-          "Multiplier",
-          "14.600000000000005",
-          "12 | x14.6 | Cost 162 ? | Next 250 ?"
+          "12",
+          "07",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Inner Land Mines": {
         "name": "Inner Land Mines",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Poison Swamp": {
         "name": "Poison Swamp",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Smart Missiles": {
         "name": "Smart Missiles",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Spotlight": {
         "name": "Spotlight",
         "track_levels": [
-          "Multiplier",
-          "20.599999999999998",
-          "09 | x20.6 | Cost 95 ? | Next 112 ?"
+          "09",
+          "09",
+          "02"
         ],
-        "unlocked": null
-      },
-      "false": {
-        "name": "false",
-        "track_levels": [
-          "Cooldown",
-          "125",
-          "00 | 125s | Cost 0 ? | Next 8 ?"
-        ],
-        "unlocked": "UW Locked"
-      },
-      "true": {
-        "name": "true",
-        "track_levels": [
-          "Quantity",
-          "3",
-          "02 | #3 | Cost 850 ? | Next 2500 ?"
-        ],
-        "unlocked": "UW Unlocked"
+        "unlocked": "true"
       }
     },
     "vault": {
@@ -5020,9 +5002,9 @@
         }
       ]
     },
-    "hash": "8bdf0422952afb62bfa563b48ca48cb75e622b751f1a91eb9b121b0593c4f8c5",
+    "hash": "a335922173961189f6d6e0aae8ac08780392f31cc7750d02b2746dc4b1458d3a",
     "ids_raw_index": {
-      "hash": "59ecd66b2044c776d01a3364c6b9e1decf32551edf76d74101efeb3930e906d7",
+      "hash": "33ec068112745b00260082576949231f0191a7aab0bf99bc65a21633612b9f50",
       "sections": [
         {
           "hash": "2585352889e208c68fb7164a2a4243f0acb114eb7a60b129d5313faae8977e35",
@@ -5040,7 +5022,7 @@
           "rows": 18
         },
         {
-          "hash": "31de9fd6fecb32a621a45c57f21596231a8b190013acc212c7f41950780df7dc",
+          "hash": "fe2bd39591f83d2a57856c3267cc411a31378c79256dfb9a8f4633e046152dcf",
           "name": "Labs",
           "rows": 212
         },
@@ -5088,7 +5070,7 @@
     },
     "stage_hashes": {
       "compiled_stat_inputs": "c71a820f6c8182b6d3e31adf488cdd4483e52f1a7879221507a9b985afa04349",
-      "ids_raw_index": "59ecd66b2044c776d01a3364c6b9e1decf32551edf76d74101efeb3930e906d7",
+      "ids_raw_index": "33ec068112745b00260082576949231f0191a7aab0bf99bc65a21633612b9f50",
       "stat_engine": "bad49badb3da8aae42f6aa32462d46756a9f3cc474d8f322ff9b327dbf9641be"
     },
     "stat_engine": {
@@ -5780,7 +5762,7 @@
       "Common Drop Chance": 10,
       "Common Enemy Attack": 0,
       "Common Enemy Health": 0,
-      "Core Effect Bans": 3,
+      "Core Effect Bans": 4,
       "Critical Chance Mastery": 0,
       "Critical Coin Mastery": 0,
       "Critical Factor": 80,
@@ -5831,8 +5813,8 @@
       "Game Speed": 7,
       "Garlic Thorns": 10,
       "Generator Effect Bans": 1,
-      "Gold Bot - Cooldown": 15,
-      "Gold Bot - Duration": 8,
+      "Gold Bot - Cooldown": 18,
+      "Gold Bot - Duration": 11,
       "Golden Tower Bonus": 22,
       "Golden Tower Duration": 19,
       "Health": 68,
@@ -5848,7 +5830,7 @@
       "Intro Sprint Mastery": 0,
       "Knockback Resistance": 0,
       "Labs Coin Discount": 68,
-      "Labs Speed": 89,
+      "Labs Speed": 91,
       "Land Mine Damage": 0,
       "Land Mine Decay": 13,
       "Land Mine Stun Mastery": 0,
@@ -6837,6 +6819,17 @@
       }
     },
     "player_meta": {
+      "Coin Multiplier": "x9",
+      "Disable Ads": "true",
+      "Epic Pack": "true",
+      "Farming Tier": "Tier 14",
+      "Gems": "326",
+      "Lifetime Coins": "3570000000000",
+      "Player ID": "4C64DCF66976FD33",
+      "Premium Packs": "Unlocked",
+      "Starter Pack": "true",
+      "Stat": "Value",
+      "Stones": "200",
       "Tier": "Wave",
       "Tier 1": "10210",
       "Tier 10": "11300",
@@ -6858,7 +6851,8 @@
       "Tier 6": "8252",
       "Tier 7": "7854",
       "Tier 8": "8119",
-      "Tier 9": "6985"
+      "Tier 9": "6985",
+      "Tourney League": "Legends"
     },
     "raw_sections": {
       "Bots": [
@@ -7454,7 +7448,7 @@
         ],
         [
           "Labs Speed",
-          "89",
+          "91",
           "",
           "99"
         ],
@@ -8096,7 +8090,7 @@
         ],
         [
           "Gold Bot - Cooldown",
-          "15",
+          "18",
           "",
           "25"
         ],
@@ -8120,7 +8114,7 @@
         ],
         [
           "Gold Bot - Duration",
-          "8",
+          "11",
           "",
           "20"
         ],
@@ -8324,7 +8318,7 @@
         ],
         [
           "Core Effect Bans",
-          "3",
+          "4",
           "",
           "7"
         ],
@@ -12214,101 +12208,83 @@
       "Black Hole": {
         "name": "Black Hole",
         "track_levels": [
-          "Size",
-          "48",
-          "09 | 48m | Cost 76 ? | Next 89 ?"
+          "09",
+          "17",
+          "15"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Chain Lightning": {
         "name": "Chain Lightning",
         "track_levels": [
-          "Damage",
-          "898",
-          "19 | x898 | Cost 302 ? | Next 362 ?"
+          "19",
+          "03",
+          "08"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Chrono Field": {
         "name": "Chrono Field",
         "track_levels": [
-          "Duration",
-          "20",
-          "15 | 20s | Cost 131 ? | Next 140 ?"
+          "15",
+          "06",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Death Wave": {
         "name": "Death Wave",
         "track_levels": [
-          "Damage",
-          "63",
-          "08 | x63 | Cost 47 ? | Next 53 ?"
+          "08",
+          "02",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Golden Tower": {
         "name": "Golden Tower",
         "track_levels": [
-          "Multiplier",
-          "14.600000000000005",
-          "12 | x14.6 | Cost 162 ? | Next 250 ?"
+          "12",
+          "07",
+          "12"
         ],
-        "unlocked": null
+        "unlocked": "true"
       },
       "Inner Land Mines": {
         "name": "Inner Land Mines",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Poison Swamp": {
         "name": "Poison Swamp",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Smart Missiles": {
         "name": "Smart Missiles",
         "track_levels": [
-          "Damage",
-          "10",
-          "00 | x10 | Cost 0 ? | Next 5 ?"
+          "00",
+          "00",
+          "00"
         ],
-        "unlocked": null
+        "unlocked": "false"
       },
       "Spotlight": {
         "name": "Spotlight",
         "track_levels": [
-          "Multiplier",
-          "20.599999999999998",
-          "09 | x20.6 | Cost 95 ? | Next 112 ?"
+          "09",
+          "09",
+          "02"
         ],
-        "unlocked": null
-      },
-      "false": {
-        "name": "false",
-        "track_levels": [
-          "Cooldown",
-          "125",
-          "00 | 125s | Cost 0 ? | Next 8 ?"
-        ],
-        "unlocked": "UW Locked"
-      },
-      "true": {
-        "name": "true",
-        "track_levels": [
-          "Quantity",
-          "3",
-          "02 | #3 | Cost 850 ? | Next 2500 ?"
-        ],
-        "unlocked": "UW Unlocked"
+        "unlocked": "true"
       }
     },
     "uw_plus_tracks": {
@@ -13077,7 +13053,7 @@
         "Common Drop Chance": 10,
         "Common Enemy Attack": 0,
         "Common Enemy Health": 0,
-        "Core Effect Bans": 3,
+        "Core Effect Bans": 4,
         "Critical Chance Mastery": 0,
         "Critical Coin Mastery": 0,
         "Critical Factor": 80,
@@ -13128,8 +13104,8 @@
         "Game Speed": 7,
         "Garlic Thorns": 10,
         "Generator Effect Bans": 1,
-        "Gold Bot - Cooldown": 15,
-        "Gold Bot - Duration": 8,
+        "Gold Bot - Cooldown": 18,
+        "Gold Bot - Duration": 11,
         "Golden Tower Bonus": 22,
         "Golden Tower Duration": 19,
         "Health": 68,
@@ -13145,7 +13121,7 @@
         "Intro Sprint Mastery": 0,
         "Knockback Resistance": 0,
         "Labs Coin Discount": 68,
-        "Labs Speed": 89,
+        "Labs Speed": 91,
         "Land Mine Damage": 0,
         "Land Mine Decay": 13,
         "Land Mine Stun Mastery": 0,
@@ -13296,101 +13272,83 @@
         "Black Hole": {
           "name": "Black Hole",
           "track_levels": [
-            "Size",
-            "48",
-            "09 | 48m | Cost 76 ? | Next 89 ?"
+            "09",
+            "17",
+            "15"
           ],
-          "unlocked": null
+          "unlocked": "true"
         },
         "Chain Lightning": {
           "name": "Chain Lightning",
           "track_levels": [
-            "Damage",
-            "898",
-            "19 | x898 | Cost 302 ? | Next 362 ?"
+            "19",
+            "03",
+            "08"
           ],
-          "unlocked": null
+          "unlocked": "true"
         },
         "Chrono Field": {
           "name": "Chrono Field",
           "track_levels": [
-            "Duration",
-            "20",
-            "15 | 20s | Cost 131 ? | Next 140 ?"
+            "15",
+            "06",
+            "12"
           ],
-          "unlocked": null
+          "unlocked": "true"
         },
         "Death Wave": {
           "name": "Death Wave",
           "track_levels": [
-            "Damage",
-            "63",
-            "08 | x63 | Cost 47 ? | Next 53 ?"
+            "08",
+            "02",
+            "12"
           ],
-          "unlocked": null
+          "unlocked": "true"
         },
         "Golden Tower": {
           "name": "Golden Tower",
           "track_levels": [
-            "Multiplier",
-            "14.600000000000005",
-            "12 | x14.6 | Cost 162 ? | Next 250 ?"
+            "12",
+            "07",
+            "12"
           ],
-          "unlocked": null
+          "unlocked": "true"
         },
         "Inner Land Mines": {
           "name": "Inner Land Mines",
           "track_levels": [
-            "Damage",
-            "10",
-            "00 | x10 | Cost 0 ? | Next 5 ?"
+            "00",
+            "00",
+            "00"
           ],
-          "unlocked": null
+          "unlocked": "false"
         },
         "Poison Swamp": {
           "name": "Poison Swamp",
           "track_levels": [
-            "Damage",
-            "10",
-            "00 | x10 | Cost 0 ? | Next 5 ?"
+            "00",
+            "00",
+            "00"
           ],
-          "unlocked": null
+          "unlocked": "false"
         },
         "Smart Missiles": {
           "name": "Smart Missiles",
           "track_levels": [
-            "Damage",
-            "10",
-            "00 | x10 | Cost 0 ? | Next 5 ?"
+            "00",
+            "00",
+            "00"
           ],
-          "unlocked": null
+          "unlocked": "false"
         },
         "Spotlight": {
           "name": "Spotlight",
           "track_levels": [
-            "Multiplier",
-            "20.599999999999998",
-            "09 | x20.6 | Cost 95 ? | Next 112 ?"
+            "09",
+            "09",
+            "02"
           ],
-          "unlocked": null
-        },
-        "false": {
-          "name": "false",
-          "track_levels": [
-            "Cooldown",
-            "125",
-            "00 | 125s | Cost 0 ? | Next 8 ?"
-          ],
-          "unlocked": "UW Locked"
-        },
-        "true": {
-          "name": "true",
-          "track_levels": [
-            "Quantity",
-            "3",
-            "02 | #3 | Cost 850 ? | Next 2500 ?"
-          ],
-          "unlocked": "UW Unlocked"
+          "unlocked": "true"
         }
       },
       "vault": {
