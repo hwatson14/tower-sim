@@ -25,7 +25,7 @@
     "Berserker Mastery": 0,
     "Black Hole Coin Bonus": 20,
     "Black Hole Damage": 10,
-    "Black Hole Disable Ranged Enemies": 0,
+    "Black Hole Disable Ranged Enemies": 1,
     "Boss Attack": 0,
     "Boss Health": 0,
     "Boss's Ultimate": 0,
@@ -221,7 +221,7 @@
     "Attack Speed": 0.05,
     "Bot Range": 9.0,
     "Cash": 0.06,
-    "Coins": 0.42999999999999994,
+    "Coins": 0.48,
     "Crit Chance": 0.06,
     "Crit Factor": 0.5,
     "Damage": 0.5399999999999999,
@@ -232,7 +232,7 @@
     "Defense Absolute": 0.28,
     "Enemy Attack Level Skip": 0.02,
     "Enemy Health Level Skip": 0.02,
-    "Event Relics": 111.0,
+    "Event Relics": 112.0,
     "Free Attack Upgrade": 0.060000000000000005,
     "Free Defense Upgrade": 0.03,
     "Free Utility Upgrade": 0.04,
@@ -251,14 +251,14 @@
     "Super Critical Mult": 0.05,
     "Thorns": 0.09000000000000001,
     "Total Bonuses": null,
-    "Total Relics": 146.0,
+    "Total Relics": 147.0,
     "Ultimate Damage": 0.22000000000000003,
     "Utility": null,
     "Wall Rebuild": 2.0
   },
   "themes_songs": [
     [
-      "1.666",
+      "1.682",
       ""
     ]
   ],

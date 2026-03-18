@@ -1,6 +1,6 @@
 {
   "fail_closed": true,
-  "hash": "c71a820f6c8182b6d3e31adf488cdd4483e52f1a7879221507a9b985afa04349",
+  "hash": "ecfb6621adecef0f7e1f7809952ff12abc0529093ce0c015f825526c1630fe0b",
   "missing": [
     "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
     "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
@@ -8,6 +8,7 @@
     "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
     "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
     "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
+    "lab_table_unmapped:Black Hole Disable Ranged Enemies:LAB_BLACK_HOLE_DISABLE_RANGED_ENEMIES",
     "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
     "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
     "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
@@ -2328,7 +2329,7 @@
     {
       "base_value": null,
       "derived_value": null,
-      "enhancement_multiplier": 1.43,
+      "enhancement_multiplier": 1.48,
       "loadout_delta": null,
       "phase": "start_of_run",
       "provenance": "relics:coins",

@@ -589,8 +589,8 @@
       "stat_id": "wall_regen"
     }
   ],
-  "created_utc": "2026-03-17T14:26:48.957156+00:00",
-  "git_sha": "a0b312b758d87abe2f03b1ca8388a9e59f4de040",
+  "created_utc": "2026-03-18T14:26:34.780123+00:00",
+  "git_sha": "cc6c17008d9c58c601d673540bec22efc475b376",
   "ids_path": "tests/fixtures/tower-sim-data/_IDS.csv",
   "inventory": {
     "bots": [
@@ -812,7 +812,7 @@
       "Berserker Mastery": 0,
       "Black Hole Coin Bonus": 20,
       "Black Hole Damage": 10,
-      "Black Hole Disable Ranged Enemies": 0,
+      "Black Hole Disable Ranged Enemies": 1,
       "Boss Attack": 0,
       "Boss Health": 0,
       "Boss's Ultimate": 0,
@@ -1769,7 +1769,7 @@
       "Attack Speed": 0.05,
       "Bot Range": 9.0,
       "Cash": 0.06,
-      "Coins": 0.42999999999999994,
+      "Coins": 0.48,
       "Crit Chance": 0.06,
       "Crit Factor": 0.5,
       "Damage": 0.5399999999999999,
@@ -1780,7 +1780,7 @@
       "Defense Absolute": 0.28,
       "Enemy Attack Level Skip": 0.02,
       "Enemy Health Level Skip": 0.02,
-      "Event Relics": 111.0,
+      "Event Relics": 112.0,
       "Free Attack Upgrade": 0.060000000000000005,
       "Free Defense Upgrade": 0.03,
       "Free Utility Upgrade": 0.04,
@@ -1799,7 +1799,7 @@
       "Super Critical Mult": 0.05,
       "Thorns": 0.09000000000000001,
       "Total Bonuses": null,
-      "Total Relics": 146.0,
+      "Total Relics": 147.0,
       "Ultimate Damage": 0.22000000000000003,
       "Utility": null,
       "Wall Rebuild": 2.0
@@ -2375,11 +2375,12 @@
       "Wave Accelerator",
       "Critical Coin",
       "Second Wind",
-      "Extra Orb",
       "Energy Shield",
+      "Recovery Package Chance",
+      "Intro Sprint",
+      "Extra Orb",
       "Cash",
-      "Free Upgrades",
-      "Land Mine Stun"
+      "Free Upgrades"
     ],
     "inferred_shard_budgets": {
       "Armor": 175671,
@@ -2411,7 +2412,7 @@
   "pipeline": {
     "compiled_stat_inputs": {
       "fail_closed": true,
-      "hash": "c71a820f6c8182b6d3e31adf488cdd4483e52f1a7879221507a9b985afa04349",
+      "hash": "ecfb6621adecef0f7e1f7809952ff12abc0529093ce0c015f825526c1630fe0b",
       "missing": [
         "lab_table_unmapped:Armor Effect Bans:LAB_ARMOR_EFFECT_BANS",
         "lab_table_unmapped:Auto Pick Perks:LAB_AUTO_PICK_PERKS",
@@ -2419,6 +2420,7 @@
         "lab_table_unmapped:Ban Perks:LAB_BAN_PERKS",
         "lab_table_unmapped:Black Hole Coin Bonus:LAB_BLACK_HOLE_COINS_BONUS",
         "lab_table_unmapped:Black Hole Damage:LAB_BLACK_HOLE_DAMAGE",
+        "lab_table_unmapped:Black Hole Disable Ranged Enemies:LAB_BLACK_HOLE_DISABLE_RANGED_ENEMIES",
         "lab_table_unmapped:Buy Multiplier:LAB_BUY_MULTIPLIER",
         "lab_table_unmapped:Card Presets:LAB_CARD_PRESETS",
         "lab_table_unmapped:Cash / Wave:LAB_CASH_PER_WAVE",
@@ -4739,7 +4741,7 @@
         {
           "base_value": null,
           "derived_value": null,
-          "enhancement_multiplier": 1.43,
+          "enhancement_multiplier": 1.48,
           "loadout_delta": null,
           "phase": "start_of_run",
           "provenance": "relics:coins",
@@ -5002,9 +5004,9 @@
         }
       ]
     },
-    "hash": "a335922173961189f6d6e0aae8ac08780392f31cc7750d02b2746dc4b1458d3a",
+    "hash": "3dbe2ac64b2f03a20b0f1589607a6d1253c69dc4e3911e4a346b3b83cbe14775",
     "ids_raw_index": {
-      "hash": "33ec068112745b00260082576949231f0191a7aab0bf99bc65a21633612b9f50",
+      "hash": "1a9afb4520b3117371e21fa430bf67d27cf5d8b92db6dde031d2c219d1f3adbf",
       "sections": [
         {
           "hash": "2585352889e208c68fb7164a2a4243f0acb114eb7a60b129d5313faae8977e35",
@@ -5012,7 +5014,7 @@
           "rows": 16
         },
         {
-          "hash": "dc17f3795be665e9a9e42efb35863c1e748011a3a44c3c8b904d1d7f3ab7a2b3",
+          "hash": "edd23a79b849387fd89df7048f8fe08dd64ade688ffa33cacc55cc30d2b31edb",
           "name": "Cards",
           "rows": 31
         },
@@ -5022,7 +5024,7 @@
           "rows": 18
         },
         {
-          "hash": "fe2bd39591f83d2a57856c3267cc411a31378c79256dfb9a8f4633e046152dcf",
+          "hash": "0cb378533510cf2c48ecb664343156d0ad80da146cd2df66f9dc69c27533080b",
           "name": "Labs",
           "rows": 212
         },
@@ -5032,17 +5034,17 @@
           "rows": 80
         },
         {
-          "hash": "88f6752080de4aaf2ba95a1a7d32e4d3746f4cd1ac80c811a3a0f8e00387e44e",
+          "hash": "fdd6c3870a3767e9bc7f61bf3869af817bf50fa62046445c8c69c9e29e5cd0c9",
           "name": "Player & Stuff",
           "rows": 22
         },
         {
-          "hash": "3e0980e46ea6e145d74143deafe4949c4d2ad8369c86e03cea43bba9c75d5e9f",
+          "hash": "4c0b114dd3c3da784e8456fa07ae202ed511f3bf4e231bcfd4f8b8aa00ea36fd",
           "name": "Relics",
           "rows": 37
         },
         {
-          "hash": "3534f35b89fb391dd22bcb5e70c533518cc61eaddc7c2103bf7684a557d554ef",
+          "hash": "6de529003f3d04349a1813fc31df25620677bddeb7378b8947230ca863a39d40",
           "name": "Themes & Songs",
           "rows": 1
         },
@@ -5069,8 +5071,8 @@
       ]
     },
     "stage_hashes": {
-      "compiled_stat_inputs": "c71a820f6c8182b6d3e31adf488cdd4483e52f1a7879221507a9b985afa04349",
-      "ids_raw_index": "33ec068112745b00260082576949231f0191a7aab0bf99bc65a21633612b9f50",
+      "compiled_stat_inputs": "ecfb6621adecef0f7e1f7809952ff12abc0529093ce0c015f825526c1630fe0b",
+      "ids_raw_index": "1a9afb4520b3117371e21fa430bf67d27cf5d8b92db6dde031d2c219d1f3adbf",
       "stat_engine": "bad49badb3da8aae42f6aa32462d46756a9f3cc474d8f322ff9b327dbf9641be"
     },
     "stat_engine": {
@@ -5363,11 +5365,12 @@
         "Wave Accelerator",
         "Critical Coin",
         "Second Wind",
-        "Extra Orb",
         "Energy Shield",
+        "Recovery Package Chance",
+        "Intro Sprint",
+        "Extra Orb",
         "Cash",
-        "Free Upgrades",
-        "Land Mine Stun"
+        "Free Upgrades"
       ],
       "Preset 4": [],
       "Preset 5": [],
@@ -5387,7 +5390,9 @@
         "Recovery Package Chance",
         "Extra Defense",
         "Slow Aura",
-        "Energy Net"
+        "Energy Net",
+        "Land Mine Stun",
+        "Second Wind"
       ]
     },
     "cards_inventory": {
@@ -5740,7 +5745,7 @@
       "Berserker Mastery": 0,
       "Black Hole Coin Bonus": 20,
       "Black Hole Damage": 10,
-      "Black Hole Disable Ranged Enemies": 0,
+      "Black Hole Disable Ranged Enemies": 1,
       "Boss Attack": 0,
       "Boss Health": 0,
       "Boss's Ultimate": 0,
@@ -6835,13 +6840,13 @@
       "Tier 10": "11300",
       "Tier 11": "11538",
       "Tier 12": "10006",
-      "Tier 13": "6435",
-      "Tier 14": "4518",
-      "Tier 15": "4502",
-      "Tier 16": "2441",
-      "Tier 17": "505",
-      "Tier 18": "310",
-      "Tier 19": "41",
+      "Tier 13": "6908",
+      "Tier 14": "5761",
+      "Tier 15": "4859",
+      "Tier 16": "3578",
+      "Tier 17": "2010",
+      "Tier 18": "348",
+      "Tier 19": "52",
       "Tier 2": "5628",
       "Tier 20": "0",
       "Tier 21": "0",
@@ -7094,7 +7099,7 @@
           "Free Upgrades",
           "7",
           "false",
-          "Extra Orb",
+          "Energy Shield",
           "Recovery Package Chance",
           "",
           "",
@@ -7104,7 +7109,7 @@
           "Extra Orb",
           "7",
           "false",
-          "Energy Shield",
+          "Recovery Package Chance",
           "Extra Defense",
           "",
           "",
@@ -7114,7 +7119,7 @@
           "Plasma Cannon",
           "7",
           "false",
-          "Cash",
+          "Intro Sprint",
           "Slow Aura",
           "",
           "",
@@ -7124,7 +7129,7 @@
           "Critical Coin",
           "7",
           "false",
-          "Free Upgrades",
+          "Extra Orb",
           "Energy Net",
           "",
           "",
@@ -7134,8 +7139,8 @@
           "Wave Skip",
           "7",
           "false",
+          "Cash",
           "Land Mine Stun",
-          "",
           "",
           "",
           ""
@@ -7144,8 +7149,8 @@
           "Intro Sprint",
           "7",
           "true",
-          "",
-          "",
+          "Free Upgrades",
+          "Second Wind",
           "",
           "",
           ""
@@ -7910,7 +7915,7 @@
         ],
         [
           "Black Hole Disable Ranged Enemies",
-          "0",
+          "1",
           "",
           "1"
         ],
@@ -10472,7 +10477,7 @@
         ],
         [
           "Tier 13",
-          "6435",
+          "6908",
           "true",
           "",
           "",
@@ -10480,7 +10485,7 @@
         ],
         [
           "Tier 14",
-          "4518",
+          "5761",
           "",
           "",
           "",
@@ -10488,7 +10493,7 @@
         ],
         [
           "Tier 15",
-          "4502",
+          "4859",
           "",
           "",
           "",
@@ -10496,7 +10501,7 @@
         ],
         [
           "Tier 16",
-          "2441",
+          "3578",
           "true",
           "",
           "",
@@ -10504,7 +10509,7 @@
         ],
         [
           "Tier 17",
-          "505",
+          "2010",
           "",
           "",
           "",
@@ -10512,7 +10517,7 @@
         ],
         [
           "Tier 18",
-          "310",
+          "348",
           "",
           "",
           "",
@@ -10520,7 +10525,7 @@
         ],
         [
           "Tier 19",
-          "41",
+          "52",
           "false",
           "",
           "",
@@ -10547,11 +10552,11 @@
         [
           "Relics",
           "Owned",
-          "v2.3.6"
+          "v2.3.7"
         ],
         [
           "Event Relics",
-          "111",
+          "112",
           ""
         ],
         [
@@ -10566,7 +10571,7 @@
         ],
         [
           "Total Relics",
-          "146",
+          "147",
           ""
         ],
         [
@@ -10696,7 +10701,7 @@
         ],
         [
           "Coins",
-          "0.42999999999999994",
+          "0.48",
           ""
         ],
         [
@@ -10732,7 +10737,7 @@
       ],
       "Themes & Songs": [
         [
-          "1.666",
+          "1.682",
           ""
         ]
       ],
@@ -12169,7 +12174,7 @@
       "Attack Speed": 0.05,
       "Bot Range": 9.0,
       "Cash": 0.06,
-      "Coins": 0.42999999999999994,
+      "Coins": 0.48,
       "Crit Chance": 0.06,
       "Crit Factor": 0.5,
       "Damage": 0.5399999999999999,
@@ -12180,7 +12185,7 @@
       "Defense Absolute": 0.28,
       "Enemy Attack Level Skip": 0.02,
       "Enemy Health Level Skip": 0.02,
-      "Event Relics": 111.0,
+      "Event Relics": 112.0,
       "Free Attack Upgrade": 0.060000000000000005,
       "Free Defense Upgrade": 0.03,
       "Free Utility Upgrade": 0.04,
@@ -12199,7 +12204,7 @@
       "Super Critical Mult": 0.05,
       "Thorns": 0.09000000000000001,
       "Total Bonuses": null,
-      "Total Relics": 146.0,
+      "Total Relics": 147.0,
       "Ultimate Damage": 0.22000000000000003,
       "Utility": null,
       "Wall Rebuild": 2.0
@@ -13031,7 +13036,7 @@
         "Berserker Mastery": 0,
         "Black Hole Coin Bonus": 20,
         "Black Hole Damage": 10,
-        "Black Hole Disable Ranged Enemies": 0,
+        "Black Hole Disable Ranged Enemies": 1,
         "Boss Attack": 0,
         "Boss Health": 0,
         "Boss's Ultimate": 0,
@@ -13227,7 +13232,7 @@
         "Attack Speed": 0.05,
         "Bot Range": 9.0,
         "Cash": 0.06,
-        "Coins": 0.42999999999999994,
+        "Coins": 0.48,
         "Crit Chance": 0.06,
         "Crit Factor": 0.5,
         "Damage": 0.5399999999999999,
@@ -13238,7 +13243,7 @@
         "Defense Absolute": 0.28,
         "Enemy Attack Level Skip": 0.02,
         "Enemy Health Level Skip": 0.02,
-        "Event Relics": 111.0,
+        "Event Relics": 112.0,
         "Free Attack Upgrade": 0.060000000000000005,
         "Free Defense Upgrade": 0.03,
         "Free Utility Upgrade": 0.04,
@@ -13257,14 +13262,14 @@
         "Super Critical Mult": 0.05,
         "Thorns": 0.09000000000000001,
         "Total Bonuses": null,
-        "Total Relics": 146.0,
+        "Total Relics": 147.0,
         "Ultimate Damage": 0.22000000000000003,
         "Utility": null,
         "Wall Rebuild": 2.0
       },
       "themes_songs": [
         [
-          "1.666",
+          "1.682",
           ""
         ]
       ],

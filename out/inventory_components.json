@@ -12,11 +12,12 @@
       "Wave Accelerator",
       "Critical Coin",
       "Second Wind",
-      "Extra Orb",
       "Energy Shield",
+      "Recovery Package Chance",
+      "Intro Sprint",
+      "Extra Orb",
       "Cash",
-      "Free Upgrades",
-      "Land Mine Stun"
+      "Free Upgrades"
     ],
     "Preset 4": [],
     "Preset 5": [],
@@ -36,7 +37,9 @@
       "Recovery Package Chance",
       "Extra Defense",
       "Slow Aura",
-      "Energy Net"
+      "Energy Net",
+      "Land Mine Stun",
+      "Second Wind"
     ]
   },
   "cards_mastery_inventory": {
