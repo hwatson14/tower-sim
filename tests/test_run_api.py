@@ -27,7 +27,8 @@ def test_run_task_base_stats() -> None:
     ids_snapshot = _fixture_ids_snapshot()
     result = run_task(TASK_BASE_STATS, ids_snapshot=ids_snapshot)
     assert result["ok"] is True
-    assert result["result"]["statbook"]
+    assert result["fail_closed"] is False
+    assert result["result"]["statbook"]["rows"]
 
 
 def test_run_task_inventory() -> None:
@@ -65,8 +66,37 @@ def test_run_task_max_wave() -> None:
         ids_snapshot=ids_snapshot,
     )
     assert result["task"] == TASK_MAX_WAVE
+    assert result["ok"] is True
+    assert result["fail_closed"] is False
     assert "w_max" in result["result"]
     assert "assumptions_manifest" in result["result"]
+
+
+def test_run_task_max_wave_uses_v3_stage_composition_before_evaluation(monkeypatch: pytest.MonkeyPatch) -> None:
+    ids_snapshot = _fixture_ids_snapshot()
+    spec_path = Path("tests/fixtures/specs/sample_spec.yaml")
+    spec = load_problem_spec(spec_path)
+
+    called = {"value": False}
+
+    def _fake_compose_static_stage(*args, **kwargs):
+        called["value"] = True
+        class _Stage:
+            resolved_targets = {"tower_hp": 1.0}
+        return _Stage()
+
+    monkeypatch.setattr("tower_sim.run.api.compose_static_stage", _fake_compose_static_stage)
+
+    result = run_task(
+        TASK_MAX_WAVE,
+        {"problem_spec": spec_as_dict(spec)},
+        ids_snapshot=ids_snapshot,
+    )
+
+    assert called["value"] is True
+    assert result["ok"] is True
+    assert result["fail_closed"] is False
+    assert "w_max" in result["result"]
 
 
 def test_run_task_rejects_unknown_args() -> None:
