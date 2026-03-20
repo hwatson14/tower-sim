@@ -401,6 +401,34 @@ source_families:
       destination_object_type: canonical_stat
       destination_id: tower_orb_count
       resolver: integer_count_stat
+    - contributor_id: card__damage__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_damage
+      resolver: standard_scalar_stat
+    - contributor_id: card__attack_speed__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: card__health_regen__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: card__critical_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_chance_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: card__range__multiplier
+      destination_object_type: canonical_stat
+      destination_id: tower_range_m
+      resolver: standard_scalar_stat
+    - contributor_id: card__extra_defense__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_pct
+      resolver: pct_capped_scalar_stat
+    - contributor_id: card__recovery_package_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: package_chance_pct
+      resolver: pct_capped_scalar_stat
     - contributor_id: card__enemy_balance__spawn_count__pct
       destination_object_type: environment_param
       destination_id: bc.more_enemies_pct
@@ -454,6 +482,102 @@ source_families:
     - contributor_id: module__armor__wall_regen__pct
       destination_object_type: canonical_stat
       destination_id: wall_regen
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__attack_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_attack_speed
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__health_regen__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_regen
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__crit_multiplier__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_crit_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__knockback_force__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_force
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__defense__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__defense_absolute__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_defense_absolute
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__attack_range__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_range_m
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__knockback_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_knockback_chance_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__package_chance__pct
+      destination_object_type: canonical_stat
+      destination_id: package_chance_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__recovery_amount__pct
+      destination_object_type: canonical_stat
+      destination_id: recovery_amount_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__max_recovery__pct
+      destination_object_type: canonical_stat
+      destination_id: max_recovery_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__orb_speed__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_speed_rpm
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__orbs__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_orb_count
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__shockwave_frequency__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_shockwave_interval_seconds
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__shockwave_size__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_shockwave_size_m
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__thorns_damage__pct
+      destination_object_type: canonical_stat
+      destination_id: tower_thorns_damage_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__cash_bonus__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_kill_multiplier
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__cash_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: cash_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__coins_wave__pct
+      destination_object_type: canonical_stat
+      destination_id: coins_per_wave
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__enemy_attack_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_attack_level_skip_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__enemy_health_level_skip__pct
+      destination_object_type: canonical_stat
+      destination_id: enemy_health_level_skip_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__free_attack_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_attack_upgrade_chance_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__free_defense_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_defense_upgrade_chance_pct
+      resolver: standard_scalar_stat
+    - contributor_id: module__substat__free_utility_upgrade__pct
+      destination_object_type: canonical_stat
+      destination_id: free_utility_upgrade_chance_pct
       resolver: standard_scalar_stat
     - contributor_id: module__generator__coins_kill_bonus__pct
       destination_object_type: canonical_stat

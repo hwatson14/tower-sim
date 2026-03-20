@@ -1,26 +1,27 @@
 from __future__ import annotations
 
-import json
 import logging
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from tower_sim.evaluators.max_wave import MaxWaveEvaluator
-from tower_sim.engines.statbook_builder import build_statbook
-from tower_sim.engines.stat_input_compiler import compile_full_stat_inputs
-from tower_sim.loaders.ids_parser import parse_ids
-from tower_sim.loaders.account_snapshot_compiler import (
+from v3.stat_input_compiler import compile_v3_stat_inputs
+from v3.pipeline import (
+    StageRequest,
+    V3PipelineError,
+    compose_static_stage,
+)
+from v3.ids_parser import parse_ids
+from v3.account_snapshot_compiler import (
     compile_account_snapshot,
     resolve_loadout,
 )
 from tower_sim.util.account_snapshot import AccountSnapshot, ModuleSnapshot, ResolvedLoadout
+from tower_sim.evaluators.max_wave import MaxWaveEvaluator
 from tower_sim.run.problem_spec import ProblemSpec
 from tower_sim.run.optimizer_runner import OPTIMIZER_TASKS, run_optimizer_task
 from tower_sim.run.spec_loader import parse_problem_spec_data, spec_as_dict
 
 LOGGER = logging.getLogger(__name__)
-_compile_full = compile_full_stat_inputs
 
 TASK_BASE_STATS = "BASE_STATS"
 TASK_STAT_INPUTS = "STAT_INPUTS"
@@ -66,14 +67,29 @@ def run_task(
         return _fail_closed(task, missing=missing, resolved_from="ids_only")
 
     if task == TASK_BASE_STATS:
-        statbook = build_statbook(resolved_ids_snapshot)
+        try:
+            stage = compose_static_stage(
+                resolved_ids_snapshot,
+                StageRequest(stage="full", debug=True),
+            )
+        except V3PipelineError as exc:
+            return _fail_closed(task, missing=[str(exc)], resolved_from="ids_only")
         return _ok(
             task,
-            {"statbook": asdict(statbook)},
+            {
+                "statbook": {
+                    "rows": [
+                        {"stat_id": stat_id, "phase": "start_of_run", "final_value": value}
+                        for stat_id, value in sorted(stage.resolved_targets.items())
+                    ],
+                },
+                "missing": stage.missing,
+                "debug": stage.debug_breakdowns,
+            },
             resolved_from="ids_only",
         )
     if task == TASK_STAT_INPUTS:
-        compiled = _compile_full(resolved_ids_snapshot)
+        compiled = compile_v3_stat_inputs(resolved_ids_snapshot, stage="full")
         return _ok(
             task,
             {
@@ -97,6 +113,13 @@ def run_task(
         )
     if task == TASK_MAX_WAVE:
         problem_spec = parse_problem_spec_data(resolved_args["problem_spec"])
+        try:
+            compose_static_stage(
+                resolved_ids_snapshot,
+                StageRequest(stage="full", debug=False),
+            )
+        except V3PipelineError as exc:
+            return _fail_closed(task, missing=[str(exc)], resolved_from="ids_only")
         _log_problem_spec(problem_spec)
         evaluator = MaxWaveEvaluator()
         result = evaluator.evaluate(problem_spec, resolved_ids_snapshot)
@@ -117,8 +140,9 @@ def _resolve_ids_snapshot(
 
 
 def _log_problem_spec(problem_spec: ProblemSpec) -> None:
-    payload = json.dumps(spec_as_dict(problem_spec), sort_keys=True)
+    payload = spec_as_dict(problem_spec)
     LOGGER.info("Resolved ProblemSpec: %s", payload)
+
 
 
 def _validate_task_name(task: str) -> None:

@@ -112,6 +112,15 @@ def default_registry() -> StatRegistry:
             description="Defense percent (base value).",
         ),
         StatDef(
+            stat_id="tower_defense_pct",
+            display_name="Tower Defense %",
+            unit=Unit.PERCENT,
+            kind=StatKind.BASE,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical tower defense percent alias.",
+        ),
+        StatDef(
             stat_id="wall_hp",
             display_name="Wall Health",
             unit=Unit.HP,
@@ -256,6 +265,15 @@ def default_registry() -> StatRegistry:
             description="Canonical combat ultimate damage aggregate.",
         ),
         StatDef(
+            stat_id="ultimate_damage_multiplier",
+            display_name="Ultimate Damage Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.DERIVED,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical ultimate damage multiplier.",
+        ),
+        StatDef(
             stat_id="lab_speed",
             display_name="Lab Speed",
             unit=Unit.MULTIPLIER,
@@ -263,6 +281,15 @@ def default_registry() -> StatRegistry:
             scope=StatScope.RUN,
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description="Canonical combat lab speed aggregate.",
+        ),
+        StatDef(
+            stat_id="lab_speed_multiplier",
+            display_name="Lab Speed Multiplier",
+            unit=Unit.MULTIPLIER,
+            kind=StatKind.DERIVED,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical lab speed multiplier.",
         ),
         StatDef(
             stat_id="bot_range",
@@ -427,6 +454,15 @@ def default_registry() -> StatRegistry:
             description="Enemy attack level skip percent (placeholder).",
         ),
         StatDef(
+            stat_id="enemy_attack_level_skip_pct",
+            display_name="Enemy Attack Level Skip %",
+            unit=Unit.PERCENT,
+            kind=StatKind.DERIVED,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical enemy attack level skip alias.",
+        ),
+        StatDef(
             stat_id="ehls_pct",
             display_name="Enemy Health Level Skip",
             unit=Unit.PERCENT,
@@ -434,6 +470,15 @@ def default_registry() -> StatRegistry:
             scope=StatScope.RUN,
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description="Enemy health level skip percent (placeholder).",
+        ),
+        StatDef(
+            stat_id="enemy_health_level_skip_pct",
+            display_name="Enemy Health Level Skip %",
+            unit=Unit.PERCENT,
+            kind=StatKind.DERIVED,
+            scope=StatScope.RUN,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical enemy health level skip alias.",
         ),
         StatDef(
             stat_id="wave_attack_index",
@@ -490,6 +535,15 @@ def default_registry() -> StatRegistry:
             ),
         ),
         StatDef(
+            stat_id="tower_thorns_damage_pct",
+            display_name="Tower Thorns Damage %",
+            unit=Unit.PERCENT,
+            kind=StatKind.BASE,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical tower thorns damage alias.",
+        ),
+        StatDef(
             stat_id="plasma_cannon_damage_mult",
             display_name="Plasma Cannon Damage Multiplier",
             unit=Unit.MULTIPLIER,
@@ -512,6 +566,26 @@ def default_registry() -> StatRegistry:
                 "Tier BC: knockback resistance multiplier from step1 dump "
                 "(tables/inputs/combat/tier_battle_conditions.csv)."
             ),
+        ),
+        StatDef(
+            stat_id="knockback_force",
+            display_name="Knockback Force",
+            unit=Unit.NONE,
+            kind=StatKind.BASE,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description=(
+                "Composite knockback force stat consumed by runtime; fed by workshop and loadout contributors."
+            ),
+        ),
+        StatDef(
+            stat_id="tower_knockback_force",
+            display_name="Tower Knockback Force",
+            unit=Unit.NONE,
+            kind=StatKind.BASE,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical tower knockback force alias.",
         ),
         StatDef(
             stat_id="tower_damage",
@@ -541,6 +615,15 @@ def default_registry() -> StatRegistry:
             scope=StatScope.TOWER,
             allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
             description="Effective Paths eDamage output: critical chance.",
+        ),
+        StatDef(
+            stat_id="tower_crit_chance_pct",
+            display_name="Tower Crit Chance %",
+            unit=Unit.PERCENT,
+            kind=StatKind.DERIVED,
+            scope=StatScope.TOWER,
+            allowed_phases={Phase.START_OF_RUN, Phase.END_OF_RUN},
+            description="KB-canonical tower crit chance alias.",
         ),
         StatDef(
             stat_id="tower_crit_multiplier",
@@ -1510,4 +1593,74 @@ def default_registry() -> StatRegistry:
                 )
             )
             existing_ids.add(canonical_cost_stat_id)
+
+    workshop_alias_pairs = [
+        ("workshop_cash_bonus", "cash_kill_multiplier", "Cash / Kill Multiplier"),
+        ("workshop_cash_per_wave", "cash_per_wave", "Cash / Wave"),
+        ("workshop_coins_per_kill_bonus", "coin_kill_multiplier", "Coins / Kill Multiplier"),
+        ("workshop_coins_per_wave", "coins_per_wave", "Coins / Wave"),
+        ("workshop_enemy_attack_level_skip", "enemy_attack_level_skip_pct", "Enemy Attack Level Skip %"),
+        ("workshop_enemy_health_level_skip", "enemy_health_level_skip_pct", "Enemy Health Level Skip %"),
+        ("workshop_free_attack_upgrade", "free_attack_upgrade_chance_pct", "Free Attack Upgrade Chance %"),
+        ("workshop_free_defense_upgrade", "free_defense_upgrade_chance_pct", "Free Defense Upgrade Chance %"),
+        ("workshop_free_utility_upgrade", "free_utility_upgrade_chance_pct", "Free Utility Upgrade Chance %"),
+        ("workshop_interest", "interest_per_wave_pct", "Interest / Wave %"),
+        ("workshop_max_recovery", "max_recovery_multiplier", "Max Recovery Multiplier"),
+        ("workshop_package_chance", "package_chance_pct", "Package Chance %"),
+        ("workshop_recovery_amount", "recovery_amount_pct", "Recovery Amount %"),
+        ("workshop_attack_speed", "tower_attack_speed", "Tower Attack Speed"),
+        ("workshop_bounce_shot_chance", "tower_bounce_shot_chance_pct", "Tower Bounce Shot Chance %"),
+        ("workshop_bounce_shot_range", "tower_bounce_shot_range_m", "Tower Bounce Shot Range (m)"),
+        ("workshop_bounce_shot_targets", "tower_bounce_shot_targets", "Tower Bounce Shot Targets"),
+        ("workshop_critical_chance", "tower_crit_chance_pct", "Tower Crit Chance %"),
+        ("workshop_critical_factor", "tower_crit_multiplier", "Tower Crit Multiplier"),
+        ("workshop_damage", "tower_damage", "Tower Damage"),
+        ("workshop_damage_per_meter", "tower_damage_per_meter_multiplier", "Tower Damage / Meter Multiplier"),
+        ("workshop_death_defy", "tower_death_defy_chance_pct", "Tower Death Defy Chance %"),
+        ("workshop_defense_absolute", "tower_defense_absolute", "Tower Defense Absolute"),
+        ("def_pct", "tower_defense_pct", "Tower Defense %"),
+        ("tower_hp", "tower_hp", "Tower HP"),
+        ("workshop_knockback_chance", "tower_knockback_chance_pct", "Tower Knockback Chance %"),
+        ("workshop_knockback_force", "tower_knockback_force", "Tower Knockback Force"),
+        ("workshop_land_mine_chance", "tower_land_mine_chance_pct", "Tower Land Mine Chance %"),
+        ("workshop_land_mine_damage", "tower_land_mine_damage", "Tower Land Mine Damage"),
+        ("workshop_land_mine_radius", "tower_land_mine_radius_m", "Tower Land Mine Radius (m)"),
+        ("workshop_lifesteal", "tower_lifesteal_pct", "Tower Lifesteal %"),
+        ("workshop_multishot_chance", "tower_multishot_chance_pct", "Tower Multishot Chance %"),
+        ("workshop_multishot_targets", "tower_multishot_targets", "Tower Multishot Targets"),
+        ("workshop_orbs", "tower_orb_count", "Tower Orb Count"),
+        ("workshop_orb_speed", "tower_orb_speed_rpm", "Tower Orb Speed (RPM)"),
+        ("workshop_range_meters", "tower_range_m", "Tower Range (m)"),
+        ("workshop_rapid_fire_chance", "tower_rapid_fire_chance_pct", "Tower Rapid Fire Chance %"),
+        ("workshop_rapid_fire_duration", "tower_rapid_fire_duration_seconds", "Tower Rapid Fire Duration (s)"),
+        ("tower_regen", "tower_regen", "Tower Regen"),
+        ("workshop_rend_armor_chance", "tower_rend_armor_chance_pct", "Tower Rend Armor Chance %"),
+        ("workshop_rend_armor_mult", "tower_rend_armor_multiplier", "Tower Rend Armor Multiplier"),
+        ("workshop_shockwave_frequency", "tower_shockwave_interval_seconds", "Tower Shockwave Interval (s)"),
+        ("workshop_shockwave_size", "tower_shockwave_size_m", "Tower Shockwave Size (m)"),
+        ("workshop_super_crit_chance", "tower_supercrit_chance_pct", "Tower Super Crit Chance %"),
+        ("workshop_super_crit_mult_alt", "tower_supercrit_multiplier", "Tower Super Crit Multiplier"),
+        ("thorns_damage_mult", "tower_thorns_damage_pct", "Tower Thorns Damage %"),
+        ("workshop_wall_rebuild", "wall_rebuild_seconds", "Wall Rebuild (s)"),
+    ]
+
+    for source_stat_id, canonical_stat_id, canonical_display_name in workshop_alias_pairs:
+        if canonical_stat_id in existing_ids:
+            continue
+        source_def = next((stat for stat in expanded if stat.stat_id == source_stat_id), None)
+        if source_def is None:
+            continue
+        expanded.append(
+            StatDef(
+                stat_id=canonical_stat_id,
+                display_name=canonical_display_name,
+                unit=source_def.unit,
+                kind=source_def.kind,
+                scope=source_def.scope,
+                allowed_phases=source_def.allowed_phases,
+                description=f"KB canonical alias of {source_stat_id}.",
+            )
+        )
+        existing_ids.add(canonical_stat_id)
+
     return StatRegistry(expanded)
