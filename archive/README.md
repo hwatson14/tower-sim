@@ -8,7 +8,7 @@ Non-authoritative. Nothing in this folder is part of the active truth surface un
 
 ## Live active surfaces
 The authoritative repo surface is outside this folder. In particular, live automated exports remain in:
-- /tower-sim-data/
+- /tests/fixtures/tower-sim-data/
 
 ## Rules
 - Do not edit files in this folder as part of normal implementation work.
