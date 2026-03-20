@@ -1,0 +1,9 @@
+step,scope_item,verification,status
+1,Confirm attack-wave consumer is package-closed,Docs plus wave policy plus boss-wave engine audit,Complete
+2,Confirm health-wave consumer is package-closed,Docs plus wave policy plus boss-wave engine audit,Complete
+3,Add explicit runtime consumer registry,Unit tests,Complete
+4,Add machine-readable runtime consumer CSV,Manual file audit,Complete
+5,Verify attack-wave monotonic consumer semantics,Targeted unit test,Complete
+6,Verify health-wave monotonic consumer semantics,Targeted unit test,Complete
+7,Publish runtime consumers through guarded bridge,Not started,Pending
+8,Remove full-safe reference precompute,Benchmark and parity evidence required,Pending

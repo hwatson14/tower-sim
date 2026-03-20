@@ -1,0 +1,8 @@
+step,scope_item,verification,status
+1,Add non-workshop compiled-input fingerprint builder,targeted fingerprint tests,Complete
+2,Bind cached mode to provided cached_reference_fingerprint,targeted bridge tests,Complete
+3,Preserve workshop-only mutation cache validity,targeted fingerprint + bridge tests,Complete
+4,Reject fingerprint mismatch outside workshop-mutated scope,targeted validator + bridge tests,Complete
+5,Expose current cache fingerprint in bridge diagnostics,bridge tests,Complete
+6,Add broader full-state fingerprinting,not run,Pending
+7,Benchmark cached mode with strong fingerprinting,not run,Pending

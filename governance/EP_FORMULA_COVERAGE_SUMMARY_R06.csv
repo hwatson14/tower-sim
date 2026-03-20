@@ -1,0 +1,9 @@
+section,entry_kind,coverage_status,count
+eDamage_mechanics,mechanic,compare_mapped,7
+eDamage_mechanics,mechanic,kb_registry_only,39
+eEcon_mechanics,mechanic,compare_mapped,1
+eEcon_mechanics,mechanic,kb_registry_only,36
+eHP_mechanics,mechanic,compare_mapped,3
+eHP_mechanics,mechanic,kb_registry_only,5
+stat_definitions.helpers,helper_definition,definition_only,16
+stat_definitions.stats,stat_definition,definition_only,6

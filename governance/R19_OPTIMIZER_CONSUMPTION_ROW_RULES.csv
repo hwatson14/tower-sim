@@ -1,0 +1,38 @@
+objective_family,destination,output_plane,trust_tier,status_required,consumer_action,fallback_if_missing,rationale
+eecon,canonical_stat::coin_kill_multiplier,canonical,tier1,resolved,consume,record_gap,already audited core economy surface
+eecon,canonical_stat::cash_kill_multiplier,canonical,tier1,resolved,consume,record_gap,already audited core economy surface
+eecon,runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,helper_optimizer,tier1,resolved,consume,record_gap,emitted helper row for BH econ contribution
+eecon,runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,helper_optimizer,tier1,resolved,consume,record_gap,emitted helper row for DW econ contribution
+eecon,runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,helper_optimizer,tier1,resolved,consume,record_gap,emitted helper row for spotlight econ contribution
+eecon,mechanic_param::uw.golden_tower.bonus_multiplier,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW econ mechanic
+eecon,mechanic_param::uw.golden_tower.cooldown_seconds,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW econ mechanic
+eecon,mechanic_param::uw.golden_tower.duration_seconds,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW econ mechanic
+eecon,mechanic_param::uw.black_hole.cooldown_seconds,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW econ mechanic
+eecon,mechanic_param::uw.black_hole.duration_seconds,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW econ mechanic
+eecon,mechanic_param::uw.black_hole.size_m,runtime_mechanic,tier2,resolved,consume,record_gap,resolved core UW control/econ mechanic
+eecon,mechanic_param::uw.spotlight.angle_degrees,runtime_mechanic,tier2,resolved,consume,record_gap,resolved spotlight coverage mechanic
+eecon,mechanic_param::uw.spotlight.bonus_multiplier,runtime_mechanic,tier2,resolved,consume,record_gap,resolved spotlight damage mechanic
+eecon,mechanic_param::uw.spotlight.count,runtime_mechanic,tier2,resolved,consume,record_gap,resolved spotlight coverage mechanic
+eecon,mechanic_param::uw.death_wave.effect_wave_count,runtime_mechanic,tier2,resolved,consume,record_gap,resolved DW economy helper mechanic
+eecon,mechanic_param::uw.death_wave.cooldown_seconds,runtime_mechanic,tier2,resolved,consume,record_gap,resolved DW economy cadence mechanic
+eecon,runtime_mechanic_param::cards.wave_skip.chance_pct,helper_optimizer,tier2,resolved,consume,record_gap,run-speed/econ helper row
+eecon,runtime_mechanic_param::cards.critical_coin.bonus_multiplier,helper_optimizer,tier2,resolved,consume,record_gap,critical coin helper row
+eecon,runtime_mechanic_param::bot.golden_bot.bonus_multiplier_x,helper_optimizer,tier2,resolved,consume,record_gap,golden bot econ helper row
+eecon,runtime_mechanic_param::bot.golden_bot.cooldown_seconds,helper_optimizer,tier2,resolved,consume,record_gap,golden bot cadence helper row
+eecon,runtime_mechanic_param::bot.golden_bot.duration_seconds,helper_optimizer,tier2,resolved,consume,record_gap,golden bot cadence helper row
+eecon,runtime_mechanic_param::bot.golden_bot.range_meters,helper_optimizer,tier2,resolved,consume,record_gap,golden bot coverage helper row
+ehp,canonical_stat::tower_hp,canonical,tier1,resolved,consume,record_gap,already audited core survivability surface
+ehp,canonical_stat::tower_regen,canonical,tier1,resolved,consume,record_gap,already audited core survivability surface
+ehp,runtime_mechanic_param::bot.flame_bot.damage_reduction_pct,helper_optimizer,tier2,resolved,consume,record_gap,flame bot survivability helper row
+ehp,mechanic_param::module.primordial_collapse.bh_damage_reduction_pct,runtime_mechanic,tier2,resolved,consume,record_gap,resolved defensive module mechanic
+ehp,mechanic_param::module.sharp_fortitude.wall_bonus_multiplier,runtime_mechanic,tier2,resolved,consume,record_gap,resolved defensive module mechanic
+edamage,canonical_stat::tower_damage,canonical,tier1,resolved,consume,record_gap,already audited core offense surface
+edamage,mechanic_param::uw.death_wave.damage_multiplier,runtime_mechanic,tier2,resolved,consume,record_gap,resolved DW damage mechanic
+edamage,runtime_mechanic_param::bot.flame_bot.damage_multiplier_x,helper_optimizer,tier2,resolved,consume,record_gap,flame bot damage helper row
+edamage,mechanic_param::module.orbital_augment.electron_count,runtime_mechanic,tier2,resolved,consume,record_gap,resolved OA mechanic with strategic value
+survival,canonical_stat::tower_hp,canonical,tier1,resolved,consume,record_gap,already audited core survivability surface
+survival,canonical_stat::tower_regen,canonical,tier1,resolved,consume,record_gap,already audited core survivability surface
+survival,runtime_mechanic_param::cards.plasma_cannon.effect_pct,helper_optimizer,tier1,resolved,consume,record_gap,emitted helper row with direct boss damage relevance
+survival,runtime_mechanic_param::bot.flame_bot.damage_reduction_pct,helper_optimizer,tier2,resolved,consume,record_gap,flame bot survivability helper row
+survival,mechanic_param::module.primordial_collapse.bh_damage_reduction_pct,runtime_mechanic,tier2,resolved,consume,record_gap,resolved defensive module mechanic
+survival,mechanic_param::module.sharp_fortitude.wall_bonus_multiplier,runtime_mechanic,tier2,resolved,consume,record_gap,resolved defensive module mechanic

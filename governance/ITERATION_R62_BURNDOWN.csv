@@ -1,0 +1,9 @@
+step,scope_item,verification_method,verification_status,delivery_status
+1,Confirm free-defense canonical path is already closed in contract and package,package routing audit + execution tests,verified,complete
+2,Confirm free-utility canonical path is already closed in contract and package,package routing audit + execution tests,verified,complete
+3,Confirm EALS canonical path is already closed in contract and package,package routing audit + execution tests,verified,complete
+4,Confirm EHLS canonical path is already closed in contract and package,package routing audit + execution tests,verified,complete
+5,Add subset executor parity coverage,targeted unit tests,verified,complete
+6,Add bridge guarded publication coverage,targeted bridge tests,verified,complete
+7,Expand derived/runtime publishable surfaces,not run,pending,pending
+8,Remove full-safe reference precompute and claim speedup,benchmark evidence required,pending,pending

@@ -1,0 +1,93 @@
+tier,coin_bonus,bc_name,bc_level,source_ref
+14,17.6,Orb Resistance,50,internalized_source_snapshot
+14,17.6,Death Ray Resistance,50,internalized_source_snapshot
+14,17.6,Thorns Resistance,20,internalized_source_snapshot
+14,17.6,Plasma Cannon Resistance,20,internalized_source_snapshot
+14,17.6,More Bosses,1,internalized_source_snapshot
+14,17.6,ELS Reduction,5,internalized_source_snapshot
+15,21.3,Orb Resistance,60,internalized_source_snapshot
+15,21.3,Death Ray Resistance,60,internalized_source_snapshot
+15,21.3,Thorns Resistance,30,internalized_source_snapshot
+15,21.3,Knockback Resistance,40,internalized_source_snapshot
+15,21.3,Armored Enemies,10,internalized_source_snapshot
+15,21.3,Plasma Cannon Resistance,30,internalized_source_snapshot
+15,21.3,More Bosses,2,internalized_source_snapshot
+15,21.3,ELS Reduction,10,internalized_source_snapshot
+16,25.2,Orb Resistance,70,internalized_source_snapshot
+16,25.2,Death Ray Resistance,70,internalized_source_snapshot
+16,25.2,Thorns Resistance,40,internalized_source_snapshot
+16,25.2,Knockback Resistance,50,internalized_source_snapshot
+16,25.2,Armored Enemies,20,internalized_source_snapshot
+16,25.2,Plasma Cannon Resistance,40,internalized_source_snapshot
+16,25.2,Protector's Ultimate,20,internalized_source_snapshot
+16,25.2,More Bosses,3,internalized_source_snapshot
+16,25.2,ELS Reduction,15,internalized_source_snapshot
+17,29.1,Orb Resistance,80,internalized_source_snapshot
+17,29.1,Death Ray Resistance,80,internalized_source_snapshot
+17,29.1,Thorns Resistance,50,internalized_source_snapshot
+17,29.1,Knockback Resistance,60,internalized_source_snapshot
+17,29.1,Armored Enemies,30,internalized_source_snapshot
+17,29.1,Plasma Cannon Resistance,50,internalized_source_snapshot
+17,29.1,Protector's Ultimate,35,internalized_source_snapshot
+17,29.1,Tank's Ultimate,20,internalized_source_snapshot
+17,29.1,More Bosses,3,internalized_source_snapshot
+17,29.1,ELS Reduction,20,internalized_source_snapshot
+18,33.0,Orb Resistance,90,internalized_source_snapshot
+18,33.0,Death Ray Resistance,90,internalized_source_snapshot
+18,33.0,Thorns Resistance,60,internalized_source_snapshot
+18,33.0,Knockback Resistance,70,internalized_source_snapshot
+18,33.0,Armored Enemies,40,internalized_source_snapshot
+18,33.0,Plasma Cannon Resistance,60,internalized_source_snapshot
+18,33.0,Protector's Ultimate,50,internalized_source_snapshot
+18,33.0,Tank's Ultimate,35,internalized_source_snapshot
+18,33.0,Scatter Ultimate,20,internalized_source_snapshot
+18,33.0,Ray Ultimate,20,internalized_source_snapshot
+18,33.0,Vampire Ultimate,20,internalized_source_snapshot
+18,33.0,More Bosses,5,internalized_source_snapshot
+18,33.0,ELS Reduction,25,internalized_source_snapshot
+19,40.0,Orb Resistance,95,internalized_source_snapshot
+19,40.0,Death Ray Resistance,95,internalized_source_snapshot
+19,40.0,Thorns Resistance,70,internalized_source_snapshot
+19,40.0,Knockback Resistance,80,internalized_source_snapshot
+19,40.0,Armored Enemies,50,internalized_source_snapshot
+19,40.0,Plasma Cannon Resistance,70,internalized_source_snapshot
+19,40.0,Protector's Ultimate,65,internalized_source_snapshot
+19,40.0,Tank's Ultimate,50,internalized_source_snapshot
+19,40.0,Scatter Ultimate,35,internalized_source_snapshot
+19,40.0,Ray Ultimate,35,internalized_source_snapshot
+19,40.0,Vampire Ultimate,35,internalized_source_snapshot
+19,40.0,More Bosses,5,internalized_source_snapshot
+19,40.0,ELS Reduction,30,internalized_source_snapshot
+19,40.0,Fast's Ultimate,20,internalized_source_snapshot
+20,48.0,Orb Resistance,95,internalized_source_snapshot
+20,48.0,Death Ray Resistance,95,internalized_source_snapshot
+20,48.0,Thorns Resistance,80,internalized_source_snapshot
+20,48.0,Knockback Resistance,90,internalized_source_snapshot
+20,48.0,Armored Enemies,60,internalized_source_snapshot
+20,48.0,Plasma Cannon Resistance,80,internalized_source_snapshot
+20,48.0,Protector's Ultimate,80,internalized_source_snapshot
+20,48.0,Tank's Ultimate,65,internalized_source_snapshot
+20,48.0,Scatter Ultimate,50,internalized_source_snapshot
+20,48.0,Ray Ultimate,50,internalized_source_snapshot
+20,48.0,Vampire Ultimate,50,internalized_source_snapshot
+20,48.0,More Bosses,5,internalized_source_snapshot
+20,48.0,ELS Reduction,35,internalized_source_snapshot
+20,48.0,Fast's Ultimate,35,internalized_source_snapshot
+20,48.0,Boss Ultimate,20,internalized_source_snapshot
+21,60.0,Orb Resistance,95,internalized_source_snapshot
+21,60.0,Death Ray Resistance,95,internalized_source_snapshot
+21,60.0,Thorns Resistance,90,internalized_source_snapshot
+21,60.0,Knockback Resistance,95,internalized_source_snapshot
+21,60.0,Armored Enemies,70,internalized_source_snapshot
+21,60.0,Plasma Cannon Resistance,90,internalized_source_snapshot
+21,60.0,Protector's Ultimate,95,internalized_source_snapshot
+21,60.0,Tank's Ultimate,80,internalized_source_snapshot
+21,60.0,Scatter Ultimate,65,internalized_source_snapshot
+21,60.0,Ray Ultimate,65,internalized_source_snapshot
+21,60.0,Vampire Ultimate,65,internalized_source_snapshot
+21,60.0,More Bosses,5,internalized_source_snapshot
+21,60.0,ELS Reduction,40,internalized_source_snapshot
+21,60.0,Fast's Ultimate,50,internalized_source_snapshot
+21,60.0,Boss Ultimate,35,internalized_source_snapshot
+21,60.0,Basic's Ultimate,20,internalized_source_snapshot
+21,60.0,Mass Enforcement,1,internalized_source_snapshot

@@ -1,0 +1,12 @@
+Track,Work item,Status,Verification
+Calculator baseline,Expose resolved UW coin bonus helper/runtime rows (BH/DW/SL),Done,Verified regenerated output/statbook_publishable.json now includes the three runtime_mechanic_param coin bonus multiplier rows with resolved values
+Calculator baseline,Route previously pending lab labels for BH/DW/SL coin bonus labs,Done,Verified output/stat_inputs.json now maps all three labs with notes kb_lab_application_registry_routed and kb_mapped=True
+Calculator baseline,Keep Plasma Cannon helper/runtime row exposed,Done,Verified runtime_mechanic_param::cards.plasma_cannon.effect_pct still emits as helper_formula
+EP stat compilation,Retain copied-forward fresher EP mechanics registry in calculator KB,Done,Verified earlier copied-forward registry remains in baseline
+EP stat compilation,Use EP helper/econ classifications to justify BH/DW/SL helper exposure,Done,"Verified prior R09/R10 helper candidate ledgers already nominated EPC_BHCB, EPC_DWCB, and EPC_SLCB as emit candidates"
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,This iteration promotes three concrete helper rows only; it does not establish universal EP parity
+EP stat compilation,Prove full EP output wiring,Not done / not proven,Helper-plane promotion improves wiring for three surfaces but does not wire every EP helper
+KB oracle harness,Convert BH/DW/SL from defined-not-emitted candidates into emitted helper/runtime rows,Done,Verified the three previously nominated rows now emit in the canonical regenerated output
+KB oracle harness,Re-run completion gate after helper-plane expansion,Remaining,Not yet re-verified after R12 helper promotion
+Optimiser,Expose BH/DW/SL coin bonus multipliers as optimizer-usable rows,Done,Verified emitted rows are available in publishable statbook with helper_formula classification
+Optimiser,Define optimizer interface using expanded helper-plane row set,Remaining,Not yet verified

@@ -1,0 +1,3 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+multishot,chance,400 coins after Damage/Meter,99,0.5%,+0.5% per level,49.5%,Chance to fire at more than one target.,Multishot,row-verified-live-wiki
+multishot,targets,400 coins after Damage/Meter,7,2 targets,+1 target per level,9 targets,Number of projectiles when multishot activates if enough enemies are in range.,Multishot,row-verified-live-wiki

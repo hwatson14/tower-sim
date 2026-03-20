@@ -1,0 +1,9 @@
+level,chance_pct,cost,total_cost,source_page
+1,0.8,200.00,200,Bounce Shot/Cost
+2,1.6,279.00,479,Bounce Shot/Cost
+3,2.4,368.00,847,Bounce Shot/Cost
+4,3.2,472.00,1.32K,Bounce Shot/Cost
+5,4.0,591.00,1.91K,Bounce Shot/Cost
+10,8.0,1.48K,7.32K,Bounce Shot/Cost
+15,12.0,2.94K,18.83K,Bounce Shot/Cost
+18,14.4,4.13K,29.96K,Bounce Shot/Cost

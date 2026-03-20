@@ -1,0 +1,40 @@
+schema_revision: 1
+kind: ids_section_routing
+purpose: Complete routing ownership for uploaded _IDS.csv sections.
+sections:
+  Labs:
+    source_family: lab
+    destination_classes: [canonical_stat]
+  WS:
+    source_family: workshop
+    destination_classes: [canonical_stat]
+  Enhancements:
+    source_family: enhancements
+    destination_classes: [canonical_stat, runtime_mechanic_param]
+  Ultimate Weapons (UWs):
+    source_family: uw_upgrade
+    destination_classes: [runtime_mechanic_param, capability]
+  Cards:
+    source_family: card
+    destination_classes: [canonical_stat, capability]
+  Relics:
+    source_family: relic
+    destination_classes: [canonical_stat, runtime_mechanic_param]
+  Vault:
+    source_family: vault
+    destination_classes: [canonical_stat, runtime_mechanic_param, capability, account_flag]
+  Bots:
+    source_family: bot_upgrade
+    destination_classes: [runtime_mechanic_param]
+  Themes & Songs:
+    source_family: theme_song
+    destination_classes: [cosmetic_bonus]
+  Modules:
+    source_family: module
+    destination_classes: [canonical_stat, runtime_mechanic_param, capability]
+  Guardians:
+    source_family: guardian_upgrade
+    destination_classes: [runtime_mechanic_param, capability]
+  Player & Stuff:
+    source_family: player_stuff
+    destination_classes: [account_context, account_resource, account_flag]

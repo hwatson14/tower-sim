@@ -1,0 +1,13 @@
+objective_family,destination,included,reason
+ehp,canonical_stat::tower_hp,True,EP-core durability proxy
+survival,canonical_stat::tower_hp,True,Composite survival includes core ehp rows plus boss-control support
+ehp,canonical_stat::tower_regen,True,EP-core durability proxy
+survival,canonical_stat::tower_regen,True,Composite survival includes core ehp rows plus boss-control support
+ehp,mechanic_param::module.primordial_collapse.bh_damage_reduction_pct,True,EP-core durability proxy
+survival,mechanic_param::module.primordial_collapse.bh_damage_reduction_pct,True,Composite survival includes core ehp rows plus boss-control support
+ehp,mechanic_param::module.sharp_fortitude.wall_bonus_multiplier,True,EP-core durability proxy
+survival,mechanic_param::module.sharp_fortitude.wall_bonus_multiplier,True,Composite survival includes core ehp rows plus boss-control support
+ehp,runtime_mechanic_param::bot.flame_bot.damage_reduction_pct,True,EP-core durability proxy
+survival,runtime_mechanic_param::bot.flame_bot.damage_reduction_pct,True,Composite survival includes core ehp rows plus boss-control support
+ehp,runtime_mechanic_param::cards.plasma_cannon.effect_pct,False,Excluded because boss-control/helper rather than core ehp proxy
+survival,runtime_mechanic_param::cards.plasma_cannon.effect_pct,True,Composite survival includes core ehp rows plus boss-control support

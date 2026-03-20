@@ -1,0 +1,7 @@
+step,scope_item,verification,status
+1,Optimise overlay publisher to avoid full deep copy,targeted tests + benchmark,complete
+2,Preserve reference diagnostics isolation,targeted overlay test,complete
+3,Fix missing IncrementalPlan serialization/runtime consumer emission,bridge tests,complete
+4,Fix contributor stripping regression on free-upgrade support path,subset executor tests,complete
+5,Rerun closed-subset benchmark,JSON/CSV outputs,complete
+6,Decide next optimisation target,not yet run,pending

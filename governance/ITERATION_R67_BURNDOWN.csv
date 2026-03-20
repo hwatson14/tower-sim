@@ -1,0 +1,7 @@
+step,scope_item,verification,status
+1,Add cached reference validator,targeted validator tests,complete
+2,Add incremental_cached_publish_guarded mode,targeted bridge tests,complete
+3,Skip resolve_stats on valid cached closed subset,monkeypatched bridge test,complete
+4,Fall back on cache mismatch,targeted bridge test,complete
+5,Add stronger cache fingerprinting,not run,pending
+6,Benchmark cached complete-statbook mode,not run,pending

@@ -1,0 +1,2 @@
+surface_id,chip,source_page,summary_type,base_cooldown_seconds,base_effect_1,base_effect_2,base_effect_3,notes,verification_status
+wiki_verified_guardian_fetch_summary,Fetch,Guardian / Chips,summary,120,10% find chance,2% double find chance,n/a,Guild-shop chip; finds packages/loot style pickups per source page wording.,live_wiki_row_verified_summary

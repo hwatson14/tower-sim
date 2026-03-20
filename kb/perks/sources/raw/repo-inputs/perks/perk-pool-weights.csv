@@ -1,0 +1,4 @@
+category,weight_percent,notes,source
+standard,65,"Wiki perk pool weighting.","prompt_extracted_wiki_excerpt_needs_row_audit"
+ultimate_weapon,20,"Wiki perk pool weighting.","prompt_extracted_wiki_excerpt_needs_row_audit"
+trade_off,15,"Wiki perk pool weighting.","prompt_extracted_wiki_excerpt_needs_row_audit"

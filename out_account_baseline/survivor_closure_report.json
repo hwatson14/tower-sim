@@ -1,0 +1,1470 @@
+{
+  "survivor_order": [
+    "canonical_stat::tower_regen",
+    "canonical_stat::tower_hp",
+    "canonical_stat::tower_defense_absolute",
+    "canonical_stat::tower_damage",
+    "canonical_stat::wall_hp",
+    "canonical_stat::wall_regen"
+  ],
+  "rows": [
+    {
+      "destination": "canonical_stat::tower_regen",
+      "verification_status": "needs_work",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": 44640000000000.0,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "run_perks"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface depends on perk-affected stats that are not materialized in the current package run."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "canonical_stat::tower_hp",
+      "verification_status": "needs_work",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": 6650000000000.0,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "run_perks"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface depends on perk-affected stats that are not materialized in the current package run."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "canonical_stat::tower_defense_absolute",
+      "verification_status": "needs_work",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": 318930000.0,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "run_perks"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface depends on perk-affected stats that are not materialized in the current package run."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "canonical_stat::tower_damage",
+      "verification_status": "needs_work",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": 746860000000.0,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Tourney",
+      "compare_perk_state": "off",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Tourney",
+        "compare_perk_state": "off",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "tournament_perks_off",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "tourney_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "conditional_runtime_card__berserker_damage"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface may include conditional runtime card state from Berserker, which is not materialized in the package compare path."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "canonical_stat::wall_hp",
+      "verification_status": "blocked",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": 159.0,
+      "ep_compare_value": 159.0,
+      "ep_reference_value": 114130000000000.0,
+      "delta": -114129999999841.0,
+      "relative_delta_pct": -99.99999999986069,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "run_perks"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface depends on perk-affected stats that are not materialized in the current package run."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "downstream_reflection_of_tower_residue"
+    },
+    {
+      "destination": "canonical_stat::wall_regen",
+      "verification_status": "blocked",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": 210.0,
+      "ep_compare_value": 210.0,
+      "ep_reference_value": 234350000000000.0,
+      "delta": -234349999999790.0,
+      "relative_delta_pct": -99.99999999991039,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "account_baseline",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop",
+          "run_perks"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state.",
+          "EP surface depends on perk-affected stats that are not materialized in the current package run."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Extra Orb",
+            "Energy Shield",
+            "Cash",
+            "Free Upgrades",
+            "Land Mine Stun"
+          ],
+          "Tourney": [
+            "Attack Speed",
+            "Damage",
+            "Berserker",
+            "Critical Chance",
+            "Health",
+            "Health Regen",
+            "Plasma Cannon",
+            "Wave Skip",
+            "Energy Shield",
+            "Ultimate Crit",
+            "Extra Orb",
+            "Recovery Package Chance",
+            "Extra Defense",
+            "Slow Aura",
+            "Energy Net"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Orbital Augment"
+            },
+            "generator": {
+              "primary": "Singularity Harness",
+              "assist": "Black Hole Digestor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          },
+          "Tourney": {
+            "cannon": {
+              "primary": "Amplifying Strike",
+              "assist": null
+            },
+            "armor": {
+              "primary": "Sharp Fortitude",
+              "assist": "Anti-Cube Portal"
+            },
+            "generator": {
+              "primary": "Project Funding",
+              "assist": "Galaxy Compressor"
+            },
+            "core": {
+              "primary": "Primordial Collapse",
+              "assist": "Dimension Core"
+            }
+          }
+        },
+        "modules_inventory": {
+          "Astral Deliverance": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Being Annihilator": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Death Penalty": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Havoc Bringer": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Shrink Ray": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Amplifying Strike": {
+            "rarity": "Ancestral",
+            "level": 164,
+            "stat": "9.04"
+          },
+          "Any Other": {
+            "rarity": "Epic",
+            "level": 60,
+            "stat": "2.17"
+          },
+          "Any Other 2": {
+            "rarity": "Common",
+            "level": 20,
+            "stat": "1.23"
+          },
+          "Anti-Cube Portal": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Negative Mass Projector": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "2.27"
+          },
+          "Space Displacer": {
+            "rarity": "Ancestral 2*",
+            "level": 163,
+            "stat": "9.467"
+          },
+          "Wormhole Redirector": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "8.19"
+          },
+          "Sharp Fortitude": {
+            "rarity": "Ancestral",
+            "level": 163,
+            "stat": "8.84"
+          },
+          "Orbital Augment": {
+            "rarity": "Ancestral 1*",
+            "level": 163,
+            "stat": "9.154"
+          },
+          "Black Hole Digestor": {
+            "rarity": "Legendary",
+            "level": 100,
+            "stat": "1.275"
+          },
+          "Galaxy Compressor": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Singularity Harness": {
+            "rarity": "Ancestral",
+            "level": 161,
+            "stat": "1.68"
+          },
+          "Pulsar Harvester": {
+            "rarity": "Ancestral 1*",
+            "level": 161,
+            "stat": "1.707"
+          },
+          "Project Funding": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Restorative Bonus": {
+            "rarity": "Mythic+",
+            "level": 160,
+            "stat": "1.665"
+          },
+          "Multiverse Nexus": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          },
+          "Dimension Core": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Harmony Conductor": {
+            "rarity": "Ancestral 5*",
+            "level": 159,
+            "stat": "12.88"
+          },
+          "Om Chip": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Magnetic Hook": {
+            "rarity": "Ancestral",
+            "level": 159,
+            "stat": "10.9"
+          },
+          "Primordial Collapse": {
+            "rarity": "Ancestral 2*",
+            "level": 159,
+            "stat": "11.692"
+          }
+        }
+      },
+      "note": "downstream_reflection_of_tower_residue"
+    }
+  ]
+}

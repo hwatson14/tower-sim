@@ -1,0 +1,2 @@
+surface_id,chip,source_page,summary_type,base_cooldown_seconds,base_effect_1,base_effect_2,base_effect_3,notes,verification_status
+wiki_verified_guardian_attack_summary,Attack,Guardian / Chips,summary,120,1% missing-health damage,1 target,n/a,Targets nearby enemies; base chip available on guardian unlock.,live_wiki_row_verified_summary

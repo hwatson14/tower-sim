@@ -1,0 +1,10 @@
+step,scope_item,verification_method,verification_status,delivery_status
+1,Rebase DAG programme to latest R54 source,package inspection,verified,complete
+2,Add machine-readable dependency config,file inspection + tests,verified,complete
+3,Add guarded incremental planner,unit tests,verified,complete
+4,Add subset executor using stat-engine helpers,unit tests + parity tests,verified,complete
+5,Add parity harness,unit tests,verified,complete
+6,Add guarded overlay publication,unit tests + bridge tests,verified,complete
+7,Expand publishable subset beyond current closed set,targeted parity tests,not_started,pending
+8,Remove full-safe precompute dependency,end-to-end parity-backed execution,not_started,pending
+9,Claim runtime speedup,benchmark evidence,not_started,pending

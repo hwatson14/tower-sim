@@ -1,0 +1,12 @@
+rule_or_category,value_or_note,source_page
+normal,Included in overall spawn cap,Enemies
+elite,Included in overall spawn cap,Enemies
+fleet,Occupies the normal enemy spawn cap,Enemies
+boss,Included in overall spawn cap,Enemies
+spawn_cap_total,150,Enemies
+spawn_cap_normal,120,Enemies
+spawn_cap_elite,20,Enemies
+spawn_cap_boss,10,Enemies
+shared_damage_heat_up,+4% damage per hit while alive,Enemies
+shared_coin_decay,-50% coin value if alive more than 3 waves,Enemies
+shared_mass_growth,+4% mass per wave alive,Enemies

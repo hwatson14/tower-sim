@@ -1,0 +1,2 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+damage_meter,damage_per_meter,50 coins with Range,200,0%,decreasing increments until level 70 then +0.0002% constant,5.9%,Damage is calculated per 1m distance and rounds down; no fractional meter scaling.,Attack Upgrades,row-verified-live-wiki

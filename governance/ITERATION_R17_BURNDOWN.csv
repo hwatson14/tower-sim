@@ -1,0 +1,13 @@
+track,work_item,status,verification
+Calculator baseline,Carry forward regenerated calculator baseline and existing whitelist payload,Done,Verified by reusing R16 whitelisted resolved payload rows only; no calculator formula mutation
+Calculator baseline,Correct survivability framing so payload slicing does not equate survivability with eHP,Done,Verified by R17 note and survivability-inclusive slice including boss-control support rows
+Calculator baseline,Create domain-sliced optimiser payload views,Done,"Verified by emitted JSON and CSV slices for survivability_inclusive, damage, and economy"
+EP stat compilation,Retain copied-forward fresher EP registry in calculator KB,Done,No regression introduced; R17 is payload slicing only
+EP stat compilation,Use EP/helper integration work indirectly in helper/runtime rows present in slices,Done,Verified helper rows in slices are drawn from prior whitelisted emitted rows justified by earlier EP/helper work
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,R17 does not alter EP coverage state
+EP stat compilation,Prove full EP output wiring,Not done / not proven,R17 slices existing payload only
+KB oracle harness,Keep completion verdict stable after payload slicing,Done,No calculator emitted-row mutation; prior completion verdict remains applicable
+KB oracle harness,Re-run completion gate after payload slicing,Not needed this iteration,R17 is downstream projection only
+Optimiser,"Add survivability, damage, and economy payload variants",Done,Verified by optimizer_payload_r17_survivability/damage/economy JSON and CSV files
+Optimiser,Keep optimiser bounded to whitelist-derived payloads only,Done,"All slice rows derived from R16 whitelist payload, not whole statbook"
+Optimiser,Add boss-control standalone slice or broader objective composites,Remaining,Not yet verified

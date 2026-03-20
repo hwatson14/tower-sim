@@ -1,0 +1,26 @@
+destination,display_value,formula_class,resolver,reason
+mechanic_param::uw.chain_lightning.chance_pct,8%,unclassified,pct_capped_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.chain_lightning.damage_multiplier,x19,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.chain_lightning.quantity,3,unclassified,integer_count_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.chrono_field.cooldown_seconds,12,unclassified,cooldown_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.chrono_field.duration_seconds,15,unclassified,uw_duration_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.chrono_field.slow_pct,6%,unclassified,pct_capped_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.inner_land_mines.cooldown_seconds,0,unclassified,cooldown_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.inner_land_mines.damage,0,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.inner_land_mines.quantity,0,unclassified,integer_count_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.poison_swamp.cooldown_seconds,0,unclassified,cooldown_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.poison_swamp.damage_multiplier,x0,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.poison_swamp.duration_seconds,0,unclassified,uw_duration_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.smart_missiles.cooldown_seconds,0,unclassified,cooldown_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.smart_missiles.damage_multiplier,x0,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+mechanic_param::uw.smart_missiles.quantity,0,unclassified,integer_count_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct,3.8,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration,54,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.black_hole.cooldown_seconds,-4,unclassified,cooldown_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.black_hole.duration_seconds,4,unclassified,uw_duration_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.chain_lightning.chance_pct,1.2%,unclassified,pct_capped_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.chain_lightning.damage_multiplier,x5,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.chain_lightning.quantity,0.3,unclassified,integer_count_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.chrono_field.duration_seconds,30,unclassified,uw_duration_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.death_wave.quantity,2,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract
+runtime_mechanic_param::uw.spotlight.angle_degrees,16.1,unclassified,standard_scalar_param,resolved row adjacent to current optimizer contract

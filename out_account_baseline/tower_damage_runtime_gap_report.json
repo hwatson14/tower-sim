@@ -1,0 +1,49 @@
+{
+  "destination": "canonical_stat::tower_damage",
+  "compare_state_key": "Tourney__perks_off",
+  "compare_preset": "Tourney",
+  "compare_perk_state": "off",
+  "package_value_before_runtime_assumptions": null,
+  "package_value_after_runtime_assumptions": null,
+  "ep_value": 746860000000.0,
+  "runtime_compare_assumptions": [],
+  "ep_evidence": {
+    "assumed_cash": 50000000000.0,
+    "evidence_strength": "user_provided_for_current_ep_compare_basis",
+    "note": "User clarified that EP uses 50b cash for Project Funding compare. This is treated as an explicit compare-policy input rather than a calculator truth claim."
+  },
+  "current_assumption_parameters": {
+    "project_funding_cash_assumption": 50000000000.0,
+    "project_funding_rarity_family": "Mythic",
+    "project_funding_multiplier_at_assumed_cash": 6.349485002168009,
+    "berserker_assumption_multiplier": 8.0
+  },
+  "derived_fit": {
+    "applied_runtime_multiplier": null,
+    "required_total_runtime_multiplier_to_match_ep": null,
+    "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": null
+  },
+  "assessment": {
+    "calculator_change_recommended": false,
+    "compare_assumption_change_recommended": true,
+    "reason": "tower_damage residue sits in the compare-only runtime normalization layer, not the base damage resolver. With EP cash assumption fixed at 50b, the current x8 Berserker assumption nearly exactly closes the EP row."
+  },
+  "scenarios": [
+    {
+      "scenario": "current_package_runtime_assumptions",
+      "runtime_multiplier": null,
+      "package_value": null,
+      "relative_delta_pct": null,
+      "required_residual_multiplier_to_match_ep": null,
+      "note": "Current compare-only runtime assumptions as emitted by the package."
+    },
+    {
+      "scenario": "ep_cash_50b_with_berserker_x8",
+      "runtime_multiplier": 50.795880017344075,
+      "package_value": null,
+      "relative_delta_pct": null,
+      "required_residual_multiplier_to_match_ep": null,
+      "note": "EP compare uses Project Funding cash assumption of 50b; this scenario keeps Berserker at x8 and swaps only the PF cash assumption."
+    }
+  ]
+}

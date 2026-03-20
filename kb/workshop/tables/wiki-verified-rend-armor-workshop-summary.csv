@@ -1,0 +1,3 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+rend_armor,chance,500 billion coins after Super Critical,299,0.10%,+0.10% per level,30.00%,Chance on hit to permanently increase projectile damage taken by that enemy.,Attack Upgrades,row-verified-live-wiki
+rend_armor,multiplier,500 billion coins after Super Critical,299,0.0010x,+0.0010x per level,0.3000x,Stacks up to 800% of normal damage; only applies to tower projectiles.,Attack Upgrades,row-verified-live-wiki

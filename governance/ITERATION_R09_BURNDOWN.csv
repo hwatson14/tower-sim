@@ -1,0 +1,11 @@
+Track,Work item,Status,Verification
+Calculator baseline,Carry forward regenerated calculator baseline and audit rail,Done,Verified by continuing from R08 baseline and canonical `output/` rule
+Calculator baseline,Reclassify remaining EP gap bucket against live calculator evidence,Done,Verified by R09 ledger updates for 15 previously unresolved mechanics
+EP stat compilation,Retain copied-forward fresher EP mechanics registry in calculator KB,Done,Verified by mechanics registry metadata `ep_v5.03.02_extract_2026-03-17`
+EP stat compilation,Classify remaining 15 no-surface/out-of-scope mechanics,Done,Verified by `EP_REMAINING_BUCKET_RECLASSIFICATION_R09.csv`
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,R09 improves classification but does not establish universal EP parity
+EP stat compilation,Prove full EP output wiring,Not done / not proven,"Three formulas now sit in `calculator_destination_defined_not_emitted`, so universal wiring remains unproven"
+KB oracle harness,Keep regenerated output baseline as governance truth source,Done,Verified by prior R05 harness gate and continued audit-rail usage
+KB oracle harness,Reflect helper-vs-destination-defined distinction in readiness posture,Done,Verified in `R09_REMAINING_EP_BUCKET_RECLASSIFICATION.md`
+Optimiser,Treat retained helper formulas as candidate optimiser/helper-plane inputs,Done,Verified by explicit helper retention classifications in R09 ledger
+Optimiser,Define optimiser interface from trusted canonical outputs plus retained helper formulas,Remaining,Not yet verified

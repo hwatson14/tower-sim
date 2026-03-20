@@ -1,0 +1,10 @@
+scenario,mode,runs,mean_ms,median_ms,min_ms,max_ms
+health_canonical,full_safe,40,94.111,92.585,87.072,127.788
+health_canonical,incremental_targeted_probe_guarded,40,16.717,16.546,14.733,22.622
+health_canonical,incremental_cached_publish_guarded,40,19.089,18.268,14.553,63.558
+free_attack_canonical,full_safe,40,93.989,89.6,86.886,159.862
+free_attack_canonical,incremental_targeted_probe_guarded,40,19.4,19.071,16.007,27.113
+free_attack_canonical,incremental_cached_publish_guarded,40,16.859,16.154,14.834,22.097
+eals_runtime,full_safe,40,91.996,89.88,86.85,122.651
+eals_runtime,incremental_targeted_probe_guarded,40,16.772,16.328,15.665,24.882
+eals_runtime,incremental_cached_publish_guarded,40,17.601,16.603,15.628,48.406

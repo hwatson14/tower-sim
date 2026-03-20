@@ -1,0 +1,16 @@
+bc_name,scope,effect_type,target,behavior,reduction_applicable,rule_confidence,notes
+Boss Health,tournaments_or_tiers,multiplier,boss_hp,increase,yes,MEDIUM,Quantitative value belongs in Layer 3
+Boss Speed,tournaments_or_tiers,multiplier,boss_speed,increase,yes,MEDIUM,
+Enemy Damage,tournaments_or_tiers,multiplier,enemy_attack,increase,yes,MEDIUM,
+Enemy Health,tournaments_or_tiers,multiplier,enemy_hp,increase,yes,MEDIUM,
+Enemy Speed,tournaments_or_tiers,multiplier,enemy_speed,increase,yes,MEDIUM,
+Enemy Count,tournaments_or_tiers,multiplier,enemy_spawn_count,increase,yes,MEDIUM,
+Elite Health,tournaments_or_tiers,multiplier,elite_hp,increase,yes,MEDIUM,
+Elite Speed,tournaments_or_tiers,multiplier,elite_speed,increase,yes,MEDIUM,
+Bosses Every X Waves,tournaments_or_tiers,interval_override,boss_spawn_interval,decrease_interval,yes,HIGH,Behavioral override
+Death Ray Resistance,tournaments_or_tiers,mechanic_override,death_ray,convert_or_reduce_kill_behavior,yes,MEDIUM,Needs Layer 3 quant values
+Orb Resistance,tournaments_or_tiers,mechanic_override,orbs,convert_or_reduce_kill_behavior,yes,MEDIUM,Needs Layer 3 quant values
+Plasma Cannon Resistance,tournaments_or_tiers,mechanic_override,plasma_cannon,reduce_effectiveness,yes,MEDIUM,Needs Layer 3 quant values
+Thorns Resistance,tournaments_or_tiers,mechanic_override,thorns,reduce_effectiveness,yes,MEDIUM,Needs Layer 3 quant values
+Knockback Resistance,tournaments_or_tiers,resistance,knockback,increase_resistance,yes,MEDIUM,
+Ultimate Weapon Duration,tournaments_or_tiers,multiplier,uw_duration,decrease,no,HIGH,BC Reduction does not apply

@@ -1,0 +1,3 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+wall,wall_health,500 million coins after Death Defy,1800,20% tower health,+0.1% tower health per level,200.0% tower health,Wall blocks enemies until HP hits zero.,Wall,row-verified-live-wiki
+wall,wall_rebuild,500 million coins after Death Defy,300,600s current page wording baseline,-2s per level,600s page-stated minimum workshop value; hard cap currently 150s,Page states hard cap 150s despite workshop text saying minimum 600s; retained as source conflict note.,Wall,row-verified-live-wiki-conflicted-note

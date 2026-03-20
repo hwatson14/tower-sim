@@ -1,0 +1,27 @@
+{
+  "objectives": {
+    "ehp": {
+      "score": 2.0011889023909584e+17,
+      "display": "200.12 q",
+      "accuracy": "ep_verified",
+      "formula": "(tower_hp*(wall_ratio*wall_fort + max_recovery*recovery_mult) + def_abs) * def_pct * cf * pbh"
+    },
+    "edamage": {
+      "score": 6232134815725337.0,
+      "display": "6.23 q",
+      "accuracy": "expanded_proxy",
+      "formula": "base_dps * crit * supercrit * shock"
+    },
+    "eecon": {
+      "score": 1119065729.559693,
+      "display": "1.12 B",
+      "accuracy": "expanded_proxy",
+      "formula": "base * GT * BH * GB * SL_coin * DW_coin * critical_coin * wave_skip"
+    }
+  },
+  "meta": {
+    "version": "v3",
+    "note": "eHP is EP-verified. eDamage expanded with shock. eEcon expanded with SL/DW coin, critical coin, wave skip.",
+    "requires": "max_progression state mode with projected perks for EP alignment"
+  }
+}

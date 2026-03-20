@@ -1,0 +1,9 @@
+wp_id,title,purpose,priority,acceptance_anchor
+WP1,state_identity_binding,Bind stat-query state identity to existing runtime/state contracts,10,Gate A
+WP2,scenario_family_binding,Bind bounded query families to existing state modes and runtime-input semantics,10,Gate A
+WP3,baseline_materialiser,Normalize compiler output rows into bounded family baseline contributor maps,10,Gate B
+WP4,overlay_applicator,Apply immutable overlay deltas and dirty only dependent surfaces,10,Gate B
+WP5,query_api_kernel,Implement materialise/apply/resolve API with contributor and trace support,10,Gates C and F
+WP6,timing_v1_migration,Migrate timing_v1 to canonical query ownership under bounded families,9,Gate D
+WP7,progression_v1_migration,Migrate progression_v1 to canonical query ownership under bounded families,9,Gate E
+WP8,benchmark_and_trace_hardening,Benchmark value and harden contributor/trace outputs,8,Gate F

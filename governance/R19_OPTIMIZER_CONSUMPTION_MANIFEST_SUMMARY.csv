@@ -1,0 +1,5 @@
+objective_family,row_count,planes,trust_tiers,optimizer_domains,payload_json,payload_csv
+eecon,22,canonical|helper_optimizer|runtime_mechanic,tier1|tier2,economy,output/optimizer_payload_r18_eecon.json,output/optimizer_payload_r18_eecon.csv
+ehp,5,canonical|helper_optimizer|runtime_mechanic,tier1|tier2,survivability,output/optimizer_payload_r18_ehp.json,output/optimizer_payload_r18_ehp.csv
+edamage,4,canonical|helper_optimizer|runtime_mechanic,tier1|tier2,damage,output/optimizer_payload_r18_edamage.json,output/optimizer_payload_r18_edamage.csv
+survival,6,canonical|helper_optimizer|runtime_mechanic,tier1|tier2,boss_control|survivability,output/optimizer_payload_r18_survival.json,output/optimizer_payload_r18_survival.csv

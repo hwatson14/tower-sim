@@ -1,0 +1,154 @@
+surface_name,bucket,current_status,note
+Starting Cash,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Workshop Attack Discount,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Workshop Defense Discount,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Workshop Utility Discount,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Labs Coin Discount,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Buy Multiplier,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+More Round Stats,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Target Priority,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Card Presets,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Workshop Respec,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Reroll Daily Mission,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Workshop Enhancements,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enhancement Attack - Coin Discount,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enhancement Defense - Coin Discount,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enhancement Utility - Coin Discount,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Max Rend Armor Multiplier,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Light Speed Shots,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Orbs Speed,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Land Mine Damage,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Land Mine Decay,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Shockwave Size,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Orb Boss Hit,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Garlic Thorns,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Cash / Wave,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Interest,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Max Interest,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Package After Boss,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recovery Package Amount,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recovery Package Max,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Second Wind Blast,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Double Death Ray,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Extra Orb Adjuster,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Energy Shield Extra Hit,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Super Tower Bonus,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recharge Second Wind,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recharge Demon Mode,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recharge Nuke,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Unlock Perks,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Auto Pick Perks,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Standard Perks Bonus,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Perk Option Quantity,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+First Perk Choice,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ban Perks,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Improve Trade-off Perks,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Auto Pick Ranking,perk_admin,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Flame Bot - Cooldown,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Thunder Bot - Cooldown,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Gold Bot - Cooldown,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Amp Bot - Cooldown,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Flame Bot - Burn Stack,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Thunder Bot - Linger Time,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Gold Bot - Duration,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Amp Bot - Duration,bots,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Common Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Common Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Fast Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Fast Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Fast Enemy Speed,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Tank Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Tank Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ranged Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ranged Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Boss Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Boss Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Protector Health,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Protector Radius,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Protector Damage Reduction,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ray Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ray Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Vampire Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Vampire Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Scatter Enemy Attack,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Scatter Enemy Health,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ranged Enemy Range,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Common Drop Chance,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Reroll Shards,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Daily Mission Shards,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Module Shards Cost,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Module Coin Cost,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Rare Drop Chance,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Unmerge Module,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Shatter Shards,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Cannon Effect Bans,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Armor Effect Bans,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Generator Effect Bans,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Core Effect Bans,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Substats - Cannon,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Substats - Armor,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Substats - Generator,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Substats - Core,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Bonus - Cannon,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Bonus - Armor,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Bonus - Generator,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Assist Module Bonus - Core,modules,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Damage Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Attack Speed Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Health Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Health Regen Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Range Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Cash Mastery,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Coins Mastery,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Slow Aura Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Critical Chance Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enemy Balance Mastery,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Extra Defense Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Fortress Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Free Upgrades Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Extra Orb Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Plasma Cannon Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Critical Coin Mastery,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Wave Skip Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Intro Sprint Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Land Mine Stun Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Recovery Package Chance Mastery,economy_or_recovery,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Death Ray Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Energy Net Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Super Tower Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Second Wind Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Demon Mode Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Energy Shield Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Wave Accelerator Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Berserker Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ultimate Crit Mastery,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Nuke Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Area of Effect Mastery,masteries,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Knockback Resistance,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Thorns Resistance,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Orb Resistance,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Plasma Cannon Resistance,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Death Ray Resistance,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Armored Enemies,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enemy Speed,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+More Enemies,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enemy Attack Speed,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Fast's Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ranged Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Boss's Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Basic's Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Tank's Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Protector's Ultimate,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Ultimate Weapon Durations,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Death Defy Down,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Energy Shields Down,combat_utility_or_other,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Enemy Level Skip Reduction,environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+END OF ARRAY,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Keys spent,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Total Bonuses,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Misc.,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Attack,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Defense,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Utility,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+Unlocks,admin_or_meta,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.
+"Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1",environment_or_tournament,excluded_from_current_calculator_publish_scope,Preserved raw/excluded surface; not an in-scope unmapped calculator destination in current package.

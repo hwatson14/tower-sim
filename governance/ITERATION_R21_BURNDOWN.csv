@@ -1,0 +1,12 @@
+track,work_item,status,verification
+calculator baseline,fully ingest and integrate v100 baseline,done,verified in R20 integrated baseline
+calculator baseline,hard-check changed files for regression candidates,done,verified by diffing the 17 changed files against raw v100
+calculator baseline,restore contributor_consumption metadata emission in line-by-line verification,done,verified by rerun and 32 emitted rows containing contributor_consumption
+calculator baseline,confirm no further visible calculator output regressions from the restore,done,verified by successful rerun and refreshed output artifacts
+EP stat compilation,retain copied-forward fresher EP mechanics registry in integrated baseline,done,verified still present from R20; no change in R21
+EP stat compilation,prove full EP implementation coverage,not done / not proven,unchanged from R20/R19 state
+EP stat compilation,prove full EP output wiring,not done / not proven,unchanged from prior state
+KB oracle harness,carry forward governance/completeness posture from integrated baseline,done,verified governance folder preserved; no completion rerun in R21
+KB oracle harness,fix raw v100 package hygiene and canonical-path defects,remaining,not yet verified; inherited issue remains open
+optimiser,carry forward payload family and consumption manifest on integrated baseline,done,verified existing output payload and manifest files retained
+optimiser,add executable manifest validator,remaining,not yet verified

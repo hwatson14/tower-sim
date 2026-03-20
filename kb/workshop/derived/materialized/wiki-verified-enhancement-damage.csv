@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Damage,attack,Unlocked for free after Workshop Enhancement Labs.,x1.0,+0.01,400,x5.00,Multiplier applies to Damage.,Workshop_Enhancement/Attack/Damage,row_verified_v61

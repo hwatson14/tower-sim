@@ -1,0 +1,5 @@
+objective_family,row_count,role,notes
+eecon,22,EP-core economy objective,Primary optimiser family aligned to EP eecon logic family.
+ehp,5,EP-core defensive durability proxy objective,Primary optimiser family aligned to EP ehp logic family; excludes boss-control helper rows.
+edamage,4,EP-core offensive effectiveness objective,Primary optimiser family aligned to EP edamage logic family.
+survival,6,Composite survival objective,Secondary composite objective broader than ehp; includes boss-control support.

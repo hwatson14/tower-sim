@@ -1,0 +1,200 @@
+version: 2
+policy:
+  publish_default: allow_if_resolved
+  known_bad_policy: block_publish
+  oracle_policy: forbidden_for_publish
+  compare_policy: classify_before_counting_mismatch
+surfaces:
+  canonical_stat::tower_attack_speed:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_crit_chance_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+    rationale: KB-routed percent surface; compare remains normalized because EP may
+      emit decimal fractions.
+  canonical_stat::tower_crit_multiplier:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::package_chance_pct:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+    rationale: KB supports workshop base plus additive package-chance bonuses.
+  canonical_stat::tower_hp:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Relic health semantics are now explicit in the KB as pct_bonus, matching
+      live-wiki guidance that relic bonuses are additive with similar relics and multiplicative
+      with other bonuses.
+  canonical_stat::tower_regen:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Relic health-regen semantics are now explicit in the KB as pct_bonus,
+      matching live-wiki guidance that relic bonuses are additive with similar relics
+      and multiplicative with other bonuses.
+  canonical_stat::max_rend_mult:
+    formula_class: kb_contract_repaired
+    publish_policy: allow
+    compare_policy: noncomparable
+    rationale: Exact max-rend formula uses the Rend Armor enhancement multiplier on the 8x base cap, with additive lab bonus and module-substat max-rend percent converted onto the base cap; publish separately from base Rend Armor Mult.
+  canonical_stat::tower_defense_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+  canonical_stat::coins_per_kill_bonus:
+    formula_class: kb_contract_repaired
+    publish_policy: allow
+    compare_policy: normal
+    rationale: "Coins / Kill display surface: (((workshop x lab) + generator substat sum) x enhancement spillover x (1+vault)) x all-coin perk multipliers. Coin perks are KB-owned on this surface, not on broad all-coin helper surfaces."
+  canonical_stat::coin_bonus_multiplier:
+    formula_class: kb_contract_repaired
+    publish_policy: allow
+    compare_policy: helper_or_non_ep_surface
+    rationale: "Broad KB-owned coin surface: direct Coin Bonus enhancement x generator main coin bonus only. Coin perks do not own this surface."
+  canonical_stat::coins_multiplier:
+    formula_class: kb_contract_helper_surface
+    publish_policy: allow
+    compare_policy: helper_or_non_ep_surface
+    rationale: "Helper broad-coins multiplier from card and relic rows only; used for composed all-coin display surface."
+  canonical_stat::all_coin_bonus_multiplier:
+    formula_class: kb_contract_repaired_derived_display
+    publish_policy: allow_if_resolved
+    compare_policy: noncomparable_until_oracle
+    rationale: "Derived all-coin display surface: coin_bonus_multiplier x coins_multiplier x theme song coin multiplier x parsed account coin multiplier display. Premium flags are traced for audit but not numerically interpreted."
+  canonical_stat::coin_kill_multiplier:
+    formula_class: deprecated_transition_mirror
+    publish_policy: allow
+    compare_policy: normal
+    rationale: "Deprecated compatibility mirror of canonical_stat::coins_per_kill_bonus during transition; must not remain the owner of mixed coin logic."
+  canonical_stat::tower_damage:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normal
+    rationale: KB now closes damage contributor semantics sufficiently for publish;
+      workshop base scaled by lab/card/module/enhancement/relic/vault multipliers.
+  canonical_stat::tower_range_m:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_damage_per_meter_multiplier:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normal
+    rationale: KB and engine now close the destination-specific formula as decimal
+      workshop bonus multiplied by lab and post multipliers.
+  canonical_stat::tower_multishot_chance_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+  canonical_stat::tower_multishot_targets:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_rapid_fire_chance_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+  canonical_stat::tower_rapid_fire_duration_seconds:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_bounce_shot_chance_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+  canonical_stat::tower_bounce_shot_targets:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_supercrit_chance_pct:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normalize_percent_scale
+  canonical_stat::tower_supercrit_multiplier:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::tower_defense_absolute:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: normal
+    rationale: KB now closes defense-absolute contributor semantics sufficiently for
+      publish; workshop base scaled by lab/card/enhancement/relic/vault multipliers.
+  canonical_stat::wall_hp:
+    formula_class: kb_contract_repaired
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Wall Health lab semantics are now explicit in the KB as additive percent
+      points, matching the live-wiki ladder and allowing the destination-specific
+      wall HP formula to publish.
+  canonical_stat::wall_fortification_multiplier:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: scaled_number_noncomparable
+  canonical_stat::wall_regen:
+    formula_class: kb_contract_repaired
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Wall regen depends on tower_regen and uses a wiki-verified wall-regen
+      percent ladder already represented in the KB; with tower_regen contract repaired,
+      publish can be re-enabled.
+  canonical_stat::free_attack_upgrade_chance_pct:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: noncomparable
+    rationale: EP export surface is not directly comparable to package stage semantics
+      here.
+  canonical_stat::free_defense_upgrade_chance_pct:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: noncomparable
+  canonical_stat::free_utility_upgrade_chance_pct:
+    formula_class: generic_family_promoted
+    publish_policy: allow
+    compare_policy: noncomparable
+  canonical_stat::wall_rebuild_seconds:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+  canonical_stat::max_recovery_multiplier:
+    formula_class: compare_noncomparable
+    publish_policy: allow
+    compare_policy: noncomparable
+    rationale: EP export Max Recovery reflects health-at-max-recovery, not the multiplier
+      surface emitted by the package.
+  canonical_stat::cash_kill_multiplier:
+    formula_class: generic_validated
+    publish_policy: allow
+    compare_policy: normal
+    rationale: 'Shared base-multiplier family: workshop base multiplier scaled by
+      lab/card/enhancement and post-multiplied by relic/vault bonuses.'
+  runtime_mechanic_param::cards.plasma_cannon.effect_pct:
+    formula_class: helper_formula
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Resolved Plasma Cannon card effect percent surface for helper/runtime/optimizer
+      use; sourced from active card base ladder when equipped.
+  runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier:
+    formula_class: helper_formula
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Resolved helper/optimizer-facing ultimate weapon coin bonus multiplier
+      exposed for econ analysis and optimizer consumption.
+  runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier:
+    formula_class: helper_formula
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Resolved helper/optimizer-facing ultimate weapon coin bonus multiplier
+      exposed for econ analysis and optimizer consumption.
+  runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier:
+    formula_class: helper_formula
+    publish_policy: allow
+    compare_policy: normal
+    rationale: Resolved helper/optimizer-facing ultimate weapon coin bonus multiplier
+      exposed for econ analysis and optimizer consumption.

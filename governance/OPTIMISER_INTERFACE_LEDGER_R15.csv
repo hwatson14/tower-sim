@@ -1,0 +1,33 @@
+destination,output_plane,optimizer_domain,trust_tier,status,final_value,display_value,resolver,formula_class,rationale
+canonical_stat::tower_hp,canonical,survivability,tier1,resolved,12291017717105.203,12.3T,standard_scalar_stat,generic_family_promoted,already audited core survivability surface
+canonical_stat::tower_regen,canonical,survivability,tier1,resolved,854325293355.0114,854B,standard_scalar_stat,generic_family_promoted,already audited core survivability surface
+canonical_stat::tower_damage,canonical,damage,tier1,resolved,3013553551.2716107,3.01B,standard_scalar_stat,generic_family_promoted,already audited core offense surface
+canonical_stat::coin_kill_multiplier,canonical,economy,tier1,resolved,9.659790000000001,x9.66,standard_scalar_stat,generic_validated,already audited core economy surface
+canonical_stat::cash_kill_multiplier,canonical,economy,tier1,resolved,15.142132224,x15.142,standard_scalar_stat,generic_validated,already audited core economy surface
+runtime_mechanic_param::cards.plasma_cannon.effect_pct,helper_optimizer,boss_control,tier1,resolved,54.0,54%,standard_scalar_param,helper_formula,emitted helper row with direct boss damage relevance
+runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,helper_optimizer,economy,tier1,resolved,11.0,x11,standard_scalar_param,helper_formula,emitted helper row for BH econ contribution
+runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,helper_optimizer,economy,tier1,resolved,2.5,x2.5,standard_scalar_param,helper_formula,emitted helper row for DW econ contribution
+runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,helper_optimizer,economy,tier1,resolved,3.0,x3,standard_scalar_param,helper_formula,emitted helper row for spotlight econ contribution
+mechanic_param::uw.golden_tower.bonus_multiplier,runtime_mechanic,economy,tier2,resolved,12.0,x12,standard_scalar_param,unclassified,resolved core UW econ mechanic
+mechanic_param::uw.golden_tower.cooldown_seconds,runtime_mechanic,economy,tier2,resolved,12.0,12,cooldown_param,unclassified,resolved core UW econ mechanic
+mechanic_param::uw.golden_tower.duration_seconds,runtime_mechanic,economy,tier2,resolved,22.0,22,uw_duration_param,unclassified,resolved core UW econ mechanic
+mechanic_param::uw.black_hole.cooldown_seconds,runtime_mechanic,economy,tier2,resolved,15.0,15,cooldown_param,unclassified,resolved core UW econ mechanic
+mechanic_param::uw.black_hole.duration_seconds,runtime_mechanic,economy,tier2,resolved,17.0,17,uw_duration_param,unclassified,resolved core UW econ mechanic
+mechanic_param::uw.black_hole.size_m,runtime_mechanic,economy,tier2,resolved,9.0,9,standard_scalar_param,unclassified,resolved core UW control/econ mechanic
+mechanic_param::uw.spotlight.angle_degrees,runtime_mechanic,economy,tier2,resolved,9.0,9,standard_scalar_param,unclassified,resolved spotlight coverage mechanic
+mechanic_param::uw.spotlight.bonus_multiplier,runtime_mechanic,economy,tier2,resolved,9.0,x9,standard_scalar_param,unclassified,resolved spotlight damage mechanic
+mechanic_param::uw.spotlight.count,runtime_mechanic,economy,tier2,resolved,2.0,2,integer_count_param,unclassified,resolved spotlight coverage mechanic
+mechanic_param::uw.death_wave.effect_wave_count,runtime_mechanic,economy,tier2,resolved,2.0,2,integer_count_param,unclassified,resolved DW economy helper mechanic
+mechanic_param::uw.death_wave.cooldown_seconds,runtime_mechanic,economy,tier2,resolved,12.0,12,cooldown_param,unclassified,resolved DW economy cadence mechanic
+mechanic_param::uw.death_wave.damage_multiplier,runtime_mechanic,damage,tier2,resolved,8.0,x8,standard_scalar_param,unclassified,resolved DW damage mechanic
+runtime_mechanic_param::cards.wave_skip.chance_pct,helper_optimizer,economy,tier2,resolved,19.0,19,standard_scalar_param,unclassified,run-speed/econ helper row
+runtime_mechanic_param::cards.critical_coin.bonus_multiplier,helper_optimizer,economy,tier2,resolved,33.0,33,standard_scalar_param,unclassified,critical coin helper row
+runtime_mechanic_param::bot.golden_bot.bonus_multiplier_x,helper_optimizer,economy,tier2,resolved,5.6,5.6,standard_scalar_param,unclassified,golden bot econ helper row
+runtime_mechanic_param::bot.golden_bot.cooldown_seconds,helper_optimizer,economy,tier2,resolved,105.0,105,standard_scalar_param,unclassified,golden bot cadence helper row
+runtime_mechanic_param::bot.golden_bot.duration_seconds,helper_optimizer,economy,tier2,resolved,23.5,23.5,standard_scalar_param,unclassified,golden bot cadence helper row
+runtime_mechanic_param::bot.golden_bot.range_meters,helper_optimizer,economy,tier2,resolved,50.0,50,standard_scalar_param,unclassified,golden bot coverage helper row
+runtime_mechanic_param::bot.flame_bot.damage_reduction_pct,helper_optimizer,survivability,tier2,resolved,0.47,0.47,standard_scalar_param,unclassified,flame bot survivability helper row
+runtime_mechanic_param::bot.flame_bot.damage_multiplier_x,helper_optimizer,damage,tier2,resolved,50.0,50,standard_scalar_param,unclassified,flame bot damage helper row
+mechanic_param::module.orbital_augment.electron_count,runtime_mechanic,damage,tier2,resolved,2.0,2,integer_count_param,unclassified,resolved OA mechanic with strategic value
+mechanic_param::module.primordial_collapse.bh_damage_reduction_pct,runtime_mechanic,survivability,tier2,resolved,80.0,80%,standard_scalar_param,unclassified,resolved defensive module mechanic
+mechanic_param::module.sharp_fortitude.wall_bonus_multiplier,runtime_mechanic,survivability,tier2,resolved,2.5,x2.5,standard_scalar_param,unclassified,resolved defensive module mechanic

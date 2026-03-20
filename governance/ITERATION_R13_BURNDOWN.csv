@@ -1,0 +1,11 @@
+track,work_item,status,verification
+Calculator baseline,Regenerate canonical output on R12 baseline,Done,Verified by successful python run_stats.py and output/ inspection
+Calculator baseline,Refresh completion/readiness metrics after helper expansion,Done,"Verified diagnostics: publishable=164, blocked=10, trace_only=190, resolved=174"
+Calculator baseline,Confirm helper-plane emitted row count,Done,Verified 4 helper_formula rows in output/statbook_publishable.json
+EP stat compilation,Keep copied-forward fresher EP registry in calculator KB,Done,Verified prior copied-forward mechanics registry remains baseline source for EP coverage work
+EP stat compilation,Recheck EP compare health after helper expansion,Done,"Verified ep_compare_count=27, true_formula_mismatch_count=0, stage_scope_mismatch_count=10"
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,Remaining beyond current helper-plane completion refresh
+KB oracle harness,Refresh completion gate after Plasma Cannon and BH/DW/SL helper promotions,Done,Verified current verdict remains usable_with_caveats_not_fully_complete with publish_status=forbidden_for_publish
+KB oracle harness,Achieve package-wide full completeness verdict,Not done,Governance/classification maturity still incomplete
+Optimiser,Keep emitted helper rows available for optimiser consumption,Done,Verified helper rows now emitted: 4
+Optimiser,Define optimiser interface over canonical + helper planes,Remaining,Not yet verified

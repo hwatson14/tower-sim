@@ -1,0 +1,10 @@
+plane,destination,optimizer_domain,guarantee_level,status,publishable,formula_class,display_value,unit,source_basis
+canonical,canonical_stat::tower_hp,survivability_core,high,resolved,True,generic_family_promoted,12.3T,hp,audited_core_surface
+canonical,canonical_stat::tower_regen,survivability_core,high,resolved,True,generic_family_promoted,854B,hp_per_second,audited_core_surface
+canonical,canonical_stat::tower_damage,damage_core,high,resolved,True,generic_family_promoted,3.01B,damage,audited_core_surface
+canonical,canonical_stat::coin_kill_multiplier,econ_core,high,resolved,True,generic_validated,x9.66,multiplier,audited_core_surface
+canonical,canonical_stat::cash_kill_multiplier,econ_core,high,resolved,True,generic_validated,x15.142,multiplier,audited_core_surface
+helper_optimizer,runtime_mechanic_param::cards.plasma_cannon.effect_pct,boss_damage_helper,medium,resolved,True,helper_formula,54%,pct,emitted_helper_row
+helper_optimizer,runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,econ_helper,medium,resolved,True,helper_formula,x11,multiplier,emitted_helper_row
+helper_optimizer,runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,econ_helper,medium,resolved,True,helper_formula,x2.5,multiplier,emitted_helper_row
+helper_optimizer,runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,econ_helper,medium,resolved,True,helper_formula,x3,multiplier,emitted_helper_row

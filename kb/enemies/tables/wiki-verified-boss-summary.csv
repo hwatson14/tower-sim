@@ -1,0 +1,5 @@
+rule,value_or_note,source_page
+appearance,Every 10 waves,Enemies
+health_multiplier_vs_basic,x20,Enemies
+speed_modifier_vs_basic,+30%,Enemies
+base_coin_value,5,Enemies

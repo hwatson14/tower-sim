@@ -1,0 +1,12 @@
+Track,Work item,Status,Verification
+Calculator baseline,Carry forward regenerated calculator baseline and R18 objective-family payloads,Done,Verified by loading all four R18 payload JSON files from output/
+Calculator baseline,Define strict consumption rules over emitted payloads only,Done,Verified by output/optimizer_consumption_manifest_r19.json global rules
+Calculator baseline,Create row-level consumption rules by objective family,Done,Verified by governance/R19_OPTIMIZER_CONSUMPTION_ROW_RULES.csv
+EP stat compilation,Keep EP core objective framing at optimizer layer,Done,Verified by manifest objective families eecon/ehp/edamage plus additive survival
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,R19 is a downstream consumption contract only
+EP stat compilation,Prove full EP output wiring,Not done / not proven,R19 consumes existing emitted payloads only
+KB oracle harness,Keep readiness posture stable after downstream manifest addition,Done,No calculator emitted-row mutation in R19
+KB oracle harness,Re-run completion gate after R19,Not needed this iteration,R19 is downstream-contract only
+Optimiser,Turn objective-family payloads into strict consumption manifest,Done,Verified by output/optimizer_consumption_manifest_r19.json and governance markdown/CSVs
+Optimiser,Define fallback behavior for missing rows and missing payloads,Done,Verified in manifest global_rules.fallback_behavior and family notes
+Optimiser,Add executable validator over consumption manifest,Remaining,Not yet verified

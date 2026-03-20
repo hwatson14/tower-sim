@@ -1,0 +1,8 @@
+step,scope_item,verification,status
+1,Cache canonical stat metadata,targeted tests,complete
+2,Use transitive upstream closure,targeted tests,complete
+3,Build selected-node buckets only,targeted tests,complete
+4,Remove contributor serialization,targeted tests,complete
+5,Rerun benchmark,benchmark outputs,complete
+6,Optimise publish overlay,next tranche,pending
+7,Expand safe coverage,beyond current subset,pending

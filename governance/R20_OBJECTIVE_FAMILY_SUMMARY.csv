@@ -1,0 +1,5 @@
+objective,rows,payload
+eecon,22,output/optimizer_payload_r20_eecon.json
+ehp,5,output/optimizer_payload_r20_ehp.json
+edamage,4,output/optimizer_payload_r20_edamage.json
+survival,6,output/optimizer_payload_r20_survival.json

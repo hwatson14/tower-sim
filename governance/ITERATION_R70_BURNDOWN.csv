@@ -1,0 +1,9 @@
+step,scope_item,verification,verification_status,delivery_status
+1,Add bridge phase timing instrumentation,targeted bridge tests,verified,complete
+2,Expose phase timings in diagnostics,targeted bridge tests,verified,complete
+3,Extend benchmark harness to collect phase timings,benchmark script execution,verified,complete
+4,Emit phase-row CSV and attribution CSV,artifact inspection,verified,complete
+5,Measure full_safe vs targeted_probe vs cached_publish,benchmark outputs,verified,complete
+6,Identify dominant cost phases,benchmark outputs,verified,complete
+7,Optimise subset executor internals,not yet run,not started,pending
+8,Rerun benchmark after optimisation,not yet run,not started,pending

@@ -1,0 +1,12 @@
+track,work_item,status,verification
+Calculator baseline,Carry forward regenerated calculator baseline and existing whitelist/helper rows,Done,Derived R18 payloads only from existing emitted whitelist rows; no formula mutation.
+Calculator baseline,Refactor payload family names to EP-core objectives eecon/ehp/edamage plus survival composite,Done,Created output/optimizer_payload_r18_eecon|ehp|edamage|survival JSON and CSV files.
+Calculator baseline,Separate ehp from broader survival composite,Done,ehp excludes Plasma Cannon boss-control helper; survival includes it. Verified in R18_EHP_VS_SURVIVAL_DIFF.csv.
+EP stat compilation,Restore EP-core naming at optimiser objective layer,Done,R18 objective family docs and payload names now mirror eecon/ehp/edamage as primary families.
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,R18 is downstream payload refactor only; no new EP implementation proof.
+EP stat compilation,Prove full EP output wiring,Not done / not proven,R18 slices existing emitted whitelist rows only.
+KB oracle harness,Keep completion/readiness posture stable after downstream payload refactor,Done,No calculator output mutation; prior completion verdict remains applicable.
+KB oracle harness,Re-run completion gate after R18,Not needed this iteration,Downstream payload rename/refactor only.
+Optimiser,Replace generic domain slices with explicit objective-family payloads,Done,Generated four objective payloads and summary docs.
+Optimiser,"Keep survival as additive fourth optimiser, not replacement for ehp",Done,R18 docs explicitly state survival is secondary composite broader than ehp.
+Optimiser,Implement optimiser consumption over R18 payload family,Remaining,Not yet verified.

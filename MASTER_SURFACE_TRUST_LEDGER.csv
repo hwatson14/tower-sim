@@ -1,0 +1,45 @@
+surface_id,path,domain,primary_or_derived,status,trust_tier,retrieval_priority,safe_for_first_pass,surface_role,authority_source,notes
+root.start_here,START_HERE_FOR_AI.md,root,primary,canonical,1.0,1.0,yes,ai_entry,control_plane_authority,Primary AI entry surface; current rules only.
+root.manifest,manifest.json,root,primary,canonical,1.0,2.0,yes,package_manifest,control_plane_authority,Single release-identity and completeness truth surface.
+root.chatgpt_profile,CHATGPT_KB_PROFILE.yaml,root,primary,canonical,1.0,2.0,yes,chatgpt_profile,control_plane_authority,Machine-readable ChatGPT loading and boundary profile.
+root.readme,readme.md,root,primary,canonical,1.0,3.0,yes,human_readme,control_plane_authority,Concise package overview for human and AI operators.
+root.kb_index,kb/index.md,root,primary,canonical,1.0,4.0,yes,kb_index,control_plane_authority,Primary internal index.
+root.retrieval_policy,RETRIEVAL_POLICY.yaml,root,primary,canonical,1.0,5.0,yes,retrieval_governance,control_plane_authority,Machine-readable retrieval constitution.
+root.execution_order,SURFACE_EXECUTION_ORDER.yaml,root,primary,canonical,1.0,6.0,yes,execution_order,control_plane_authority,Mandatory cross-surface execution order.
+root.unknowns_policy,UNKNOWNS_OPERATING_POLICY.csv,root,primary,canonical,1.0,7.0,yes,unknowns_policy,control_plane_authority,Operational unknown handling rules.
+root.task_entrypoints,TASK_ENTRYPOINTS.yaml,root,primary,canonical,1.0,8.0,yes,task_router,control_plane_authority,Task routing surface.
+root.priority_registry,SURFACE_PRIORITY_REGISTRY.csv,root,derived,generated_control_plane,1.0,9.0,yes,surface_ranking,MASTER_SURFACE_TRUST_LEDGER.csv,Generated from master surface trust ledger.
+root.status_tags,SURFACE_STATUS_TAGS.csv,root,derived,generated_control_plane,1.0,10.0,yes,surface_status,MASTER_SURFACE_TRUST_LEDGER.csv,Generated from master surface trust ledger.
+root.master_trust_ledger,MASTER_SURFACE_TRUST_LEDGER.csv,root,primary,canonical,1.0,11.0,yes,control_plane_authority,self,Authoritative control-plane path/status/trust ledger.
+root.target_standard,KB_TARGET_STANDARD.md,root,primary,canonical,1.0,13.0,yes,target_standard,control_plane_authority,Current target standard and scope limits.
+root.verification_status,VERIFICATION_COMPLETENESS_STATUS.md,root,primary,canonical,1.0,14.0,yes,verification_status,control_plane_authority,Current verification counts by trust class.
+ledger.core_status,kb/ledgers/notes/core-kb-status.md,ledgers,primary,canonical,1.0,20.0,yes,package_status,control_plane_authority,Current package verdict and trust posture.
+ledger.completeness,kb/ledgers/tables/core-kb-completeness.csv,ledgers,primary,resolved_derived,1.0,21.0,yes,closure_status,control_plane_authority,Primary completeness surface.
+ledger.domain_completeness,kb/ledgers/tables/domain-completeness-ledger.csv,ledgers,primary,canonical,1.0,22.0,yes,domain_completeness,control_plane_authority,Domain closure ledger.
+ledger.formula_coverage,kb/ledgers/tables/formula-coverage-ledger.csv,ledgers,primary,canonical,1.0,23.0,yes,formula_coverage,control_plane_authority,Formula coverage ledger.
+ledger.explicit_unknowns,kb/ledgers/tables/scope-boundary-registry.csv,ledgers,primary,scope_boundary_registry,1.0,24.0,yes,scope_boundaries,control_plane_authority,"Simulator-scope boundary registry: out-of-scope timing edges, accepted boundaries, and resolved canonical choices."
+ledger.sim_mechanic,kb/ledgers/tables/simulator-mechanic-coverage-ledger.csv,ledgers,primary,canonical,1.0,25.0,yes,simulator_coverage,control_plane_authority,Simulator-mechanic coverage ledger.
+ledger.sim_verification,kb/ledgers/tables/simulator-verification-ledger.csv,ledgers,primary,canonical,1.0,26.0,yes,simulator_verification,control_plane_authority,Simulator verification ledger.
+ledger.source_conflicts,kb/ledgers/tables/source-conflict-registry.csv,ledgers,primary,conflict_registry,1.0,27.0,yes,source_conflicts,control_plane_authority,Explicit source conflicts that block clean compression.
+global.aliases,kb/global-rules/contracts/name-aliases.yaml,global-rules,primary,canonical_contract,2.0,30.0,yes,alias_resolution,control_plane_authority,Canonical alias surface.
+global.naming_contract,kb/global-rules/contracts/naming-contract.yaml,global-rules,primary,canonical_contract,2.0,31.0,yes,naming_governance,control_plane_authority,Canonical naming contract.
+global.relic_inputs,kb/global-rules/tables/relic-input-registry.csv,global-rules,primary,canonical,2.0,32.0,yes,input_registry,control_plane_authority,Simulator-facing relic input registry.
+global.player_inputs,kb/global-rules/tables/player-stuff-input-registry.csv,global-rules,primary,canonical,2.0,33.0,yes,input_registry,control_plane_authority,Simulator-facing player-state input registry.
+global.theme_song_inputs,kb/global-rules/tables/theme-song-input-registry.csv,global-rules,primary,canonical,2.0,34.0,yes,input_registry,control_plane_authority,Simulator-facing theme/song input registry.
+global.unlock_inputs,kb/global-rules/tables/unlock-input-registry.csv,global-rules,primary,canonical,2.0,35.0,yes,input_registry,control_plane_authority,Simulator-facing unlock input registry.
+combat.ordering,kb/combat/contracts/runtime-ordering-canonical.csv,combat,primary,canonical_contract,2.0,40.0,yes,runtime_ordering,control_plane_authority,Primary combat ordering surface.
+combat.pipeline,kb/combat/contracts/runtime-damage-pipeline.csv,combat,primary,canonical_contract,2.0,41.0,yes,runtime_pipeline,control_plane_authority,Primary damage pipeline surface.
+tournaments.bc_curves,kb/tournaments/tables/battle-condition-curves-canonical.csv,tournaments,primary,resolved_derived,1.0,50.0,yes,battle_condition_curves,control_plane_authority,Canonical BC curve surface.
+tournaments.bc_resolved,kb/tournaments/tables/tier-battle-condition-resolved-values.csv,tournaments,primary,resolved_derived,1.0,51.0,yes,resolved_tier_bc_values,control_plane_authority,Exact resolved tier BC values where supported.
+tournaments.bc_unknown,kb/tournaments/tables/tier-battle-condition-accepted-unknown-boundary.csv,tournaments,primary,accepted_unknown_boundary,1.0,52.0,yes,tier_bc_unknowns,control_plane_authority,Tier BC rows intentionally accepted as unknown-to-community boundaries.
+workshop.aggregate_values,kb/workshop/derived/materialized/workshop-values.csv,workshop,derived,derived_non_primary,3.0,70.0,no,aggregate_view,control_plane_authority,Derived aggregate workshop materialized view; not first-pass canon.
+workshop.aggregate_enhancements,kb/workshop/derived/materialized/enhancements-values.csv,workshop,derived,derived_non_primary,3.0,71.0,no,aggregate_view,control_plane_authority,Derived aggregate enhancement materialized view; not first-pass canon.
+labs.summary,kb/labs/tables/lab-track-summary.csv,labs,primary,canonical,2.0,72.0,yes,summary_registry,control_plane_authority,Lab ladder summary surface.
+labs.application_registry,kb/labs/tables/lab-application-registry.csv,labs,primary,canonical,2.0,73.0,yes,application_registry,control_plane_authority,Lab target-routing registry.
+labs.source_registry,kb/labs/tables/lab-source-registry.csv,labs,primary,canonical,2.0,74.0,yes,source_registry,control_plane_authority,Lab source registry.
+labs.boundary,kb/labs/tables/lab-simulator-boundary-registry.csv,labs,primary,resolved_boundary_registry,2.0,75.0,yes,lab_boundary_registry,control_plane_authority,Resolved or accepted lab-scope boundaries for simulator use.
+uw.runtime_proof,kb/ultimate-weapons/contracts/uw-runtime-proof-matrix.csv,ultimate-weapons,primary,canonical_contract,2.0,80.0,yes,runtime_proof,control_plane_authority,UW runtime proof matrix.
+bots.runtime_contract,kb/bots/contracts/bot-runtime-contract.md,bots,primary,canonical_contract,2.0,81.0,yes,runtime_contract,control_plane_authority,Bot runtime contract.
+bots.runtime_proof,kb/bots/contracts/bot-runtime-proof-matrix.csv,bots,primary,canonical_contract,2.0,82.0,yes,runtime_proof,control_plane_authority,Bot runtime proof matrix.
+profile_knowledge_role_schema,KNOWLEDGE_ROLE_SCHEMA.yaml,control_plane,primary,active,high,highest,yes,control_plane_schema,control_plane_authority,Knowledge-role definitions for ChatGPT routing.
+profile_knowledge_role_registry,KNOWLEDGE_ROLE_REGISTRY.csv,control_plane,primary,active,high,highest,yes,control_plane_registry,control_plane_authority,Knowledge-role registry for ChatGPT routing.

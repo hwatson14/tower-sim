@@ -1,0 +1,55 @@
+{
+  "package_name": "tower_kb_calculator_baseline",
+  "release_locator": "Use the enclosing zip filename as the only release/version identifier.",
+  "created_on": "2026-03-18",
+  "package_focus": "combined AI-facing Tower knowledge base, stat calculator, perk timeline, progression foundation, and downstream optimizer support package",
+  "package_status_verdict": "runnable and merge-ready as the current KB/calculator baseline with explicit open items retained; not final full-simulator closure",
+  "control_plane_authority": "MASTER_SURFACE_TRUST_LEDGER.csv",
+  "current_entry_surfaces": [
+    "START_HERE_FOR_AI.md",
+    "CHATGPT_KB_PROFILE.yaml",
+    "manifest.json",
+    "readme.md",
+    "RETRIEVAL_POLICY.yaml",
+    "TASK_ENTRYPOINTS.yaml",
+    "SURFACE_EXECUTION_ORDER.yaml",
+    "KNOWLEDGE_ROLE_SCHEMA.yaml",
+    "KNOWLEDGE_ROLE_REGISTRY.csv",
+    "SURFACE_PRIORITY_REGISTRY.csv",
+    "MASTER_SURFACE_TRUST_LEDGER.csv",
+    "UNKNOWNS_OPERATING_POLICY.csv",
+    "MERGE_NOTES_FOR_AI.md",
+    "kb/index.md",
+    "freeze-status.md"
+  ],
+  "verification_snapshot": {
+    "row_verified_live_source": 210,
+    "exact_rule_verified_formula": 40,
+    "repo_trusted_user_provided": 4,
+    "evidence_backed_trusted": 250,
+    "derived_non_primary_classified": 56,
+    "conflict_registered_classified": 3,
+    "supporting_noncanonical_classified": 82,
+    "total_classified_surfaces": 393,
+    "remaining_unclassified": 0
+  },
+  "storage_policy_summary": {
+    "canonical_tables_primary": true,
+    "contracts_secondary": true,
+    "strategy_and_community_retained": true,
+    "notes_explanatory_only": true,
+    "sources_grounding_only": true,
+    "derived_materialized_never_first_pass": true
+  },
+  "package_target": "simulator-complete for the intended sim scope; practical deterministic modelling; strategy and theorycraft support for ChatGPT; not exact-tick replay canon",
+  "knowledge_role_schema": "KNOWLEDGE_ROLE_SCHEMA.yaml",
+  "knowledge_role_registry": "KNOWLEDGE_ROLE_REGISTRY.csv",
+  "key_scope_decisions": [
+    "module_main_effect_totals_ep_verified_package_canon",
+    "vault_numeric_externalized_inputs_only",
+    "thorns_after_damage_only_in_scope",
+    "broader_same_tick_precedence_out_of_scope",
+    "tournament_bc_17_rows_accepted_unknown_boundary",
+    "wall_fortification_unlock_t14_w60_package_canon"
+  ]
+}

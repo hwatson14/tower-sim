@@ -1,0 +1,8 @@
+step,scope_item,verification,status
+1,Check R85 against latest R80 repo seams,repo+pack review,complete
+2,Add explicit layering over existing runtime/state contracts,artifact review,complete
+3,Freeze family-to-state-mode mapping,artifact review,complete
+4,Harmonise overlay vocabulary,artifact review,complete
+5,Freeze phase-1 baseline materialiser seam,artifact review,complete
+6,Add worked examples for baseline/overlay/query,artifact review,complete
+7,Hand tightened pack to Codex,next step,pending

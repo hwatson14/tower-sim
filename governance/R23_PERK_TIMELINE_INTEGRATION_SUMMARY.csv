@@ -1,0 +1,11 @@
+metric,value
+active_generated_preset,ProjectedMax_GeneratedTimeline
+generated_unique_perks,34
+generated_total_picks,79
+timeline_rows,79
+timeline_final_wave,8702
+waves_required_lab,13
+standard_perk_bonus,0.25
+perk_option_quantity,2
+pwr_stacks,3
+perk_resolution_fallback_reason,max_progression_generated_from_timeline_policy

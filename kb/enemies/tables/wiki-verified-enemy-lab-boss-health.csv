@@ -1,0 +1,2 @@
+lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
+Boss Health,boss,Tier 9 Wave 20,Reduces boss health at all waves.,30,-0.30%,-9.00%,Boss labs break the simple x20 health assumption once researched.,Lab/Boss_Health,row_verified_v62

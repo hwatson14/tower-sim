@@ -1,0 +1,24 @@
+path_pattern,knowledge_role,authority_level,primary_use,override_rule
+START_HERE_FOR_AI.md,control_plane_entry,highest_for_loading,first-pass package loading and scope alignment,Cannot be overridden by lower-tier prose
+CHATGPT_KB_PROFILE.yaml,control_plane_entry,highest_for_loading,first-pass ChatGPT loading profile,Cannot be overridden by lower-tier prose
+manifest.json,control_plane_metadata,high,"package identity, release locator, and entry-surface metadata",Does not override canonical mechanics
+RETRIEVAL_POLICY.yaml,control_plane_entry,high,role-aware routing policy,Cannot override canonical values
+TASK_ENTRYPOINTS.yaml,control_plane_entry,high,task-specific routing,Cannot override canonical values
+SURFACE_EXECUTION_ORDER.yaml,control_plane_entry,high,surface order and control-plane semantics,Cannot override canonical values
+SURFACE_PRIORITY_REGISTRY.csv,control_plane_entry,high,surface priority registry,Cannot override canonical values
+MASTER_SURFACE_TRUST_LEDGER.csv,control_plane_entry,high,surface trust registry,Cannot override canonical values
+SURFACE_STATUS_TAGS.csv,control_plane_metadata,high,surface status semantics,Cannot override canonical values
+UNKNOWNS_OPERATING_POLICY.csv,boundary_policy,highest_for_unknown_handling,accepted unknowns and fail-closed behavior,Overrides any attempt to infer exact values for boundary rows
+kb/ledgers/tables/simulator-scope-boundary-ledger.csv,boundary_policy,highest_for_scope_boundaries,simulator-scope boundaries and package-canon decisions,Overrides lower-tier explanatory notes
+kb/ledgers/tables/scope-boundary-registry.csv,boundary_policy,highest_for_scope_boundaries,cross-domain scope boundaries,Overrides lower-tier explanatory notes
+kb/modules/tables/module-main-effect-total-multipliers-package-canon.csv,package_canon,high_with_explicit_label,package-canon module totals,Overrides lower-tier derived module surfaces
+kb/economy/tables/vault-externalized-simulator-inputs.csv,boundary_policy,highest_for_externalized_inputs,vault input boundary handling,Overrides silent inference
+kb/**/tables/**,canonical_mechanics,highest_for_lookup,structured lookup surfaces and normalized mechanics rows,"Overrides notes, sources, derived, community, and advisory content except where boundary or package-canon files apply"
+kb/**/contracts/**,canonical_contract,highest_for_semantics,runtime semantics and interpretation contracts,"Overrides notes, sources, derived, community, and advisory content except where boundary or package-canon files apply"
+kb/community/**,community_signal,secondary_noncanonical,"community heuristics, Reddit advice, meta signals",Must never override canonical mechanics or boundary policy
+kb/advisory/strategy/**,strategy_guidance,preferred_for_strategy,"build guidance, progression advice, theorycraft strategy",Must not override canonical mechanics or boundary policy
+kb/advisory/reasoning/**,strategy_guidance,preferred_for_strategy,"reasoning frameworks, optimisation frameworks, diagnosis frameworks",Must not override canonical mechanics or boundary policy
+kb/advisory/prompts/**,retrieval_operational,operational,AI prompting and retrieval support,Operational only; not domain canon
+kb/**/notes/**,explanatory_secondary,secondary,explanation and orientation,"Must not override canonical mechanics, package canon, or boundary policy"
+kb/**/sources/**,provenance_grounding,secondary,source grounding and provenance,Must not override canonical mechanics directly
+kb/**/derived/**,derived_nonprimary,lower_than_canon,materialized or derived support surfaces,Must not override canonical tables or contracts on first pass

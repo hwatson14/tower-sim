@@ -1,0 +1,3 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+rapid_fire,chance,1500 coins after Multishot,85,0.4%,+0.4% per level,34.0%,"When active, tower fires x4 as fast as normal.",Rapid Fire,row-verified-live-wiki
+rapid_fire,duration,1500 coins after Multishot,99,unspecified page base,increases each level; page leaves increment as [x],5.55s,"Duration value published, but page text leaves per-level increment symbolic.",Rapid Fire,row-verified-live-wiki

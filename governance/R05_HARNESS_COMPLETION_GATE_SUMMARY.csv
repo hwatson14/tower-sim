@@ -1,0 +1,14 @@
+metric,value,verification
+calculator_scope_mapped_inputs,293,diagnostics.burn_down
+calculator_scope_total_inputs,293,diagnostics.burn_down
+calculator_scope_mapping_pct,100.0,diagnostics.burn_down
+resolved_surfaces,171,output.statbook_publishable.rows
+unmapped_trace_only_surfaces,193,output.statbook_publishable.rows
+publishable_surfaces,161,diagnostics.line_verification_summary
+blocked_surfaces,10,diagnostics.line_verification_summary
+ep_compare_count,27,diagnostics.ep_compare_summary
+ep_true_formula_mismatch_count,0,diagnostics.ep_compare_summary
+ep_stage_scope_mismatch_count,10,diagnostics.ep_compare_summary
+ep_non_comparable_count,4,diagnostics.ep_compare_summary
+blocked_formula_contract_count,0,diagnostics.kb_incomplete_areas.summary
+active_unmapped_input_count,195,diagnostics.kb_incomplete_areas.summary

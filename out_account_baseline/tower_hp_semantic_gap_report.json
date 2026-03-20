@@ -1,0 +1,37 @@
+{
+  "destination": "canonical_stat::tower_hp",
+  "compare_state_key": "Farming__perks_on",
+  "compare_preset": "Farming",
+  "compare_perk_state": "on",
+  "package_value": null,
+  "ep_value": 6650000000000.0,
+  "package_value_recomputed_from_current_factors": null,
+  "current_factors": {
+    "standard_perk_factor": null,
+    "coin_health_tradeoff_factor": null,
+    "regen_health_tradeoff_factor": null,
+    "death_wave_health_factor": 12.5,
+    "armor_primary_factor": null,
+    "armor_assist_factor": null
+  },
+  "ep_formula_hypotheses": {
+    "ep_standard_perk_factor": null,
+    "account_death_wave_health_level": null,
+    "account_death_wave_health_multiplier_if_applied": null
+  },
+  "assessment": {
+    "remaining_fraction_bug_present_in_live_compare_row": null,
+    "death_wave_health_wired_in_live_compare_row": null,
+    "reason": "Current compare row carries the two HP trade-off drawbacks correctly and now also includes the Death Wave Health multiplier plus the EP-style armor assist factor. The remaining gap is primarily the EP workbook Standard Perk Bonus semantic drift.",
+    "calculator_change_recommended": false
+  },
+  "scenarios": [
+    {
+      "scenario": "current_package_semantics",
+      "package_value": null,
+      "relative_delta_pct": null,
+      "required_residual_multiplier_to_match_ep": null,
+      "note": "Current calculator semantics and compare-row inputs as emitted."
+    }
+  ]
+}

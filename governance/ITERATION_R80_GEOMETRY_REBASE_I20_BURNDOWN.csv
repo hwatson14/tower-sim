@@ -1,0 +1,7 @@
+work_package,status,verification
+Target surface rebase,complete,verified
+Measurement protocol rebase,complete,verified
+Fit ingestion rebase,complete,verified
+Fit harness rebase,complete,verified
+Artifact harmonizer rebase,complete,verified
+Minimal fit pipeline rebase,complete,verified

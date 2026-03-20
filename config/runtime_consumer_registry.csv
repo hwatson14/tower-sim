@@ -1,0 +1,3 @@
+consumer_id,source_node_id,evidence,notes
+runtime_consumer::wave_progression.attack_wave,canonical_stat::enemy_attack_level_skip_pct,"docs/10_workshop_dependency_ledger.md; engine/wave_progression_policy.py; engine/boss_wave_engine.py","Attack-wave advancement is deterministically suppressed by effective enemy attack level skip pct."
+runtime_consumer::wave_progression.health_wave,canonical_stat::enemy_health_level_skip_pct,"docs/10_workshop_dependency_ledger.md; engine/wave_progression_policy.py; engine/boss_wave_engine.py","Health-wave advancement is deterministically suppressed by effective enemy health level skip pct."

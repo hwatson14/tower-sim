@@ -1,0 +1,21 @@
+state_mode_aliases:
+  with_loadout: start_of_run
+state_modes:
+  account_baseline:
+    excluded_source_families: [workshop, bot, card, module, module_substat, perk]
+    notes:
+      - Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces.
+  gem_respec:
+    excluded_source_families: [card, module, module_substat, perk]
+    notes:
+      - Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules.
+  start_of_run:
+    excluded_source_families: []
+    notes:
+      - Current IDS preset with active loadout applied.
+  max_progression:
+    excluded_source_families: []
+    projection_facets_applied: [max_workshop]
+    notes:
+      - Max progression projects workshop rows to max_level while preserving current permanent state and loadout.
+      - Perks can be materialized in this state when supplied via input/perks.json or --perks.

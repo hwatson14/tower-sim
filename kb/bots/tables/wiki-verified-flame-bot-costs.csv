@@ -1,0 +1,31 @@
+level,cost_medals,damage_reduction_pct,cooldown_seconds,damage_multiplier_x_tower_damage,range_m,source_status,notes
+1,100,,72,23%,34,live_wiki_row_verified,
+2,140,,69,26%,38,live_wiki_row_verified,
+3,180,,66,29%,42,live_wiki_row_verified,
+4,220,,63,32%,46,live_wiki_row_verified,
+5,260,,60,35%,50,live_wiki_row_verified,
+6,300,,57,38%,54,live_wiki_row_verified,
+7,340,,54,41%,58,live_wiki_row_verified,
+8,380,,51,44%,62,live_wiki_row_verified,
+9,420,,48,47%,66,live_wiki_row_verified,
+10,460,,45,50%,70,live_wiki_row_verified,
+11,500,,42,53%,74,live_wiki_row_verified,
+12,540,,39,56%,78,live_wiki_row_verified,
+13,580,,36,59%,82,live_wiki_row_verified,
+14,620,,33,62%,86,live_wiki_row_verified,
+15,660,,30,65%,90,live_wiki_row_verified,
+16,700,,,68%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+17,740,,,71%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+18,780,,,74%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+19,820,,,77%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+20,860,,,80%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+21,900,,,83%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+22,940,,,86%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+23,980,,,89%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+24,1020,,,92%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+25,1060,,,95%,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+26,1100,,,,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+27,1140,,,,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+28,1180,,,,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+29,1220,,,,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page
+30,1260,,,,,live_wiki_row_verified,damage is bot damage multiplier; damage reduction/cooldown/range columns omitted after caps on source page

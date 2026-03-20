@@ -1,0 +1,5 @@
+destination,status,verification_status,final_value,display_value,unit,resolver,formula_class,publish_policy,compare_policy
+runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,resolved,publishable,11.0,x11,,,helper_formula,allow,normal
+runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,resolved,publishable,2.5,x2.5,,,helper_formula,allow,normal
+runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,resolved,publishable,3.0,x3,,,helper_formula,allow,normal
+runtime_mechanic_param::cards.plasma_cannon.effect_pct,resolved,publishable,54.0,54%,,,helper_formula,allow,normal

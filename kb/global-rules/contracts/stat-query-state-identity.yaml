@@ -1,0 +1,43 @@
+contract_id: stat_query_state_identity_v1
+extends_contracts:
+  - scenario-runtime-inputs.yaml
+  - state-modes.yaml
+required_fields:
+  - account_snapshot_id
+  - loadout_id
+  - scenario_id
+  - runtime_branch_id
+field_ownership:
+  account_snapshot_id:
+    owns:
+      - workshop progression state
+      - labs and enhancements
+      - relics and unlock flags
+      - card inventory and levels
+      - module inventory and levels
+      - UW progression
+      - bot progression
+  loadout_id:
+    owns:
+      - equipped cards
+      - equipped modules
+      - assist-slot choice
+      - equipped bot set
+      - equip masks
+  scenario_id:
+    owns:
+      - mode_id
+      - tier and scenario restrictions
+      - battle conditions
+      - heat
+      - perks_enabled
+      - allowed overlay classes
+  runtime_branch_id:
+    owns:
+      - runtime what-if branch identity
+      - overlay delta lineage
+      - wave-local mutable branch state
+rules:
+  - no implicit equipped state
+  - no implicit scenario state
+  - runtime_branch_id must identify overlay lineage, not replace account/loadout/scenario identity

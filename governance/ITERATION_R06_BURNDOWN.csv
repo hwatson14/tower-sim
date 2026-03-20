@@ -1,0 +1,11 @@
+Track,Work item,Status,Verification
+Calculator baseline,Maintain regenerated baseline from canonical output path,Done,Verified by prior rerun and use of output/ as source of truth
+Calculator baseline,EP formula coverage ledger added to baseline,Done,Verified by generated R06 coverage CSVs and markdown
+EP stat compilation,Copy-forward EP mechanics registry retained in calculator KB,Done,Verified by mechanics-library metadata ep_v5.03.02_extract_2026-03-17
+EP stat compilation,Inventory explicit EP mechanics entries from copied-forward registry,Done,Verified 91 mechanics inventoried from mechanics-library.yaml
+EP stat compilation,Prove all EP formulas are implemented in calculator,Not done / not proven,Coverage ledger shows only 11 high-confidence compare-mapped mechanics; remainder registry-only
+EP stat compilation,Prove all EP formulas are fully wired to calculator outputs,Not done / not proven,No evidence yet for universal output wiring; current proof limited to mapped compare subset
+KB oracle harness,Use regenerated output baseline as governance source of truth,Done,Verified in prior R05 completion gate using output/
+KB oracle harness,Full package completeness established,Not done,Current verdict remains usable_with_caveats_not_fully_complete
+Optimiser,Keep optimiser bounded as downstream consumer only,Done,Role locked from prior scope/authority artifacts
+Optimiser,Define optimiser interface from trusted calculator outputs,Remaining,Not yet verified

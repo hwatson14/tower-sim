@@ -1,0 +1,4 @@
+slice_name,row_count,domains_included,note
+survivability_inclusive,6,"survivability,boss_control",broader than eHP; includes boss-control support
+damage,4,damage,damage-focused subset
+economy,22,economy,economy-focused subset

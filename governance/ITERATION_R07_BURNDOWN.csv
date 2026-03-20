@@ -1,0 +1,11 @@
+Track,Work item,Status,Verification
+Calculator baseline,Carry forward regenerated calculator baseline and current audit rail,Done,Verified by continuing from R06 baseline artifacts and canonical output-path rule
+Calculator baseline,Classify registry-only EP mechanics against live calculator surfaces,Done,Verified by generated R07 implementation ledger with explicit conservative buckets and evidence fields
+EP stat compilation,Retain copied-forward fresher EP mechanics registry in calculator KB,Done,Verified from mechanics-library metadata `ep_v5.03.02_extract_2026-03-17`
+EP stat compilation,Differentiate registry presence from likely implemented equivalents,Done,Verified by R07 ledger: bucketed registry-only mechanics into equivalent/helper/out-of-scope/duplicate classes
+EP stat compilation,Prove full EP implementation coverage,Not done / not proven,R07 still leaves many formulas as helper-only or no-current-surface/out-of-scope
+EP stat compilation,Prove full EP output wiring,Not done / not proven,No universal one-to-one output wiring evidence yet
+KB oracle harness,Keep regenerated output baseline as governance truth source,Done,Verified by prior R05 harness gate and continued use of `output/` convention
+KB oracle harness,Update readiness claim based on R07 implementation ledger,Done,"Verified in R07 markdown verdict: calculator closer than raw registry-only implied, but still not fully EP-implemented"
+Optimiser,Keep optimiser bounded as downstream consumer only,Done,Role remains locked from prior authority/scope artifacts
+Optimiser,Define optimiser interface from trusted calculator outputs,Remaining,Not yet verified

@@ -1,0 +1,21 @@
+level,time,cost,value_multiplier,source_status
+1,1d 15h 59m,20000000,1.10,live_wiki_row_verified
+2,2d 0h 21m,21405405,1.20,live_wiki_row_verified
+3,2d 8h 53m,23124324,1.30,live_wiki_row_verified
+4,2d 17h 54m,26627027,1.40,live_wiki_row_verified
+5,3d 3h 49m,35837838,1.50,live_wiki_row_verified
+6,3d 15h 6m,58248649,1.60,live_wiki_row_verified
+7,4d 4h 17m,106162162,1.70,live_wiki_row_verified
+8,4d 19h 58m,197870270,1.80,live_wiki_row_verified
+9,5d 14h 49m,358875676,1.90,live_wiki_row_verified
+10,6d 13h 31m,623091892,2.00,live_wiki_row_verified
+11,7d 16h 49m,1030000000,2.10,live_wiki_row_verified
+12,9d 1h 30m,1640000000,2.20,live_wiki_row_verified
+13,10d 16h 23m,2520000000,2.30,live_wiki_row_verified
+14,12d 14h 21m,3740000000,2.40,live_wiki_row_verified
+15,14d 20h 18m,5410000000,2.50,live_wiki_row_verified
+16,17d 11h 9m,7630000000,2.60,live_wiki_row_verified
+17,20d 11h 54m,10520000000,2.70,live_wiki_row_verified
+18,23d 23h 32m,14230000000,2.80,live_wiki_row_verified
+19,27d 23h 5m,18930000000,2.90,live_wiki_row_verified
+20,32d 11h 40m,24800000000,3.00,live_wiki_row_verified

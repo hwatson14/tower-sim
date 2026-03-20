@@ -1,0 +1,587 @@
+uw_name,track_name,level_index,value,cost,source_ref,notes,provenance
+Chain Lightning,Damage,0,2.0,0,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,1,3.0,5,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,2,5.0,11,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,3,9.0,17,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,4,14.0,23,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,5,22.0,29,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,6,32.0,35,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,7,46.0,41,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,8,63.0,47,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,9,85.0,53,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,10,113.0,61,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,11,148.0,71,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,12,191.0,84,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,13,244.0,100,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,14,309.0,120,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,15,387.0,144,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,16,482.0,174,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,17,596.0,210,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,18,733.0,252,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,19,898.0,302,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,20,1094.0,362,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,21,1328.0,434,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,22,1607.0,525,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,23,1937.0,636,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,24,2329.0,767,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,25,2794.0,923,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,26,3342.0,1109,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,27,3990.0,1295,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,28,4755.0,1521,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,29,5655.0,1787,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,30,6715.0,2103,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Damage,31,7961.0,2469,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Quantity,0,1.0,0,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Quantity,1,2.0,30,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Quantity,2,3.0,75,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Quantity,3,4.0,150,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Quantity,4,5.0,400,internalized_source_snapshot,,wiki_verified_v2
+Chain Lightning,Chance,0,5.0,0,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,1,6.5,8,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,2,8.0,26,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,3,9.5,44,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,4,11.0,62,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,5,12.5,80,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,6,14.0,98,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,7,15.5,116,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,8,17.0,134,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,9,18.5,152,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,10,20.0,170,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,11,21.5,188,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,12,23.0,206,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,13,24.5,224,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,14,26.0,242,internalized_source_snapshot,percent,wiki_verified_v2
+Chain Lightning,Chance,15,27.5,260,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Duration,0,5.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,1,6.0,5,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,2,7.0,14,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,3,8.0,23,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,4,9.0,32,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,5,10.0,41,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,6,11.0,50,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,7,12.0,59,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,8,13.0,68,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,9,14.0,77,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,10,15.0,86,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,11,16.0,95,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,12,17.0,104,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,13,18.0,113,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,14,19.0,122,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,15,20.0,131,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,16,21.0,140,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,17,22.0,149,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,18,23.0,158,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,19,24.0,167,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,20,25.0,176,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,21,26.0,185,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,22,27.0,194,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,23,28.0,203,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,24,29.0,212,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,25,30.0,221,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,26,31.0,230,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,27,32.0,239,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,28,33.0,248,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,29,34.0,257,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,30,35.0,266,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,31,36.0,275,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,32,37.0,284,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,33,38.0,293,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,34,39.0,302,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Duration,35,40.0,311,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Slow,0,20.0,0,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,1,25.0,15,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,2,30.0,25,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,3,35.0,40,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,4,40.0,60,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,5,45.0,120,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,6,50.0,150,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,7,55.0,200,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,8,60.0,300,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,9,65.0,450,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,10,70.0,650,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Slow,11,75.0,900,internalized_source_snapshot,percent,wiki_verified_v2
+Chrono Field,Cooldown,0,180.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,1,170.0,10,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,2,160.0,31,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,3,150.0,52,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,4,140.0,73,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,5,130.0,94,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,6,120.0,115,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,7,110.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,8,100.0,157,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,9,90.0,178,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,10,80.0,199,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,11,70.0,220,internalized_source_snapshot,seconds,wiki_verified_v2
+Chrono Field,Cooldown,12,60.0,241,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Damage,0,2.0,0,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,1,3.0,5,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,2,5.0,11,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,3,9.0,17,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,4,14.0,23,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,5,22.0,29,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,6,32.0,35,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,7,46.0,41,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,8,63.0,47,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,9,85.0,53,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,10,113.0,61,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,11,148.0,71,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,12,191.0,84,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,13,244.0,100,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,14,309.0,120,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,15,387.0,144,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,16,482.0,174,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,17,596.0,210,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,18,723.0,254,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,19,877.0,308,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,20,1064.0,374,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,21,1290.0,452,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,22,1569.0,558,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,23,1916.0,694,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,24,2356.0,880,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,25,2919.0,1126,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,26,3637.0,1432,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,27,4544.0,1813,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,28,5678.0,2269,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,29,7078.0,2800,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Damage,30,9119.0,3406,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Effect Wave Quantity,0,1.0,0,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Effect Wave Quantity,1,2.0,200,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Effect Wave Quantity,2,3.0,500,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Effect Wave Quantity,3,4.0,850,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Effect Wave Quantity,4,5.0,1400,internalized_source_snapshot,,wiki_verified_v2
+Death Wave,Cooldown,0,300.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,1,290.0,8,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,2,280.0,24,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,3,270.0,40,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,4,260.0,56,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,5,250.0,72,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,6,240.0,88,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,7,230.0,104,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,8,220.0,120,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,9,210.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,10,200.0,152,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,11,190.0,168,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,12,180.0,184,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,13,170.0,200,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,14,160.0,216,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,15,150.0,232,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,16,140.0,248,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,17,130.0,264,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,18,120.0,280,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,19,110.0,346,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,20,100.0,512,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,21,90.0,688,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,22,80.0,874,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,23,70.0,1070,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,24,60.0,1276,internalized_source_snapshot,seconds,wiki_verified_v2
+Death Wave,Cooldown,25,50.0,1492,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Multiplier,0,5.0,0,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,1,5.8,5,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,2,6.6,13,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,3,7.4,22,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,4,8.2,32,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,5,9.0,43,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,6,9.8,55,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,7,10.6,68,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,8,11.4,82,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,9,12.2,98,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,10,13.0,116,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,11,13.8,138,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,12,14.6,162,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,13,15.4,250,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,14,16.2,350,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,15,17.0,500,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,16,17.8,700,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,17,18.6,950,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,18,19.4,1250,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,19,20.2,1600,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Multiplier,20,21.0,2000,internalized_source_snapshot,x,wiki_verified_v2
+Golden Tower,Duration,0,15.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,1,16.0,5,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,2,17.0,14,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,3,18.0,23,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,4,19.0,32,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,5,20.0,41,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,6,21.0,50,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,7,22.0,59,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,8,23.0,68,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,9,24.0,77,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,10,25.0,87,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,11,26.0,98,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,12,27.0,110,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,13,28.0,123,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,14,29.0,137,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,15,30.0,152,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,16,31.0,168,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,17,32.0,185,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,18,33.0,203,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,19,34.0,222,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,20,35.0,242,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,21,36.0,263,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,22,37.0,285,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,23,38.0,308,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,24,39.0,332,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,25,40.0,356,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,26,41.0,380,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,27,42.0,404,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,28,43.0,428,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,29,44.0,452,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,30,45.0,476,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,31,46.0,530,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,32,47.0,614,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,33,48.0,728,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,34,49.0,872,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,35,50.0,1046,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,36,51.0,1250,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,37,52.0,1484,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Duration,38,53.0,1748,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,0,300.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,1,290.0,10,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,2,280.0,28,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,3,270.0,46,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,4,260.0,64,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,5,250.0,82,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,6,240.0,100,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,7,230.0,118,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,8,220.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,9,210.0,154,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,10,200.0,172,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,11,190.0,190,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,12,180.0,208,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,13,170.0,226,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,14,160.0,244,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,15,150.0,262,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,16,140.0,300,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,17,130.0,368,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,18,120.0,476,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,19,110.0,644,internalized_source_snapshot,seconds,wiki_verified_v2
+Golden Tower,Cooldown,20,100.0,872,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Damage,0,10.0,0,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,1,11.0,5,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,2,13.0,11,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,3,16.0,17,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,4,20.0,23,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,5,26.0,29,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,6,34.0,35,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,7,43.0,41,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,8,55.0,47,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,9,69.0,53,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,10,87.0,61,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,11,108.0,71,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,12,134.0,84,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,13,164.0,100,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,14,200.0,120,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,15,243.0,144,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,16,293.0,174,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,17,352.0,210,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,18,421.0,254,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,19,502.0,308,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,20,597.0,374,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,21,708.0,454,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,22,838.0,540,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,23,989.0,632,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,24,1165.0,730,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,25,1370.0,834,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,26,1608.0,944,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,27,1886.0,1060,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,28,2209.0,1182,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,29,2585.0,1312,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Damage,30,3021.0,1448,internalized_source_snapshot,x,wiki_verified_v2
+Inner Land Mines,Quantity,0,3.0,0,internalized_source_snapshot,count,wiki_verified_v2
+Inner Land Mines,Quantity,1,4.0,50,internalized_source_snapshot,count,wiki_verified_v2
+Inner Land Mines,Quantity,2,5.0,125,internalized_source_snapshot,count,wiki_verified_v2
+Inner Land Mines,Quantity,3,6.0,250,internalized_source_snapshot,count,wiki_verified_v2
+Inner Land Mines,Cooldown,0,200.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,1,190.0,8,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,2,180.0,24,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,3,170.0,40,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,4,160.0,56,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,5,150.0,72,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,6,140.0,88,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,7,130.0,104,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,8,120.0,120,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,9,110.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,10,100.0,152,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,11,90.0,168,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,12,80.0,184,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,13,70.0,200,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,14,60.0,216,internalized_source_snapshot,seconds,wiki_verified_v2
+Inner Land Mines,Cooldown,15,50.0,232,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Size,0,30.0,0,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,1,32.0,5,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,2,34.0,12,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,3,36.0,19,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,4,38.0,26,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,5,40.0,34,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,6,42.0,43,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,7,44.0,53,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,8,46.0,64,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,9,48.0,76,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,10,50.0,89,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,11,52.0,103,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,12,54.0,118,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,13,56.0,134,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,14,58.0,151,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,15,60.0,169,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,16,62.0,189,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,17,64.0,211,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,18,66.0,236,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,19,68.0,264,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Size,20,70.0,295,internalized_source_snapshot,meters,wiki_verified_v2
+Black Hole,Duration,0,15.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,1,16.0,5,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,2,17.0,14,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,3,18.0,23,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,4,19.0,32,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,5,20.0,41,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,6,21.0,50,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,7,22.0,59,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,8,23.0,68,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,9,24.0,77,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,10,25.0,86,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,11,26.0,95,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,12,27.0,104,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,13,28.0,113,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,14,29.0,122,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,15,30.0,131,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,16,31.0,165,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,17,32.0,224,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,18,33.0,308,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,19,34.0,417,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,20,35.0,551,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,21,36.0,710,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,22,37.0,894,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Duration,23,38.0,1103,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,0,200.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,1,190.0,10,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,2,180.0,28,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,3,170.0,46,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,4,160.0,64,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,5,150.0,82,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,6,140.0,100,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,7,130.0,118,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,8,120.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,9,110.0,154,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,10,100.0,172,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,11,90.0,190,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,12,80.0,208,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,13,70.0,226,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,14,60.0,244,internalized_source_snapshot,seconds,wiki_verified_v2
+Black Hole,Cooldown,15,50.0,262,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Damage,0,10.0,0,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,1,11.0,5,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,2,13.0,11,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,3,16.0,17,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,4,20.0,23,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,5,26.0,29,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,6,34.0,35,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,7,43.0,41,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,8,55.0,47,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,9,69.0,53,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,10,87.0,61,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,11,108.0,71,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,12,134.0,84,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,13,164.0,100,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,14,200.0,120,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,15,243.0,144,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,16,293.0,174,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,17,352.0,210,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,18,421.0,252,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,19,502.0,302,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,20,597.0,362,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,21,708.0,434,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,22,838.0,525,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,23,989.0,636,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,24,1165.0,772,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,25,1370.0,938,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,26,1608.0,1134,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,27,1886.0,1360,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,28,2209.0,1616,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,29,2585.0,1902,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Damage,30,3021.0,2228,internalized_source_snapshot,x,wiki_verified_v2
+Poison Swamp,Duration,0,30.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,1,35.0,10,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,2,40.0,20,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,3,45.0,35,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,4,50.0,55,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,5,55.0,100,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,6,60.0,120,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,7,65.0,150,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,8,70.0,200,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,9,75.0,260,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,10,80.0,330,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,11,85.0,410,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,12,90.0,500,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,13,95.0,600,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Duration,14,100.0,710,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,0,125.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,1,120.0,8,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,2,115.0,26,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,3,110.0,44,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,4,105.0,62,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,5,100.0,80,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,6,95.0,98,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,7,90.0,116,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,8,85.0,134,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,9,80.0,152,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,10,75.0,170,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,11,70.0,188,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,12,65.0,206,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,13,60.0,224,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,14,55.0,242,internalized_source_snapshot,seconds,wiki_verified_v2
+Poison Swamp,Cooldown,15,50.0,260,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Damage,0,10.0,0,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,1,11.0,5,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,2,13.0,11,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,3,16.0,17,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,4,20.0,23,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,5,26.0,29,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,6,34.0,35,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,7,43.0,41,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,8,55.0,47,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,9,69.0,53,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,10,87.0,61,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,11,108.0,71,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,12,134.0,84,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,13,164.0,100,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,14,200.0,120,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,15,243.0,144,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,16,293.0,174,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,17,352.0,210,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,18,421.0,254,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,19,502.0,308,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,20,597.0,374,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,21,708.0,454,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,22,838.0,540,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,23,989.0,632,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,24,1165.0,730,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,25,1370.0,834,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,26,1608.0,944,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,27,1886.0,1060,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,28,2209.0,1182,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,29,2585.0,1312,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Damage,30,3021.0,1448,internalized_source_snapshot,x,wiki_verified_v2
+Smart Missiles,Quantity,0,5.0,0,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,1,6.0,4,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,2,7.0,12,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,3,8.0,35,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,4,9.0,70,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,5,10.0,120,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,6,11.0,180,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,7,12.0,275,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,8,13.0,350,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,9,14.0,420,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,10,15.0,500,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,11,16.0,600,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,12,17.0,750,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,13,18.0,950,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,14,19.0,1200,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Quantity,15,20.0,1500,internalized_source_snapshot,count,wiki_verified_v2
+Smart Missiles,Cooldown,0,180.0,0,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,1,170.0,8,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,2,160.0,24,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,3,150.0,40,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,4,140.0,56,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,5,130.0,72,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,6,120.0,88,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,7,110.0,104,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,8,100.0,120,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,9,90.0,136,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,10,80.0,152,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,11,70.0,168,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,12,60.0,184,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,13,50.0,200,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,14,40.0,216,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,15,30.0,232,internalized_source_snapshot,seconds,wiki_verified_v2
+Smart Missiles,Cooldown,16,20.0,750,internalized_source_snapshot,seconds,wiki_verified_v2
+Spotlight,Bonus,0,8.0,0,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,1,9.4,5,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,2,10.8,13,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,3,12.2,21,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,4,13.6,30,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,5,15.0,40,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,6,16.4,52,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,7,17.8,65,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,8,19.2,80,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,9,20.6,95,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,10,22.0,112,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,11,23.4,133,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,12,24.8,150,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,13,26.2,180,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,14,27.6,220,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,15,29.0,280,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,16,30.4,320,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,17,31.8,360,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,18,33.2,420,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,19,34.6,500,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,20,36.0,600,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,21,37.4,720,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,22,38.8,850,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,23,40.2,1000,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,24,41.6,1175,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Bonus,25,43.0,1400,internalized_source_snapshot,x,wiki_verified_v2
+Spotlight,Angle,0,30.0,0,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,1,31.0,5,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,2,32.0,16,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,3,33.0,27,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,4,34.0,38,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,5,35.0,49,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,6,36.0,60,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,7,37.0,71,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,8,38.0,82,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,9,39.0,93,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,10,40.0,104,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,11,41.0,115,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,12,42.0,126,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,13,43.0,137,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,14,44.0,148,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,15,45.0,159,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,16,46.0,170,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,17,47.0,181,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,18,48.0,192,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,19,49.0,203,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,20,50.0,214,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,21,51.0,225,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,22,52.0,236,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,23,53.0,247,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,24,54.0,258,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,25,55.0,269,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,26,56.0,280,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,27,57.0,291,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,28,58.0,302,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,29,59.0,313,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,30,60.0,324,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,31,61.0,337,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,32,62.0,352,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,33,63.0,369,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,34,64.0,388,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,35,65.0,409,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,36,66.0,432,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,37,67.0,457,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,38,68.0,484,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,39,69.0,513,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,40,70.0,544,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,41,71.0,577,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,42,72.0,612,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,43,73.0,649,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,44,74.0,688,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,45,75.0,729,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,46,76.0,772,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,47,77.0,817,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,48,78.0,864,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,49,79.0,913,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,50,80.0,964,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,51,81.0,1017,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,52,82.0,1072,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,53,83.0,1129,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,54,84.0,1188,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,55,85.0,1249,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,56,86.0,1312,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,57,87.0,1377,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,58,88.0,1444,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,59,89.0,1513,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Angle,60,90.0,1584,internalized_source_snapshot,degrees,wiki_verified_v2
+Spotlight,Quantity,0,1.0,0,internalized_source_snapshot,count,wiki_verified_v2
+Spotlight,Quantity,1,2.0,375,internalized_source_snapshot,count,wiki_verified_v2
+Spotlight,Quantity,2,3.0,850,internalized_source_snapshot,count,wiki_verified_v2
+Spotlight,Quantity,3,4.0,2500,internalized_source_snapshot,count,wiki_verified_v2

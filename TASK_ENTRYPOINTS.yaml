@@ -1,0 +1,40 @@
+task_entrypoints:
+  baseline_ingest:
+    read:
+      - START_HERE_FOR_AI.md
+      - manifest.json
+      - readme.md
+      - freeze-status.md
+  kb_lookup:
+    read:
+      - kb/index.md
+      - MASTER_SURFACE_TRUST_LEDGER.csv
+      - SURFACE_PRIORITY_REGISTRY.csv
+      - UNKNOWNS_OPERATING_POLICY.csv
+  calculator_audit:
+    read:
+      - run_stats.py
+      - compilers/stat_input_compiler.py
+      - engine/stat_engine.py
+      - out/diagnostics.json
+      - FINAL_AUDIT_SUMMARY.md
+  progression_merge:
+    read:
+      - MERGE_NOTES_FOR_AI.md
+      - docs/15_engine_readiness_audit.md
+      - docs/16_progression_engine_scope_and_burndown.md
+      - engine/progression_state.py
+      - engine/progression_recalc_bridge.py
+      - engine/boss_wave_engine.py
+  optimizer_consumption:
+    read:
+      - optimizer/ACCURACY.md
+      - optimizer/scorer.py
+      - optimizer/path_ranker.py
+      - out/optimizer_scores.json
+  package_rebuild:
+    run:
+      - python run_stats.py
+  package_verify:
+    run:
+      - pytest -q

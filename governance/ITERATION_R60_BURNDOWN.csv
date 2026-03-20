@@ -1,0 +1,10 @@
+step,scope_item,verification_method,verification_status,delivery_status
+1,Remove incremental subset executor dependency on stat-engine postprocessing,unit tests,verified,complete
+2,Move derived/helper surface composition outside stat engine core,code review plus targeted tests,verified,complete
+3,Implement direct resolver formulas for free-upgrade canonicals,targeted perk scaling test,verified,complete
+4,Implement direct resolver formula for max_rend_mult,targeted perk scaling test,verified,complete
+5,Implement direct resolver formula for wall_regen,bridge and subset executor tests,verified,complete
+6,Implement direct resolver formula for package_chance_pct,bridge tests,verified,complete
+7,Enforce explicit dependency-aware bucket ordering,bridge and subset executor tests,verified,complete
+8,Expand closed publishable subset after override removal,not started,not_started,pending
+9,Remove full-safe reference precompute and claim speedup,benchmark evidence,not_started,pending

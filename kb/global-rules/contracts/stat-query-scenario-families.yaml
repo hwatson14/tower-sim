@@ -1,0 +1,69 @@
+contract_id: stat_query_scenario_families_v1
+extends_contracts:
+  - scenario-runtime-inputs.yaml
+  - state-modes.yaml
+family_groups:
+  timing:
+    families:
+      timing_tournament_no_perks:
+        state_mode: start_of_run
+        mode_id: tournament
+        perks_enabled: false
+        allowed_overlay_types:
+          - card_assertions
+          - module_assertions
+          - assist_slot_choice
+          - package_event_model
+          - runtime_target_display_wave
+      timing_farm_with_perks:
+        state_mode: start_of_run
+        mode_id: farming
+        perks_enabled: true
+        allowed_overlay_types:
+          - perk_count_overrides
+          - card_assertions
+          - module_assertions
+          - assist_slot_choice
+          - package_event_model
+          - runtime_target_display_wave
+      timing_scenario_probe:
+        state_mode: start_of_run
+        mode_id: scenario_probe
+        perks_enabled: explicit
+        allowed_overlay_types:
+          - perk_count_overrides
+          - card_assertions
+          - module_assertions
+          - assist_slot_choice
+          - package_event_model
+          - runtime_target_display_wave
+  progression:
+    families:
+      progression_start_of_run:
+        state_mode: start_of_run
+        mode_id: progression
+        perks_enabled: false
+        allowed_overlay_types:
+          - workshop_mutation
+          - runtime_wave_state
+          - free_upgrade_runtime_state
+      progression_runtime_no_perks:
+        state_mode: start_of_run
+        mode_id: progression
+        perks_enabled: false
+        allowed_overlay_types:
+          - workshop_mutation
+          - runtime_wave_state
+          - free_upgrade_runtime_state
+      progression_runtime_with_perks:
+        state_mode: start_of_run
+        mode_id: progression
+        perks_enabled: true
+        allowed_overlay_types:
+          - workshop_mutation
+          - runtime_wave_state
+          - free_upgrade_runtime_state
+          - perk_count_overrides
+rules:
+  - families are bounded and named; arbitrary family synthesis is forbidden in phase 1
+  - tournament implies perks_enabled=false unless a later governed contract explicitly overrides this

@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Orb Size,defense,Requires 500 trillion coins to be spent on defense enhancements to unlock.,x1.0,+0.01,200,x3.00,Multiplier applies to Orb Size.,Workshop_Enhancement/Defense/Orb_Size,row_verified_v61
