@@ -1,8 +1,0 @@
-topic,value,source_page
-purchase_cost_sequence_stones,5|50|150|300|800|1250|1750|2400|3000|9705 total,Ultimate Weapons
-auto_activation,Activates when cooldown timer hits zero,Ultimate Weapons
-cooldown_behavior,Timer resets immediately even if the Ultimate Weapon is active,Ultimate Weapons
-toggle_behavior,Toggling off resets cooldown timer when turned on,Ultimate Weapons
-toggle_limit_per_run,40,Ultimate Weapons
-uw_damage_formula,UW Multiplier * Core Module Multiplier * Damage * (1 + Critical Factor * Critical Chance) * (1 + Super Crit Mult * Super Crit Chance * Critical Chance),Ultimate Weapons
-ultimate_crit_formula,Critical Ultimate Weapon Damage = Ultimate Weapon Damage * Critical Factor,Ultimate Weapons

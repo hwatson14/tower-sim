@@ -1,5 +1,0 @@
-field,value,notes
-cooldown_seconds_base,120,From Chips/Steal page
-multiplier_base,0.01x,Bounty amount based on active coin multipliers on target
-targets_base,1,Base targets
-effect_summary,Marks nearby non-common enemies causing more coins on death,Bounty scales off active coin multipliers

@@ -1,8 +1,0 @@
-Optimization workflow:
-1. Identify mode
-2. Identify constrained resource
-3. Compare candidate upgrades
-4. Evaluate direct benefit and interaction benefit
-5. Evaluate opportunity cost
-6. Recommend best option
-7. State what missing data would change the answer

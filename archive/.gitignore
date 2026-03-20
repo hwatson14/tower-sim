@@ -1,5 +1,0 @@
-data/
-out/*
-!out/.gitkeep
-__pycache__/
-*.py[cod]

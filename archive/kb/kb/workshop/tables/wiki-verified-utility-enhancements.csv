@@ -1,5 +1,0 @@
-enhancement_name,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,source_page
-Cash Bonus,free after completing Workshop Enhancement Labs,1.0,0.01,400,5.0,Workshop_Enhancement/Utility/Cash_Bonus
-Coin Bonus,50B coins spent on Utility enhancements,1.0,0.01,200,3.0,Workshop_Enhancement/Utility
-Cells/Kill Bonus,500B coins spent on Utility enhancements,1.0,0.01,200,3.0,Workshop_Enhancement/Utility/Cells_Per_Kill_Bonus
-Enemy Level Skips,500T coins spent on Utility enhancements,1.0,0.01,60,1.6,Workshop_Enhancement/Utility/Enemy_Level_Skips

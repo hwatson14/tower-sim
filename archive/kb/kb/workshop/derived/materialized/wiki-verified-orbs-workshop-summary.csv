@@ -1,3 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-orbs,orb_speed,15000 coins after Knockback,38,0.4 rpm,+0.15 rpm per level,6.10 rpm,Workshop orb distance adjusts with tower range; minimum range 60m.,Orbs,row-verified-live-wiki
-orbs,orb_count,15000 coins after Knockback,4,0 orbs,+1 orb per level,4 orbs,Orb perk can raise to 6; sub-module effects can raise further.,Orbs,row-verified-live-wiki

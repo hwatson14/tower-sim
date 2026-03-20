@@ -1,2 +1,0 @@
-enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
-Defense Absolute,defense,Requires 500 billion coins to be spent on defense enhancements to unlock.,x1.0,+0.01,400,x5.00,Multiplier applies to Defense Absolute.,Workshop_Enhancement/Defense/Defense_Absolute,row_verified_v61

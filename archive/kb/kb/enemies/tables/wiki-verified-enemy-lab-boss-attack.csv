@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Boss Attack,boss,Tier 9 Wave 20,Reduces boss attack at all waves.,30,-0.30%,-9.00%,Boss labs break the simple base-ratio assumptions once researched.,Lab/Boss_Attack,row_verified_v62

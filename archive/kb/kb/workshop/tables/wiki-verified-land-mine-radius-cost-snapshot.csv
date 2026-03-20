@@ -1,7 +1,0 @@
-level,value,cost,total_cost,source
-1,0.52,500.00,500.00,Land Mine/Cost/Land_Mine_Radius
-10,0.70,10.53K,37.73K,Land Mine/Cost/Land_Mine_Radius
-20,0.90,92.48K,492.61K,Land Mine/Cost/Land_Mine_Radius
-30,1.10,357.47K,2.67M,Land Mine/Cost/Land_Mine_Radius
-40,1.30,93.80M,206.82M,Land Mine/Cost/Land_Mine_Radius
-50,1.50,19.82B,77.52B,Land Mine/Cost/Land_Mine_Radius

@@ -1,9 +1,0 @@
-level,value,cost,total_cost,source_page
-1,1.05,30,0,Attack Speed/Cost
-2,1.10,56,86,Attack Speed/Cost
-3,1.15,92,178,Attack Speed/Cost
-4,1.20,140,318,Attack Speed/Cost
-5,1.25,200,518,Attack Speed/Cost
-10,1.50,725,2.94K,Attack Speed/Cost
-15,1.75,1.68K,9.23K,Attack Speed/Cost
-20,2.00,3.11K,21.70K,Attack Speed/Cost

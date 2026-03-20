@@ -1,2 +1,0 @@
-surface_id,domain,scope_decision,simulator_handling,status
-CARD_LOCK_MICRO_PRECEDENCE,cards,Out of scope for the intended simulator target; exact micro-precedence is intentionally excluded from package canon.,Use rule-level lock semantics; treat same-tick edge ordering as out-of-frame exact scope.,out_of_scope_tick_precedence

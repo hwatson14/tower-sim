@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Vampire Enemy Attack,vampire,Tier 19 Wave 60,"Reduces Vampire attack, not drain.",30,-0.40%,-12.00%,Explicitly does not reduce the Vampire drain mechanic.,Lab/Vampire_Enemy_Attack,row_verified_v62

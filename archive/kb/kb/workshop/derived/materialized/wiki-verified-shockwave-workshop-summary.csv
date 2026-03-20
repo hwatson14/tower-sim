@@ -1,3 +1,0 @@
-workshop_stat,unlock,levels,base_value,increment,max_value,source_page,notes
-Shockwave Size,"100,000 coins after Orbs",35,0.6,+0.05 per level,2.35,Shockwave,Pushes enemies away except bosses.
-Shockwave Frequency,"100,000 coins after Orbs",40,20.00 seconds,-0.15 seconds per level,14.00 seconds (hard cap 7s),Shockwave,Workshop minimum is 14.00s; hard cap can be reduced further.

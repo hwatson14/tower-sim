@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Common Enemy Attack,basic,Tier 9 Wave 10,Reduces basic enemy attack at all waves.,30,-0.40%,-12.00%,Enemy research changes base inter-enemy ratios once researched.,Lab/Common_Enemy_Attack,row_verified_v62

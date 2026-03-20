@@ -1,2 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-death_defy,death_defy_chance,"1,500,000 coins after Land Mine Chance, Damage and Radius",75,0.4% per upgrade path,+0.4% per level,30.00%,"Death prevention priority: Death Defy, Energy Shield, Second Wind, smart Demon Mode, smart Nuke.",Death Defy,row-verified-live-wiki

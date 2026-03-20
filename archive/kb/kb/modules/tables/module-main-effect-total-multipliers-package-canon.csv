@@ -1,2 +1,0 @@
-surface_id,source_basis,canon_scope,status,rule
-MODULE_MAIN_EFFECT_TOTALS,Bundled Effective Paths structured export materialized into active KB table,material_simulator_complete,active_package_canon,Use as canonical module main-effect totals for this package even though the live wiki verifies structure rather than the full numeric ladder directly.

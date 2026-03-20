@@ -1,6 +1,0 @@
-rule_id,scope,rule_value,unit,source,verification_status
-VAULT_TIER2_COST_MULTIPLIER,power_tree,2,x_t1_cost,https://the-tower-idle-tower-defense.fandom.com/wiki/The_Vault,live_wiki_verified_2026-03-15
-VAULT_TIER3_COST_MULTIPLIER,power_tree,4,x_t1_cost,https://the-tower-idle-tower-defense.fandom.com/wiki/The_Vault,live_wiki_verified_2026-03-15
-VAULT_TIER2_UNLOCK_REQUIREMENT,power_tree,15,t1_unlocks,https://the-tower-idle-tower-defense.fandom.com/wiki/The_Vault,live_wiki_verified_2026-03-15
-VAULT_TIER3_UNLOCK_REQUIREMENT_T1,power_tree,30,t1_unlocks,https://the-tower-idle-tower-defense.fandom.com/wiki/The_Vault,live_wiki_verified_2026-03-15
-VAULT_TIER3_UNLOCK_REQUIREMENT_T2,power_tree,15,t2_unlocks,https://the-tower-idle-tower-defense.fandom.com/wiki/The_Vault,live_wiki_verified_2026-03-15

@@ -1,4 +1,0 @@
-contracts:
-  kb/global-rules/contracts/naming-contract.yaml: 75216b097e9ac7615fd5e58d3202b5629d2372693a5b7c40da7fa6a5cc0730f3
-  kb/global-rules/contracts/ids-section-routing.yaml: 2b4214cae0c8413417be0000f6f7fdf05b6abce216c22b7c35f2eff97ce38af0
-  kb/global-rules/contracts/contributor-mappings-full.yaml: 88b73d98a372fe65f08465e43e096f042b9f20c0ca345b3cbaf9964349f8f69e

@@ -1,4 +1,0 @@
-workshop_stat,unlock,levels,base_value,increment,max_value,source_page,notes
-Recovery Amount,"1,500,000 coins after Interest",300,14%,+0.40 percentage points per level,134.00%,Recovery_Packages,Packages apply automatically on spawn.
-Max Recovery,"1,500,000 coins after Interest",500,x1.00 health,+0.031x per level,x16.50 health,Recovery_Packages,Lifesteal and regen do not heal above 100% health.
-Package Chance,"1,500,000 coins after Interest",60,6%,+0.40 percentage points per level,30%,Recovery_Packages,"Max 82% cited with max lab, card, and ancestral substat."

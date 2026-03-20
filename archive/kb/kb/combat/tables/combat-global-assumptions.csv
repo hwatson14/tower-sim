@@ -1,4 +1,0 @@
-mechanic_id,surface,rule,evidence_class
-heat,enemy_damage_multiplier,base_damage * (1.04 ^ hits_taken),assumption-labeled
-coin-decay,coin-value-floor,enemy coin value becomes 50 percent of base after 3 waves alive,assumption-labeled
-protector-shield,orb-kill-block,enemies inside protector shielding cannot be orb-killed,derived-and-reproducible

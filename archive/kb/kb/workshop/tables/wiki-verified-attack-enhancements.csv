@@ -1,3 +1,0 @@
-enhancement_name,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,source_page
-Damage,free after Workshop Enhancement Labs,1.0,0.01,400,5.0,Workshop_Enhancement/Attack
-Attack Speed,500T coins spent on enhancements,1.0,0.01,75,1.75,Workshop_Enhancement

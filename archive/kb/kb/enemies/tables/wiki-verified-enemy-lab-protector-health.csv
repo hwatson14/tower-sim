@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Protector Health,protector,Tier 9 Wave 20,Reduces protector health at all waves.,30,-0.30%,-9.00%,Protector labs modify elite-like family stats independently.,Lab/Protector_Health,row_verified_v62
