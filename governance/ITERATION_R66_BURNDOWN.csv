@@ -1,9 +1,0 @@
-step,scope_item,verification,status
-1,Add incremental_targeted_probe_guarded bridge mode,targeted bridge tests,complete
-2,Avoid full-safe reference resolve on closed subset paths,monkeypatched resolve_stats tests,complete
-3,Publish partial candidate statbook only,bridge tests,complete
-4,Publish skip runtime outputs from probe subset,bridge tests + runtime executor tests,complete
-5,Preserve fallback_full_safe on unsupported mutations,bridge tests,complete
-6,Expand targeted probe coverage beyond already parity-proven subset,not yet run,pending
-7,Return complete statbook without full-safe reference,not yet run,pending
-8,Claim broad runtime speedup,benchmark evidence required,pending

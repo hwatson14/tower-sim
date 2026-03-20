@@ -1,7 +1,0 @@
-step,scope_item,verification,status
-1,Add closed-subset benchmark harness,script executes,Complete
-2,Benchmark health canonical path,results emitted,Complete
-3,Benchmark EALS runtime path,results emitted,Complete
-4,Compute speedups vs full_safe,results emitted,Complete
-5,Document interpretation and limits,governance note,Complete
-6,Benchmark broader cached/publication paths,not run,Pending

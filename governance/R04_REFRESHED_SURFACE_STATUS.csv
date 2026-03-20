@@ -1,4 +1,0 @@
-destination,status,final_value,formula_class,publishable,verification_basis
-canonical_stat::cash_kill_multiplier,resolved,15.142132224,generic_validated,True,rerun_and_read_output/statbook_publishable.json
-canonical_stat::tower_land_mine_damage,resolved,120227866523882.12,unclassified,True,rerun_and_read_output/line_by_line_verification.json_and_statbook_publishable.json
-mechanic_param::module.orbital_augment.electron_count,resolved,2.0,unclassified,True,rerun_and_read_output/line_by_line_verification.json_and_statbook_publishable.json

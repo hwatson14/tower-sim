@@ -1,8 +1,0 @@
-step,scope_item,verification,status
-1,Freeze governing architecture decisions,manual review against prior verified line,complete
-2,Freeze verified canonical publication set,manual review against prior verified line,complete
-3,Freeze verified runtime publication set,manual review against prior verified line,complete
-4,Freeze benchmark-backed performance interpretation,manual review against prior benchmark outputs,complete
-5,Issue stop/go recommendation,manual review,complete
-6,Further broad surface expansion,not run,pending
-7,Production hardening beyond current line,not run,pending

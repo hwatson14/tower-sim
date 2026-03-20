@@ -1,6 +1,0 @@
-work_package,status,verification
-rebase_fit_review,complete,tests
-rebase_holdout,complete,tests
-rebase_decision_report,complete,tests
-update_minimal_pipeline,complete,tests
-final_selective_rebase_scope_review,complete,manual

@@ -1,6 +1,0 @@
-field,value,notes
-cooldown_seconds_base,140,From Guardian page
-duration_seconds_base,5,From Guardian page
-cash_bonus_base,1.0x,From Guardian page
-spawn_rate,2 enemies per second,Basic/Tank/Ranged/Fast
-effect_summary,Summons enemies and grants cash bonus to all kills while active,Summoned enemies do not gain Ultimate Status

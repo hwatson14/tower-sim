@@ -1,9 +1,0 @@
-rule,value_or_note,source_page
-fleet_types,Saboteur | Commander | Overcharge,Fleet_Enemies
-tier_gate,Encountered on T14 and beyond,Fleet_Enemies
-immune_to,Orbs | Death Ray | Shockwave | Knockback | Black Hole Damage | Black Hole Pull,Fleet_Enemies
-thorn_resistance,90%,Fleet_Enemies
-control_resistance,50% resistance to Chrono Field | Chrono Loop(CF+) | Thunder Bot | Poison Swamp Stun | Land Mine Stun | Inner Land Mine Stun,Fleet_Enemies
-cannot_target,Magnetic Hook module | Plasma Cannon card,Fleet_Enemies
-collision_rule,Do not collide with other enemies,Fleet_Enemies
-approach_rule,Commander and Overcharge stay outside tower range; Saboteur fully approaches tower,Fleet_Enemies

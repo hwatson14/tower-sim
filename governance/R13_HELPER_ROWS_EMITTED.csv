@@ -1,5 +1,0 @@
-destination,destination_type,status,final_value,display_value
-runtime_mechanic_param::cards.plasma_cannon.effect_pct,,resolved,54.0,54%
-runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,,resolved,11.0,x11
-runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,,resolved,2.5,x2.5
-runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,,resolved,3.0,x3

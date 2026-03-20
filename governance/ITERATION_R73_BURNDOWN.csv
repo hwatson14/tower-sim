@@ -1,6 +1,0 @@
-step,scope_item,verification,status
-1,Add guarded publication test for Free Attack Upgrade,pytest targeted bridge test,complete
-2,Add cached guarded publication test for Free Attack Upgrade,pytest targeted bridge test with monkeypatch,complete
-3,Extend benchmark harness with free_attack_canonical scenario,benchmark output inspection,complete
-4,Re-run targeted benchmark and emit artifacts,benchmark script execution,complete
-5,Broader coverage expansion beyond closed canonical paths,not run,pending

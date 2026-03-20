@@ -1,3 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-knockback,chance,5000 coins after Lifesteal,80,1%,+1% per level,80%,Chance to push enemies away from tower.,Knockback,row-verified-live-wiki
-knockback,force,5000 coins after Lifesteal,40,0.4,+0.142 per level,6.08,Enemy mass reduces effect; enemies cannot be pushed toward tower because of knockback when paired with bounce shot.,Knockback,row-verified-live-wiki

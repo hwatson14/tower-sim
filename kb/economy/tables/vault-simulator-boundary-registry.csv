@@ -1,3 +1,0 @@
-surface_id,resolution,simulator_handling,status
-VAULT_NUMERIC_NODE_BOUNDARY,"Numeric Power-tree node ladders are not bundled as authoritative per-level canon; instead, listed vault stat bonuses are accepted as explicit account-resolved externalized inputs.",Apply only explicit values listed in kb/economy/tables/vault-externalized-simulator-inputs.csv and fail closed when required input is absent.,closed_with_externalized_input_boundary
-VAULT_HARMONY_CAPABILITY_BOUNDARY,"Harmony capability and unlock nodes are structurally normalized; apply only their explicit named unlock/capability behavior.",Do not infer hidden sub-behavior beyond surfaced capability meaning.,closed_with_structural_boundary

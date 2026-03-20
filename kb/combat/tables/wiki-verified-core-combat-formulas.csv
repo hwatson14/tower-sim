@@ -1,4 +1,0 @@
-formula_id,formula_text,source_page,notes
-tower_projectile_damage_displayed,Displayed damage = Workshop x Lab x Damage Card x (1 + Relics) x (1 + Cannon Module %) x Enhancements x Perk + Berserker,Damage,Displayed damage formula from live wiki; perk term uses Standard Perk Bonus formula.
-defense_absolute_application,Damage received = incoming_damage × (1 - def%) - defense_absolute,Defense_Absolute,Defense absolute is calculated after defense %.
-effective_health_ehp,eHP = (Health/(1 - Chrono Field Reduction %) + Defense Absolute)/(1 - Defense %),Health,"When using packages, highest health value should be used rather than base max health."

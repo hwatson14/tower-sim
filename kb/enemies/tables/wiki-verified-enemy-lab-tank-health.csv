@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Tank Enemy Health,tank,Tier 9 Wave 20,Reduces tank enemy health at all waves.,30,-0.40%,-12.00%,Tank base ratios cease to be exact once enemy research is active.,Lab/Tank_Enemy_Health,row_verified_v62

@@ -1,2 +1,0 @@
-destination,status,verification_status,final_value,unit,resolver,formula_class,publish_policy,compare_policy,capability_row_still_present
-runtime_mechanic_param::cards.plasma_cannon.effect_pct,resolved,publishable,54.0,pct,standard_scalar_param,helper_formula,allow,normal,False

@@ -1,4 +1,0 @@
-enhancement_name,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,source_page
-Health Regen,50B coins spent on defense enhancements,1.0,0.01,400,5.0,Workshop_Enhancement/Defense/Health_Regen
-Defense Absolute,500B coins spent on defense enhancements,1.0,0.01,400,5.0,Workshop_Enhancement/Defense/Defense_Absolute
-Wall Health,50T coins spent on defense enhancements,1.0,0.01,400,5.0,Workshop_Enhancement/Defense

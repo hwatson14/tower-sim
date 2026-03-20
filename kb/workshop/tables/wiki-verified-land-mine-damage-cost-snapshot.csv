@@ -1,8 +1,0 @@
-level,value,cost,total_cost,source
-1,110.00%,500.00,500.00,Land Mine/Cost/Land_Mine_Damage
-10,200.00%,8.24K,30.91K,Land Mine/Cost/Land_Mine_Damage
-20,300.00%,65.19K,359.50K,Land Mine/Cost/Land_Mine_Damage
-50,600.00%,1.26M,15.46M,Land Mine/Cost/Land_Mine_Damage
-100,1100.00%,25.57M,414.26M,Land Mine/Cost/Land_Mine_Damage
-150,1600.00%,48.00B,543.04B,Land Mine/Cost/Land_Mine_Damage
-200,2100.00%,217.61T,2.45q,Land Mine/Cost/Land_Mine_Damage

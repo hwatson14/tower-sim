@@ -1,8 +1,0 @@
-step,scope_item,verification,status
-1,Add runtime consumer executor for skip-driven wave outputs,targeted executor test,Complete
-2,Add explicit bridge request field for runtime_target_display_wave,bridge test coverage,Complete
-3,Publish runtime outputs from full-safe reference when eligible,bridge test coverage,Complete
-4,Publish runtime outputs from guarded publish mode after parity pass,bridge test coverage,Complete
-5,Keep non-runtime health path free of runtime publication,bridge test coverage,Complete
-6,Expand runtime publication beyond skip-driven wave outputs,not run,Pending
-7,Remove full-safe reference dependency and claim speedup,benchmark and parity evidence required,Pending

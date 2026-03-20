@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Protector Damage Reduction,protector,Tier 9 Wave 20,Reduces protector damage reduction at all waves.,20,-0.30%,-6.00%,This surface uses a shorter ladder than most enemy-research labs.,Lab/Protector_Damage_Reduction,row_verified_v62

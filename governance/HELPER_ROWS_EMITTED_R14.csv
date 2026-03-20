@@ -1,5 +1,0 @@
-destination,display_value,final_value,unit
-runtime_mechanic_param::cards.plasma_cannon.effect_pct,54%,54.0,pct
-runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier,x11,11.0,multiplier
-runtime_mechanic_param::uw.death_wave.coin_bonus_multiplier,x2.5,2.5,multiplier
-runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier,x3,3.0,multiplier

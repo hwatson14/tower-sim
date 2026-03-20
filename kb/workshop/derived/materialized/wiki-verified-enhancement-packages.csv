@@ -1,2 +1,0 @@
-enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
-Packages,utility,Requires 50 trillion coins to be spent on Utility enhancements to unlock.,x1.0,+0.01,300,x4.00,Applies to Max Recovery Package and Recovery Amount.,Workshop_Enhancement/Utility/Packages,row_verified_v61

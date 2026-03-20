@@ -1,9 +1,0 @@
-track,work_item,status,verification
-Calculator baseline,Promote/expose resolved Plasma Cannon effect surface,Done,Verified emitted row runtime_mechanic_param::cards.plasma_cannon.effect_pct in regenerated output/statbook_publishable.json with final_value 54.0 and display_value 54%
-Calculator baseline,Assign explicit runtime contract and schema unit for Plasma Cannon effect,Done,Verified mechanic contract sets unit pct and resolver standard_scalar_param; emitted schema now pct
-EP stat compilation,Keep copied-forward EP mechanics registry available for future Plasma Cannon helper parity work,Done,Registry remains present in calculator KB; no EP compare row required for this promotion task
-EP stat compilation,Full EP parity for Plasma Cannon helper surfaces,Not done / not proven,This iteration promotes calculator exposure only; no universal EP parity claim made
-KB oracle harness,Reflect Plasma Cannon effect as helper/runtime surface rather than capability-only bridge,Done,Verified formula ledger class helper_formula and publishable resolved row
-KB oracle harness,Re-run completion gate after Plasma Cannon promotion,Remaining,Not yet verified this iteration
-Optimiser,Expose Plasma Cannon resolved effect as optimiser-usable helper/runtime row,Done,Resolved emitted row now available in publishable statbook for downstream consumption
-Optimiser,Define optimiser interface update including Plasma Cannon effect row,Remaining,Not yet verified
