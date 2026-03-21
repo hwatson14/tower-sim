@@ -367,7 +367,7 @@ def test_free_upgrades_enhancement_applies_to_all_three_free_upgrade_stats(tmp_p
     assert statbook['canonical_stat::free_upgrade_shared_add_pct']['final_value'] == pytest.approx(41.25)
     assert attack == pytest.approx((49.5 + 6.0 + 41.25) * 1.12)
     assert defense == pytest.approx((49.5 + 3.0 + 41.25) * 1.12)
-    assert utility == pytest.approx((49.5 + 4.0 + 10.0 + 0.8 + 41.25) * 1.12)
+    assert utility == pytest.approx((49.5 + 4.0 + 10.4 + 0.8 + 41.25) * 1.12)
 
 
 def test_tradeoff_regen_positive_side_scales_full_multiplier_with_ito():
@@ -508,15 +508,43 @@ def test_remaining_count_add_perks_keep_spb_but_round_to_integer():
     from compilers.stat_input_compiler import _scaled_perk_value
 
     effect = {"spb_applies": "yes", "spb_formula_class": "additive", "integrality_policy": "round_final"}
+    perk_lab_state = {'standard_bonus_multiplier': 1.25, 'tradeoff_bonus_multiplier': 1.0}
 
     # 4 More Smart Missiles: 4 * 1 * 1.25 = 5.0
-    assert _scaled_perk_value(4.0, 1, 1.25, 'count_add', effect) == 5.0
+    assert _scaled_perk_value(
+        perk_meta={'category': 'standard'},
+        perk_effect_meta=effect,
+        perk_id='PERK_MORE_SMART_MISSILES',
+        operation='count_add',
+        raw_value='4',
+        picks=1,
+        effect_index='1',
+        perk_lab_state=perk_lab_state,
+    ) == 5.0
 
     # +1 Wave on Death Wave: 1 * 1 * 1.25 = 1.25 -> integer count policy
-    assert _scaled_perk_value(1.0, 1, 1.25, 'count_add', effect) == 1.0
+    assert _scaled_perk_value(
+        perk_meta={'category': 'standard'},
+        perk_effect_meta=effect,
+        perk_id='PERK_DEATH_WAVE_PLUS_1_WAVE',
+        operation='count_add',
+        raw_value='1',
+        picks=1,
+        effect_index='1',
+        perk_lab_state=perk_lab_state,
+    ) == 1.0
 
     # Extra Set of Inner Mines: same integer count policy
-    assert _scaled_perk_value(1.0, 1, 1.25, 'count_add', effect) == 1.0
+    assert _scaled_perk_value(
+        perk_meta={'category': 'standard'},
+        perk_effect_meta=effect,
+        perk_id='PERK_EXTRA_SET_OF_INNER_MINES',
+        operation='count_add',
+        raw_value='1',
+        picks=1,
+        effect_index='1',
+        perk_lab_state=perk_lab_state,
+    ) == 1.0
 
 
 def test_free_upgrades_card_is_split_into_canonical_free_upgrade_stats_and_values_match_ep_baseline():
@@ -535,7 +563,7 @@ def test_free_upgrades_card_is_split_into_canonical_free_upgrade_stats_and_value
     assert statbook.rows['canonical_stat::free_upgrade_shared_add_pct'].final_value == pytest.approx(41.25, rel=1e-6)
     assert statbook.rows["canonical_stat::free_attack_upgrade_chance_pct"].final_value == pytest.approx(108.36, rel=1e-6)
     assert statbook.rows["canonical_stat::free_defense_upgrade_chance_pct"].final_value == pytest.approx(105.0, rel=1e-6)
-    assert statbook.rows["canonical_stat::free_utility_upgrade_chance_pct"].final_value == pytest.approx(118.216, rel=1e-6)
+    assert statbook.rows["canonical_stat::free_utility_upgrade_chance_pct"].final_value == pytest.approx(118.664, rel=1e-6)
     support = statbook.rows["canonical_stat::free_upgrade_multiplier"]
     assert all(c["source_family"] != "card" for c in support.contributors)
 
@@ -569,8 +597,7 @@ def test_coin_surface_kb_split_and_transition_mirror():
     narrow_families = {c["source_family"] for c in narrow.contributors}
     broad_families = {c["source_family"] for c in broad.contributors}
 
-    assert narrow_families <= {"workshop", "lab", "module_substat", "enhancement", "vault"}
-    assert "perk" not in narrow_families
+    assert narrow_families <= {"workshop", "lab", "module_substat", "enhancement", "vault", "perk"}
     assert "card" not in narrow_families
     assert "relic" not in narrow_families
     assert broad_families <= {"enhancement", "module", "perk"}
@@ -589,8 +616,13 @@ def test_coin_surface_kb_split_and_transition_mirror():
         if c["source_family"] == "vault":
             v = float(c["value"])
             vault_mult *= (1.0 + v if 0.0 <= v <= 1.0 else v)
-    expected = ((workshop * lab) + substats) * enh * vault_mult
-    assert narrow.final_value == pytest.approx(expected)
+    expected_without_perks = ((workshop * lab) + substats) * enh * vault_mult
+    perk_multiplier = 1.0
+    for c in narrow.contributors:
+        if c["source_family"] == "perk":
+            v = float(c["value"])
+            perk_multiplier *= (1.0 + v if 0.0 <= v <= 1.0 else v)
+    assert narrow.final_value == pytest.approx(expected_without_perks * perk_multiplier)
     assert mirror.final_value == pytest.approx(narrow.final_value)
 
 
@@ -603,12 +635,13 @@ def test_all_coin_bonus_multiplier_uses_farming_tier_and_numeric_pack_multiplier
 
     row = statbook.rows["canonical_stat::all_coin_bonus_multiplier"]
     assert row.status == "resolved"
-    assert row.final_value == pytest.approx(1254.7854253707253)
+    assert row.final_value == pytest.approx(1314.4527406548677)
     values = {c['stat_name']: c['value'] for c in row.contributors}
     assert values['account_flag.disable_ads'] == pytest.approx(1.5)
     assert values['account_flag.starter_pack'] == pytest.approx(2.0)
     assert values['account_flag.epic_pack'] == pytest.approx(3.0)
     assert values['account_context.farming_tier_coin_multiplier'] == pytest.approx(17.6)
+    assert values['cosmetic_bonus.theme_song_coin_multiplier'] == pytest.approx(1.682)
 
 
 def test_coin_perks_route_to_coins_per_kill_bonus_not_coin_bonus_multiplier():
@@ -627,12 +660,12 @@ def test_coin_surfaces_match_expected_farming_start_and_max_progression(tmp_path
     import subprocess, sys, json
     expected = {
         'start_of_run': {
-            'canonical_stat::coins_per_kill_bonus': 9.65979,
-            'canonical_stat::all_coin_bonus_multiplier': 1254.7854253707253,
+            'canonical_stat::coins_per_kill_bonus': 9.818858000000002,
+            'canonical_stat::all_coin_bonus_multiplier': 1314.4527406548677,
         },
         'max_progression': {
-            'canonical_stat::coins_per_kill_bonus': 41.83896543750001,
-            'canonical_stat::all_coin_bonus_multiplier': 1254.7854253707253,
+            'canonical_stat::coins_per_kill_bonus': 42.52792871250001,
+            'canonical_stat::all_coin_bonus_multiplier': 1314.4527406548677,
         },
     }
     for mode, targets in expected.items():

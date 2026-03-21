@@ -3,15 +3,15 @@
 lab system structure, lab ladders, and lab-specific baselines.
 
 ## Suggested retrieval order
-1. local `tables/`
+1. local `kb/labs/tables/`
 2. local `contracts/`
 3. local `sources/`
 4. local `notes/`
 
 ## Tables
-- `tables/lab-values.csv`
-- `tables/wiki-game-speed-lab.csv`
-- `tables/module-drop-labs.csv`
+- `kb/labs/tables/lab-values.csv`
+- `kb/labs/tables/wiki-game-speed-lab.csv`
+- `kb/labs/tables/module-drop-labs.csv`
 
 ## Contracts
 - `contracts/lab-domain-contract.md`

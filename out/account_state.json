@@ -7,7 +7,7 @@
     "Workshop Defense Discount": 28,
     "Workshop Utility Discount": 41,
     "Labs Coin Discount": 68,
-    "Labs Speed": 89,
+    "Labs Speed": 91,
     "Buy Multiplier": 4,
     "More Round Stats": 1,
     "Target Priority": 2,
@@ -20,7 +20,7 @@
     "Enhancement Utility - Coin Discount": 0,
     "Damage": 69,
     "Attack Speed": 75,
-    "Critical Factor": 80,
+    "Critical Factor": 83,
     "Range": 33,
     "Damage / Meter": 16,
     "Super Crit Chance": 9,
@@ -45,7 +45,7 @@
     "Garlic Thorns": 10,
     "Cash Bonus": 33,
     "Cash / Wave": 8,
-    "Coins / Kill Bonus": 85,
+    "Coins / Kill Bonus": 87,
     "Coins / Wave": 6,
     "Interest": 11,
     "Max Interest": 8,
@@ -84,7 +84,7 @@
     "Black Hole Coin Bonus": 20,
     "Spotlight Coin Bonus": 20,
     "Spotlight Missiles": 1,
-    "Black Hole Disable Ranged Enemies": 0,
+    "Black Hole Disable Ranged Enemies": 1,
     "Recharge Missile Barrage": 0,
     "Swamp Rend": 0,
     "Swamp Rend - Additional Enemies": 0,
@@ -114,11 +114,11 @@
     "Auto Pick Ranking": 12,
     "Flame Bot - Cooldown": 25,
     "Thunder Bot - Cooldown": 0,
-    "Gold Bot - Cooldown": 15,
+    "Gold Bot - Cooldown": 21,
     "Amp Bot - Cooldown": 0,
     "Flame Bot - Burn Stack": 0,
     "Thunder Bot - Linger Time": 0,
-    "Gold Bot - Duration": 8,
+    "Gold Bot - Duration": 12,
     "Amp Bot - Duration": 0,
     "Common Enemy Health": 0,
     "Common Enemy Attack": 0,
@@ -145,14 +145,14 @@
     "Reroll Shards": 100,
     "Daily Mission Shards": 50,
     "Module Shards Cost": 30,
-    "Module Coin Cost": 19,
+    "Module Coin Cost": 23,
     "Rare Drop Chance": 10,
     "Unmerge Module": 1,
     "Shatter Shards": 5,
     "Cannon Effect Bans": 0,
     "Armor Effect Bans": 2,
     "Generator Effect Bans": 1,
-    "Core Effect Bans": 3,
+    "Core Effect Bans": 4,
     "Assist Module Substats - Cannon": 0,
     "Assist Module Substats - Armor": 0,
     "Assist Module Substats - Generator": 0,
@@ -1230,10 +1230,10 @@
   },
   "relics": {
     "Relics": null,
-    "Event Relics": 111.0,
+    "Event Relics": 112.0,
     "Guild Relics": 13.0,
     "Other Relics": 22.0,
-    "Total Relics": 146.0,
+    "Total Relics": 147.0,
     "Total Bonuses": null,
     "Misc.": null,
     "Lab Speed": 0.395,
@@ -1259,7 +1259,7 @@
     "Wall Rebuild": 2.0,
     "Utility": null,
     "Cash": 0.06,
-    "Coins": 0.42999999999999994,
+    "Coins": 0.48,
     "Free Attack Upgrade": 0.060000000000000005,
     "Free Defense Upgrade": 0.03,
     "Free Utility Upgrade": 0.04,
@@ -1344,10 +1344,10 @@
   ],
   "bot_upgrades": {
     "Flame Bot": {
-      "Damage R.": 9,
-      "Cooldown": 14,
+      "Damage R.": 5,
+      "Cooldown": 8,
       "Damage": 0,
-      "Range": 6
+      "Range": 4
     },
     "Thunder Bot": {
       "Duration": 0,
@@ -1356,9 +1356,9 @@
       "Range": 0
     },
     "Golden Bot": {
-      "Duration": 7,
-      "Cooldown": 5,
-      "Bonus": 18,
+      "Duration": 12,
+      "Cooldown": 3,
+      "Bonus": 21,
       "Range": 15
     },
     "Amplify Bot": {
@@ -1522,17 +1522,17 @@
     "Epic Pack": "true",
     "Tier 12": "10006",
     "Coin Multiplier": "x9",
-    "Tier 13": "6435",
-    "Tier 14": "4518",
-    "Tier 15": "4502",
-    "Tier 16": "2441",
-    "Tier 17": "505",
-    "Tier 18": "310",
-    "Tier 19": "41",
+    "Tier 13": "6908",
+    "Tier 14": "5761",
+    "Tier 15": "4859",
+    "Tier 16": "3578",
+    "Tier 17": "2010",
+    "Tier 18": "348",
+    "Tier 19": "52",
     "Tier 20": "0",
     "Tier 21": "0"
   },
-  "theme_song_coin_multiplier": 1.666,
+  "theme_song_coin_multiplier": 1.682,
   "cards_inventory": {
     "Damage": {
       "name": "Damage",
@@ -1715,7 +1715,7 @@
       "mastery_lab_level": 0
     }
   },
-  "card_slots_unlocked": 16,
+  "card_slots_unlocked": 17,
   "card_presets": {
     "Farming": [
       "Enemy Balance",
@@ -1729,11 +1729,12 @@
       "Wave Accelerator",
       "Critical Coin",
       "Second Wind",
-      "Extra Orb",
       "Energy Shield",
+      "Recovery Package Chance",
+      "Intro Sprint",
+      "Extra Orb",
       "Cash",
-      "Free Upgrades",
-      "Land Mine Stun"
+      "Free Upgrades"
     ],
     "Tourney": [
       "Attack Speed",
@@ -1750,7 +1751,9 @@
       "Recovery Package Chance",
       "Extra Defense",
       "Slow Aura",
-      "Energy Net"
+      "Energy Net",
+      "Land Mine Stun",
+      "Second Wind"
     ],
     "Milestone": [],
     "Preset 4": [],
@@ -1802,7 +1805,7 @@
       },
       "generator": {
         "primary": "Singularity Harness",
-        "assist": "Black Hole Digestor"
+        "assist": "Pulsar Harvester"
       },
       "core": {
         "primary": "Primordial Collapse",
@@ -2670,7 +2673,7 @@
       ],
       [
         "Labs Speed",
-        "89",
+        "91",
         "",
         "99"
       ],
@@ -2748,7 +2751,7 @@
       ],
       [
         "Critical Factor",
-        "80",
+        "83",
         "",
         "99"
       ],
@@ -2898,7 +2901,7 @@
       ],
       [
         "Coins / Kill Bonus",
-        "85",
+        "87",
         "",
         "99"
       ],
@@ -3132,7 +3135,7 @@
       ],
       [
         "Black Hole Disable Ranged Enemies",
-        "0",
+        "1",
         "",
         "1"
       ],
@@ -3312,7 +3315,7 @@
       ],
       [
         "Gold Bot - Cooldown",
-        "15",
+        "21",
         "",
         "25"
       ],
@@ -3336,7 +3339,7 @@
       ],
       [
         "Gold Bot - Duration",
-        "8",
+        "12",
         "",
         "20"
       ],
@@ -3498,7 +3501,7 @@
       ],
       [
         "Module Coin Cost",
-        "19",
+        "23",
         "",
         "30"
       ],
@@ -3540,7 +3543,7 @@
       ],
       [
         "Core Effect Bans",
-        "3",
+        "4",
         "",
         "7"
       ],
@@ -5188,7 +5191,7 @@
         "Free Upgrades",
         "7",
         "false",
-        "Extra Orb",
+        "Energy Shield",
         "Recovery Package Chance",
         "",
         "",
@@ -5198,7 +5201,7 @@
         "Extra Orb",
         "7",
         "false",
-        "Energy Shield",
+        "Recovery Package Chance",
         "Extra Defense",
         "",
         "",
@@ -5208,7 +5211,7 @@
         "Plasma Cannon",
         "7",
         "false",
-        "Cash",
+        "Intro Sprint",
         "Slow Aura",
         "",
         "",
@@ -5218,7 +5221,7 @@
         "Critical Coin",
         "7",
         "false",
-        "Free Upgrades",
+        "Extra Orb",
         "Energy Net",
         "",
         "",
@@ -5228,8 +5231,8 @@
         "Wave Skip",
         "7",
         "false",
+        "Cash",
         "Land Mine Stun",
-        "",
         "",
         "",
         ""
@@ -5238,8 +5241,8 @@
         "Intro Sprint",
         "7",
         "true",
-        "",
-        "",
+        "Free Upgrades",
+        "Second Wind",
         "",
         "",
         ""
@@ -5379,11 +5382,11 @@
       [
         "Relics",
         "Owned",
-        "v2.3.6"
+        "v2.3.7"
       ],
       [
         "Event Relics",
-        "111",
+        "112",
         ""
       ],
       [
@@ -5398,7 +5401,7 @@
       ],
       [
         "Total Relics",
-        "146",
+        "147",
         ""
       ],
       [
@@ -5528,7 +5531,7 @@
       ],
       [
         "Coins",
-        "0.42999999999999994",
+        "0.48",
         ""
       ],
       [
@@ -5837,15 +5840,15 @@
         "Flame Bot",
         "",
         "Damage R.",
-        "0.4700000000000002",
-        "09 | 47% | Cost 420 ? | Next 460 ?"
+        "0.3500000000000001",
+        "05 | 35% | Cost 260 ? | Next 300 ?"
       ],
       [
         "",
         "",
         "Cooldown",
-        "33",
-        "14 | 33s | Cost 620 ? | Next 660 ?"
+        "51",
+        "08 | 51s | Cost 380 ? | Next 420 ?"
       ],
       [
         "",
@@ -5858,8 +5861,8 @@
         "true",
         "Unlocked",
         "Range",
-        "54",
-        "06 | 54m | Cost 300 ? | Next 340 ?"
+        "46",
+        "04 | 46m | Cost 220 ? | Next 260 ?"
       ],
       [
         "Thunder Bot",
@@ -5893,22 +5896,22 @@
         "Golden Bot",
         "",
         "Duration",
-        "23.5",
-        "07 | 23.5s | Cost 340 ? | Next 380 ?"
+        "26",
+        "12 | 26.0s | Cost 540 ? | Next 580 ?"
       ],
       [
         "",
         "",
         "Cooldown",
-        "105",
-        "05 | 105s | Cost 260 ? | Next 300 ?"
+        "111",
+        "03 | 111s | Cost 180 ? | Next 220 ?"
       ],
       [
         "",
         "",
         "Bonus",
-        "5.600000000000003",
-        "18 | x5.6 | Cost 780 ? | Next 820 ?"
+        "6.200000000000004",
+        "21 | x6.2 | Cost 900 ? | Next 940 ?"
       ],
       [
         "true",
@@ -5948,7 +5951,7 @@
     ],
     "Themes & Songs": [
       [
-        "1.666",
+        "1.682",
         ""
       ]
     ],
@@ -6112,7 +6115,7 @@
         "",
         "",
         "Assist Slot",
-        "Black Hole Digestor",
+        "Pulsar Harvester",
         "",
         "",
         "",
@@ -7869,7 +7872,7 @@
       ],
       [
         "Tier 13",
-        "6435",
+        "6908",
         "true",
         "",
         "",
@@ -7877,7 +7880,7 @@
       ],
       [
         "Tier 14",
-        "4518",
+        "5761",
         "",
         "",
         "",
@@ -7885,7 +7888,7 @@
       ],
       [
         "Tier 15",
-        "4502",
+        "4859",
         "",
         "",
         "",
@@ -7893,7 +7896,7 @@
       ],
       [
         "Tier 16",
-        "2441",
+        "3578",
         "true",
         "",
         "",
@@ -7901,7 +7904,7 @@
       ],
       [
         "Tier 17",
-        "505",
+        "2010",
         "",
         "",
         "",
@@ -7909,7 +7912,7 @@
       ],
       [
         "Tier 18",
-        "310",
+        "348",
         "",
         "",
         "",
@@ -7917,7 +7920,7 @@
       ],
       [
         "Tier 19",
-        "41",
+        "52",
         "false",
         "",
         "",

@@ -40,11 +40,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -61,7 +62,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -76,7 +79,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -417,11 +420,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -438,7 +442,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -453,7 +459,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -785,11 +791,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -806,7 +813,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -821,7 +830,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -1072,10 +1081,10 @@
   },
   "canonical_stat::tower_crit_multiplier": {
     "label": "Critical Factor",
-    "ep_value_raw": "168.192",
-    "ep_value_parsed": 168.192,
+    "ep_value_raw": "171.6912",
+    "ep_value_parsed": 171.6912,
     "ep_value_type": "number",
-    "ep_value": 168.192,
+    "ep_value": 171.6912,
     "formula_contract": {
       "formula_class": "generic_validated",
       "publish_policy": "allow",
@@ -1109,11 +1118,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -1130,7 +1140,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -1145,7 +1157,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -1304,9 +1316,9 @@
         }
       }
     },
-    "package_value_before_runtime_assumptions": 168.192,
+    "package_value_before_runtime_assumptions": 171.6912,
     "runtime_compare_assumptions": [],
-    "package_value": 168.192,
+    "package_value": 171.6912,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -1315,7 +1327,7 @@
         "source_family": "lab",
         "source_name": "Critical Factor",
         "preset_name": null,
-        "value": 3.4,
+        "value": 3.4899999999999998,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -1365,7 +1377,7 @@
         "source_family": "lab",
         "source_name": "Critical Factor",
         "preset_name": null,
-        "value": 3.4,
+        "value": 3.4899999999999998,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -1417,17 +1429,17 @@
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x168.192",
-    "ep_value_display": "168.192",
+    "package_value_display": "x171.691",
+    "ep_value_display": "171.691",
     "delta_display": "x0",
     "relative_delta_display": "0%"
   },
   "canonical_stat::tower_range_m": {
     "label": "Range",
-    "ep_value_raw": "109.48863512309427",
-    "ep_value_parsed": 109.48863512309427,
+    "ep_value_raw": "69.5",
+    "ep_value_parsed": 69.5,
     "ep_value_type": "number",
-    "ep_value": 109.48863512309427,
+    "ep_value": 69.5,
     "formula_contract": {
       "formula_class": "generic_validated",
       "publish_policy": "allow",
@@ -1461,11 +1473,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -1482,7 +1495,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -1497,7 +1512,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -1698,17 +1713,17 @@
         "notes": "state_mode=max_progression:using_workshop_max_level:kb_workshop_summary_formula_derived"
       }
     ],
-    "delta": 0.07136487690571869,
-    "relative_delta_pct": 0.06518016854031072,
-    "status": "matched_close",
+    "delta": 40.05999999999999,
+    "relative_delta_pct": 57.64028776978415,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
     "package_value_display": "109.56",
-    "ep_value_display": "109.489",
-    "delta_display": "0.071",
-    "relative_delta_display": "0.065%"
+    "ep_value_display": "69.5",
+    "delta_display": "40.06",
+    "relative_delta_display": "57.64%"
   },
   "canonical_stat::tower_damage_per_meter_multiplier": {
     "label": "Damage / Meter",
@@ -1749,11 +1764,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -1770,7 +1786,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -1785,7 +1803,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -2085,11 +2103,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -2106,7 +2125,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -2121,7 +2142,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -2377,11 +2398,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -2398,7 +2420,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -2413,7 +2437,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -2665,11 +2689,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -2686,7 +2711,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -2701,7 +2728,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -2957,11 +2984,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -2978,7 +3006,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -2993,7 +3023,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -3229,11 +3259,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -3250,7 +3281,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -3265,7 +3298,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -3537,11 +3570,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -3558,7 +3592,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -3573,7 +3609,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -3809,11 +3845,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -3830,7 +3867,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -3845,7 +3884,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -4133,11 +4172,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -4154,7 +4194,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -4169,7 +4211,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -4485,11 +4527,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -4506,7 +4549,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -4521,7 +4566,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -4825,11 +4870,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -4846,7 +4892,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -4861,7 +4909,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -5273,11 +5321,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -5294,7 +5343,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -5309,7 +5360,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -5689,11 +5740,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -5710,7 +5762,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -5725,7 +5779,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -6041,11 +6095,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -6062,7 +6117,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -6077,7 +6134,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -6429,11 +6486,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -6450,7 +6508,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -6465,7 +6525,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -6781,11 +6841,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -6802,7 +6863,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -6817,7 +6880,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -7057,11 +7120,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -7078,7 +7142,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -7093,7 +7159,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -7306,320 +7372,12 @@
     "delta_display": "2.11B",
     "relative_delta_display": "0.001%"
   },
-  "canonical_stat::max_recovery_multiplier": {
-    "label": "Max Recovery",
-    "ep_value_raw": "155.73 T",
-    "ep_value_parsed": 155730000000000.0,
-    "ep_value_type": "scaled_number",
-    "ep_value": 155730000000000.0,
-    "formula_contract": {
-      "formula_class": "compare_noncomparable",
-      "publish_policy": "allow",
-      "compare_policy": "noncomparable",
-      "rationale": "EP export Max Recovery reflects health-at-max-recovery, not the multiplier surface emitted by the package."
-    },
-    "compare_preset": "Farming",
-    "compare_perk_state": "auto",
-    "compare_state_key": "Farming",
-    "ep_stage_context": {
-      "compare_preset": "Farming",
-      "compare_perk_state": "auto",
-      "ep_progression_state": "max_progression",
-      "ep_workshop_state": "max_workshop",
-      "ep_run_state": "farming_or_milestone_perk_state_unspecified",
-      "package_progression_state": "projected_max_progression",
-      "package_workshop_state": "projected_max_workshop",
-      "package_run_state": "farming_perks_on",
-      "unsupported_facets": [],
-      "notes": [],
-      "active_cards_by_preset": {
-        "Farming": [
-          "Enemy Balance",
-          "Extra Defense",
-          "Health",
-          "Coins",
-          "Plasma Cannon",
-          "Attack Speed",
-          "Wave Skip",
-          "Health Regen",
-          "Wave Accelerator",
-          "Critical Coin",
-          "Second Wind",
-          "Extra Orb",
-          "Energy Shield",
-          "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
-        ],
-        "Tourney": [
-          "Attack Speed",
-          "Damage",
-          "Berserker",
-          "Critical Chance",
-          "Health",
-          "Health Regen",
-          "Plasma Cannon",
-          "Wave Skip",
-          "Energy Shield",
-          "Ultimate Crit",
-          "Extra Orb",
-          "Recovery Package Chance",
-          "Extra Defense",
-          "Slow Aura",
-          "Energy Net"
-        ]
-      },
-      "active_modules_by_preset": {
-        "Farming": {
-          "cannon": {
-            "primary": "Amplifying Strike",
-            "assist": null
-          },
-          "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Orbital Augment"
-          },
-          "generator": {
-            "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
-          },
-          "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
-          }
-        },
-        "Tourney": {
-          "cannon": {
-            "primary": "Amplifying Strike",
-            "assist": null
-          },
-          "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
-          },
-          "generator": {
-            "primary": "Project Funding",
-            "assist": "Galaxy Compressor"
-          },
-          "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
-          }
-        }
-      },
-      "modules_inventory": {
-        "Astral Deliverance": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "8.19"
-        },
-        "Being Annihilator": {
-          "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
-        },
-        "Death Penalty": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "8.19"
-        },
-        "Havoc Bringer": {
-          "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
-        },
-        "Shrink Ray": {
-          "rarity": "Legendary",
-          "level": 100,
-          "stat": "2.27"
-        },
-        "Amplifying Strike": {
-          "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
-        },
-        "Any Other": {
-          "rarity": "Epic",
-          "level": 60,
-          "stat": "2.17"
-        },
-        "Any Other 2": {
-          "rarity": "Common",
-          "level": 20,
-          "stat": "1.23"
-        },
-        "Anti-Cube Portal": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "8.19"
-        },
-        "Negative Mass Projector": {
-          "rarity": "Legendary",
-          "level": 100,
-          "stat": "2.27"
-        },
-        "Space Displacer": {
-          "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
-        },
-        "Wormhole Redirector": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "8.19"
-        },
-        "Sharp Fortitude": {
-          "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
-        },
-        "Orbital Augment": {
-          "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
-        },
-        "Black Hole Digestor": {
-          "rarity": "Legendary",
-          "level": 100,
-          "stat": "1.275"
-        },
-        "Galaxy Compressor": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "1.665"
-        },
-        "Singularity Harness": {
-          "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
-        },
-        "Pulsar Harvester": {
-          "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
-        },
-        "Project Funding": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "1.665"
-        },
-        "Restorative Bonus": {
-          "rarity": "Mythic+",
-          "level": 160,
-          "stat": "1.665"
-        },
-        "Multiverse Nexus": {
-          "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
-        },
-        "Dimension Core": {
-          "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
-        },
-        "Harmony Conductor": {
-          "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
-        },
-        "Om Chip": {
-          "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
-        },
-        "Magnetic Hook": {
-          "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
-        },
-        "Primordial Collapse": {
-          "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
-        }
-      }
-    },
-    "package_value_before_runtime_assumptions": 16.5,
-    "runtime_compare_assumptions": [],
-    "package_value": 16.5,
-    "package_value_type": "multiplier",
-    "package_value_source_preset": "Farming",
-    "package_value_source_state_mode": "max_progression",
-    "package_contributors_before_runtime_assumptions": [
-      {
-        "source_family": "lab",
-        "source_name": "Recovery Package Max",
-        "preset_name": null,
-        "value": 0.0,
-        "value_type": "resolved_value",
-        "notes": "kb_lab_application_registry_routed"
-      },
-      {
-        "source_family": "workshop",
-        "source_name": "Max Amount",
-        "preset_name": "Farming",
-        "value": 16.5,
-        "value_type": "resolved_value",
-        "notes": "state_mode=max_progression:using_workshop_max_level:kb_workshop_summary_formula_derived"
-      },
-      {
-        "source_family": "vault",
-        "source_name": "Max Recovery",
-        "preset_name": null,
-        "value": 0,
-        "value_type": "resolved_value",
-        "notes": null
-      }
-    ],
-    "package_contributors": [
-      {
-        "source_family": "lab",
-        "source_name": "Recovery Package Max",
-        "preset_name": null,
-        "value": 0.0,
-        "value_type": "resolved_value",
-        "notes": "kb_lab_application_registry_routed"
-      },
-      {
-        "source_family": "workshop",
-        "source_name": "Max Amount",
-        "preset_name": "Farming",
-        "value": 16.5,
-        "value_type": "resolved_value",
-        "notes": "state_mode=max_progression:using_workshop_max_level:kb_workshop_summary_formula_derived"
-      },
-      {
-        "source_family": "vault",
-        "source_name": "Max Recovery",
-        "preset_name": null,
-        "value": 0,
-        "value_type": "resolved_value",
-        "notes": null
-      }
-    ],
-    "delta": null,
-    "relative_delta_pct": null,
-    "status": "non_comparable",
-    "kb_alignment_status": "misaligned",
-    "verdict": "fail",
-    "compare_notes": [
-      "formula_ledger_marked_noncomparable"
-    ],
-    "notes": [
-      "formula_ledger_marked_noncomparable"
-    ],
-    "package_value_display": "x16.5",
-    "ep_value_display": "156T",
-    "delta_display": null,
-    "relative_delta_display": null
-  },
   "canonical_stat::coins_per_kill_bonus": {
     "label": "Coins / Kill Bonus",
-    "ep_value_raw": "41.83896543750001",
-    "ep_value_parsed": 41.83896543750001,
+    "ep_value_raw": "42.527928712500014",
+    "ep_value_parsed": 42.527928712500014,
     "ep_value_type": "number",
-    "ep_value": 41.83896543750001,
+    "ep_value": 42.527928712500014,
     "formula_contract": {
       "formula_class": "kb_contract_repaired",
       "publish_policy": "allow",
@@ -7653,11 +7411,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -7674,7 +7433,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -7689,7 +7450,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -7848,9 +7609,9 @@
         }
       }
     },
-    "package_value_before_runtime_assumptions": 41.8389654375,
+    "package_value_before_runtime_assumptions": 42.52792871250001,
     "runtime_compare_assumptions": [],
-    "package_value": 41.8389654375,
+    "package_value": 42.52792871250001,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -7859,7 +7620,7 @@
         "source_family": "lab",
         "source_name": "Coins / Kill Bonus",
         "preset_name": null,
-        "value": 2.7,
+        "value": 2.74,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -7913,9 +7674,9 @@
       },
       {
         "source_family": "module_substat",
-        "source_name": "Black Hole Digestor",
+        "source_name": "Pulsar Harvester",
         "preset_name": "Farming",
-        "value": 0.04000000000000001,
+        "value": 0.06,
         "value_type": "multiplier_display",
         "notes": "kb_exact_routed_module_substat_assist"
       }
@@ -7925,7 +7686,7 @@
         "source_family": "lab",
         "source_name": "Coins / Kill Bonus",
         "preset_name": null,
-        "value": 2.7,
+        "value": 2.74,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -7979,22 +7740,22 @@
       },
       {
         "source_family": "module_substat",
-        "source_name": "Black Hole Digestor",
+        "source_name": "Pulsar Harvester",
         "preset_name": "Farming",
-        "value": 0.04000000000000001,
+        "value": 0.06,
         "value_type": "multiplier_display",
         "notes": "kb_exact_routed_module_substat_assist"
       }
     ],
     "delta": -7.105427357601002e-15,
-    "relative_delta_pct": -1.6982798889268066e-14,
+    "relative_delta_pct": -1.6707673222544084e-14,
     "status": "matched_exact",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x41.839",
-    "ep_value_display": "41.839",
+    "package_value_display": "x42.528",
+    "ep_value_display": "42.528",
     "delta_display": "x-0",
     "relative_delta_display": "-0%"
   },
@@ -8037,11 +7798,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -8058,7 +7820,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -8073,7 +7837,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -8377,11 +8141,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -8398,7 +8163,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -8413,7 +8180,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -8680,10 +8447,10 @@
   },
   "canonical_stat::free_utility_upgrade_chance_pct": {
     "label": "Free Utility Upgrade",
-    "ep_value_raw": "1.1828544000000003",
-    "ep_value_parsed": 1.1828544000000003,
+    "ep_value_raw": "1.1875136000000002",
+    "ep_value_parsed": 1.1875136000000002,
     "ep_value_type": "number",
-    "ep_value": 1.1828544000000003,
+    "ep_value": 1.1875136000000002,
     "formula_contract": {
       "formula_class": "generic_family_promoted",
       "publish_policy": "allow",
@@ -8717,11 +8484,12 @@
           "Wave Accelerator",
           "Critical Coin",
           "Second Wind",
-          "Extra Orb",
           "Energy Shield",
+          "Recovery Package Chance",
+          "Intro Sprint",
+          "Extra Orb",
           "Cash",
-          "Free Upgrades",
-          "Land Mine Stun"
+          "Free Upgrades"
         ],
         "Tourney": [
           "Attack Speed",
@@ -8738,7 +8506,9 @@
           "Recovery Package Chance",
           "Extra Defense",
           "Slow Aura",
-          "Energy Net"
+          "Energy Net",
+          "Land Mine Stun",
+          "Second Wind"
         ]
       },
       "active_modules_by_preset": {
@@ -8753,7 +8523,7 @@
           },
           "generator": {
             "primary": "Singularity Harness",
-            "assist": "Black Hole Digestor"
+            "assist": "Pulsar Harvester"
           },
           "core": {
             "primary": "Primordial Collapse",
@@ -8912,9 +8682,9 @@
         }
       }
     },
-    "package_value_before_runtime_assumptions": 118.21600000000001,
+    "package_value_before_runtime_assumptions": 118.66400000000002,
     "runtime_compare_assumptions": [],
-    "package_value": 118.21600000000001,
+    "package_value": 118.66400000000002,
     "package_value_type": "pct",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -8969,9 +8739,9 @@
       },
       {
         "source_family": "module_substat",
-        "source_name": "Black Hole Digestor",
+        "source_name": "Pulsar Harvester",
         "preset_name": "Farming",
-        "value": 0.8,
+        "value": 1.2000000000000002,
         "value_type": "percent_display",
         "notes": "kb_exact_routed_module_substat_assist"
       }
@@ -9027,9 +8797,9 @@
       },
       {
         "source_family": "module_substat",
-        "source_name": "Black Hole Digestor",
+        "source_name": "Pulsar Harvester",
         "preset_name": "Farming",
-        "value": 0.8,
+        "value": 1.2000000000000002,
         "value_type": "percent_display",
         "notes": "kb_exact_routed_module_substat_assist"
       }
@@ -9045,8 +8815,8 @@
     "notes": [
       "formula_ledger_marked_noncomparable"
     ],
-    "package_value_display": "118.216%",
-    "ep_value_display": "1.183",
+    "package_value_display": "118.664%",
+    "ep_value_display": "1.188",
     "delta_display": null,
     "relative_delta_display": null
   }
