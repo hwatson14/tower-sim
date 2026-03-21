@@ -1,15 +1,23 @@
 from __future__ import annotations
 
+import csv
 from dataclasses import dataclass, field
 from fractions import Fraction
 from math import gcd
+from functools import lru_cache
 from pathlib import Path
-from typing import Dict, Iterable, List, Mapping, Optional
+from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
-from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces
+from engine.family_baseline_materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
+from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
+from engine.state_identity import compile_stat_inputs_with_identity
+from engine.stat_query_kernel import QueryResponse, StatQueryKernel
+from models.account_state import AccountState
+from models.stat_input import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
 ORB_BOSS_HIT_LEVELS_TABLE = ROOT / "kb" / "global-rules" / "tables" / "note-derived-orb-boss-hit-levels-1-10.csv"
+WAVE_TIMING_BASELINES_TABLE = ROOT / "kb" / "global-rules" / "tables" / "wave-timing-baselines.csv"
 
 
 def _uptime(duration: float, cooldown: float) -> float:
@@ -28,6 +36,23 @@ def _lcm(a: int, b: int) -> int:
 
 def _fraction_from_float(value: float) -> Fraction:
     return Fraction(str(float(value))).limit_denominator(1000000)
+
+
+@lru_cache(maxsize=1)
+def _load_wave_timing_baselines() -> Dict[str, float]:
+    out: Dict[str, float] = {}
+    with WAVE_TIMING_BASELINES_TABLE.open(newline='') as fh:
+        for row in csv.DictReader(fh):
+            mode_id = str(row.get('mode_id') or '').strip()
+            if not mode_id:
+                continue
+            try:
+                out[mode_id] = float(row['total_wave_duration_seconds'])
+            except (TypeError, ValueError, KeyError):
+                raise ValueError(f'Invalid total_wave_duration_seconds row in {WAVE_TIMING_BASELINES_TABLE}: {row!r}.')
+    if 'farming' not in out or 'tournament' not in out:
+        raise ValueError(f'{WAVE_TIMING_BASELINES_TABLE} must define farming and tournament base wave durations.')
+    return out
 
 
 def shared_cycle_seconds(periods: Iterable[float]) -> float:
@@ -420,6 +445,196 @@ def compute_timing_surfaces(config: ScenarioConfig, scenario: Optional[ScenarioS
         bot_flame_cooldown_s=config.bot_flame_cooldown_s,
         bot_flame_damage_reduction_pct=config.bot_flame_damage_reduction_pct,
     )
+
+
+def materialize_timing_family_baseline(
+    *,
+    account_state: AccountState,
+    family_id: str,
+    preset_name: str,
+    scenario_config: ScenarioConfig,
+    state_mode: str = 'start_of_run',
+    perks_enabled: bool,
+    runtime_branch_id: str = 'branch_base',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    materializer: FamilyBaselineMaterializer | None = None,
+) -> FamilyBaselineContributorMap:
+    _validate_timing_family_request(family_id=family_id, scenario_config=scenario_config, perks_enabled=perks_enabled)
+    bound = compile_stat_inputs_with_identity(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name or preset_name,
+        module_preset_name=module_preset_name or preset_name,
+        perk_preset_name=perk_preset_name or preset_name,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_context={
+            'mode_id': scenario_config.mode_id,
+            'tier': scenario_config.tier,
+            'league': scenario_config.league,
+            'tournament_wave': scenario_config.tournament_wave,
+        },
+    )
+    scenario = compute_scenario_surfaces(scenario_config)
+    timing = compute_timing_surfaces(scenario_config, scenario)
+    wave_acceleration_pct = _wave_acceleration_pct_from_rows(bound.stat_inputs)
+    derived_rows = tuple(_timing_family_derived_rows(scenario_config, scenario, timing, wave_acceleration_pct))
+    replaced_surface_keys = {
+        (row.destination_object_type, row.destination_id)
+        for row in derived_rows
+        if row.destination_object_type and row.destination_id
+    }
+    base_rows = tuple(
+        row for row in bound.stat_inputs
+        if (row.destination_object_type, row.destination_id) not in replaced_surface_keys
+    )
+    rows = base_rows + derived_rows
+    return (materializer or FamilyBaselineMaterializer()).materialize_from_rows(bound.binding.identity, family_id, rows)
+
+
+def resolve_timing_family_query(
+    *,
+    account_state: AccountState,
+    family_id: str,
+    preset_name: str,
+    scenario_config: ScenarioConfig,
+    requested_surface_ids: Sequence[str],
+    state_mode: str = 'start_of_run',
+    perks_enabled: bool,
+    runtime_branch_id: str = 'branch_base',
+    trace_mode: str = 'contributors',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    query_kernel = kernel or StatQueryKernel()
+    baseline = materialize_timing_family_baseline(
+        account_state=account_state,
+        family_id=family_id,
+        preset_name=preset_name,
+        scenario_config=scenario_config,
+        state_mode=state_mode,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        materializer=query_kernel.materializer,
+    )
+    return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+
+
+def _validate_timing_family_request(*, family_id: str, scenario_config: ScenarioConfig, perks_enabled: bool) -> None:
+    if family_id == 'timing_tournament_no_perks':
+        if scenario_config.mode_id != 'tournament':
+            raise ValueError('timing_tournament_no_perks requires ScenarioConfig.mode_id="tournament".')
+        if perks_enabled:
+            raise ValueError('timing_tournament_no_perks forbids perks_enabled=True because tournament implies perks disabled.')
+    elif family_id == 'timing_farm_with_perks':
+        if scenario_config.mode_id != 'farming':
+            raise ValueError('timing_farm_with_perks requires ScenarioConfig.mode_id="farming".')
+        if not perks_enabled:
+            raise ValueError('timing_farm_with_perks requires perks_enabled=True.')
+    elif family_id == 'timing_scenario_probe':
+        if scenario_config.mode_id == 'tournament' and perks_enabled:
+            raise ValueError('timing_scenario_probe still enforces tournament implies perks disabled.')
+    else:
+        raise ValueError(f'Unsupported timing family_id {family_id!r}.')
+
+
+def _timing_family_derived_rows(
+    config: ScenarioConfig,
+    scenario: ScenarioSurfaces,
+    timing: TimingSurfaces,
+    wave_acceleration_pct: float,
+) -> tuple[StatInput, ...]:
+    base_wave_duration_seconds = _load_wave_timing_baselines()['tournament' if config.mode_id == 'tournament' else 'farming']
+    effective_wave_duration_seconds = max(0.0, base_wave_duration_seconds * (1.0 - (max(0.0, wave_acceleration_pct) / 100.0)))
+    return (
+        StatInput(
+            stat_name='Black Hole Effective Duration',
+            source_family='scenario_rules',
+            source_name='Black Hole',
+            value=timing.bh_effective_duration_s,
+            value_type='seconds',
+            stage='scenario_runtime',
+            contributor_id='timing.black_hole.effective_duration',
+            provenance='engine.timing_engine.compute_timing_surfaces',
+            destination_object_type='mechanic_param',
+            destination_id='uw.black_hole.duration_seconds',
+            kb_mapped=True,
+        ),
+        StatInput(
+            stat_name='Black Hole Effective Cooldown',
+            source_family='scenario_rules',
+            source_name='Black Hole',
+            value=timing.bh_effective_cooldown_s,
+            value_type='seconds',
+            stage='scenario_runtime',
+            contributor_id='timing.black_hole.effective_cooldown',
+            provenance='engine.timing_engine.compute_timing_surfaces',
+            destination_object_type='mechanic_param',
+            destination_id='uw.black_hole.cooldown_seconds',
+            kb_mapped=True,
+        ),
+        StatInput(
+            stat_name='Golden Tower Effective Duration',
+            source_family='scenario_rules',
+            source_name='Golden Tower',
+            value=timing.gt_effective_duration_s,
+            value_type='seconds',
+            stage='scenario_runtime',
+            contributor_id='timing.golden_tower.effective_duration',
+            provenance='engine.timing_engine.compute_timing_surfaces',
+            destination_object_type='mechanic_param',
+            destination_id='uw.golden_tower.duration_seconds',
+            kb_mapped=True,
+        ),
+        StatInput(
+            stat_name='Golden Tower Effective Cooldown',
+            source_family='scenario_rules',
+            source_name='Golden Tower',
+            value=timing.gt_effective_cooldown_s,
+            value_type='seconds',
+            stage='scenario_runtime',
+            contributor_id='timing.golden_tower.effective_cooldown',
+            provenance='engine.timing_engine.compute_timing_surfaces',
+            destination_object_type='mechanic_param',
+            destination_id='uw.golden_tower.cooldown_seconds',
+            kb_mapped=True,
+        ),
+        StatInput(
+            stat_name='Wave Duration Effective',
+            source_family='scenario_rules',
+            source_name='Wave Accelerator',
+            value=effective_wave_duration_seconds,
+            value_type='seconds',
+            stage='scenario_runtime',
+            contributor_id='timing.wave_duration_seconds_effective',
+            provenance='engine.timing_engine.compute_timing_surfaces',
+            destination_object_type='support_surface',
+            destination_id='timing.wave_duration_seconds_effective',
+            kb_mapped=True,
+        ),
+    )
+
+
+def _wave_acceleration_pct_from_rows(rows: Sequence[StatInput]) -> float:
+    for row in rows:
+        if (
+            row.destination_object_type == 'runtime_mechanic_param'
+            and row.destination_id == 'cards.wave_accelerator.spawn_rate_acceleration'
+            and row.active
+        ):
+            try:
+                return float(row.value)
+            except (TypeError, ValueError):
+                return 0.0
+    return 0.0
 
 
 def build_default_econ_timing_mechanics(statbook_rows: Dict[str, dict]) -> List[TimingMechanic]:
