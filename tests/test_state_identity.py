@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import json
 import sys
 from dataclasses import replace
 from pathlib import Path
@@ -9,22 +8,15 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
 from engine.state_identity import bind_state_identity, compile_stat_inputs_with_identity
-from parsers.ids_parser import parse_ids
+from tests.helpers import build_state
 
-
-def _build_state():
-    ids = parse_ids(ROOT / 'input' / '_IDS.csv')
-    loadout = json.loads((ROOT / 'input' / 'loadout.json').read_text())
-    perks = json.loads((ROOT / 'input' / 'perks.json').read_text())
-    return compile_account_state(ids, default_preset='Farming', loadout_config=loadout, perk_config=perks)
 
 
 def test_state_identity_is_stable_for_identical_inputs():
-    state_a = _build_state()
-    state_b = _build_state()
+    state_a = build_state()
+    state_b = build_state()
     scenario_inputs = ScenarioRuntimeInputs.from_mapping({'boss_wave_interval': 11.5})
 
     binding_a = bind_state_identity(
@@ -46,8 +38,8 @@ def test_state_identity_is_stable_for_identical_inputs():
 
 
 def test_state_identity_changes_when_any_identity_surface_changes():
-    base_state = _build_state()
-    account_changed_state = _build_state()
+    base_state = build_state()
+    account_changed_state = build_state()
     account_changed_state.labs['Damage'] = (account_changed_state.labs['Damage'] or 0) + 1
 
     base_identity = bind_state_identity(base_state, preset_name='Farming', state_mode='start_of_run', runtime_branch_id='branch_base').identity
@@ -63,7 +55,7 @@ def test_state_identity_changes_when_any_identity_surface_changes():
 
 
 def test_account_snapshot_id_does_not_depend_on_ids_file_path():
-    state = _build_state()
+    state = build_state()
     moved_state = replace(state, ids_path=Path('/tmp/other/_IDS.csv'))
 
     base_identity = bind_state_identity(state, preset_name='Farming', state_mode='start_of_run', runtime_branch_id='branch_base').identity
@@ -73,7 +65,7 @@ def test_account_snapshot_id_does_not_depend_on_ids_file_path():
 
 
 def test_compile_stat_inputs_with_identity_preserves_existing_compiler_behavior():
-    state = _build_state()
+    state = build_state()
 
     bound = compile_stat_inputs_with_identity(
         state,
