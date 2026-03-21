@@ -11,6 +11,7 @@ if str(ROOT) not in sys.path:
 from pathlib import Path
 
 from compilers.account_state_compiler import compile_account_state
+import engine.progression_recalc_bridge as progression_recalc_bridge
 from engine.progression_recalc_bridge import ProgressionRecalcBridge, ProgressionRecalcRequest
 from parsers.ids_parser import parse_ids
 
@@ -78,3 +79,25 @@ def test_recalc_bridge_uses_structural_overlay_without_mutating_original_nested_
     assert 'ProgressionTimeline_CurrentWave' not in state.perk_presets
     assert result.patched_account_state.active_perk_preset == 'ProgressionTimeline_CurrentWave'
     assert result.patched_account_state.perk_presets['ProgressionTimeline_CurrentWave'][0].perk_id == 'perk_wave_requirement'
+
+
+def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_probe(monkeypatch):
+    state = _build_state()
+
+    def _boom(_):
+        raise AssertionError('resolve_stats should not be used for supported incremental_targeted_probe_guarded progression requests')
+
+    monkeypatch.setattr(progression_recalc_bridge, 'resolve_stats', _boom)
+    result = ProgressionRecalcBridge().recompute(
+        ProgressionRecalcRequest(
+            account_state=state,
+            preset_name='Farming',
+            workshop_levels_current={'Enemy Attack Level Skip': state.workshop['Enemy Attack Level Skip'].preset_levels['Farming'] + 1},
+            recompute_mode='incremental_targeted_probe_guarded',
+            runtime_target_display_wave=120,
+        )
+    )
+
+    assert result.incremental_diagnostics['status'] == 'published_targeted_probe_subset'
+    assert result.incremental_diagnostics['runtime_publication']['outputs']['attack_wave'] is not None
+    assert 'canonical_stat::enemy_attack_level_skip_pct' in result.statbook.rows

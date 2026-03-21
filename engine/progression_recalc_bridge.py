@@ -192,7 +192,11 @@ class ProgressionRecalcBridge:
 
         executor = IncrementalSubsetExecutor()
         t = perf_counter()
-        candidate_rows = executor.execute(stat_inputs, plan.publishable_dirty_nodes)
+        candidate_rows = executor.execute(
+            stat_inputs,
+            plan.publishable_dirty_nodes,
+            family_id=plan.family_id,
+        )
         phase_timings['execute_candidate_subset'] = _elapsed_ms(t)
         diagnostics['candidate_nodes'] = sorted(candidate_rows.keys())
 

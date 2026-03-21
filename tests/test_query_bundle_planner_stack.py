@@ -13,9 +13,14 @@ if str(ROOT) not in sys.path:
 
 import engine.runtime_consumer_registry as runtime_consumer_registry
 import engine.dependency_registry as dependency_registry
+import engine.incremental_subset_executor as incremental_subset_executor
 from engine.incremental_recalc_runtime import IncrementalRecalcRuntime
+from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.runtime_consumer_registry import resolve_consumer_bundle
 from engine.dependency_registry import DependencyRegistry
+from compilers.account_state_compiler import compile_account_state
+from compilers.stat_input_compiler import compile_stat_inputs
+from parsers.ids_parser import parse_ids
 
 
 def test_consumer_bundle_registry_resolves_declared_bundle_with_optional_surfaces():
@@ -72,6 +77,19 @@ def test_dependency_registry_covers_bundle_reachable_surfaces_and_runtime_consum
 
     assert registry.node('support_surface::timing.wave_duration_seconds_effective') is not None
     assert 'runtime_consumer::wave_progression.attack_wave' in registry.closure_downstream({'canonical_stat::enemy_attack_level_skip_pct'})
+
+
+def test_consumer_bundle_contract_covers_current_phase1_bounded_consumers():
+    definitions = runtime_consumer_registry.load_consumer_bundle_definitions()
+    declared_consumers = {consumer_id for consumer_id, _ in definitions}
+    assert {
+        'run_stats',
+        'progression_runtime',
+        'runtime_consumer::wave_progression.attack_wave',
+        'runtime_consumer::wave_progression.health_wave',
+        'optimizer_analysis',
+        'advisor_reporting',
+    }.issubset(declared_consumers)
 
 
 def test_dependency_registry_fails_closed_for_missing_dependency_node(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
@@ -162,3 +180,29 @@ def test_planner_populates_fallback_reason_for_invalid_surface_request():
 
     assert plan.fallback_required is True
     assert 'outside family' in str(plan.fallback_reason)
+
+
+def test_planned_progression_bundle_executes_natively_without_full_statbook(monkeypatch):
+    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    state = compile_account_state(ids_raw, default_preset='Farming')
+    stat_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
+    plan = IncrementalRecalcRuntime().plan_consumer_bundle(
+        consumer_id='progression_runtime',
+        bundle_id='progression_wave_skips',
+        family_id='progression_runtime_with_perks',
+        trace_mode='contributors',
+    )
+
+    def _boom(_):
+        raise AssertionError('resolve_stats should not be used by the bounded planned executor path')
+
+    monkeypatch.setattr(incremental_subset_executor, 'resolve_stats', _boom, raising=False)
+    candidate = IncrementalSubsetExecutor().execute(
+        stat_inputs,
+        plan.publishable_dirty_nodes,
+        family_id=plan.family_id,
+    )
+
+    assert sorted(candidate) == sorted(plan.publishable_dirty_nodes)
+    assert candidate['canonical_stat::enemy_attack_level_skip_pct'].status == 'resolved'
+    assert candidate['canonical_stat::enemy_health_level_skip_pct'].status == 'resolved'
