@@ -26,6 +26,20 @@ _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query
 _MUTATING_STAGES = {'additive_pre_cap', 'scenario_adjustment'}
 _ALLOWED_TRACE_MODES = frozenset({'none', 'contributors', 'full_trace'})
 _ALLOWED_CONTRIBUTOR_OPS = frozenset({'add', 'remove', 'multiply', 'replace'})
+_MUTATION_METADATA_FIELDS = frozenset(
+    {
+        'surface_id',
+        'surface_class',
+        'domain',
+        'source_class',
+        'composition_stage',
+        'value_type',
+        'active',
+        'gate_reason',
+        'provenance_ref',
+    }
+)
+_REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', 'factor'})
 
 
 @dataclass(frozen=True)
@@ -70,6 +84,11 @@ class OverlayApplicator:
         self._required_fields = tuple(overlay_contract.get('required_fields') or ())
         self._allowed_delta_types = frozenset(overlay_contract.get('allowed_delta_types') or ())
         self._target_scope_allowed_keys = frozenset(((overlay_contract.get('target_scope_schema') or {}).get('allowed_keys') or ()))
+        changed_schema = overlay_contract.get('changed_contributors_schema') or {}
+        self._op_required_fields = {
+            str(operation): tuple(payload.get('required_fields') or ())
+            for operation, payload in (changed_schema.get('per_operation_requirements') or {}).items()
+        }
         self._family_allowed_delta_types = _family_allowed_delta_types(family_contract)
         self._surface_metadata_by_id = load_surface_metadata_by_id()
 
@@ -123,9 +142,9 @@ class OverlayApplicator:
                 contributor_id=target_row.contributor_id,
                 value=new_value,
                 value_type=target_row.value_type,
-                active=bool(change.get('active', target_row.active)),
-                gate_reason=change.get('gate_reason', target_row.gate_reason),
-                provenance_ref=change.get('provenance_ref', target_row.provenance_ref),
+                active=target_row.active,
+                gate_reason=target_row.gate_reason,
+                provenance_ref=target_row.provenance_ref,
             )
             new_rows[index_by_id[contributor_id]] = replacement
             rows_by_id[contributor_id] = replacement
@@ -145,6 +164,12 @@ class OverlayApplicator:
         missing = [field for field in self._required_fields if field not in delta]
         if missing:
             raise ValueError(f'Overlay delta is missing required fields: {missing}.')
+        baseline_runtime_branch_id = str(delta['baseline_runtime_branch_id'])
+        runtime_branch_id = str(delta['runtime_branch_id'])
+        if baseline_runtime_branch_id != baseline.runtime_branch_id:
+            raise ValueError('Overlay baseline_runtime_branch_id does not match the supplied baseline runtime_branch_id.')
+        if runtime_branch_id == baseline_runtime_branch_id:
+            raise ValueError('Overlay runtime_branch_id must identify a new immutable branch, not reuse the baseline runtime_branch_id.')
         delta_type = str(delta['delta_type'])
         if delta_type not in self._allowed_delta_types:
             raise ValueError(f'Overlay delta_type {delta_type!r} is not declared by the KB schema.')
@@ -158,14 +183,55 @@ class OverlayApplicator:
         if unknown_scope_keys:
             raise ValueError(f'Overlay target_scope contains unsupported keys: {unknown_scope_keys}.')
         allowed_surfaces = {row.surface_id for row in baseline.contributor_rows}
+        allowed_contributor_ids = {row.contributor_id for row in baseline.contributor_rows}
         supplied_surfaces = set(target_scope.get('surface_ids') or ())
+        supplied_contributor_ids = set(target_scope.get('contributor_ids') or ())
         if not supplied_surfaces.issubset(allowed_surfaces):
             raise ValueError('Overlay target_scope surface_ids include surfaces absent from the supplied baseline family map.')
+        if not supplied_contributor_ids.issubset(allowed_contributor_ids):
+            raise ValueError('Overlay target_scope contributor_ids include contributors absent from the supplied baseline family map.')
         if not isinstance(delta.get('changed_masks'), Sequence) or not isinstance(delta.get('changed_assertions'), Sequence):
             raise ValueError('Overlay changed_masks and changed_assertions must be sequences, even when empty.')
         for change in delta.get('changed_contributors', ()):
             if 'contributor_id' not in change:
                 raise ValueError('Every overlay changed_contributors row must include contributor_id.')
+            self._validate_change(change, supplied_surfaces=supplied_surfaces, supplied_contributor_ids=supplied_contributor_ids)
+
+    def _validate_change(
+        self,
+        change: Mapping[str, Any],
+        *,
+        supplied_surfaces: set[str],
+        supplied_contributor_ids: set[str],
+    ) -> None:
+        operation = str(change.get('operation') or 'replace').strip()
+        if operation not in _ALLOWED_CONTRIBUTOR_OPS:
+            raise ValueError(f'Unsupported overlay contributor operation {operation!r}.')
+        missing = [field for field in self._op_required_fields.get(operation, ()) if field not in change]
+        if missing:
+            raise ValueError(f'Overlay {operation} operation is missing required fields: {missing}.')
+
+        contributor_id = str(change['contributor_id'])
+        if supplied_contributor_ids and operation in {'replace', 'multiply', 'remove'} and contributor_id not in supplied_contributor_ids:
+            raise ValueError(f'Overlay {operation} operation targets contributor_id {contributor_id!r} outside target_scope contributor_ids.')
+
+        if operation == 'add':
+            surface_id = str(change['surface_id'])
+            if supplied_surfaces and surface_id not in supplied_surfaces:
+                raise ValueError(f'Overlay add operation targets surface_id {surface_id!r} outside target_scope surface_ids.')
+            return
+
+        illegal_mutation_fields = sorted(set(change) & _MUTATION_METADATA_FIELDS)
+        if illegal_mutation_fields:
+            raise ValueError(
+                f'Overlay {operation} operation cannot mutate contributor metadata fields: {illegal_mutation_fields}.'
+            )
+        if operation == 'remove':
+            illegal_remove_fields = sorted(set(change) & _REMOVE_FORBIDDEN_FIELDS)
+            if illegal_remove_fields:
+                raise ValueError(
+                    f'Overlay remove operation cannot carry value or metadata mutation fields: {illegal_remove_fields}.'
+                )
 
 
 class StatQueryKernel:
