@@ -8,7 +8,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Set
 import yaml
 
 from engine.runtime_consumer_registry import load_consumer_bundle_definitions
-from engine.family_baseline_materializer import load_family_surface_ids
+from engine.family_baseline_materializer import load_family_contracts, load_family_surface_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 _DEPENDENCY_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-dependency-invalidation-ledger.yaml'
@@ -111,6 +111,7 @@ class DependencyRegistry:
 
     def assert_contract_integrity(self) -> None:
         family_surface_ids = load_family_surface_ids()
+        family_contracts = load_family_contracts()
         bundle_definitions = load_consumer_bundle_definitions()
         for node_id, node in self.nodes.items():
             if not node.family_ids:
@@ -137,22 +138,10 @@ class DependencyRegistry:
             if not self.upstream.get(surface_id) and not self.downstream.get(surface_id):
                 raise ValueError(f'Bundle-reachable surface {surface_id!r} has no dependency coverage.')
         declared_mutation_classes = {mapping.mutation_class for mapping in self.mutation_mappings.values()}
-        family_overlay_types = {
-            overlay_type
-            for family in family_surface_ids
-            for overlay_type in []
-        }
-        # rely on known phase-1 overlay classes used by current bounded families / planner entrypoints
         required_mutation_classes = {
-            'workshop_mutation',
-            'perk_count_overrides',
-            'card_assertions',
-            'module_assertions',
-            'assist_slot_choice',
-            'package_event_model',
-            'runtime_target_display_wave',
-            'runtime_wave_state',
-            'free_upgrade_runtime_state',
+            str(overlay_type)
+            for contract in family_contracts.values()
+            for overlay_type in contract['allowed_overlay_types']
         }
         missing_mutation_classes = sorted(required_mutation_classes - declared_mutation_classes)
         if missing_mutation_classes:

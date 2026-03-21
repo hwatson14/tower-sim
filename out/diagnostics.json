@@ -3525,36 +3525,6 @@
       ],
       "explicit_caps": {}
     },
-    "module.orbital_augment.electrons_count": {
-      "unit": "count",
-      "resolver": "integer_count_param",
-      "allowed_input_value_types": [
-        "bool",
-        "count",
-        "flat",
-        "multiplier",
-        "multiplier_display",
-        "pct",
-        "percent_display",
-        "resolved_value"
-      ],
-      "disallowed_input_value_types": [
-        "level",
-        "raw_text",
-        "display_token",
-        "missing_inventory"
-      ],
-      "publish_gate_rules": [
-        "no_numeric_publish_if_any_contributor_is_unresolved",
-        "no_numeric_publish_if_any_contributor_value_type_is_level",
-        "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-      ],
-      "expected_input_semantics": [
-        "resolved_unit_value",
-        "unit_multiplier"
-      ],
-      "explicit_caps": {}
-    },
     "module.primordial_collapse.bh_damage_reduction_pct": {
       "unit": "pct",
       "resolver": "standard_scalar_param",

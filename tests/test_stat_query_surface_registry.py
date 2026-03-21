@@ -75,6 +75,7 @@ def test_phase_1_surface_registry_entries_define_required_metadata_and_designati
         if entry['surface_kind'] == 'support_surface':
             assert entry['support_only'] is True
             assert entry['surface_class'] == 'surface'
+            assert entry.get('query_value_type') in {'scalar', 'count'}
         else:
             assert entry['support_only'] is False
         assert entry['consumer_only'] is False
@@ -214,7 +215,7 @@ def test_module_contributors_are_split_into_main_unique_and_substat_source_class
         ),
     )
 
-    assert {row.contributor_id: row.source_class for row in baseline.contributor_rows} == {
+    assert {row.contributor_id: row.source_class for row in baseline.contributor_rows if row.active} == {
         'module.galaxy_compressor.main': 'module_main',
         'module.galaxy_compressor.substat': 'module_substat',
         'module.galaxy_compressor.unique': 'module_unique',

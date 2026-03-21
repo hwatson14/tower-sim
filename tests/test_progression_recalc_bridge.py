@@ -12,6 +12,7 @@ from pathlib import Path
 
 from compilers.account_state_compiler import compile_account_state
 import engine.progression_recalc_bridge as progression_recalc_bridge
+from engine.incremental_recalc_runtime import IncrementalPlan
 from engine.progression_recalc_bridge import ProgressionRecalcBridge, ProgressionRecalcRequest
 from parsers.ids_parser import parse_ids
 
@@ -99,5 +100,88 @@ def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_prob
     )
 
     assert result.incremental_diagnostics['status'] == 'published_targeted_probe_subset'
+    assert result.incremental_diagnostics['ownership_boundary'] == 'bounded_query_owned_publishable_subset'
+    assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
     assert result.incremental_diagnostics['runtime_publication']['outputs']['attack_wave'] is not None
     assert 'canonical_stat::enemy_attack_level_skip_pct' in result.statbook.rows
+
+
+def test_recalc_bridge_marks_full_safe_as_transitional_reference():
+    state = _build_state()
+    result = ProgressionRecalcBridge().recompute(
+        ProgressionRecalcRequest(
+            account_state=state,
+            preset_name='Farming',
+            workshop_levels_current={'Wall Health': state.workshop['Wall Health'].preset_levels['Farming']},
+            recompute_mode='full_safe',
+        )
+    )
+
+    assert result.incremental_diagnostics['mode'] == 'full_safe'
+    assert result.incremental_diagnostics['ownership_boundary'] == 'transitional_full_stat_engine_reference'
+
+
+def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_query(monkeypatch):
+    state = _build_state()
+    seen_family_ids = []
+    original = progression_recalc_bridge.resolve_progression_family_query
+
+    def _wrapped(*args, **kwargs):
+        seen_family_ids.append(kwargs['family_id'])
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(progression_recalc_bridge, 'resolve_progression_family_query', _wrapped)
+
+    result = ProgressionRecalcBridge().recompute(
+        ProgressionRecalcRequest(
+            account_state=state,
+            preset_name='Farming',
+            workshop_levels_current={'Enemy Attack Level Skip': state.workshop['Enemy Attack Level Skip'].preset_levels['Farming'] + 1},
+            recompute_mode='full_safe',
+            runtime_target_display_wave=120,
+            perks_enabled=False,
+        )
+    )
+
+    assert seen_family_ids == ['progression_runtime_no_perks']
+    assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
+    assert result.incremental_diagnostics['runtime_publication']['outputs']['attack_wave'] is not None
+
+
+def test_recalc_bridge_marks_fallback_plans_as_transitional_reference(monkeypatch):
+    state = _build_state()
+
+    def _fallback_plan(self, workshop_levels_current):
+        return IncrementalPlan(
+            consumer_id=None,
+            bundle_id=None,
+            family_id='progression_runtime_no_perks',
+            baseline_required=True,
+            overlays_to_apply=[],
+            requested_surfaces=[],
+            upstream_dependency_closure=[],
+            publishable_closure=[],
+            runtime_consumer_ids=[],
+            mutated_source_nodes=[],
+            dirty_nodes=[],
+            fallback_required=True,
+            fallback_reason='forced_fallback_for_test',
+        )
+
+    monkeypatch.setattr(
+        progression_recalc_bridge.IncrementalRecalcRuntime,
+        'plan_from_workshop_overrides',
+        _fallback_plan,
+    )
+
+    result = ProgressionRecalcBridge().recompute(
+        ProgressionRecalcRequest(
+            account_state=state,
+            preset_name='Farming',
+            workshop_levels_current={'Wall Health': state.workshop['Wall Health'].preset_levels['Farming']},
+            recompute_mode='incremental_targeted_probe_guarded',
+        )
+    )
+
+    assert result.incremental_diagnostics['status'] == 'fallback_full_safe'
+    assert result.incremental_diagnostics['ownership_boundary'] == 'transitional_full_stat_engine_reference'

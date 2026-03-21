@@ -8,7 +8,13 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from engine.free_upgrade_generation_policy import FreeUpgradeGenerationPolicy, FreeUpgradeGenerationState
 from engine.perk_timeline_state import perk_counts_at_wave
-from engine.progression_recalc_bridge import ProgressionRecalcBridge, ProgressionRecalcRequest, ProgressionRecalcResult
+from engine.progression_recalc_bridge import (
+    ProgressionRecalcBridge,
+    ProgressionRecalcRequest,
+    ProgressionRecalcResult,
+    resolve_progression_consumer_bundle,
+    resolve_progression_family_query,
+)
 from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces, config_from_statbook, compute_scenario_surfaces
 from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
 from engine.timing_engine import TimingSurfaces, compute_average_damage_reduction_fraction_over_interval, compute_timing_surfaces, resolve_combat_runtime_surfaces
@@ -87,6 +93,7 @@ class ProgressionSnapshot:
     display_wave: int
     perk_counts: Dict[str, int]
     row_map: Dict[str, Any]
+    query_surface_values: Dict[str, Optional[float]]
     wave_progression_state: WaveProgressionState
     total_generated_free_upgrades: int
     total_explicit_workshop_events: int
@@ -298,6 +305,8 @@ class BossWaveEngine:
         for event in config.workshop_progression_events or []:
             events_by_wave.setdefault(int(event.wave), []).append(event)
         row_map: Optional[Dict[str, Any]] = None
+        bounded_bundle_values: Optional[Dict[str, Optional[float]]] = None
+        bounded_family_values: Optional[Dict[str, Optional[float]]] = None
         dirty = True
         last_recalc_result: Optional[ProgressionRecalcResult] = None
         last_recalc_workshop_levels_current = dict(workshop_levels_current)
@@ -315,6 +324,14 @@ class BossWaveEngine:
                     cached_reference_workshop_levels_current=last_recalc_workshop_levels_current,
                 )
                 row_map = recalc.statbook.rows
+                bounded_bundle_values = self._resolve_progression_bundle_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
+                bounded_family_values = self._resolve_progression_family_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
                 last_recalc_result = recalc
                 last_recalc_workshop_levels_current = dict(workshop_levels_current)
                 dirty = False
@@ -341,6 +358,14 @@ class BossWaveEngine:
                     cached_reference_workshop_levels_current=last_recalc_workshop_levels_current,
                 )
                 row_map = recalc.statbook.rows
+                bounded_bundle_values = self._resolve_progression_bundle_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
+                bounded_family_values = self._resolve_progression_family_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
                 last_recalc_result = recalc
                 last_recalc_workshop_levels_current = dict(workshop_levels_current)
                 dirty = False
@@ -351,9 +376,9 @@ class BossWaveEngine:
                 workshop_tracks=init_state.workshop_tracks,
                 workshop_levels_current=workshop_levels_current,
                 stat_values={
-                    'canonical_stat::free_attack_upgrade_chance_pct': _row_value(row_map, 'canonical_stat::free_attack_upgrade_chance_pct'),
-                    'canonical_stat::free_defense_upgrade_chance_pct': _row_value(row_map, 'canonical_stat::free_defense_upgrade_chance_pct'),
-                    'canonical_stat::free_utility_upgrade_chance_pct': _row_value(row_map, 'canonical_stat::free_utility_upgrade_chance_pct'),
+                    'canonical_stat::free_attack_upgrade_chance_pct': None if bounded_bundle_values is None else bounded_bundle_values.get('canonical_stat::free_attack_upgrade_chance_pct'),
+                    'canonical_stat::free_defense_upgrade_chance_pct': None if bounded_bundle_values is None else bounded_bundle_values.get('canonical_stat::free_defense_upgrade_chance_pct'),
+                    'canonical_stat::free_utility_upgrade_chance_pct': None if bounded_bundle_values is None else bounded_bundle_values.get('canonical_stat::free_utility_upgrade_chance_pct'),
                 },
                 state=free_upgrade_state,
                 black_hole_disable_ranged=black_hole_disable_ranged,
@@ -373,12 +398,28 @@ class BossWaveEngine:
                     cached_reference_workshop_levels_current=last_recalc_workshop_levels_current,
                 )
                 row_map = recalc.statbook.rows
+                bounded_bundle_values = self._resolve_progression_bundle_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
+                bounded_family_values = self._resolve_progression_family_values(
+                    patched_account_state=recalc.patched_account_state,
+                    config=config,
+                )
                 last_recalc_result = recalc
                 last_recalc_workshop_levels_current = dict(workshop_levels_current)
                 dirty = False
 
-            enemy_attack_level_skip_pct = max(0.0, (_row_value(row_map, 'canonical_stat::enemy_attack_level_skip_pct') or 0.0) - float(fixed_inputs.enemy_level_skip_reduction_pp))
-            enemy_health_level_skip_pct = max(0.0, (_row_value(row_map, 'canonical_stat::enemy_health_level_skip_pct') or 0.0) - float(fixed_inputs.enemy_level_skip_reduction_pp))
+            enemy_attack_level_skip_pct = max(
+                0.0,
+                ((0.0 if bounded_bundle_values is None else (bounded_bundle_values.get('canonical_stat::enemy_attack_level_skip_pct') or 0.0)))
+                - float(fixed_inputs.enemy_level_skip_reduction_pp),
+            )
+            enemy_health_level_skip_pct = max(
+                0.0,
+                ((0.0 if bounded_bundle_values is None else (bounded_bundle_values.get('canonical_stat::enemy_health_level_skip_pct') or 0.0)))
+                - float(fixed_inputs.enemy_level_skip_reduction_pp),
+            )
             wave_progression_state = wave_progression_policy.advance_to_wave(
                 state=wave_progression_state,
                 target_display_wave=display_wave,
@@ -390,6 +431,7 @@ class BossWaveEngine:
                 display_wave=display_wave,
                 perk_counts=dict(perk_counts),
                 row_map=row_map,
+                query_surface_values=dict(bounded_family_values or {}),
                 wave_progression_state=wave_progression_state,
                 total_generated_free_upgrades=total_generated_free_upgrades,
                 total_explicit_workshop_events=total_explicit_workshop_events,
@@ -456,19 +498,20 @@ class BossWaveEngine:
                 continue
             snapshot = snapshots[display_wave]
             row_map = snapshot.row_map
+            query_surface_values = snapshot.query_surface_values
             perk_counts = snapshot.perk_counts
             boss_wave = display_wave
             attack_wave = snapshot.wave_progression_state.attack_wave
             health_wave = snapshot.wave_progression_state.health_wave
-            wall_hp = _row_value(row_map, 'canonical_stat::wall_hp')
-            wall_regen = _row_value(row_map, 'canonical_stat::wall_regen')
-            wall_fortification_multiplier = _row_value(row_map, 'canonical_stat::wall_fortification_multiplier')
-            tower_defense_pct = _row_value(row_map, 'canonical_stat::tower_defense_pct')
+            wall_hp = query_surface_values.get('canonical_stat::wall_hp') if query_surface_values else _row_value(row_map, 'canonical_stat::wall_hp')
+            wall_regen = query_surface_values.get('canonical_stat::wall_regen') if query_surface_values else _row_value(row_map, 'canonical_stat::wall_regen')
+            wall_fortification_multiplier = query_surface_values.get('canonical_stat::wall_fortification_multiplier') if query_surface_values else _row_value(row_map, 'canonical_stat::wall_fortification_multiplier')
+            tower_defense_pct = query_surface_values.get('canonical_stat::tower_defense_pct') if query_surface_values else _row_value(row_map, 'canonical_stat::tower_defense_pct')
             plasma_cannon_effect_pct = _row_value(row_map, 'runtime_mechanic_param::cards.plasma_cannon.effect_pct')
             orb_count = _row_value(row_map, 'canonical_stat::tower_orb_count')
             orb_speed_rpm = _row_value(row_map, 'canonical_stat::tower_orb_speed_rpm')
             electron_count = _row_value(row_map, 'mechanic_param::module.orbital_augment.electron_count')
-            tower_thorns_damage_pct = _row_value(row_map, 'canonical_stat::tower_thorns_damage_pct')
+            tower_thorns_damage_pct = query_surface_values.get('canonical_stat::tower_thorns_damage_pct') if query_surface_values else _row_value(row_map, 'canonical_stat::tower_thorns_damage_pct')
             boss_damage = self._lookup_wave_value(self._enemy_damage, attack_wave, config.tier_column)
             common_hp = self._lookup_wave_value(self._enemy_health, health_wave, config.tier_column)
             notes = [
@@ -683,6 +726,75 @@ class BossWaveEngine:
                 workshop_levels_current=workshop_levels_current,
                 perk_counts=perk_counts,
             )
+
+    @staticmethod
+    def _resolve_progression_bundle_values(
+        *,
+        patched_account_state: AccountState,
+        config: BossWaveEngineConfig,
+    ) -> Dict[str, Optional[float]]:
+        family_id = 'progression_runtime_with_perks' if config.perks_enabled else 'progression_runtime_no_perks'
+        free_upgrade_bundle = resolve_progression_consumer_bundle(
+            account_state=patched_account_state,
+            consumer_id='progression_runtime',
+            bundle_id='progression_free_upgrades',
+            family_id=family_id,
+            preset_name=config.preset_name,
+            perks_enabled=config.perks_enabled,
+            trace_mode='contributors',
+            card_preset_name=config.card_preset_name,
+            module_preset_name=config.module_preset_name,
+            perk_preset_name=config.perk_preset_name,
+        )
+        wave_skip_bundle = resolve_progression_consumer_bundle(
+            account_state=patched_account_state,
+            consumer_id='progression_runtime',
+            bundle_id='progression_wave_skips',
+            family_id=family_id,
+            preset_name=config.preset_name,
+            perks_enabled=config.perks_enabled,
+            trace_mode='contributors',
+            card_preset_name=config.card_preset_name,
+            module_preset_name=config.module_preset_name,
+            perk_preset_name=config.perk_preset_name,
+        )
+        values: Dict[str, Optional[float]] = {}
+        for row in (*free_upgrade_bundle.resolved_surface_rows, *wave_skip_bundle.resolved_surface_rows):
+            values[row.surface_id] = None if row.final_value is None else float(row.final_value)
+        return values
+
+    @staticmethod
+    def _resolve_progression_family_values(
+        *,
+        patched_account_state: AccountState,
+        config: BossWaveEngineConfig,
+    ) -> Dict[str, Optional[float]]:
+        family_id = 'progression_runtime_with_perks' if config.perks_enabled else 'progression_runtime_no_perks'
+        response = resolve_progression_family_query(
+            account_state=patched_account_state,
+            family_id=family_id,
+            preset_name=config.preset_name,
+            requested_surface_ids=(
+                'canonical_stat::wall_hp',
+                'canonical_stat::wall_regen',
+                'canonical_stat::wall_fortification_multiplier',
+                'canonical_stat::tower_defense_pct',
+                'canonical_stat::tower_thorns_damage_pct',
+                'canonical_stat::tower_orb_count',
+                'canonical_stat::tower_orb_speed_rpm',
+                'runtime_mechanic_param::cards.plasma_cannon.effect_pct',
+                'mechanic_param::module.orbital_augment.electron_count',
+            ),
+            perks_enabled=config.perks_enabled,
+            trace_mode='contributors',
+            card_preset_name=config.card_preset_name,
+            module_preset_name=config.module_preset_name,
+            perk_preset_name=config.perk_preset_name,
+        )
+        values: Dict[str, Optional[float]] = {}
+        for row in response.resolved_surface_rows:
+            values[row.surface_id] = None if row.final_value is None else float(row.final_value)
+        return values
 
     @staticmethod
     def _materialize_dynamic_tracks(init_state: ProgressionInitState, workshop_levels_current: Dict[str, int]) -> Dict[str, WorkshopTrackState]:

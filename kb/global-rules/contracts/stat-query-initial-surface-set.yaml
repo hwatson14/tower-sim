@@ -86,6 +86,7 @@ families:
         surface_kind: support_surface
         surface_class: surface
         domain: modules
+        query_value_type: scalar
         owning_families:
           - timing_tournament_no_perks
           - timing_farm_with_perks
@@ -118,6 +119,7 @@ families:
         surface_kind: support_surface
         surface_class: surface
         domain: timing
+        query_value_type: scalar
         owning_families:
           - timing_tournament_no_perks
           - timing_farm_with_perks
@@ -180,6 +182,38 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved wall health stat available to progression queries.
+      - surface_id: canonical_stat::wall_regen
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved wall regen stat available to progression queries.
+      - surface_id: canonical_stat::wall_fortification_multiplier
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved wall fortification multiplier available to progression queries.
       - surface_id: canonical_stat::tower_defense_pct
         surface_kind: canonical_surface
         surface_class: surface
@@ -244,6 +278,38 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved orb speed in revolutions per minute consumed by progression and combat-adjacent deterministic queries.
+      - surface_id: runtime_mechanic_param::cards.plasma_cannon.effect_pct
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: cards
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved Plasma Cannon effect percent available to progression-driven boss-wave queries.
+      - surface_id: mechanic_param::module.orbital_augment.electron_count
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: modules
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved Orbital Augment electron count available to progression-driven boss-wave queries.
       - surface_id: canonical_stat::free_attack_upgrade_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
@@ -328,6 +394,7 @@ families:
         surface_kind: support_surface
         surface_class: surface
         domain: progression
+        query_value_type: scalar
         owning_families:
           - progression_start_of_run
           - progression_runtime_no_perks

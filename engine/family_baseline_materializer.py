@@ -15,6 +15,8 @@ ROOT = Path(__file__).resolve().parents[1]
 _INITIAL_SURFACE_SET_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-initial-surface-set.yaml'
 _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-scenario-families.yaml'
 _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
+_CANONICAL_STATS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-stats.yaml'
+_MECHANIC_PARAMS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml'
 
 _SURFACE_ID_ALIASES = {
     'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
@@ -44,6 +46,7 @@ _SOURCE_CLASS_BY_FAMILY = {
     'workshop': 'workshop',
     'enhancement': 'workshop',
     'relic': 'relics',
+    'perk': 'perks',
     'card': 'cards',
     'module_substat': 'module_substat',
     'uw': 'ultimate_weapons',
@@ -113,13 +116,14 @@ class FamilyBaselineMaterializer:
     def materialize(self, bound_inputs: BoundStatInputs, family_id: str) -> FamilyBaselineContributorMap:
         self.assert_family_supported(family_id)
         allowed_surfaces = self._family_surface_ids[family_id]
+        normalized_rows = [
+            self._normalize_row(stat_input)
+            for stat_input in bound_inputs.stat_inputs
+            if _normalized_surface_id(stat_input) in allowed_surfaces
+        ]
         rows = tuple(
             sorted(
-                (
-                    self._normalize_row(stat_input)
-                    for stat_input in bound_inputs.stat_inputs
-                    if _normalized_surface_id(stat_input) in allowed_surfaces
-                ),
+                self._with_declared_surface_placeholders(normalized_rows, allowed_surfaces),
                 key=contributor_row_sort_key,
             )
         )
@@ -136,13 +140,14 @@ class FamilyBaselineMaterializer:
     def materialize_from_rows(self, identity: StateIdentity, family_id: str, stat_inputs: Iterable[StatInput]) -> FamilyBaselineContributorMap:
         self.assert_family_supported(family_id)
         allowed_surfaces = self._family_surface_ids[family_id]
+        normalized_rows = [
+            self._normalize_row(stat_input)
+            for stat_input in stat_inputs
+            if _normalized_surface_id(stat_input) in allowed_surfaces
+        ]
         rows = tuple(
             sorted(
-                (
-                    self._normalize_row(stat_input)
-                    for stat_input in stat_inputs
-                    if _normalized_surface_id(stat_input) in allowed_surfaces
-                ),
+                self._with_declared_surface_placeholders(normalized_rows, allowed_surfaces),
                 key=contributor_row_sort_key,
             )
         )
@@ -205,6 +210,32 @@ class FamilyBaselineMaterializer:
             gate_reason=gate_reason,
             provenance_ref=provenance_ref,
         )
+
+    def _with_declared_surface_placeholders(
+        self,
+        rows: Iterable[BaselineContributorRow],
+        allowed_surfaces: frozenset[str],
+    ) -> tuple[BaselineContributorRow, ...]:
+        materialized = list(rows)
+        present_surfaces = {row.surface_id for row in materialized}
+        for surface_id in sorted(allowed_surfaces - present_surfaces):
+            surface_metadata = self._surface_metadata_by_id[surface_id]
+            materialized.append(
+                BaselineContributorRow(
+                    surface_id=surface_id,
+                    surface_class=str(surface_metadata['surface_class']),
+                    domain=str(surface_metadata['domain']),
+                    source_class='base',
+                    composition_stage='gate_enable_disable',
+                    contributor_id=f'query_placeholder::{surface_id}',
+                    value=False,
+                    value_type=str(surface_metadata['default_value_type']),
+                    active=False,
+                    gate_reason='surface_absent_from_bound_inputs',
+                    provenance_ref='engine.family_baseline_materializer.placeholder',
+                )
+            )
+        return tuple(materialized)
 
 
 def load_surface_registry_contract() -> dict[str, Any]:
@@ -293,10 +324,19 @@ def load_surface_metadata_by_id() -> dict[str, Mapping[str, Any]]:
     contract = load_surface_registry_contract()
     for family_data in (contract.get('families') or {}).values():
         for entry in family_data.get('surfaces') or ():
+            surface_id = str(entry['surface_id'])
+            query_value_type = entry.get('query_value_type')
+            if str(entry.get('surface_kind')) == 'support_surface':
+                query_value_type = str(query_value_type or '').strip()
+                if query_value_type not in {'scalar', 'count'}:
+                    raise ValueError(
+                        f'Support surface {surface_id!r} must declare query_value_type scalar|count in the phase-1 registry.'
+                    )
             metadata[str(entry['surface_id'])] = MappingProxyType(
                 {
                     'surface_class': str(entry['surface_class']),
                     'domain': str(entry['domain']),
+                    'default_value_type': _default_value_type_for_surface_id(surface_id, query_value_type=query_value_type),
                 }
             )
     return metadata
@@ -356,8 +396,10 @@ def _fallback_contributor_id(row: StatInput) -> str:
 def _normalize_value_type(value_type: str) -> str:
     return {
         'multiplier': 'scalar',
+        'multiplier_display': 'scalar',
         'resolved_value': 'scalar',
         'percent_display': 'scalar',
+        'flat': 'scalar',
         'bool': 'count',
         'level': 'count',
         'raw_text': 'scalar',
@@ -374,6 +416,53 @@ def _normalize_composition_stage(surface_id: str, row: StatInput) -> str:
     if row.destination_object_type == 'runtime_mechanic_param':
         return 'scenario_adjustment'
     return 'additive_pre_cap'
+
+
+def _default_value_type_for_surface_id(surface_id: str, *, query_value_type: str | None = None) -> str:
+    if query_value_type:
+        return str(query_value_type)
+    object_type, _, destination_id = surface_id.partition('::')
+    registry = _contract_registry_value_types()
+    return registry.get((object_type, destination_id), 'scalar')
+
+
+def _unit_to_query_value_type(unit: str) -> str:
+    return 'count' if str(unit).strip() == 'count' else 'scalar'
+
+
+def _resolver_to_query_value_type(resolver: str) -> str:
+    return 'count' if 'count' in str(resolver) else 'scalar'
+
+
+def _contract_registry_value_types() -> dict[tuple[str, str], str]:
+    canonical_stats = yaml.safe_load(_CANONICAL_STATS_PATH.read_text()) or {}
+    mechanic_params = yaml.safe_load(_MECHANIC_PARAMS_PATH.read_text()) or {}
+    out: dict[tuple[str, str], str] = {}
+
+    for entries in (canonical_stats.get('domains') or {}).values():
+        for entry in entries or ():
+            destination_id = str(entry.get('id') or '').strip()
+            if not destination_id:
+                continue
+            value_type = _unit_to_query_value_type(entry.get('unit', ''))
+            out[('canonical_stat', destination_id)] = value_type
+
+    for group_name, entries in (mechanic_params.get('groups') or mechanic_params).items():
+        if group_name in {'schema_revision', 'purpose', 'notes'}:
+            continue
+        if not isinstance(entries, list):
+            continue
+        for entry in entries:
+            destination_id = str(entry.get('id') or '').strip()
+            if not destination_id:
+                continue
+            resolver = str(entry.get('resolver') or '')
+            unit = str(entry.get('unit') or '')
+            value_type = _resolver_to_query_value_type(resolver) if resolver else _unit_to_query_value_type(unit)
+            out[('mechanic_param', destination_id)] = value_type
+            out[('runtime_mechanic_param', destination_id)] = value_type
+
+    return out
 
 
 def contributor_row_sort_key(row: BaselineContributorRow) -> tuple[str, str, str, str, str, str, str]:

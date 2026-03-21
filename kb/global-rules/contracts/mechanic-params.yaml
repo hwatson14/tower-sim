@@ -480,10 +480,6 @@ domains:
     unit: count
     resolver: integer_count_param
     status: keep_now
-  - id: module.orbital_augment.electrons_count
-    unit: count
-    resolver: integer_count_param
-    status: keep_now
   - id: module.primordial_collapse.bh_damage_reduction_pct
     unit: pct
     resolver: standard_scalar_param

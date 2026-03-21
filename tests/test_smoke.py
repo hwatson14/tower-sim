@@ -981,7 +981,7 @@ def test_orbital_augment_electron_count_resolves_as_count(tmp_path):
     result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     statbook = json.loads((out / 'statbook.json').read_text())['rows']
-    row = statbook['mechanic_param::module.orbital_augment.electrons_count']
+    row = statbook['mechanic_param::module.orbital_augment.electron_count']
     assert row['status'] == 'resolved'
     assert row['schema']['unit'] == 'count'
     assert row['final_value'] == 2

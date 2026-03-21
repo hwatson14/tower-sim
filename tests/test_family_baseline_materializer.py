@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine.family_baseline_materializer import FamilyBaselineMaterializer
+from engine.family_baseline_materializer import FamilyBaselineMaterializer, load_family_surface_ids
 from engine.state_identity import compile_stat_inputs_with_identity
 from tests.helpers import build_state
 
@@ -70,10 +70,14 @@ def test_progression_family_materializer_normalizes_rows_to_contract_shape():
         {
             'canonical_stat::tower_hp',
             'canonical_stat::wall_hp',
+            'canonical_stat::wall_regen',
+            'canonical_stat::wall_fortification_multiplier',
             'canonical_stat::tower_defense_pct',
             'canonical_stat::tower_thorns_damage_pct',
             'canonical_stat::tower_orb_count',
             'canonical_stat::tower_orb_speed_rpm',
+            'runtime_mechanic_param::cards.plasma_cannon.effect_pct',
+            'mechanic_param::module.orbital_augment.electron_count',
             'canonical_stat::free_attack_upgrade_chance_pct',
             'canonical_stat::free_defense_upgrade_chance_pct',
             'canonical_stat::free_utility_upgrade_chance_pct',
@@ -117,11 +121,34 @@ def test_timing_family_materializer_is_bounded_to_timing_surface_set():
             'mechanic_param::uw.black_hole.duration_seconds',
             'mechanic_param::uw.golden_tower.cooldown_seconds',
             'mechanic_param::uw.golden_tower.duration_seconds',
+            'support_surface::timing.gcomp_cooldown_reduction_seconds',
             'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+            'support_surface::timing.wave_duration_seconds_effective',
         }
     )
     assert 'canonical_stat::tower_hp' not in {row.surface_id for row in baseline.contributor_rows}
     assert all(row.domain in {'timing', 'ultimate_weapons', 'modules', 'cards'} for row in baseline.contributor_rows)
+
+
+def test_materializer_backfills_declared_surfaces_with_gated_placeholders_when_inputs_are_absent():
+    baseline = FamilyBaselineMaterializer().materialize_from_rows(
+        identity=compile_stat_inputs_with_identity(
+            build_state(),
+            preset_name='Tourney',
+            state_mode='start_of_run',
+            runtime_branch_id='branch_base',
+            perks_enabled=False,
+        ).binding.identity,
+        family_id='timing_tournament_no_perks',
+        stat_inputs=(),
+    )
+
+    declared = load_family_surface_ids()['timing_tournament_no_perks']
+    assert declared.issubset(set(baseline.contributor_rows_by_surface))
+    placeholder = baseline.contributor_rows_by_surface['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'][0]
+    assert placeholder.active is False
+    assert placeholder.composition_stage == 'gate_enable_disable'
+    assert placeholder.gate_reason == 'surface_absent_from_bound_inputs'
 
 
 

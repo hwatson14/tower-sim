@@ -50,6 +50,16 @@ surface_nodes:
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::wall_regen
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::wall_fortification_multiplier
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
   - node_id: canonical_stat::tower_defense_pct
     ownership_class: surface
     ownership_status: query_owned
@@ -66,6 +76,16 @@ surface_nodes:
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
   - node_id: canonical_stat::tower_orb_speed_rpm
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: runtime_mechanic_param::cards.plasma_cannon.effect_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::module.orbital_augment.electron_count
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine

@@ -98,7 +98,7 @@ kb/{domain}/
 
 **Ownership rule:** One stat, one resolution path, one owner. The Query Engine must produce identical results for identical inputs. It must never silently cache, approximate, or re-derive a surface that it has already resolved. Contributor-ledger visibility is a first-class requirement: every resolved stat must be traceable to its contributing sources.
 
-**Current state:** The core resolver exists and works (`stat_engine.py`). What does not yet exist is the query API surface defined by the R86 contract pack: state identity binding, scenario family definitions, baseline materialisation, overlay application, and the query kernel itself. That is the primary Codex work order.
+**Current state:** The core resolver exists and works (`stat_engine.py`), and the phase-1 query API primitives now exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. The remaining work is confirmation and migration: prove parity against the canonical stat engine across declared families, exercise allowed overlay classes end-to-end, and retire transitional full-stat-engine reference paths such as the progression recalc bridge once bounded coverage is complete.
 
 **Key interfaces:**
 - Consumes: `AccountState` from Inputs, mechanic contracts and tables from the KB
@@ -108,14 +108,18 @@ kb/{domain}/
 
 | File | Lines | Role |
 |---|---|---|
-| `engine/stat_engine.py` | 1,500 | Core stat resolution — the heart of this layer |
+| `engine/stat_engine.py` | ~13 | Legacy compatibility entrypoint that re-exports the canonical resolver surface |
+| `engine/stat_resolution_core.py` | ~1,500 | Core stat resolution — the heart of this layer |
 | `engine/scenario_engine.py` | 537 | Scenario configuration and scenario-dependent surface handling |
 | `engine/scenario_runtime_inputs.py` | 90 | Scenario input assembly |
 | `engine/derived_surface_composer.py` | 156 | Derived stat composition |
 | `engine/dependency_registry.py` | 107 | Progression dependency DAG |
+| `engine/state_identity.py` | 145 | Account/loadout/scenario/runtime-branch identity binding for bounded queries |
+| `engine/family_baseline_materializer.py` | 340 | Family-scoped baseline contributor materialisation from routed stat inputs |
+| `engine/stat_query_kernel.py` | 420 | Bounded query API kernel for baseline resolution, overlays, and trace output |
 | `models/statbook.py` | 28 | StatBook output data model |
 
-**Planned (R86):** State identity binder, bounded family baseline materialiser, overlay applicator, query API kernel, timing_v1 migration, progression_v1 migration. See `kb/global-rules/contracts/stat-query-*.yaml` for the contract definitions.
+**Planned (R86):** Complete parity validation for declared query-owned families, expand end-to-end overlay/invalidation coverage, finish progression_v1 migration off transitional full-stat-engine reference paths, and continue moving primary orchestration onto the bounded query API surface. See `kb/global-rules/contracts/stat-query-*.yaml` for the contract definitions.
 
 ---
 
