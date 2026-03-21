@@ -14,7 +14,9 @@ from compilers.account_state_compiler import compile_account_state
 from engine.family_baseline_materializer import FamilyBaselineMaterializer
 from engine.family_baseline_materializer import load_family_surface_ids
 from engine.runtime_consumer_registry import (
+    assert_runtime_consumer_bundle_contract,
     assert_runtime_consumer_ownership_contract,
+    list_runtime_consumer_rules,
     load_consumer_bundle_definitions,
 )
 from engine.scenario_engine import ScenarioConfig
@@ -117,12 +119,39 @@ def test_publish_default_consumer_bundles_resolve_through_bounded_query_stack(co
 
 def test_query_engine_completion_contracts_are_internally_consistent():
     assert_runtime_consumer_ownership_contract()
+    assert_runtime_consumer_bundle_contract()
     definitions = load_consumer_bundle_definitions()
     assert definitions
     for definition in definitions.values():
         baseline = _baseline_for_family(definition.allowed_family_ids[0])
         available_surface_ids = set(baseline.contributor_rows_by_surface)
         assert set(definition.required_surface_ids).issubset(available_surface_ids)
+
+
+def test_runtime_consumer_query_ownership_scope_is_complete_for_declared_phase1_consumers():
+    assert_runtime_consumer_ownership_contract()
+    assert_runtime_consumer_bundle_contract()
+    definitions = load_consumer_bundle_definitions()
+    runtime_rules = list_runtime_consumer_rules()
+
+    runtime_bundle_keys = {
+        key
+        for key, definition in definitions.items()
+        if definition.consumer_id.startswith('runtime_consumer::') and definition.publish_default
+    }
+    assert runtime_bundle_keys == {
+        (rule.consumer_id, 'progression_wave_skips')
+        for rule in runtime_rules
+    }
+    assert len(runtime_bundle_keys) == len(runtime_rules) == 2
+
+    progression_runtime_bundle = definitions[('progression_runtime', 'progression_wave_skips')]
+    assert progression_runtime_bundle.publish_default is True
+    assert set(progression_runtime_bundle.required_surface_ids) == {
+        source_node_id
+        for rule in runtime_rules
+        for source_node_id in rule.source_node_ids
+    }
 
 
 @pytest.mark.parametrize('family_id', sorted(load_family_surface_ids()))

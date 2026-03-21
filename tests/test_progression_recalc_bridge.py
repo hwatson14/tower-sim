@@ -88,7 +88,7 @@ def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_prob
     def _boom(_):
         raise AssertionError('resolve_stats should not be used for supported incremental_targeted_probe_guarded progression requests')
 
-    monkeypatch.setattr(progression_recalc_bridge, 'resolve_stats', _boom)
+    monkeypatch.setattr(progression_recalc_bridge, 'resolve_stats', _boom, raising=False)
     result = ProgressionRecalcBridge().recompute(
         ProgressionRecalcRequest(
             account_state=state,
@@ -106,8 +106,13 @@ def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_prob
     assert 'canonical_stat::enemy_attack_level_skip_pct' in result.statbook.rows
 
 
-def test_recalc_bridge_marks_full_safe_as_transitional_reference():
+def test_recalc_bridge_full_safe_uses_bounded_family_reference(monkeypatch):
     state = _build_state()
+
+    def _boom(_):
+        raise AssertionError('resolve_stats should not be used for full_safe progression requests once bounded family reference is available')
+
+    monkeypatch.setattr(progression_recalc_bridge, 'resolve_stats', _boom, raising=False)
     result = ProgressionRecalcBridge().recompute(
         ProgressionRecalcRequest(
             account_state=state,
@@ -118,19 +123,19 @@ def test_recalc_bridge_marks_full_safe_as_transitional_reference():
     )
 
     assert result.incremental_diagnostics['mode'] == 'full_safe'
-    assert result.incremental_diagnostics['ownership_boundary'] == 'transitional_full_stat_engine_reference'
+    assert result.incremental_diagnostics['ownership_boundary'] == 'bounded_query_owned_declared_family_reference'
 
 
-def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_query(monkeypatch):
+def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_bundle(monkeypatch):
     state = _build_state()
-    seen_family_ids = []
-    original = progression_recalc_bridge.resolve_progression_family_query
+    seen_calls = []
+    original = progression_recalc_bridge.resolve_progression_consumer_bundle
 
     def _wrapped(*args, **kwargs):
-        seen_family_ids.append(kwargs['family_id'])
+        seen_calls.append((kwargs['consumer_id'], kwargs['bundle_id'], kwargs['family_id']))
         return original(*args, **kwargs)
 
-    monkeypatch.setattr(progression_recalc_bridge, 'resolve_progression_family_query', _wrapped)
+    monkeypatch.setattr(progression_recalc_bridge, 'resolve_progression_consumer_bundle', _wrapped)
 
     result = ProgressionRecalcBridge().recompute(
         ProgressionRecalcRequest(
@@ -143,12 +148,12 @@ def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_qu
         )
     )
 
-    assert seen_family_ids == ['progression_runtime_no_perks']
+    assert seen_calls == [('progression_runtime', 'progression_wave_skips', 'progression_runtime_no_perks')]
     assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
     assert result.incremental_diagnostics['runtime_publication']['outputs']['attack_wave'] is not None
 
 
-def test_recalc_bridge_marks_fallback_plans_as_transitional_reference(monkeypatch):
+def test_recalc_bridge_fallback_plans_use_bounded_family_reference(monkeypatch):
     state = _build_state()
 
     def _fallback_plan(self, workshop_levels_current):
@@ -183,5 +188,5 @@ def test_recalc_bridge_marks_fallback_plans_as_transitional_reference(monkeypatc
         )
     )
 
-    assert result.incremental_diagnostics['status'] == 'fallback_full_safe'
-    assert result.incremental_diagnostics['ownership_boundary'] == 'transitional_full_stat_engine_reference'
+    assert result.incremental_diagnostics['status'] == 'fallback_bounded_family_reference'
+    assert result.incremental_diagnostics['ownership_boundary'] == 'bounded_query_owned_declared_family_reference'
