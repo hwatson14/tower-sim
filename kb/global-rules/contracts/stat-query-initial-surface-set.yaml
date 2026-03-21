@@ -84,7 +84,7 @@ families:
         semantics: effective Golden Tower active duration seconds after deterministic timing adjustments.
       - surface_id: support_surface::timing.gcomp_cooldown_reduction_seconds
         surface_kind: support_surface
-        surface_class: context_resource
+        surface_class: surface
         domain: modules
         owning_families:
           - timing_tournament_no_perks
@@ -116,7 +116,7 @@ families:
         semantics: Wave Accelerator spawn-rate acceleration scalar consumed by effective wave-duration timing.
       - surface_id: support_surface::timing.wave_duration_seconds_effective
         surface_kind: support_surface
-        surface_class: context_resource
+        surface_class: surface
         domain: timing
         owning_families:
           - timing_tournament_no_perks
@@ -326,7 +326,7 @@ families:
         semantics: resolved enemy health level skip percent consumed by wave progression runtime consumers.
       - surface_id: support_surface::free_upgrade_multiplier
         surface_kind: support_surface
-        surface_class: context_resource
+        surface_class: surface
         domain: progression
         owning_families:
           - progression_start_of_run

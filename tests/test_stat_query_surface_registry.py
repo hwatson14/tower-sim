@@ -42,6 +42,10 @@ def _registry_contract() -> dict:
     return family_surface_registry.load_surface_registry_contract()
 
 
+def _ownership_ledger() -> dict:
+    return family_surface_registry.load_surface_ownership_ledger()
+
+
 def _all_surface_entries() -> list[tuple[str, dict]]:
     contract = _registry_contract()
     return [
@@ -70,7 +74,7 @@ def test_phase_1_surface_registry_entries_define_required_metadata_and_designati
         assert entry['queryable_directly'] is True
         if entry['surface_kind'] == 'support_surface':
             assert entry['support_only'] is True
-            assert entry['surface_class'] == 'context_resource'
+            assert entry['surface_class'] == 'surface'
         else:
             assert entry['support_only'] is False
         assert entry['consumer_only'] is False
@@ -93,6 +97,19 @@ def test_every_family_owned_surface_is_declared_in_exactly_one_registry_location
     assert set().union(*family_surface_ids.values()) == declared_surface_ids
     for family_id, surface_ids in family_surface_ids.items():
         assert surface_ids, family_id
+
+
+
+def test_every_phase_1_surface_has_matching_query_ownership_ledger_coverage():
+    ownership_rows = {row['node_id']: row for row in (_ownership_ledger().get('surface_nodes') or [])}
+
+    for _, entry in _all_surface_entries():
+        row = ownership_rows.get(entry['surface_id'])
+        assert row is not None, entry['surface_id']
+        assert row['ownership_status'] == 'query_owned'
+        assert row['governed_by'] == 'canonical_query_engine'
+        assert row['ownership_class'] == entry['surface_class']
+        assert row['downstream_policy'] == 'consume_only_no_rederivation'
 
 
 def test_every_bundle_referenced_surface_is_declared_within_its_family_group():
@@ -211,6 +228,10 @@ def test_module_contributors_are_split_into_main_unique_and_substat_source_class
             lambda contract: contract['families']['timing_v1']['surfaces'][0].__setitem__('surface_class', 'internal_only'),
             'unsupported surface_class',
         ),
+        (
+            lambda contract: None,
+            'missing from the ownership ledger',
+        ),
     ],
 )
 def test_surface_registry_loader_fails_closed_for_invalid_registry_references(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, mutation, match: str):
@@ -219,6 +240,15 @@ def test_surface_registry_loader_fails_closed_for_invalid_registry_references(tm
     registry_path = tmp_path / 'stat-query-initial-surface-set.yaml'
     registry_path.write_text(yaml.safe_dump(contract, sort_keys=False))
     monkeypatch.setattr(family_surface_registry, '_INITIAL_SURFACE_SET_PATH', registry_path)
+    if match == 'missing from the ownership ledger':
+        ledger = copy.deepcopy(_ownership_ledger())
+        ledger['surface_nodes'] = [
+            row for row in (ledger.get('surface_nodes') or [])
+            if row.get('node_id') != contract['families']['timing_v1']['surfaces'][0]['surface_id']
+        ]
+        ledger_path = tmp_path / 'stat-query-surface-ownership-ledger.yaml'
+        ledger_path.write_text(yaml.safe_dump(ledger, sort_keys=False))
+        monkeypatch.setattr(family_surface_registry, '_OWNERSHIP_LEDGER_PATH', ledger_path)
 
     with pytest.raises(ValueError, match=match):
         family_surface_registry.load_family_surface_ids()
