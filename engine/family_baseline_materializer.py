@@ -14,6 +14,7 @@ from models.stat_input import StatInput
 ROOT = Path(__file__).resolve().parents[1]
 _INITIAL_SURFACE_SET_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-initial-surface-set.yaml'
 _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-scenario-families.yaml'
+_OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
 
 _SURFACE_ID_ALIASES = {
     'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
@@ -210,11 +211,19 @@ def load_surface_registry_contract() -> dict[str, Any]:
     return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
 
 
+def load_surface_ownership_ledger() -> dict[str, Any]:
+    return yaml.safe_load(_OWNERSHIP_LEDGER_PATH.read_text()) or {}
+
+
 def load_family_surface_ids() -> dict[str, frozenset[str]]:
     initial_surface_contract = load_surface_registry_contract()
     declared_families = set(load_family_contracts())
     bounded: dict[str, frozenset[str]] = {}
     all_surface_ids: set[str] = set()
+    ownership_rows = {
+        str(row.get('node_id')): row
+        for row in (load_surface_ownership_ledger().get('surface_nodes') or [])
+    }
     for family_group, family_data in (initial_surface_contract.get('families') or {}).items():
         group_surfaces = family_data.get('surfaces') or ()
         seen_in_group: set[str] = set()
@@ -244,6 +253,16 @@ def load_family_surface_ids() -> dict[str, frozenset[str]]:
                 raise ValueError(f'Surface {surface_id!r} has non-boolean metadata fields: {invalid_bool_fields}.')
             if entry['debug_only'] and entry['publish_default']:
                 raise ValueError(f'Surface {surface_id!r} cannot be debug_only and publish_default simultaneously.')
+            ownership_row = ownership_rows.get(surface_id)
+            if ownership_row is None:
+                raise ValueError(f'Surface {surface_id!r} is missing from the ownership ledger.')
+            if ownership_row.get('ownership_status') != 'query_owned' or ownership_row.get('governed_by') != 'canonical_query_engine':
+                raise ValueError(f'Surface {surface_id!r} must be query_owned and governed_by canonical_query_engine in the ownership ledger.')
+            if ownership_row.get('ownership_class') != surface_class:
+                raise ValueError(
+                    f'Surface {surface_id!r} disagrees with the ownership ledger on ownership_class: '
+                    f"registry={surface_class!r}, ledger={ownership_row.get('ownership_class')!r}."
+                )
             seen_in_group.add(surface_id)
             all_surface_ids.add(surface_id)
             owning_families = tuple(entry.get('owning_families') or ())
