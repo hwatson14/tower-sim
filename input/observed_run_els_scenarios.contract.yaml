@@ -1,0 +1,14 @@
+contract_id: observed_run_els_scenarios_v1
+required_fields:
+  - scenario_id
+  - scenario_kind
+  - skip_track
+  - observed_run_label
+  - enemy_level_skip_reduction_pp
+  - notes
+required_scenarios:
+  - observed_run_enemy_attack_skip
+  - observed_run_enemy_health_skip
+notes:
+  - Observed-run ELS scenarios are bounded prep inputs for optimizer-side helper evaluation only.
+  - enemy_level_skip_reduction_pp is an observed external reduction applied to the relevant skip track.

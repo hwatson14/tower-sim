@@ -1,0 +1,71 @@
+change_classification:
+  - Routing correction
+  - Output correction
+notes:
+  - Non-runtime R94 prep only; this contract does not make run_stats.py the long-term owner.
+  - Coin Bonus prep surfaces are intended for strong-model outputs once optimizer-side helper composition lands.
+  - ELS helper prep surfaces are accepted-model only until runtime comparator integration is implemented.
+enhancement_surfaces:
+  coin_bonus:
+    surface_id: support_surface::enhancement.coin_bonus_model_multiplier
+    cost_table: kb/workshop/tables/enhancements-values.csv
+    value_table: kb/workshop/derived/materialized/wiki-verified-enhancement-coin-bonus.csv
+    formula_registry_key: enh_coin_bonus_multiplier
+    current_value_owner: kb/formulas/tables/canonical-formula-registry.csv
+    current_cost_owner: kb/workshop/tables/enhancements-values.csv
+  coin_bonus_spillover:
+    surface_id: support_surface::enhancement.coin_bonus_spillover_multiplier
+    cost_table: kb/workshop/tables/enhancements-values.csv
+    value_table: kb/workshop/derived/materialized/wiki-verified-enhancement-coin-bonus.csv
+    formula_registry_key: enh_coin_bonus_multiplier
+    current_value_owner: kb/ledgers/tables/towersim-static-ledger.csv
+    current_cost_owner: kb/workshop/tables/enhancements-values.csv
+  enemy_attack_level_skip:
+    surface_id: support_surface::enhancement.enemy_attack_level_skip_helper_multiplier
+    cost_table: kb/workshop/tables/enhancements-values.csv
+    value_table: kb/workshop/derived/materialized/wiki-verified-enhancement-enemy-level-skips.csv
+    formula_registry_key: enh_enemy_level_skips_multiplier
+    current_value_owner: kb/formulas/tables/canonical-formula-registry.csv
+    current_cost_owner: kb/workshop/tables/enhancements-values.csv
+  enemy_health_level_skip:
+    surface_id: support_surface::enhancement.enemy_health_level_skip_helper_multiplier
+    cost_table: kb/workshop/tables/enhancements-values.csv
+    value_table: kb/workshop/derived/materialized/wiki-verified-enhancement-enemy-level-skips.csv
+    formula_registry_key: enh_enemy_level_skips_multiplier
+    current_value_owner: kb/formulas/tables/canonical-formula-registry.csv
+    current_cost_owner: kb/workshop/tables/enhancements-values.csv
+  free_upgrades:
+    surface_id: support_surface::free_upgrade_multiplier
+    cost_table: kb/workshop/tables/enhancements-values.csv
+    value_table: kb/workshop/derived/materialized/wiki-verified-enhancement-free-upgrades.csv
+    formula_registry_key: enh_free_upgrades_multiplier
+    current_value_owner: kb/formulas/tables/canonical-formula-registry.csv
+    current_cost_owner: kb/workshop/tables/enhancements-values.csv
+output_labels:
+  strong_model_coin_bonus:
+    strength: strong_model
+    surface_ids:
+      - support_surface::enhancement.coin_bonus_model_multiplier
+      - support_surface::enhancement.coin_bonus_spillover_multiplier
+    provenance:
+      - row-verified enhancement value table in kb/workshop/derived/materialized/
+      - current cost owner pinned to kb/workshop/tables/enhancements-values.csv
+      - current formula/value owner pinned before runtime integration
+  accepted_model_els_helpers:
+    strength: accepted_model
+    surface_ids:
+      - support_surface::enhancement.enemy_attack_level_skip_helper_multiplier
+      - support_surface::enhancement.enemy_health_level_skip_helper_multiplier
+    provenance:
+      - row-verified enhancement value table in kb/workshop/derived/materialized/
+      - helper output remains prep-only until runtime comparator integration lands
+future_query_bundle:
+  consumer_id: optimizer_analysis
+  bundle_id: optimizer_enhancement_state
+  family_bundle_id: optimizer_enhancement_state
+  surface_ids:
+    - support_surface::enhancement.coin_bonus_model_multiplier
+    - support_surface::enhancement.coin_bonus_spillover_multiplier
+    - support_surface::enhancement.enemy_attack_level_skip_helper_multiplier
+    - support_surface::enhancement.enemy_health_level_skip_helper_multiplier
+    - support_surface::free_upgrade_multiplier

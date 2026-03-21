@@ -1,0 +1,20 @@
+{
+  "scenarios": [
+    {
+      "scenario_id": "observed_run_enemy_attack_skip",
+      "scenario_kind": "observed_run",
+      "skip_track": "enemy_attack_level_skip",
+      "observed_run_label": "observed_run_attack_skip_reduction_probe",
+      "enemy_level_skip_reduction_pp": 5.0,
+      "notes": "Prep-only attack-skip observed-run contract for accepted-model ELS helper evaluation."
+    },
+    {
+      "scenario_id": "observed_run_enemy_health_skip",
+      "scenario_kind": "observed_run",
+      "skip_track": "enemy_health_level_skip",
+      "observed_run_label": "observed_run_health_skip_reduction_probe",
+      "enemy_level_skip_reduction_pp": 5.0,
+      "notes": "Prep-only health-skip observed-run contract for accepted-model ELS helper evaluation."
+    }
+  ]
+}
