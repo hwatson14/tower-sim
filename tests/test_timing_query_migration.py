@@ -12,7 +12,12 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from engine.scenario_engine import ScenarioConfig
-from engine.timing_engine import materialize_timing_family_baseline, resolve_timing_family_query
+from engine.stat_query_kernel import StatQueryKernel
+from engine.timing_engine import (
+    materialize_timing_family_baseline,
+    resolve_timing_consumer_bundle,
+    resolve_timing_family_query,
+)
 from tests.helpers import build_state
 
 
@@ -111,7 +116,9 @@ def test_timing_query_wave_accelerator_assertions_hold():
     assert resolved['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'] > 0
     assert resolved['support_surface::timing.wave_duration_seconds_effective'] < 35.0
     assert any('wave_accelerator' in row.contributor_id for row in with_card.contributor_rows)
-    assert 'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration' not in without_card_baseline.contributor_rows_by_surface
+    without_wave_accel = without_card_baseline.contributor_rows_by_surface['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'][0]
+    assert without_wave_accel.active is False
+    assert without_wave_accel.gate_reason == 'surface_absent_from_bound_inputs'
     assert resolved['support_surface::timing.wave_duration_seconds_effective'] == pytest.approx(16.1)
 
 
@@ -148,7 +155,9 @@ def test_timing_query_assist_slot_owns_and_traces_gcomp_surface():
         for row in with_response.contributor_rows
     )
     assert 'support_surface::timing.gcomp_cooldown_reduction_seconds' in with_response.dependency_trace['dependency_closure']
-    assert 'support_surface::timing.gcomp_cooldown_reduction_seconds' not in without_baseline.contributor_rows_by_surface
+    without_gcomp_row = without_baseline.contributor_rows_by_surface['support_surface::timing.gcomp_cooldown_reduction_seconds'][0]
+    assert without_gcomp_row.active is False
+    assert without_gcomp_row.gate_reason == 'surface_absent_from_bound_inputs'
 
 
 def test_timing_query_replaces_base_uw_duration_rows_with_scenario_effective_values():
@@ -182,3 +191,77 @@ def test_timing_query_replaces_base_uw_duration_rows_with_scenario_effective_val
         for row in response.contributor_rows
     )
     assert all(row.source_class == 'scenario_rules' for row in response.contributor_rows)
+
+
+def test_timing_query_helper_matches_direct_kernel_resolution():
+    state = build_state()
+    config = ScenarioConfig(mode_id='farming', tier=14)
+    requested_surface_ids = (
+        'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+        'support_surface::timing.wave_duration_seconds_effective',
+    )
+
+    helper_response = resolve_timing_family_query(
+        account_state=state,
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=config,
+        perks_enabled=True,
+        requested_surface_ids=requested_surface_ids,
+        trace_mode='full_trace',
+    )
+    baseline = materialize_timing_family_baseline(
+        account_state=state,
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=config,
+        perks_enabled=True,
+    )
+    direct_response = StatQueryKernel().resolve_surfaces(
+        baseline,
+        requested_surface_ids=requested_surface_ids,
+        trace_mode='full_trace',
+    )
+
+    assert helper_response.family_id == direct_response.family_id
+    assert helper_response.resolved_surface_rows == direct_response.resolved_surface_rows
+    assert helper_response.contributor_rows == direct_response.contributor_rows
+    assert helper_response.dependency_trace == direct_response.dependency_trace
+
+
+def test_timing_consumer_bundle_helper_matches_family_query_for_declared_bundle():
+    state = build_state()
+    config = ScenarioConfig(mode_id='farming', tier=14)
+
+    bundle_response = resolve_timing_consumer_bundle(
+        account_state=state,
+        consumer_id='run_stats',
+        bundle_id='timing_wave_duration',
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=config,
+        perks_enabled=True,
+        include_optional_surface_ids=(
+            'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+            'canonical_stat::package_chance_pct',
+        ),
+        trace_mode='contributors',
+    )
+    family_response = resolve_timing_family_query(
+        account_state=state,
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=config,
+        perks_enabled=True,
+        requested_surface_ids=(
+            'support_surface::timing.wave_duration_seconds_effective',
+            'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+            'canonical_stat::package_chance_pct',
+        ),
+        trace_mode='contributors',
+    )
+
+    assert bundle_response.family_id == family_response.family_id
+    assert bundle_response.resolved_surface_rows == family_response.resolved_surface_rows
+    assert bundle_response.contributor_rows == family_response.contributor_rows
+    assert bundle_response.dependency_trace == family_response.dependency_trace

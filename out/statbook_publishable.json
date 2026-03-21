@@ -22538,8 +22538,8 @@
       "display_value": "x2.5",
       "publishable": true
     },
-    "mechanic_param::module.orbital_augment.electrons_count": {
-      "stat_name": "mechanic_param::module.orbital_augment.electrons_count",
+    "mechanic_param::module.orbital_augment.electron_count": {
+      "stat_name": "mechanic_param::module.orbital_augment.electron_count",
       "final_value": 2.0,
       "value_type": "count",
       "source_count": 1,
@@ -22559,7 +22559,7 @@
           "notes": "module_assist_unique_effect",
           "contributor_id": "module__armor__orbital_augment__electrons_count@@orbital augment@@assist@@unique",
           "destination_object_type": "mechanic_param",
-          "destination_id": "module.orbital_augment.electrons_count",
+          "destination_id": "module.orbital_augment.electron_count",
           "resolver_id": "integer_count_param",
           "kb_mapped": true,
           "display_value": "2"
@@ -33046,36 +33046,6 @@
         "explicit_caps": {}
       },
       "module.orbital_augment.electron_count": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "module.orbital_augment.electrons_count": {
         "unit": "count",
         "resolver": "integer_count_param",
         "allowed_input_value_types": [

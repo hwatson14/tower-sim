@@ -112,7 +112,23 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
     baseline = FamilyBaselineMaterializer().materialize_from_rows(identity, 'progression_runtime_no_perks', rows)
 
     assert baseline.account_snapshot_id == 'acct_demo_v1'
-    assert [row.__dict__ for row in baseline.contributor_rows] == [
+    active_rows = [row.__dict__ for row in baseline.contributor_rows if row.active]
+    assert [row.__dict__ for row in baseline.contributor_rows_by_surface['canonical_stat::enemy_attack_level_skip_pct']] == [
+        {
+            'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+            'surface_class': 'surface',
+            'domain': 'progression',
+            'source_class': 'base',
+            'composition_stage': 'gate_enable_disable',
+            'contributor_id': 'query_placeholder::canonical_stat::enemy_attack_level_skip_pct',
+            'value': False,
+            'value_type': 'scalar',
+            'active': False,
+            'gate_reason': 'surface_absent_from_bound_inputs',
+            'provenance_ref': 'engine.family_baseline_materializer.placeholder',
+        }
+    ]
+    assert active_rows == [
         {
             'surface_id': 'canonical_stat::free_attack_upgrade_chance_pct',
             'surface_class': 'surface',
@@ -180,11 +196,19 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
 
     assert baseline.runtime_branch_id == 'branch_base'
     assert applied.runtime_branch_id == 'branch_wave_187'
-    assert {row.contributor_id: row.value for row in baseline.contributor_rows} == {
+    assert {
+        row.contributor_id: row.value
+        for row in baseline.contributor_rows
+        if row.active
+    } == {
         'relic.enemy_attack_level_skip.multiplier': 1.1,
         'workshop.enemy_attack_level_skip.base': 25,
     }
-    assert {row.contributor_id: row.value for row in applied.contributor_rows} == {
+    assert {
+        row.contributor_id: row.value
+        for row in applied.contributor_rows
+        if row.active
+    } == {
         'relic.enemy_attack_level_skip.multiplier': 2.2,
         'workshop.enemy_attack_level_skip.base': 27,
     }

@@ -14579,8 +14579,8 @@
     },
     "contributor_consumption": null
   },
-  "mechanic_param::module.orbital_augment.electrons_count": {
-    "destination": "mechanic_param::module.orbital_augment.electrons_count",
+  "mechanic_param::module.orbital_augment.electron_count": {
+    "destination": "mechanic_param::module.orbital_augment.electron_count",
     "status": "resolved",
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",

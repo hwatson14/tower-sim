@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
 from engine.family_baseline_materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
+from engine.runtime_consumer_registry import resolve_consumer_bundle
 from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
 from engine.state_identity import compile_stat_inputs_with_identity
 from engine.stat_query_kernel import QueryResponse, StatQueryKernel
@@ -526,6 +527,49 @@ def resolve_timing_family_query(
         materializer=query_kernel.materializer,
     )
     return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+
+
+def resolve_timing_consumer_bundle(
+    *,
+    account_state: AccountState,
+    consumer_id: str,
+    bundle_id: str,
+    family_id: str,
+    preset_name: str,
+    scenario_config: ScenarioConfig,
+    perks_enabled: bool,
+    include_optional_surface_ids: Sequence[str] = (),
+    state_mode: str = 'start_of_run',
+    runtime_branch_id: str = 'branch_base',
+    trace_mode: str | None = None,
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    resolved_bundle = resolve_consumer_bundle(
+        consumer_id,
+        bundle_id,
+        family_id=family_id,
+        include_optional_surface_ids=include_optional_surface_ids,
+        trace_mode=trace_mode,
+    )
+    effective_trace_mode = resolved_bundle.minimum_trace_mode if trace_mode is None else str(trace_mode)
+    return resolve_timing_family_query(
+        account_state=account_state,
+        family_id=family_id,
+        preset_name=preset_name,
+        scenario_config=scenario_config,
+        requested_surface_ids=resolved_bundle.surface_ids,
+        state_mode=state_mode,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        trace_mode=effective_trace_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        kernel=kernel,
+    )
 
 
 def _validate_timing_family_request(*, family_id: str, scenario_config: ScenarioConfig, perks_enabled: bool) -> None:

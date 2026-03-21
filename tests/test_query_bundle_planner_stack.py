@@ -14,6 +14,7 @@ if str(ROOT) not in sys.path:
 import engine.runtime_consumer_registry as runtime_consumer_registry
 import engine.dependency_registry as dependency_registry
 import engine.incremental_subset_executor as incremental_subset_executor
+import engine.family_baseline_materializer as family_surface_registry
 from engine.incremental_recalc_runtime import IncrementalRecalcRuntime
 from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.runtime_consumer_registry import resolve_consumer_bundle
@@ -125,6 +126,20 @@ def test_dependency_registry_fails_closed_for_publishable_cycle(tmp_path: Path, 
     dependency_registry.load_dependency_ledger.cache_clear()
     try:
         with pytest.raises(ValueError, match='Cycle or unresolved dependency ordering'):
+            DependencyRegistry.load_default()
+    finally:
+        dependency_registry.load_dependency_ledger.cache_clear()
+
+
+def test_dependency_registry_derives_required_mutation_classes_from_family_contracts(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    raw_contract = yaml.safe_load((ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-scenario-families.yaml').read_text())
+    raw_contract['family_groups']['progression']['families']['progression_runtime_no_perks']['allowed_overlay_types'].append('brand_new_overlay_type')
+    contract_path = tmp_path / 'stat-query-scenario-families.yaml'
+    contract_path.write_text(yaml.safe_dump(raw_contract, sort_keys=False))
+    monkeypatch.setattr(family_surface_registry, '_FAMILY_CONTRACT_PATH', contract_path)
+    dependency_registry.load_dependency_ledger.cache_clear()
+    try:
+        with pytest.raises(ValueError, match='Mutation classes missing invalidation mappings'):
             DependencyRegistry.load_default()
     finally:
         dependency_registry.load_dependency_ledger.cache_clear()

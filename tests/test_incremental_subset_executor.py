@@ -94,6 +94,14 @@ def test_subset_executor_matches_enemy_health_level_skip_path():
     assert candidate['canonical_stat::enemy_health_level_skip_pct'].final_value == reference.rows['canonical_stat::enemy_health_level_skip_pct'].final_value
 
 
+
+
+def test_subset_executor_module_does_not_import_stat_engine_directly():
+    module_source = Path(incremental_subset_executor.__file__).read_text()
+    assert 'from engine.stat_engine import' not in module_source
+    assert 'import engine.stat_engine' not in module_source
+    assert 'from engine.stat_resolution_core import' in module_source
+
 def test_subset_executor_resolves_timing_wave_duration_natively_without_full_statbook(monkeypatch):
     ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')

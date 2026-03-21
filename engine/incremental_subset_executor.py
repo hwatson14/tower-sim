@@ -4,7 +4,7 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Mapping, Sequence
 
 from engine.dependency_registry import DependencyRegistry
-from engine.stat_engine import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
+from engine.stat_resolution_core import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
 from models.stat_input import StatInput
 from models.statbook import StatRow
 

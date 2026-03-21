@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -10,6 +11,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from compilers.account_state_compiler import compile_account_state
+import engine.boss_wave_engine as boss_wave_engine_module
 from engine.boss_wave_engine import BossWaveEngine, BossWaveEngineConfig
 from engine.perk_timeline_state import PerkTimelineEvent
 from engine.progression_recalc_bridge import ProgressionRecalcResult
@@ -26,6 +28,99 @@ pytestmark = pytest.mark.slow
 def _build_state():
     ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
     return compile_account_state(ids_raw, default_preset='Farming')
+
+
+def test_boss_wave_engine_resolves_progression_bundle_values_from_declared_bounded_bundles(monkeypatch):
+    calls = []
+
+    def _fake_bundle(**kwargs):
+        calls.append((kwargs['consumer_id'], kwargs['bundle_id'], kwargs['family_id']))
+        if kwargs['bundle_id'] == 'progression_free_upgrades':
+            rows = (
+                SimpleNamespace(surface_id='canonical_stat::free_attack_upgrade_chance_pct', final_value=101.0),
+                SimpleNamespace(surface_id='canonical_stat::free_defense_upgrade_chance_pct', final_value=102.0),
+                SimpleNamespace(surface_id='canonical_stat::free_utility_upgrade_chance_pct', final_value=103.0),
+            )
+        else:
+            rows = (
+                SimpleNamespace(surface_id='canonical_stat::enemy_attack_level_skip_pct', final_value=11.0),
+                SimpleNamespace(surface_id='canonical_stat::enemy_health_level_skip_pct', final_value=12.0),
+            )
+        return SimpleNamespace(resolved_surface_rows=rows)
+
+    monkeypatch.setattr(boss_wave_engine_module, 'resolve_progression_consumer_bundle', _fake_bundle)
+
+    values = BossWaveEngine._resolve_progression_bundle_values(
+        patched_account_state=_build_state(),
+        config=BossWaveEngineConfig(
+            preset_name='Farming',
+            mode_id='farming',
+            tier_column='Tier 12',
+            perks_enabled=True,
+            perk_preset_name='Farming',
+            card_preset_name='Farming',
+            module_preset_name='Farming',
+        ),
+    )
+
+    assert calls == [
+        ('progression_runtime', 'progression_free_upgrades', 'progression_runtime_with_perks'),
+        ('progression_runtime', 'progression_wave_skips', 'progression_runtime_with_perks'),
+    ]
+    assert values == {
+        'canonical_stat::free_attack_upgrade_chance_pct': 101.0,
+        'canonical_stat::free_defense_upgrade_chance_pct': 102.0,
+        'canonical_stat::free_utility_upgrade_chance_pct': 103.0,
+        'canonical_stat::enemy_attack_level_skip_pct': 11.0,
+        'canonical_stat::enemy_health_level_skip_pct': 12.0,
+    }
+
+
+def test_boss_wave_engine_resolves_progression_family_values_from_bounded_query_helper(monkeypatch):
+    seen_family_ids = []
+
+    def _fake_family_query(**kwargs):
+        seen_family_ids.append(kwargs['family_id'])
+        rows = (
+            SimpleNamespace(surface_id='canonical_stat::wall_hp', final_value=1000.0),
+            SimpleNamespace(surface_id='canonical_stat::wall_regen', final_value=25.0),
+            SimpleNamespace(surface_id='canonical_stat::wall_fortification_multiplier', final_value=1.7),
+            SimpleNamespace(surface_id='canonical_stat::tower_defense_pct', final_value=54.0),
+            SimpleNamespace(surface_id='canonical_stat::tower_thorns_damage_pct', final_value=12.5),
+            SimpleNamespace(surface_id='canonical_stat::tower_orb_count', final_value=8.0),
+            SimpleNamespace(surface_id='canonical_stat::tower_orb_speed_rpm', final_value=6.832),
+            SimpleNamespace(surface_id='runtime_mechanic_param::cards.plasma_cannon.effect_pct', final_value=54.0),
+            SimpleNamespace(surface_id='mechanic_param::module.orbital_augment.electron_count', final_value=2.0),
+        )
+        return SimpleNamespace(resolved_surface_rows=rows)
+
+    monkeypatch.setattr(boss_wave_engine_module, 'resolve_progression_family_query', _fake_family_query)
+
+    values = BossWaveEngine._resolve_progression_family_values(
+        patched_account_state=_build_state(),
+        config=BossWaveEngineConfig(
+            preset_name='Farming',
+            mode_id='farming',
+            tier_column='Tier 12',
+            perks_enabled=False,
+            perk_preset_name='Farming',
+            card_preset_name='Farming',
+            module_preset_name='Farming',
+        ),
+    )
+
+    assert seen_family_ids == ['progression_runtime_no_perks']
+    assert values == {
+        'canonical_stat::wall_hp': 1000.0,
+        'canonical_stat::wall_regen': 25.0,
+        'canonical_stat::wall_fortification_multiplier': 1.7,
+        'canonical_stat::tower_defense_pct': 54.0,
+        'canonical_stat::tower_thorns_damage_pct': 12.5,
+        'canonical_stat::tower_orb_count': 8.0,
+        'canonical_stat::tower_orb_speed_rpm': 6.832,
+        'runtime_mechanic_param::cards.plasma_cannon.effect_pct': 54.0,
+        'mechanic_param::module.orbital_augment.electron_count': 2.0,
+    }
 
 
 def test_boss_wave_engine_scaffold_emits_blocked_rows_until_ttk_inputs_closed():
