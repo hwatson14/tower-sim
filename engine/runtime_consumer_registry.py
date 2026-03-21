@@ -3,13 +3,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 import yaml
 
 
 ROOT = Path(__file__).resolve().parents[1]
 _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
+_INITIAL_SURFACE_SET_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-initial-surface-set.yaml'
+_CONSUMER_BUNDLE_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-consumer-bundles.yaml'
+_TRACE_MODE_RANK = {'none': 0, 'contributors': 1, 'full_trace': 2}
 
 
 @dataclass(frozen=True)
@@ -18,6 +21,38 @@ class RuntimeConsumerRule:
     source_node_ids: tuple[str, ...]
     evidence: str
     notes: str = ""
+
+
+@dataclass(frozen=True)
+class ConsumerBundleDefinition:
+    consumer_id: str
+    bundle_id: str
+    family_bundle_id: str
+    allowed_family_ids: tuple[str, ...]
+    required_surface_ids: tuple[str, ...]
+    optional_surface_ids: tuple[str, ...]
+    minimum_trace_mode: str
+    overlays_allowed: bool
+    publish_default: bool
+    debug_only: bool
+
+    @property
+    def surface_ids(self) -> tuple[str, ...]:
+        return self.required_surface_ids + self.optional_surface_ids
+
+
+@dataclass(frozen=True)
+class ResolvedConsumerBundle:
+    consumer_id: str
+    bundle_id: str
+    family_id: str
+    surface_ids: tuple[str, ...]
+    required_surface_ids: tuple[str, ...]
+    optional_surface_ids: tuple[str, ...]
+    minimum_trace_mode: str
+    overlays_allowed: bool
+    publish_default: bool
+    debug_only: bool
 
 
 _RUNTIME_CONSUMER_RULES: tuple[RuntimeConsumerRule, ...] = (
@@ -42,6 +77,16 @@ def load_surface_ownership_ledger() -> dict[str, Any]:
 
 
 @lru_cache(maxsize=1)
+def load_initial_surface_contract() -> dict[str, Any]:
+    return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
+
+
+@lru_cache(maxsize=1)
+def load_consumer_bundle_contract() -> dict[str, Any]:
+    return yaml.safe_load(_CONSUMER_BUNDLE_PATH.read_text()) or {}
+
+
+@lru_cache(maxsize=1)
 def ownership_rows_by_node() -> Mapping[str, dict[str, Any]]:
     ledger = load_surface_ownership_ledger()
     rows = [
@@ -52,6 +97,34 @@ def ownership_rows_by_node() -> Mapping[str, dict[str, Any]]:
         *(ledger.get('out_of_scope_nodes') or []),
     ]
     return {str(row.get('node_id')): row for row in rows}
+
+
+@lru_cache(maxsize=1)
+def declared_query_bundles() -> Mapping[str, frozenset[str]]:
+    contract = load_initial_surface_contract()
+    bundles: dict[str, frozenset[str]] = {}
+    for family_data in (contract.get('families') or {}).values():
+        for bundle in family_data.get('query_bundles') or ():
+            bundle_id = str(bundle.get('bundle_id') or '').strip()
+            if not bundle_id:
+                raise ValueError('Initial surface contract contains a query bundle without bundle_id.')
+            surface_ids = tuple(str(surface_id) for surface_id in (bundle.get('surface_ids') or ()))
+            if bundle_id in bundles:
+                raise ValueError(f'Duplicate query bundle {bundle_id!r} in initial surface contract.')
+            bundles[bundle_id] = frozenset(surface_ids)
+    return bundles
+
+
+@lru_cache(maxsize=1)
+def declared_family_surface_ids() -> Mapping[str, frozenset[str]]:
+    contract = load_initial_surface_contract()
+    surfaces_by_family: dict[str, set[str]] = {}
+    for family_data in (contract.get('families') or {}).values():
+        for entry in family_data.get('surfaces') or ():
+            surface_id = str(entry.get('surface_id') or '').strip()
+            for family_id in entry.get('owning_families') or ():
+                surfaces_by_family.setdefault(str(family_id), set()).add(surface_id)
+    return {family_id: frozenset(surface_ids) for family_id, surface_ids in surfaces_by_family.items()}
 
 
 def assert_runtime_consumer_ownership_contract() -> None:
@@ -81,6 +154,116 @@ def assert_runtime_consumer_ownership_contract() -> None:
                 raise ValueError(
                     f'Runtime consumer source {source_node_id!r} must forbid downstream re-derivation in the ownership ledger.'
                 )
+
+
+def _bundle_definition_from_payload(consumer_id: str, payload: Mapping[str, Any]) -> ConsumerBundleDefinition:
+    required_surface_ids = tuple(str(surface_id) for surface_id in (payload.get('required_surface_ids') or ()))
+    optional_surface_ids = tuple(str(surface_id) for surface_id in (payload.get('optional_surface_ids') or ()))
+    minimum_trace_mode = str(payload.get('minimum_trace_mode') or '').strip()
+    if minimum_trace_mode not in _TRACE_MODE_RANK:
+        raise ValueError(f'Consumer bundle {(consumer_id, payload.get("bundle_id"))!r} declares unsupported minimum_trace_mode {minimum_trace_mode!r}.')
+    definition = ConsumerBundleDefinition(
+        consumer_id=consumer_id,
+        bundle_id=str(payload.get('bundle_id') or '').strip(),
+        family_bundle_id=str(payload.get('family_bundle_id') or '').strip(),
+        allowed_family_ids=tuple(str(family_id) for family_id in (payload.get('allowed_family_ids') or ())),
+        required_surface_ids=required_surface_ids,
+        optional_surface_ids=optional_surface_ids,
+        minimum_trace_mode=minimum_trace_mode,
+        overlays_allowed=bool(payload.get('overlays_allowed')),
+        publish_default=bool(payload.get('publish_default')),
+        debug_only=bool(payload.get('debug_only')),
+    )
+    if not definition.bundle_id:
+        raise ValueError(f'Consumer {consumer_id!r} declares a bundle without bundle_id.')
+    if not definition.family_bundle_id:
+        raise ValueError(f'Consumer bundle {definition.bundle_id!r} must declare family_bundle_id.')
+    if not definition.allowed_family_ids:
+        raise ValueError(f'Consumer bundle {definition.bundle_id!r} must declare allowed_family_ids.')
+    if not definition.required_surface_ids:
+        raise ValueError(f'Consumer bundle {definition.bundle_id!r} must declare required_surface_ids.')
+    if definition.publish_default and definition.debug_only:
+        raise ValueError(f'Consumer bundle {definition.bundle_id!r} cannot be publish_default and debug_only simultaneously.')
+    return definition
+
+
+@lru_cache(maxsize=1)
+def load_consumer_bundle_definitions() -> Mapping[tuple[str, str], ConsumerBundleDefinition]:
+    ownership = ownership_rows_by_node()
+    query_bundles = declared_query_bundles()
+    family_surfaces = declared_family_surface_ids()
+    definitions: dict[tuple[str, str], ConsumerBundleDefinition] = {}
+    for consumer_payload in load_consumer_bundle_contract().get('consumers') or ():
+        consumer_id = str(consumer_payload.get('consumer_id') or '').strip()
+        if not consumer_id:
+            raise ValueError('Consumer bundle contract declares a consumer without consumer_id.')
+        if consumer_id.startswith('runtime_consumer::') and consumer_id not in ownership:
+            raise ValueError(f'Runtime consumer bundle declaration references undeclared consumer {consumer_id!r}.')
+        for bundle_payload in consumer_payload.get('bundles') or ():
+            definition = _bundle_definition_from_payload(consumer_id, bundle_payload)
+            key = (definition.consumer_id, definition.bundle_id)
+            if key in definitions:
+                raise ValueError(f'Duplicate consumer bundle declaration for {key!r}.')
+            if definition.family_bundle_id not in query_bundles:
+                raise ValueError(
+                    f'Consumer bundle {key!r} references undeclared family_bundle_id {definition.family_bundle_id!r}.'
+                )
+            declared_surfaces = query_bundles[definition.family_bundle_id]
+            requested_surfaces = set(definition.surface_ids)
+            missing_surfaces = sorted(requested_surfaces - declared_surfaces)
+            if missing_surfaces:
+                raise ValueError(f'Consumer bundle {key!r} references undeclared bundle surfaces: {missing_surfaces}.')
+            for family_id in definition.allowed_family_ids:
+                allowed_family_surfaces = family_surfaces.get(family_id)
+                if allowed_family_surfaces is None:
+                    raise ValueError(f'Consumer bundle {key!r} references undeclared family_id {family_id!r}.')
+                if not requested_surfaces.issubset(allowed_family_surfaces):
+                    raise ValueError(
+                        f'Consumer bundle {key!r} requests surfaces outside allowed family {family_id!r}. '
+                        f'Got {sorted(requested_surfaces - allowed_family_surfaces)}.'
+                    )
+            definitions[key] = definition
+    return definitions
+
+
+def resolve_consumer_bundle(
+    consumer_id: str,
+    bundle_id: str,
+    *,
+    family_id: str,
+    include_optional_surface_ids: Sequence[str] = (),
+    trace_mode: str | None = None,
+) -> ResolvedConsumerBundle:
+    definitions = load_consumer_bundle_definitions()
+    key = (str(consumer_id), str(bundle_id))
+    definition = definitions.get(key)
+    if definition is None:
+        if consumer_id not in {consumer for consumer, _ in definitions}:
+            raise ValueError(f'Undeclared consumer {consumer_id!r} cannot request query bundles.')
+        raise ValueError(f'Consumer {consumer_id!r} is not allowed to request bundle {bundle_id!r}.')
+    if family_id not in definition.allowed_family_ids:
+        raise ValueError(f'Consumer bundle {key!r} is not allowed for family_id {family_id!r}.')
+    optional_requested = tuple(str(surface_id) for surface_id in include_optional_surface_ids)
+    unknown_optional = sorted(set(optional_requested) - set(definition.optional_surface_ids))
+    if unknown_optional:
+        raise ValueError(f'Consumer bundle {key!r} cannot request undeclared optional surfaces {unknown_optional}.')
+    if trace_mode is not None and _TRACE_MODE_RANK[str(trace_mode)] < _TRACE_MODE_RANK[definition.minimum_trace_mode]:
+        raise ValueError(
+            f'Consumer bundle {key!r} requires minimum trace_mode {definition.minimum_trace_mode!r}, got {trace_mode!r}.'
+        )
+    surface_ids = definition.required_surface_ids + optional_requested
+    return ResolvedConsumerBundle(
+        consumer_id=definition.consumer_id,
+        bundle_id=definition.bundle_id,
+        family_id=family_id,
+        surface_ids=surface_ids,
+        required_surface_ids=definition.required_surface_ids,
+        optional_surface_ids=optional_requested,
+        minimum_trace_mode=definition.minimum_trace_mode,
+        overlays_allowed=definition.overlays_allowed,
+        publish_default=definition.publish_default,
+        debug_only=definition.debug_only,
+    )
 
 
 def list_runtime_consumer_rules() -> tuple[RuntimeConsumerRule, ...]:
