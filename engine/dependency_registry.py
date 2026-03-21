@@ -83,6 +83,18 @@ class DependencyRegistry:
             todo.extend(self.downstream.get(node, []))
         return seen
 
+
+    def closure_upstream(self, seeds: Iterable[str]) -> Set[str]:
+        todo = list(seeds)
+        seen: Set[str] = set()
+        while todo:
+            node = todo.pop()
+            if node in seen:
+                continue
+            seen.add(node)
+            todo.extend(self.upstream.get(node, []))
+        return seen
+
     def topo_publishable_subset(self, nodes: Iterable[str]) -> List[str]:
         selected = {node for node in nodes if self.nodes.get(node) and self.nodes[node].is_publishable}
         indegree = {node: 0 for node in selected}
