@@ -1,0 +1,150 @@
+contract_id: stat_query_consumer_bundles_v1
+consumers:
+  - consumer_id: run_stats
+    bundles:
+      - bundle_id: progression_free_upgrades
+        family_bundle_id: progression_free_upgrades
+        allowed_family_ids:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::free_attack_upgrade_chance_pct
+          - canonical_stat::free_defense_upgrade_chance_pct
+          - canonical_stat::free_utility_upgrade_chance_pct
+        optional_surface_ids:
+          - support_surface::free_upgrade_multiplier
+        minimum_trace_mode: contributors
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+      - bundle_id: timing_core_cycle
+        family_bundle_id: timing_core_cycle
+        allowed_family_ids:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        required_surface_ids:
+          - mechanic_param::uw.black_hole.cooldown_seconds
+          - mechanic_param::uw.black_hole.duration_seconds
+          - mechanic_param::uw.golden_tower.cooldown_seconds
+          - mechanic_param::uw.golden_tower.duration_seconds
+        optional_surface_ids:
+          - support_surface::timing.gcomp_cooldown_reduction_seconds
+        minimum_trace_mode: contributors
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+      - bundle_id: timing_wave_duration
+        family_bundle_id: timing_wave_duration
+        allowed_family_ids:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        required_surface_ids:
+          - support_surface::timing.wave_duration_seconds_effective
+        optional_surface_ids:
+          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+          - canonical_stat::package_chance_pct
+        minimum_trace_mode: contributors
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+  - consumer_id: runtime_consumer::wave_progression.attack_wave
+    bundles:
+      - bundle_id: progression_wave_skips
+        family_bundle_id: progression_wave_skips
+        allowed_family_ids:
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::enemy_attack_level_skip_pct
+        optional_surface_ids: []
+        minimum_trace_mode: none
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+  - consumer_id: runtime_consumer::wave_progression.health_wave
+    bundles:
+      - bundle_id: progression_wave_skips
+        family_bundle_id: progression_wave_skips
+        allowed_family_ids:
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::enemy_health_level_skip_pct
+        optional_surface_ids: []
+        minimum_trace_mode: none
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+  - consumer_id: progression_runtime
+    bundles:
+      - bundle_id: progression_wave_skips
+        family_bundle_id: progression_wave_skips
+        allowed_family_ids:
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::enemy_attack_level_skip_pct
+          - canonical_stat::enemy_health_level_skip_pct
+        optional_surface_ids: []
+        minimum_trace_mode: contributors
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+      - bundle_id: progression_free_upgrades
+        family_bundle_id: progression_free_upgrades
+        allowed_family_ids:
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::free_attack_upgrade_chance_pct
+          - canonical_stat::free_defense_upgrade_chance_pct
+          - canonical_stat::free_utility_upgrade_chance_pct
+        optional_surface_ids:
+          - support_surface::free_upgrade_multiplier
+        minimum_trace_mode: contributors
+        overlays_allowed: true
+        publish_default: true
+        debug_only: false
+  - consumer_id: optimizer_analysis
+    bundles:
+      - bundle_id: progression_free_upgrades
+        family_bundle_id: progression_free_upgrades
+        allowed_family_ids:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - canonical_stat::free_attack_upgrade_chance_pct
+          - canonical_stat::free_defense_upgrade_chance_pct
+          - canonical_stat::free_utility_upgrade_chance_pct
+        optional_surface_ids:
+          - support_surface::free_upgrade_multiplier
+        minimum_trace_mode: contributors
+        overlays_allowed: false
+        publish_default: false
+        debug_only: true
+  - consumer_id: advisor_reporting
+    bundles:
+      - bundle_id: timing_wave_duration
+        family_bundle_id: timing_wave_duration
+        allowed_family_ids:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        required_surface_ids:
+          - support_surface::timing.wave_duration_seconds_effective
+          - canonical_stat::package_chance_pct
+        optional_surface_ids:
+          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+        minimum_trace_mode: contributors
+        overlays_allowed: false
+        publish_default: true
+        debug_only: false
+rules:
+  - consumer bundles constrain what each bounded consumer may request; they do not redefine surface ownership
+  - family_bundle_id must reference a bundle declared in stat-query-initial-surface-set.yaml
+  - required_surface_ids and optional_surface_ids must remain subsets of the referenced family_bundle_id surface_ids
+  - bundles fail closed for undeclared consumers, undeclared families, undeclared surfaces, and request-all expansion
