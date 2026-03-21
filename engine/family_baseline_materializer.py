@@ -61,6 +61,8 @@ _SOURCE_CLASS_BY_FAMILY = {
 @dataclass(frozen=True)
 class BaselineContributorRow:
     surface_id: str
+    surface_class: str
+    domain: str
     source_class: str
     composition_stage: str
     contributor_id: str
@@ -78,6 +80,7 @@ class FamilyBaselineContributorMap:
     scenario_id: str
     runtime_branch_id: str
     family_id: str
+    baseline_semantics: Mapping[str, bool | str]
     contributor_rows: tuple[BaselineContributorRow, ...]
 
     @property
@@ -94,6 +97,7 @@ class FamilyBaselineContributorMap:
             'scenario_id': self.scenario_id,
             'runtime_branch_id': self.runtime_branch_id,
             'family_id': self.family_id,
+            'baseline_semantics': dict(self.baseline_semantics),
             'contributor_rows': [row.__dict__ for row in self.contributor_rows],
         }
         return json.dumps(payload, sort_keys=True, default=str)
@@ -102,13 +106,12 @@ class FamilyBaselineContributorMap:
 class FamilyBaselineMaterializer:
     def __init__(self) -> None:
         self._family_surface_ids = load_family_surface_ids()
+        self._surface_metadata_by_id = load_surface_metadata_by_id()
+        self._family_contracts = load_family_contracts()
 
     def materialize(self, bound_inputs: BoundStatInputs, family_id: str) -> FamilyBaselineContributorMap:
-        # Phase-1 note: family/scenario compatibility remains query-kernel work.
-        # This materializer only normalizes compiler-emitted rows into bounded family maps.
-        allowed_surfaces = self._family_surface_ids.get(family_id)
-        if allowed_surfaces is None:
-            raise ValueError(f'Unsupported family_id {family_id!r}. Phase 1 only supports bounded families declared in KB contracts.')
+        self.assert_family_supported(family_id)
+        allowed_surfaces = self._family_surface_ids[family_id]
         rows = tuple(
             sorted(
                 (
@@ -125,13 +128,13 @@ class FamilyBaselineMaterializer:
             scenario_id=bound_inputs.binding.identity.scenario_id,
             runtime_branch_id=bound_inputs.binding.identity.runtime_branch_id,
             family_id=family_id,
+            baseline_semantics=self._family_contracts[family_id]['baseline_semantics'],
             contributor_rows=rows,
         )
 
     def materialize_from_rows(self, identity: StateIdentity, family_id: str, stat_inputs: Iterable[StatInput]) -> FamilyBaselineContributorMap:
-        allowed_surfaces = self._family_surface_ids.get(family_id)
-        if allowed_surfaces is None:
-            raise ValueError(f'Unsupported family_id {family_id!r}. Phase 1 only supports bounded families declared in KB contracts.')
+        self.assert_family_supported(family_id)
+        allowed_surfaces = self._family_surface_ids[family_id]
         rows = tuple(
             sorted(
                 (
@@ -148,13 +151,41 @@ class FamilyBaselineMaterializer:
             scenario_id=identity.scenario_id,
             runtime_branch_id=identity.runtime_branch_id,
             family_id=family_id,
+            baseline_semantics=self._family_contracts[family_id]['baseline_semantics'],
             contributor_rows=rows,
         )
+
+    def assert_family_supported(self, family_id: str) -> None:
+        if family_id not in self._family_surface_ids:
+            raise ValueError(f'Unsupported family_id {family_id!r}. Phase 1 only supports bounded families declared in KB contracts.')
+
+    def assert_family_compatibility(
+        self,
+        *,
+        family_id: str,
+        state_mode: str,
+        perks_enabled: bool,
+        scenario_mode_id: str | None,
+    ) -> None:
+        self.assert_family_supported(family_id)
+        family_contract = self._family_contracts[family_id]
+        expected_state_mode = family_contract['state_mode']
+        if state_mode != expected_state_mode:
+            raise ValueError(f'Family {family_id!r} requires state_mode={expected_state_mode!r}, got {state_mode!r}.')
+        expected_perks = family_contract['perks_enabled']
+        if expected_perks != 'explicit' and bool(perks_enabled) is not bool(expected_perks):
+            raise ValueError(f'Family {family_id!r} requires perks_enabled={expected_perks!r}.')
+        expected_mode_id = family_contract['mode_id']
+        if scenario_mode_id is not None and scenario_mode_id != expected_mode_id:
+            raise ValueError(f'Family {family_id!r} requires scenario mode_id={expected_mode_id!r}, got {scenario_mode_id!r}.')
 
     def _normalize_row(self, row: StatInput) -> BaselineContributorRow:
         surface_id = _normalized_surface_id(row)
         if surface_id is None:
             raise ValueError(f'Stat input {row!r} is missing destination routing and cannot be materialized.')
+        surface_metadata = self._surface_metadata_by_id.get(surface_id)
+        if surface_metadata is None:
+            raise ValueError(f'Surface {surface_id!r} is not declared in the phase-1 family surface registry.')
         source_class = _normalize_source_class(row)
         contributor_id = row.contributor_id or _fallback_contributor_id(row)
         composition_stage = _normalize_composition_stage(surface_id, row)
@@ -162,6 +193,8 @@ class FamilyBaselineMaterializer:
         provenance_ref = row.provenance or row.notes or f'compiler::{row.source_family}::{row.source_name}'
         return BaselineContributorRow(
             surface_id=surface_id,
+            surface_class=str(surface_metadata['surface_class']),
+            domain=str(surface_metadata['domain']),
             source_class=source_class,
             composition_stage=composition_stage,
             contributor_id=contributor_id,
@@ -179,12 +212,7 @@ def load_surface_registry_contract() -> dict[str, Any]:
 
 def load_family_surface_ids() -> dict[str, frozenset[str]]:
     initial_surface_contract = load_surface_registry_contract()
-    family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
-    declared_families = {
-        family_id
-        for group_payload in (family_contract.get('family_groups') or {}).values()
-        for family_id in (group_payload.get('families') or {}).keys()
-    }
+    declared_families = set(load_family_contracts())
     bounded: dict[str, frozenset[str]] = {}
     all_surface_ids: set[str] = set()
     for family_group, family_data in (initial_surface_contract.get('families') or {}).items():
@@ -239,6 +267,46 @@ def load_family_surface_ids() -> dict[str, frozenset[str]]:
     if missing_family_assignments:
         raise ValueError(f'Families missing declared query surfaces in phase-1 registry: {missing_family_assignments}.')
     return {family_id: frozenset(surface_ids) for family_id, surface_ids in bounded.items()}
+
+
+def load_surface_metadata_by_id() -> dict[str, Mapping[str, Any]]:
+    metadata: dict[str, Mapping[str, Any]] = {}
+    contract = load_surface_registry_contract()
+    for family_data in (contract.get('families') or {}).values():
+        for entry in family_data.get('surfaces') or ():
+            metadata[str(entry['surface_id'])] = MappingProxyType(
+                {
+                    'surface_class': str(entry['surface_class']),
+                    'domain': str(entry['domain']),
+                }
+            )
+    return metadata
+
+
+def load_family_contracts() -> dict[str, Mapping[str, Any]]:
+    family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
+    family_contracts: dict[str, Mapping[str, Any]] = {}
+    for group_id, group_payload in (family_contract.get('family_groups') or {}).items():
+        for family_id, payload in (group_payload.get('families') or {}).items():
+            baseline_semantics = MappingProxyType(dict(payload.get('baseline_semantics') or {}))
+            if not baseline_semantics:
+                raise ValueError(f'Family {family_id!r} must declare baseline_semantics.')
+            required_semantics = {'deterministic', 'immutable', 'overlay_free', 'bounded_to_declared_surface_set'}
+            missing_semantics = sorted(required_semantics - set(baseline_semantics))
+            if missing_semantics:
+                raise ValueError(f'Family {family_id!r} baseline_semantics missing required fields: {missing_semantics}.')
+            family_contracts[str(family_id)] = MappingProxyType(
+                {
+                    'family_group': str(group_id),
+                    'state_mode': str(payload['state_mode']),
+                    'mode_id': str(payload['mode_id']),
+                    'perks_enabled': payload['perks_enabled'],
+                    'allowed_overlay_types': tuple(payload.get('allowed_overlay_types') or ()),
+                    'scenario_kind': str(payload.get('scenario_kind') or 'run'),
+                    'baseline_semantics': baseline_semantics,
+                }
+            )
+    return family_contracts
 
 
 def _normalize_source_class(row: StatInput) -> str:

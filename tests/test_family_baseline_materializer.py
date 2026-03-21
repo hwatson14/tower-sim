@@ -40,6 +40,12 @@ def test_progression_family_materializer_is_deterministic_and_immutable():
 
     assert baseline_a.fingerprint() == baseline_b.fingerprint()
     assert baseline_a.family_id == 'progression_runtime_no_perks'
+    assert dict(baseline_a.baseline_semantics) == {
+        'deterministic': True,
+        'immutable': True,
+        'overlay_free': True,
+        'bounded_to_declared_surface_set': True,
+    }
     assert baseline_a.contributor_rows
     with pytest.raises(FrozenInstanceError):
         baseline_a.contributor_rows += ()
@@ -78,8 +84,12 @@ def test_progression_family_materializer_normalizes_rows_to_contract_shape():
     )
     free_upgrade_support = rows_by_surface['support_surface::free_upgrade_multiplier']
     assert all(row.composition_stage == 'multiplicative' for row in free_upgrade_support)
+    assert all(row.surface_class == 'context_resource' for row in free_upgrade_support)
+    assert all(row.domain == 'progression' for row in free_upgrade_support)
     tower_hp_sources = {row.source_class for row in rows_by_surface['canonical_stat::tower_hp']}
     assert {'labs', 'workshop'}.issubset(tower_hp_sources)
+    assert all(row.surface_class == 'surface' for row in rows_by_surface['canonical_stat::tower_hp'])
+    assert all(row.domain == 'progression' for row in rows_by_surface['canonical_stat::tower_hp'])
     assert all(row.provenance_ref for row in baseline.contributor_rows)
     assert all(row.contributor_id for row in baseline.contributor_rows)
 
@@ -111,6 +121,7 @@ def test_timing_family_materializer_is_bounded_to_timing_surface_set():
         }
     )
     assert 'canonical_stat::tower_hp' not in {row.surface_id for row in baseline.contributor_rows}
+    assert all(row.domain in {'timing', 'ultimate_weapons', 'modules', 'cards'} for row in baseline.contributor_rows)
 
 
 
@@ -132,4 +143,22 @@ def test_materialize_from_rows_rejects_unknown_family_before_iterating_inputs():
             ).binding.identity,
             family_id='not_a_real_family',
             stat_inputs=_rows(),
+        )
+
+
+@pytest.mark.parametrize(
+    ('family_id', 'state_mode', 'perks_enabled', 'scenario_mode_id', 'match'),
+    [
+        ('progression_runtime_no_perks', 'max_progression', False, 'progression', 'requires state_mode'),
+        ('progression_runtime_no_perks', 'start_of_run', True, 'progression', 'requires perks_enabled'),
+        ('progression_runtime_no_perks', 'start_of_run', False, 'farming', 'requires scenario mode_id'),
+    ],
+)
+def test_family_compatibility_assertions_fail_closed(family_id, state_mode, perks_enabled, scenario_mode_id, match):
+    with pytest.raises(ValueError, match=match):
+        FamilyBaselineMaterializer().assert_family_compatibility(
+            family_id=family_id,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
+            scenario_mode_id=scenario_mode_id,
         )

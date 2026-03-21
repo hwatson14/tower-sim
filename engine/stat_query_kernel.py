@@ -14,6 +14,7 @@ from engine.family_baseline_materializer import (
     FamilyBaselineContributorMap,
     FamilyBaselineMaterializer,
     contributor_row_sort_key,
+    load_surface_metadata_by_id,
 )
 from engine.state_identity import BoundStatInputs
 
@@ -70,6 +71,7 @@ class OverlayApplicator:
         self._allowed_delta_types = frozenset(overlay_contract.get('allowed_delta_types') or ())
         self._target_scope_allowed_keys = frozenset(((overlay_contract.get('target_scope_schema') or {}).get('allowed_keys') or ()))
         self._family_allowed_delta_types = _family_allowed_delta_types(family_contract)
+        self._surface_metadata_by_id = load_surface_metadata_by_id()
 
     def apply_overlay_delta(
         self,
@@ -90,13 +92,19 @@ class OverlayApplicator:
             if operation == 'add':
                 if target_row is not None:
                     raise ValueError(f'Overlay add operation refuses to overwrite existing contributor {contributor_id!r}.')
-                created = _row_from_overlay_add(change)
+                created = _row_from_overlay_add(change, self._surface_metadata_by_id)
                 new_rows.append(created)
                 rows_by_id[contributor_id] = created
                 index_by_id[contributor_id] = len(new_rows) - 1
                 continue
             if target_row is None:
                 raise ValueError(f'Overlay contributor {contributor_id!r} is missing from the baseline map.')
+            _validate_surface_metadata(
+                surface_metadata_by_id=self._surface_metadata_by_id,
+                surface_id=target_row.surface_id,
+                surface_class=target_row.surface_class,
+                domain=target_row.domain,
+            )
             if operation == 'remove':
                 del new_rows[index_by_id[contributor_id]]
                 rows_by_id.pop(contributor_id, None)
@@ -108,6 +116,8 @@ class OverlayApplicator:
                 new_value = _required(change, 'new_value')
             replacement = BaselineContributorRow(
                 surface_id=target_row.surface_id,
+                surface_class=target_row.surface_class,
+                domain=target_row.domain,
                 source_class=target_row.source_class,
                 composition_stage=target_row.composition_stage,
                 contributor_id=target_row.contributor_id,
@@ -251,13 +261,34 @@ def _required(mapping: Mapping[str, Any], field: str) -> Any:
     return mapping[field]
 
 
-def _row_from_overlay_add(change: Mapping[str, Any]) -> BaselineContributorRow:
-    required = ('surface_id', 'source_class', 'composition_stage', 'contributor_id', 'new_value', 'value_type', 'provenance_ref')
+def _row_from_overlay_add(
+    change: Mapping[str, Any],
+    surface_metadata_by_id: Mapping[str, Mapping[str, Any]],
+) -> BaselineContributorRow:
+    required = (
+        'surface_id',
+        'surface_class',
+        'domain',
+        'source_class',
+        'composition_stage',
+        'contributor_id',
+        'new_value',
+        'value_type',
+        'provenance_ref',
+    )
     missing = [field for field in required if field not in change]
     if missing:
         raise ValueError(f'Overlay add operation is missing contributor row fields: {missing}.')
+    _validate_surface_metadata(
+        surface_metadata_by_id=surface_metadata_by_id,
+        surface_id=str(change['surface_id']),
+        surface_class=str(change['surface_class']),
+        domain=str(change['domain']),
+    )
     return BaselineContributorRow(
         surface_id=str(change['surface_id']),
+        surface_class=str(change['surface_class']),
+        domain=str(change['domain']),
         source_class=str(change['source_class']),
         composition_stage=str(change['composition_stage']),
         contributor_id=str(change['contributor_id']),
@@ -267,6 +298,26 @@ def _row_from_overlay_add(change: Mapping[str, Any]) -> BaselineContributorRow:
         gate_reason=change.get('gate_reason'),
         provenance_ref=str(change['provenance_ref']),
     )
+
+
+def _validate_surface_metadata(
+    *,
+    surface_metadata_by_id: Mapping[str, Mapping[str, Any]],
+    surface_id: str,
+    surface_class: str,
+    domain: str,
+) -> None:
+    metadata = surface_metadata_by_id.get(surface_id)
+    if metadata is None:
+        raise ValueError(f'Overlay references undeclared surface_id {surface_id!r}.')
+    expected_surface_class = str(metadata['surface_class'])
+    expected_domain = str(metadata['domain'])
+    if surface_class != expected_surface_class:
+        raise ValueError(
+            f'Overlay surface_class mismatch for {surface_id!r}: expected {expected_surface_class!r}, got {surface_class!r}.'
+        )
+    if domain != expected_domain:
+        raise ValueError(f'Overlay domain mismatch for {surface_id!r}: expected {expected_domain!r}, got {domain!r}.')
 
 
 def _coerce_numeric(value: Any) -> float:

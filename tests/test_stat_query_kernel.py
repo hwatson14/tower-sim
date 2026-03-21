@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine.family_baseline_materializer import FamilyBaselineMaterializer
+from engine.family_baseline_materializer import BaselineContributorRow, FamilyBaselineContributorMap, FamilyBaselineMaterializer
 from engine.state_identity import StateIdentity
 from engine.stat_query_kernel import OverlayApplicator, StatQueryKernel
 from models.stat_input import StatInput
@@ -57,6 +57,8 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
     assert [row.__dict__ for row in baseline.contributor_rows] == [
         {
             'surface_id': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'surface_class': 'surface',
+            'domain': 'progression',
             'source_class': 'workshop',
             'composition_stage': 'additive_pre_cap',
             'contributor_id': 'workshop.free_attack_upgrade.base',
@@ -68,6 +70,8 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
         },
         {
             'surface_id': 'support_surface::free_upgrade_multiplier',
+            'surface_class': 'context_resource',
+            'domain': 'progression',
             'source_class': 'cards',
             'composition_stage': 'multiplicative',
             'contributor_id': 'card.free_upgrades.multiplier',
@@ -134,6 +138,8 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
             {
                 'operation': 'add',
                 'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_class': 'surface',
+                'domain': 'progression',
                 'source_class': 'cards',
                 'composition_stage': 'additive_pre_cap',
                 'contributor_id': 'card.enemy_attack_level_skip.bonus',
@@ -163,6 +169,128 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
         'relic.enemy_attack_level_skip.multiplier': 2.2,
         'workshop.enemy_attack_level_skip.base': 27,
     }
+
+
+@pytest.mark.parametrize(
+    ('change', 'match'),
+    [
+        (
+            {
+                'operation': 'add',
+                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_class': 'context_resource',
+                'domain': 'progression',
+                'source_class': 'cards',
+                'composition_stage': 'additive_pre_cap',
+                'contributor_id': 'card.enemy_attack_level_skip.bad_surface_class',
+                'new_value': 3,
+                'value_type': 'integer_pct',
+                'provenance_ref': 'cards.enemy_attack_level_skip',
+            },
+            'surface_class mismatch',
+        ),
+        (
+            {
+                'operation': 'add',
+                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_class': 'surface',
+                'domain': 'timing',
+                'source_class': 'cards',
+                'composition_stage': 'additive_pre_cap',
+                'contributor_id': 'card.enemy_attack_level_skip.bad_domain',
+                'new_value': 3,
+                'value_type': 'integer_pct',
+                'provenance_ref': 'cards.enemy_attack_level_skip',
+            },
+            'domain mismatch',
+        ),
+    ],
+)
+def test_overlay_applicator_rejects_metadata_drift_for_added_rows(change, match):
+    identity = StateIdentity('acct_demo_v1', 'loadout_demo_farm', 'scn_progression_no_perks', 'branch_base')
+    baseline = FamilyBaselineMaterializer().materialize_from_rows(
+        identity,
+        'progression_runtime_no_perks',
+        (
+            StatInput(
+                stat_name='Enemy Attack Level Skip',
+                source_family='workshop',
+                source_name='Enemy Attack Level Skip',
+                value=25,
+                value_type='integer_pct',
+                stage='account_state',
+                contributor_id='workshop.enemy_attack_level_skip.base',
+                provenance='workshop.track.enemy_attack_level_skip',
+                destination_object_type='canonical_stat',
+                destination_id='enemy_attack_level_skip_pct',
+                kb_mapped=True,
+            ),
+        ),
+    )
+    overlay = {
+        'delta_id': 'delta_progression_wave_002',
+        'runtime_branch_id': 'branch_wave_188',
+        'affected_family_id': 'progression_runtime_no_perks',
+        'delta_type': 'workshop_mutation',
+        'target_scope': {'surface_ids': ['canonical_stat::enemy_attack_level_skip_pct']},
+        'changed_contributors': [change],
+        'changed_masks': [],
+        'changed_assertions': [],
+        'provenance_note': 'wave free-upgrade event',
+    }
+
+    with pytest.raises(ValueError, match=match):
+        OverlayApplicator().apply_overlay_delta(baseline, overlay)
+
+
+def test_overlay_applicator_rejects_metadata_drift_for_mutated_rows():
+    baseline = FamilyBaselineContributorMap(
+        account_snapshot_id='acct_demo_v1',
+        loadout_id='loadout_demo_farm',
+        scenario_id='scn_progression_no_perks',
+        runtime_branch_id='branch_base',
+        family_id='progression_runtime_no_perks',
+        baseline_semantics={
+            'deterministic': True,
+            'immutable': True,
+            'overlay_free': True,
+            'bounded_to_declared_surface_set': True,
+        },
+        contributor_rows=(
+            BaselineContributorRow(
+                surface_id='canonical_stat::enemy_attack_level_skip_pct',
+                surface_class='context_resource',
+                domain='progression',
+                source_class='workshop',
+                composition_stage='additive_pre_cap',
+                contributor_id='workshop.enemy_attack_level_skip.base',
+                value=25,
+                value_type='integer_pct',
+                active=True,
+                gate_reason=None,
+                provenance_ref='workshop.track.enemy_attack_level_skip',
+            ),
+        ),
+    )
+    overlay = {
+        'delta_id': 'delta_progression_wave_003',
+        'runtime_branch_id': 'branch_wave_189',
+        'affected_family_id': 'progression_runtime_no_perks',
+        'delta_type': 'workshop_mutation',
+        'target_scope': {'surface_ids': ['canonical_stat::enemy_attack_level_skip_pct']},
+        'changed_contributors': [
+            {
+                'contributor_id': 'workshop.enemy_attack_level_skip.base',
+                'new_value': 27,
+            },
+        ],
+        'changed_masks': [],
+        'changed_assertions': [],
+        'provenance_note': 'wave free-upgrade event',
+    }
+
+    with pytest.raises(ValueError, match='surface_class mismatch'):
+        OverlayApplicator().apply_overlay_delta(baseline, overlay)
 
 
 def test_query_kernel_returns_worked_example_resolved_rows_contributor_rows_and_trace():

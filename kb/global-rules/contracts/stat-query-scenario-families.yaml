@@ -8,7 +8,13 @@ family_groups:
       timing_tournament_no_perks:
         state_mode: start_of_run
         mode_id: tournament
+        scenario_kind: run
         perks_enabled: false
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - card_assertions
           - module_assertions
@@ -18,7 +24,13 @@ family_groups:
       timing_farm_with_perks:
         state_mode: start_of_run
         mode_id: farming
+        scenario_kind: run
         perks_enabled: true
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - perk_count_overrides
           - card_assertions
@@ -29,7 +41,13 @@ family_groups:
       timing_scenario_probe:
         state_mode: start_of_run
         mode_id: scenario_probe
+        scenario_kind: scenario_probe
         perks_enabled: explicit
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - perk_count_overrides
           - card_assertions
@@ -42,7 +60,13 @@ family_groups:
       progression_start_of_run:
         state_mode: start_of_run
         mode_id: progression
+        scenario_kind: run
         perks_enabled: false
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - workshop_mutation
           - runtime_wave_state
@@ -50,7 +74,13 @@ family_groups:
       progression_runtime_no_perks:
         state_mode: start_of_run
         mode_id: progression
+        scenario_kind: run
         perks_enabled: false
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - workshop_mutation
           - runtime_wave_state
@@ -58,7 +88,13 @@ family_groups:
       progression_runtime_with_perks:
         state_mode: start_of_run
         mode_id: progression
+        scenario_kind: run
         perks_enabled: true
+        baseline_semantics:
+          deterministic: true
+          immutable: true
+          overlay_free: true
+          bounded_to_declared_surface_set: true
         allowed_overlay_types:
           - workshop_mutation
           - runtime_wave_state
@@ -67,3 +103,5 @@ family_groups:
 rules:
   - families are bounded and named; arbitrary family synthesis is forbidden in phase 1
   - tournament implies perks_enabled=false unless a later governed contract explicitly overrides this
+  - family compatibility is asserted against state_mode, mode_id, perks_enabled, and scenario_kind before baseline materialization
+  - baseline contributor rows must carry surface_class, domain, source_class, composition_stage, gate_reason, and provenance_ref
