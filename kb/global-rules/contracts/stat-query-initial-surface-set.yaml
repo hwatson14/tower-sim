@@ -1,36 +1,416 @@
-contract_id: stat_query_initial_surface_set_v1
+contract_id: stat_query_initial_surface_set_v3
 families:
   timing_v1:
-    canonical_and_support_surfaces:
-      - canonical_stat::package_chance_pct
-      - mechanic_param::uw.black_hole.cooldown_seconds
-      - mechanic_param::uw.black_hole.duration_seconds
-      - mechanic_param::uw.golden_tower.cooldown_seconds
-      - mechanic_param::uw.golden_tower.duration_seconds
-      - support_surface::timing.gcomp_cooldown_reduction_seconds
-      - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
-      - support_surface::timing.wave_duration_seconds_effective
+    surfaces:
+      - surface_id: canonical_stat::package_chance_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: timing
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: additive recovery-package chance percent visible to timing queries.
+      - surface_id: mechanic_param::uw.black_hole.cooldown_seconds
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: ultimate_weapons
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: effective Black Hole cooldown seconds after deterministic timing adjustments.
+      - surface_id: mechanic_param::uw.black_hole.duration_seconds
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: ultimate_weapons
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: effective Black Hole active duration seconds after deterministic timing adjustments.
+      - surface_id: mechanic_param::uw.golden_tower.cooldown_seconds
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: ultimate_weapons
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: effective Golden Tower cooldown seconds after deterministic timing adjustments.
+      - surface_id: mechanic_param::uw.golden_tower.duration_seconds
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: ultimate_weapons
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: effective Golden Tower active duration seconds after deterministic timing adjustments.
+      - surface_id: support_surface::timing.gcomp_cooldown_reduction_seconds
+        surface_kind: support_surface
+        surface_class: context_resource
+        domain: modules
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: true
+        publish_default: false
+        debug_only: false
+        scenario_scoped: false
+        semantics: Galaxy Compressor unique-effect cooldown reduction seconds consumed by timing mechanics.
+      - surface_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+        surface_kind: runtime_mechanic_surface
+        surface_class: environment
+        domain: cards
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: false
+        debug_only: false
+        scenario_scoped: true
+        semantics: Wave Accelerator spawn-rate acceleration scalar consumed by effective wave-duration timing.
+      - surface_id: support_surface::timing.wave_duration_seconds_effective
+        surface_kind: support_surface
+        surface_class: context_resource
+        domain: timing
+        owning_families:
+          - timing_tournament_no_perks
+          - timing_farm_with_perks
+          - timing_scenario_probe
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: true
+        publish_default: false
+        debug_only: false
+        scenario_scoped: true
+        semantics: effective per-wave duration seconds after deterministic timing modifiers are composed.
     runtime_consumers:
       - runtime_consumer::wave_progression.attack_wave
       - runtime_consumer::wave_progression.health_wave
+    query_bundles:
+      - bundle_id: timing_core_cycle
+        surface_ids:
+          - mechanic_param::uw.black_hole.cooldown_seconds
+          - mechanic_param::uw.black_hole.duration_seconds
+          - mechanic_param::uw.golden_tower.cooldown_seconds
+          - mechanic_param::uw.golden_tower.duration_seconds
+          - support_surface::timing.gcomp_cooldown_reduction_seconds
+      - bundle_id: timing_wave_duration
+        surface_ids:
+          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+          - support_surface::timing.wave_duration_seconds_effective
+          - canonical_stat::package_chance_pct
   progression_v1:
-    canonical_and_support_surfaces:
-      - canonical_stat::tower_hp
-      - canonical_stat::wall_hp
-      - canonical_stat::tower_defense_pct
-      - canonical_stat::tower_thorns_damage_pct
-      - canonical_stat::tower_orb_count
-      - canonical_stat::tower_orb_speed_rpm
-      - canonical_stat::free_attack_upgrade_chance_pct
-      - canonical_stat::free_defense_upgrade_chance_pct
-      - canonical_stat::free_utility_upgrade_chance_pct
-      - canonical_stat::enemy_attack_level_skip_pct
-      - canonical_stat::enemy_health_level_skip_pct
-      - support_surface::free_upgrade_multiplier
+    surfaces:
+      - surface_id: canonical_stat::tower_hp
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved tower health stat available to progression queries.
+      - surface_id: canonical_stat::wall_hp
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved wall health stat available to progression queries.
+      - surface_id: canonical_stat::tower_defense_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved tower defense percent available to progression queries.
+      - surface_id: canonical_stat::tower_thorns_damage_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved tower thorns damage percent available to progression queries.
+      - surface_id: canonical_stat::tower_orb_count
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved orb count stat consumed by progression and combat-adjacent deterministic queries.
+      - surface_id: canonical_stat::tower_orb_speed_rpm
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved orb speed in revolutions per minute consumed by progression and combat-adjacent deterministic queries.
+      - surface_id: canonical_stat::free_attack_upgrade_chance_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved free attack upgrade chance percent before runtime wave mutation deltas.
+      - surface_id: canonical_stat::free_defense_upgrade_chance_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved free defense upgrade chance percent before runtime wave mutation deltas.
+      - surface_id: canonical_stat::free_utility_upgrade_chance_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: false
+        semantics: resolved free utility upgrade chance percent before runtime wave mutation deltas.
+      - surface_id: canonical_stat::enemy_attack_level_skip_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: resolved enemy attack level skip percent consumed by wave progression runtime consumers.
+      - surface_id: canonical_stat::enemy_health_level_skip_pct
+        surface_kind: canonical_surface
+        surface_class: surface
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: true
+        debug_only: false
+        scenario_scoped: true
+        semantics: resolved enemy health level skip percent consumed by wave progression runtime consumers.
+      - surface_id: support_surface::free_upgrade_multiplier
+        surface_kind: support_surface
+        surface_class: context_resource
+        domain: progression
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: true
+        publish_default: false
+        debug_only: false
+        scenario_scoped: false
+        semantics: multiplicative free-upgrade support surface composed with free-upgrade chance surfaces.
     runtime_consumers:
       - runtime_consumer::wave_progression.attack_wave
       - runtime_consumer::wave_progression.health_wave
+    query_bundles:
+      - bundle_id: progression_free_upgrades
+        surface_ids:
+          - canonical_stat::free_attack_upgrade_chance_pct
+          - canonical_stat::free_defense_upgrade_chance_pct
+          - canonical_stat::free_utility_upgrade_chance_pct
+          - support_surface::free_upgrade_multiplier
+      - bundle_id: progression_wave_skips
+        surface_ids:
+          - canonical_stat::enemy_attack_level_skip_pct
+          - canonical_stat::enemy_health_level_skip_pct
+promotion_review:
+  reviewed_nodes:
+    - node_id: mechanic_param::uw.black_hole.cooldown_seconds
+      domain: ultimate_weapons
+      owner_family_group: timing_v1
+      promotion_decision: first_class_surface_entry
+      rationale: deterministic timing queries already request the governed Black Hole cooldown directly.
+    - node_id: mechanic_param::uw.black_hole.duration_seconds
+      domain: ultimate_weapons
+      owner_family_group: timing_v1
+      promotion_decision: first_class_surface_entry
+      rationale: deterministic timing queries already request the governed Black Hole duration directly.
+    - node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+      domain: ultimate_weapons
+      owner_family_group: timing_v1
+      promotion_decision: first_class_surface_entry
+      rationale: deterministic timing queries already request the governed Golden Tower cooldown directly.
+    - node_id: mechanic_param::uw.golden_tower.duration_seconds
+      domain: ultimate_weapons
+      owner_family_group: timing_v1
+      promotion_decision: first_class_surface_entry
+      rationale: deterministic timing queries already request the governed Golden Tower duration directly.
+    - node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
+      domain: modules
+      owner_family_group: timing_v1
+      promotion_decision: first_class_surface_entry
+      rationale: Galaxy Compressor unique-effect output is a bounded support dependency with direct timing consumers.
+    - node_id: runtime_mechanic_param::module.orbital_augment.electron_hits_per_second
+      domain: modules
+      owner_family_group: none_phase_1
+      promotion_decision: helper_debug_only_node
+      rationale: timing engine still treats Orbital Augment cadence as open and does not govern it as a phase-1 query surface.
+    - node_id: timing.bot_amplify_uptime_fraction
+      domain: bots
+      owner_family_group: none_phase_1
+      promotion_decision: helper_debug_only_node
+      rationale: bot uptime remains an internal timing helper and is not a phase-1 query contract surface.
+    - node_id: timing.bot_golden_uptime_fraction
+      domain: bots
+      owner_family_group: none_phase_1
+      promotion_decision: helper_debug_only_node
+      rationale: golden bot uptime remains an internal timing helper and is not a phase-1 query contract surface.
+    - node_id: timing.bot_thunder_uptime_fraction
+      domain: bots
+      owner_family_group: none_phase_1
+      promotion_decision: helper_debug_only_node
+      rationale: thunder bot uptime remains an internal timing helper and is not a phase-1 query contract surface.
+    - node_id: guardian_runtime_helpers
+      domain: guardians
+      owner_family_group: none_phase_1
+      promotion_decision: helper_debug_only_node
+      rationale: no deterministic guardian timing/progression helper is currently governed as a phase-1 query surface.
 rules:
   - phase 1 excludes geometry surfaces
   - phase 1 excludes broad combat-helper surfaces
   - expansion beyond this set requires explicit approval
+  - surface_id values must be unique across the entire phase-1 registry
+  - references to undeclared surface_id values are invalid and must fail closed
+  - family-owned surfaces must be declared only in this registry location for phase 1
+  - surface categories must use surface, capability, environment, or context_resource rather than public/internal splits
