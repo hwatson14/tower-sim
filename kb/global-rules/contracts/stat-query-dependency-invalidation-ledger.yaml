@@ -88,6 +88,54 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned orb speed surface.
+  - node_id: source_input::module:Black Hole Digestor
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Black Hole Digestor optimizer-prep surface.
+  - node_id: source_input::module:Orbital Augment
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Orbital Augment optimizer-prep surface.
+  - node_id: source_input::module:Primordial Collapse
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Module assertion source for Primordial Collapse optimizer-prep surface.
+  - node_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Draft optimizer-prep Black Hole Digestor surface.
+  - node_id: mechanic_param::module.orbital_augment.electron_count
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Orbital Augment electron count surface.
+  - node_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Draft optimizer-prep Primordial Collapse surface.
   - node_id: source_input::workshop:Free Attack Upgrade
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -340,6 +388,27 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Orb Speed routes to orb speed.
+  - upstream_node_id: source_input::module:Black Hole Digestor
+    downstream_node_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern the draft Black Hole Digestor optimizer surface.
+  - upstream_node_id: source_input::module:Orbital Augment
+    downstream_node_id: mechanic_param::module.orbital_augment.electron_count
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Module assertions govern Orbital Augment electron-count publication.
+  - upstream_node_id: source_input::module:Primordial Collapse
+    downstream_node_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Module assertions govern the draft Primordial Collapse optimizer surface.
   - upstream_node_id: source_input::workshop:Free Attack Upgrade
     downstream_node_id: canonical_stat::free_attack_upgrade_chance_pct
     invalidation_semantics: recompute_downstream

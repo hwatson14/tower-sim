@@ -11,3 +11,4 @@ What is source-backed in the active bundle:
 Boundary:
 - Main-effect numerics are now treated as structured simulator canon sourced from the bundled Effective Paths export, not as directly row-verified live-wiki values.
 - Unique effects and substats remain separately sourced.
+- Module economy and reroll numerics are not implied by this closure note; Pack14 prep keeps those surfaces separately classified so workbook-derived helper ladders are not accidentally promoted into cost canon.

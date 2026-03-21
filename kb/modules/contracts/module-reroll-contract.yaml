@@ -1,0 +1,25 @@
+contract_id: module_reroll_contract_v1
+artifact_type: module_reroll_policy
+currency:
+  resource_id: reroll_shards
+  closure_class: canonical_kb_truth
+  source_ref: kb/modules/sources/wiki-modules-and-submodules.md
+lock_policy:
+  locking_allowed: true
+  locking_increases_cost: true
+  closure_class: canonical_kb_truth
+  source_ref: kb/modules/sources/wiki-modules-and-submodules.md
+numeric_cost_ladder:
+  source_closed: false
+  fail_closed: true
+  accepted_model_helper_allowed: false
+  rationale: Do not invent reroll shard ladders until a row-closed source is captured under kb/modules.
+accepted_model_helpers:
+  - helper_id: module.assist.unique_rarity_upgrade_costs
+    closure_class: accepted_model_helper
+    source_ref: kb/modules/tables/assist-unique-rarity-upgrade-costs.csv
+    use_boundary: Pack14 prep only; may inform planning notes but must not be promoted to canonical reroll numerics.
+rules:
+  - reroll numerics fail closed until a source-closed shard ladder is committed under kb/modules.
+  - lock state may be modeled only as a qualitative cost escalator unless a numeric ladder is source-closed.
+  - assist cap behavior remains governed by module-unique-runtime-semantics.md and is not re-owned here.
