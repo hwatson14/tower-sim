@@ -14,11 +14,30 @@ from models.stat_input import StatInput
 ROOT = Path(__file__).resolve().parents[1]
 _INITIAL_SURFACE_SET_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-initial-surface-set.yaml'
 _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-scenario-families.yaml'
+_OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
 
 _SURFACE_ID_ALIASES = {
     'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
     'mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds': 'support_surface::timing.gcomp_cooldown_reduction_seconds',
 }
+
+
+_REQUIRED_SURFACE_ENTRY_FIELDS = {
+    'surface_id',
+    'surface_kind',
+    'surface_class',
+    'domain',
+    'owning_families',
+    'query_resolvable_phase_1',
+    'queryable_directly',
+    'consumer_only',
+    'support_only',
+    'publish_default',
+    'debug_only',
+    'scenario_scoped',
+    'semantics',
+}
+_ALLOWED_SURFACE_CLASSES = frozenset({'surface', 'capability', 'environment', 'context_resource'})
 
 _SOURCE_CLASS_BY_FAMILY = {
     'lab': 'labs',
@@ -26,8 +45,7 @@ _SOURCE_CLASS_BY_FAMILY = {
     'enhancement': 'workshop',
     'relic': 'relics',
     'card': 'cards',
-    'module': 'modules_main',
-    'module_substat': 'modules_substats',
+    'module_substat': 'module_substat',
     'uw': 'ultimate_weapons',
     'uw_plus': 'ultimate_weapons',
     'bot': 'bots',
@@ -84,7 +102,7 @@ class FamilyBaselineContributorMap:
 
 class FamilyBaselineMaterializer:
     def __init__(self) -> None:
-        self._family_surface_ids = _load_family_surface_ids()
+        self._family_surface_ids = load_family_surface_ids()
 
     def materialize(self, bound_inputs: BoundStatInputs, family_id: str) -> FamilyBaselineContributorMap:
         # Phase-1 note: family/scenario compatibility remains query-kernel work.
@@ -138,9 +156,7 @@ class FamilyBaselineMaterializer:
         surface_id = _normalized_surface_id(row)
         if surface_id is None:
             raise ValueError(f'Stat input {row!r} is missing destination routing and cannot be materialized.')
-        source_class = _SOURCE_CLASS_BY_FAMILY.get(row.source_family)
-        if source_class is None:
-            raise ValueError(f'Unsupported source_family {row.source_family!r} for bounded baseline materialization.')
+        source_class = _normalize_source_class(row)
         contributor_id = row.contributor_id or _fallback_contributor_id(row)
         composition_stage = _normalize_composition_stage(surface_id, row)
         gate_reason = None if row.active else (row.notes or 'inactive_compiler_row')
@@ -158,21 +174,103 @@ class FamilyBaselineMaterializer:
         )
 
 
-def _load_family_surface_ids() -> dict[str, frozenset[str]]:
-    initial_surface_contract = yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
+def load_surface_registry_contract() -> dict[str, Any]:
+    return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
+
+
+def load_surface_ownership_ledger() -> dict[str, Any]:
+    return yaml.safe_load(_OWNERSHIP_LEDGER_PATH.read_text()) or {}
+
+
+def load_family_surface_ids() -> dict[str, frozenset[str]]:
+    initial_surface_contract = load_surface_registry_contract()
     family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
-    initial_by_group = {
-        family_group: frozenset(family_data.get('canonical_and_support_surfaces', []))
-        for family_group, family_data in (initial_surface_contract.get('families') or {}).items()
+    declared_families = {
+        family_id
+        for group_payload in (family_contract.get('family_groups') or {}).values()
+        for family_id in (group_payload.get('families') or {}).keys()
     }
     bounded: dict[str, frozenset[str]] = {}
-    for group_name, group_payload in (family_contract.get('family_groups') or {}).items():
-        surface_group = initial_by_group.get(f'{group_name}_v1')
-        if surface_group is None:
-            raise ValueError(f'Missing initial surface contract for family group {group_name!r}.')
-        for family_id in (group_payload.get('families') or {}).keys():
-            bounded[family_id] = surface_group
-    return bounded
+    all_surface_ids: set[str] = set()
+    ownership_rows = {
+        str(row.get('node_id')): row
+        for row in (load_surface_ownership_ledger().get('surface_nodes') or [])
+    }
+    for family_group, family_data in (initial_surface_contract.get('families') or {}).items():
+        group_surfaces = family_data.get('surfaces') or ()
+        seen_in_group: set[str] = set()
+        for entry in group_surfaces:
+            missing_fields = sorted(_REQUIRED_SURFACE_ENTRY_FIELDS - set(entry))
+            if missing_fields:
+                raise ValueError(f'Family group {family_group!r} contains a surface entry missing required fields: {missing_fields}.')
+            surface_id = str(entry.get('surface_id') or '').strip()
+            if not surface_id:
+                raise ValueError(f'Family group {family_group!r} contains a surface entry without surface_id.')
+            if surface_id in seen_in_group or surface_id in all_surface_ids:
+                raise ValueError(f'Duplicate surface_id {surface_id!r} found in stat query surface registry.')
+            surface_class = str(entry.get('surface_class') or '').strip()
+            if surface_class not in _ALLOWED_SURFACE_CLASSES:
+                raise ValueError(f'Surface {surface_id!r} declares unsupported surface_class {surface_class!r}.')
+            bool_fields = (
+                'query_resolvable_phase_1',
+                'queryable_directly',
+                'consumer_only',
+                'support_only',
+                'publish_default',
+                'debug_only',
+                'scenario_scoped',
+            )
+            invalid_bool_fields = [field for field in bool_fields if not isinstance(entry.get(field), bool)]
+            if invalid_bool_fields:
+                raise ValueError(f'Surface {surface_id!r} has non-boolean metadata fields: {invalid_bool_fields}.')
+            if entry['debug_only'] and entry['publish_default']:
+                raise ValueError(f'Surface {surface_id!r} cannot be debug_only and publish_default simultaneously.')
+            ownership_row = ownership_rows.get(surface_id)
+            if ownership_row is None:
+                raise ValueError(f'Surface {surface_id!r} is missing from the ownership ledger.')
+            if ownership_row.get('ownership_status') != 'query_owned' or ownership_row.get('governed_by') != 'canonical_query_engine':
+                raise ValueError(f'Surface {surface_id!r} must be query_owned and governed_by canonical_query_engine in the ownership ledger.')
+            if ownership_row.get('ownership_class') != surface_class:
+                raise ValueError(
+                    f'Surface {surface_id!r} disagrees with the ownership ledger on ownership_class: '
+                    f"registry={surface_class!r}, ledger={ownership_row.get('ownership_class')!r}."
+                )
+            seen_in_group.add(surface_id)
+            all_surface_ids.add(surface_id)
+            owning_families = tuple(entry.get('owning_families') or ())
+            if not owning_families:
+                raise ValueError(f'Surface {surface_id!r} must declare owning_families.')
+            unknown_families = sorted(set(owning_families) - declared_families)
+            if unknown_families:
+                raise ValueError(f'Surface {surface_id!r} references undeclared owning_families: {unknown_families}.')
+            for family_id in owning_families:
+                bounded.setdefault(str(family_id), set()).add(surface_id)
+        for bundle in family_data.get('query_bundles') or ():
+            bundle_id = str(bundle.get('bundle_id') or '').strip()
+            if not bundle_id:
+                raise ValueError(f'Family group {family_group!r} contains a query bundle without bundle_id.')
+            missing_bundle_surfaces = sorted(set(bundle.get('surface_ids') or ()) - seen_in_group)
+            if missing_bundle_surfaces:
+                raise ValueError(
+                    f'Query bundle {bundle_id!r} references undeclared surface_ids for family group {family_group!r}: {missing_bundle_surfaces}.'
+                )
+    missing_family_assignments = sorted(declared_families - set(bounded))
+    if missing_family_assignments:
+        raise ValueError(f'Families missing declared query surfaces in phase-1 registry: {missing_family_assignments}.')
+    return {family_id: frozenset(surface_ids) for family_id, surface_ids in bounded.items()}
+
+
+def _normalize_source_class(row: StatInput) -> str:
+    if row.source_family == 'module':
+        stat_name = str(row.stat_name or '')
+        notes = str(row.notes or '')
+        if stat_name.endswith('::unique') or 'module_' in notes and 'unique_effect' in notes or ':kb_module_unique_routed' in notes:
+            return 'module_unique'
+        return 'module_main'
+    source_class = _SOURCE_CLASS_BY_FAMILY.get(row.source_family)
+    if source_class is None:
+        raise ValueError(f'Unsupported source_family {row.source_family!r} for bounded baseline materialization.')
+    return source_class
 
 
 def _normalized_surface_id(row: StatInput) -> str | None:

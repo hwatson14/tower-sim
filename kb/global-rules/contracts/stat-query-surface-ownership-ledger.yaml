@@ -1,26 +1,161 @@
-contract_id: stat_query_surface_ownership_ledger_v1
-phase_1_domain_owners:
-  canonical_query_engine:
-    owns:
-      - deterministic timing_v1 canonical surfaces
-      - deterministic timing_v1 support surfaces
-      - deterministic progression_v1 canonical surfaces
-      - deterministic progression_v1 support surfaces
-  runtime_simulation:
-    owns:
-      - wave advancement over time
-      - event ordering
-      - combat stepping
-      - package event realization over time
-  analysis_consumers:
-    owns:
-      - optimisation search
-      - reporting
-      - diagnostics synthesis beyond truth-owned surfaces
-phase_1_exclusions:
-  - geometry domain migration
-  - broad combat-helper migration
-  - optimiser domain migration
+contract_id: stat_query_surface_ownership_ledger_v3
+surface_nodes:
+  - node_id: canonical_stat::package_chance_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::uw.black_hole.cooldown_seconds
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::uw.black_hole.duration_seconds
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::uw.golden_tower.duration_seconds
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+    ownership_class: environment
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: support_surface::timing.wave_duration_seconds_effective
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::tower_hp
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::wall_hp
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::tower_defense_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::tower_thorns_damage_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::tower_orb_count
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::tower_orb_speed_rpm
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::free_attack_upgrade_chance_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::free_defense_upgrade_chance_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::free_utility_upgrade_chance_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::enemy_attack_level_skip_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: canonical_stat::enemy_health_level_skip_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: support_surface::free_upgrade_multiplier
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+runtime_consumers:
+  - node_id: runtime_consumer::wave_progression.attack_wave
+    ownership_class: surface
+    ownership_status: simulator_owned
+    governed_by: runtime_simulation
+    downstream_policy: consume_query_owned_surfaces_only
+    consumes:
+      - canonical_stat::enemy_attack_level_skip_pct
+  - node_id: runtime_consumer::wave_progression.health_wave
+    ownership_class: surface
+    ownership_status: simulator_owned
+    governed_by: runtime_simulation
+    downstream_policy: consume_query_owned_surfaces_only
+    consumes:
+      - canonical_stat::enemy_health_level_skip_pct
+runtime_domains:
+  - node_id: runtime_domain::event_ordering
+    ownership_class: out_of_scope
+    ownership_status: simulator_owned
+    governed_by: runtime_simulation
+    downstream_policy: simulation_truth_owner
+  - node_id: runtime_domain::combat_stepping
+    ownership_class: out_of_scope
+    ownership_status: simulator_owned
+    governed_by: runtime_simulation
+    downstream_policy: simulation_truth_owner
+analysis_nodes:
+  - node_id: analysis_consumer::optimisation_search
+    ownership_class: analysis_only
+    ownership_status: analysis_only
+    governed_by: analysis_reporting
+    downstream_policy: may_aggregate_but_not_rederive_truth_owned_surfaces
+  - node_id: analysis_consumer::reporting
+    ownership_class: analysis_only
+    ownership_status: analysis_only
+    governed_by: analysis_reporting
+    downstream_policy: may_aggregate_but_not_rederive_truth_owned_surfaces
+  - node_id: analysis_consumer::diagnostics_synthesis
+    ownership_class: analysis_only
+    ownership_status: analysis_only
+    governed_by: analysis_reporting
+    downstream_policy: may_aggregate_but_not_rederive_truth_owned_surfaces
+out_of_scope_nodes:
+  - node_id: runtime_domain::geometry_migration
+    ownership_class: out_of_scope
+    ownership_status: out_of_scope
+    governed_by: deferred
+    downstream_policy: not_query_governed_phase_1
+  - node_id: runtime_domain::broad_combat_helpers
+    ownership_class: out_of_scope
+    ownership_status: out_of_scope
+    governed_by: deferred
+    downstream_policy: not_query_governed_phase_1
 rules:
-  - each migrated surface has exactly one truth owner
-  - downstream consumers may consume owned surfaces but must not silently re-derive them
+  - each phase-1 query surface must appear exactly once in surface_nodes
+  - governed_by identifies the phase-1 governing owner for the published node, not a permanent conceptual owner across all future layers
+  - surface ownership categories must use surface, capability, environment, or context_resource where applicable
+  - runtime consumers may consume query-governed nodes but must not re-derive them
+  - analysis/reporting may aggregate truth-owned nodes but must not replace their governing owner
