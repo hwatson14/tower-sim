@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import sys
+from dataclasses import replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -59,6 +60,16 @@ def test_state_identity_changes_when_any_identity_surface_changes():
     assert loadout_identity.loadout_id != base_identity.loadout_id
     assert scenario_identity.scenario_id != base_identity.scenario_id
     assert branch_identity.runtime_branch_id != base_identity.runtime_branch_id
+
+
+def test_account_snapshot_id_does_not_depend_on_ids_file_path():
+    state = _build_state()
+    moved_state = replace(state, ids_path=Path('/tmp/other/_IDS.csv'))
+
+    base_identity = bind_state_identity(state, preset_name='Farming', state_mode='start_of_run', runtime_branch_id='branch_base').identity
+    moved_identity = bind_state_identity(moved_state, preset_name='Farming', state_mode='start_of_run', runtime_branch_id='branch_base').identity
+
+    assert moved_identity.account_snapshot_id == base_identity.account_snapshot_id
 
 
 def test_compile_stat_inputs_with_identity_preserves_existing_compiler_behavior():

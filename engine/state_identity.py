@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from dataclasses import asdict, dataclass, is_dataclass
 from hashlib import sha256
 from pathlib import Path
@@ -56,15 +57,13 @@ def bind_state_identity(
     resolved_card_preset = card_preset_name or account_state.active_card_preset or resolved_preset
     resolved_module_preset = module_preset_name or account_state.active_module_preset or resolved_preset
     resolved_perk_preset = perk_preset_name or account_state.active_perk_preset or resolved_preset
-    if perks_enabled is None:
-        perks_enabled = bool(account_state.active_perk_preset)
+    resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
     if not runtime_branch_id or not str(runtime_branch_id).strip():
         raise ValueError('runtime_branch_id must be a non-empty string.')
 
     account_snapshot_id = _fingerprint_id(
         'acct',
         {
-            'ids_path': account_state.ids_path,
             'labs': account_state.labs,
             'workshop': account_state.workshop,
             'workshop_enhancements': account_state.workshop_enhancements,
@@ -100,7 +99,7 @@ def bind_state_identity(
         'scenario',
         {
             'state_mode': state_mode,
-            'perks_enabled': bool(perks_enabled),
+            'perks_enabled': resolved_perks_enabled,
             'scenario_runtime_inputs': None if scenario_runtime_inputs is None else scenario_runtime_inputs.to_debug_dict(),
             'scenario_context': dict(scenario_context or {}),
         },
@@ -130,6 +129,7 @@ def compile_stat_inputs_with_identity(
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None,
     scenario_context: Optional[Mapping[str, Any]] = None,
 ) -> BoundStatInputs:
+    resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
     binding = bind_state_identity(
         account_state,
         preset_name=preset_name,
@@ -137,7 +137,7 @@ def compile_stat_inputs_with_identity(
         card_preset_name=card_preset_name,
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
-        perks_enabled=perks_enabled,
+        perks_enabled=resolved_perks_enabled,
         runtime_branch_id=runtime_branch_id,
         scenario_runtime_inputs=scenario_runtime_inputs,
         scenario_context=scenario_context,
@@ -149,7 +149,7 @@ def compile_stat_inputs_with_identity(
         card_preset_name=card_preset_name,
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
-        perks_enabled=perks_enabled,
+        perks_enabled=resolved_perks_enabled,
     )
     return BoundStatInputs(binding=binding, stat_inputs=tuple(stat_inputs))
 
@@ -184,8 +184,7 @@ def _fingerprint_id(prefix: str, payload: Mapping[str, Any]) -> str:
 
 
 def _stable_jsonish(value: Any) -> str:
-    normalized = _normalize_value(value)
-    return repr(normalized)
+    return json.dumps(_normalize_value(value), sort_keys=True, default=str)
 
 
 def _normalize_value(value: Any) -> Any:
