@@ -94,6 +94,7 @@ def test_ranged_tradeoff_positive_side_is_preserved_but_not_bound_to_a_calculate
     assert any(r.destination_id == "enemy.ranged.damage_multiplier" and abs(float(r.value) - 3.0) < 1e-9 for r in tradeoff_rows)
 
 
+@pytest.mark.slow
 def test_tourney_compare_for_offense_uses_perks_off_even_when_engine_perks_on(tmp_path):
     import subprocess, sys, json
     out = tmp_path / "compare_policy"
@@ -151,6 +152,7 @@ def test_wall_hp_uses_additive_ratio_bonuses_not_ratio_times_one_plus_bonus():
     expected = 100.0 * (2.0 + 1.0 + 1.2) * 1.59 * 2.5
     assert row.final_value == pytest.approx(expected)
 
+@pytest.mark.slow
 def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty(tmp_path):
     import subprocess, sys, json
     empty_perks = tmp_path / 'perks.json'
@@ -168,6 +170,7 @@ def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty
     assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('input/perks_projected_max.json')
 
 
+@pytest.mark.slow
 def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'regen_compare'
@@ -190,6 +193,7 @@ def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path)
     assert regen_closure['compare_perk_state'] == 'on'
 
 
+@pytest.mark.slow
 def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'regen_semantics'
@@ -210,6 +214,7 @@ def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses
     assert report['assessment']['calculator_change_recommended'] is False
 
 
+@pytest.mark.slow
 def test_tower_defense_absolute_semantic_gap_report_identifies_standard_perk_ep_semantics(tmp_path):
     import json, subprocess, sys
     from pathlib import Path
@@ -244,6 +249,7 @@ def test_parse_ep_value_q_and_q_suffixes_have_distinct_magnitudes():
     assert Q_value == pytest.approx(1e18)
 
 
+@pytest.mark.slow
 def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_keys(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'compare_policy_milestone'
@@ -260,6 +266,7 @@ def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_
     assert policy['milestone_compare_policy']['preset'] == 'Milestone'
 
 
+@pytest.mark.slow
 def test_package_compare_capability_has_single_nested_perk_state_field(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'package_compare_capability_shape'
@@ -275,6 +282,7 @@ def test_package_compare_capability_has_single_nested_perk_state_field(tmp_path)
     assert diagnostics['ep_compare_stage_rules'].get('perk_state') is None
 
 
+@pytest.mark.slow
 def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
     import json, subprocess, sys
     out = tmp_path / 'damage_runtime_gap'
@@ -295,6 +303,7 @@ def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
     assert report['assessment']['calculator_change_recommended'] is False
 
 
+@pytest.mark.slow
 def test_farming_survivability_compare_respects_perk_bans(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'perk_bans'
@@ -317,6 +326,7 @@ def test_farming_survivability_compare_respects_perk_bans(tmp_path):
 
 
 
+@pytest.mark.slow
 def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'tower_hp_compare'
@@ -337,6 +347,7 @@ def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
     assert row['compare_perk_state'] == 'on'
 
 
+@pytest.mark.slow
 def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_perk_semantics(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'tower_hp_semantics'
@@ -351,6 +362,7 @@ def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_per
     assert float(row['package_value']) == pytest.approx(float(row['ep_value']), rel=6e-4)
 
 
+@pytest.mark.slow
 def test_free_upgrades_enhancement_applies_to_all_three_free_upgrade_stats(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'free_upgrades_enh'
@@ -384,6 +396,7 @@ def test_tradeoff_regen_positive_side_scales_full_multiplier_with_ito():
     assert value == 8.8
 
 
+@pytest.mark.slow
 def test_tower_regen_compare_closes_after_module_efficiency_fix(tmp_path):
     import subprocess, sys, json, math
     out = tmp_path / 'regen_fixed'
@@ -484,6 +497,7 @@ def test_remaining_exception_set_promoted_in_formula_ledger():
         assert surfaces[key]['formula_class'] == 'generic_family_promoted'
 
 
+@pytest.mark.slow
 def test_promoted_family_outputs_hold_on_v85_run(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'v85_promotions'
@@ -656,6 +670,7 @@ def test_coin_perks_route_to_coins_per_kill_bonus_not_coin_bonus_multiplier():
     assert positive[0].destination_id == "coins_per_kill_bonus"
 
 
+@pytest.mark.slow
 def test_coin_surfaces_match_expected_farming_start_and_max_progression(tmp_path):
     import subprocess, sys, json
     expected = {

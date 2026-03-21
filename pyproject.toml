@@ -26,3 +26,7 @@ include = ["engine*", "compilers*", "models*", "parsers*", "optimizer*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-m 'not slow'"
+markers = [
+  "slow: subprocess-heavy integration/regression coverage excluded from the default test run",
+]
