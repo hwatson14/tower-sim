@@ -156,6 +156,47 @@ def assert_runtime_consumer_ownership_contract() -> None:
                 )
 
 
+def assert_runtime_consumer_bundle_contract() -> None:
+    definitions = load_consumer_bundle_definitions()
+    covered_consumers = {
+        definition.consumer_id
+        for definition in definitions.values()
+        if definition.consumer_id.startswith('runtime_consumer::') and definition.publish_default
+    }
+    uncovered = sorted(
+        rule.consumer_id
+        for rule in _RUNTIME_CONSUMER_RULES
+        if rule.consumer_id not in covered_consumers
+    )
+    if uncovered:
+        raise ValueError(
+            'Runtime consumers missing publish-default query bundle coverage: '
+            f'{uncovered}.'
+        )
+    for rule in _RUNTIME_CONSUMER_RULES:
+        matching = [
+            definition
+            for definition in definitions.values()
+            if definition.consumer_id == rule.consumer_id and definition.publish_default
+        ]
+        if not matching:
+            raise ValueError(f'Runtime consumer {rule.consumer_id!r} is missing a publish-default bundle contract.')
+        if len(matching) != 1:
+            raise ValueError(f'Runtime consumer {rule.consumer_id!r} must map to exactly one publish-default bundle contract.')
+        definition = matching[0]
+        if definition.required_surface_ids != rule.source_node_ids:
+            raise ValueError(
+                f'Runtime consumer {rule.consumer_id!r} bundle surfaces {definition.required_surface_ids!r} '
+                f'do not match owned source nodes {rule.source_node_ids!r}.'
+            )
+        if definition.optional_surface_ids:
+            raise ValueError(f'Runtime consumer {rule.consumer_id!r} must not declare optional surfaces in its publish-default bundle.')
+        if definition.minimum_trace_mode != 'none':
+            raise ValueError(
+                f'Runtime consumer {rule.consumer_id!r} publish-default bundle must require minimum_trace_mode \"none\".'
+            )
+
+
 def _bundle_definition_from_payload(consumer_id: str, payload: Mapping[str, Any]) -> ConsumerBundleDefinition:
     required_surface_ids = tuple(str(surface_id) for surface_id in (payload.get('required_surface_ids') or ()))
     optional_surface_ids = tuple(str(surface_id) for surface_id in (payload.get('optional_surface_ids') or ()))

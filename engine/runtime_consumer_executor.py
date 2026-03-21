@@ -7,6 +7,12 @@ from engine.wave_progression_policy import WaveProgressionPolicy, WaveProgressio
 from models.statbook import StatBook
 
 
+_WAVE_SKIP_SURFACE_IDS = (
+    'canonical_stat::enemy_attack_level_skip_pct',
+    'canonical_stat::enemy_health_level_skip_pct',
+)
+
+
 @dataclass(frozen=True)
 class RuntimeConsumerOutputs:
     target_display_wave: int
@@ -30,6 +36,7 @@ class RuntimeConsumerExecutor:
         self._policy = policy or WaveProgressionPolicy()
 
     def execute_skip_wave_outputs(self, *, statbook: StatBook, target_display_wave: int) -> RuntimeConsumerOutputs:
+        self._assert_required_wave_skip_rows_present(statbook)
         attack_skip_pct = self._row_float(statbook, 'canonical_stat::enemy_attack_level_skip_pct')
         health_skip_pct = self._row_float(statbook, 'canonical_stat::enemy_health_level_skip_pct')
         state = self._policy.advance_to_wave(
@@ -52,3 +59,12 @@ class RuntimeConsumerExecutor:
         if row is None or row.final_value is None:
             return None
         return float(row.final_value)
+
+    @staticmethod
+    def _assert_required_wave_skip_rows_present(statbook: StatBook) -> None:
+        for surface_id in _WAVE_SKIP_SURFACE_IDS:
+            row = statbook.rows.get(surface_id)
+            if row is None:
+                raise ValueError(
+                    f'Runtime skip-wave execution requires wave skip surface {surface_id!r}; row is missing.'
+                )
