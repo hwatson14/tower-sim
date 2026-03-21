@@ -17,6 +17,7 @@ _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query
 
 _SURFACE_ID_ALIASES = {
     'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
+    'mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds': 'support_surface::timing.gcomp_cooldown_reduction_seconds',
 }
 
 _SOURCE_CLASS_BY_FAMILY = {
@@ -34,6 +35,7 @@ _SOURCE_CLASS_BY_FAMILY = {
     'vault': 'base',
     'player_stuff': 'base',
     'theme_song': 'base',
+    'scenario_rules': 'scenario_rules',
     'uw_unlock': 'unlock_mask',
     'bot_unlock': 'unlock_mask',
 }
@@ -189,6 +191,7 @@ def _normalize_value_type(value_type: str) -> str:
     return {
         'multiplier': 'scalar',
         'resolved_value': 'scalar',
+        'percent_display': 'scalar',
         'bool': 'count',
         'level': 'count',
         'raw_text': 'scalar',

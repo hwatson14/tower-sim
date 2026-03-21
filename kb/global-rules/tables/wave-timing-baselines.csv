@@ -1,0 +1,3 @@
+mode_id,spawn_phase_seconds,cooldown_phase_seconds,total_wave_duration_seconds,source_ref,notes
+farming,26.0,9.0,35.0,kb/global-rules/notes/environment-parameter-closure.md,Normal wave timing uses 26.0s spawn plus 9.0s cooldown.
+tournament,26.0,4.5,30.5,kb/global-rules/notes/environment-parameter-closure.md,Tournament halves cooldown to 4.5s while keeping the same spawn phase.
