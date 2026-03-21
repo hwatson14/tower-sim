@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
 
 import engine.runtime_consumer_registry as runtime_consumer_registry
 from engine.runtime_consumer_registry import (
+    assert_runtime_consumer_bundle_contract,
     assert_runtime_consumer_ownership_contract,
     impacted_runtime_consumers,
     list_runtime_consumer_rules,
@@ -37,6 +38,7 @@ def test_runtime_consumers_consume_query_owned_surfaces_without_rederiving_them(
     ledger_rows = runtime_consumer_registry.ownership_rows_by_node()
 
     assert_runtime_consumer_ownership_contract()
+    assert_runtime_consumer_bundle_contract()
     for rule in list_runtime_consumer_rules():
         consumer_row = ledger_rows[rule.consumer_id]
         assert consumer_row['ownership_status'] == 'simulator_owned'
@@ -48,7 +50,6 @@ def test_runtime_consumers_consume_query_owned_surfaces_without_rederiving_them(
             assert source_row['ownership_status'] == 'query_owned'
             assert source_row['governed_by'] == 'canonical_query_engine'
             assert source_row['downstream_policy'] == 'consume_only_no_rederivation'
-
 
 @pytest.mark.parametrize(
     ('mutator', 'match'),
@@ -83,6 +84,22 @@ def test_runtime_consumer_ownership_contract_fails_closed_for_invalid_ledgers(tm
     finally:
         runtime_consumer_registry.load_surface_ownership_ledger.cache_clear()
         runtime_consumer_registry.ownership_rows_by_node.cache_clear()
+
+
+def test_runtime_consumer_bundle_contract_fails_closed_for_mismatched_bundle_surfaces(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    contract = copy.deepcopy(runtime_consumer_registry.load_consumer_bundle_contract())
+    contract['consumers'][1]['bundles'][0]['required_surface_ids'] = ['canonical_stat::enemy_health_level_skip_pct']
+    contract_path = tmp_path / 'stat-query-consumer-bundles.yaml'
+    contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
+    monkeypatch.setattr(runtime_consumer_registry, '_CONSUMER_BUNDLE_PATH', contract_path)
+    runtime_consumer_registry.load_consumer_bundle_contract.cache_clear()
+    runtime_consumer_registry.load_consumer_bundle_definitions.cache_clear()
+    try:
+        with pytest.raises(ValueError, match='do not match owned source nodes'):
+            assert_runtime_consumer_bundle_contract()
+    finally:
+        runtime_consumer_registry.load_consumer_bundle_contract.cache_clear()
+        runtime_consumer_registry.load_consumer_bundle_definitions.cache_clear()
 
 
 def test_wave_progression_policy_attack_wave_is_monotonic_with_attack_skip_pct():

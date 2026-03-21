@@ -14,11 +14,10 @@ from engine.incremental_overlay_publisher import IncrementalOverlayPublisher
 from engine.incremental_parity_harness import IncrementalParityHarness
 from engine.incremental_recalc_runtime import IncrementalRecalcRuntime
 from engine.incremental_subset_executor import IncrementalSubsetExecutor
-from engine.family_baseline_materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
+from engine.family_baseline_materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer, load_family_surface_ids
 from engine.runtime_consumer_registry import resolve_consumer_bundle
 from engine.runtime_consumer_executor import RuntimeConsumerExecutor
 from engine.state_identity import compile_stat_inputs_with_identity
-from engine.stat_engine import resolve_stats
 from engine.stat_query_kernel import QueryResponse, StatQueryKernel
 from models.account_state import AccountState
 from models.stat_input import StatInput
@@ -110,23 +109,37 @@ class ProgressionRecalcBridge:
         patched: AccountState,
         request: ProgressionRecalcRequest,
     ) -> StatBook:
-        family_id = 'progression_runtime_with_perks' if request.perks_enabled else 'progression_runtime_no_perks'
-        response = resolve_progression_family_query(
+        family_id = self._progression_family_id(request)
+        response = resolve_progression_consumer_bundle(
             account_state=patched,
+            consumer_id='progression_runtime',
+            bundle_id='progression_wave_skips',
             family_id=family_id,
             preset_name=request.preset_name,
-            requested_surface_ids=(
-                'canonical_stat::enemy_attack_level_skip_pct',
-                'canonical_stat::enemy_health_level_skip_pct',
-            ),
             state_mode=request.state_mode,
             perks_enabled=request.perks_enabled,
-            runtime_branch_id='branch_base',
             trace_mode='contributors',
             card_preset_name=request.card_preset_name,
             module_preset_name=request.module_preset_name,
             perk_preset_name=request.perk_preset_name,
         )
+        return self._query_response_to_statbook(
+            response,
+            notes='Bounded progression consumer bundle surface used for runtime publication.',
+            diagnostics={'family_id': response.family_id},
+        )
+
+    @staticmethod
+    def _progression_family_id(request: ProgressionRecalcRequest) -> str:
+        return 'progression_runtime_with_perks' if request.perks_enabled else 'progression_runtime_no_perks'
+
+    @staticmethod
+    def _query_response_to_statbook(
+        response: QueryResponse,
+        *,
+        notes: str,
+        diagnostics: Dict[str, Any],
+    ) -> StatBook:
         contributors_by_surface: dict[str, list[dict[str, object]]] = defaultdict(list)
         for contributor in response.contributor_rows:
             contributors_by_surface[contributor.surface_id].append(
@@ -151,18 +164,40 @@ class ProgressionRecalcBridge:
                 value_type=row.value_type,
                 source_count=len(contributors_by_surface.get(row.surface_id, ())),
                 status=row.status,
-                notes='Bounded progression query helper surface used for runtime publication.',
+                notes=notes,
                 contributors=contributors_by_surface.get(row.surface_id, []),
-                schema={'family_id': response.family_id, 'query_engine': 'bounded_progression_helper'},
             )
             for row in response.resolved_surface_rows
         }
         return StatBook(
             rows=rows,
-            diagnostics={
-                'source': 'bounded_progression_runtime_publication_helper',
-                'family_id': response.family_id,
-            },
+            diagnostics=dict(diagnostics),
+        )
+
+    def _bounded_reference_statbook(
+        self,
+        *,
+        patched: AccountState,
+        request: ProgressionRecalcRequest,
+    ) -> StatBook:
+        family_id = self._progression_family_id(request)
+        response = resolve_progression_family_query(
+            account_state=patched,
+            family_id=family_id,
+            preset_name=request.preset_name,
+            requested_surface_ids=tuple(sorted(load_family_surface_ids()[family_id])),
+            state_mode=request.state_mode,
+            perks_enabled=request.perks_enabled,
+            runtime_branch_id='branch_base',
+            trace_mode='contributors',
+            card_preset_name=request.card_preset_name,
+            module_preset_name=request.module_preset_name,
+            perk_preset_name=request.perk_preset_name,
+        )
+        return self._query_response_to_statbook(
+            response,
+            notes='Bounded progression family surface used for recalc reference publication.',
+            diagnostics={'family_id': response.family_id, 'source': 'bounded_progression_family_reference'},
         )
 
     def recompute(self, request: ProgressionRecalcRequest) -> ProgressionRecalcResult:
@@ -216,11 +251,11 @@ class ProgressionRecalcBridge:
 
         if request.recompute_mode == 'full_safe':
             t = perf_counter()
-            statbook = resolve_stats(stat_inputs)
-            phase_timings['resolve_stats'] = _elapsed_ms(t)
+            statbook = self._bounded_reference_statbook(patched=patched, request=request)
+            phase_timings['resolve_bounded_reference'] = _elapsed_ms(t)
             diagnostics = {
                 'mode': 'full_safe',
-                'ownership_boundary': 'transitional_full_stat_engine_reference',
+                'ownership_boundary': 'bounded_query_owned_declared_family_reference',
                 'plan': plan.to_dict(),
                 'cache_fingerprint': current_fingerprint.to_dict(),
             }
@@ -256,10 +291,10 @@ class ProgressionRecalcBridge:
         }
         if plan.fallback_required:
             t = perf_counter()
-            reference_statbook = resolve_stats(stat_inputs)
-            phase_timings['resolve_stats'] = _elapsed_ms(t)
-            diagnostics['status'] = 'fallback_full_safe'
-            diagnostics['ownership_boundary'] = 'transitional_full_stat_engine_reference'
+            reference_statbook = self._bounded_reference_statbook(patched=patched, request=request)
+            phase_timings['resolve_bounded_reference'] = _elapsed_ms(t)
+            diagnostics['status'] = 'fallback_bounded_family_reference'
+            diagnostics['ownership_boundary'] = 'bounded_query_owned_declared_family_reference'
             return self._build_result(
                 patched=patched,
                 stat_inputs=stat_inputs,
@@ -324,10 +359,10 @@ class ProgressionRecalcBridge:
             }
             if not cache_validation.is_valid:
                 t = perf_counter()
-                reference_statbook = resolve_stats(stat_inputs)
-                phase_timings['resolve_stats'] = _elapsed_ms(t)
-                diagnostics['status'] = 'fallback_full_safe'
-                diagnostics['ownership_boundary'] = 'transitional_full_stat_engine_reference'
+                reference_statbook = self._bounded_reference_statbook(patched=patched, request=request)
+                phase_timings['resolve_bounded_reference'] = _elapsed_ms(t)
+                diagnostics['status'] = 'fallback_bounded_family_reference'
+                diagnostics['ownership_boundary'] = 'bounded_query_owned_declared_family_reference'
                 return self._build_result(
                     patched=patched,
                     stat_inputs=stat_inputs,
@@ -363,8 +398,8 @@ class ProgressionRecalcBridge:
             )
 
         t = perf_counter()
-        reference_statbook = resolve_stats(stat_inputs)
-        phase_timings['resolve_stats'] = _elapsed_ms(t)
+        reference_statbook = self._bounded_reference_statbook(patched=patched, request=request)
+        phase_timings['resolve_bounded_reference'] = _elapsed_ms(t)
         t = perf_counter()
         parity = IncrementalParityHarness().compare(candidate_rows, reference_statbook)
         phase_timings['compare_parity'] = _elapsed_ms(t)
@@ -375,8 +410,8 @@ class ProgressionRecalcBridge:
         }
 
         if request.recompute_mode == 'incremental_parity_guarded':
-            diagnostics['status'] = 'parity_only_full_safe_return'
-            diagnostics['ownership_boundary'] = 'transitional_full_stat_engine_reference'
+            diagnostics['status'] = 'parity_only_bounded_family_return'
+            diagnostics['ownership_boundary'] = 'bounded_query_owned_declared_family_reference'
             if request.runtime_target_display_wave is not None and plan.runtime_consumer_ids:
                 t = perf_counter()
                 publication_statbook = self._runtime_publication_statbook(
@@ -404,7 +439,7 @@ class ProgressionRecalcBridge:
             t = perf_counter()
             published = IncrementalOverlayPublisher().publish(reference_statbook, candidate_rows)
             phase_timings['publish_overlay'] = _elapsed_ms(t)
-            diagnostics['status'] = 'published_candidate_overlay_over_full_reference'
+            diagnostics['status'] = 'published_candidate_overlay_over_bounded_reference'
             if request.runtime_target_display_wave is not None and plan.runtime_consumer_ids:
                 reference_outputs = RuntimeConsumerExecutor().execute_skip_wave_outputs(
                     statbook=self._runtime_publication_statbook(
@@ -436,8 +471,8 @@ class ProgressionRecalcBridge:
                 phase_timings=phase_timings,
             )
 
-        diagnostics['status'] = 'fallback_full_safe'
-        diagnostics['ownership_boundary'] = 'transitional_full_stat_engine_reference'
+        diagnostics['status'] = 'fallback_bounded_family_reference'
+        diagnostics['ownership_boundary'] = 'bounded_query_owned_declared_family_reference'
         return self._build_result(
             patched=patched,
             stat_inputs=stat_inputs,
