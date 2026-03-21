@@ -69,7 +69,7 @@
     },
     "meta_progression_param::laboratory.speed_multiplier": {
       "stat_name": "meta_progression_param::laboratory.speed_multiplier",
-      "final_value": 2.78,
+      "final_value": 2.82,
       "value_type": "unknown",
       "source_count": 1,
       "status": "resolved",
@@ -79,7 +79,7 @@
           "stat_name": "Labs Speed",
           "source_family": "lab",
           "source_name": "Labs Speed",
-          "value": 2.78,
+          "value": 2.82,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -91,7 +91,7 @@
           "destination_id": "laboratory.speed_multiplier",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "2.78"
+          "display_value": "2.82"
         }
       ],
       "schema": {
@@ -132,7 +132,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "2.78"
+      "display_value": "2.82"
     },
     "canonical_stat::tower_damage": {
       "stat_name": "canonical_stat::tower_damage",
@@ -522,7 +522,7 @@
     },
     "canonical_stat::tower_crit_multiplier": {
       "stat_name": "canonical_stat::tower_crit_multiplier",
-      "final_value": 168.192,
+      "final_value": 171.6912,
       "value_type": "multiplier",
       "source_count": 6,
       "status": "resolved",
@@ -532,7 +532,7 @@
           "stat_name": "Critical Factor",
           "source_family": "lab",
           "source_name": "Critical Factor",
-          "value": 3.4,
+          "value": 3.4899999999999998,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -544,7 +544,7 @@
           "destination_id": "tower_crit_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "3.4"
+          "display_value": "3.49"
         },
         {
           "stat_name": "Critical Factor",
@@ -675,7 +675,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x168.192"
+      "display_value": "x171.691"
     },
     "canonical_stat::tower_range_m": {
       "stat_name": "canonical_stat::tower_range_m",
@@ -3431,7 +3431,7 @@
     },
     "canonical_stat::coins_per_kill_bonus": {
       "stat_name": "canonical_stat::coins_per_kill_bonus",
-      "final_value": 41.8389654375,
+      "final_value": 42.52792871250001,
       "value_type": "multiplier",
       "source_count": 8,
       "status": "resolved",
@@ -3441,7 +3441,7 @@
           "stat_name": "Coins / Kill Bonus",
           "source_family": "lab",
           "source_name": "Coins / Kill Bonus",
-          "value": 2.7,
+          "value": 2.74,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -3453,7 +3453,7 @@
           "destination_id": "coins_per_kill_bonus",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "2.7"
+          "display_value": "2.74"
         },
         {
           "stat_name": "Coin / Kill Bonus",
@@ -3566,8 +3566,8 @@
         {
           "stat_name": "Coins / Kill Bonus",
           "source_family": "module_substat",
-          "source_name": "Black Hole Digestor",
-          "value": 0.04000000000000001,
+          "source_name": "Pulsar Harvester",
+          "value": 0.06,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -3579,7 +3579,7 @@
           "destination_id": "coins_per_kill_bonus",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "x0.04"
+          "display_value": "x0.06"
         }
       ],
       "schema": {
@@ -3621,7 +3621,7 @@
         "compare_policy": "normal",
         "rationale": "Coins / Kill display surface: (((workshop x lab) + generator substat sum) x enhancement spillover x (1+vault)) x all-coin perk multipliers. Coin perks are KB-owned on this surface, not on broad all-coin helper surfaces."
       },
-      "display_value": "x41.839"
+      "display_value": "x42.528"
     },
     "canonical_stat::coins_per_wave": {
       "stat_name": "canonical_stat::coins_per_wave",
@@ -4135,9 +4135,9 @@
     },
     "canonical_stat::package_chance_pct": {
       "stat_name": "canonical_stat::package_chance_pct",
-      "final_value": 45.0,
+      "final_value": 78.5,
       "value_type": "pct",
-      "source_count": 3,
+      "source_count": 5,
       "status": "resolved",
       "notes": "Promoted additive-base-plus-bonuses pct family: workshop base plus additive percent-point bonuses, uncapped.",
       "contributors": [
@@ -4178,6 +4178,24 @@
           "display_value": "30"
         },
         {
+          "stat_name": "Recovery Package Chance",
+          "source_family": "card",
+          "source_name": "Recovery Package Chance",
+          "value": 33.0,
+          "value_type": "resolved_value",
+          "stage": "loadout_resolved",
+          "active": true,
+          "preset_name": "Farming",
+          "provenance": "IDS::Cards",
+          "notes": "kb_card_name_fallback_routed",
+          "contributor_id": null,
+          "destination_object_type": "canonical_stat",
+          "destination_id": "package_chance_pct",
+          "resolver_id": "pct_capped_scalar_stat",
+          "kb_mapped": true,
+          "display_value": "33"
+        },
+        {
           "stat_name": "Package Chance",
           "source_family": "module_substat",
           "source_name": "Singularity Harness",
@@ -4194,6 +4212,24 @@
           "resolver_id": "pct_capped_scalar_stat",
           "kb_mapped": true,
           "display_value": "11%"
+        },
+        {
+          "stat_name": "Package Chance",
+          "source_family": "module_substat",
+          "source_name": "Pulsar Harvester",
+          "value": 0.5,
+          "value_type": "percent_display",
+          "stage": "loadout_resolved",
+          "active": true,
+          "preset_name": "Farming",
+          "provenance": "IDS::Modules",
+          "notes": "kb_exact_routed_module_substat_assist",
+          "contributor_id": null,
+          "destination_object_type": "canonical_stat",
+          "destination_id": "package_chance_pct",
+          "resolver_id": "pct_capped_scalar_stat",
+          "kb_mapped": true,
+          "display_value": "0.5%"
         }
       ],
       "schema": {
@@ -4233,11 +4269,11 @@
         "compare_policy": "normalize_percent_scale",
         "rationale": "KB supports workshop base plus additive package-chance bonuses."
       },
-      "display_value": "45%"
+      "display_value": "78.5%"
     },
     "canonical_stat::enemy_attack_level_skip_pct": {
       "stat_name": "canonical_stat::enemy_attack_level_skip_pct",
-      "final_value": 55.83249999999999,
+      "final_value": 56.29249999999999,
       "value_type": "pct",
       "source_count": 8,
       "status": "resolved",
@@ -4372,8 +4408,8 @@
         {
           "stat_name": "Enemy Attack Level Skip",
           "source_family": "module_substat",
-          "source_name": "Black Hole Digestor",
-          "value": 0.4,
+          "source_name": "Pulsar Harvester",
+          "value": 0.8,
           "value_type": "percent_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -4385,7 +4421,7 @@
           "destination_id": "enemy_attack_level_skip_pct",
           "resolver_id": "pct_capped_scalar_stat",
           "kb_mapped": true,
-          "display_value": "0.4%"
+          "display_value": "0.8%"
         }
       ],
       "schema": {
@@ -4425,15 +4461,15 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "55.832%"
+      "display_value": "56.292%"
     },
     "canonical_stat::enemy_health_level_skip_pct": {
       "stat_name": "canonical_stat::enemy_health_level_skip_pct",
-      "final_value": 51.74999999999999,
+      "final_value": 52.669999999999995,
       "value_type": "pct",
-      "source_count": 6,
+      "source_count": 7,
       "status": "resolved",
-      "notes": "Consumed 6/6 contributors with cautious resolver-aware rules.",
+      "notes": "Consumed 7/7 contributors with cautious resolver-aware rules.",
       "contributors": [
         {
           "stat_name": "Enemy Health Level Skip",
@@ -4542,6 +4578,24 @@
           "resolver_id": "pct_capped_scalar_stat",
           "kb_mapped": true,
           "display_value": "6%"
+        },
+        {
+          "stat_name": "Enemy Health Level Skip",
+          "source_family": "module_substat",
+          "source_name": "Pulsar Harvester",
+          "value": 0.8,
+          "value_type": "percent_display",
+          "stage": "loadout_resolved",
+          "active": true,
+          "preset_name": "Farming",
+          "provenance": "IDS::Modules",
+          "notes": "kb_exact_routed_module_substat_assist",
+          "contributor_id": null,
+          "destination_object_type": "canonical_stat",
+          "destination_id": "enemy_health_level_skip_pct",
+          "resolver_id": "pct_capped_scalar_stat",
+          "kb_mapped": true,
+          "display_value": "0.8%"
         }
       ],
       "schema": {
@@ -4581,7 +4635,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "51.75%"
+      "display_value": "52.67%"
     },
     "mechanic_param::uw.smart_missiles.despawn_time_seconds": {
       "stat_name": "mechanic_param::uw.smart_missiles.despawn_time_seconds",
@@ -6478,7 +6532,7 @@
     },
     "capability::capability.uw.black_hole.disable_ranged": {
       "stat_name": "capability::capability.uw.black_hole.disable_ranged",
-      "final_value": false,
+      "final_value": true,
       "value_type": "unknown",
       "source_count": 1,
       "status": "resolved",
@@ -6488,7 +6542,7 @@
           "stat_name": "Black Hole Disable Ranged Enemies",
           "source_family": "lab",
           "source_name": "Black Hole Disable Ranged Enemies",
-          "value": false,
+          "value": true,
           "value_type": "bool",
           "stage": "account_state",
           "active": true,
@@ -6500,7 +6554,7 @@
           "destination_id": "capability.uw.black_hole.disable_ranged",
           "resolver_id": "capability_passthrough",
           "kb_mapped": true,
-          "display_value": "false"
+          "display_value": "true"
         }
       ],
       "schema": {
@@ -6541,7 +6595,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "false"
+      "display_value": "true"
     },
     "mechanic_param::uw.smart_missiles.recharge_barrage_waves": {
       "stat_name": "mechanic_param::uw.smart_missiles.recharge_barrage_waves",
@@ -7817,7 +7871,7 @@
     },
     "mechanic_param::bot.flame.cooldown_seconds": {
       "stat_name": "mechanic_param::bot.flame.cooldown_seconds",
-      "final_value": 8.0,
+      "final_value": 26.0,
       "value_type": "seconds",
       "source_count": 2,
       "status": "resolved",
@@ -7845,7 +7899,7 @@
           "stat_name": "Flame Bot::Cooldown",
           "source_family": "bot",
           "source_name": "Flame Bot",
-          "value": 33.0,
+          "value": 51.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -7857,7 +7911,7 @@
           "destination_id": "bot.flame.cooldown_seconds",
           "resolver_id": "cooldown_param",
           "kb_mapped": true,
-          "display_value": "33"
+          "display_value": "51"
         }
       ],
       "schema": {
@@ -7896,7 +7950,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "8"
+      "display_value": "26"
     },
     "mechanic_param::bot.thunder.cooldown_seconds": {
       "stat_name": "mechanic_param::bot.thunder.cooldown_seconds",
@@ -7993,7 +8047,7 @@
           "stat_name": "Gold Bot - Cooldown",
           "source_family": "lab",
           "source_name": "Gold Bot - Cooldown",
-          "value": -15.0,
+          "value": -21.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -8005,13 +8059,13 @@
           "destination_id": "bot.golden.cooldown_seconds",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "-15"
+          "display_value": "-21"
         },
         {
           "stat_name": "Golden Bot::Cooldown",
           "source_family": "bot",
           "source_name": "Golden Bot",
-          "value": 105.0,
+          "value": 111.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -8023,7 +8077,7 @@
           "destination_id": "bot.golden.cooldown_seconds",
           "resolver_id": "cooldown_param",
           "kb_mapped": true,
-          "display_value": "105"
+          "display_value": "111"
         }
       ],
       "schema": {
@@ -8281,7 +8335,7 @@
     },
     "mechanic_param::bot.golden.duration_seconds": {
       "stat_name": "mechanic_param::bot.golden.duration_seconds",
-      "final_value": 27.5,
+      "final_value": 32.0,
       "value_type": "seconds",
       "source_count": 2,
       "status": "resolved",
@@ -8291,7 +8345,7 @@
           "stat_name": "Gold Bot - Duration",
           "source_family": "lab",
           "source_name": "Gold Bot - Duration",
-          "value": 4.0,
+          "value": 6.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -8303,13 +8357,13 @@
           "destination_id": "bot.golden.duration_seconds",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "4"
+          "display_value": "6"
         },
         {
           "stat_name": "Golden Bot::Duration",
           "source_family": "bot",
           "source_name": "Golden Bot",
-          "value": 23.5,
+          "value": 26.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -8321,7 +8375,7 @@
           "destination_id": "bot.golden.duration_seconds",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "23.5"
+          "display_value": "26"
         }
       ],
       "schema": {
@@ -8360,7 +8414,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "27.5"
+      "display_value": "32"
     },
     "mechanic_param::bot.amplify.duration_seconds": {
       "stat_name": "mechanic_param::bot.amplify.duration_seconds",
@@ -12425,7 +12479,7 @@
     },
     "canonical_stat::tower_land_mine_damage": {
       "stat_name": "canonical_stat::tower_land_mine_damage",
-      "final_value": 6150361401260418.0,
+      "final_value": 6277439853110709.0,
       "value_type": "damage",
       "source_count": 3,
       "status": "resolved",
@@ -12522,7 +12576,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "6.15q"
+      "display_value": "6.28q"
     },
     "canonical_stat::tower_land_mine_radius_m": {
       "stat_name": "canonical_stat::tower_land_mine_radius_m",
@@ -12951,7 +13005,7 @@
     },
     "canonical_stat::free_utility_upgrade_chance_pct": {
       "stat_name": "canonical_stat::free_utility_upgrade_chance_pct",
-      "final_value": 118.21600000000001,
+      "final_value": 118.66400000000002,
       "value_type": "pct",
       "source_count": 8,
       "status": "resolved",
@@ -13068,8 +13122,8 @@
         {
           "stat_name": "Free Utility Upgrade",
           "source_family": "module_substat",
-          "source_name": "Black Hole Digestor",
-          "value": 0.8,
+          "source_name": "Pulsar Harvester",
+          "value": 1.2000000000000002,
           "value_type": "percent_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -13081,7 +13135,7 @@
           "destination_id": "free_utility_upgrade_chance_pct",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "0.8%"
+          "display_value": "1.2%"
         }
       ],
       "schema": {
@@ -13121,7 +13175,7 @@
         "compare_policy": "noncomparable",
         "rationale": ""
       },
-      "display_value": "118.216%"
+      "display_value": "118.664%"
     },
     "runtime_mechanic_param::tower.orb_size_multiplier": {
       "stat_name": "runtime_mechanic_param::tower.orb_size_multiplier",
@@ -13191,7 +13245,7 @@
     },
     "canonical_stat::coin_bonus_multiplier": {
       "stat_name": "canonical_stat::coin_bonus_multiplier",
-      "final_value": 2.29316472,
+      "final_value": 2.2989741599999998,
       "value_type": "multiplier",
       "source_count": 3,
       "status": "resolved",
@@ -13234,22 +13288,22 @@
           "display_value": "x1.68"
         },
         {
-          "stat_name": "Black Hole Digestor::main",
+          "stat_name": "Pulsar Harvester::main",
           "source_family": "module",
-          "source_name": "Black Hole Digestor",
-          "value": 1.0263,
+          "source_name": "Pulsar Harvester",
+          "value": 1.0289,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
           "preset_name": "Farming",
           "provenance": "IDS::Modules",
           "notes": "module_assist_main_effect:assist_multiplier_eff=0.1:kb_module_base_routed",
-          "contributor_id": "module__generator__coins_kill_bonus__pct@@black hole digestor@@assist",
+          "contributor_id": "module__generator__coins_kill_bonus__pct@@pulsar harvester@@assist",
           "destination_object_type": "canonical_stat",
           "destination_id": "coin_bonus_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "x1.026"
+          "display_value": "x1.029"
         }
       ],
       "schema": {
@@ -13289,7 +13343,7 @@
         "compare_policy": "helper_or_non_ep_surface",
         "rationale": "Broad KB-owned coin surface: direct Coin Bonus enhancement x generator main coin bonus only. Coin perks do not own this surface."
       },
-      "display_value": "x2.293"
+      "display_value": "x2.299"
     },
     "canonical_stat::cells_kill_multiplier": {
       "stat_name": "canonical_stat::cells_kill_multiplier",
@@ -13491,7 +13545,7 @@
     },
     "cosmetic_bonus::cosmetic_bonus.theme_song_coin_multiplier": {
       "stat_name": "cosmetic_bonus::cosmetic_bonus.theme_song_coin_multiplier",
-      "final_value": 1.666,
+      "final_value": 1.682,
       "value_type": "unknown",
       "source_count": 1,
       "status": "resolved",
@@ -13501,7 +13555,7 @@
           "stat_name": "Theme Song Coin Bonus",
           "source_family": "theme_song",
           "source_name": "Themes & Songs",
-          "value": 1.666,
+          "value": 1.682,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -13513,7 +13567,7 @@
           "destination_id": "cosmetic_bonus.theme_song_coin_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "1.666"
+          "display_value": "1.682"
         }
       ],
       "schema": {
@@ -13554,7 +13608,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1.666"
+      "display_value": "1.682"
     },
     "account_flag::account_flag.disable_ads": {
       "stat_name": "account_flag::account_flag.disable_ads",
@@ -14262,7 +14316,7 @@
     },
     "mechanic_param::bot.flame.range_m": {
       "stat_name": "mechanic_param::bot.flame.range_m",
-      "final_value": 78.0,
+      "final_value": 70.0,
       "value_type": "m",
       "source_count": 3,
       "status": "resolved",
@@ -14308,7 +14362,7 @@
           "stat_name": "Flame Bot::Range",
           "source_family": "bot",
           "source_name": "Flame Bot",
-          "value": 54.0,
+          "value": 46.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -14320,7 +14374,7 @@
           "destination_id": "bot.flame.range_m",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "54"
+          "display_value": "46"
         }
       ],
       "schema": {
@@ -14359,7 +14413,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "78"
+      "display_value": "70"
     },
     "mechanic_param::bot.thunder.range_m": {
       "stat_name": "mechanic_param::bot.thunder.range_m",
@@ -14584,7 +14638,7 @@
     },
     "canonical_stat::coins_multiplier": {
       "stat_name": "canonical_stat::coins_multiplier",
-      "final_value": 2.0734999999999997,
+      "final_value": 2.146,
       "value_type": "multiplier",
       "source_count": 2,
       "status": "resolved",
@@ -14594,7 +14648,7 @@
           "stat_name": "Coins",
           "source_family": "relic",
           "source_name": "Coins",
-          "value": 0.42999999999999994,
+          "value": 0.48,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -14606,7 +14660,7 @@
           "destination_id": "coins_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "0.43"
+          "display_value": "0.48"
         },
         {
           "stat_name": "Coins",
@@ -14665,7 +14719,7 @@
         "compare_policy": "helper_or_non_ep_surface",
         "rationale": "Helper broad-coins multiplier from card and relic rows only; used for composed all-coin display surface."
       },
-      "display_value": "x2.073"
+      "display_value": "x2.146"
     },
     "account_flag::account_flag.discount_enhancements_pct": {
       "stat_name": "account_flag::account_flag.discount_enhancements_pct",
@@ -16447,7 +16501,7 @@
     },
     "mechanic_param::bot.flame.damage_reduction_pct": {
       "stat_name": "mechanic_param::bot.flame.damage_reduction_pct",
-      "final_value": 0.47,
+      "final_value": 0.35,
       "value_type": "pct",
       "source_count": 1,
       "status": "resolved",
@@ -16457,7 +16511,7 @@
           "stat_name": "Flame Bot::Damage R.",
           "source_family": "bot",
           "source_name": "Flame Bot",
-          "value": 0.47,
+          "value": 0.35,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -16469,7 +16523,7 @@
           "destination_id": "bot.flame.damage_reduction_pct",
           "resolver_id": "pct_capped_param",
           "kb_mapped": true,
-          "display_value": "0.47"
+          "display_value": "0.35"
         }
       ],
       "schema": {
@@ -16509,7 +16563,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "0.47%"
+      "display_value": "0.35%"
     },
     "mechanic_param::bot.flame.damage_multiplier": {
       "stat_name": "mechanic_param::bot.flame.damage_multiplier",
@@ -16710,7 +16764,7 @@
     },
     "mechanic_param::bot.golden.bonus_multiplier": {
       "stat_name": "mechanic_param::bot.golden.bonus_multiplier",
-      "final_value": 5.6,
+      "final_value": 6.2,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -16720,7 +16774,7 @@
           "stat_name": "Golden Bot::Bonus",
           "source_family": "bot",
           "source_name": "Golden Bot",
-          "value": 5.6,
+          "value": 6.2,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -16732,7 +16786,7 @@
           "destination_id": "bot.golden.bonus_multiplier",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "5.6"
+          "display_value": "6.2"
         }
       ],
       "schema": {
@@ -16772,7 +16826,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x5.6"
+      "display_value": "x6.2"
     },
     "mechanic_param::bot.amplify.bonus_multiplier": {
       "stat_name": "mechanic_param::bot.amplify.bonus_multiplier",
@@ -21252,73 +21306,6 @@
       },
       "display_value": "true"
     },
-    "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct": {
-      "stat_name": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
-      "final_value": 3.8,
-      "value_type": "unknown",
-      "source_count": 1,
-      "status": "resolved",
-      "notes": "Single mapped contributor; direct value preserved.",
-      "contributors": [
-        {
-          "stat_name": "Land Mine Stun",
-          "source_family": "card",
-          "source_name": "Land Mine Stun",
-          "value": 3.8,
-          "value_type": "resolved_value",
-          "stage": "loadout_resolved",
-          "active": true,
-          "preset_name": "Farming",
-          "provenance": "IDS::Cards",
-          "notes": "kb_card_name_fallback_routed",
-          "contributor_id": null,
-          "destination_object_type": "runtime_mechanic_param",
-          "destination_id": "cards.land_mine_stun.miss_attack_chance_pct",
-          "resolver_id": "standard_scalar_param",
-          "kb_mapped": true,
-          "display_value": "3.8"
-        }
-      ],
-      "schema": {
-        "unit": "unknown",
-        "resolver": "standard_scalar_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_numeric",
-          "percentage_points",
-          "multiplier_display",
-          "multiplier_factor"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": "3.8"
-    },
     "runtime_mechanic_param::uw.smart_missiles.extra_missiles": {
       "stat_name": "runtime_mechanic_param::uw.smart_missiles.extra_missiles",
       "final_value": 4.0,
@@ -22402,31 +22389,31 @@
       },
       "display_value": "15"
     },
-    "mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct": {
-      "stat_name": "mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
-      "final_value": 0.30000000000000004,
+    "mechanic_param::module.pulsar_harvester.level_reduction_proc_pct": {
+      "stat_name": "mechanic_param::module.pulsar_harvester.level_reduction_proc_pct",
+      "final_value": 0.1,
       "value_type": "pct",
       "source_count": 1,
       "status": "resolved",
       "notes": "Single mapped contributor; direct value preserved.",
       "contributors": [
         {
-          "stat_name": "Black Hole Digestor::unique",
+          "stat_name": "Pulsar Harvester::unique",
           "source_family": "module",
-          "source_name": "Black Hole Digestor",
-          "value": 0.30000000000000004,
+          "source_name": "Pulsar Harvester",
+          "value": 0.1,
           "value_type": "pct",
           "stage": "loadout_resolved",
           "active": true,
           "preset_name": "Farming",
           "provenance": "IDS::Modules",
           "notes": "module_assist_unique_effect",
-          "contributor_id": "module__generator__black_hole_digestor__extra_coin_kill_bonus_per_free_upgrade_pct@@black hole digestor@@assist@@unique",
+          "contributor_id": "module__generator__pulsar_harvester__level_reduction_proc_pct@@pulsar harvester@@assist@@unique",
           "destination_object_type": "mechanic_param",
-          "destination_id": "module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
+          "destination_id": "module.pulsar_harvester.level_reduction_proc_pct",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "display_value": "0.3%"
+          "display_value": "0.1%"
         }
       ],
       "schema": {
@@ -22466,7 +22453,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "0.3%"
+      "display_value": "0.1%"
     },
     "mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct": {
       "stat_name": "mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct",
@@ -24496,7 +24483,7 @@
           "stat_name": "Module Coin Cost",
           "source_family": "lab",
           "source_name": "Module Coin Cost",
-          "value": 19,
+          "value": 23,
           "value_type": "level",
           "stage": "account_state",
           "active": true,
@@ -24508,7 +24495,7 @@
           "destination_id": null,
           "resolver_id": null,
           "kb_mapped": false,
-          "display_value": "19"
+          "display_value": "23"
         }
       ],
       "schema": {
@@ -24951,7 +24938,7 @@
           "stat_name": "Core Effect Bans",
           "source_family": "lab",
           "source_name": "Core Effect Bans",
-          "value": 3,
+          "value": 4,
           "value_type": "level",
           "stage": "account_state",
           "active": true,
@@ -24963,7 +24950,7 @@
           "destination_id": null,
           "resolver_id": null,
           "kb_mapped": false,
-          "display_value": "3"
+          "display_value": "4"
         }
       ],
       "schema": {
@@ -28449,6 +28436,71 @@
       },
       "display_value": null
     },
+    "raw::Intro Sprint": {
+      "stat_name": "Intro Sprint",
+      "final_value": null,
+      "value_type": "raw_unmapped_input",
+      "source_count": 1,
+      "status": "unmapped",
+      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
+      "contributors": [
+        {
+          "stat_name": "Intro Sprint",
+          "source_family": "card",
+          "source_name": "Intro Sprint",
+          "value": 100.0,
+          "value_type": "resolved_value",
+          "stage": "loadout_resolved",
+          "active": true,
+          "preset_name": "Farming",
+          "provenance": "IDS::Cards",
+          "notes": "kb_alias_routed_card_alias_missing",
+          "contributor_id": null,
+          "destination_object_type": null,
+          "destination_id": null,
+          "resolver_id": null,
+          "kb_mapped": false,
+          "display_value": "100"
+        }
+      ],
+      "schema": {
+        "unit": "count",
+        "resolver": "integer_count_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_unit_value",
+          "unit_multiplier"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": null
+    },
     "raw::Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1": {
       "stat_name": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1",
       "final_value": null,
@@ -28572,7 +28624,7 @@
     },
     "canonical_stat::coin_kill_multiplier": {
       "stat_name": "canonical_stat::coin_kill_multiplier",
-      "final_value": 41.8389654375,
+      "final_value": 42.52792871250001,
       "value_type": "multiplier",
       "source_count": 8,
       "status": "resolved",
@@ -28582,7 +28634,7 @@
           "stat_name": "Coins / Kill Bonus",
           "source_family": "lab",
           "source_name": "Coins / Kill Bonus",
-          "value": 2.7,
+          "value": 2.74,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -28594,7 +28646,7 @@
           "destination_id": "coins_per_kill_bonus",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "2.7"
+          "display_value": "2.74"
         },
         {
           "stat_name": "Coin / Kill Bonus",
@@ -28707,8 +28759,8 @@
         {
           "stat_name": "Coins / Kill Bonus",
           "source_family": "module_substat",
-          "source_name": "Black Hole Digestor",
-          "value": 0.04000000000000001,
+          "source_name": "Pulsar Harvester",
+          "value": 0.06,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -28720,7 +28772,7 @@
           "destination_id": "coins_per_kill_bonus",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "x0.04"
+          "display_value": "x0.06"
         }
       ],
       "schema": {
@@ -28762,11 +28814,11 @@
         "compare_policy": "normal",
         "rationale": "Deprecated compatibility mirror of canonical_stat::coins_per_kill_bonus during transition; must not remain the owner of mixed coin logic."
       },
-      "display_value": "x41.839"
+      "display_value": "x42.528"
     },
     "canonical_stat::all_coin_bonus_multiplier": {
       "stat_name": "canonical_stat::all_coin_bonus_multiplier",
-      "final_value": 1254.785425370725,
+      "final_value": 1314.4527406548677,
       "value_type": "multiplier",
       "source_count": 9,
       "status": "resolved",
@@ -28776,40 +28828,40 @@
           "stat_name": "canonical_stat::coin_bonus_multiplier",
           "source_family": "helper_surface",
           "source_name": "canonical_stat::coin_bonus_multiplier",
-          "value": 2.29316472,
+          "value": 2.2989741599999998,
           "value_type": "multiplier",
           "stage": "phase3_composition",
           "destination_object_type": "canonical_stat",
           "destination_id": "all_coin_bonus_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "x2.293"
+          "display_value": "x2.299"
         },
         {
           "stat_name": "canonical_stat::coins_multiplier",
           "source_family": "helper_surface",
           "source_name": "canonical_stat::coins_multiplier",
-          "value": 2.0734999999999997,
+          "value": 2.146,
           "value_type": "multiplier",
           "stage": "phase3_composition",
           "destination_object_type": "canonical_stat",
           "destination_id": "all_coin_bonus_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "x2.073"
+          "display_value": "x2.146"
         },
         {
           "stat_name": "cosmetic_bonus.theme_song_coin_multiplier",
           "source_family": "helper_surface",
           "source_name": "cosmetic_bonus.theme_song_coin_multiplier",
-          "value": 1.666,
+          "value": 1.682,
           "value_type": "unknown",
           "stage": "phase3_composition",
           "destination_object_type": "canonical_stat",
           "destination_id": "all_coin_bonus_multiplier",
           "resolver_id": "standard_scalar_stat",
           "kb_mapped": true,
-          "display_value": "1.666"
+          "display_value": "1.682"
         },
         {
           "stat_name": "account_flag.disable_ads",
@@ -28905,7 +28957,7 @@
         "compare_policy": "noncomparable_until_oracle",
         "rationale": "Derived all-coin display surface: coin_bonus_multiplier x coins_multiplier x theme song coin multiplier x parsed account coin multiplier display. Premium flags are traced for audit but not numerically interpreted."
       },
-      "display_value": "x1.25k"
+      "display_value": "x1.31k"
     },
     "runtime_mechanic_param::uw.chain_lightning.chance_pct": {
       "stat_name": "runtime_mechanic_param::uw.chain_lightning.chance_pct",
@@ -36089,17 +36141,17 @@
         "explicit_caps": {}
       }
     },
-    "mapped_input_count": 490,
-    "unmapped_input_count": 91,
+    "mapped_input_count": 492,
+    "unmapped_input_count": 92,
     "input_count_by_family": {
       "bot": 16,
       "bot_unlock": 6,
-      "card": 18,
+      "card": 19,
       "enhancement": 21,
       "guardian": 15,
       "lab": 212,
       "module": 17,
-      "module_substat": 32,
+      "module_substat": 34,
       "perk": 43,
       "player_stuff": 5,
       "relic": 31,
@@ -36118,7 +36170,7 @@
       "guardian": 15,
       "lab": 129,
       "module": 17,
-      "module_substat": 32,
+      "module_substat": 34,
       "perk": 42,
       "player_stuff": 5,
       "relic": 31,
@@ -36129,7 +36181,7 @@
       "vault": 64,
       "workshop": 48
     },
-    "resolved_stat_count": 236,
+    "resolved_stat_count": 235,
     "partially_resolved_stat_count": 0,
     "mapped_unresolved_stat_count": 49,
     "notes": [

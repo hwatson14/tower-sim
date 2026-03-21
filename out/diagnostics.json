@@ -98,9 +98,9 @@
           "Current IDS preset with active loadout applied."
         ]
       },
-      "input_count": 581,
-      "mapped_input_count": 490,
-      "resolved_stat_count": 236,
+      "input_count": 584,
+      "mapped_input_count": 492,
+      "resolved_stat_count": 235,
       "partially_resolved_stat_count": 0
     },
     "max_progression": {
@@ -116,13 +116,13 @@
           "Perks can be materialized in this state when supplied via input/perks.json or --perks."
         ]
       },
-      "input_count": 581,
-      "mapped_input_count": 490,
-      "resolved_stat_count": 236,
+      "input_count": 584,
+      "mapped_input_count": 492,
+      "resolved_stat_count": 235,
       "partially_resolved_stat_count": 0
     }
   },
-  "stat_input_count": 581,
+  "stat_input_count": 584,
   "statbook_row_count": 382,
   "engine_status": "publish_gate_enforced_resolution",
   "publish_status": "forbidden_for_publish",
@@ -7065,14 +7065,14 @@
       "explicit_caps": {}
     }
   },
-  "mapped_stat_input_count": 490,
-  "unmapped_stat_input_count": 91,
-  "resolved_stat_count": 236,
+  "mapped_stat_input_count": 492,
+  "unmapped_stat_input_count": 92,
+  "resolved_stat_count": 235,
   "partially_resolved_stat_count": 0,
   "burn_down": {
-    "input_mapping_pct": 84.34,
-    "fully_resolved_surface_pct_of_inputs": 40.62,
-    "resolved_or_partial_surface_pct_of_inputs": 40.62,
+    "input_mapping_pct": 84.25,
+    "fully_resolved_surface_pct_of_inputs": 40.24,
+    "resolved_or_partial_surface_pct_of_inputs": 40.24,
     "family_mapping_pct": {
       "bot": {
         "mapped": 16,
@@ -7086,8 +7086,8 @@
       },
       "card": {
         "mapped": 18,
-        "total": 18,
-        "pct": 100.0
+        "total": 19,
+        "pct": 94.74
       },
       "enhancement": {
         "mapped": 21,
@@ -7110,8 +7110,8 @@
         "pct": 100.0
       },
       "module_substat": {
-        "mapped": 32,
-        "total": 32,
+        "mapped": 34,
+        "total": 34,
         "pct": 100.0
       },
       "perk": {
@@ -7160,9 +7160,9 @@
         "pct": 100.0
       }
     },
-    "calculator_scope_total_inputs": 310,
-    "calculator_scope_mapped_inputs": 310,
-    "calculator_scope_mapping_pct": 100.0,
+    "calculator_scope_total_inputs": 313,
+    "calculator_scope_mapped_inputs": 312,
+    "calculator_scope_mapping_pct": 99.68,
     "calculator_scope_excluded_inputs": 271,
     "calculator_scope_excluded_examples": [
       "+1 Wave on Death Wave::effect_1",
@@ -7188,26 +7188,30 @@
     ],
     "calculator_scope_family_totals": {
       "bot": 16,
-      "card": 18,
+      "card": 19,
       "enhancement": 21,
       "guardian": 15,
       "lab": 16,
       "module": 17,
-      "module_substat": 32,
+      "module_substat": 34,
       "relic": 31,
       "uw": 27,
       "uw_plus": 9,
       "vault": 60,
       "workshop": 48
     },
-    "calculator_scope_unmapped_examples": [],
+    "calculator_scope_unmapped_examples": [
+      "Intro Sprint"
+    ],
     "note": "calculator_scope excludes preserved-only lab/admin/runtime rows and grouping/admin surfaces that are intentionally outside the current calculator publish surface."
   },
   "tests_passed": "not_run_by_run_stats",
-  "calculator_scope_mapping_pct": 100.0,
+  "calculator_scope_mapping_pct": 99.68,
   "calculator_scope_excluded_inputs": 271,
-  "calculator_scope_unmapped_examples": [],
-  "card_slots_unlocked": 16,
+  "calculator_scope_unmapped_examples": [
+    "Intro Sprint"
+  ],
+  "card_slots_unlocked": 17,
   "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
   "configured_perk_presets": {
     "ProjectedMax_AllAllowedExceptBanned": [
@@ -7273,11 +7277,17 @@
   "kb_incomplete_areas": {
     "summary": {
       "blocked_formula_contract_count": 0,
-      "active_unmapped_input_count": 91,
-      "resolved_unknown_schema_unit_count": 104,
+      "active_unmapped_input_count": 92,
+      "resolved_unknown_schema_unit_count": 103,
       "ambiguous_relic_semantic_hint_count": 21
     },
     "priority_gaps": [
+      {
+        "source_family": "card",
+        "stat_name": "Intro Sprint",
+        "value_type": "resolved_value",
+        "contributor_id": null
+      },
       {
         "source_family": "lab",
         "stat_name": "Area of Effect Mastery",
@@ -7343,21 +7353,22 @@
         "stat_name": "Attack Speed Mastery",
         "value_type": "level",
         "contributor_id": null
-      },
-      {
-        "source_family": "lab",
-        "stat_name": "Auto Pick Perks",
-        "value_type": "level",
-        "contributor_id": null
       }
     ],
     "blocked_formula_contracts": [],
     "active_unmapped_by_family": {
+      "card": 1,
       "lab": 83,
       "perk": 1,
       "vault": 7
     },
     "active_unmapped_inputs": [
+      {
+        "source_family": "card",
+        "stat_name": "Intro Sprint",
+        "value_type": "resolved_value",
+        "contributor_id": null
+      },
       {
         "source_family": "lab",
         "stat_name": "Area of Effect Mastery",
@@ -8126,7 +8137,7 @@
         "destination_id": "capability::capability.uw.black_hole.disable_ranged",
         "resolver": "capability_passthrough",
         "value_type": "unknown",
-        "final_value": false
+        "final_value": true
       },
       {
         "destination_id": "capability::capability.uw.black_hole.extra_black_hole",
@@ -8228,7 +8239,7 @@
         "destination_id": "cosmetic_bonus::cosmetic_bonus.theme_song_coin_multiplier",
         "resolver": "standard_scalar_stat",
         "value_type": "unknown",
-        "final_value": 1.666
+        "final_value": 1.682
       },
       {
         "destination_id": "environment_param::enemy.boss.health_multiplier",
@@ -8378,7 +8389,7 @@
         "destination_id": "meta_progression_param::laboratory.speed_multiplier",
         "resolver": "standard_scalar_param",
         "value_type": "unknown",
-        "final_value": 2.78
+        "final_value": 2.82
       },
       {
         "destination_id": "meta_progression_param::milestones.waves_required_delta",
@@ -8391,12 +8402,6 @@
         "resolver": "standard_scalar_param",
         "value_type": "unknown",
         "final_value": 33.0
-      },
-      {
-        "destination_id": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
-        "resolver": "standard_scalar_param",
-        "value_type": "unknown",
-        "final_value": 3.8
       },
       {
         "destination_id": "runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
@@ -8626,11 +8631,29 @@
   "kb_gap_register": {
     "summary": {
       "Calculator wiring / implementation gap": 1,
-      "Intentional non-goal / runtime-only surface": 178,
+      "Intentional non-goal / runtime-only surface": 177,
       "KB contract ambiguous": 1,
-      "KB missing executable contract": 16
+      "KB missing executable contract": 16,
+      "KB missing fact": 1
     },
     "entries": [
+      {
+        "gap_id": "unmapped::card::Intro Sprint",
+        "bucket": "KB missing fact",
+        "surface": "Intro Sprint",
+        "files": [
+          "compilers/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active card input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
       {
         "gap_id": "unmapped::lab::Area of Effect Mastery",
         "bucket": "Intentional non-goal / runtime-only surface",
@@ -11326,20 +11349,6 @@
         "verification_source": "package KB only"
       },
       {
-        "gap_id": "unknown_unit::runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
-        "files": [
-          "engine/stat_engine.py",
-          "run_stats.py"
-        ],
-        "evidence": "Resolved publishable row still has schema.unit=unknown for runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
-        "why_it_matters": "The surface publishes, but its schema is not convergence-grade clean.",
-        "what_would_close_it": "Assign a precise schema unit or explicitly classify the surface as runtime-only/administrative.",
-        "changed_in_this_iteration": false,
-        "verification_source": "package KB only"
-      },
-      {
         "gap_id": "unknown_unit::runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
         "bucket": "Intentional non-goal / runtime-only surface",
         "surface": "runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
@@ -11650,8 +11659,8 @@
     ]
   },
   "blocked_formula_contract_count": 0,
-  "active_unmapped_input_count": 91,
-  "resolved_unknown_schema_unit_count": 104,
+  "active_unmapped_input_count": 92,
+  "resolved_unknown_schema_unit_count": 103,
   "ambiguous_relic_semantic_hint_count": 21,
   "perk_support": {
     "progression_state": "dynamic_current_or_projected_max_by_state_mode",
@@ -11668,8 +11677,8 @@
     "state_mode": "max_progression"
   },
   "card_preset_sizes": {
-    "Farming": 16,
-    "Tourney": 15,
+    "Farming": 17,
+    "Tourney": 17,
     "Milestone": 0,
     "Preset 4": 0,
     "Preset 5": 0
@@ -11683,7 +11692,7 @@
     "guardian": 15,
     "lab": 129,
     "module": 17,
-    "module_substat": 32,
+    "module_substat": 34,
     "perk": 42,
     "player_stuff": 5,
     "relic": 31,
@@ -11697,12 +11706,12 @@
   "total_count_by_family": {
     "bot": 16,
     "bot_unlock": 6,
-    "card": 18,
+    "card": 19,
     "enhancement": 21,
     "guardian": 15,
     "lab": 212,
     "module": 17,
-    "module_substat": 32,
+    "module_substat": 34,
     "perk": 43,
     "player_stuff": 5,
     "relic": 31,
@@ -11716,71 +11725,76 @@
   "unmapped_example_by_family": {
     "lab": "Starting Cash",
     "vault": "Keys spent",
+    "card": "Intro Sprint",
     "perk": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1"
   },
   "ep_compare_summary": {
-    "ep_compare_count": 27,
+    "ep_compare_count": 26,
     "ep_compare_status_counts": {
-      "matched_close": 8,
+      "matched_close": 7,
       "matched_exact": 14,
-      "non_comparable": 4,
+      "mismatch": 1,
+      "non_comparable": 3,
       "non_numeric_compare": 1
     },
     "ep_mismatch_count": 5,
-    "ep_true_formula_mismatch_count": 0,
+    "ep_true_formula_mismatch_count": 1,
     "ep_formula_blocked_count": 0,
     "ep_stage_scope_mismatch_count": 0,
-    "ep_non_comparable_count": 4,
+    "ep_non_comparable_count": 3,
     "ep_missing_from_package_count": 0
   },
-  "ep_compare_count": 27,
+  "ep_compare_count": 26,
   "ep_compare_status_counts": {
-    "matched_close": 8,
+    "matched_close": 7,
     "matched_exact": 14,
-    "non_comparable": 4,
+    "mismatch": 1,
+    "non_comparable": 3,
     "non_numeric_compare": 1
   },
   "ep_mismatch_count": 5,
-  "ep_true_formula_mismatch_count": 0,
+  "ep_true_formula_mismatch_count": 1,
   "ep_formula_blocked_count": 0,
   "ep_stage_scope_mismatch_count": 0,
-  "ep_non_comparable_count": 4,
+  "ep_non_comparable_count": 3,
   "ep_missing_from_package_count": 0,
   "ep_compare_projection_views": {
     "current_state_mode": {
       "state_mode": "max_progression",
       "perk_state": "auto",
       "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
-      "ep_compare_count": 27,
+      "ep_compare_count": 26,
       "ep_compare_status_counts": {
-        "matched_close": 8,
+        "matched_close": 7,
         "matched_exact": 14,
-        "non_comparable": 4,
+        "mismatch": 1,
+        "non_comparable": 3,
         "non_numeric_compare": 1
       },
       "ep_mismatch_count": 5,
-      "ep_true_formula_mismatch_count": 0,
+      "ep_true_formula_mismatch_count": 1,
       "ep_formula_blocked_count": 0,
       "ep_stage_scope_mismatch_count": 0,
-      "ep_non_comparable_count": 4,
+      "ep_non_comparable_count": 3,
       "ep_missing_from_package_count": 0
     },
     "projected_max_progression": {
       "state_mode": "max_progression",
       "perk_state": "auto",
       "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
-      "ep_compare_count": 27,
+      "ep_compare_count": 26,
       "ep_compare_status_counts": {
-        "matched_close": 8,
+        "matched_close": 7,
         "matched_exact": 14,
-        "non_comparable": 4,
+        "mismatch": 1,
+        "non_comparable": 3,
         "non_numeric_compare": 1
       },
       "ep_mismatch_count": 5,
-      "ep_true_formula_mismatch_count": 0,
+      "ep_true_formula_mismatch_count": 1,
       "ep_formula_blocked_count": 0,
       "ep_stage_scope_mismatch_count": 0,
-      "ep_non_comparable_count": 4,
+      "ep_non_comparable_count": 3,
       "ep_missing_from_package_count": 0
     }
   },
@@ -11867,11 +11881,6 @@
     {
       "destination": "canonical_stat::wall_fortification_multiplier",
       "issue": "non_numeric_compare",
-      "compare_preset": "Farming"
-    },
-    {
-      "destination": "canonical_stat::max_recovery_multiplier",
-      "issue": "non_comparable",
       "compare_preset": "Farming"
     },
     {
@@ -12334,11 +12343,6 @@
         "compare_preset": "Farming"
       },
       {
-        "destination": "canonical_stat::max_recovery_multiplier",
-        "issue": "non_comparable",
-        "compare_preset": "Farming"
-      },
-      {
         "destination": "canonical_stat::free_attack_upgrade_chance_pct",
         "issue": "non_comparable",
         "compare_preset": "Farming"
@@ -12356,10 +12360,10 @@
     ]
   },
   "line_verification_summary": {
-    "blocked": 1,
+    "blocked": 2,
     "needs_work": 49,
-    "publishable": 241,
-    "trace_only": 91
+    "publishable": 239,
+    "trace_only": 92
   },
   "presentation": {
     "scope": "display_fields_only",
@@ -12394,9 +12398,10 @@
     "surfaces": {
       "package_chance_pct": {
         "status": "resolved",
-        "final_value": 45.0,
-        "display_value": "45%",
+        "final_value": 78.5,
+        "display_value": "78.5%",
         "contributor_families": [
+          "card",
           "lab",
           "module_substat",
           "workshop"
@@ -12419,12 +12424,28 @@
             "notes": "state_mode=max_progression:using_workshop_max_level:kb_workshop_summary_formula_derived"
           },
           {
+            "source_family": "card",
+            "source_name": "Recovery Package Chance",
+            "value": 33.0,
+            "display_value": "33",
+            "value_type": "resolved_value",
+            "notes": "kb_card_name_fallback_routed"
+          },
+          {
             "source_family": "module_substat",
             "source_name": "Singularity Harness",
             "value": 11.0,
             "display_value": "11%",
             "value_type": "percent_display",
             "notes": "kb_exact_routed_module_substat_primary"
+          },
+          {
+            "source_family": "module_substat",
+            "source_name": "Pulsar Harvester",
+            "value": 0.5,
+            "display_value": "0.5%",
+            "value_type": "percent_display",
+            "notes": "kb_exact_routed_module_substat_assist"
           }
         ]
       },
@@ -14904,70 +14925,73 @@
       "farming__perks_off": {
         "preset": "Farming",
         "perk_state": "off",
-        "ep_compare_count": 27,
+        "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 8,
+          "matched_close": 7,
           "matched_exact": 14,
-          "non_comparable": 4,
+          "mismatch": 1,
+          "non_comparable": 3,
           "non_numeric_compare": 1
         },
         "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 0,
+        "ep_true_formula_mismatch_count": 1,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 4,
+        "ep_non_comparable_count": 3,
         "ep_missing_from_package_count": 0
       },
       "farming__perks_on": {
         "preset": "Farming",
         "perk_state": "on",
-        "ep_compare_count": 27,
+        "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 8,
+          "matched_close": 7,
           "matched_exact": 14,
-          "non_comparable": 4,
+          "mismatch": 1,
+          "non_comparable": 3,
           "non_numeric_compare": 1
         },
         "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 0,
+        "ep_true_formula_mismatch_count": 1,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 4,
+        "ep_non_comparable_count": 3,
         "ep_missing_from_package_count": 0
       },
       "tourney__perks_off": {
         "preset": "Tourney",
         "perk_state": "off",
-        "ep_compare_count": 27,
+        "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 9,
+          "matched_close": 8,
           "matched_exact": 13,
-          "non_comparable": 4,
+          "mismatch": 1,
+          "non_comparable": 3,
           "non_numeric_compare": 1
         },
         "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 0,
+        "ep_true_formula_mismatch_count": 1,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 4,
+        "ep_non_comparable_count": 3,
         "ep_missing_from_package_count": 0
       },
       "tourney__perks_on": {
         "preset": "Tourney",
         "perk_state": "on",
-        "ep_compare_count": 27,
+        "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 7,
+          "matched_close": 6,
           "matched_exact": 13,
-          "mismatch": 2,
-          "non_comparable": 4,
+          "mismatch": 3,
+          "non_comparable": 3,
           "non_numeric_compare": 1
         },
         "ep_mismatch_count": 7,
-        "ep_true_formula_mismatch_count": 2,
+        "ep_true_formula_mismatch_count": 3,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 4,
+        "ep_non_comparable_count": 3,
         "ep_missing_from_package_count": 0
       }
     },
@@ -14977,10 +15001,10 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "matched_exact",
-        "package_value": 41.8389654375,
-        "ep_value": 41.83896543750001,
-        "relative_delta_pct": -1.6982798889268066e-14,
-        "abs_relative_delta_pct": 1.6982798889268066e-14
+        "package_value": 42.52792871250001,
+        "ep_value": 42.527928712500014,
+        "relative_delta_pct": -1.6707673222544084e-14,
+        "abs_relative_delta_pct": 1.6707673222544084e-14
       },
       "canonical_stat::free_attack_upgrade_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15007,18 +15031,8 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "non_comparable",
-        "package_value": 83.21600000000001,
-        "ep_value": 1.1828544000000003,
-        "relative_delta_pct": null,
-        "abs_relative_delta_pct": null
-      },
-      "canonical_stat::max_recovery_multiplier": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "non_comparable",
-        "package_value": 16.5,
-        "ep_value": 155730000000000.0,
+        "package_value": 83.66400000000002,
+        "ep_value": 1.1875136000000002,
         "relative_delta_pct": null,
         "abs_relative_delta_pct": null
       },
@@ -15077,8 +15091,8 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "matched_exact",
-        "package_value": 168.192,
-        "ep_value": 168.192,
+        "package_value": 171.6912,
+        "ep_value": 171.6912,
         "relative_delta_pct": 0.0,
         "abs_relative_delta_pct": 0.0
       },
@@ -15156,11 +15170,11 @@
         "state_key": "farming__perks_off",
         "preset": "Farming",
         "perk_state": "off",
-        "status": "matched_close",
+        "status": "mismatch",
         "package_value": 109.55999999999999,
-        "ep_value": 109.48863512309427,
-        "relative_delta_pct": 0.06518016854031072,
-        "abs_relative_delta_pct": 0.06518016854031072
+        "ep_value": 69.5,
+        "relative_delta_pct": 57.64028776978415,
+        "abs_relative_delta_pct": 57.64028776978415
       },
       "canonical_stat::tower_rapid_fire_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15243,14 +15257,15 @@
         "abs_relative_delta_pct": 0.0008990968408630254
       }
     },
-    "destination_count": 27,
+    "destination_count": 26,
     "best_fit_state_counts": {
-      "farming__perks_off": 27
+      "farming__perks_off": 26
     },
     "best_fit_status_counts": {
-      "matched_close": 8,
+      "matched_close": 7,
       "matched_exact": 14,
-      "non_comparable": 4,
+      "mismatch": 1,
+      "non_comparable": 3,
       "non_numeric_compare": 1
     }
   },

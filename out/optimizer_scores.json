@@ -7,14 +7,14 @@
       "formula": "(tower_hp*(wall_ratio*wall_fort + max_recovery*recovery_mult) + def_abs) * def_pct * cf * pbh"
     },
     "edamage": {
-      "score": 6232134815725337.0,
-      "display": "6.23 q",
+      "score": 6361667726887617.0,
+      "display": "6.36 q",
       "accuracy": "expanded_proxy",
       "formula": "base_dps * crit * supercrit * shock"
     },
     "eecon": {
-      "score": 167857351.7563488,
-      "display": "167.86 M",
+      "score": 191177217.13704288,
+      "display": "191.18 M",
       "accuracy": "expanded_proxy",
       "formula": "base * timed_overlap(GT,BH,GB) * SL_coin * DW_coin * critical_coin * wave_skip"
     }

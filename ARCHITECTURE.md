@@ -51,7 +51,7 @@ Dependency flows downward only. Advisors may consume from any layer above. Optim
 ```
 kb/{domain}/
     contracts/     Runtime and application contracts (the KB-to-code API)
-    tables/        Canonical data tables (the primary query surface)
+    kb/<domain>/tables/  Canonical data tables (the primary query surface)
     notes/         Explanatory context (human consumption, not code)
     sources/       Provenance and evidence (grounding, not code)
     derived/       Materialised views (computed from tables, not primary)

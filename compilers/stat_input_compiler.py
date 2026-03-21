@@ -1795,7 +1795,9 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                 _set_row_field(row, 'kb_mapped', resolved is not None)
             else:
                 _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
-                _set_row_field(row, 'destination_id', f'bot.{_slug(bot_name).replace(' ', '_')}.{track_name or _slug(attr).replace(' ', '_')}')
+                bot_slug = _slug(bot_name).replace(' ', '_')
+                attr_slug = (track_name or _slug(attr)).replace(' ', '_')
+                _set_row_field(row, 'destination_id', f'bot.{bot_slug}.{attr_slug}')
                 _set_row_field(row, 'resolver_id', 'standard_scalar_param')
                 _set_row_field(row, 'kb_mapped', resolved is not None)
             _append(out, row)
@@ -1837,7 +1839,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                     _bind_destination(row, destination, canonical_stats, note='kb_guardian_override_routed')
                 else:
                     _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
-                    _set_row_field(row, 'destination_id', f'guardian.{_slug(current_guardian).replace(' ', '_')}.{g_attr}')
+                    guardian_slug = _slug(current_guardian).replace(' ', '_')
+                    _set_row_field(row, 'destination_id', f'guardian.{guardian_slug}.{g_attr}')
                     _set_row_field(row, 'resolver_id', 'standard_scalar_param')
                     _set_row_field(row, 'kb_mapped', resolved is not None)
                 _append(out, row)
@@ -1884,7 +1887,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                     _bind_destination(row, destination, canonical_stats, note='kb_uw_override_routed')
                 else:
                     _set_row_field(row, 'destination_object_type', 'mechanic_param')
-                    _set_row_field(row, 'destination_id', f'uw.{_slug(uw_name).replace(' ', '_')}.{_slug(track_name).replace(' ', '_')}')
+                    track_slug = _slug(track_name).replace(' ', '_')
+                    _set_row_field(row, 'destination_id', f'uw.{uw_slug}.{track_slug}')
                     _set_row_field(row, 'resolver_id', 'standard_scalar_param')
                     _set_row_field(row, 'kb_mapped', resolved is not None)
             if row.value_type == 'resolved_value' and isinstance(row.value, (int, float)) and 0.0 <= float(row.value) <= 1.0:
@@ -1907,7 +1911,9 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
         row = StatInput(stat_name=track_name, source_family='uw_plus', source_name=track.uw_name, value=resolved if resolved is not None else (0.0 if level == 0 else track.display_token), value_type='resolved_value' if resolved is not None or level == 0 else 'display_token', stage='account_state', provenance='IDS::UWs', notes='kb_uw_plus_track_resolved' if resolved is not None else ('kb_uw_plus_locked_level0' if level == 0 else 'runtime_surface_preserved_pending_uw_plus_lookup'))
         if level is not None:
             _set_row_field(row, 'destination_object_type', 'mechanic_param')
-            _set_row_field(row, 'destination_id', f'uw_plus.{_slug(track.uw_name).replace(' ', '_')}.{_slug(track.plus_track_name).replace(' ', '_')}')
+            uw_plus_slug = _slug(track.uw_name).replace(' ', '_')
+            plus_track_slug = _slug(track.plus_track_name).replace(' ', '_')
+            _set_row_field(row, 'destination_id', f'uw_plus.{uw_plus_slug}.{plus_track_slug}')
             _set_row_field(row, 'resolver_id', 'standard_scalar_param')
             _set_row_field(row, 'kb_mapped', True)
         _append(out, row)

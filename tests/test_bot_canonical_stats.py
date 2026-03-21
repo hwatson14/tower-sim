@@ -23,11 +23,11 @@ def _book(state_mode: str = 'start_of_run'):
 def test_bot_canonicals_resolve_through_stat_engine_start_of_run():
     book = _book('start_of_run')
     expected = {
-        'mechanic_param::bot.golden.duration_seconds': 27.5,
+        'mechanic_param::bot.golden.duration_seconds': 32.0,
         'mechanic_param::bot.golden.cooldown_seconds': 90.0,
         'mechanic_param::bot.golden.range_m': 74.0,
-        'mechanic_param::bot.flame.cooldown_seconds': 8.0,
-        'mechanic_param::bot.flame.range_m': 78.0,
+        'mechanic_param::bot.flame.cooldown_seconds': 26.0,
+        'mechanic_param::bot.flame.range_m': 70.0,
         'mechanic_param::bot.amplify.range_m': 49.0,
         'mechanic_param::bot.thunder.linger_slow_pct': 0.2,
         'mechanic_param::bot.global.range_bonus_m': 24.0,

@@ -41,6 +41,8 @@ def test_scenario_runtime_inputs_contract_declares_all_dataclass_fields():
         'boss_hit_interval_seconds',
         'effective_damage_reduction_pct',
         'incoming_damage_multiplier',
+        'boss_wave_interval',
+        'enemy_level_skip_reduction_pp',
     }
     assert fields == expected
 
