@@ -1,0 +1,294 @@
+path,domain,surface_type,canonicality,evidence_class,closure_status,notes
+kb/advisory/prompts/diagnosis-subprompt.txt,advisory,prompts,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/prompts/optimization-subprompt.txt,advisory,prompts,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/prompts/retrieval-map.yaml,advisory,prompts,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/prompts/system-prompt.txt,advisory,prompts,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/build-optimisation-playbook.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/farming-efficiency-framework.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/query-playbook.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/reasoning-index.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/stone-allocation-framework.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/survivability-and-wave-death-model.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/reasoning/tournament-strategy-framework.md,advisory,reasoning,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/account-current-logic.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/battle-condition-strategy-notes.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/build-survivability-models.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/difficulty-transition-models.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/guardian-progression-notes.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/optimisation-method.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/optimisation-objectives.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/stone-allocation-evaluation-template.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/strategy-index.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/system-progression-models.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/testing-protocol.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/tournament-meta-models.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/tower-bot-medal-optimization-sheet.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/tower-econ-break-even-analysis.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/tower-econ-mechanics-reference.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/ultimate-weapon-economy-strategy-notes.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/wiki-strategy-addendum.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/advisory/strategy/wiki-strategy-baselines.md,advisory,strategy,advisory_noncanonical,mixed,noncanonical,
+kb/bots/contracts/bot-runtime-contract.md,bots,contract,canonical,wiki-verified,external_source_closed,Bot semantics
+kb/bots/notes/bot-system.md,bots,note,canonical,wiki-verified,external_source_closed,Canonical bot note
+kb/bots/sources/raw/effective-paths/sheet-exports/all-bots-formulas.csv,bots,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/bots/sources/raw/effective-paths/sheet-exports/all-bots-values.csv,bots,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/bots/sources/raw/effective-paths/sheet-exports/dvt-bot-formulas.csv,bots,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/bots/sources/raw/effective-paths/sheet-exports/dvt-bot-values.csv,bots,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/bots/sources/wiki-bot-baselines.md,bots,source,supporting,wiki-verified,supporting_reference,Bot provenance
+kb/bots/tables/bot-labs-summary.yaml,bots,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/bots/tables/flame-bot-tracks-and-costs.csv,bots,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/bots/tables/golden-bot-tracks.yaml,bots,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/cards/contracts/card-runtime-contract.md,cards,contract,canonical,wiki-verified,external_source_closed,Card semantics note
+kb/cards/notes/card-system.md,cards,note,canonical,derived-and-reproducible,uploaded_corpus_closed,Canonical cards note
+kb/cards/sources/raw/repo-cache/wiki/cards-common.csv,cards,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/cards/sources/raw/repo-cache/wiki/cards-epic.csv,cards,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/cards/sources/raw/repo-cache/wiki/cards-rare.csv,cards,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/cards/sources/raw/repo-inputs/cards/card-masteries.csv,cards,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/cards/sources/wiki-cards-and-card-masteries.md,cards,source,supporting_reference,wiki,supporting_reference,
+kb/cards/tables/card-masteries.csv,cards,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/cards/tables/wiki-card-mastery-lab-costs.csv,cards,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/cards/tables/wiki-card-slots-and-costs.csv,cards,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/cards/tables/card-base-ladders.csv,cards,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/combat/contracts/enemy-class-interaction-matrix.csv,combat,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/combat/contracts/runtime-damage-pipeline.csv,combat,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/combat/contracts/runtime-effect-catalog.csv,combat,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/combat/contracts/runtime-exception-matrix.csv,combat,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/combat/contracts/towersim-mechanics-runtime-corrected.md,combat,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/combat/notes/combat-system.md,combat,note,canonical,derived-and-reproducible,uploaded_corpus_closed,Combat cross-domain ownership note
+kb/combat/notes/core-system-interactions.md,combat,note,canonical_note,mixed,supporting_reference,
+kb/combat/sources/combat-wiki-and-runtime-status.md,combat,source,supporting,derived-and-reproducible,supporting_reference,Combat provenance note
+kb/combat/tables/combat-global-assumptions.csv,combat,table,assumption_surface,assumption-labeled,modeled_assumption,Explicit assumption table
+kb/economy/contracts/economy-currency-contract.md,economy,contract,canonical,derived-and-reproducible,uploaded_corpus_closed,Domain contract for economy surfaces
+kb/economy/notes/economy-system.md,economy,note,canonical,derived-and-reproducible,uploaded_corpus_closed,Authored canonical economy scope note
+kb/economy/sources/raw/repo-inputs/economy/labs-values.csv,economy,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/economy/sources/raw/repo-inputs/economy/vault-stats.csv,economy,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming; empty table in current package
+kb/economy/sources/raw/repo-inputs/economy/wse-presets.csv,economy,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/economy/sources/wiki-economy-and-vault-baselines.md,economy,source,supporting,wiki-verified,supporting_reference,Wiki provenance note
+kb/economy/tables/currency-summary.csv,economy,table,canonical,wiki-verified,external_source_closed,High-level economy identity table
+kb/economy/tables/economy-resource-flows.csv,economy,table,canonical,derived-and-reproducible,uploaded_corpus_closed,Normalized source->sink bridge table
+kb/economy/tables/vault-overview.csv,economy,table,canonical,wiki-verified,external_source_closed,High-level Vault ownership table
+kb/enemies/notes/boss-progression-system.md,enemies,note,canonical_note,mixed,supporting_reference,
+kb/enemies/notes/enemy-scaling-curves.md,enemies,note,canonical_note,mixed,supporting_reference,
+kb/enemies/notes/enemy-scaling-model.md,enemies,note,canonical_note,mixed,supporting_reference,
+kb/enemies/notes/survivability-limits.md,enemies,note,canonical_note,mixed,supporting_reference,
+kb/enemies/notes/wave-progression-system.md,enemies,note,canonical_note,mixed,supporting_reference,
+kb/enemies/sources/enemy-system-baselines.md,enemies,source,supporting,derived-and-reproducible,supporting_reference,Enemy provenance / ownership note
+kb/enemies/sources/raw/repo-cache/wiki/lab-enemy-attack-level-skip.csv,enemies,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-cache/wiki/lab-enemy-health-level-skip.csv,enemies,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-inputs/combat/boss-hit-interval.csv,enemies,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-inputs/combat/enemy-damage-table.csv,enemies,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-inputs/combat/enemy-health-table.csv,enemies,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-legacy/tier-wave-damage.csv,enemies,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/raw/repo-legacy/tournament-wave-damage.csv,enemies,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/enemies/sources/wiki-enemy-and-wave-baselines.md,enemies,source,supporting_reference,wiki,supporting_reference,
+kb/enemies/sources/wiki-fleet-and-special-interactions.md,enemies,source,supporting_reference,wiki,supporting_reference,
+kb/enemies/tables/boss-hit-interval.csv,enemies,table,assumption_surface,assumption,modeled_assumption,Explicit assumption surface; removed from the temporary-assumption bucket after review
+kb/enemies/tables/enemy-damage-scaling-long.csv,enemies,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/enemies/tables/enemy-damage-table.csv,enemies,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/enemies/tables/enemy-health-scaling-long.csv,enemies,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/enemies/tables/enemy-health-table.csv,enemies,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/enemies/tables/enemy-level-skip-workshop-reference.csv,enemies,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/enemies/tables/note-derived-boss-properties.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-elite-cells-t14-t21.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-elite-spawn-rules.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-enemy-spawn-caps.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-enemy-spawn-structure.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-enemy-types.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/enemies/tables/note-derived-fleet-enemy-resistances.csv,enemies,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/global-rules/contracts/aliases.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/canonical-stats.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/capabilities.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/contributor-mappings-full.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/contributors.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/domain-coverage.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/environment-params.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/mechanic-params.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/resolvers.yaml,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/contracts/system-dependency-graph.md,global-rules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/global-rules/notes/architecture-index.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/domain-map.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/layer2-wiki-correction-notes.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/mechanics-index.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/migration-rules.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/object-taxonomy.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/registry-guide.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/notes/tier-difficulty-scaling.md,global-rules,note,canonical_note,mixed,supporting_reference,
+kb/global-rules/sources/effective-paths-workbook-inventory.md,global-rules,source,supporting_reference,ep,supporting_reference,
+kb/global-rules/sources/effective-paths-workbook-sheet-inventory.csv,global-rules,source,supporting_reference,ep,supporting_reference,
+kb/global-rules/sources/raw/effective-paths/readme-ep-extraction.md,global-rules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/global-rules/sources/raw/effective-paths/sheet-exports/data-val-tables-formulas.csv,global-rules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/global-rules/sources/raw/effective-paths/sheet-exports/data-val-tables-values.csv,global-rules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/global-rules/sources/raw/effective-paths/sheet-exports/sheet-export-index.json,global-rules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/global-rules/sources/raw/repo-derived/dag.json,global-rules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/global-rules/sources/repo-table-imports.md,global-rules,source,supporting_reference,repo,supporting_reference,
+kb/global-rules/sources/repo-tables-readme.md,global-rules,source,supporting_reference,repo,supporting_reference,
+kb/global-rules/sources/support-systems-coverage-pass.md,global-rules,source,supporting_reference,mixed,supporting_reference,
+kb/global-rules/sources/wiki-source-index.md,global-rules,source,supporting_reference,wiki,supporting_reference,
+kb/global-rules/sources/wiki-verified-baselines.md,global-rules,source,supporting_reference,wiki,supporting_reference,
+kb/global-rules/sources/workbook-and-repo-evidence-summary.md,global-rules,source,supporting_reference,repo,supporting_reference,
+kb/global-rules/tables/sub-module-effects-core-and-utility.csv,global-rules,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/global-rules/tables/wiki-module-pull-rates-and-levels.csv,global-rules,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/global-rules/tables/module-unique-effects-reference.csv,global-rules,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/global-rules/tables/note-derived-orb-boss-hit-levels-1-10.csv,global-rules,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/global-rules/tables/wiki-tier-scaling-multipliers.csv,global-rules,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/global-rules/tables/note-derived-wave-boss-intervals.csv,global-rules,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/guardians/contracts/guardian-runtime-contract.md,guardians,contract,canonical,wiki-verified,external_source_closed,Guardian semantics
+kb/guardians/notes/guardian-effects.md,guardians,note,canonical_note,mixed,supporting_reference,
+kb/guardians/notes/guardian-system.md,guardians,note,canonical_note,mixed,supporting_reference,
+kb/guardians/sources/wiki-guardian-baselines.md,guardians,source,supporting,wiki-verified,supporting_reference,Guardian provenance
+kb/guardians/tables/guardian-chip-baselines.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/guardians/tables/guardian-upgrades.csv,guardians,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/guardians/tables/wiki-guardian-ally-levels-1-31-slice.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/guardians/tables/wiki-guardian-attack-levels-full.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/guardians/tables/wiki-guardian-bonus-scaling.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/guardians/tables/wiki-guardian-types.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/labs/contracts/lab-domain-contract.md,labs,contract,canonical,derived-and-reproducible,uploaded_corpus_closed,Labs domain contract
+kb/labs/notes/lab-system.md,labs,note,canonical,derived-and-reproducible,uploaded_corpus_closed,Canonical labs note
+kb/labs/sources/raw/effective-paths/sheet-exports/dvt-laboratory-formulas.csv,labs,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/effective-paths/sheet-exports/dvt-laboratory-values.csv,labs,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-attack-speed.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-chrono-field-duration.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-defense.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-health-regen.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-health.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-recovery-package-chance.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/lab-waves-required.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/wall-lab-wall-health.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/raw/repo-cache/wiki/wall-lab-wall-regen.csv,labs,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/labs/sources/wiki-labs-baselines.md,labs,source,supporting,wiki-verified,supporting_reference,Labs provenance summary
+kb/labs/tables/lab-values.csv,labs,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/labs/tables/wiki-game-speed-lab.csv,labs,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/labs/tables/module-drop-labs.csv,labs,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ledgers/notes/scope-boundary-registry.md,ledgers,note,canonical_governance_doc,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/merged-inventory.csv,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/merged-section-coverage.csv,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/registry/catalog.yaml,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/registry/ep-formulas/formula-library.yaml,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/registry/ep-formulas/mechanics-library.yaml,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/registry/ep-formulas/sources.yaml,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/registry/ep-formulas/targets.yaml,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/schemas/combat-params-schema.json,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/sources/raw/repo-meta/source-packages-summary.csv,ledgers,source,supporting_reference,mixed,supporting_reference,
+kb/ledgers/tables/canonical-id-registry.csv,ledgers,table,canonical_registry,derived,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ledgers/tables/canonicality-registry.csv,ledgers,table,canonical_registry,derived,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ledgers/tables/towersim-static-ledger.csv,ledgers,table,supporting_reference,derived,supporting_reference,
+kb/modules/contracts/module-unique-mechanic-contracts.csv,modules,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/modules/contracts/module-unique-runtime-catalog.csv,modules,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/modules/contracts/module-unique-runtime-semantics.md,modules,contract,canonical_runtime_doc,mixed,supporting_reference,
+kb/modules/notes/module-unique-effects.md,modules,note,canonical_note,mixed,supporting_reference,
+kb/modules/sources/raw/effective-paths/defined-names/module-defined-names.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-base.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-formula-notes.md,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-increment-bands.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-level-additive-curve.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-total-multiplier-by-rarity-level.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/sheet-exports/module-base-stat-formulas.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/effective-paths/sheet-exports/module-base-stat-values.csv,modules,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/assist-efficiency-upgrade-costs.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/assist-slot-unlock-costs.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/assist-stone-levels.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/assist-unique-rarity-upgrade-costs.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/bot-upgrades.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/guardian-upgrades.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/module-main-effect-bands.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/module-main-effect-bases.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/raw/repo-inputs/modules/module-substats.csv,modules,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/modules/sources/wiki-module-unique-effects-baselines.md,modules,source,supporting_reference,wiki,supporting_reference,
+kb/modules/sources/wiki-modules-and-submodules.md,modules,source,supporting_reference,wiki,supporting_reference,
+kb/modules/tables/assist-efficiency-upgrade-costs.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/assist-slot-unlock-costs.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/assist-stone-levels.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/core-submodule-effects-quant.csv,modules,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/module-main-effect-bands.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/module-main-effect-bases.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/module-substats.csv,modules,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/modules/tables/module-unique-effects.csv,modules,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/modules/tables/utility-submodule-effects-quant.csv,modules,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/perks/contracts/perk-runtime-contract.md,perks,contract,canonical,wiki-verified,external_source_closed,Perk runtime semantics
+kb/perks/notes/perk-system.md,perks,note,canonical,wiki-verified,external_source_closed,Canonical perks note
+kb/perks/sources/raw/repo-inputs/perks/perk-pool-weights.csv,perks,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/perks/sources/raw/repo-inputs/perks/perks.csv,perks,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/perks/sources/wiki-perks-baselines.md,perks,source,supporting,wiki-verified,supporting_reference,Perk provenance summary
+kb/perks/tables/perk-pool-weights.csv,perks,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/perks/tables/perks.csv,perks,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/contracts/battle-condition-effect-matrix.csv,tournaments,contract,canonical_runtime_doc,derived,supporting_reference,
+kb/tournaments/notes/battle-condition-mechanics.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/notes/battle-condition-system.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/notes/tournament-difficulty-model.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/notes/tournament-league-structure.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/notes/tournament-system.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/notes/tournament-wave-timing.md,tournaments,note,canonical_note,mixed,supporting_reference,
+kb/tournaments/sources/raw/repo-inputs/combat/battle-condition-magnitudes.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/combat/tier-battle-conditions.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/heat-bc-registry.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/heat-scale-long.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/tournament-heat-bc-values-long.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/tournament-heat-steps.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/tournament-league-rules.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/raw/repo-inputs/tournament/tournament-more-bosses-static.csv,tournaments,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/tournaments/sources/wiki-battle-conditions-and-tournaments.md,tournaments,source,supporting_reference,wiki,supporting_reference,
+kb/tournaments/tables/battle-condition-behavior-reference.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/battle-condition-magnitudes.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/battle-condition-reduction-lab.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/battle-condition-group-2-reduction-lab.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/battle-condition-group-3-reduction-lab.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/battle-condition-group-4-reduction-lab.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/heat-battle-condition-registry.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/heat-scale-long.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tier-battle-condition-levels.csv,tournaments,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tier-battle-conditions.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tournament-heat-battle-condition-values-long.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tournament-heat-steps.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tournament-league-rules.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/tournament-more-bosses-intervals.csv,tournaments,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/tournaments/tables/note-derived-battle-condition-groups.csv,tournaments,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/battle-condition-reduction-baselines.csv,tournaments,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/tournaments/tables/note-derived-enemy-heat-scaling-reference.csv,tournaments,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/note-derived-tournament-leagues.csv,tournaments,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/note-derived-tournament-wave-structure.csv,tournaments,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/ultimate-weapons/contracts/ultimate-weapon-plus-runtime-contract.md,ultimate-weapons,contract,canonical,wiki-verified,external_source_closed,Ultimate Weapon Plus (UW+) shared runtime semantics
+kb/ultimate-weapons/contracts/ultimate-weapon-runtime-contract.md,ultimate-weapons,contract,canonical,wiki-verified,external_source_closed,Shared UW runtime semantics
+kb/ultimate-weapons/notes/ultimate-weapon-economy-and-sync-models.md,ultimate-weapons,note,canonical_note,mixed,supporting_reference,
+kb/ultimate-weapons/notes/ultimate-weapon-lab-ladders.md,ultimate-weapons,note,canonical_note,mixed,supporting_reference,
+kb/ultimate-weapons/notes/ultimate-weapon-lab-mechanics.md,ultimate-weapons,note,canonical_note,mixed,supporting_reference,
+kb/ultimate-weapons/sources/raw/effective-paths/sheet-exports/all-uws-formulas.csv,ultimate-weapons,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/effective-paths/sheet-exports/all-uws-values.csv,ultimate-weapons,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-plus-ladders.csv,ultimate-weapons,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-plus-ladders-recommended.csv,ultimate-weapons,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-purchase-costs.csv,ultimate-weapons,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-track-ladders.csv,ultimate-weapons,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-track-ladders-recommended.csv,ultimate-weapons,source,raw_source_artifact,repo_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/wiki-verified-uw-plus-ladders.csv,ultimate-weapons,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/wiki-verified-uw-track-ladders.csv,ultimate-weapons,source,raw_source_artifact,wiki_raw,supporting_reference,preserve source-faithful naming
+kb/ultimate-weapons/sources/wiki-ultimate-weapons-and-spotlight-baselines.md,ultimate-weapons,source,supporting_reference,wiki,supporting_reference,
+kb/ultimate-weapons/sources/wiki-ultimate-weapon-detailed-baselines.md,ultimate-weapons,source,supporting_reference,wiki,supporting_reference,
+kb/ultimate-weapons/tables/black-hole-basic-upgrades.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/black-hole-consume-ultimate-weapon-plus.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/black-hole-size-duration-extension.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/death-wave-basic-upgrades.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/death-wave-damage-extension.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/golden-tower-basic-upgrades.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/golden-tower-duration-extension.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/spotlight-basic-upgrades-extended.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/spotlight-missiles-lab-1-16.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/ultimate-weapon-cooldown-step-costs.csv,ultimate-weapons,table,canonical_table,ep,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/ultimate-weapon-plus-ladders.csv,ultimate-weapons,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/ultimate-weapon-purchase-costs.csv,ultimate-weapons,table,canonical_table,mixed,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/ultimate-weapon-track-ladders.csv,ultimate-weapons,table,canonical_table,repo,uploaded_corpus_closed,Canonical within frozen package corpus; upstream external closure not always available.
+kb/ultimate-weapons/tables/black-hole-coin-bonus-levels-1-17.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/wiki-death-wave-cell-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/wiki-death-wave-coin-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/wiki-death-wave-health-levels-full.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/wiki-golden-tower-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/wiki-golden-tower-duration-levels-full.csv,ultimate-weapons,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/ultimate-weapons/tables/note-derived-ultimate-weapon-plus-chain-lightning-and-poison-swamp.csv,ultimate-weapons,table,canonical_table,notes_or_prompt_reconstruction,externally_verified_live_wiki_2026-03-14,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/workshop/contracts/workshop-runtime-contract.md,workshop,contract,canonical,derived-and-reproducible,uploaded_corpus_closed,Workshop runtime semantics
+kb/workshop/notes/workshop-system.md,workshop,note,canonical,derived-and-reproducible,uploaded_corpus_closed,Canonical workshop system note
+kb/workshop/sources/raw/effective-paths/sheet-exports/dvt-workshop-formulas.csv,workshop,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/workshop/sources/raw/effective-paths/sheet-exports/dvt-workshop-values.csv,workshop,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/workshop/sources/raw/effective-paths/sheet-exports/wsvalues-formulas.csv,workshop,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/workshop/sources/raw/effective-paths/sheet-exports/wsvalues-values.csv,workshop,source,raw_source_artifact,ep_raw,supporting_reference,preserve source-faithful naming
+kb/workshop/sources/wiki-and-effective-paths-workshop-baselines.md,workshop,source,supporting,wiki-verified,supporting_reference,Workshop provenance summary
+kb/workshop/tables/enhancements-values.csv,workshop,table,canonical,ep-verified,external_source_closed,Promoted Effective Paths enhancement ladders
+kb/workshop/tables/workshop-values.csv,workshop,table,canonical,ep-verified,external_source_closed,Promoted Effective Paths workshop ladders

@@ -1,0 +1,16 @@
+level,unlock_cost_stones,value,ability,description,source_status
+1,300,0.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+2,360,1.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+3,430,2.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+4,510,4.7,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+5,620,6.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+6,750,9.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+7,900,12.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+8,1100,15.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+9,1350,19.7,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+10,1650,23.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+11,2050,28.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+12,2600,33.5,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+13,3300,38.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+14,4150,44.7,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70
+15,5200,50.9,Inner Land Mines - Charged Mines,The damage of Inner Land Mines increases X times per second as long as they are alive.,live_wiki_row_verified_v70

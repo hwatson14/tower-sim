@@ -1,0 +1,924 @@
+eDamage_mechanics:
+  version: ep_v5.03.02_extract_2026-03-17
+  workbook: Copy of Effective Paths v5.03.02.xlsx
+  mechanics:
+  - id: ep_lambda_bullet_per_second
+    name: BULLET_PER_SECOND
+    type: excel_named_formula
+    excel_definition: LAMBDA(attack_speed, ((0.01413 * attack_speed^2) + (4.01278 * attack_speed) + 92.8885)*1.3)
+    notes: From workbook defined name.
+  - id: ep_lambda_epd_epd_aspd
+    name: EPD_ASPD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, wsp_level, lab_level, has_card, card_level, substat, relic, vault, has_mastery, mastery_level,\
+      \ LET(\n  WS, 1 + 0.05 * ws_level,\n  WSPlus, 1 + 0.01 * wsp_level,\n  Lab, 1 + 0.02 * lab_level,\n  CardASPD, IF(has_card,\
+      \ (1.1 + card_level * 0.15) * IF(has_mastery, 1+0.03*(1+mastery_level), 1), 1),\n  RelicBonus, 1 + relic,\n  VaultBonus,\
+      \ 1 + vault,\n\n(WS * Lab * CardASPD + Substat) * WSPlus * RelicBonus * VaultBonus))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_bounceshot
+    name: EPD_BOUNCESHOT
+    type: excel_named_formula
+    excel_definition: LAMBDA(bsc, bst, astral_delivrance, (1 + SUM(ARRAYFORMULA(BSC^(SEQUENCE(BST)) * (1+Astral_Delivrance)^SEQUENCE(BST)))))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_bsc
+    name: EPD_BSC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.8%,\n  VaultBonus, 1 + vault,\n\n(WS + Substat)\
+      \ * VaultBonus))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_bst
+    name: EPD_BST
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, perk, substat, LET(\n  WS, 1 + ws_level,\n  VaultBonus, 1 + vault,\n\nWS + Perk +\
+      \ FLOOR(Substat)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_critical
+    name: EPD_CRITICAL
+    type: excel_named_formula
+    excel_definition: "LAMBDA(cc, cf, scc, scm, being_annihilator, LET(\n  CCm, MIN(1, CC),\n  normalCrit, (1-CCm) + (CCm*CF*(1-SCC)\
+      \ + CCm*CF*SCC*SCM),\n\n  Streak, being_annihilator,\n  StreakChance, CCm * SCC,\n  piZero, 1 / (1 + Streak * StreakChance),\n\
+      \  pistreak, (Streak * StreakChance) / (1 + Streak * StreakChance),\n  BACritF, CF * SCM,\n\npiZero * normalCrit + pistreak\
+      \ * BACritF))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_crit_chance
+    name: EPD_CRIT_CHANCE
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, has_card, card_level, relic, vault, substat, has_mastery, mastery_level, LET(\n  WS,\
+      \ (1%+(1%*ws_level)),\n  CardCC, IF(has_card, 4%+ 1% * card_level+IF(has_mastery, 1% * (1+mastery_level), 0), 0),\n\n\
+      WS + relic + vault + Substat + CardCC))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_dpm
+    name: EPD_DPM
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, wsp_level, lab_level, substat, relic, vault, has_mastery, mastery_level, LET(\n  WS,\
+      \ VLOOKUP(ws_level, WSValues!$I:$J, 2, FALSE)/1000,\n  Lab, 1 + 2% * lab_level,\n  WSPlus, 1 + 0.01 * wsp_level,\n \
+      \ RelicBonus, 1 + relic,\n  VaultBonus, 1 + vault,\n  CardRNGMastery, IF(has_mastery, 1 + 0.2 * (1+mastery_level), 1),\n\
+      \n(WS * Lab + Substat) * WSPlus * RelicBonus * VaultBonus * CardRNGMastery))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_maxrend
+    name: EPD_MAXREND
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_rend, lab_level, substat, wsp_level, LET(\n  Lab, lab_level * 25%,\n  Wsp, 1+(wsp_level\
+      \ * 1%),\nIF(has_rend, (8 + Substat + Lab) * Wsp, 1)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_msc
+    name: EPD_MSC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.5%,\n  VaultBonus, 1 + vault,\n(WS + Substat)\
+      \ * VaultBonus))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_mst
+    name: EPD_MST
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, substat, LET(\n  WS, 2 + ws_level,\nWS + FLOOR(Substat)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_multishot
+    name: EPD_MULTISHOT
+    type: excel_named_formula
+    excel_definition: LAMBDA(msc, mst, 1 + MSC * (MST-1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_range
+    name: EPD_RANGE
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, has_card, card_level, lab_level, substat, LET(\n  WS, 30 + 0.5 * ws_level,\n  CardRNG,\
+      \ IF(has_card, 1.1 + 0.05 * card_level, 1),\n  Lab, 1 + 2% * lab_level,\n\nFUDDSMATH_RANGE(WS * CardRNG * Lab + Substat)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_rangedpm
+    name: EPD_RANGEDPM
+    type: excel_named_formula
+    excel_definition: LAMBDA(range, dpm, kill_at_range, 1 + range * dpm * kill_at_range)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_rapidfire
+    name: EPD_RAPIDFIRE
+    type: excel_named_formula
+    excel_definition: LAMBDA(rfc, rfd, bps, (1 + 4 * RFC*RFD*BPS) / (1 + RFC*RFD*BPS))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_rfc
+    name: EPD_RFC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, substat, vault, LET(\n  WS, ws_level * 0.4%,\n  VaultBonus, 1 + vault,\n(WS + Substat)\
+      \ * VaultBonus))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_rfd
+    name: EPD_RFD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_level, substat, LET(\n  WS, 0.6 + ws_level * 0.05,\nWS + Substat))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_uwcritical
+    name: EPD_UWCRITICAL
+    type: excel_named_formula
+    excel_definition: LAMBDA(cc, cf, scc, scm, (1+CC*CF)*(1+CC*SCC*SCM))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epg_assist_sub_cap
+    name: EPG_ASSIST_SUB_CAP
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_assist, stone_cap, lab_cap, IF(has_assist, (1 + stone_cap + lab_cap) / 100, 0))
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_cl_dps
+    name: EP_CL_DPS
+    type: excel_named_formula
+    excel_definition: 'LAMBDA(cl_damage, cl_quant, cl_chance, multi_rapid_bounce, bullet_per_second, cl_damage*cl_quant*cl_chance
+
+      *multi_rapid_bounce*bullet_per_second)'
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_dw_dps
+    name: EP_DW_DPS
+    type: excel_named_formula
+    excel_definition: LAMBDA(hasdw, dwdamage, dwquantity, dwcooldown, dwdamageamp, IF(hasdw, DWDamage/DWCooldown* DwQuantity*
+      (5+ dwDamageAmp*1.5), 0))
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_slm_dps
+    name: EP_SLM_DPS
+    type: excel_named_formula
+    excel_definition: LAMBDA(sm_damage, sl_damage, sm_cooldown, sm_heat, sm_aoe, sm_heat * sm_aoe * sm_damage * sl_damage
+      / sm_cooldown)
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_sl_final_bonus
+    name: EP_SL_FINAL_BONUS
+    type: excel_named_formula
+    excel_definition: LAMBDA(sl_coverage, sl_bonus, 1 + (sl_bonus-1) * sl_coverage)
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_sm_dps
+    name: EP_SM_DPS
+    type: excel_named_formula
+    excel_definition: LAMBDA(sm_damage, sm_quant, sm_cooldown, sm_coverfire, sm_heat, sm_aoe, sm_heat * sm_aoe * (sm_damage
+      * sm_quant / sm_cooldown + sm_coverfire))
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_uw_sl_coverage
+    name: EP_UW_SL_COVERAGE
+    type: excel_named_formula
+    excel_definition: LAMBDA(sl_quant, sl_angle, MIN(100%, sl_quant * sl_angle / 360))
+    notes: From workbook defined name.
+  - id: ep_lambda_ep_uw_total_damage
+    name: EP_UW_TOTAL_DAMAGE
+    type: excel_named_formula
+    excel_definition: LAMBDA(dw, cl, sm, slm, sl, ps, ilm, uw_damage_boost, st_uw_mastery, uw_crit_card, uw_damage_boost *
+      ((DW+SM+CL+PS+ILM) * SL * st_uw_mastery + SLM) * uw_crit_card * st_uw_mastery)
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_cl_final_ch
+    name: STAT_UW_CL_FINAL_CH
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_cl_final_dmg
+    name: STAT_UW_CL_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasperk, (base+substat)*IF(HasPerk,2,1))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_cl_final_qty
+    name: STAT_UW_CL_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasdc, FLOOR(base+substat) + IF(HasDC,0.6,0))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_dw_final_cd
+    name: STAT_UW_DW_FINAL_CD
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, gcompreduction, (base+substat)*gcompreduction)
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_dw_final_dmg
+    name: STAT_UW_DW_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, base+substat)
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_dw_final_qty
+    name: STAT_UW_DW_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasperk, FLOOR(base+substat+IF(hasperk,1,0)))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sl_final_angle
+    name: STAT_UW_SL_FINAL_ANGLE
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sl_final_dmg
+    name: STAT_UW_SL_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: 'LAMBDA(base, sl_lightrange, substat, relic, vault, has_perk, (base+substat)*(1+relic)*(1+vault)*
+
+      IF(has_perk, 1.5, 1)*sl_lightrange)'
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sl_final_lr
+    name: STAT_UW_SL_FINAL_LR
+    type: excel_named_formula
+    excel_definition: LAMBDA(sl_lightrange, dpm, 1+IF(ISNUMBER(sl_lightrange), sl_lightrange * (dpm-1), 0))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sm_final_cd
+    name: STAT_UW_SM_FINAL_CD
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, gcompreduction, (base+substat)*gcompreduction)
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sm_final_cf
+    name: STAT_UW_SM_FINAL_CF
+    type: excel_named_formula
+    excel_definition: LAMBDA(sm_damage, cf_time, IF(ISNUMBER(cf_time), sm_damage * (1 / cf_time), 0))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sm_final_dmg
+    name: STAT_UW_SM_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name.
+  - id: ep_lambda_stat_uw_sm_final_qty
+    name: STAT_UW_SM_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, has_perk, FLOOR((base+substat) + IF(has_perk, 4, 0)))
+    notes: From workbook defined name.
+  - id: ep_lambda_epd_epd_aoe_card_boost
+    name: EPD_AOE_CARD_BOOST
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_card, card_level, IF(has_card, 1+INDEX({5%;8%;11%;14%;17%;20%;25%}, card_level), 1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_shockwave_damage
+    name: EPD_SHOCKWAVE_DAMAGE
+    type: excel_named_formula
+    excel_definition: "LAMBDA(acp, sw_size_ws, sw_size_lab, sw_frequency_ws, sw_frequency_vault, sw_frequency_sub, IF(acp=0,\
+      \ 1, LET(\n  SWsizeWs, 0.6 + 0.05 * sw_size_ws,\n  SWsizeLab, sw_size_lab/20,\n  SWsize, SWsizeWs + SWsizeLab,\n\n \
+      \ SWFreqWs, 20 - 0.15 * sw_frequency_ws,\n  SWFreq, MAX(7, SWFreqWs + sw_frequency_vault + sw_frequency_sub) + SWsize/2,\n\
+      1+(acp-1)*(7/SWFreq))))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_spb
+    name: EPD_SPB
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_perk, lab_spb, damage_quantity, IF(has_perk,\n  (1+0.15*damage_quantity)*EPG_SPB(lab_spb),\n\
+      \  1\n))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_supertower_bonus
+    name: EPD_SUPERTOWER_BONUS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(card_level, lab_level, LET(\n  cardBonus, 2.1 + card_level * 0.4 + IF(card_level=\"7\", 0.1,\
+      \ 0),\n  labBonus, 1 + (3% * lab_level),\n  cardBonus * labBonus))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_supertower_cooldown
+    name: EPD_SUPERTOWER_COOLDOWN
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_stm, stm_level, 45 - 3 * IF(has_stm, 1 + stm_level, 0))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_supertower_effective_bonus
+    name: EPD_SUPERTOWER_EFFECTIVE_BONUS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_card, has_mastery, st_bonus, st_cooldown, has_sl, sl_quantity, sl_angle, LET(\n  ST_SLb,\
+      \ IF(has_mastery, 1 + (35% * (ST_bonus - 1)), 1),\n  SLC, IF(eDamage!$BG$30, EP_UW_SL_COVERAGE(SL_quantity, SL_angle),\
+      \ 0),\n\nIF(has_card, 1 + (15 * (ST_bonus * (1 + (ST_SLb - 1) * SLC) - 1))/st_cooldown, 1)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epd_epd_supertower_effective_uwbonus
+    name: EPD_SUPERTOWER_EFFECTIVE_UWBONUS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_card, has_mastery, st_bonus, st_cooldown, IF(\n  AND(has_card, has_mastery),\n  1 + (15\
+      \ * (35% * ST_bonus - 1)) / ST_cooldown,\n  1\n))"
+    notes: From workbook defined name. Verification source only; not package canon.
+ids_helpers:
+  status: complete
+stacking_rules:
+  status: complete
+issues:
+- id: ep_defined_name_missing_param
+  name: EPD_BST uses vault without parameter
+  workbook: Copy of Effective Paths v5.00.01.xlsx
+  defined_name: EPD_BST
+  detail: Defined name text contains 'VaultBonus, 1 + vault' but lambda params are (ws_level, perk, substat).
+  policy: fail_closed_or_explicit_patch_only
+- id: AUDIT_BLOCKED_ITEMS_PRESENCE
+  status: partial
+  note: Health/regen labs and card curves exist in tables/wiki_cache; workshop base curves exist in tests/fixtures/WSValues.csv;
+    defense% lab/curve and wall fortification curve not found in tables/ or wiki_cache.
+eHP_mechanics:
+  version: ep_v5.03.02_extract_2026-03-17
+  workbook: Copy of Effective Paths v5.03.02.xlsx
+  mechanics:
+  - id: ep_lambda_ehp_eph_max_rcvr
+    name: EPH_MAX_RCVR
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, vault_pct, LET(\n  WS, ws_val,\n\
+      \  LAB, 1%*lab_lvl,\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n  WSE, 1+0.01*wse_lvl,\n\
+      \  VAULT, 1+vault_pct,\n\n(WS+LAB+SUBSTAT)*WSE*VAULT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_health
+    name: EPH_HEALTH
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, wse_lvl, has_perk, spb_lvl, has_cto,\
+      \ has_rto, relic_pct, vault_pct, has_dwhp, dwhp_lvl, LET(\n  WS, ws_val,\n  LAB, 1+0.03*lab_lvl,\n  CARD, IF(has_card,\
+      \ card_val*IF(has_mastery, 1+0.2*(1+mastery_lvl), 1), 1),\n  WSE, 1+0.01*wse_lvl,\n  PERKHP, IF(has_perk, (1+0.2*5)*(1+1%*spb_lvl),\
+      \ 1),\n  CTO, IF(has_cto, 0.3, 1),\n  RTO, IF(has_rto, 0.4, 1),\n  RELIC, 1+relic_pct,\n  VAULT, 1+vault_pct,\n  DWHP,\
+      \ IF(has_dwhp, 500%+25%*dwhp_lvl, 1),\n\nWS*LAB*CARD*WSE*PERKHP*CTO*RTO*RELIC*VAULT*DWHP))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_regen
+    name: EPH_REGEN
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub,\
+      \ ass_sub, wse_lvl, has_perk, spb_lvl, has_rgnto, has_rto, ito_lvl, relic_pct, vault_pct, has_swm, swm_lvl, LET(\n \
+      \ WS, ws_val,\n  LAB, 1+0.03*lab_lvl,\n  CARD, IF(has_card, card_val*IF(has_mastery, 1+0.4*(1+mastery_lvl), 1), 1),\n\
+      \  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, 1+prim_sub+ass_sub*SAC,\n  WSE, 1+0.01*wse_lvl,\n  PERKREGEN, IF(has_perk,\
+      \ (1+0.75*5)*(1+1%*spb_lvl), 1),\n  RGNTO, IF(has_rgnto, 0.1, 1),\n  RTO, IF(has_rto, 8*(1+1%*ito_lvl), 1),\n  RELIC,\
+      \ 1+relic_pct,\n  VAULT, 1+vault_pct,\n  SWM, IF(has_swm, 1+0.9*(1+swm_lvl), 1),\n\nWS*LAB*CARD*SUBSTAT*WSE*PERKREGEN*RGNTO*RTO*RELIC*VAULT*SWM))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_def_pct
+    name: EPH_DEF_PCT
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, has_mastery, mastery_lvl, stone_sac, lab_sac, prim_sub,\
+      \ ass_sub, has_perk, spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 0.2%*lab_lvl,\n  CARD, IF(has_card,\
+      \ card_val+IF(has_mastery, 0.7%*(1+mastery_lvl), 0), 0),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\
+      \  PERKDEF, IF(has_perk, (4%*5)*(1+1%*spb_lvl), 0),\n  RELIC, relic_pct,\n  VAULT, vault_pct,\n\nMIN(98%, WS+LAB+CARD+SUBSTAT+PERKDEF+RELIC+VAULT)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_dabs
+    name: EPH_DABS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk,\
+      \ spb_lvl, relic_pct, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1+0.03*lab_lvl,\n  CARD, IF(has_card, card_val, 1),\n \
+      \ SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, 1+prim_sub+ass_sub*SAC,\n  WSE, 1+0.01*wse_lvl,\n  PERKDABS, IF(has_perk,\
+      \ (1+0.15*5)*(1+1%*spb_lvl), 1),\n  RELIC, 1+relic_pct,\n  VAULT, 1+vault_pct,\n\nWS*LAB*CARD*SUBSTAT*WSE*PERKDABS*RELIC*VAULT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_armor
+    name: EPH_ARMOR
+    type: excel_named_formula
+    excel_definition: LAMBDA(prim_bonus, has_ass, ass_bonus, stone_bac, lab_bac, prim_bonus*IF(has_ass, ((ass_bonus-1)*(1+stone_bac+lab_bac)*0.01)+1,
+      1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_wall_health
+    name: EPH_WALL_HEALTH
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, prim_effect, ass_effect, fort_lvl,\
+      \ LET(\n  WS, ws_val,\n  LAB, 2%*lab_lvl,\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n  WSE,\
+      \ 1+0.01*wse_lvl,\n  SF, IF(prim_effect+ass_effect<>0, prim_effect+ass_effect, 1),\n    WALLHP, (WS+LAB+SUBSTAT)*WSE*SF,\n\
+      \n  FORT, 1+0.2*fort_lvl,\n\nWALLHP*FORT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_ehp_eph_wall_regen
+    name: EPH_WALL_REGEN
+    type: excel_named_formula
+    excel_definition: "LAMBDA(lab_lvl, prim_effect, ass_effect, LET(\n  LAB, 10%*lab_lvl,\n  SF, IF(prim_effect+ass_effect<>0,\
+      \ prim_effect+ass_effect, 1),\n\nLAB*SF))"
+    notes: From workbook defined name. Verification source only; not package canon.
+stat_definitions:
+  version: '0.6'
+  notes: Aligned stat IDs with the historical repo stat registry where available (tower_hp, tower_regen,
+    def_pct, wall_hp, wall_regen). Uses the existing _IDS schema (historical IDS-state naming plus ids_parser naming). Any referenced
+    entity missing from tables/registry/catalog.yaml is marked catalog_missing and should fail-closed.
+  stats:
+    tower_hp:
+      display_name: Health
+      unit: hp
+      definition:
+        op_chain:
+        - op: APPLY_WORKSHOP_BASE
+          level:
+            type: IDS_PATH
+            path: ids.workshop.entries['Health'].coin_level
+          base_curve: WSValues/Health
+          note: Workshop level from IDS. Base curve must be an authoritative table (currently only in fixtures).
+        - op: MULT
+          factor:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/labs_values_v1.csv
+            key:
+              canonical_id: LAB_HEALTH
+              level:
+                type: IDS_PATH
+                path: ids.labs.labs['Health']
+            value_col: value
+            note: Lab Health multiplier from canonical labs_values_v1.csv (promoted from wiki cache).
+    tower_regen:
+      display_name: Health Regen
+      unit: hp_per_s
+      definition:
+        op_chain:
+        - op: APPLY_WORKSHOP_BASE
+          level:
+            type: MISSING_IDS_PATH
+            expected: ids.workshop.entries['HPregen'].coin_level
+            note: No HPregen entry in WS section of IDS fixture; regen base currently sourced via WSValues fixture. Keep fail-closed
+              until promoted.
+        - op: MULT
+          factor:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/labs_values_v1.csv
+            key:
+              canonical_id: LAB_HEALTH_REGEN
+              level:
+                type: IDS_PATH
+                path: ids.labs.labs['Health Regen']
+            value_col: value
+            note: Health Regen lab multiplier (canonical table).
+        - op: MULT
+          factor:
+            type: HELPER_REF
+            name: standard_perks_bonus_mult
+    def_pct:
+      display_name: Defense %
+      unit: percent
+      definition:
+        op_chain:
+        - op: ADD_PP
+          term:
+            type: WORKSHOP_RULE
+            level:
+              type: IDS_PATH
+              path: ids.workshop.entries['Defense %'].coin_level
+            pp_per_level: 0.5
+            note: Workshop Defense % adds 0.5 percentage points per level; prefer a table.
+        - op: ADD_PP
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Defense %']
+            pp_per_level: 0.2
+            max_pp: 10.0
+            note: 'Formulaic lab: 0.20pp per level to 50 (user-provided). Promote into tables/wiki_cache.'
+        - op: ADD_PP
+          term:
+            type: CARD_TABLE
+            level:
+              type: IDS_PATH
+              path: ids.cards.cards['Extra Defense'].level
+            canonical_id: CARD_EXTRA_DEFENSE
+            note: Card present in IDS; catalog entry required for lookup.
+        - op: CAP_MAX
+          value: 0.98
+    wall_hp:
+      display_name: Wall Health
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: tower_hp * wall_health_ratio
+          inputs:
+          - tower_hp
+          - helper: wall_health_ratio
+    wall_regen:
+      display_name: Wall Regen
+      unit: hp_per_s
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: tower_regen * wall_regen_ratio
+          inputs:
+          - tower_regen
+          - helper: wall_regen_ratio
+    recovery_package_max:
+      display_name: Recovery Package Max
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_base * max_recovery_wse_mult * max_recovery_vault_mult
+          inputs:
+          - helper: max_recovery_base
+          - helper: max_recovery_wse_mult
+          - helper: max_recovery_vault_mult
+  helpers:
+    standard_perks_bonus_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 1.0
+        - op: MULT
+          factor:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/labs_values_v1.csv
+            key:
+              canonical_id: LAB_STANDARD_PERKS_BONUS
+              level:
+                type: IDS_PATH
+                path: ids.labs.labs['Standard Perks Bonus']
+            value_col: value
+            note: Standard Perks Bonus lab (canonical table).
+    wall_health_ratio:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.2
+        - op: ADD
+          term:
+            type: WORKSHOP_RULE
+            level:
+              type: IDS_PATH
+              path: ids.workshop.entries['Wall Health'].coin_level
+            add_per_level: 0.001
+            cap_max: 2.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/labs_values_v1.csv
+            key:
+              canonical_id: LAB_WALL_HEALTH
+              level:
+                type: IDS_PATH
+                path: ids.labs.labs['Wall Health']
+            value_col: value
+            note: Wall Health lab adds to wall HP ratio; verify semantics in canonical table.
+    wall_regen_ratio:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/labs_values_v1.csv
+            key:
+              canonical_id: LAB_WALL_REGEN
+              level:
+                type: IDS_PATH
+                path: ids.labs.labs['Wall Regen']
+            value_col: value
+            note: Wall Regen lab ratio (canonical table).
+    wall_fort_overheal_ratio:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Wall Fortification']
+            add_per_level: 0.2
+            max: 12.0
+            note: User-provided ladder 20% per level to level 60 (1200%). Promote into tables/wiki_cache.
+      note: Fortification semantics beyond 'regen beyond max' remain blocked until sourced.
+    max_recovery_ws:
+      unit: hp
+      definition:
+        op_chain:
+        - op: APPLY_WORKSHOP_BASE
+          level:
+            type: IDS_PATH
+            path: ids.workshop.entries['Recovery Package Max'].coin_level
+          base_curve: DVT_Workshop/Max Recovery
+          note: Base curve uses DVT_Workshop Max Recovery (EPH_MAX_RCVR ws_val). Fail-closed until authoritative table is
+            present.
+    max_recovery_lab:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Recovery Package Max']
+            add_per_level: 0.01
+            note: LAB = 1% * lab_lvl (EPH_MAX_RCVR).
+    max_recovery_stone_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/modules/assist_stone_levels_v1.csv
+            key:
+              stone_level:
+                type: MISSING_IDS_PATH
+                expected: ids.stones.assist_level
+            value_col: assist_efficiency_frac
+            note: stone_sac from assist_stone_levels_v1.csv (linear +1% per level); fail-closed until IDS path is provided.
+    max_recovery_lab_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: LAB_RULE
+            level:
+              type: IDS_PATH
+              path: ids.labs.labs['Assist Module Substats - Generator']
+            add_per_level: 1.0
+            note: lab_sac from Assist Module Substats - Generator (raw lab level).
+    max_recovery_sac:
+      unit: scalar
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: (1 + max_recovery_stone_sac + max_recovery_lab_sac) * 0.01
+          inputs:
+          - helper: max_recovery_stone_sac
+          - helper: max_recovery_lab_sac
+    max_recovery_primary_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/modules/module_substats_v1.csv
+            key:
+              key: primary_max_recovery
+            value_col: value
+            note: prim_sub from module substat tables (missing in repo); fail-closed until table is provided.
+    max_recovery_assist_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/modules/module_substats_v1.csv
+            key:
+              key: assist_max_recovery
+            value_col: value
+            note: ass_sub from module substat tables (missing in repo); fail-closed until table is provided.
+    max_recovery_substat:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_primary_substat + (max_recovery_assist_substat * max_recovery_sac)
+          inputs:
+          - helper: max_recovery_primary_substat
+          - helper: max_recovery_assist_substat
+          - helper: max_recovery_sac
+    max_recovery_base:
+      unit: hp
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: max_recovery_ws + max_recovery_lab + max_recovery_substat
+          inputs:
+          - helper: max_recovery_ws
+          - helper: max_recovery_lab
+          - helper: max_recovery_substat
+    max_recovery_wse_level:
+      unit: level
+      definition:
+        op_chain:
+        - op: BASE
+          value: 0.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/wse_presets_v1.csv
+            key:
+              preset_id:
+                type: MISSING_IDS_PATH
+                expected: ids.wse.preset_id
+              stat: max_recovery
+            value_col: wse_level
+            note: WSE preset mapping required for max_recovery; wse_level contributes +1% per level.
+    max_recovery_wse_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: DERIVE
+          expr: 1 + (0.01 * max_recovery_wse_level)
+          inputs:
+          - helper: max_recovery_wse_level
+    max_recovery_vault_mult:
+      unit: multiplier
+      definition:
+        op_chain:
+        - op: BASE
+          value: 1.0
+        - op: ADD
+          term:
+            type: TABLE_LOOKUP
+            table: tables/inputs/economy/vault_stats_v1.csv
+            key:
+              stat: max_recovery
+            value_col: vault_pct
+            note: vault_pct from vault_stats_v1.csv; fail-closed until max_recovery entry is provided.
+eEcon_mechanics:
+  version: ep_v5.03.02_extract_2026-03-17
+  workbook: Copy of Effective Paths v5.03.02.xlsx
+  mechanics:
+  - id: ep_lambda_epc_epc_bhcb
+    name: EPC_BHCB
+    type: excel_named_formula
+    excel_definition: LAMBDA(lab_lvl, kill_pct, ((1+0.5*lab_lvl)-1)*kill_pct+1)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_bhcd
+    name: EPC_BHCD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_bh, stone_lvl, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 200-10*stone_lvl,\n\
+      \  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\nIF(has_bh, STONE+SUBSTAT, 0)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_bhd
+    name: EPC_BHD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stone_lvl, has_perk, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 15+stone_lvl,\n \
+      \ PERK, IF(has_perk, 12, 0),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\nSTONE+PERK+SUBSTAT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_card_coins
+    name: EPC_CARD_COINS
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_card, card_val, has_mastery, mastery_lvl, IF(has_card, card_val*IF(has_mastery, 1+0.03*(1+mastery_lvl),
+      1), 1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_card_eom
+    name: EPC_CARD_EOM
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_eom, mastery_lvl, hit_pct, IF(has_eom, 1+0.04*(1+mastery_lvl)*MIN(1, hit_pct), 1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_card_ws
+    name: EPC_CARD_WS
+    type: excel_named_formula
+    excel_definition: "LAMBDA(skip, has_ws, card_val, has_mastery, mastery_lvl, LET(\n  SKIPS, skip,\n  WS, IF(has_ws, card_val,\
+      \ 0),\n  WSM, IF(has_mastery, 0.1+0.05*mastery_lvl, 0),\n\n  SKIP0, IF(SKIPS>=0, (WS*(1-WSM))^(SKIPS)*(WS*WSM)^(0)*COMBIN(0+SKIPS,\
+      \ SKIPS)*(1-WS), 0),\n  SKIP1, IF(SKIPS>=2, (WS*(1-WSM))^(SKIPS-2)*(WS*WSM)^(1)*COMBIN(1+SKIPS-2, SKIPS-2)*(1-WS), 0),\n\
+      \  SKIP2, IF(SKIPS>=4, (WS*(1-WSM))^(SKIPS-4)*(WS*WSM)^(2)*COMBIN(2+SKIPS-4, SKIPS-4)*(1-WS), 0),\n  SKIP3, IF(SKIPS>=6,\
+      \ (WS*(1-WSM))^(SKIPS-6)*(WS*WSM)^(3)*COMBIN(3+SKIPS-6, SKIPS-6)*(1-WS), 0),\n  SKIP4, IF(SKIPS>=8, (WS*(1-WSM))^(SKIPS-8)*(WS*WSM)^(4)*COMBIN(4+SKIPS-8,\
+      \ SKIPS-8)*(1-WS), 0),\n  SKIP5, IF(SKIPS>=10, (WS*(1-WSM))^(SKIPS-10)*(WS*WSM)^(5)*COMBIN(5+SKIPS-10, SKIPS-10)*(1-WS),\
+      \ 0),\n\nSKIP0+SKIP1+SKIP2+SKIP3+SKIP4+SKIP5))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_cpk
+    name: EPC_CPK
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl, has_perk, spb_lvl, has_cto,\
+      \ ito_lvl, vault_pct, LET(\n  WS, ws_val,\n  LAB, 1+0.02*lab_lvl,\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\
+      \  WSE, (1+0.01*wse_lvl)^2,\n  PERK, IF(has_perk, (1+0.15*5)*(1+0.01*spb_lvl), 1),\n  CTO, IF(has_cto, 1.8*(1+0.01*ito_lvl),\
+      \ 1),\n  VAULT, 1+vault_pct,\n\n(WS*LAB+SUBSTAT)*WSE*PERK*CTO*VAULT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_dwcb
+    name: EPC_DWCB
+    type: excel_named_formula
+    excel_definition: LAMBDA(lab_lvl, 1.5+0.05*lab_lvl)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_fup
+    name: EPC_FUP
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, has_card, card_val, has_perk, spb_lvl, stone_sac, lab_sac, prim_sub, ass_sub, wse_lvl,\
+      \ relic_pct, vault_pct, LET(\n  WS, ws_val,\n  CARD, IF(has_card, card_val, 0),\n  PERK, IF(has_perk, 5%*5*(1+1%*spb_lvl),\
+      \ 0),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n  WSE, 1+0.01*wse_lvl,\n  RELIC, 1+relic_pct,\n\
+      \  VAULT, 1+vault_pct,\n\n(WS+CARD+PERK+SUBSTAT)*WSE*RELIC*VAULT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_gcomp
+    name: EPC_GCOMP
+    type: excel_named_formula
+    excel_definition: "LAMBDA(ws_val, lab_lvl, has_card, card_val, stone_sac, lab_sac, prim_sub, ass_sub, pab_lvl, boss_wave,\
+      \ gcomp_val, wave_dur, LET(\n  WS, ws_val,\n  LAB, 0.2%*lab_lvl,\n  CARD, IF(has_card, card_val, 0),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n\
+      \  SUBSTAT, prim_sub+ass_sub*SAC,\n    RPC, WS+LAB+CARD+SUBSTAT,\n\n  RPCB, IF(pab_lvl=1, (RPC*(boss_wave-1)+1)/boss_wave,\
+      \ RPC),\n\n  PTG, -IF(gcomp_val=0, 0, (gcomp_val)*RPCB),\n\n1-PTG/(wave_dur+PTG)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_gtb
+    name: EPC_GTB
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stone_lvl, lab_lvl, has_perk, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 5+0.8*stone_lvl,\n\
+      \  LAB, 0.15*lab_lvl,\n  PERK, IF(has_perk, 1.5, 1),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\
+      \n(STONE+LAB)*PERK+SUBSTAT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_gtcd
+    name: EPC_GTCD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_gt, stone_lvl, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 300-10*stone_lvl,\n\
+      \  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\nIF(has_gt, STONE+SUBSTAT, 0)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_gtd
+    name: EPC_GTD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stone_lvl, lab_lvl, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 15+stone_lvl,\n  LAB,\
+      \ lab_lvl,\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\nSTONE+LAB+SUBSTAT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_gtgc
+    name: EPC_GTGC
+    type: excel_named_formula
+    excel_definition: LAMBDA(has_gc, stone_lvl, kps, gtd, IF(has_gc, POW(1+0.03%*(1+stone_lvl), kps*gtd), 1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_mvn
+    name: EPC_MVN
+    type: excel_named_formula
+    excel_definition: "LAMBDA(mvn, assmvn, gtcd, bhcd, dwcd, uwcount, LET(\n  PMOD, ISNUMBER(mvn),\n  AMOD, ISNUMBER(assmvn),\n\
+      \n  CD, SUM(gtcd, bhcd, dwcd)/uwcount+IF(PMOD, mvn, assmvn),\n\nIF(OR(PMOD, AMOD), IF(MOD(CD, 1)=0.5, IF(MOD(FLOOR(CD),\
+      \ 2)=0, FLOOR(CD), CEILING(CD)), ROUND(CD)), 0)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_sla
+    name: EPC_SLA
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stone_lvl, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 30+stone_lvl,\n  SAC, (1+stone_sac+lab_sac)*0.01,\n\
+      \  SUBSTAT, prim_sub+ass_sub*SAC,\n\nSTONE+SUBSTAT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_slcb
+    name: EPC_SLCB
+    type: excel_named_formula
+    excel_definition: LAMBDA(lab_lvl, 1+0.1*lab_lvl)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_slq
+    name: EPC_SLQ
+    type: excel_named_formula
+    excel_definition: LAMBDA(stone_lvl, 1+stone_lvl)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epc_epc_sync
+    name: EPC_SYNC
+    type: excel_named_formula
+    excel_definition: "LAMBDA(hasgt, gtm, gtd, gtcd, gtgc, hasbh, bhm, bhd, bhcd, hasdw, dwm, dwd, dwcd, hasgb, gbm, gbd,\
+      \ gbcd, LET(\n  AVG_BLOCK, LAMBDA(vec, w, BYROW(WRAPCOLS(vec, w), LAMBDA(r, AVERAGE(r)))) ,\n  REPEAT, LAMBDA(vec, k,\
+      \ IF(k=1, vec, REDUCE(vec, SEQUENCE(k-1), LAMBDA(a, c, VSTACK(a, vec))))),\n\n  nGT, IF(HASGT, GTCD, 1),\n  nBH, IF(HASBH,\
+      \ BHCD, 1),\n  nDW, IF(HASDW, DWCD, 1),\n  nGB, IF(HASGB, GBCD, 1),\n\n  GTA, IF(HASGT, MAKEARRAY(nGT,1,LAMBDA(r,c,\
+      \ IF(r<=nGT-GTD,1,GTM*GTGC))), 1),\n  BHA, IF(HASBH, MAKEARRAY(nBH,1,LAMBDA(r,c, IF(r<=nBH-BHD,1,BHM))), 1),\n  DWA,\
+      \ IF(HASDW, MAKEARRAY(nDW,1,LAMBDA(r,c, IF(r<=nDW-DWD,1,DWM))), 1),\n  GBA, IF(HASGB, MAKEARRAY(nGB,1,LAMBDA(r,c, IF(r<=nGB-GBD,1,GBM))),\
+      \ 1),\n\n  wGT, IF(HASGT, MAX(IF(HASBH,GCD(nGT,nBH)), IF(HASDW,GCD(nGT,nDW)), IF(HASGB,GCD(nGT,nGB)), 1), 1),\n  wBH,\
+      \ IF(HASBH, MAX(IF(HASGT,GCD(nBH,nGT)), IF(HASDW,GCD(nBH,nDW)), IF(HASGB,GCD(nBH,nGB)), 1), 1),\n  wDW, IF(HASDW, MAX(IF(HASGT,GCD(nDW,nGT)),\
+      \ IF(HASBH,GCD(nDW,nBH)), IF(HASGB,GCD(nDW,nGB)), 1), 1),\n  wGB, IF(HASGB, MAX(IF(HASGT,GCD(nGB,nGT)), IF(HASBH,GCD(nGB,nBH)),\
+      \ IF(HASDW,GCD(nGB,nDW)), 1), 1),\n\n  GTB, IF(HASGT, AVG_BLOCK(GTA, wGT), 1),\n  BHB, IF(HASBH, AVG_BLOCK(BHA, wBH),\
+      \ 1),\n  DWB, IF(HASDW, AVG_BLOCK(DWA, wDW), 1),\n  GBB, IF(HASGB, AVG_BLOCK(GBA, wGB), 1),\n\n  rGT, IF(HASGT, ROWS(GTB),\
+      \ 1),\n  rBH, IF(HASBH, ROWS(BHB), 1),\n  rDW, IF(HASDW, ROWS(DWB), 1),\n  rGB, IF(HASGB, ROWS(GBB), 1),\n  LOWCM, LCM(rGT,\
+      \ rBH, rDW, rGB),\n\n  PROD, MAP(SEQUENCE(LOWCM), LAMBDA(i,\n    (IF(HASGT, INDEX(GTB, 1+MOD(i-1, rGT)), 1)) *\n   \
+      \ (IF(HASBH, INDEX(BHB, 1+MOD(i-1, rBH)), 1)) *\n    (IF(HASDW, INDEX(DWB, 1+MOD(i-1, rDW)), 1)) *\n    (IF(HASGB, INDEX(GBB,\
+      \ 1+MOD(i-1, rGB)), 1)))),\n\nAVERAGE(PROD)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epu_epu_dwcd
+    name: EPU_DWCD
+    type: excel_named_formula
+    excel_definition: "LAMBDA(has_dw, stone_lvl, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 300-10*stone_lvl,\n\
+      \  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+ass_sub*SAC,\n\nIF(has_dw, STONE+SUBSTAT, 0)))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_epu_epu_dwq
+    name: EPU_DWQ
+    type: excel_named_formula
+    excel_definition: "LAMBDA(stone_lvl, has_perk, stone_sac, lab_sac, prim_sub, ass_sub, LET(\n  STONE, 1+stone_lvl,\n  PERK,\
+      \ IF(has_perk, 1, 0),\n  SAC, (1+stone_sac+lab_sac)*0.01,\n  SUBSTAT, prim_sub+FLOOR(ass_sub*SAC),\n\nSTONE+PERK+SUBSTAT))"
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_cl_final_ch
+    name: STAT_UW_CL_FINAL_CH
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_cl_final_dmg
+    name: STAT_UW_CL_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasperk, (base+substat)*IF(HasPerk,2,1))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_cl_final_qty
+    name: STAT_UW_CL_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasdc, FLOOR(base+substat) + IF(HasDC,0.6,0))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_dw_final_cd
+    name: STAT_UW_DW_FINAL_CD
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, gcompreduction, (base+substat)*gcompreduction)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_dw_final_cd_mvn
+    name: STAT_UW_DW_FINAL_CD_MVN
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, gcompreduction, mvn, IF(ISNUMBER(mvn), mvn,(base+substat)*gcompreduction))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_dw_final_dmg
+    name: STAT_UW_DW_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, base+substat)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_dw_final_qty
+    name: STAT_UW_DW_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasperk, FLOOR(base+substat+IF(hasperk,1,0)))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_ilm_final_dmg
+    name: STAT_UW_ILM_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, base+substat)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_ilm_final_qty
+    name: STAT_UW_ILM_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, hasperk, FLOOR(base+substat+IF(hasperk,6,0)))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sl_final_angle
+    name: STAT_UW_SL_FINAL_ANGLE
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sl_final_dmg
+    name: STAT_UW_SL_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: 'LAMBDA(base, sl_lightrange, substat, relic, vault, has_perk, (base+substat)*(1+relic)*(1+vault)*
+
+      IF(has_perk, 1.5, 1)*sl_lightrange)'
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sl_final_lr
+    name: STAT_UW_SL_FINAL_LR
+    type: excel_named_formula
+    excel_definition: LAMBDA(sl_lightrange, dpm, 1+IF(ISNUMBER(sl_lightrange), sl_lightrange * (dpm-1), 0))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sm_final_cd
+    name: STAT_UW_SM_FINAL_CD
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, gcompreduction, (base+substat)*gcompreduction)
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sm_final_cf
+    name: STAT_UW_SM_FINAL_CF
+    type: excel_named_formula
+    excel_definition: LAMBDA(sm_damage, cf_time, IF(ISNUMBER(cf_time), sm_damage * (1 / cf_time), 0))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sm_final_dmg
+    name: STAT_UW_SM_FINAL_DMG
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, (base+substat))
+    notes: From workbook defined name. Verification source only; not package canon.
+  - id: ep_lambda_stat_uw_stat_uw_sm_final_qty
+    name: STAT_UW_SM_FINAL_QTY
+    type: excel_named_formula
+    excel_definition: LAMBDA(base, substat, has_perk, FLOOR((base+substat) + IF(has_perk, 4, 0)))
+    notes: From workbook defined name. Verification source only; not package canon.

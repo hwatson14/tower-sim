@@ -1,0 +1,4 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+bounce_shot,chance,10000 coins after Rapid Fire,85,0.8%,+0.8% per level,68.0%,Chance for projectile to bounce after hitting.,Bounce Shot,row-verified-live-wiki
+bounce_shot,targets,10000 coins after Rapid Fire,7,1 target,+1 target per level,8 targets,Maximum targets can be increased to 14 using Bounce Shot perk.,Bounce Shot,row-verified-live-wiki
+bounce_shot,range,10000 coins after Rapid Fire,60,2.0m,+0.1m per level,8.0m,Projectile chases selected enemy even if knocked farther than max bounce range.,Bounce Shot,row-verified-live-wiki

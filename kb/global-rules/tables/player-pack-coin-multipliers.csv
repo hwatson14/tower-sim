@@ -1,0 +1,4 @@
+pack_name,flag_destination,multiplier,source_ref,note
+Disable Ads,account_flag.disable_ads,1.5,user_confirmed_r45,"Apply when Disable Ads flag is true"
+Starter Pack,account_flag.starter_pack,2.0,user_confirmed_r45,"Apply when Starter Pack flag is true"
+Epic Pack,account_flag.epic_pack,3.0,user_confirmed_r45,"Apply when Epic Pack flag is true"

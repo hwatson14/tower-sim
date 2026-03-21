@@ -1,0 +1,4 @@
+param_id,domain,surface_type,status,unit,resolver,source_class,evidence_summary,recommended_next_action
+chrono_field.range_bonus_m,uw.chrono_field,runtime_param,addressed_for_kb_scope,m,standard_scalar_param,public_source_closed_for_kb_scope,Chrono Field additive range bonus is publicly evidenced and closed for KB scope.,none
+same_tick_micro_precedence,combat,runtime_boundary,de_scoped_non_blocking,na,runtime_scheduler,out_of_scope_for_kb_scope,Exact same-tick precedence is intentionally out of scope for this KB because it is low-materiality nuance.,none
+expiry_micro_precedence,combat,runtime_boundary,de_scoped_non_blocking,na,runtime_scheduler,out_of_scope_for_kb_scope,Exact expiry precedence is intentionally out of scope for this KB because it is low-materiality nuance.,none

@@ -1,0 +1,2053 @@
+wave,surface,enemy_damage,source_class,source_file
+1,Tier 1,1.18,repo_raw_table,enemy_damage_table.csv
+10,Tier 1,4.81,repo_raw_table,enemy_damage_table.csv
+20,Tier 1,13.65,repo_raw_table,enemy_damage_table.csv
+30,Tier 1,28.76,repo_raw_table,enemy_damage_table.csv
+40,Tier 1,50.41,repo_raw_table,enemy_damage_table.csv
+50,Tier 1,81.33,repo_raw_table,enemy_damage_table.csv
+60,Tier 1,120.19,repo_raw_table,enemy_damage_table.csv
+70,Tier 1,167.99,repo_raw_table,enemy_damage_table.csv
+80,Tier 1,229.96,repo_raw_table,enemy_damage_table.csv
+90,Tier 1,304.54,repo_raw_table,enemy_damage_table.csv
+100,Tier 1,402.95,repo_raw_table,enemy_damage_table.csv
+150,Tier 1,1100.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 1,2420.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 1,4620.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 1,7740.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 1,19180.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 1,38940.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 1,155440.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 1,482950.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 1,1210000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 1,2610000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 1,10640000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 1,34180000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 1,101250000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 1,264950000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 1,1700000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 1,3860000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 1,8840000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 1,19480000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 1,42450000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 1,90960000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 1,192770000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 1,395590000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 1,817750000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 1,1670000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 1,3230000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 1,6630000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 1,12780000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 1,25230000000000.0,repo_raw_table,enemy_damage_table.csv
+11500,Tier 1,48010000000000.0,repo_raw_table,enemy_damage_table.csv
+12000,Tier 1,96020000000000.0,repo_raw_table,enemy_damage_table.csv
+12500,Tier 1,178070000000000.0,repo_raw_table,enemy_damage_table.csv
+13000,Tier 1,349100000000000.0,repo_raw_table,enemy_damage_table.csv
+13500,Tier 1,694300000000000.0,repo_raw_table,enemy_damage_table.csv
+14500,Tier 1,2510000000000000.0,repo_raw_table,enemy_damage_table.csv
+15000,Tier 1,4630000000000000.0,repo_raw_table,enemy_damage_table.csv
+15500,Tier 1,8680000000000000.0,repo_raw_table,enemy_damage_table.csv
+16000,Tier 1,1.6399999999999998e+16,repo_raw_table,enemy_damage_table.csv
+16500,Tier 1,3.101e+16,repo_raw_table,enemy_damage_table.csv
+17000,Tier 1,5.57e+16,repo_raw_table,enemy_damage_table.csv
+17500,Tier 1,1.0583e+17,repo_raw_table,enemy_damage_table.csv
+18000,Tier 1,2.0271e+17,repo_raw_table,enemy_damage_table.csv
+18500,Tier 1,3.5761e+17,repo_raw_table,enemy_damage_table.csv
+19000,Tier 1,6.7521e+17,repo_raw_table,enemy_damage_table.csv
+19500,Tier 1,1.22e+18,repo_raw_table,enemy_damage_table.csv
+20000,Tier 1,2.28e+18,repo_raw_table,enemy_damage_table.csv
+21000,Tier 1,7.96e+18,repo_raw_table,enemy_damage_table.csv
+22000,Tier 1,2.669e+19,repo_raw_table,enemy_damage_table.csv
+23000,Tier 1,8.638e+19,repo_raw_table,enemy_damage_table.csv
+24000,Tier 1,2.9068e+20,repo_raw_table,enemy_damage_table.csv
+25000,Tier 1,9.3058e+20,repo_raw_table,enemy_damage_table.csv
+30000,Tier 1,3.521e+23,repo_raw_table,enemy_damage_table.csv
+35000,Tier 1,1.1538e+26,repo_raw_table,enemy_damage_table.csv
+40000,Tier 1,3.59e+28,repo_raw_table,enemy_damage_table.csv
+45000,Tier 1,1.0549999999999999e+31,repo_raw_table,enemy_damage_table.csv
+50000,Tier 1,3.02e+33,repo_raw_table,enemy_damage_table.csv
+55000,Tier 1,8.621299999999999e+35,repo_raw_table,enemy_damage_table.csv
+60000,Tier 1,2.2761000000000003e+38,repo_raw_table,enemy_damage_table.csv
+65000,Tier 1,6.181e+40,repo_raw_table,enemy_damage_table.csv
+70000,Tier 1,1.6329999999999998e+43,repo_raw_table,enemy_damage_table.csv
+75000,Tier 1,4.23e+45,repo_raw_table,enemy_damage_table.csv
+80000,Tier 1,1.0600000000000003e+48,repo_raw_table,enemy_damage_table.csv
+85000,Tier 1,2.8076999999999997e+50,repo_raw_table,enemy_damage_table.csv
+90000,Tier 1,6.948999999999998e+52,repo_raw_table,enemy_damage_table.csv
+95000,Tier 1,1.6530000000000003e+55,repo_raw_table,enemy_damage_table.csv
+100000,Tier 1,4.0600000000000004e+57,repo_raw_table,enemy_damage_table.csv
+1,Tier 2,23.52,repo_raw_table,enemy_damage_table.csv
+10,Tier 2,96.19,repo_raw_table,enemy_damage_table.csv
+20,Tier 2,272.94,repo_raw_table,enemy_damage_table.csv
+30,Tier 2,575.27,repo_raw_table,enemy_damage_table.csv
+40,Tier 2,1010.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 2,1630.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 2,2400.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 2,3360.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 2,4600.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 2,6090.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 2,8060.000000000001,repo_raw_table,enemy_damage_table.csv
+150,Tier 2,22070.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 2,48470.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 2,92370.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 2,154750.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 2,383520.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 2,778840.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 2,3110000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 2,9660000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 2,24270000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 2,52150000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 2,212710000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 2,683520000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 2,2020000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 2,5300000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 2,33980000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 2,77150000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 2,176740000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 2,389650000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 2,849040000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 2,1820000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 2,3860000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 2,7910000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 2,16350000000000.002,repo_raw_table,enemy_damage_table.csv
+9000,Tier 2,33490000000000.004,repo_raw_table,enemy_damage_table.csv
+9500,Tier 2,64610000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 2,132620000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 2,255640000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 2,504640000000000.0,repo_raw_table,enemy_damage_table.csv
+11500,Tier 2,960300000000000.0,repo_raw_table,enemy_damage_table.csv
+12000,Tier 2,1920000000000000.0,repo_raw_table,enemy_damage_table.csv
+12500,Tier 2,3560000000000000.0,repo_raw_table,enemy_damage_table.csv
+13000,Tier 2,6980000000000000.0,repo_raw_table,enemy_damage_table.csv
+13500,Tier 2,1.389e+16,repo_raw_table,enemy_damage_table.csv
+14500,Tier 2,5.019e+16,repo_raw_table,enemy_damage_table.csv
+15000,Tier 2,9.263e+16,repo_raw_table,enemy_damage_table.csv
+15500,Tier 2,1.7362e+17,repo_raw_table,enemy_damage_table.csv
+16000,Tier 2,3.2797e+17,repo_raw_table,enemy_damage_table.csv
+16500,Tier 2,6.2023e+17,repo_raw_table,enemy_damage_table.csv
+17000,Tier 2,1.11e+18,repo_raw_table,enemy_damage_table.csv
+17500,Tier 2,2.12e+18,repo_raw_table,enemy_damage_table.csv
+18000,Tier 2,4.05e+18,repo_raw_table,enemy_damage_table.csv
+18500,Tier 2,7.15e+18,repo_raw_table,enemy_damage_table.csv
+19000,Tier 2,1.35e+19,repo_raw_table,enemy_damage_table.csv
+19500,Tier 2,2.432e+19,repo_raw_table,enemy_damage_table.csv
+20000,Tier 2,4.55e+19,repo_raw_table,enemy_damage_table.csv
+21000,Tier 2,1.5911e+20,repo_raw_table,enemy_damage_table.csv
+22000,Tier 2,5.3378999999999993e+20,repo_raw_table,enemy_damage_table.csv
+23000,Tier 2,1.73e+21,repo_raw_table,enemy_damage_table.csv
+24000,Tier 2,5.81e+21,repo_raw_table,enemy_damage_table.csv
+25000,Tier 2,1.861e+22,repo_raw_table,enemy_damage_table.csv
+30000,Tier 2,7.04e+24,repo_raw_table,enemy_damage_table.csv
+35000,Tier 2,2.3100000000000003e+27,repo_raw_table,enemy_damage_table.csv
+40000,Tier 2,7.179e+29,repo_raw_table,enemy_damage_table.csv
+45000,Tier 2,2.1108000000000003e+32,repo_raw_table,enemy_damage_table.csv
+50000,Tier 2,6.035e+34,repo_raw_table,enemy_damage_table.csv
+55000,Tier 2,1.724e+37,repo_raw_table,enemy_damage_table.csv
+60000,Tier 2,4.5499999999999995e+39,repo_raw_table,enemy_damage_table.csv
+65000,Tier 2,1.24e+42,repo_raw_table,enemy_damage_table.csv
+70000,Tier 2,3.2662000000000004e+44,repo_raw_table,enemy_damage_table.csv
+75000,Tier 2,8.453e+46,repo_raw_table,enemy_damage_table.csv
+80000,Tier 2,2.1170000000000004e+49,repo_raw_table,enemy_damage_table.csv
+85000,Tier 2,5.62e+51,repo_raw_table,enemy_damage_table.csv
+90000,Tier 2,1.39e+54,repo_raw_table,enemy_damage_table.csv
+95000,Tier 2,3.306600000000001e+56,repo_raw_table,enemy_damage_table.csv
+100000,Tier 2,8.116e+58,repo_raw_table,enemy_damage_table.csv
+1,Tier 3,70.56,repo_raw_table,enemy_damage_table.csv
+10,Tier 3,288.56,repo_raw_table,enemy_damage_table.csv
+20,Tier 3,818.83,repo_raw_table,enemy_damage_table.csv
+30,Tier 3,1730.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 3,3020.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 3,4880.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 3,7210.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 3,10080.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 3,13800.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 3,18270.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 3,24180.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 3,66220.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 3,145420.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 3,277120.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 3,464240.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 3,1150000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 3,2340000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 3,9330000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 3,28980000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 3,72810000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 3,156460000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 3,638120000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 3,2050000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 3,6070000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 3,15900000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 3,101930000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 3,231440000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 3,530230000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 3,1170000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 3,2550000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 3,5460000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 3,11570000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 3,23740000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 3,49060000000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 3,100480000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 3,193830000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 3,397860000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 3,766930000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 3,1510000000000000.0,repo_raw_table,enemy_damage_table.csv
+11500,Tier 3,2880000000000000.0,repo_raw_table,enemy_damage_table.csv
+12000,Tier 3,5760000000000000.0,repo_raw_table,enemy_damage_table.csv
+12500,Tier 3,1.068e+16,repo_raw_table,enemy_damage_table.csv
+13000,Tier 3,2.095e+16,repo_raw_table,enemy_damage_table.csv
+13500,Tier 3,4.166e+16,repo_raw_table,enemy_damage_table.csv
+14500,Tier 3,1.5058e+17,repo_raw_table,enemy_damage_table.csv
+15000,Tier 3,2.7789e+17,repo_raw_table,enemy_damage_table.csv
+15500,Tier 3,5.2086e+17,repo_raw_table,enemy_damage_table.csv
+16000,Tier 3,9.8391e+17,repo_raw_table,enemy_damage_table.csv
+16500,Tier 3,1.86e+18,repo_raw_table,enemy_damage_table.csv
+17000,Tier 3,3.34e+18,repo_raw_table,enemy_damage_table.csv
+17500,Tier 3,6.35e+18,repo_raw_table,enemy_damage_table.csv
+18000,Tier 3,1.216e+19,repo_raw_table,enemy_damage_table.csv
+18500,Tier 3,2.146e+19,repo_raw_table,enemy_damage_table.csv
+19000,Tier 3,4.051e+19,repo_raw_table,enemy_damage_table.csv
+19500,Tier 3,7.295999999999999e+19,repo_raw_table,enemy_damage_table.csv
+20000,Tier 3,1.3650999999999998e+20,repo_raw_table,enemy_damage_table.csv
+21000,Tier 3,4.7733e+20,repo_raw_table,enemy_damage_table.csv
+22000,Tier 3,1.6e+21,repo_raw_table,enemy_damage_table.csv
+23000,Tier 3,5.18e+21,repo_raw_table,enemy_damage_table.csv
+24000,Tier 3,1.7440000000000002e+22,repo_raw_table,enemy_damage_table.csv
+25000,Tier 3,5.583e+22,repo_raw_table,enemy_damage_table.csv
+30000,Tier 3,2.113e+25,repo_raw_table,enemy_damage_table.csv
+35000,Tier 3,6.920000000000001e+27,repo_raw_table,enemy_damage_table.csv
+40000,Tier 3,2.15e+30,repo_raw_table,enemy_damage_table.csv
+45000,Tier 3,6.3323999999999996e+32,repo_raw_table,enemy_damage_table.csv
+50000,Tier 3,1.8104e+35,repo_raw_table,enemy_damage_table.csv
+55000,Tier 3,5.172999999999999e+37,repo_raw_table,enemy_damage_table.csv
+60000,Tier 3,1.366e+40,repo_raw_table,enemy_damage_table.csv
+65000,Tier 3,3.7100000000000004e+42,repo_raw_table,enemy_damage_table.csv
+70000,Tier 3,9.7986e+44,repo_raw_table,enemy_damage_table.csv
+75000,Tier 3,2.5359999999999998e+47,repo_raw_table,enemy_damage_table.csv
+80000,Tier 3,6.352000000000001e+49,repo_raw_table,enemy_damage_table.csv
+85000,Tier 3,1.6850000000000002e+52,repo_raw_table,enemy_damage_table.csv
+90000,Tier 3,4.17e+54,repo_raw_table,enemy_damage_table.csv
+95000,Tier 3,9.9198e+56,repo_raw_table,enemy_damage_table.csv
+100000,Tier 3,2.4349000000000003e+59,repo_raw_table,enemy_damage_table.csv
+1,Tier 4,135.11,repo_raw_table,enemy_damage_table.csv
+10,Tier 4,552.57,repo_raw_table,enemy_damage_table.csv
+20,Tier 4,1570.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 4,3300.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 4,5790.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 4,9340.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 4,13810.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 4,19300.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 4,26420.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 4,34990.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 4,46300.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 4,126800.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 4,278470.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 4,530660.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 4,888970.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 4,2200000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 4,4470000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 4,17860000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 4,55490000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 4,139430000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 4,299600000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 4,1220000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 4,3930000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 4,11630000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 4,30440000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 4,195190000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 4,443180000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 4,1020000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 4,2240000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 4,4880000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 4,10450000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 4,22150000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 4,45450000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 4,93950000000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 4,192410000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 4,371170000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 4,761860000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 4,1470000000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 4,2900000000000000.0,repo_raw_table,enemy_damage_table.csv
+11500,Tier 4,5520000000000000.0,repo_raw_table,enemy_damage_table.csv
+12000,Tier 4,1.103e+16,repo_raw_table,enemy_damage_table.csv
+12500,Tier 4,2.046e+16,repo_raw_table,enemy_damage_table.csv
+13000,Tier 4,4.011e+16,repo_raw_table,enemy_damage_table.csv
+13500,Tier 4,7.977e+16,repo_raw_table,enemy_damage_table.csv
+14500,Tier 4,2.8834e+17,repo_raw_table,enemy_damage_table.csv
+15000,Tier 4,5.3213e+17,repo_raw_table,enemy_damage_table.csv
+15500,Tier 4,9.974e+17,repo_raw_table,enemy_damage_table.csv
+16000,Tier 4,1.88e+18,repo_raw_table,enemy_damage_table.csv
+16500,Tier 4,3.56e+18,repo_raw_table,enemy_damage_table.csv
+17000,Tier 4,6.4e+18,repo_raw_table,enemy_damage_table.csv
+17500,Tier 4,1.216e+19,repo_raw_table,enemy_damage_table.csv
+18000,Tier 4,2.329e+19,repo_raw_table,enemy_damage_table.csv
+18500,Tier 4,4.109e+19,repo_raw_table,enemy_damage_table.csv
+19000,Tier 4,7.758e+19,repo_raw_table,enemy_damage_table.csv
+19500,Tier 4,1.3971e+20,repo_raw_table,enemy_damage_table.csv
+20000,Tier 4,2.6139e+20,repo_raw_table,enemy_damage_table.csv
+21000,Tier 4,9.1404e+20,repo_raw_table,enemy_damage_table.csv
+22000,Tier 4,3.07e+21,repo_raw_table,enemy_damage_table.csv
+23000,Tier 4,9.92e+21,repo_raw_table,enemy_damage_table.csv
+24000,Tier 4,3.34e+22,repo_raw_table,enemy_damage_table.csv
+25000,Tier 4,1.0692e+23,repo_raw_table,enemy_damage_table.csv
+30000,Tier 4,4.045e+25,repo_raw_table,enemy_damage_table.csv
+35000,Tier 4,1.3260000000000002e+28,repo_raw_table,enemy_damage_table.csv
+40000,Tier 4,4.12e+30,repo_raw_table,enemy_damage_table.csv
+45000,Tier 4,1.21e+33,repo_raw_table,enemy_damage_table.csv
+50000,Tier 4,3.4667e+35,repo_raw_table,enemy_damage_table.csv
+55000,Tier 4,9.905e+37,repo_raw_table,enemy_damage_table.csv
+60000,Tier 4,2.615e+40,repo_raw_table,enemy_damage_table.csv
+65000,Tier 4,7.1e+42,repo_raw_table,enemy_damage_table.csv
+70000,Tier 4,1.8799999999999998e+45,repo_raw_table,enemy_damage_table.csv
+75000,Tier 4,4.8561999999999995e+47,repo_raw_table,enemy_damage_table.csv
+80000,Tier 4,1.2164000000000002e+50,repo_raw_table,enemy_damage_table.csv
+85000,Tier 4,3.226e+52,repo_raw_table,enemy_damage_table.csv
+90000,Tier 4,7.98e+54,repo_raw_table,enemy_damage_table.csv
+95000,Tier 4,1.9000000000000003e+57,repo_raw_table,enemy_damage_table.csv
+100000,Tier 4,4.6626e+59,repo_raw_table,enemy_damage_table.csv
+1,Tier 5,270.22,repo_raw_table,enemy_damage_table.csv
+10,Tier 5,1110.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 5,3140.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 5,6610.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 5,11580.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 5,18690.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 5,27620.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 5,38600.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 5,52840.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 5,69980.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 5,92590.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 5,253600.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 5,556940.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 5,1060000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 5,1780000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 5,4410000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 5,8950000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 5,35720000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 5,110980000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 5,278870000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 5,599190000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 5,2440000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 5,7850000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 5,23270000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 5,60880000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 5,390370000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 5,886350000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 5,2030000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 5,4480000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 5,9750000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 5,20900000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 5,44300000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 5,90900000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 5,187910000000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 5,384810000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 5,742340000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 5,1520000000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 5,2940000000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 5,5800000000000000.0,repo_raw_table,enemy_damage_table.csv
+11500,Tier 5,1.103e+16,repo_raw_table,enemy_damage_table.csv
+12000,Tier 5,2.206e+16,repo_raw_table,enemy_damage_table.csv
+12500,Tier 5,4.092e+16,repo_raw_table,enemy_damage_table.csv
+13000,Tier 5,8.022e+16,repo_raw_table,enemy_damage_table.csv
+13500,Tier 5,1.5954e+17,repo_raw_table,enemy_damage_table.csv
+14500,Tier 5,5.7668e+17,repo_raw_table,enemy_damage_table.csv
+15000,Tier 5,1.06e+18,repo_raw_table,enemy_damage_table.csv
+15500,Tier 5,1.99e+18,repo_raw_table,enemy_damage_table.csv
+16000,Tier 5,3.77e+18,repo_raw_table,enemy_damage_table.csv
+16500,Tier 5,7.13e+18,repo_raw_table,enemy_damage_table.csv
+17000,Tier 5,1.28e+19,repo_raw_table,enemy_damage_table.csv
+17500,Tier 5,2.432e+19,repo_raw_table,enemy_damage_table.csv
+18000,Tier 5,4.658e+19,repo_raw_table,enemy_damage_table.csv
+18500,Tier 5,8.217e+19,repo_raw_table,enemy_damage_table.csv
+19000,Tier 5,1.5516e+20,repo_raw_table,enemy_damage_table.csv
+19500,Tier 5,2.7942e+20,repo_raw_table,enemy_damage_table.csv
+20000,Tier 5,5.2278999999999993e+20,repo_raw_table,enemy_damage_table.csv
+21000,Tier 5,1.83e+21,repo_raw_table,enemy_damage_table.csv
+22000,Tier 5,6.13e+21,repo_raw_table,enemy_damage_table.csv
+23000,Tier 5,1.985e+22,repo_raw_table,enemy_damage_table.csv
+24000,Tier 5,6.679e+22,repo_raw_table,enemy_damage_table.csv
+25000,Tier 5,2.1384e+23,repo_raw_table,enemy_damage_table.csv
+30000,Tier 5,8.091e+25,repo_raw_table,enemy_damage_table.csv
+35000,Tier 5,2.651e+28,repo_raw_table,enemy_damage_table.csv
+40000,Tier 5,8.25e+30,repo_raw_table,enemy_damage_table.csv
+45000,Tier 5,2.43e+33,repo_raw_table,enemy_damage_table.csv
+50000,Tier 5,6.9334e+35,repo_raw_table,enemy_damage_table.csv
+55000,Tier 5,1.9811000000000004e+38,repo_raw_table,enemy_damage_table.csv
+60000,Tier 5,5.23e+40,repo_raw_table,enemy_damage_table.csv
+65000,Tier 5,1.42e+43,repo_raw_table,enemy_damage_table.csv
+70000,Tier 5,3.7499999999999997e+45,repo_raw_table,enemy_damage_table.csv
+75000,Tier 5,9.7125e+47,repo_raw_table,enemy_damage_table.csv
+80000,Tier 5,2.4329e+50,repo_raw_table,enemy_damage_table.csv
+85000,Tier 5,6.452e+52,repo_raw_table,enemy_damage_table.csv
+90000,Tier 5,1.597e+55,repo_raw_table,enemy_damage_table.csv
+95000,Tier 5,3.8000000000000006e+57,repo_raw_table,enemy_damage_table.csv
+100000,Tier 5,9.3252e+59,repo_raw_table,enemy_damage_table.csv
+1,Tier 6,540.43,repo_raw_table,enemy_damage_table.csv
+10,Tier 6,2210.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 6,6270.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 6,13220.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 6,23170.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 6,37380.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 6,55240.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 6,77200.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 6,105680.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 6,139960.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 6,185180.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 6,507200.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 6,1110000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 6,2120000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 6,3560000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 6,8810000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 6,17900000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 6,71440000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 6,221950000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 6,557730000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 6,1200000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 6,4890000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 6,15710000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 6,46530000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 6,121760000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 6,780750000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 6,1770000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 6,4060000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 6,8950000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 6,19510000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 6,41800000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 6,88590000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 6,181800000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 6,375810000000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 6,769620000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 6,1480000000000000.0,repo_raw_table,enemy_damage_table.csv
+10000,Tier 6,3050000000000000.0,repo_raw_table,enemy_damage_table.csv
+10500,Tier 6,5870000000000000.0,repo_raw_table,enemy_damage_table.csv
+11000,Tier 6,1.16e+16,repo_raw_table,enemy_damage_table.csv
+11500,Tier 6,2.207e+16,repo_raw_table,enemy_damage_table.csv
+12000,Tier 6,4.413e+16,repo_raw_table,enemy_damage_table.csv
+12500,Tier 6,8.184e+16,repo_raw_table,enemy_damage_table.csv
+13000,Tier 6,1.6044e+17,repo_raw_table,enemy_damage_table.csv
+13500,Tier 6,3.1908e+17,repo_raw_table,enemy_damage_table.csv
+14500,Tier 6,1.15e+18,repo_raw_table,enemy_damage_table.csv
+15000,Tier 6,2.13e+18,repo_raw_table,enemy_damage_table.csv
+15500,Tier 6,3.99e+18,repo_raw_table,enemy_damage_table.csv
+16000,Tier 6,7.54e+18,repo_raw_table,enemy_damage_table.csv
+16500,Tier 6,1.425e+19,repo_raw_table,enemy_damage_table.csv
+17000,Tier 6,2.56e+19,repo_raw_table,enemy_damage_table.csv
+17500,Tier 6,4.864e+19,repo_raw_table,enemy_damage_table.csv
+18000,Tier 6,9.316e+19,repo_raw_table,enemy_damage_table.csv
+18500,Tier 6,1.6435e+20,repo_raw_table,enemy_damage_table.csv
+19000,Tier 6,3.1031e+20,repo_raw_table,enemy_damage_table.csv
+19500,Tier 6,5.5884e+20,repo_raw_table,enemy_damage_table.csv
+20000,Tier 6,1.05e+21,repo_raw_table,enemy_damage_table.csv
+21000,Tier 6,3.66e+21,repo_raw_table,enemy_damage_table.csv
+22000,Tier 6,1.227e+22,repo_raw_table,enemy_damage_table.csv
+23000,Tier 6,3.97e+22,repo_raw_table,enemy_damage_table.csv
+24000,Tier 6,1.3359e+23,repo_raw_table,enemy_damage_table.csv
+25000,Tier 6,4.2767e+23,repo_raw_table,enemy_damage_table.csv
+30000,Tier 6,1.6181e+26,repo_raw_table,enemy_damage_table.csv
+35000,Tier 6,5.303000000000001e+28,repo_raw_table,enemy_damage_table.csv
+40000,Tier 6,1.65e+31,repo_raw_table,enemy_damage_table.csv
+45000,Tier 6,4.849999999999999e+33,repo_raw_table,enemy_damage_table.csv
+50000,Tier 6,1.39e+36,repo_raw_table,enemy_damage_table.csv
+55000,Tier 6,3.9621e+38,repo_raw_table,enemy_damage_table.csv
+60000,Tier 6,1.046e+41,repo_raw_table,enemy_damage_table.csv
+65000,Tier 6,2.841e+43,repo_raw_table,enemy_damage_table.csv
+70000,Tier 6,7.509999999999999e+45,repo_raw_table,enemy_damage_table.csv
+75000,Tier 6,1.94e+48,repo_raw_table,enemy_damage_table.csv
+80000,Tier 6,4.8657000000000005e+50,repo_raw_table,enemy_damage_table.csv
+85000,Tier 6,1.2903e+53,repo_raw_table,enemy_damage_table.csv
+90000,Tier 6,3.194e+55,repo_raw_table,enemy_damage_table.csv
+95000,Tier 6,7.600000000000001e+57,repo_raw_table,enemy_damage_table.csv
+100000,Tier 6,1.87e+60,repo_raw_table,enemy_damage_table.csv
+1,Tier 7,1030.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 7,4220.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 7,11990.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 7,25260.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 7,44270.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 7,71440.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 7,105570.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 7,147550.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 7,201980.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 7,267480.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 7,353910.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 7,993550.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 7,2180000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 7,4160000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 7,7140000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 7,17690000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 7,36830000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 7,154460000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 7,504210000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 7,1300000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 7,2930000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 7,13200000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 7,45670000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 7,149360000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 7,431410000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 7,3290000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 7,8039999999999.999,repo_raw_table,enemy_damage_table.csv
+5500,Tier 7,20330000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 7,49480000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 7,116100000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 7,274590000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 7,626670000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 7,1420000000000000.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 7,3240000000000000.0,repo_raw_table,enemy_damage_table.csv
+9000,Tier 7,7140000000000000.0,repo_raw_table,enemy_damage_table.csv
+9500,Tier 7,1.521e+16,repo_raw_table,enemy_damage_table.csv
+10000,Tier 7,3.362e+16,repo_raw_table,enemy_damage_table.csv
+10500,Tier 7,7.154000000000001e+16,repo_raw_table,enemy_damage_table.csv
+11000,Tier 7,1.5588e+17,repo_raw_table,enemy_damage_table.csv
+11500,Tier 7,3.1943e+17,repo_raw_table,enemy_damage_table.csv
+12000,Tier 7,7.0509e+17,repo_raw_table,enemy_damage_table.csv
+12500,Tier 7,1.41e+18,repo_raw_table,enemy_damage_table.csv
+13000,Tier 7,3.05e+18,repo_raw_table,enemy_damage_table.csv
+13500,Tier 7,6.69e+18,repo_raw_table,enemy_damage_table.csv
+14500,Tier 7,2.874e+19,repo_raw_table,enemy_damage_table.csv
+15000,Tier 7,5.712e+19,repo_raw_table,enemy_damage_table.csv
+15500,Tier 7,1.1819e+20,repo_raw_table,enemy_damage_table.csv
+16000,Tier 7,2.4643e+20,repo_raw_table,enemy_damage_table.csv
+16500,Tier 7,5.0186e+20,repo_raw_table,enemy_damage_table.csv
+17000,Tier 7,9.9504e+20,repo_raw_table,enemy_damage_table.csv
+17500,Tier 7,2.04e+21,repo_raw_table,enemy_damage_table.csv
+18000,Tier 7,4.3e+21,repo_raw_table,enemy_damage_table.csv
+18500,Tier 7,8.380000000000001e+21,repo_raw_table,enemy_damage_table.csv
+19000,Tier 7,1.704e+22,repo_raw_table,enemy_damage_table.csv
+19500,Tier 7,3.388e+22,repo_raw_table,enemy_damage_table.csv
+20000,Tier 7,6.826000000000001e+22,repo_raw_table,enemy_damage_table.csv
+21000,Tier 7,2.9081e+23,repo_raw_table,enemy_damage_table.csv
+22000,Tier 7,1.16e+24,repo_raw_table,enemy_damage_table.csv
+23000,Tier 7,4.46e+24,repo_raw_table,enemy_damage_table.csv
+24000,Tier 7,1.785e+25,repo_raw_table,enemy_damage_table.csv
+25000,Tier 7,6.792e+25,repo_raw_table,enemy_damage_table.csv
+30000,Tier 7,6.251000000000001e+28,repo_raw_table,enemy_damage_table.csv
+35000,Tier 7,4.983e+31,repo_raw_table,enemy_damage_table.csv
+40000,Tier 7,3.771e+34,repo_raw_table,enemy_damage_table.csv
+45000,Tier 7,2.697e+37,repo_raw_table,enemy_damage_table.csv
+50000,Tier 7,1.8759999999999999e+40,repo_raw_table,enemy_damage_table.csv
+55000,Tier 7,1.304e+43,repo_raw_table,enemy_damage_table.csv
+60000,Tier 7,8.369999999999999e+45,repo_raw_table,enemy_damage_table.csv
+65000,Tier 7,5.5300000000000004e+48,repo_raw_table,enemy_damage_table.csv
+70000,Tier 7,3.55e+51,repo_raw_table,enemy_damage_table.csv
+75000,Tier 7,2.2400000000000003e+54,repo_raw_table,enemy_damage_table.csv
+80000,Tier 7,1.3600000000000002e+57,repo_raw_table,enemy_damage_table.csv
+85000,Tier 7,8.7956e+59,repo_raw_table,enemy_damage_table.csv
+90000,Tier 7,5.2958e+62,repo_raw_table,enemy_damage_table.csv
+95000,Tier 7,3.0647000000000007e+65,repo_raw_table,enemy_damage_table.csv
+100000,Tier 7,1.8299e+68,repo_raw_table,enemy_damage_table.csv
+1,Tier 8,2070.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 8,8450.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 8,23970.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 8,50530.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 8,88550.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 8,142870.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 8,211130.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 8,295090.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 8,403950.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 8,534960.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 8,707810.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 8,1990000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 8,4470000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 8,8520000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 8,14640000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 8,37180000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 8,77390000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 8,341000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 8,1140000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 8,3010000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 8,7140000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 8,33790000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 8,125920000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 8,443450000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 8,1380000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 8,11890000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 8,31320000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 8,85300000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 8,218080000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 8,551060000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 8,1400000000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 8,3450000000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Tier 8,8210000000000002.0,repo_raw_table,enemy_damage_table.csv
+8500,Tier 8,2.017e+16,repo_raw_table,enemy_damage_table.csv
+9000,Tier 8,4.791e+16,repo_raw_table,enemy_damage_table.csv
+9500,Tier 8,1.0985e+17,repo_raw_table,enemy_damage_table.csv
+10000,Tier 8,2.5511e+17,repo_raw_table,enemy_damage_table.csv
+10500,Tier 8,5.8456e+17,repo_raw_table,enemy_damage_table.csv
+11000,Tier 8,1.37e+18,repo_raw_table,enemy_damage_table.csv
+11500,Tier 8,3.03e+18,repo_raw_table,enemy_damage_table.csv
+12000,Tier 8,7.02e+18,repo_raw_table,enemy_damage_table.csv
+12500,Tier 8,1.51e+19,repo_raw_table,enemy_damage_table.csv
+13000,Tier 8,3.518e+19,repo_raw_table,enemy_damage_table.csv
+13500,Tier 8,8.318e+19,repo_raw_table,enemy_damage_table.csv
+14500,Tier 8,4.0434e+20,repo_raw_table,enemy_damage_table.csv
+15000,Tier 8,8.653700000000001e+20,repo_raw_table,enemy_damage_table.csv
+15500,Tier 8,1.93e+21,repo_raw_table,enemy_damage_table.csv
+16000,Tier 8,4.22e+21,repo_raw_table,enemy_damage_table.csv
+16500,Tier 8,9.26e+21,repo_raw_table,enemy_damage_table.csv
+17000,Tier 8,1.9780000000000003e+22,repo_raw_table,enemy_damage_table.csv
+17500,Tier 8,4.358e+22,repo_raw_table,enemy_damage_table.csv
+18000,Tier 8,9.68e+22,repo_raw_table,enemy_damage_table.csv
+18500,Tier 8,2.0298e+23,repo_raw_table,enemy_damage_table.csv
+19000,Tier 8,4.4447e+23,repo_raw_table,enemy_damage_table.csv
+19500,Tier 8,9.5148e+23,repo_raw_table,enemy_damage_table.csv
+20000,Tier 8,2.01e+24,repo_raw_table,enemy_damage_table.csv
+21000,Tier 8,9.95e+24,repo_raw_table,enemy_damage_table.csv
+22000,Tier 8,4.49e+25,repo_raw_table,enemy_damage_table.csv
+23000,Tier 8,2.0032e+26,repo_raw_table,enemy_damage_table.csv
+24000,Tier 8,9.065999999999999e+26,repo_raw_table,enemy_damage_table.csv
+25000,Tier 8,4e+27,repo_raw_table,enemy_damage_table.csv
+30000,Tier 8,7.17e+30,repo_raw_table,enemy_damage_table.csv
+35000,Tier 8,1.142e+34,repo_raw_table,enemy_damage_table.csv
+40000,Tier 8,1.683e+37,repo_raw_table,enemy_damage_table.csv
+45000,Tier 8,2.403e+40,repo_raw_table,enemy_damage_table.csv
+50000,Tier 8,3.255e+43,repo_raw_table,enemy_damage_table.csv
+55000,Tier 8,4.5159999999999993e+46,repo_raw_table,enemy_damage_table.csv
+60000,Tier 8,5.649e+49,repo_raw_table,enemy_damage_table.csv
+65000,Tier 8,7.451000000000001e+52,repo_raw_table,enemy_damage_table.csv
+70000,Tier 8,9.327000000000001e+55,repo_raw_table,enemy_damage_table.csv
+75000,Tier 8,1.1724e+59,repo_raw_table,enemy_damage_table.csv
+80000,Tier 8,1.3913999999999995e+62,repo_raw_table,enemy_damage_table.csv
+85000,Tier 8,1.7920000000000002e+65,repo_raw_table,enemy_damage_table.csv
+90000,Tier 8,2.1016000000000001e+68,repo_raw_table,enemy_damage_table.csv
+95000,Tier 8,2.3689e+71,repo_raw_table,enemy_damage_table.csv
+100000,Tier 8,2.8239999999999997e+74,repo_raw_table,enemy_damage_table.csv
+1,Tier 9,6200.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 9,25340.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 9,71920.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 9,151580.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 9,265640.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 9,428620.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 9,633400.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 9,885280.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 9,1210000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 9,1600000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 9,2120000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 9,5960000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 9,13420000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 9,25570000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 9,43910000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 9,111540000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 9,232180000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 9,1020000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 9,3420000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 9,9040000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 9,21430000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 9,101370000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 9,377770000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 9,1330000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 9,4140000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 9,35680000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 9,93960000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 9,255890000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 9,654230000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 9,1650000000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 9,4210000000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Tier 9,1.035e+16,repo_raw_table,enemy_damage_table.csv
+8000,Tier 9,2.463e+16,repo_raw_table,enemy_damage_table.csv
+8500,Tier 9,6.052e+16,repo_raw_table,enemy_damage_table.csv
+9000,Tier 9,1.4372e+17,repo_raw_table,enemy_damage_table.csv
+9500,Tier 9,3.2956e+17,repo_raw_table,enemy_damage_table.csv
+10000,Tier 9,7.6534e+17,repo_raw_table,enemy_damage_table.csv
+10500,Tier 9,1.75e+18,repo_raw_table,enemy_damage_table.csv
+11000,Tier 9,4.110000000000001e+18,repo_raw_table,enemy_damage_table.csv
+11500,Tier 9,9.08e+18,repo_raw_table,enemy_damage_table.csv
+12000,Tier 9,2.106e+19,repo_raw_table,enemy_damage_table.csv
+12500,Tier 9,4.529e+19,repo_raw_table,enemy_damage_table.csv
+13000,Tier 9,1.0555e+20,repo_raw_table,enemy_damage_table.csv
+13500,Tier 9,2.4953e+20,repo_raw_table,enemy_damage_table.csv
+14500,Tier 9,1.21e+21,repo_raw_table,enemy_damage_table.csv
+15000,Tier 9,2.6e+21,repo_raw_table,enemy_damage_table.csv
+15500,Tier 9,5.78e+21,repo_raw_table,enemy_damage_table.csv
+16000,Tier 9,1.267e+22,repo_raw_table,enemy_damage_table.csv
+16500,Tier 9,2.779e+22,repo_raw_table,enemy_damage_table.csv
+17000,Tier 9,5.9340000000000005e+22,repo_raw_table,enemy_damage_table.csv
+17500,Tier 9,1.3073e+23,repo_raw_table,enemy_damage_table.csv
+18000,Tier 9,2.904e+23,repo_raw_table,enemy_damage_table.csv
+18500,Tier 9,6.0895e+23,repo_raw_table,enemy_damage_table.csv
+19000,Tier 9,1.33e+24,repo_raw_table,enemy_damage_table.csv
+19500,Tier 9,2.85e+24,repo_raw_table,enemy_damage_table.csv
+20000,Tier 9,6.04e+24,repo_raw_table,enemy_damage_table.csv
+21000,Tier 9,2.985e+25,repo_raw_table,enemy_damage_table.csv
+22000,Tier 9,1.347e+26,repo_raw_table,enemy_damage_table.csv
+23000,Tier 9,6.0095e+26,repo_raw_table,enemy_damage_table.csv
+24000,Tier 9,2.72e+27,repo_raw_table,enemy_damage_table.csv
+25000,Tier 9,1.2e+28,repo_raw_table,enemy_damage_table.csv
+30000,Tier 9,2.152e+31,repo_raw_table,enemy_damage_table.csv
+35000,Tier 9,3.425e+34,repo_raw_table,enemy_damage_table.csv
+40000,Tier 9,5.048e+37,repo_raw_table,enemy_damage_table.csv
+45000,Tier 9,7.208e+40,repo_raw_table,enemy_damage_table.csv
+50000,Tier 9,9.764e+43,repo_raw_table,enemy_damage_table.csv
+55000,Tier 9,1.3549e+47,repo_raw_table,enemy_damage_table.csv
+60000,Tier 9,1.6948e+50,repo_raw_table,enemy_damage_table.csv
+65000,Tier 9,2.2352e+53,repo_raw_table,enemy_damage_table.csv
+70000,Tier 9,2.7982000000000003e+56,repo_raw_table,enemy_damage_table.csv
+75000,Tier 9,3.5172000000000006e+59,repo_raw_table,enemy_damage_table.csv
+80000,Tier 9,4.1743e+62,repo_raw_table,enemy_damage_table.csv
+85000,Tier 9,5.376100000000002e+65,repo_raw_table,enemy_damage_table.csv
+90000,Tier 9,6.304799999999999e+68,repo_raw_table,enemy_damage_table.csv
+95000,Tier 9,7.106799999999999e+71,repo_raw_table,enemy_damage_table.csv
+100000,Tier 9,8.472e+74,repo_raw_table,enemy_damage_table.csv
+1,Tier 10,18860.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 10,77290.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 10,219760.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 10,463740.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 10,813390.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 10,1310000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 10,1940000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 10,2710000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 10,3720000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 10,4920000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 10,6520000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 10,18320000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 10,41260000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 10,78670000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 10,135130000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 10,343500000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 10,715350000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 10,3150000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 10,10560000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 10,27890000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 10,66180000000.00001,repo_raw_table,enemy_damage_table.csv
+2000,Tier 10,313230000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 10,1170000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 10,4110000000000.001,repo_raw_table,enemy_damage_table.csv
+3500,Tier 10,12800000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 10,110450000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 10,290880000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 10,792320000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Tier 10,2030000000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Tier 10,5120000000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Tier 10,1.304e+16,repo_raw_table,enemy_damage_table.csv
+7500,Tier 10,3.2060000000000004e+16,repo_raw_table,enemy_damage_table.csv
+8000,Tier 10,7.631e+16,repo_raw_table,enemy_damage_table.csv
+8500,Tier 10,1.8754e+17,repo_raw_table,enemy_damage_table.csv
+9000,Tier 10,4.4544e+17,repo_raw_table,enemy_damage_table.csv
+9500,Tier 10,1.02e+18,repo_raw_table,enemy_damage_table.csv
+10000,Tier 10,2.37e+18,repo_raw_table,enemy_damage_table.csv
+10500,Tier 10,5.44e+18,repo_raw_table,enemy_damage_table.csv
+11000,Tier 10,1.276e+19,repo_raw_table,enemy_damage_table.csv
+11500,Tier 10,2.816e+19,repo_raw_table,enemy_damage_table.csv
+12000,Tier 10,6.531e+19,repo_raw_table,enemy_damage_table.csv
+12500,Tier 10,1.4047e+20,repo_raw_table,enemy_damage_table.csv
+13000,Tier 10,3.2738e+20,repo_raw_table,enemy_damage_table.csv
+13500,Tier 10,7.7401e+20,repo_raw_table,enemy_damage_table.csv
+14500,Tier 10,3.76e+21,repo_raw_table,enemy_damage_table.csv
+15000,Tier 10,8.050000000000001e+21,repo_raw_table,enemy_damage_table.csv
+15500,Tier 10,1.7949999999999998e+22,repo_raw_table,enemy_damage_table.csv
+16000,Tier 10,3.932e+22,repo_raw_table,enemy_damage_table.csv
+16500,Tier 10,8.623999999999999e+22,repo_raw_table,enemy_damage_table.csv
+17000,Tier 10,1.8414e+23,repo_raw_table,enemy_damage_table.csv
+17500,Tier 10,4.0573e+23,repo_raw_table,enemy_damage_table.csv
+18000,Tier 10,9.013e+23,repo_raw_table,enemy_damage_table.csv
+18500,Tier 10,1.89e+24,repo_raw_table,enemy_damage_table.csv
+19000,Tier 10,4.14e+24,repo_raw_table,enemy_damage_table.csv
+19500,Tier 10,8.859999999999999e+24,repo_raw_table,enemy_damage_table.csv
+20000,Tier 10,1.876e+25,repo_raw_table,enemy_damage_table.csv
+21000,Tier 10,9.269e+25,repo_raw_table,enemy_damage_table.csv
+22000,Tier 10,4.1824e+26,repo_raw_table,enemy_damage_table.csv
+23000,Tier 10,1.87e+27,repo_raw_table,enemy_damage_table.csv
+24000,Tier 10,8.449999999999999e+27,repo_raw_table,enemy_damage_table.csv
+25000,Tier 10,3.728e+28,repo_raw_table,enemy_damage_table.csv
+30000,Tier 10,6.685e+31,repo_raw_table,enemy_damage_table.csv
+35000,Tier 10,1.0643e+35,repo_raw_table,enemy_damage_table.csv
+40000,Tier 10,1.5692e+38,repo_raw_table,enemy_damage_table.csv
+45000,Tier 10,2.2412e+41,repo_raw_table,enemy_damage_table.csv
+50000,Tier 10,3.0366000000000003e+44,repo_raw_table,enemy_damage_table.csv
+55000,Tier 10,4.2144999999999996e+47,repo_raw_table,enemy_damage_table.csv
+60000,Tier 10,5.2728e+50,repo_raw_table,enemy_damage_table.csv
+65000,Tier 10,6.9553e+53,repo_raw_table,enemy_damage_table.csv
+70000,Tier 10,8.708300000000002e+56,repo_raw_table,enemy_damage_table.csv
+75000,Tier 10,1.0900000000000001e+60,repo_raw_table,enemy_damage_table.csv
+80000,Tier 10,1.3e+63,repo_raw_table,enemy_damage_table.csv
+85000,Tier 10,1.6700000000000001e+66,repo_raw_table,enemy_damage_table.csv
+90000,Tier 10,1.9600000000000003e+69,repo_raw_table,enemy_damage_table.csv
+95000,Tier 10,2.2100000000000003e+72,repo_raw_table,enemy_damage_table.csv
+100000,Tier 10,2.6399999999999997e+75,repo_raw_table,enemy_damage_table.csv
+1,Tier 11,245180.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 11,1010000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 11,2870000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 11,6060000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 11,10640000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 11,17190000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 11,25420000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 11,35560000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 11,48720000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 11,64560000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 11,85460000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 11,240400000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 11,541880000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 11,1030000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 11,1780000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 11,4520000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 11,9410000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 11,41550000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 11,139190000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 11,367810000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 11,873020000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 11,4130000000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 11,15420000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 11,54340000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 11,169150000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Tier 11,1460000000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Tier 11,3850000000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Tier 11,1.048e+16,repo_raw_table,enemy_damage_table.csv
+6000,Tier 11,2.68e+16,repo_raw_table,enemy_damage_table.csv
+6500,Tier 11,6.773999999999999e+16,repo_raw_table,enemy_damage_table.csv
+7000,Tier 11,1.7259e+17,repo_raw_table,enemy_damage_table.csv
+7500,Tier 11,4.2429e+17,repo_raw_table,enemy_damage_table.csv
+8000,Tier 11,1.01e+18,repo_raw_table,enemy_damage_table.csv
+8500,Tier 11,2.48e+18,repo_raw_table,enemy_damage_table.csv
+9000,Tier 11,5.9e+18,repo_raw_table,enemy_damage_table.csv
+9500,Tier 11,1.353e+19,repo_raw_table,enemy_damage_table.csv
+10000,Tier 11,3.142e+19,repo_raw_table,enemy_damage_table.csv
+10500,Tier 11,7.2e+19,repo_raw_table,enemy_damage_table.csv
+11000,Tier 11,1.6898e+20,repo_raw_table,enemy_damage_table.csv
+11500,Tier 11,3.7297e+20,repo_raw_table,enemy_damage_table.csv
+12000,Tier 11,8.651e+20,repo_raw_table,enemy_damage_table.csv
+12500,Tier 11,1.86e+21,repo_raw_table,enemy_damage_table.csv
+13000,Tier 11,4.34e+21,repo_raw_table,enemy_damage_table.csv
+13500,Tier 11,1.026e+22,repo_raw_table,enemy_damage_table.csv
+14500,Tier 11,4.987e+22,repo_raw_table,enemy_damage_table.csv
+15000,Tier 11,1.0674e+23,repo_raw_table,enemy_damage_table.csv
+15500,Tier 11,2.3785e+23,repo_raw_table,enemy_damage_table.csv
+16000,Tier 11,5.2113e+23,repo_raw_table,enemy_damage_table.csv
+16500,Tier 11,1.14e+24,repo_raw_table,enemy_damage_table.csv
+17000,Tier 11,2.44e+24,repo_raw_table,enemy_damage_table.csv
+17500,Tier 11,5.38e+24,repo_raw_table,enemy_damage_table.csv
+18000,Tier 11,1.195e+25,repo_raw_table,enemy_damage_table.csv
+18500,Tier 11,2.506e+25,repo_raw_table,enemy_damage_table.csv
+19000,Tier 11,5.488e+25,repo_raw_table,enemy_damage_table.csv
+19500,Tier 11,1.1749e+26,repo_raw_table,enemy_damage_table.csv
+20000,Tier 11,2.4872e+26,repo_raw_table,enemy_damage_table.csv
+21000,Tier 11,1.2300000000000002e+27,repo_raw_table,enemy_damage_table.csv
+22000,Tier 11,5.55e+27,repo_raw_table,enemy_damage_table.csv
+23000,Tier 11,2.475e+28,repo_raw_table,enemy_damage_table.csv
+24000,Tier 11,1.1204000000000002e+29,repo_raw_table,enemy_damage_table.csv
+25000,Tier 11,4.945300000000001e+29,repo_raw_table,enemy_damage_table.csv
+30000,Tier 11,8.8719e+32,repo_raw_table,enemy_damage_table.csv
+35000,Tier 11,1.41e+36,repo_raw_table,enemy_damage_table.csv
+40000,Tier 11,2.08e+39,repo_raw_table,enemy_damage_table.csv
+45000,Tier 11,2.98e+42,repo_raw_table,enemy_damage_table.csv
+50000,Tier 11,4.03e+45,repo_raw_table,enemy_damage_table.csv
+55000,Tier 11,5.6e+48,repo_raw_table,enemy_damage_table.csv
+60000,Tier 11,7.009999999999999e+51,repo_raw_table,enemy_damage_table.csv
+65000,Tier 11,9.24e+54,repo_raw_table,enemy_damage_table.csv
+70000,Tier 11,1.1580000000000001e+58,repo_raw_table,enemy_damage_table.csv
+75000,Tier 11,1.455e+61,repo_raw_table,enemy_damage_table.csv
+80000,Tier 11,1.7280000000000006e+64,repo_raw_table,enemy_damage_table.csv
+85000,Tier 11,2.226e+67,repo_raw_table,enemy_damage_table.csv
+90000,Tier 11,2.611e+70,repo_raw_table,enemy_damage_table.csv
+95000,Tier 11,2.944e+73,repo_raw_table,enemy_damage_table.csv
+100000,Tier 11,3.51e+76,repo_raw_table,enemy_damage_table.csv
+1,Tier 12,14710000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 12,61430000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 12,177760000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 12,379260000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 12,670290000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 12,1090000000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 12,1620000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 12,2270000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 12,3120000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 12,4140000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 12,5490000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 12,15570000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 12,35290000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 12,67590000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 12,116530000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 12,297890000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 12,623070000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 12,2770000000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 12,9320000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 12,24720000000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 12,58850000000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 12,280010000000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 12,1050000000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Tier 12,3710000000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Tier 12,1.156e+16,repo_raw_table,enemy_damage_table.csv
+4500,Tier 12,1.0021e+17,repo_raw_table,enemy_damage_table.csv
+5000,Tier 12,2.6442e+17,repo_raw_table,enemy_damage_table.csv
+5500,Tier 12,7.215e+17,repo_raw_table,enemy_damage_table.csv
+6000,Tier 12,1.85e+18,repo_raw_table,enemy_damage_table.csv
+6500,Tier 12,4.68e+18,repo_raw_table,enemy_damage_table.csv
+7000,Tier 12,1.193e+19,repo_raw_table,enemy_damage_table.csv
+7500,Tier 12,2.936e+19,repo_raw_table,enemy_damage_table.csv
+8000,Tier 12,6.997e+19,repo_raw_table,enemy_damage_table.csv
+8500,Tier 12,1.7213e+20,repo_raw_table,enemy_damage_table.csv
+9000,Tier 12,4.0926e+20,repo_raw_table,enemy_damage_table.csv
+9500,Tier 12,9.395e+20,repo_raw_table,enemy_damage_table.csv
+10000,Tier 12,2.1800000000000005e+21,repo_raw_table,enemy_damage_table.csv
+10500,Tier 12,5.01e+21,repo_raw_table,enemy_damage_table.csv
+11000,Tier 12,1.177e+22,repo_raw_table,enemy_damage_table.csv
+11500,Tier 12,2.599e+22,repo_raw_table,enemy_damage_table.csv
+12000,Tier 12,6.032e+22,repo_raw_table,enemy_damage_table.csv
+12500,Tier 12,1.2983000000000002e+23,repo_raw_table,enemy_damage_table.csv
+13000,Tier 12,3.028e+23,repo_raw_table,enemy_damage_table.csv
+13500,Tier 12,7.1639e+23,repo_raw_table,enemy_damage_table.csv
+14500,Tier 12,3.49e+24,repo_raw_table,enemy_damage_table.csv
+15000,Tier 12,7.469999999999999e+24,repo_raw_table,enemy_damage_table.csv
+15500,Tier 12,1.665e+25,repo_raw_table,enemy_damage_table.csv
+16000,Tier 12,3.65e+25,repo_raw_table,enemy_damage_table.csv
+16500,Tier 12,8.011e+25,repo_raw_table,enemy_damage_table.csv
+17000,Tier 12,1.7114e+26,repo_raw_table,enemy_damage_table.csv
+17500,Tier 12,3.7729e+26,repo_raw_table,enemy_damage_table.csv
+18000,Tier 12,8.385499999999999e+26,repo_raw_table,enemy_damage_table.csv
+18500,Tier 12,1.76e+27,repo_raw_table,enemy_damage_table.csv
+19000,Tier 12,3.85e+27,repo_raw_table,enemy_damage_table.csv
+19500,Tier 12,8.260000000000001e+27,repo_raw_table,enemy_damage_table.csv
+20000,Tier 12,1.7480000000000003e+28,repo_raw_table,enemy_damage_table.csv
+21000,Tier 12,8.648000000000002e+28,repo_raw_table,enemy_damage_table.csv
+22000,Tier 12,3.9053e+29,repo_raw_table,enemy_damage_table.csv
+23000,Tier 12,1.7399999999999998e+30,repo_raw_table,enemy_damage_table.csv
+24000,Tier 12,7.900000000000001e+30,repo_raw_table,enemy_damage_table.csv
+25000,Tier 12,3.4890000000000003e+31,repo_raw_table,enemy_damage_table.csv
+30000,Tier 12,6.278e+34,repo_raw_table,enemy_damage_table.csv
+35000,Tier 12,1.0021999999999999e+38,repo_raw_table,enemy_damage_table.csv
+40000,Tier 12,1.4811e+41,repo_raw_table,enemy_damage_table.csv
+45000,Tier 12,2.12e+44,repo_raw_table,enemy_damage_table.csv
+50000,Tier 12,2.8776999999999995e+47,repo_raw_table,enemy_damage_table.csv
+55000,Tier 12,4.0009e+50,repo_raw_table,enemy_damage_table.csv
+60000,Tier 12,5.0134e+53,repo_raw_table,enemy_damage_table.csv
+65000,Tier 12,6.6227e+56,repo_raw_table,enemy_damage_table.csv
+70000,Tier 12,8.302900000000001e+59,repo_raw_table,enemy_damage_table.csv
+75000,Tier 12,1.0499999999999999e+63,repo_raw_table,enemy_damage_table.csv
+80000,Tier 12,1.24e+66,repo_raw_table,enemy_damage_table.csv
+85000,Tier 12,1.6e+69,repo_raw_table,enemy_damage_table.csv
+90000,Tier 12,1.8800000000000002e+72,repo_raw_table,enemy_damage_table.csv
+95000,Tier 12,2.12e+75,repo_raw_table,enemy_damage_table.csv
+100000,Tier 12,2.5300000000000002e+78,repo_raw_table,enemy_damage_table.csv
+1,Tier 13,147110000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 13,631520000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 13,1880000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 13,4070000000.000001,repo_raw_table,enemy_damage_table.csv
+40,Tier 13,7260000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 13,11890000000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 13,17780000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 13,25080000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 13,34610000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 13,46150000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 13,61430000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 13,176410000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 13,403260000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 13,777460000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 13,1350000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 13,3470000000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 13,7310000000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 13,32850000000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 13,111430000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 13,297310000000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 13,711260000000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 13,3410000000000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Tier 13,1.284e+16,repo_raw_table,enemy_damage_table.csv
+3000,Tier 13,4.561e+16,repo_raw_table,enemy_damage_table.csv
+3500,Tier 13,1.4288999999999998e+17,repo_raw_table,enemy_damage_table.csv
+4500,Tier 13,1.25e+18,repo_raw_table,enemy_damage_table.csv
+5000,Tier 13,3.3e+18,repo_raw_table,enemy_damage_table.csv
+5500,Tier 13,9.02e+18,repo_raw_table,enemy_damage_table.csv
+6000,Tier 13,2.316e+19,repo_raw_table,enemy_damage_table.csv
+6500,Tier 13,5.875e+19,repo_raw_table,enemy_damage_table.csv
+7000,Tier 13,1.5015e+20,repo_raw_table,enemy_damage_table.csv
+7500,Tier 13,3.7021e+20,repo_raw_table,enemy_damage_table.csv
+8000,Tier 13,8.8368e+20,repo_raw_table,enemy_damage_table.csv
+8500,Tier 13,2.1800000000000005e+21,repo_raw_table,enemy_damage_table.csv
+9000,Tier 13,5.19e+21,repo_raw_table,enemy_damage_table.csv
+9500,Tier 13,1.192e+22,repo_raw_table,enemy_damage_table.csv
+10000,Tier 13,2.775e+22,repo_raw_table,enemy_damage_table.csv
+10500,Tier 13,6.372e+22,repo_raw_table,enemy_damage_table.csv
+11000,Tier 13,1.4984e+23,repo_raw_table,enemy_damage_table.csv
+11500,Tier 13,3.3135e+23,repo_raw_table,enemy_damage_table.csv
+12000,Tier 13,7.699500000000001e+23,repo_raw_table,enemy_damage_table.csv
+12500,Tier 13,1.66e+24,repo_raw_table,enemy_damage_table.csv
+13000,Tier 13,3.87e+24,repo_raw_table,enemy_damage_table.csv
+13500,Tier 13,9.17e+24,repo_raw_table,enemy_damage_table.csv
+14500,Tier 13,4.474e+25,repo_raw_table,enemy_damage_table.csv
+15000,Tier 13,9.59e+25,repo_raw_table,enemy_damage_table.csv
+15500,Tier 13,2.1399e+26,repo_raw_table,enemy_damage_table.csv
+16000,Tier 13,4.6947e+26,repo_raw_table,enemy_damage_table.csv
+16500,Tier 13,1.03e+27,repo_raw_table,enemy_damage_table.csv
+17000,Tier 13,2.2e+27,repo_raw_table,enemy_damage_table.csv
+17500,Tier 13,4.86e+27,repo_raw_table,enemy_damage_table.csv
+18000,Tier 13,1.082e+28,repo_raw_table,enemy_damage_table.csv
+18500,Tier 13,2.2710000000000004e+28,repo_raw_table,enemy_damage_table.csv
+19000,Tier 13,4.980000000000001e+28,repo_raw_table,enemy_damage_table.csv
+19500,Tier 13,1.0673e+29,repo_raw_table,enemy_damage_table.csv
+20000,Tier 13,2.2618e+29,repo_raw_table,enemy_damage_table.csv
+21000,Tier 13,1.12e+30,repo_raw_table,enemy_damage_table.csv
+22000,Tier 13,5.06e+30,repo_raw_table,enemy_damage_table.csv
+23000,Tier 13,2.264e+31,repo_raw_table,enemy_damage_table.csv
+24000,Tier 13,1.0267e+32,repo_raw_table,enemy_damage_table.csv
+25000,Tier 13,4.5394999999999995e+32,repo_raw_table,enemy_damage_table.csv
+30000,Tier 13,8.206799999999999e+35,repo_raw_table,enemy_damage_table.csv
+35000,Tier 13,1.32e+39,repo_raw_table,enemy_damage_table.csv
+40000,Tier 13,1.9500000000000002e+42,repo_raw_table,enemy_damage_table.csv
+45000,Tier 13,2.7999999999999996e+45,repo_raw_table,enemy_damage_table.csv
+50000,Tier 13,3.81e+48,repo_raw_table,enemy_damage_table.csv
+55000,Tier 13,5.3099999999999995e+51,repo_raw_table,enemy_damage_table.csv
+60000,Tier 13,6.67e+54,repo_raw_table,enemy_damage_table.csv
+65000,Tier 13,8.83e+57,repo_raw_table,enemy_damage_table.csv
+70000,Tier 13,1.1099999999999999e+61,repo_raw_table,enemy_damage_table.csv
+75000,Tier 13,1.3989999999999998e+64,repo_raw_table,enemy_damage_table.csv
+80000,Tier 13,1.6660000000000002e+67,repo_raw_table,enemy_damage_table.csv
+85000,Tier 13,2.1510000000000006e+70,repo_raw_table,enemy_damage_table.csv
+90000,Tier 13,2.529e+73,repo_raw_table,enemy_damage_table.csv
+95000,Tier 13,2.8579999999999995e+76,repo_raw_table,enemy_damage_table.csv
+100000,Tier 13,3.415e+79,repo_raw_table,enemy_damage_table.csv
+1,Tier 14,882660000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 14,3900000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 14,11920000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 14,26260000000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 14,47450000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 14,78320000000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 14,117860000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 14,167190000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 14,231760000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 14,310280000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 14,414490000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 14,1210000000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 14,2780000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 14,5400000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 14,9410000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 14,24450000000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 14,51780000000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 14,235370000000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 14,804910000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 14,2160000000000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Tier 14,5200000000000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Tier 14,2.511e+16,repo_raw_table,enemy_damage_table.csv
+2500,Tier 14,9.514e+16,repo_raw_table,enemy_damage_table.csv
+3000,Tier 14,3.3959e+17,repo_raw_table,enemy_damage_table.csv
+3500,Tier 14,1.07e+18,repo_raw_table,enemy_damage_table.csv
+4500,Tier 14,9.39e+18,repo_raw_table,enemy_damage_table.csv
+5000,Tier 14,2.491e+19,repo_raw_table,enemy_damage_table.csv
+5500,Tier 14,6.831e+19,repo_raw_table,enemy_damage_table.csv
+6000,Tier 14,1.7576e+20,repo_raw_table,enemy_damage_table.csv
+6500,Tier 14,4.4674e+20,repo_raw_table,enemy_damage_table.csv
+7000,Tier 14,1.14e+21,repo_raw_table,enemy_damage_table.csv
+7500,Tier 14,2.83e+21,repo_raw_table,enemy_damage_table.csv
+8000,Tier 14,6.76e+21,repo_raw_table,enemy_damage_table.csv
+8500,Tier 14,1.668e+22,repo_raw_table,enemy_damage_table.csv
+9000,Tier 14,3.978e+22,repo_raw_table,enemy_damage_table.csv
+9500,Tier 14,9.157e+22,repo_raw_table,enemy_damage_table.csv
+10000,Tier 14,2.1346e+23,repo_raw_table,enemy_damage_table.csv
+10500,Tier 14,4.9087e+23,repo_raw_table,enemy_damage_table.csv
+11000,Tier 14,1.16e+24,repo_raw_table,enemy_damage_table.csv
+11500,Tier 14,2.56e+24,repo_raw_table,enemy_damage_table.csv
+12000,Tier 14,5.95e+24,repo_raw_table,enemy_damage_table.csv
+12500,Tier 14,1.284e+25,repo_raw_table,enemy_damage_table.csv
+13000,Tier 14,3.001e+25,repo_raw_table,enemy_damage_table.csv
+13500,Tier 14,7.114e+25,repo_raw_table,enemy_damage_table.csv
+14500,Tier 14,3.4767000000000004e+26,repo_raw_table,enemy_damage_table.csv
+15000,Tier 14,7.4592e+26,repo_raw_table,enemy_damage_table.csv
+15500,Tier 14,1.6699999999999998e+27,repo_raw_table,enemy_damage_table.csv
+16000,Tier 14,3.66e+27,repo_raw_table,enemy_damage_table.csv
+16500,Tier 14,8.039999999999999e+27,repo_raw_table,enemy_damage_table.csv
+17000,Tier 14,1.721e+28,repo_raw_table,enemy_damage_table.csv
+17500,Tier 14,3.799000000000001e+28,repo_raw_table,enemy_damage_table.csv
+18000,Tier 14,8.456e+28,repo_raw_table,enemy_damage_table.csv
+18500,Tier 14,1.7767e+29,repo_raw_table,enemy_damage_table.csv
+19000,Tier 14,3.898e+29,repo_raw_table,enemy_damage_table.csv
+19500,Tier 14,8.360399999999999e+29,repo_raw_table,enemy_damage_table.csv
+20000,Tier 14,1.7699999999999998e+30,repo_raw_table,enemy_damage_table.csv
+21000,Tier 14,8.789999999999999e+30,repo_raw_table,enemy_damage_table.csv
+22000,Tier 14,3.9799999999999995e+31,repo_raw_table,enemy_damage_table.csv
+23000,Tier 14,1.7815e+32,repo_raw_table,enemy_damage_table.csv
+24000,Tier 14,8.088e+32,repo_raw_table,enemy_damage_table.csv
+25000,Tier 14,3.58e+33,repo_raw_table,enemy_damage_table.csv
+30000,Tier 14,6.5e+36,repo_raw_table,enemy_damage_table.csv
+35000,Tier 14,1.0469999999999999e+40,repo_raw_table,enemy_damage_table.csv
+40000,Tier 14,1.5580000000000002e+43,repo_raw_table,enemy_damage_table.csv
+45000,Tier 14,2.2440000000000001e+46,repo_raw_table,enemy_damage_table.csv
+50000,Tier 14,3.064e+49,repo_raw_table,enemy_damage_table.csv
+55000,Tier 14,4.2809999999999997e+52,repo_raw_table,enemy_damage_table.csv
+60000,Tier 14,5.389000000000001e+55,repo_raw_table,enemy_damage_table.csv
+65000,Tier 14,7.149e+58,repo_raw_table,enemy_damage_table.csv
+70000,Tier 14,8.998e+61,repo_raw_table,enemy_damage_table.csv
+75000,Tier 14,1.1367e+65,repo_raw_table,enemy_damage_table.csv
+80000,Tier 14,1.3555e+68,repo_raw_table,enemy_damage_table.csv
+85000,Tier 14,1.7535e+71,repo_raw_table,enemy_damage_table.csv
+90000,Tier 14,2.0649999999999998e+74,repo_raw_table,enemy_damage_table.csv
+95000,Tier 14,2.3369e+77,repo_raw_table,enemy_damage_table.csv
+100000,Tier 14,2.7963e+80,repo_raw_table,enemy_damage_table.csv
+1,Tier 15,5300000000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 15,24210000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 15,76130000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 15,170760000000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 15,312260000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 15,520070000000.00006,repo_raw_table,enemy_damage_table.csv
+60,Tier 15,788060000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 15,1120000000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 15,1570000000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 15,2110000000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 15,2820000000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 15,8330000000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 15,19390000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 15,37900000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 15,66420000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 15,174180000000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 15,371460000000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 15,1710000000000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Tier 15,5900000000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Tier 15,1.593e+16,repo_raw_table,enemy_damage_table.csv
+1500,Tier 15,3.852e+16,repo_raw_table,enemy_damage_table.csv
+2000,Tier 15,1.8773e+17,repo_raw_table,enemy_damage_table.csv
+2500,Tier 15,7.1597e+17,repo_raw_table,enemy_damage_table.csv
+3000,Tier 15,2.57e+18,repo_raw_table,enemy_damage_table.csv
+3500,Tier 15,8.119999999999999e+18,repo_raw_table,enemy_damage_table.csv
+4500,Tier 15,7.186e+19,repo_raw_table,enemy_damage_table.csv
+5000,Tier 15,1.9127e+20,repo_raw_table,enemy_damage_table.csv
+5500,Tier 15,5.2603e+20,repo_raw_table,enemy_damage_table.csv
+6000,Tier 15,1.36e+21,repo_raw_table,enemy_damage_table.csv
+6500,Tier 15,3.46e+21,repo_raw_table,enemy_damage_table.csv
+7000,Tier 15,8.869999999999999e+21,repo_raw_table,enemy_damage_table.csv
+7500,Tier 15,2.196e+22,repo_raw_table,enemy_damage_table.csv
+8000,Tier 15,5.261e+22,repo_raw_table,enemy_damage_table.csv
+8500,Tier 15,1.3008e+23,repo_raw_table,enemy_damage_table.csv
+9000,Tier 15,3.1074e+23,repo_raw_table,enemy_damage_table.csv
+9500,Tier 15,7.1652e+23,repo_raw_table,enemy_damage_table.csv
+10000,Tier 15,1.67e+24,repo_raw_table,enemy_damage_table.csv
+10500,Tier 15,3.85e+24,repo_raw_table,enemy_damage_table.csv
+11000,Tier 15,9.08e+24,repo_raw_table,enemy_damage_table.csv
+11500,Tier 15,2.013e+25,repo_raw_table,enemy_damage_table.csv
+12000,Tier 15,4.689999999999999e+25,repo_raw_table,enemy_damage_table.csv
+12500,Tier 15,1.0128e+26,repo_raw_table,enemy_damage_table.csv
+13000,Tier 15,2.3697e+26,repo_raw_table,enemy_damage_table.csv
+13500,Tier 15,5.6239e+26,repo_raw_table,enemy_damage_table.csv
+14500,Tier 15,2.7500000000000004e+27,repo_raw_table,enemy_damage_table.csv
+15000,Tier 15,5.91e+27,repo_raw_table,enemy_damage_table.csv
+15500,Tier 15,1.322e+28,repo_raw_table,enemy_damage_table.csv
+16000,Tier 15,2.906e+28,repo_raw_table,enemy_damage_table.csv
+16500,Tier 15,6.393e+28,repo_raw_table,enemy_damage_table.csv
+17000,Tier 15,1.3692000000000001e+29,repo_raw_table,enemy_damage_table.csv
+17500,Tier 15,3.0257e+29,repo_raw_table,enemy_damage_table.csv
+18000,Tier 15,6.740400000000001e+29,repo_raw_table,enemy_damage_table.csv
+18500,Tier 15,1.42e+30,repo_raw_table,enemy_damage_table.csv
+19000,Tier 15,3.11e+30,repo_raw_table,enemy_damage_table.csv
+19500,Tier 15,6.679999999999999e+30,repo_raw_table,enemy_damage_table.csv
+20000,Tier 15,1.418e+31,repo_raw_table,enemy_damage_table.csv
+21000,Tier 15,7.040000000000001e+31,repo_raw_table,enemy_damage_table.csv
+22000,Tier 15,3.1913e+32,repo_raw_table,enemy_damage_table.csv
+23000,Tier 15,1.43e+33,repo_raw_table,enemy_damage_table.csv
+24000,Tier 15,6.5e+33,repo_raw_table,enemy_damage_table.csv
+25000,Tier 15,2.881e+34,repo_raw_table,enemy_damage_table.csv
+30000,Tier 15,5.262e+37,repo_raw_table,enemy_damage_table.csv
+35000,Tier 15,8.508e+40,repo_raw_table,enemy_damage_table.csv
+40000,Tier 15,1.2713e+44,repo_raw_table,enemy_damage_table.csv
+45000,Tier 15,1.8372e+47,repo_raw_table,enemy_damage_table.csv
+50000,Tier 15,2.5156e+50,repo_raw_table,enemy_damage_table.csv
+55000,Tier 15,3.5249e+53,repo_raw_table,enemy_damage_table.csv
+60000,Tier 15,4.448600000000001e+56,repo_raw_table,enemy_damage_table.csv
+65000,Tier 15,5.9153e+59,repo_raw_table,enemy_damage_table.csv
+70000,Tier 15,7.4613e+62,repo_raw_table,enemy_damage_table.csv
+75000,Tier 15,9.4447e+65,repo_raw_table,enemy_damage_table.csv
+80000,Tier 15,1.13e+69,repo_raw_table,enemy_damage_table.csv
+85000,Tier 15,1.46e+72,repo_raw_table,enemy_damage_table.csv
+90000,Tier 15,1.7199999999999998e+75,repo_raw_table,enemy_damage_table.csv
+95000,Tier 15,1.96e+78,repo_raw_table,enemy_damage_table.csv
+100000,Tier 15,2.3399999999999995e+81,repo_raw_table,enemy_damage_table.csv
+1,Tier 16,44130000000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 16,201720000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 16,634390000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 16,1420000000000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 16,2600000000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 16,4330000000000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 16,6570000000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 16,9370000000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 16,13050000000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 16,17550000000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 16,23530000000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 16,69400000000000.01,repo_raw_table,enemy_damage_table.csv
+200,Tier 16,161560000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 16,315820000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 16,553500000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 16,1450000000000000.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 16,3100000000000000.0,repo_raw_table,enemy_damage_table.csv
+750,Tier 16,1.424e+16,repo_raw_table,enemy_damage_table.csv
+1000,Tier 16,4.913e+16,repo_raw_table,enemy_damage_table.csv
+1250,Tier 16,1.3279e+17,repo_raw_table,enemy_damage_table.csv
+1500,Tier 16,3.21e+17,repo_raw_table,enemy_damage_table.csv
+2000,Tier 16,1.56e+18,repo_raw_table,enemy_damage_table.csv
+2500,Tier 16,5.97e+18,repo_raw_table,enemy_damage_table.csv
+3000,Tier 16,2.141e+19,repo_raw_table,enemy_damage_table.csv
+3500,Tier 16,6.767e+19,repo_raw_table,enemy_damage_table.csv
+4500,Tier 16,5.9882e+20,repo_raw_table,enemy_damage_table.csv
+5000,Tier 16,1.59e+21,repo_raw_table,enemy_damage_table.csv
+5500,Tier 16,4.38e+21,repo_raw_table,enemy_damage_table.csv
+6000,Tier 16,1.131e+22,repo_raw_table,enemy_damage_table.csv
+6500,Tier 16,2.881e+22,repo_raw_table,enemy_damage_table.csv
+7000,Tier 16,7.393999999999999e+22,repo_raw_table,enemy_damage_table.csv
+7500,Tier 16,1.83e+23,repo_raw_table,enemy_damage_table.csv
+8000,Tier 16,4.3842e+23,repo_raw_table,enemy_damage_table.csv
+8500,Tier 16,1.08e+24,repo_raw_table,enemy_damage_table.csv
+9000,Tier 16,2.59e+24,repo_raw_table,enemy_damage_table.csv
+9500,Tier 16,5.969999999999999e+24,repo_raw_table,enemy_damage_table.csv
+10000,Tier 16,1.394e+25,repo_raw_table,enemy_damage_table.csv
+10500,Tier 16,3.2099999999999995e+25,repo_raw_table,enemy_damage_table.csv
+11000,Tier 16,7.568e+25,repo_raw_table,enemy_damage_table.csv
+11500,Tier 16,1.6778e+26,repo_raw_table,enemy_damage_table.csv
+12000,Tier 16,3.9079999999999995e+26,repo_raw_table,enemy_damage_table.csv
+12500,Tier 16,8.4401e+26,repo_raw_table,enemy_damage_table.csv
+13000,Tier 16,1.97e+27,repo_raw_table,enemy_damage_table.csv
+13500,Tier 16,4.6900000000000006e+27,repo_raw_table,enemy_damage_table.csv
+14500,Tier 16,2.295e+28,repo_raw_table,enemy_damage_table.csv
+15000,Tier 16,4.929000000000001e+28,repo_raw_table,enemy_damage_table.csv
+15500,Tier 16,1.1018000000000002e+29,repo_raw_table,enemy_damage_table.csv
+16000,Tier 16,2.4216000000000002e+29,repo_raw_table,enemy_damage_table.csv
+16500,Tier 16,5.3276e+29,repo_raw_table,enemy_damage_table.csv
+17000,Tier 16,1.14e+30,repo_raw_table,enemy_damage_table.csv
+17500,Tier 16,2.52e+30,repo_raw_table,enemy_damage_table.csv
+18000,Tier 16,5.62e+30,repo_raw_table,enemy_damage_table.csv
+18500,Tier 16,1.181e+31,repo_raw_table,enemy_damage_table.csv
+19000,Tier 16,2.593e+31,repo_raw_table,enemy_damage_table.csv
+19500,Tier 16,5.5670000000000005e+31,repo_raw_table,enemy_damage_table.csv
+20000,Tier 16,1.1813999999999999e+32,repo_raw_table,enemy_damage_table.csv
+21000,Tier 16,5.8662999999999994e+32,repo_raw_table,enemy_damage_table.csv
+22000,Tier 16,2.66e+33,repo_raw_table,enemy_damage_table.csv
+23000,Tier 16,1.192e+34,repo_raw_table,enemy_damage_table.csv
+24000,Tier 16,5.418e+34,repo_raw_table,enemy_damage_table.csv
+25000,Tier 16,2.4010000000000002e+35,repo_raw_table,enemy_damage_table.csv
+30000,Tier 16,4.3852e+38,repo_raw_table,enemy_damage_table.csv
+35000,Tier 16,7.0898e+41,repo_raw_table,enemy_damage_table.csv
+40000,Tier 16,1.06e+45,repo_raw_table,enemy_damage_table.csv
+45000,Tier 16,1.5300000000000002e+48,repo_raw_table,enemy_damage_table.csv
+50000,Tier 16,2.1e+51,repo_raw_table,enemy_damage_table.csv
+55000,Tier 16,2.9400000000000003e+54,repo_raw_table,enemy_damage_table.csv
+60000,Tier 16,3.71e+57,repo_raw_table,enemy_damage_table.csv
+65000,Tier 16,4.9299999999999985e+60,repo_raw_table,enemy_damage_table.csv
+70000,Tier 16,6.22e+63,repo_raw_table,enemy_damage_table.csv
+75000,Tier 16,7.87e+66,repo_raw_table,enemy_damage_table.csv
+80000,Tier 16,9.400000000000001e+69,repo_raw_table,enemy_damage_table.csv
+85000,Tier 16,1.2190000000000001e+73,repo_raw_table,enemy_damage_table.csv
+90000,Tier 16,1.4369999999999996e+76,repo_raw_table,enemy_damage_table.csv
+95000,Tier 16,1.629e+79,repo_raw_table,enemy_damage_table.csv
+100000,Tier 16,1.952e+82,repo_raw_table,enemy_damage_table.csv
+1,Tier 17,264800000000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 17,1210000000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 17,3810000000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 17,8539999999999.999,repo_raw_table,enemy_damage_table.csv
+40,Tier 17,15610000000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 17,26000000000000.0,repo_raw_table,enemy_damage_table.csv
+60,Tier 17,39400000000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 17,56220000000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 17,78310000000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 17,105280000000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 17,141170000000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 17,416380000000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 17,969360000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 17,1890000000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 17,3320000000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Tier 17,8710000000000002.0,repo_raw_table,enemy_damage_table.csv
+500,Tier 17,1.857e+16,repo_raw_table,enemy_damage_table.csv
+750,Tier 17,8.547e+16,repo_raw_table,enemy_damage_table.csv
+1000,Tier 17,2.948e+17,repo_raw_table,enemy_damage_table.csv
+1250,Tier 17,7.9674e+17,repo_raw_table,enemy_damage_table.csv
+1500,Tier 17,1.93e+18,repo_raw_table,enemy_damage_table.csv
+2000,Tier 17,9.39e+18,repo_raw_table,enemy_damage_table.csv
+2500,Tier 17,3.58e+19,repo_raw_table,enemy_damage_table.csv
+3000,Tier 17,1.2847e+20,repo_raw_table,enemy_damage_table.csv
+3500,Tier 17,4.06e+20,repo_raw_table,enemy_damage_table.csv
+4500,Tier 17,3.59e+21,repo_raw_table,enemy_damage_table.csv
+5000,Tier 17,9.56e+21,repo_raw_table,enemy_damage_table.csv
+5500,Tier 17,2.63e+22,repo_raw_table,enemy_damage_table.csv
+6000,Tier 17,6.784999999999999e+22,repo_raw_table,enemy_damage_table.csv
+6500,Tier 17,1.7286e+23,repo_raw_table,enemy_damage_table.csv
+7000,Tier 17,4.4363e+23,repo_raw_table,enemy_damage_table.csv
+7500,Tier 17,1.0999999999999999e+24,repo_raw_table,enemy_damage_table.csv
+8000,Tier 17,2.63e+24,repo_raw_table,enemy_damage_table.csv
+8500,Tier 17,6.5e+24,repo_raw_table,enemy_damage_table.csv
+9000,Tier 17,1.554e+25,repo_raw_table,enemy_damage_table.csv
+9500,Tier 17,3.583e+25,repo_raw_table,enemy_damage_table.csv
+10000,Tier 17,8.364e+25,repo_raw_table,enemy_damage_table.csv
+10500,Tier 17,1.9261e+26,repo_raw_table,enemy_damage_table.csv
+11000,Tier 17,4.541e+26,repo_raw_table,enemy_damage_table.csv
+11500,Tier 17,1.0100000000000001e+27,repo_raw_table,enemy_damage_table.csv
+12000,Tier 17,2.3400000000000002e+27,repo_raw_table,enemy_damage_table.csv
+12500,Tier 17,5.06e+27,repo_raw_table,enemy_damage_table.csv
+13000,Tier 17,1.185e+28,repo_raw_table,enemy_damage_table.csv
+13500,Tier 17,2.812e+28,repo_raw_table,enemy_damage_table.csv
+14500,Tier 17,1.377e+29,repo_raw_table,enemy_damage_table.csv
+15000,Tier 17,2.9573000000000003e+29,repo_raw_table,enemy_damage_table.csv
+15500,Tier 17,6.611000000000001e+29,repo_raw_table,enemy_damage_table.csv
+16000,Tier 17,1.45e+30,repo_raw_table,enemy_damage_table.csv
+16500,Tier 17,3.2000000000000003e+30,repo_raw_table,enemy_damage_table.csv
+17000,Tier 17,6.85e+30,repo_raw_table,enemy_damage_table.csv
+17500,Tier 17,1.513e+31,repo_raw_table,enemy_damage_table.csv
+18000,Tier 17,3.3700000000000004e+31,repo_raw_table,enemy_damage_table.csv
+18500,Tier 17,7.0870000000000005e+31,repo_raw_table,enemy_damage_table.csv
+19000,Tier 17,1.5561e+32,repo_raw_table,enemy_damage_table.csv
+19500,Tier 17,3.3399000000000004e+32,repo_raw_table,enemy_damage_table.csv
+20000,Tier 17,7.0884e+32,repo_raw_table,enemy_damage_table.csv
+21000,Tier 17,3.52e+33,repo_raw_table,enemy_damage_table.csv
+22000,Tier 17,1.596e+34,repo_raw_table,enemy_damage_table.csv
+23000,Tier 17,7.151e+34,repo_raw_table,enemy_damage_table.csv
+24000,Tier 17,3.2507e+35,repo_raw_table,enemy_damage_table.csv
+25000,Tier 17,1.44e+36,repo_raw_table,enemy_damage_table.csv
+30000,Tier 17,2.6299999999999997e+39,repo_raw_table,enemy_damage_table.csv
+35000,Tier 17,4.25e+42,repo_raw_table,enemy_damage_table.csv
+40000,Tier 17,6.36e+45,repo_raw_table,enemy_damage_table.csv
+45000,Tier 17,9.19e+48,repo_raw_table,enemy_damage_table.csv
+50000,Tier 17,1.2579999999999998e+52,repo_raw_table,enemy_damage_table.csv
+55000,Tier 17,1.762e+55,repo_raw_table,enemy_damage_table.csv
+60000,Tier 17,2.224e+58,repo_raw_table,enemy_damage_table.csv
+65000,Tier 17,2.958e+61,repo_raw_table,enemy_damage_table.csv
+70000,Tier 17,3.7310000000000003e+64,repo_raw_table,enemy_damage_table.csv
+75000,Tier 17,4.7220000000000004e+67,repo_raw_table,enemy_damage_table.csv
+80000,Tier 17,5.642000000000001e+70,repo_raw_table,enemy_damage_table.csv
+85000,Tier 17,7.311000000000001e+73,repo_raw_table,enemy_damage_table.csv
+90000,Tier 17,8.623999999999999e+76,repo_raw_table,enemy_damage_table.csv
+95000,Tier 17,9.775e+79,repo_raw_table,enemy_damage_table.csv
+100000,Tier 17,1.1714e+83,repo_raw_table,enemy_damage_table.csv
+1,Tier 18,1320000000000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 18,6050000000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 18,19030000000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 18,42690000000000.0,repo_raw_table,enemy_damage_table.csv
+40,Tier 18,78070000000000.0,repo_raw_table,enemy_damage_table.csv
+50,Tier 18,130020000000000.02,repo_raw_table,enemy_damage_table.csv
+60,Tier 18,197010000000000.0,repo_raw_table,enemy_damage_table.csv
+70,Tier 18,281090000000000.0,repo_raw_table,enemy_damage_table.csv
+80,Tier 18,391550000000000.0,repo_raw_table,enemy_damage_table.csv
+90,Tier 18,526420000000000.0,repo_raw_table,enemy_damage_table.csv
+100,Tier 18,705840000000000.0,repo_raw_table,enemy_damage_table.csv
+150,Tier 18,2080000000000000.0,repo_raw_table,enemy_damage_table.csv
+200,Tier 18,4850000000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Tier 18,9470000000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Tier 18,1.661e+16,repo_raw_table,enemy_damage_table.csv
+400,Tier 18,4.354e+16,repo_raw_table,enemy_damage_table.csv
+500,Tier 18,9.286e+16,repo_raw_table,enemy_damage_table.csv
+750,Tier 18,4.2733e+17,repo_raw_table,enemy_damage_table.csv
+1000,Tier 18,1.47e+18,repo_raw_table,enemy_damage_table.csv
+1250,Tier 18,3.98e+18,repo_raw_table,enemy_damage_table.csv
+1500,Tier 18,9.63e+18,repo_raw_table,enemy_damage_table.csv
+2000,Tier 18,4.693e+19,repo_raw_table,enemy_damage_table.csv
+2500,Tier 18,1.7899e+20,repo_raw_table,enemy_damage_table.csv
+3000,Tier 18,6.423300000000001e+20,repo_raw_table,enemy_damage_table.csv
+3500,Tier 18,2.03e+21,repo_raw_table,enemy_damage_table.csv
+4500,Tier 18,1.796e+22,repo_raw_table,enemy_damage_table.csv
+5000,Tier 18,4.782e+22,repo_raw_table,enemy_damage_table.csv
+5500,Tier 18,1.3151e+23,repo_raw_table,enemy_damage_table.csv
+6000,Tier 18,3.3924e+23,repo_raw_table,enemy_damage_table.csv
+6500,Tier 18,8.642999999999999e+23,repo_raw_table,enemy_damage_table.csv
+7000,Tier 18,2.22e+24,repo_raw_table,enemy_damage_table.csv
+7500,Tier 18,5.49e+24,repo_raw_table,enemy_damage_table.csv
+8000,Tier 18,1.315e+25,repo_raw_table,enemy_damage_table.csv
+8500,Tier 18,3.2520000000000003e+25,repo_raw_table,enemy_damage_table.csv
+9000,Tier 18,7.769e+25,repo_raw_table,enemy_damage_table.csv
+9500,Tier 18,1.7913e+26,repo_raw_table,enemy_damage_table.csv
+10000,Tier 18,4.1819e+26,repo_raw_table,enemy_damage_table.csv
+10500,Tier 18,9.6303e+26,repo_raw_table,enemy_damage_table.csv
+11000,Tier 18,2.27e+27,repo_raw_table,enemy_damage_table.csv
+11500,Tier 18,5.03e+27,repo_raw_table,enemy_damage_table.csv
+12000,Tier 18,1.172e+28,repo_raw_table,enemy_damage_table.csv
+12500,Tier 18,2.532e+28,repo_raw_table,enemy_damage_table.csv
+13000,Tier 18,5.924e+28,repo_raw_table,enemy_damage_table.csv
+13500,Tier 18,1.406e+29,repo_raw_table,enemy_damage_table.csv
+14500,Tier 18,6.885e+29,repo_raw_table,enemy_damage_table.csv
+15000,Tier 18,1.48e+30,repo_raw_table,enemy_damage_table.csv
+15500,Tier 18,3.31e+30,repo_raw_table,enemy_damage_table.csv
+16000,Tier 18,7.26e+30,repo_raw_table,enemy_damage_table.csv
+16500,Tier 18,1.5979999999999999e+31,repo_raw_table,enemy_damage_table.csv
+17000,Tier 18,3.423e+31,repo_raw_table,enemy_damage_table.csv
+17500,Tier 18,7.564e+31,repo_raw_table,enemy_damage_table.csv
+18000,Tier 18,1.6851e+32,repo_raw_table,enemy_damage_table.csv
+18500,Tier 18,3.5435e+32,repo_raw_table,enemy_damage_table.csv
+19000,Tier 18,7.7803e+32,repo_raw_table,enemy_damage_table.csv
+19500,Tier 18,1.6699999999999998e+33,repo_raw_table,enemy_damage_table.csv
+20000,Tier 18,3.54e+33,repo_raw_table,enemy_damage_table.csv
+21000,Tier 18,1.7600000000000002e+34,repo_raw_table,enemy_damage_table.csv
+22000,Tier 18,7.978e+34,repo_raw_table,enemy_damage_table.csv
+23000,Tier 18,3.5756999999999994e+35,repo_raw_table,enemy_damage_table.csv
+24000,Tier 18,1.63e+36,repo_raw_table,enemy_damage_table.csv
+25000,Tier 18,7.200000000000001e+36,repo_raw_table,enemy_damage_table.csv
+30000,Tier 18,1.316e+40,repo_raw_table,enemy_damage_table.csv
+35000,Tier 18,2.127e+43,repo_raw_table,enemy_damage_table.csv
+40000,Tier 18,3.178e+46,repo_raw_table,enemy_damage_table.csv
+45000,Tier 18,4.593e+49,repo_raw_table,enemy_damage_table.csv
+50000,Tier 18,6.289e+52,repo_raw_table,enemy_damage_table.csv
+55000,Tier 18,8.812000000000003e+55,repo_raw_table,enemy_damage_table.csv
+60000,Tier 18,1.1121e+59,repo_raw_table,enemy_damage_table.csv
+65000,Tier 18,1.4787999999999998e+62,repo_raw_table,enemy_damage_table.csv
+70000,Tier 18,1.8653e+65,repo_raw_table,enemy_damage_table.csv
+75000,Tier 18,2.3612e+68,repo_raw_table,enemy_damage_table.csv
+80000,Tier 18,2.8208e+71,repo_raw_table,enemy_damage_table.csv
+85000,Tier 18,3.6555000000000004e+74,repo_raw_table,enemy_damage_table.csv
+90000,Tier 18,4.3120999999999997e+77,repo_raw_table,enemy_damage_table.csv
+95000,Tier 18,4.8875e+80,repo_raw_table,enemy_damage_table.csv
+100000,Tier 18,5.857e+83,repo_raw_table,enemy_damage_table.csv
+1,Tier 19,344240000000000.0,repo_raw_table,enemy_damage_table.csv
+10,Tier 19,1570000000000000.0,repo_raw_table,enemy_damage_table.csv
+20,Tier 19,4950000000000000.0,repo_raw_table,enemy_damage_table.csv
+30,Tier 19,1.11e+16,repo_raw_table,enemy_damage_table.csv
+40,Tier 19,2.03e+16,repo_raw_table,enemy_damage_table.csv
+50,Tier 19,3.38e+16,repo_raw_table,enemy_damage_table.csv
+60,Tier 19,5.122e+16,repo_raw_table,enemy_damage_table.csv
+70,Tier 19,7.308e+16,repo_raw_table,enemy_damage_table.csv
+80,Tier 19,1.018e+17,repo_raw_table,enemy_damage_table.csv
+90,Tier 19,1.3687e+17,repo_raw_table,enemy_damage_table.csv
+100,Tier 19,1.8352e+17,repo_raw_table,enemy_damage_table.csv
+150,Tier 19,5.4129e+17,repo_raw_table,enemy_damage_table.csv
+200,Tier 19,1.26e+18,repo_raw_table,enemy_damage_table.csv
+250,Tier 19,2.46e+18,repo_raw_table,enemy_damage_table.csv
+300,Tier 19,4.320000000000001e+18,repo_raw_table,enemy_damage_table.csv
+400,Tier 19,1.132e+19,repo_raw_table,enemy_damage_table.csv
+500,Tier 19,2.414e+19,repo_raw_table,enemy_damage_table.csv
+750,Tier 19,1.1111e+20,repo_raw_table,enemy_damage_table.csv
+1000,Tier 19,3.8323e+20,repo_raw_table,enemy_damage_table.csv
+1250,Tier 19,1.04e+21,repo_raw_table,enemy_damage_table.csv
+1500,Tier 19,2.5e+21,repo_raw_table,enemy_damage_table.csv
+2000,Tier 19,1.22e+22,repo_raw_table,enemy_damage_table.csv
+2500,Tier 19,4.654e+22,repo_raw_table,enemy_damage_table.csv
+3000,Tier 19,1.6701e+23,repo_raw_table,enemy_damage_table.csv
+3500,Tier 19,5.2779999999999993e+23,repo_raw_table,enemy_damage_table.csv
+4500,Tier 19,4.67e+24,repo_raw_table,enemy_damage_table.csv
+5000,Tier 19,1.243e+25,repo_raw_table,enemy_damage_table.csv
+5500,Tier 19,3.419e+25,repo_raw_table,enemy_damage_table.csv
+6000,Tier 19,8.82e+25,repo_raw_table,enemy_damage_table.csv
+6500,Tier 19,2.2472e+26,repo_raw_table,enemy_damage_table.csv
+7000,Tier 19,5.7672e+26,repo_raw_table,enemy_damage_table.csv
+7500,Tier 19,1.43e+27,repo_raw_table,enemy_damage_table.csv
+8000,Tier 19,3.4200000000000005e+27,repo_raw_table,enemy_damage_table.csv
+8500,Tier 19,8.460000000000001e+27,repo_raw_table,enemy_damage_table.csv
+9000,Tier 19,2.02e+28,repo_raw_table,enemy_damage_table.csv
+9500,Tier 19,4.657e+28,repo_raw_table,enemy_damage_table.csv
+10000,Tier 19,1.0873e+29,repo_raw_table,enemy_damage_table.csv
+10500,Tier 19,2.5039000000000002e+29,repo_raw_table,enemy_damage_table.csv
+11000,Tier 19,5.903300000000001e+29,repo_raw_table,enemy_damage_table.csv
+11500,Tier 19,1.31e+30,repo_raw_table,enemy_damage_table.csv
+12000,Tier 19,3.05e+30,repo_raw_table,enemy_damage_table.csv
+12500,Tier 19,6.58e+30,repo_raw_table,enemy_damage_table.csv
+13000,Tier 19,1.5400000000000002e+31,repo_raw_table,enemy_damage_table.csv
+13500,Tier 19,3.6559999999999997e+31,repo_raw_table,enemy_damage_table.csv
+14500,Tier 19,1.7901e+32,repo_raw_table,enemy_damage_table.csv
+15000,Tier 19,3.8445e+32,repo_raw_table,enemy_damage_table.csv
+15500,Tier 19,8.5943e+32,repo_raw_table,enemy_damage_table.csv
+16000,Tier 19,1.89e+33,repo_raw_table,enemy_damage_table.csv
+16500,Tier 19,4.16e+33,repo_raw_table,enemy_damage_table.csv
+17000,Tier 19,8.899999999999999e+33,repo_raw_table,enemy_damage_table.csv
+17500,Tier 19,1.967e+34,repo_raw_table,enemy_damage_table.csv
+18000,Tier 19,4.381e+34,repo_raw_table,enemy_damage_table.csv
+18500,Tier 19,9.213e+34,repo_raw_table,enemy_damage_table.csv
+19000,Tier 19,2.0229e+35,repo_raw_table,enemy_damage_table.csv
+19500,Tier 19,4.3419e+35,repo_raw_table,enemy_damage_table.csv
+20000,Tier 19,9.2149e+35,repo_raw_table,enemy_damage_table.csv
+21000,Tier 19,4.5800000000000005e+36,repo_raw_table,enemy_damage_table.csv
+22000,Tier 19,2.074e+37,repo_raw_table,enemy_damage_table.csv
+23000,Tier 19,9.297e+37,repo_raw_table,enemy_damage_table.csv
+24000,Tier 19,4.2259e+38,repo_raw_table,enemy_damage_table.csv
+25000,Tier 19,1.87e+39,repo_raw_table,enemy_damage_table.csv
+30000,Tier 19,3.42e+42,repo_raw_table,enemy_damage_table.csv
+35000,Tier 19,5.5299999999999996e+45,repo_raw_table,enemy_damage_table.csv
+40000,Tier 19,8.26e+48,repo_raw_table,enemy_damage_table.csv
+45000,Tier 19,1.194e+52,repo_raw_table,enemy_damage_table.csv
+50000,Tier 19,1.6350000000000002e+55,repo_raw_table,enemy_damage_table.csv
+55000,Tier 19,2.291e+58,repo_raw_table,enemy_damage_table.csv
+60000,Tier 19,2.8919999999999996e+61,repo_raw_table,enemy_damage_table.csv
+65000,Tier 19,3.845000000000001e+64,repo_raw_table,enemy_damage_table.csv
+70000,Tier 19,4.85e+67,repo_raw_table,enemy_damage_table.csv
+75000,Tier 19,6.139e+70,repo_raw_table,enemy_damage_table.csv
+80000,Tier 19,7.334000000000001e+73,repo_raw_table,enemy_damage_table.csv
+85000,Tier 19,9.504e+76,repo_raw_table,enemy_damage_table.csv
+90000,Tier 19,1.1211000000000001e+80,repo_raw_table,enemy_damage_table.csv
+95000,Tier 19,1.2708e+83,repo_raw_table,enemy_damage_table.csv
+100000,Tier 19,1.5228e+86,repo_raw_table,enemy_damage_table.csv
+1,Tier 20,8.262e+16,repo_raw_table,enemy_damage_table.csv
+10,Tier 20,3.7763e+17,repo_raw_table,enemy_damage_table.csv
+20,Tier 20,1.19e+18,repo_raw_table,enemy_damage_table.csv
+30,Tier 20,2.66e+18,repo_raw_table,enemy_damage_table.csv
+40,Tier 20,4.87e+18,repo_raw_table,enemy_damage_table.csv
+50,Tier 20,8.109999999999999e+18,repo_raw_table,enemy_damage_table.csv
+60,Tier 20,1.229e+19,repo_raw_table,enemy_damage_table.csv
+70,Tier 20,1.754e+19,repo_raw_table,enemy_damage_table.csv
+80,Tier 20,2.443e+19,repo_raw_table,enemy_damage_table.csv
+90,Tier 20,3.285e+19,repo_raw_table,enemy_damage_table.csv
+100,Tier 20,4.404e+19,repo_raw_table,enemy_damage_table.csv
+150,Tier 20,1.2991e+20,repo_raw_table,enemy_damage_table.csv
+200,Tier 20,3.0244e+20,repo_raw_table,enemy_damage_table.csv
+250,Tier 20,5.912100000000001e+20,repo_raw_table,enemy_damage_table.csv
+300,Tier 20,1.04e+21,repo_raw_table,enemy_damage_table.csv
+400,Tier 20,2.72e+21,repo_raw_table,enemy_damage_table.csv
+500,Tier 20,5.79e+21,repo_raw_table,enemy_damage_table.csv
+750,Tier 20,2.667e+22,repo_raw_table,enemy_damage_table.csv
+1000,Tier 20,9.198e+22,repo_raw_table,enemy_damage_table.csv
+1250,Tier 20,2.4858e+23,repo_raw_table,enemy_damage_table.csv
+1500,Tier 20,6.0092e+23,repo_raw_table,enemy_damage_table.csv
+2000,Tier 20,2.93e+24,repo_raw_table,enemy_damage_table.csv
+2500,Tier 20,1.117e+25,repo_raw_table,enemy_damage_table.csv
+3000,Tier 20,4.008e+25,repo_raw_table,enemy_damage_table.csv
+3500,Tier 20,1.2667e+26,repo_raw_table,enemy_damage_table.csv
+4500,Tier 20,1.12e+27,repo_raw_table,enemy_damage_table.csv
+5000,Tier 20,2.9800000000000004e+27,repo_raw_table,enemy_damage_table.csv
+5500,Tier 20,8.210000000000001e+27,repo_raw_table,enemy_damage_table.csv
+6000,Tier 20,2.117e+28,repo_raw_table,enemy_damage_table.csv
+6500,Tier 20,5.3930000000000005e+28,repo_raw_table,enemy_damage_table.csv
+7000,Tier 20,1.3841000000000001e+29,repo_raw_table,enemy_damage_table.csv
+7500,Tier 20,3.4258000000000004e+29,repo_raw_table,enemy_damage_table.csv
+8000,Tier 20,8.207200000000001e+29,repo_raw_table,enemy_damage_table.csv
+8500,Tier 20,2.03e+30,repo_raw_table,enemy_damage_table.csv
+9000,Tier 20,4.85e+30,repo_raw_table,enemy_damage_table.csv
+9500,Tier 20,1.118e+31,repo_raw_table,enemy_damage_table.csv
+10000,Tier 20,2.6100000000000004e+31,repo_raw_table,enemy_damage_table.csv
+10500,Tier 20,6.008999999999999e+31,repo_raw_table,enemy_damage_table.csv
+11000,Tier 20,1.4168e+32,repo_raw_table,enemy_damage_table.csv
+11500,Tier 20,3.1408e+32,repo_raw_table,enemy_damage_table.csv
+12000,Tier 20,7.315700000000001e+32,repo_raw_table,enemy_damage_table.csv
+12500,Tier 20,1.58e+33,repo_raw_table,enemy_damage_table.csv
+13000,Tier 20,3.7000000000000004e+33,repo_raw_table,enemy_damage_table.csv
+13500,Tier 20,8.769999999999999e+33,repo_raw_table,enemy_damage_table.csv
+14500,Tier 20,4.296e+34,repo_raw_table,enemy_damage_table.csv
+15000,Tier 20,9.227e+34,repo_raw_table,enemy_damage_table.csv
+15500,Tier 20,2.0626e+35,repo_raw_table,enemy_damage_table.csv
+16000,Tier 20,4.5333e+35,repo_raw_table,enemy_damage_table.csv
+16500,Tier 20,9.9733e+35,repo_raw_table,enemy_damage_table.csv
+17000,Tier 20,2.1400000000000003e+36,repo_raw_table,enemy_damage_table.csv
+17500,Tier 20,4.72e+36,repo_raw_table,enemy_damage_table.csv
+18000,Tier 20,1.0519999999999999e+37,repo_raw_table,enemy_damage_table.csv
+18500,Tier 20,2.211e+37,repo_raw_table,enemy_damage_table.csv
+19000,Tier 20,4.855e+37,repo_raw_table,enemy_damage_table.csv
+19500,Tier 20,1.0421e+38,repo_raw_table,enemy_damage_table.csv
+20000,Tier 20,2.2116e+38,repo_raw_table,enemy_damage_table.csv
+21000,Tier 20,1.0999999999999999e+39,repo_raw_table,enemy_damage_table.csv
+22000,Tier 20,4.9799999999999996e+39,repo_raw_table,enemy_damage_table.csv
+23000,Tier 20,2.231e+40,repo_raw_table,enemy_damage_table.csv
+24000,Tier 20,1.0142e+41,repo_raw_table,enemy_damage_table.csv
+25000,Tier 20,4.4946e+41,repo_raw_table,enemy_damage_table.csv
+30000,Tier 20,8.209e+44,repo_raw_table,enemy_damage_table.csv
+35000,Tier 20,1.3300000000000002e+48,repo_raw_table,enemy_damage_table.csv
+40000,Tier 20,1.98e+51,repo_raw_table,enemy_damage_table.csv
+45000,Tier 20,2.8700000000000004e+54,repo_raw_table,enemy_damage_table.csv
+50000,Tier 20,3.92e+57,repo_raw_table,enemy_damage_table.csv
+55000,Tier 20,5.5e+60,repo_raw_table,enemy_damage_table.csv
+60000,Tier 20,6.940000000000001e+63,repo_raw_table,enemy_damage_table.csv
+65000,Tier 20,9.230000000000001e+66,repo_raw_table,enemy_damage_table.csv
+70000,Tier 20,1.1639999999999999e+70,repo_raw_table,enemy_damage_table.csv
+75000,Tier 20,1.4730000000000002e+73,repo_raw_table,enemy_damage_table.csv
+80000,Tier 20,1.7599999999999998e+76,repo_raw_table,enemy_damage_table.csv
+85000,Tier 20,2.2810000000000002e+79,repo_raw_table,enemy_damage_table.csv
+90000,Tier 20,2.6909999999999997e+82,repo_raw_table,enemy_damage_table.csv
+95000,Tier 20,3.0500000000000006e+85,repo_raw_table,enemy_damage_table.csv
+100000,Tier 20,3.6549999999999995e+88,repo_raw_table,enemy_damage_table.csv
+1,Tier 21,1.983e+19,repo_raw_table,enemy_damage_table.csv
+10,Tier 21,9.063e+19,repo_raw_table,enemy_damage_table.csv
+20,Tier 21,2.8502e+20,repo_raw_table,enemy_damage_table.csv
+30,Tier 21,6.3932e+20,repo_raw_table,enemy_damage_table.csv
+40,Tier 21,1.17e+21,repo_raw_table,enemy_damage_table.csv
+50,Tier 21,1.95e+21,repo_raw_table,enemy_damage_table.csv
+60,Tier 21,2.95e+21,repo_raw_table,enemy_damage_table.csv
+70,Tier 21,4.21e+21,repo_raw_table,enemy_damage_table.csv
+80,Tier 21,5.86e+21,repo_raw_table,enemy_damage_table.csv
+90,Tier 21,7.88e+21,repo_raw_table,enemy_damage_table.csv
+100,Tier 21,1.057e+22,repo_raw_table,enemy_damage_table.csv
+150,Tier 21,3.118e+22,repo_raw_table,enemy_damage_table.csv
+200,Tier 21,7.259e+22,repo_raw_table,enemy_damage_table.csv
+250,Tier 21,1.4189e+23,repo_raw_table,enemy_damage_table.csv
+300,Tier 21,2.4868e+23,repo_raw_table,enemy_damage_table.csv
+400,Tier 21,6.5212e+23,repo_raw_table,enemy_damage_table.csv
+500,Tier 21,1.39e+24,repo_raw_table,enemy_damage_table.csv
+750,Tier 21,6.400000000000001e+24,repo_raw_table,enemy_damage_table.csv
+1000,Tier 21,2.207e+25,repo_raw_table,enemy_damage_table.csv
+1250,Tier 21,5.966e+25,repo_raw_table,enemy_damage_table.csv
+1500,Tier 21,1.4422e+26,repo_raw_table,enemy_damage_table.csv
+2000,Tier 21,7.0287e+26,repo_raw_table,enemy_damage_table.csv
+2500,Tier 21,2.6800000000000004e+27,repo_raw_table,enemy_damage_table.csv
+3000,Tier 21,9.62e+27,repo_raw_table,enemy_damage_table.csv
+3500,Tier 21,3.04e+28,repo_raw_table,enemy_damage_table.csv
+4500,Tier 21,2.6904000000000003e+29,repo_raw_table,enemy_damage_table.csv
+5000,Tier 21,7.161300000000001e+29,repo_raw_table,enemy_damage_table.csv
+5500,Tier 21,1.97e+30,repo_raw_table,enemy_damage_table.csv
+6000,Tier 21,5.08e+30,repo_raw_table,enemy_damage_table.csv
+6500,Tier 21,1.294e+31,repo_raw_table,enemy_damage_table.csv
+7000,Tier 21,3.322e+31,repo_raw_table,enemy_damage_table.csv
+7500,Tier 21,8.221999999999999e+31,repo_raw_table,enemy_damage_table.csv
+8000,Tier 21,1.9697e+32,repo_raw_table,enemy_damage_table.csv
+8500,Tier 21,4.8701999999999995e+32,repo_raw_table,enemy_damage_table.csv
+9000,Tier 21,1.16e+33,repo_raw_table,enemy_damage_table.csv
+9500,Tier 21,2.68e+33,repo_raw_table,enemy_damage_table.csv
+10000,Tier 21,6.26e+33,repo_raw_table,enemy_damage_table.csv
+10500,Tier 21,1.442e+34,repo_raw_table,enemy_damage_table.csv
+11000,Tier 21,3.4e+34,repo_raw_table,enemy_damage_table.csv
+11500,Tier 21,7.537999999999999e+34,repo_raw_table,enemy_damage_table.csv
+12000,Tier 21,1.7558e+35,repo_raw_table,enemy_damage_table.csv
+12500,Tier 21,3.7919e+35,repo_raw_table,enemy_damage_table.csv
+13000,Tier 21,8.8722e+35,repo_raw_table,enemy_damage_table.csv
+13500,Tier 21,2.1099999999999997e+36,repo_raw_table,enemy_damage_table.csv
+14500,Tier 21,1.031e+37,repo_raw_table,enemy_damage_table.csv
+15000,Tier 21,2.2140000000000003e+37,repo_raw_table,enemy_damage_table.csv
+15500,Tier 21,4.950000000000001e+37,repo_raw_table,enemy_damage_table.csv
+16000,Tier 21,1.088e+38,repo_raw_table,enemy_damage_table.csv
+16500,Tier 21,2.3935999999999998e+38,repo_raw_table,enemy_damage_table.csv
+17000,Tier 21,5.1263e+38,repo_raw_table,enemy_damage_table.csv
+17500,Tier 21,1.1299999999999997e+39,repo_raw_table,enemy_damage_table.csv
+18000,Tier 21,2.52e+39,repo_raw_table,enemy_damage_table.csv
+18500,Tier 21,5.3099999999999995e+39,repo_raw_table,enemy_damage_table.csv
+19000,Tier 21,1.165e+40,repo_raw_table,enemy_damage_table.csv
+19500,Tier 21,2.5009999999999997e+40,repo_raw_table,enemy_damage_table.csv
+20000,Tier 21,5.307999999999999e+40,repo_raw_table,enemy_damage_table.csv
+21000,Tier 21,2.6356e+41,repo_raw_table,enemy_damage_table.csv
+22000,Tier 21,1.19e+42,repo_raw_table,enemy_damage_table.csv
+23000,Tier 21,5.35e+42,repo_raw_table,enemy_damage_table.csv
+24000,Tier 21,2.4340000000000003e+43,repo_raw_table,enemy_damage_table.csv
+25000,Tier 21,1.0787e+44,repo_raw_table,enemy_damage_table.csv
+30000,Tier 21,1.9702e+47,repo_raw_table,enemy_damage_table.csv
+35000,Tier 21,3.1853e+50,repo_raw_table,enemy_damage_table.csv
+40000,Tier 21,4.7595999999999995e+53,repo_raw_table,enemy_damage_table.csv
+45000,Tier 21,6.878500000000001e+56,repo_raw_table,enemy_damage_table.csv
+50000,Tier 21,9.4183e+59,repo_raw_table,enemy_damage_table.csv
+55000,Tier 21,1.3200000000000002e+63,repo_raw_table,enemy_damage_table.csv
+60000,Tier 21,1.6700000000000001e+66,repo_raw_table,enemy_damage_table.csv
+65000,Tier 21,2.21e+69,repo_raw_table,enemy_damage_table.csv
+70000,Tier 21,2.79e+72,repo_raw_table,enemy_damage_table.csv
+75000,Tier 21,3.5399999999999997e+75,repo_raw_table,enemy_damage_table.csv
+80000,Tier 21,4.22e+78,repo_raw_table,enemy_damage_table.csv
+85000,Tier 21,5.47e+81,repo_raw_table,enemy_damage_table.csv
+90000,Tier 21,6.46e+84,repo_raw_table,enemy_damage_table.csv
+95000,Tier 21,7.32e+87,repo_raw_table,enemy_damage_table.csv
+100000,Tier 21,8.769999999999997e+90,repo_raw_table,enemy_damage_table.csv
+1,Champion,28610000.0,repo_raw_table,enemy_damage_table.csv
+10,Champion,767030000.0,repo_raw_table,enemy_damage_table.csv
+20,Champion,3710000000.0,repo_raw_table,enemy_damage_table.csv
+30,Champion,10120000000.0,repo_raw_table,enemy_damage_table.csv
+40,Champion,20890000000.0,repo_raw_table,enemy_damage_table.csv
+50,Champion,37920000000.0,repo_raw_table,enemy_damage_table.csv
+60,Champion,61430000000.0,repo_raw_table,enemy_damage_table.csv
+70,Champion,92540000000.0,repo_raw_table,enemy_damage_table.csv
+80,Champion,134940000000.0,repo_raw_table,enemy_damage_table.csv
+90,Champion,188740000000.0,repo_raw_table,enemy_damage_table.csv
+100,Champion,262010000000.0,repo_raw_table,enemy_damage_table.csv
+150,Champion,932440000000.0,repo_raw_table,enemy_damage_table.csv
+200,Champion,2370000000000.0,repo_raw_table,enemy_damage_table.csv
+250,Champion,5260000000000.0,repo_raw_table,enemy_damage_table.csv
+300,Champion,9740000000000.0,repo_raw_table,enemy_damage_table.csv
+400,Champion,29480000000000.0,repo_raw_table,enemy_damage_table.csv
+500,Champion,71170000000000.0,repo_raw_table,enemy_damage_table.csv
+750,Champion,439050000000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Champion,1850000000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Champion,6350000000000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Champion,1.818e+16,repo_raw_table,enemy_damage_table.csv
+2000,Champion,1.2882e+17,repo_raw_table,enemy_damage_table.csv
+2500,Champion,7.0099e+17,repo_raw_table,enemy_damage_table.csv
+3000,Champion,3.55e+18,repo_raw_table,enemy_damage_table.csv
+3500,Champion,1.568e+19,repo_raw_table,enemy_damage_table.csv
+4500,Champion,2.6709e+20,repo_raw_table,enemy_damage_table.csv
+5000,Champion,9.8058e+20,repo_raw_table,enemy_damage_table.csv
+5500,Champion,3.71e+21,repo_raw_table,enemy_damage_table.csv
+6000,Champion,1.3130000000000002e+22,repo_raw_table,enemy_damage_table.csv
+6500,Champion,4.579e+22,repo_raw_table,enemy_damage_table.csv
+7000,Champion,1.6064e+23,repo_raw_table,enemy_damage_table.csv
+7500,Champion,5.4271e+23,repo_raw_table,enemy_damage_table.csv
+8000,Champion,1.77e+24,repo_raw_table,enemy_damage_table.csv
+8500,Champion,5.969999999999999e+24,repo_raw_table,enemy_damage_table.csv
+9000,Champion,1.939e+25,repo_raw_table,enemy_damage_table.csv
+9500,Champion,6.077e+25,repo_raw_table,enemy_damage_table.csv
+10000,Champion,1.9266e+26,repo_raw_table,enemy_damage_table.csv
+10500,Champion,6.0206e+26,repo_raw_table,enemy_damage_table.csv
+11000,Champion,1.9300000000000003e+27,repo_raw_table,enemy_damage_table.csv
+11500,Champion,5.780000000000001e+27,repo_raw_table,enemy_damage_table.csv
+12000,Champion,1.8250000000000002e+28,repo_raw_table,enemy_damage_table.csv
+12500,Champion,5.337e+28,repo_raw_table,enemy_damage_table.csv
+13000,Champion,1.6898000000000003e+29,repo_raw_table,enemy_damage_table.csv
+13500,Champion,5.425e+29,repo_raw_table,enemy_damage_table.csv
+14500,Champion,4.86e+30,repo_raw_table,enemy_damage_table.csv
+15000,Champion,1.409e+31,repo_raw_table,enemy_damage_table.csv
+15500,Champion,4.255e+31,repo_raw_table,enemy_damage_table.csv
+16000,Champion,1.2629999999999999e+32,repo_raw_table,enemy_damage_table.csv
+16500,Champion,3.7514e+32,repo_raw_table,enemy_damage_table.csv
+17000,Champion,1.0799999999999999e+33,repo_raw_table,enemy_damage_table.csv
+17500,Champion,3.23e+33,repo_raw_table,enemy_damage_table.csv
+18000,Champion,9.72e+33,repo_raw_table,enemy_damage_table.csv
+18500,Champion,2.756e+34,repo_raw_table,enemy_damage_table.csv
+19000,Champion,8.159999999999999e+34,repo_raw_table,enemy_damage_table.csv
+19500,Champion,2.3615e+35,repo_raw_table,enemy_damage_table.csv
+20000,Champion,6.755700000000001e+35,repo_raw_table,enemy_damage_table.csv
+21000,Champion,6.09e+36,repo_raw_table,enemy_damage_table.csv
+22000,Champion,5.011999999999999e+37,repo_raw_table,enemy_damage_table.csv
+23000,Champion,4.0743e+38,repo_raw_table,enemy_damage_table.csv
+24000,Champion,3.3599999999999994e+39,repo_raw_table,enemy_damage_table.csv
+25000,Champion,2.6959999999999997e+40,repo_raw_table,enemy_damage_table.csv
+30000,Champion,9.5548e+44,repo_raw_table,enemy_damage_table.csv
+35000,Champion,2.974e+49,repo_raw_table,enemy_damage_table.csv
+40000,Champion,8.5039e+53,repo_raw_table,enemy_damage_table.csv
+45000,Champion,2.341e+58,repo_raw_table,enemy_damage_table.csv
+50000,Champion,6.085999999999999e+62,repo_raw_table,enemy_damage_table.csv
+55000,Champion,1.614e+67,repo_raw_table,enemy_damage_table.csv
+60000,Champion,3.8472e+71,repo_raw_table,enemy_damage_table.csv
+65000,Champion,9.64e+75,repo_raw_table,enemy_damage_table.csv
+70000,Champion,2.2881000000000002e+80,repo_raw_table,enemy_damage_table.csv
+75000,Champion,5.4400000000000006e+84,repo_raw_table,enemy_damage_table.csv
+80000,Champion,1.2197999999999999e+89,repo_raw_table,enemy_damage_table.csv
+85000,Champion,2.9600000000000005e+93,repo_raw_table,enemy_damage_table.csv
+90000,Champion,6.5430000000000014e+97,repo_raw_table,enemy_damage_table.csv
+95000,Champion,1.3899999999999998e+102,repo_raw_table,enemy_damage_table.csv
+100000,Champion,3.108e+106,repo_raw_table,enemy_damage_table.csv
+1,Copper,2.29,repo_raw_table,enemy_damage_table.csv
+10,Copper,59.13,repo_raw_table,enemy_damage_table.csv
+20,Copper,281.13,repo_raw_table,enemy_damage_table.csv
+30,Copper,758.75,repo_raw_table,enemy_damage_table.csv
+40,Copper,1550.0,repo_raw_table,enemy_damage_table.csv
+50,Copper,2810.0,repo_raw_table,enemy_damage_table.csv
+60,Copper,4530.0,repo_raw_table,enemy_damage_table.csv
+70,Copper,6800.0,repo_raw_table,enemy_damage_table.csv
+80,Copper,9890.0,repo_raw_table,enemy_damage_table.csv
+90,Copper,13800.0,repo_raw_table,enemy_damage_table.csv
+100,Copper,19120.0,repo_raw_table,enemy_damage_table.csv
+150,Copper,65820.0,repo_raw_table,enemy_damage_table.csv
+200,Copper,162430.0,repo_raw_table,enemy_damage_table.csv
+250,Copper,358500.0,repo_raw_table,enemy_damage_table.csv
+300,Copper,645040.0,repo_raw_table,enemy_damage_table.csv
+400,Copper,1890000.0,repo_raw_table,enemy_damage_table.csv
+500,Copper,4440000.0,repo_raw_table,enemy_damage_table.csv
+750,Copper,24620000.0,repo_raw_table,enemy_damage_table.csv
+1000,Copper,95760000.0,repo_raw_table,enemy_damage_table.csv
+1250,Copper,311530000.0,repo_raw_table,enemy_damage_table.csv
+1500,Copper,805040000.0,repo_raw_table,enemy_damage_table.csv
+2000,Copper,4890000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Copper,22840000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Copper,96900000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Copper,359250000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Copper,4530000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Copper,14300000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Copper,45420000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Copper,138370000000000.0,repo_raw_table,enemy_damage_table.csv
+6500,Copper,415570000000000.0,repo_raw_table,enemy_damage_table.csv
+7000,Copper,1220000000000000.0,repo_raw_table,enemy_damage_table.csv
+7500,Copper,3560000000000000.0,repo_raw_table,enemy_damage_table.csv
+8000,Copper,1.002e+16,repo_raw_table,enemy_damage_table.csv
+8500,Copper,2.834e+16,repo_raw_table,enemy_damage_table.csv
+9000,Copper,7.933e+16,repo_raw_table,enemy_damage_table.csv
+9500,Copper,2.0893e+17,repo_raw_table,enemy_damage_table.csv
+10000,Copper,5.8485e+17,repo_raw_table,enemy_damage_table.csv
+10500,Copper,1.54e+18,repo_raw_table,enemy_damage_table.csv
+11000,Copper,4.13e+18,repo_raw_table,enemy_damage_table.csv
+11500,Copper,1.069e+19,repo_raw_table,enemy_damage_table.csv
+12000,Copper,2.905e+19,repo_raw_table,enemy_damage_table.csv
+12500,Copper,7.318000000000001e+19,repo_raw_table,enemy_damage_table.csv
+13000,Copper,1.948e+20,repo_raw_table,enemy_damage_table.csv
+13500,Copper,5.2572e+20,repo_raw_table,enemy_damage_table.csv
+14500,Copper,3.49e+21,repo_raw_table,enemy_damage_table.csv
+15000,Copper,8.74e+21,repo_raw_table,enemy_damage_table.csv
+15500,Copper,2.218e+22,repo_raw_table,enemy_damage_table.csv
+16000,Copper,5.673e+22,repo_raw_table,enemy_damage_table.csv
+16500,Copper,1.4522e+23,repo_raw_table,enemy_damage_table.csv
+17000,Copper,3.5293e+23,repo_raw_table,enemy_damage_table.csv
+17500,Copper,9.0694e+23,repo_raw_table,enemy_damage_table.csv
+18000,Copper,2.35e+24,repo_raw_table,enemy_damage_table.csv
+18500,Copper,5.599999999999999e+24,repo_raw_table,enemy_damage_table.csv
+19000,Copper,1.4289999999999998e+25,repo_raw_table,enemy_damage_table.csv
+19500,Copper,3.478e+25,repo_raw_table,enemy_damage_table.csv
+20000,Copper,8.79e+25,repo_raw_table,enemy_damage_table.csv
+21000,Copper,5.6041e+26,repo_raw_table,enemy_damage_table.csv
+22000,Copper,3.43e+27,repo_raw_table,enemy_damage_table.csv
+23000,Copper,2.018e+28,repo_raw_table,enemy_damage_table.csv
+24000,Copper,1.2353000000000002e+29,repo_raw_table,enemy_damage_table.csv
+25000,Copper,7.189800000000001e+29,repo_raw_table,enemy_damage_table.csv
+30000,Copper,5.36e+33,repo_raw_table,enemy_damage_table.csv
+35000,Copper,3.4240000000000005e+37,repo_raw_table,enemy_damage_table.csv
+40000,Copper,2.0608e+41,repo_raw_table,enemy_damage_table.csv
+45000,Copper,1.1700000000000001e+45,repo_raw_table,enemy_damage_table.csv
+50000,Copper,6.38e+48,repo_raw_table,enemy_damage_table.csv
+55000,Copper,3.4779999999999997e+52,repo_raw_table,enemy_damage_table.csv
+60000,Copper,1.7465999999999999e+56,repo_raw_table,enemy_damage_table.csv
+65000,Copper,8.9983e+59,repo_raw_table,enemy_damage_table.csv
+70000,Copper,4.5e+63,repo_raw_table,enemy_damage_table.csv
+75000,Copper,2.201e+67,repo_raw_table,enemy_damage_table.csv
+80000,Copper,1.0398e+71,repo_raw_table,enemy_damage_table.csv
+85000,Copper,5.193900000000001e+74,repo_raw_table,enemy_damage_table.csv
+90000,Copper,2.42e+78,repo_raw_table,enemy_damage_table.csv
+95000,Copper,1.081e+82,repo_raw_table,enemy_damage_table.csv
+100000,Copper,4.9809999999999995e+85,repo_raw_table,enemy_damage_table.csv
+1,Gold,525.59,repo_raw_table,enemy_damage_table.csv
+10,Gold,13590.0,repo_raw_table,enemy_damage_table.csv
+20,Gold,64599.99999999999,repo_raw_table,enemy_damage_table.csv
+30,Gold,174350.0,repo_raw_table,enemy_damage_table.csv
+40,Gold,357310.0,repo_raw_table,enemy_damage_table.csv
+50,Gold,645440.0,repo_raw_table,enemy_damage_table.csv
+60,Gold,1040000.0,repo_raw_table,enemy_damage_table.csv
+70,Gold,1560000.0,repo_raw_table,enemy_damage_table.csv
+80,Gold,2270000.0,repo_raw_table,enemy_damage_table.csv
+90,Gold,3170000.0,repo_raw_table,enemy_damage_table.csv
+100,Gold,4390000.0,repo_raw_table,enemy_damage_table.csv
+150,Gold,15120000.0,repo_raw_table,enemy_damage_table.csv
+200,Gold,37320000.0,repo_raw_table,enemy_damage_table.csv
+250,Gold,82380000.0,repo_raw_table,enemy_damage_table.csv
+300,Gold,148220000.0,repo_raw_table,enemy_damage_table.csv
+400,Gold,435250000.0,repo_raw_table,enemy_damage_table.csv
+500,Gold,1020000000.0,repo_raw_table,enemy_damage_table.csv
+750,Gold,5660000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Gold,22000000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Gold,71590000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Gold,184990000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Gold,1120000000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Gold,5250000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Gold,22270000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Gold,82550000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Gold,1040000000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Gold,3290000000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Gold,1.044e+16,repo_raw_table,enemy_damage_table.csv
+6000,Gold,3.18e+16,repo_raw_table,enemy_damage_table.csv
+6500,Gold,9.549e+16,repo_raw_table,enemy_damage_table.csv
+7000,Gold,2.8141000000000003e+17,repo_raw_table,enemy_damage_table.csv
+7500,Gold,8.1864e+17,repo_raw_table,enemy_damage_table.csv
+8000,Gold,2.3e+18,repo_raw_table,enemy_damage_table.csv
+8500,Gold,6.51e+18,repo_raw_table,enemy_damage_table.csv
+9000,Gold,1.823e+19,repo_raw_table,enemy_damage_table.csv
+9500,Gold,4.801e+19,repo_raw_table,enemy_damage_table.csv
+10000,Gold,1.3438999999999998e+20,repo_raw_table,enemy_damage_table.csv
+10500,Gold,3.5297e+20,repo_raw_table,enemy_damage_table.csv
+11000,Gold,9.4855e+20,repo_raw_table,enemy_damage_table.csv
+11500,Gold,2.46e+21,repo_raw_table,enemy_damage_table.csv
+12000,Gold,6.669999999999999e+21,repo_raw_table,enemy_damage_table.csv
+12500,Gold,1.682e+22,repo_raw_table,enemy_damage_table.csv
+13000,Gold,4.476e+22,repo_raw_table,enemy_damage_table.csv
+13500,Gold,1.208e+23,repo_raw_table,enemy_damage_table.csv
+14500,Gold,8.0286e+23,repo_raw_table,enemy_damage_table.csv
+15000,Gold,2.01e+24,repo_raw_table,enemy_damage_table.csv
+15500,Gold,5.1e+24,repo_raw_table,enemy_damage_table.csv
+16000,Gold,1.3039999999999998e+25,repo_raw_table,enemy_damage_table.csv
+16500,Gold,3.337e+25,repo_raw_table,enemy_damage_table.csv
+17000,Gold,8.109999999999999e+25,repo_raw_table,enemy_damage_table.csv
+17500,Gold,2.0839999999999997e+26,repo_raw_table,enemy_damage_table.csv
+18000,Gold,5.3977e+26,repo_raw_table,enemy_damage_table.csv
+18500,Gold,1.29e+27,repo_raw_table,enemy_damage_table.csv
+19000,Gold,3.2800000000000004e+27,repo_raw_table,enemy_damage_table.csv
+19500,Gold,7.99e+27,repo_raw_table,enemy_damage_table.csv
+20000,Gold,2.02e+28,repo_raw_table,enemy_damage_table.csv
+21000,Gold,1.2878000000000001e+29,repo_raw_table,enemy_damage_table.csv
+22000,Gold,7.870599999999999e+29,repo_raw_table,enemy_damage_table.csv
+23000,Gold,4.64e+30,repo_raw_table,enemy_damage_table.csv
+24000,Gold,2.839e+31,repo_raw_table,enemy_damage_table.csv
+25000,Gold,1.6521e+32,repo_raw_table,enemy_damage_table.csv
+30000,Gold,1.23e+36,repo_raw_table,enemy_damage_table.csv
+35000,Gold,7.869999999999999e+39,repo_raw_table,enemy_damage_table.csv
+40000,Gold,4.736e+43,repo_raw_table,enemy_damage_table.csv
+45000,Gold,2.6784e+47,repo_raw_table,enemy_damage_table.csv
+50000,Gold,1.4699999999999999e+51,repo_raw_table,enemy_damage_table.csv
+55000,Gold,7.990000000000001e+54,repo_raw_table,enemy_damage_table.csv
+60000,Gold,4.0130000000000004e+58,repo_raw_table,enemy_damage_table.csv
+65000,Gold,2.0677e+62,repo_raw_table,enemy_damage_table.csv
+70000,Gold,1.03e+66,repo_raw_table,enemy_damage_table.csv
+75000,Gold,5.06e+69,repo_raw_table,enemy_damage_table.csv
+80000,Gold,2.3890000000000003e+73,repo_raw_table,enemy_damage_table.csv
+85000,Gold,1.1935e+77,repo_raw_table,enemy_damage_table.csv
+90000,Gold,5.557200000000001e+80,repo_raw_table,enemy_damage_table.csv
+95000,Gold,2.48e+84,repo_raw_table,enemy_damage_table.csv
+100000,Gold,1.1449999999999998e+88,repo_raw_table,enemy_damage_table.csv
+1,Legend,515060000000.0,repo_raw_table,enemy_damage_table.csv
+10,Legend,16079999999999.998,repo_raw_table,enemy_damage_table.csv
+20,Legend,83840000000000.0,repo_raw_table,enemy_damage_table.csv
+30,Legend,237860000000000.0,repo_raw_table,enemy_damage_table.csv
+40,Legend,504200000000000.0,repo_raw_table,enemy_damage_table.csv
+50,Legend,934190000000000.0,repo_raw_table,enemy_damage_table.csv
+60,Legend,1540000000000000.0,repo_raw_table,enemy_damage_table.csv
+70,Legend,2350000000000000.0,repo_raw_table,enemy_damage_table.csv
+80,Legend,3470000000000000.0,repo_raw_table,enemy_damage_table.csv
+90,Legend,4900000000000000.0,repo_raw_table,enemy_damage_table.csv
+100,Legend,6860000000000000.0,repo_raw_table,enemy_damage_table.csv
+150,Legend,2.527e+16,repo_raw_table,enemy_damage_table.csv
+200,Legend,6.586e+16,repo_raw_table,enemy_damage_table.csv
+250,Legend,1.4876e+17,repo_raw_table,enemy_damage_table.csv
+300,Legend,2.7958e+17,repo_raw_table,enemy_damage_table.csv
+400,Legend,8.6684e+17,repo_raw_table,enemy_damage_table.csv
+500,Legend,2.13e+18,repo_raw_table,enemy_damage_table.csv
+750,Legend,1.36e+19,repo_raw_table,enemy_damage_table.csv
+1000,Legend,5.865e+19,repo_raw_table,enemy_damage_table.csv
+1250,Legend,2.0511e+20,repo_raw_table,enemy_damage_table.csv
+1500,Legend,5.9605e+20,repo_raw_table,enemy_damage_table.csv
+2000,Legend,4.320000000000001e+21,repo_raw_table,enemy_damage_table.csv
+2500,Legend,2.397e+22,repo_raw_table,enemy_damage_table.csv
+3000,Legend,1.2311e+23,repo_raw_table,enemy_damage_table.csv
+3500,Legend,5.5113e+23,repo_raw_table,enemy_damage_table.csv
+4500,Legend,9.58e+24,repo_raw_table,enemy_damage_table.csv
+5000,Legend,3.549e+25,repo_raw_table,enemy_damage_table.csv
+5500,Legend,1.3527e+26,repo_raw_table,enemy_damage_table.csv
+6000,Legend,4.8219e+26,repo_raw_table,enemy_damage_table.csv
+6500,Legend,1.69e+27,repo_raw_table,enemy_damage_table.csv
+7000,Legend,5.98e+27,repo_raw_table,enemy_damage_table.csv
+7500,Legend,2.03e+28,repo_raw_table,enemy_damage_table.csv
+8000,Legend,6.666e+28,repo_raw_table,enemy_damage_table.csv
+8500,Legend,2.2555e+29,repo_raw_table,enemy_damage_table.csv
+9000,Legend,7.3639e+29,repo_raw_table,enemy_damage_table.csv
+9500,Legend,2.32e+30,repo_raw_table,enemy_damage_table.csv
+10000,Legend,7.38e+30,repo_raw_table,enemy_damage_table.csv
+10500,Legend,2.316e+31,repo_raw_table,enemy_damage_table.csv
+11000,Legend,7.432e+31,repo_raw_table,enemy_damage_table.csv
+11500,Legend,2.2412e+32,repo_raw_table,enemy_damage_table.csv
+12000,Legend,7.096200000000001e+32,repo_raw_table,enemy_damage_table.csv
+12500,Legend,2.08e+33,repo_raw_table,enemy_damage_table.csv
+13000,Legend,6.61e+33,repo_raw_table,enemy_damage_table.csv
+13500,Legend,2.13e+34,repo_raw_table,enemy_damage_table.csv
+14500,Legend,1.9176999999999998e+35,repo_raw_table,enemy_damage_table.csv
+15000,Legend,5.580499999999999e+35,repo_raw_table,enemy_damage_table.csv
+15500,Legend,1.69e+36,repo_raw_table,enemy_damage_table.csv
+16000,Legend,5.03e+36,repo_raw_table,enemy_damage_table.csv
+16500,Legend,1.4970000000000002e+37,repo_raw_table,enemy_damage_table.csv
+17000,Legend,4.3390000000000005e+37,repo_raw_table,enemy_damage_table.csv
+17500,Legend,1.2968e+38,repo_raw_table,enemy_damage_table.csv
+18000,Legend,3.9063e+38,repo_raw_table,enemy_damage_table.csv
+18500,Legend,1.1099999999999999e+39,repo_raw_table,enemy_damage_table.csv
+19000,Legend,3.29e+39,repo_raw_table,enemy_damage_table.csv
+19500,Legend,9.559999999999999e+39,repo_raw_table,enemy_damage_table.csv
+20000,Legend,2.739e+40,repo_raw_table,enemy_damage_table.csv
+21000,Legend,2.48e+41,repo_raw_table,enemy_damage_table.csv
+22000,Legend,2.05e+42,repo_raw_table,enemy_damage_table.csv
+23000,Legend,1.6710000000000005e+43,repo_raw_table,enemy_damage_table.csv
+24000,Legend,1.3818e+44,repo_raw_table,enemy_damage_table.csv
+25000,Legend,1.11e+45,repo_raw_table,enemy_damage_table.csv
+30000,Legend,4.0049999999999997e+49,repo_raw_table,enemy_damage_table.csv
+35000,Legend,1.26e+54,repo_raw_table,enemy_damage_table.csv
+40000,Legend,3.6500000000000004e+58,repo_raw_table,enemy_damage_table.csv
+45000,Legend,1.01e+63,repo_raw_table,enemy_damage_table.csv
+50000,Legend,2.6599999999999998e+67,repo_raw_table,enemy_damage_table.csv
+55000,Legend,7.1113999999999995e+71,repo_raw_table,enemy_damage_table.csv
+60000,Legend,1.707e+76,repo_raw_table,enemy_damage_table.csv
+65000,Legend,4.306e+80,repo_raw_table,enemy_damage_table.csv
+70000,Legend,1.0279999999999999e+85,repo_raw_table,enemy_damage_table.csv
+75000,Legend,2.4588999999999998e+89,repo_raw_table,enemy_damage_table.csv
+80000,Legend,5.54e+93,repo_raw_table,enemy_damage_table.csv
+85000,Legend,1.3525999999999999e+98,repo_raw_table,enemy_damage_table.csv
+90000,Legend,3e+102,repo_raw_table,enemy_damage_table.csv
+95000,Legend,6.392e+106,repo_raw_table,enemy_damage_table.csv
+100000,Legend,1.44e+111,repo_raw_table,enemy_damage_table.csv
+1,Platinum,4020.0,repo_raw_table,enemy_damage_table.csv
+10,Platinum,103860.0,repo_raw_table,enemy_damage_table.csv
+20,Platinum,493840.0,repo_raw_table,enemy_damage_table.csv
+30,Platinum,1330000.0,repo_raw_table,enemy_damage_table.csv
+40,Platinum,2730000.0,repo_raw_table,enemy_damage_table.csv
+50,Platinum,4930000.0,repo_raw_table,enemy_damage_table.csv
+60,Platinum,7960000.0,repo_raw_table,enemy_damage_table.csv
+70,Platinum,11950000.0,repo_raw_table,enemy_damage_table.csv
+80,Platinum,17380000.0,repo_raw_table,enemy_damage_table.csv
+90,Platinum,24250000.0,repo_raw_table,enemy_damage_table.csv
+100,Platinum,33580000.0,repo_raw_table,enemy_damage_table.csv
+150,Platinum,118510000.0,repo_raw_table,enemy_damage_table.csv
+200,Platinum,299770000.0,repo_raw_table,enemy_damage_table.csv
+250,Platinum,661620000.0,repo_raw_table,enemy_damage_table.csv
+300,Platinum,1220000000.0,repo_raw_table,enemy_damage_table.csv
+400,Platinum,3670000000.0,repo_raw_table,enemy_damage_table.csv
+500,Platinum,8830000000.0,repo_raw_table,enemy_damage_table.csv
+750,Platinum,54010000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Platinum,226220000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Platinum,773230000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Platinum,2210000000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Platinum,15540000000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Platinum,84170000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Platinum,424400000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Platinum,1870000000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Platinum,3.17e+16,repo_raw_table,enemy_damage_table.csv
+5000,Platinum,1.1612e+17,repo_raw_table,enemy_damage_table.csv
+5500,Platinum,4.3837e+17,repo_raw_table,enemy_damage_table.csv
+6000,Platinum,1.55e+18,repo_raw_table,enemy_damage_table.csv
+6500,Platinum,5.39e+18,repo_raw_table,enemy_damage_table.csv
+7000,Platinum,1.89e+19,repo_raw_table,enemy_damage_table.csv
+7500,Platinum,6.375e+19,repo_raw_table,enemy_damage_table.csv
+8000,Platinum,2.0792e+20,repo_raw_table,enemy_damage_table.csv
+8500,Platinum,6.9918e+20,repo_raw_table,enemy_damage_table.csv
+9000,Platinum,2.27e+21,repo_raw_table,enemy_damage_table.csv
+9500,Platinum,7.1e+21,repo_raw_table,enemy_damage_table.csv
+10000,Platinum,2.25e+22,repo_raw_table,enemy_damage_table.csv
+10500,Platinum,7.025e+22,repo_raw_table,enemy_damage_table.csv
+11000,Platinum,2.244e+23,repo_raw_table,enemy_damage_table.csv
+11500,Platinum,6.7365e+23,repo_raw_table,enemy_damage_table.csv
+12000,Platinum,2.12e+24,repo_raw_table,enemy_damage_table.csv
+12500,Platinum,6.199999999999999e+24,repo_raw_table,enemy_damage_table.csv
+13000,Platinum,1.963e+25,repo_raw_table,enemy_damage_table.csv
+13500,Platinum,6.298e+25,repo_raw_table,enemy_damage_table.csv
+14500,Platinum,5.6293e+26,repo_raw_table,enemy_damage_table.csv
+15000,Platinum,1.6300000000000002e+27,repo_raw_table,enemy_damage_table.csv
+15500,Platinum,4.9300000000000003e+27,repo_raw_table,enemy_damage_table.csv
+16000,Platinum,1.461e+28,repo_raw_table,enemy_damage_table.csv
+16500,Platinum,4.3380000000000006e+28,repo_raw_table,enemy_damage_table.csv
+17000,Platinum,1.2531e+29,repo_raw_table,enemy_damage_table.csv
+17500,Platinum,3.7345000000000005e+29,repo_raw_table,enemy_damage_table.csv
+18000,Platinum,1.12e+30,repo_raw_table,enemy_damage_table.csv
+18500,Platinum,3.1800000000000003e+30,repo_raw_table,enemy_damage_table.csv
+19000,Platinum,9.41e+30,repo_raw_table,enemy_damage_table.csv
+19500,Platinum,2.721e+31,repo_raw_table,enemy_damage_table.csv
+20000,Platinum,7.781e+31,repo_raw_table,enemy_damage_table.csv
+21000,Platinum,7.0102e+32,repo_raw_table,enemy_damage_table.csv
+22000,Platinum,5.76e+33,repo_raw_table,enemy_damage_table.csv
+23000,Platinum,4.679999999999999e+34,repo_raw_table,enemy_damage_table.csv
+24000,Platinum,3.8529e+35,repo_raw_table,enemy_damage_table.csv
+25000,Platinum,3.09e+36,repo_raw_table,enemy_damage_table.csv
+30000,Platinum,1.0917e+41,repo_raw_table,enemy_damage_table.csv
+35000,Platinum,3.39e+45,repo_raw_table,enemy_damage_table.csv
+40000,Platinum,9.66e+49,repo_raw_table,enemy_damage_table.csv
+45000,Platinum,2.65e+54,repo_raw_table,enemy_damage_table.csv
+50000,Platinum,6.883e+58,repo_raw_table,enemy_damage_table.csv
+55000,Platinum,1.8200000000000003e+63,repo_raw_table,enemy_damage_table.csv
+60000,Platinum,4.335e+67,repo_raw_table,enemy_damage_table.csv
+65000,Platinum,1.08e+72,repo_raw_table,enemy_damage_table.csv
+70000,Platinum,2.57e+76,repo_raw_table,enemy_damage_table.csv
+75000,Platinum,6.104200000000001e+80,repo_raw_table,enemy_damage_table.csv
+80000,Platinum,1.3670000000000003e+85,repo_raw_table,enemy_damage_table.csv
+85000,Platinum,3.3151e+89,repo_raw_table,enemy_damage_table.csv
+90000,Platinum,7.31e+93,repo_raw_table,enemy_damage_table.csv
+95000,Platinum,1.5491e+98,repo_raw_table,enemy_damage_table.csv
+100000,Platinum,3.4700000000000003e+102,repo_raw_table,enemy_damage_table.csv
+1,Silver,137.24,repo_raw_table,enemy_damage_table.csv
+10,Silver,3550.0,repo_raw_table,enemy_damage_table.csv
+20,Silver,16870.0,repo_raw_table,enemy_damage_table.csv
+30,Silver,45520.0,repo_raw_table,enemy_damage_table.csv
+40,Silver,93300.0,repo_raw_table,enemy_damage_table.csv
+50,Silver,168530.0,repo_raw_table,enemy_damage_table.csv
+60,Silver,271910.0,repo_raw_table,enemy_damage_table.csv
+70,Silver,408250.0,repo_raw_table,enemy_damage_table.csv
+80,Silver,593620.0,repo_raw_table,enemy_damage_table.csv
+90,Silver,828170.0,repo_raw_table,enemy_damage_table.csv
+100,Silver,1150000.0,repo_raw_table,enemy_damage_table.csv
+150,Silver,3950000.0,repo_raw_table,enemy_damage_table.csv
+200,Silver,9750000.0,repo_raw_table,enemy_damage_table.csv
+250,Silver,21510000.0,repo_raw_table,enemy_damage_table.csv
+300,Silver,38700000.0,repo_raw_table,enemy_damage_table.csv
+400,Silver,113650000.0,repo_raw_table,enemy_damage_table.csv
+500,Silver,266460000.0,repo_raw_table,enemy_damage_table.csv
+750,Silver,1480000000.0,repo_raw_table,enemy_damage_table.csv
+1000,Silver,5750000000.0,repo_raw_table,enemy_damage_table.csv
+1250,Silver,18690000000.0,repo_raw_table,enemy_damage_table.csv
+1500,Silver,48300000000.0,repo_raw_table,enemy_damage_table.csv
+2000,Silver,293410000000.0,repo_raw_table,enemy_damage_table.csv
+2500,Silver,1370000000000.0,repo_raw_table,enemy_damage_table.csv
+3000,Silver,5810000000000.0,repo_raw_table,enemy_damage_table.csv
+3500,Silver,21560000000000.0,repo_raw_table,enemy_damage_table.csv
+4500,Silver,271620000000000.0,repo_raw_table,enemy_damage_table.csv
+5000,Silver,858060000000000.0,repo_raw_table,enemy_damage_table.csv
+5500,Silver,2730000000000000.0,repo_raw_table,enemy_damage_table.csv
+6000,Silver,8300000000000002.0,repo_raw_table,enemy_damage_table.csv
+6500,Silver,2.493e+16,repo_raw_table,enemy_damage_table.csv
+7000,Silver,7.348e+16,repo_raw_table,enemy_damage_table.csv
+7500,Silver,2.1376e+17,repo_raw_table,enemy_damage_table.csv
+8000,Silver,6.0117e+17,repo_raw_table,enemy_damage_table.csv
+8500,Silver,1.7e+18,repo_raw_table,enemy_damage_table.csv
+9000,Silver,4.76e+18,repo_raw_table,enemy_damage_table.csv
+9500,Silver,1.254e+19,repo_raw_table,enemy_damage_table.csv
+10000,Silver,3.5090000000000004e+19,repo_raw_table,enemy_damage_table.csv
+10500,Silver,9.216e+19,repo_raw_table,enemy_damage_table.csv
+11000,Silver,2.4768e+20,repo_raw_table,enemy_damage_table.csv
+11500,Silver,6.4114e+20,repo_raw_table,enemy_damage_table.csv
+12000,Silver,1.74e+21,repo_raw_table,enemy_damage_table.csv
+12500,Silver,4.39e+21,repo_raw_table,enemy_damage_table.csv
+13000,Silver,1.169e+22,repo_raw_table,enemy_damage_table.csv
+13500,Silver,3.154e+22,repo_raw_table,enemy_damage_table.csv
+14500,Silver,2.0964e+23,repo_raw_table,enemy_damage_table.csv
+15000,Silver,5.2424e+23,repo_raw_table,enemy_damage_table.csv
+15500,Silver,1.33e+24,repo_raw_table,enemy_damage_table.csv
+16000,Silver,3.3999999999999995e+24,repo_raw_table,enemy_damage_table.csv
+16500,Silver,8.710000000000001e+24,repo_raw_table,enemy_damage_table.csv
+17000,Silver,2.118e+25,repo_raw_table,enemy_damage_table.csv
+17500,Silver,5.442e+25,repo_raw_table,enemy_damage_table.csv
+18000,Silver,1.4094e+26,repo_raw_table,enemy_damage_table.csv
+18500,Silver,3.3611e+26,repo_raw_table,enemy_damage_table.csv
+19000,Silver,8.5764e+26,repo_raw_table,enemy_damage_table.csv
+19500,Silver,2.0900000000000003e+27,repo_raw_table,enemy_damage_table.csv
+20000,Silver,5.269999999999999e+27,repo_raw_table,enemy_damage_table.csv
+21000,Silver,3.362e+28,repo_raw_table,enemy_damage_table.csv
+22000,Silver,2.0551e+29,repo_raw_table,enemy_damage_table.csv
+23000,Silver,1.21e+30,repo_raw_table,enemy_damage_table.csv
+24000,Silver,7.41e+30,repo_raw_table,enemy_damage_table.csv
+25000,Silver,4.314e+31,repo_raw_table,enemy_damage_table.csv
+30000,Silver,3.2154e+35,repo_raw_table,enemy_damage_table.csv
+35000,Silver,2.0499999999999997e+39,repo_raw_table,enemy_damage_table.csv
+40000,Silver,1.2360000000000001e+43,repo_raw_table,enemy_damage_table.csv
+45000,Silver,6.993999999999998e+46,repo_raw_table,enemy_damage_table.csv
+50000,Silver,3.8286e+50,repo_raw_table,enemy_damage_table.csv
+55000,Silver,2.09e+54,repo_raw_table,enemy_damage_table.csv
+60000,Silver,1.0480000000000001e+58,repo_raw_table,enemy_damage_table.csv
+65000,Silver,5.398999999999999e+61,repo_raw_table,enemy_damage_table.csv
+70000,Silver,2.7002e+65,repo_raw_table,enemy_damage_table.csv
+75000,Silver,1.3200000000000002e+69,repo_raw_table,enemy_damage_table.csv
+80000,Silver,6.24e+72,repo_raw_table,enemy_damage_table.csv
+85000,Silver,3.116e+76,repo_raw_table,enemy_damage_table.csv
+90000,Silver,1.4511e+80,repo_raw_table,enemy_damage_table.csv
+95000,Silver,6.486699999999999e+83,repo_raw_table,enemy_damage_table.csv
+100000,Silver,2.9900000000000002e+87,repo_raw_table,enemy_damage_table.csv

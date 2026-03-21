@@ -1,0 +1,9 @@
+level,value,cost,total_cost,source_page
+1,6,30,0,Damage/Cost
+100,1.05K,80.73K,2.50M,Damage/Cost
+200,3.64K,643.07K,32.86M,Damage/Cost
+300,7.77K,1.59M,141.20M,Damage/Cost
+400,13.44K,3.03M,368.88M,Damage/Cost
+500,20.65K,5.00M,766.77M,Damage/Cost
+1000,79.80K,23.60M,7.29B,Damage/Cost
+1500,214.84K,58.53M,27.12B,Damage/Cost

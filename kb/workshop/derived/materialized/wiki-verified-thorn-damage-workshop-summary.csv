@@ -1,0 +1,2 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+thorn_damage,thorns,500 coins after Defense % and Defense Absolute,99,1%,+1% per level,99%,Bosses take 49.5%; thorns does not trigger lifesteal; protectors reduce thorn damage by 60%.,Thorn Damage,row-verified-live-wiki

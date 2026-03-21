@@ -1,0 +1,113 @@
+schema_revision: 1
+kind: capabilities
+purpose: Boolean or enum feature presence for runtime branches.
+notes:
+  - Capabilities should not be represented as numeric stats.
+  - Presence and unlocked state belong here.
+entries:
+  - id: capability.wall.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.orbs.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.death_ray.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.land_mines.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.black_hole.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.golden_tower.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.spotlight.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.chrono_field.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.death_wave.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.chain_lightning.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.poison_swamp.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.smart_missiles.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.inner_land_mines.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.bot.golden.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.bot.amplify.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.bot.flame.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.bot.thunder.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.attack.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.ally.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.bounty.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.fetch.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.scout.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.summon.enabled
+    type: boolean
+    status: keep_now
+
+  - id: capability.additional_card_slot.count
+    type: count
+    status: keep_now
+  - id: capability.orb_boss_hit.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.plasma_cannon.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.uw.black_hole.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.uw.black_hole.extra_black_hole
+    type: boolean
+    status: keep_now
+  - id: capability.uw.black_hole.disable_ranged
+    type: boolean
+    status: keep_now
+  - id: capability.uw.golden_tower.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.uw.chain_lightning.shock
+    type: boolean
+    status: keep_now
+  - id: capability.uw.chrono_field.damage_reduction.enabled
+    type: boolean
+    status: keep_now
+  - id: capability.uw.poison_swamp.stun
+    type: boolean
+    status: keep_now
+  - id: capability.uw.smart_missiles.explosion
+    type: boolean
+    status: keep_now
+  - id: capability.guardian.enabled
+    type: boolean
+    status: keep_now

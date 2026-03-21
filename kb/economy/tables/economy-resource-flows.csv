@@ -1,0 +1,9 @@
+resource_id,flow_id,primary_source,primary_sink
+cash,run reward flow,in-round combat progression,workshop in-round upgrades
+coins,persistent farm flow,kills / runs / bonuses,"workshop, enhancements, labs"
+gems,meta utility flow,missions / gameplay rewards,"cards, slots, utility sinks"
+power-stones,uw progression flow,progression rewards,"uw unlocks, uw upgrades, uw+ unlocks/upgrades"
+medals,event progression flow,event missions / events,bots and event shop spending
+keys,legend endgame flow,legends placement,vault
+bits,guild progression flow,guild chest / guild shop,guardians
+shards,module progression flow,module systems / missions,"module upgrades, rerolls, merges depending on shard type"

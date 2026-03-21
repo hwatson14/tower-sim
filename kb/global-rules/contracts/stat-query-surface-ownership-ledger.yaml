@@ -1,0 +1,26 @@
+contract_id: stat_query_surface_ownership_ledger_v1
+phase_1_domain_owners:
+  canonical_query_engine:
+    owns:
+      - deterministic timing_v1 canonical surfaces
+      - deterministic timing_v1 support surfaces
+      - deterministic progression_v1 canonical surfaces
+      - deterministic progression_v1 support surfaces
+  runtime_simulation:
+    owns:
+      - wave advancement over time
+      - event ordering
+      - combat stepping
+      - package event realization over time
+  analysis_consumers:
+    owns:
+      - optimisation search
+      - reporting
+      - diagnostics synthesis beyond truth-owned surfaces
+phase_1_exclusions:
+  - geometry domain migration
+  - broad combat-helper migration
+  - optimiser domain migration
+rules:
+  - each migrated surface has exactly one truth owner
+  - downstream consumers may consume owned surfaces but must not silently re-derive them

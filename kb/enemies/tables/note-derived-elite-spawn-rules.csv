@@ -1,0 +1,6 @@
+rule,value,status
+elite_types,vampire|ray|scatter,rebuilt_from_prior_notes
+onscreen_limit_per_elite_type,8,rebuilt_from_prior_notes
+drops,elite_cells,rebuilt_from_prior_notes
+spawn_split_bands,1_pct_through_100_pct,rebuilt_from_prior_notes
+33_100_behavior,recorded_in_prior_notes,rebuilt_from_prior_notes

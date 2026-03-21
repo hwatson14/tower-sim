@@ -1,0 +1,13 @@
+knowledge_role,path_patterns,chatgpt_use
+control_plane_entry,top-level routing files,first-pass package loading and trust order
+control_plane_metadata,manifest and status registries,package identity and high-level metadata
+canonical_mechanics,kb/**/tables/**,"lookup, mechanics explanation, simulator reasoning"
+canonical_contract,kb/**/contracts/**,runtime semantics and interpretation
+package_canon,explicit package-canon surfaces,use only when labeled as package canon
+boundary_policy,unknowns and boundary registries,"accepted unknowns, out-of-scope edges, externalized inputs"
+strategy_guidance,kb/advisory/strategy/** and kb/advisory/reasoning/**,"strategy, theorycraft, prioritization, diagnosis"
+community_signal,kb/community/**,"meta observations, practical advice, community heuristics"
+provenance_grounding,kb/**/sources/**,source support and provenance
+explanatory_secondary,kb/**/notes/**,orientation and explanation
+derived_nonprimary,kb/**/derived/**,secondary support only
+retrieval_operational,kb/advisory/prompts/**,AI retrieval support only

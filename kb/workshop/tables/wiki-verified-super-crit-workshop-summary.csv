@@ -1,0 +1,3 @@
+surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
+super_crit,chance,100 million coins after Bounce Shot,100,0.2%,+0.2% per level,20.0%,Applies after critical hit chance succeeds.,Attack Upgrades,row-verified-live-wiki
+super_crit,multiplier,100 million coins after Bounce Shot,120,1.2x,+0.1x per level,13.2x,Total crit multiplier on super crit = Critical Factor × Super Crit Mult.,Attack Upgrades,row-verified-live-wiki

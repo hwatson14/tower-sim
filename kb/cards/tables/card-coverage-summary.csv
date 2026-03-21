@@ -1,0 +1,6 @@
+metric,value,note
+unique_cards,30,Expected base card count in current bundle
+rarities_present,common|epic|rare,common|rare|epic present
+levels_present,1-7,All base ladders use 7 levels
+base_rows,210,30 cards x 7 levels = 210 rows
+base_ladder_completeness,complete_for_all_bundled_base_cards,No missing common/rare/epic base card rows in active bundle

@@ -1,0 +1,7 @@
+level,time,cost,value,unit,source_status
+1,0d 20h 0m,"750,000",25,missiles,live_wiki_row_verified
+2,1d 18h 14m,"1,660,000",30,missiles,live_wiki_row_verified
+3,2d 16h 46m,"2,860,000",35,missiles,live_wiki_row_verified
+4,3d 16h 25m,"5,750,000",40,missiles,live_wiki_row_verified
+5,4d 18h 36m,"13,900,000",45,missiles,live_wiki_row_verified
+6,6d 1h 23m,"34,080,000",50,missiles,live_wiki_row_verified

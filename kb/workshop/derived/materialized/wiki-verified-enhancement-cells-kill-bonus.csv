@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Cells/Kill Bonus,utility,Requires 500 billion coins to be spent on Utility enhancements to unlock.,x1.0,+0.01,200,x3.00,Multiplier applies to Cells/Kill.,Workshop_Enhancement/Utility/Cells_Per_Kill_Bonus,row_verified_v61

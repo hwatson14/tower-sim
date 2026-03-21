@@ -1,0 +1,76 @@
+routes:
+  entry:
+    sources:
+      - START_HERE_FOR_AI.md
+      - CHATGPT_KB_PROFILE.yaml
+      - KNOWLEDGE_ROLE_SCHEMA.yaml
+      - KNOWLEDGE_ROLE_REGISTRY.csv
+      - manifest.json
+      - RETRIEVAL_POLICY.yaml
+      - SURFACE_PRIORITY_REGISTRY.csv
+      - UNKNOWNS_OPERATING_POLICY.csv
+      - kb/index.md
+      - kb/ledgers/tables/core-kb-completeness.csv
+      - kb/ledgers/tables/scope-boundary-registry.csv
+      - kb/ledgers/tables/simulator-scope-boundary-ledger.csv
+  combat:
+    sources:
+      - kb/combat/contracts/runtime-ordering-canonical.csv
+      - kb/combat/contracts/runtime-damage-pipeline.csv
+      - kb/combat/contracts/runtime-ordering-ledger.csv
+      - kb/combat/sources/runtime-ordering-evidence.md
+      - kb/enemies/tables/boss-hit-interval.csv
+  tournaments:
+    sources:
+      - kb/tournaments/tables/battle-condition-curves-canonical.csv
+      - kb/tournaments/tables/tier-battle-condition-resolved-values.csv
+      - kb/tournaments/tables/tier-battle-condition-accepted-unknown-boundary.csv
+      - kb/tournaments/notes/battle-condition-magnitude-closure.md
+  workshop_labs_perks:
+    sources:
+      - kb/workshop/tables/workshop-values.csv
+      - kb/workshop/tables/enhancements-values.csv
+      - kb/labs/tables/lab-values.csv
+      - kb/perks/tables/perks.csv
+  ultimate_weapons:
+    sources:
+      - kb/ultimate-weapons/tables/ultimate-weapon-track-ladders.csv
+      - kb/ultimate-weapons/tables/ultimate-weapon-plus-ladders.csv
+      - kb/ultimate-weapons/contracts/ultimate-weapon-runtime-contract.md
+      - kb/ultimate-weapons/contracts/ultimate-weapon-plus-runtime-contract.md
+      - kb/ultimate-weapons/tables/uw-runtime-boundary-registry.csv
+  modules:
+    sources:
+      - kb/modules/tables/module-main-effect-total-multipliers-package-canon.csv
+      - kb/modules/tables/module-substats.csv
+      - kb/modules/tables/module-unique-effects.csv
+      - kb/modules/contracts/module-unique-runtime-semantics.md
+  strategy:
+    sources:
+      - kb/advisory/strategy/strategy-index.md
+      - kb/advisory/reasoning/reasoning-index.md
+      - kb/community/notes/reddit-and-community-meta-layer.md
+      - kb/community/tables/reddit-battle-condition-meta.csv
+rules:
+  mechanics:
+    prefer:
+      - canonical tables
+      - canonical contracts
+      - package canon
+      - boundary policy
+    avoid_first_pass:
+      - community
+      - advisory
+  strategy:
+    prefer:
+      - advisory
+      - community
+      - canonical tables
+      - boundary policy
+  unknown_handling: >
+    Use scope-boundary-registry.csv and simulator-scope-boundary-ledger.csv as the active
+    boundary surfaces. Do not interpolate the 17 BC rows marked accepted_unknown_boundary,
+    and treat broader same-tick micro-precedence as out_of_scope_tick_precedence.
+  advisory_rule: >
+    Advisory and community surfaces may help theorycrafting and practical recommendations
+    but must not override canonical tables, contracts, package canon, or boundary policy.

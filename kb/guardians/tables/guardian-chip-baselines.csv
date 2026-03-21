@@ -1,0 +1,7 @@
+chip,unlock_source,base_cooldown_seconds,base_effect,base_targets,secondary_base,status,source_url,verification_status
+attack,base,120,1% missing-health damage,1.0,,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14
+ally,base,120,1s ally conversion / recovery package,1.0,,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14
+bounty,guild_shop_200_tokens,120,0.01x bounty multiplier,1.0,,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14
+fetch,guild_shop_200_tokens,120,10% find chance,,2% double find chance,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14
+summon,guild_shop_season_5_200_tokens,140,5s duration,,x1.00 cash bonus,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14
+scout,guild_shop_season_7_200_tokens,105,5s duration,,x2.0 range effect,wiki_verified_surface,https://the-tower-idle-tower-defense.fandom.com/wiki/Guardian,live_wiki_row_verified_2026-03-14

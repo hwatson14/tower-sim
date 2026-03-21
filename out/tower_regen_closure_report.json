@@ -1,0 +1,95 @@
+{
+  "destination": "canonical_stat::tower_regen",
+  "compare_state_key": "Farming__perks_on",
+  "compare_preset": "Farming",
+  "compare_perk_state": "on",
+  "package_value": 44638496577799.34,
+  "ep_value": 44640000000000.0,
+  "relative_delta_pct": -0.003367881273871528,
+  "workshop_base": 10170855374.9115,
+  "multiplier_product": 5689.267584,
+  "recomputed_package_value": 57864717786036.17,
+  "required_missing_multiplier_to_match_ep": 0.771454553102002,
+  "contributors": [
+    {
+      "source_family": "lab",
+      "source_name": "Health Regen",
+      "preset_name": null,
+      "raw_value": 3.04,
+      "value_type": "resolved_value",
+      "applied_factor": 3.04
+    },
+    {
+      "source_family": "workshop",
+      "source_name": "Health Regen",
+      "preset_name": "Farming",
+      "raw_value": 10170855374.9115,
+      "value_type": "resolved_value",
+      "applied_factor": null
+    },
+    {
+      "source_family": "enhancement",
+      "source_name": "Health Regen +",
+      "preset_name": null,
+      "raw_value": 1.6,
+      "value_type": "resolved_value",
+      "applied_factor": 1.6
+    },
+    {
+      "source_family": "relic",
+      "source_name": "Health Regen",
+      "preset_name": null,
+      "raw_value": 0.22999999999999998,
+      "value_type": "resolved_value",
+      "applied_factor": 1.23
+    },
+    {
+      "source_family": "vault",
+      "source_name": "Health Regen",
+      "preset_name": null,
+      "raw_value": 0,
+      "value_type": "resolved_value",
+      "applied_factor": 1.0
+    },
+    {
+      "source_family": "card",
+      "source_name": "Health Regen",
+      "preset_name": "Farming",
+      "raw_value": 2.6,
+      "value_type": "resolved_value",
+      "applied_factor": 2.6
+    },
+    {
+      "source_family": "perk",
+      "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+      "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+      "raw_value": 8.8,
+      "value_type": "multiplier",
+      "applied_factor": 8.8
+    },
+    {
+      "source_family": "perk",
+      "source_name": "x1.75 Health Regen",
+      "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+      "raw_value": 5.9375,
+      "value_type": "multiplier",
+      "applied_factor": 5.9375
+    },
+    {
+      "source_family": "module_substat",
+      "source_name": "Sharp Fortitude",
+      "preset_name": "Farming",
+      "raw_value": 400.0,
+      "value_type": "percent_display",
+      "applied_factor": 5.0
+    },
+    {
+      "source_family": "module_substat",
+      "source_name": "Orbital Augment",
+      "preset_name": "Farming",
+      "raw_value": 40.0,
+      "value_type": "percent_display",
+      "applied_factor": 1.4
+    }
+  ]
+}

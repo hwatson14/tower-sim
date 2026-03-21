@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Combat Parameters",
+  "type": "object",
+  "required": [
+    "tower_dr_frac",
+    "enemy_attack_mult",
+    "thorns_frac",
+    "pc_frac",
+    "pc_boss_mult"
+  ],
+  "properties": {
+    "tower_dr_frac": { "type": "number", "minimum": 0, "maximum": 1 },
+    "enemy_attack_mult": { "type": "number", "minimum": 0 },
+    "thorns_frac": { "type": "number", "minimum": 0, "maximum": 1 },
+    "pc_frac": { "type": "number", "minimum": 0 },
+    "pc_boss_mult": { "type": "number", "minimum": 0 }
+  },
+  "additionalProperties": false
+}

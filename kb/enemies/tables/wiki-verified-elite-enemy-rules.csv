@@ -1,0 +1,7 @@
+rule,value_or_note,source_page
+elite_types,Vampire | Ray | Scatter,Elite_Enemies
+spawn_per_wave_limit,1 or up to 2 at higher waves,Elite_Enemies
+onscreen_limit_per_elite_type,8,Elite_Enemies
+immune_to,Orbs | Death Ray | Shockwave | Black Hole,Elite_Enemies
+cell_drop,Drops Elite Cells when defeated,Elite_Enemies
+spawn_split_values,"1%, 4%, 9%, 16%, 25%, 36%, 49%, 64%, 81%, 100% total split between 3 types",Elite_Enemies

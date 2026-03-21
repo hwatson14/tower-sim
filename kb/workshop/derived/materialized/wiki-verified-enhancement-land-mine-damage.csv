@@ -1,0 +1,2 @@
+enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
+Land Mine Damage,defense,Requires 5 trillion coins to be spent on defense enhancements to unlock.,x1.0,+0.06,400,x25.00,Multiplier applies to Land Mine Damage.,Workshop_Enhancement/Defense/Land_Mine_Damage,row_verified_v61

@@ -1,0 +1,6 @@
+level,value,cost,total_cost,source
+1,0.55,80.00,80.00,Knockback/Cost/Knockback_Force
+10,1.90,794.00,3.60K,Knockback/Cost/Knockback_Force
+20,3.40,3.11K,22.75K,Knockback/Cost/Knockback_Force
+30,4.66,7.43K,75.81K,Knockback/Cost/Knockback_Force
+40,6.08,14.01K,184.33K,Knockback/Cost/Knockback_Force

@@ -1,0 +1,5 @@
+perks_taken_threshold,base_waves_required,notes,source
+0,200,Default base wave requirement before any step-up,kb/perks/notes/perk-system.md
+20,250,First step-up after 20 selected perks,kb/perks/notes/perk-system.md
+30,300,Second step-up after 30 selected perks,kb/perks/notes/perk-system.md
+40,350,Third step-up after 40 selected perks,kb/perks/notes/perk-system.md

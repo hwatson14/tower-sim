@@ -1,0 +1,47 @@
+fields:
+  orb_boss_hit_pct:
+    aliases:
+      - orb_boss_hit_pct
+      - runtime_mechanic_param::combat.orb_boss_hit_pct
+    min: 0.0
+  orb_boss_hits_per_second:
+    aliases:
+      - orb_boss_hits_per_second
+      - runtime_mechanic_param::combat.orb_boss_hits_per_second
+    min_exclusive: 0.0
+  electron_hits_per_second:
+    aliases:
+      - electron_hits_per_second
+      - runtime_mechanic_param::combat.electron_hits_per_second
+    min_exclusive: 0.0
+  boss_contact_time_seconds:
+    aliases:
+      - boss_contact_time_seconds
+      - runtime_mechanic_param::combat.boss_contact_time_seconds
+    min: 0.0
+  boss_hit_interval_seconds:
+    aliases:
+      - boss_hit_interval_seconds
+      - runtime_mechanic_param::combat.boss_hit_interval_seconds
+    min: 0.0
+  effective_damage_reduction_pct:
+    aliases:
+      - effective_damage_reduction_pct
+      - runtime_mechanic_param::combat.effective_damage_reduction_pct
+    min: 0.0
+    max: 100.0
+  incoming_damage_multiplier:
+    aliases:
+      - incoming_damage_multiplier
+      - runtime_mechanic_param::combat.incoming_damage_multiplier
+    min: 0.0
+  boss_wave_interval:
+    aliases:
+      - boss_wave_interval
+      - runtime_mechanic_param::combat.boss_wave_interval
+    min_exclusive: 0.0
+  enemy_level_skip_reduction_pp:
+    aliases:
+      - enemy_level_skip_reduction_pp
+      - runtime_mechanic_param::combat.enemy_level_skip_reduction_pp
+    min: 0.0

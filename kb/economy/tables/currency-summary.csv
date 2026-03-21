@@ -1,0 +1,9 @@
+resource_id,resource_scope,persistence,primary_source_channel,primary_spend_sink,evidence_class
+cash,run,run-local,general gameplay during a round,in-round workshop spending,wiki-verified
+coins,persistent,persistent,runs and kills,"workshop, enhancements, labs and other permanent upgrades",wiki-verified
+gems,persistent,persistent,"missions, gameplay and rewards","cards, card slots, some utility/respec surfaces",wiki-verified
+power-stones,persistent,persistent,game progression and rewards,ultimate weapons and ultimate weapon plus,wiki-verified
+medals,persistent,persistent,events and event missions,"event shop, including bots and event purchases",wiki-verified
+keys,persistent,persistent,Legends League placement,Vault tech trees,wiki-verified
+shards,persistent,persistent,modules / missions / drops depending on shard type,module upgrade and reroll-related surfaces,wiki-verified
+bits,persistent,persistent,guild store and guild chests,guardian unlocks and guardian chip upgrades,wiki-verified
