@@ -84,7 +84,7 @@ def test_progression_family_materializer_normalizes_rows_to_contract_shape():
     )
     free_upgrade_support = rows_by_surface['support_surface::free_upgrade_multiplier']
     assert all(row.composition_stage == 'multiplicative' for row in free_upgrade_support)
-    assert all(row.surface_class == 'context_resource' for row in free_upgrade_support)
+    assert all(row.surface_class == 'surface' for row in free_upgrade_support)
     assert all(row.domain == 'progression' for row in free_upgrade_support)
     tower_hp_sources = {row.source_class for row in rows_by_surface['canonical_stat::tower_hp']}
     assert {'labs', 'workshop'}.issubset(tower_hp_sources)

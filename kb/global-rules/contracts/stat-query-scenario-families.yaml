@@ -105,3 +105,5 @@ rules:
   - tournament implies perks_enabled=false unless a later governed contract explicitly overrides this
   - family compatibility is asserted against state_mode, mode_id, perks_enabled, and scenario_kind before baseline materialization
   - baseline contributor rows must carry surface_class, domain, source_class, composition_stage, gate_reason, and provenance_ref
+  - timing families allow only timing/assertion overlay classes: card_assertions, module_assertions, assist_slot_choice, package_event_model, runtime_target_display_wave, and governed perk_count_overrides where the family explicitly enables perks
+  - progression families allow only progression/runtime mutation overlay classes: workshop_mutation, runtime_wave_state, free_upgrade_runtime_state, and governed perk_count_overrides where the family explicitly enables perks
