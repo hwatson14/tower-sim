@@ -27,7 +27,33 @@ target_scope_schema:
 changed_contributors_schema:
   required_fields:
     - contributor_id
-    - new_value
+  operation_field: operation
+  allowed_operations:
+    - replace
+    - multiply
+    - add
+    - remove
+  per_operation_requirements:
+    replace:
+      required_fields:
+        - contributor_id
+        - new_value
+    multiply:
+      required_fields:
+        - contributor_id
+        - factor
+    add:
+      required_fields:
+        - contributor_id
+        - surface_id
+        - source_class
+        - composition_stage
+        - new_value
+        - value_type
+        - provenance_ref
+    remove:
+      required_fields:
+        - contributor_id
 changed_assertions_schema:
   examples:
     - assertion_type: card_assertions

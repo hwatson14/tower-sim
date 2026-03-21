@@ -97,7 +97,7 @@ class FamilyBaselineMaterializer:
                     for stat_input in bound_inputs.stat_inputs
                     if _normalized_surface_id(stat_input) in allowed_surfaces
                 ),
-                key=_row_sort_key,
+                key=contributor_row_sort_key,
             )
         )
         return FamilyBaselineContributorMap(
@@ -120,7 +120,7 @@ class FamilyBaselineMaterializer:
                     for stat_input in stat_inputs
                     if _normalized_surface_id(stat_input) in allowed_surfaces
                 ),
-                key=_row_sort_key,
+                key=contributor_row_sort_key,
             )
         )
         return FamilyBaselineContributorMap(
@@ -204,10 +204,10 @@ def _normalize_composition_stage(surface_id: str, row: StatInput) -> str:
         return 'multiplicative'
     if row.destination_object_type == 'runtime_mechanic_param':
         return 'scenario_adjustment'
-    return 'base' if row.stage in {'account_state', 'loadout_resolved'} else 'additive_pre_cap'
+    return 'additive_pre_cap'
 
 
-def _row_sort_key(row: BaselineContributorRow) -> tuple[str, str, str, str, str, str, str]:
+def contributor_row_sort_key(row: BaselineContributorRow) -> tuple[str, str, str, str, str, str, str]:
     return (
         row.surface_id,
         row.source_class,
