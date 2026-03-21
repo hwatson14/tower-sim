@@ -91,14 +91,32 @@ def test_phase_1_surface_registry_has_no_duplicate_surface_ids():
 
 def test_every_family_owned_surface_is_declared_in_exactly_one_registry_location():
     family_surface_ids = family_surface_registry.load_family_surface_ids()
+    family_contracts = family_surface_registry.load_family_contracts()
     declared_surface_ids = {entry['surface_id'] for _, entry in _all_surface_entries()}
 
     assert family_surface_ids
     assert set().union(*family_surface_ids.values()) == declared_surface_ids
+    assert set(family_surface_ids) == set(family_contracts)
     for family_id, surface_ids in family_surface_ids.items():
         assert surface_ids, family_id
 
 
+def test_family_contracts_define_baseline_semantics_and_supported_compatibility_shape():
+    family_contracts = family_surface_registry.load_family_contracts()
+
+    assert family_contracts
+    for family_id, contract in family_contracts.items():
+        assert contract['family_group'] in {'timing', 'progression'}
+        assert contract['state_mode'] == 'start_of_run'
+        assert contract['mode_id']
+        assert contract['scenario_kind'] in {'run', 'scenario_probe'}
+        assert set(contract['baseline_semantics']) == {
+            'deterministic',
+            'immutable',
+            'overlay_free',
+            'bounded_to_declared_surface_set',
+        }, family_id
+        assert all(contract['baseline_semantics'].values()), family_id
 
 def test_every_phase_1_surface_has_matching_query_ownership_ledger_coverage():
     ownership_rows = {row['node_id']: row for row in (_ownership_ledger().get('surface_nodes') or [])}
