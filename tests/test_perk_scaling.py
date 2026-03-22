@@ -10,6 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
 from compilers import stat_input_compiler as compiler
+from engine import query_perk_compiler
 from compilers.stat_input_compiler import compile_stat_inputs
 from helpers import build_state, cached_run_stats_output
 
@@ -619,3 +620,12 @@ def test_coin_surfaces_match_expected_farming_start_and_max_progression(tmp_path
         for key, value in targets.items():
             assert statbook[key]['status'] == 'resolved'
             assert statbook[key]['final_value'] == pytest.approx(value)
+
+
+def test_compiler_perk_helpers_delegate_to_query_owner():
+    assert compiler._active_perk_selections is query_perk_compiler.active_perk_selections
+    assert compiler._perk_lab_state is query_perk_compiler.perk_lab_state
+    assert compiler._scaled_perk_value is query_perk_compiler.scaled_perk_value
+    assert compiler._perk_value_type_for_operation is query_perk_compiler.perk_value_type_for_operation
+    assert compiler._perk_value_from_effect is query_perk_compiler.perk_value_from_effect
+    assert compiler._normalized_multiplier is query_perk_compiler.normalized_multiplier

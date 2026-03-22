@@ -49,6 +49,9 @@ def test_stat_input_compiler_uses_query_engine_owned_routing_authority():
     assert stat_input_compiler.bind_perk_effect_destination is query_routing.bind_perk_effect_destination
     assert stat_input_compiler.WORKSHOP_IDS_TO_CONTRIBUTOR is query_routing.WORKSHOP_IDS_TO_CONTRIBUTOR
     assert stat_input_compiler.LAB_APPLICATION_TARGET_TO_DESTINATION is query_routing.LAB_APPLICATION_TARGET_TO_DESTINATION
+    assert stat_input_compiler.load_card_effect_targets is query_routing.load_card_effect_targets
+    assert stat_input_compiler.load_lab_application_registry is query_routing.load_lab_application_registry
+    assert stat_input_compiler.load_theme_song_registry is query_routing.load_theme_song_registry
     assert not hasattr(stat_input_compiler, '_load_mapping_index')
     assert not hasattr(stat_input_compiler, '_bind_kb_fields')
     assert not hasattr(stat_input_compiler, '_bind_alias_destination')
