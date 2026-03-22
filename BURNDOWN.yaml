@@ -1,0 +1,221 @@
+version: 1
+program: tower-sim-migration
+active_tranche_id: TRANCHE_BOOTSTRAP_CONTROL_SYSTEM_V1
+status_dimensions:
+  delivery:
+    - not_started
+    - in_progress
+    - implemented
+    - blocked
+    - done
+  verification:
+    - not_verified
+    - partial
+    - verified
+
+tasks:
+  - id: P0-T1
+    title: Lock canonical ownership truth
+    phase: P0
+    delivery_status: implemented
+    verification_status: partial
+    depends_on: []
+    owner_surfaces:
+      - ARCHITECTURE.md
+      - README.md
+      - engine/stat_engine.py
+      - engine/stat_resolution_core.py
+    scope_in:
+      - docs/comments/import-facing ownership wording
+    scope_out:
+      - runtime formula changes
+    acceptance_criteria:
+      - no_major_doc_implies_dual_ownership
+      - compatibility_surfaces_named_explicitly
+      - canonical_owner_stated_consistently
+    required_checks:
+      - ownership_wording_review
+    evidence_paths: []
+    blockers: []
+    next_action: Align durable ownership wording in the major docs and execution-control rails.
+
+  - id: P0-T2
+    title: Create canonical migration/status ledger and control-artifact bootstrap
+    phase: P0
+    delivery_status: implemented
+    verification_status: partial
+    depends_on:
+      - P0-T1
+    owner_surfaces:
+      - AI_MIGRATION_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    scope_in:
+      - canonical migration status structure
+      - archive disposition structure
+      - execution-control artifact structure
+      - control-artifact establishment
+    scope_out:
+      - runtime mechanic changes
+    acceptance_criteria:
+      - canonical_ledger_exists
+      - active_tranche_exists
+      - burndown_exists
+      - no_major_doc_contradicts_ledger_role
+    required_checks:
+      - control_file_consistency_review
+    evidence_paths:
+      - AI_MIGRATION_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Finish syncing major docs to the canonical ledger and control-system model.
+
+  - id: P1-T1
+    title: Convert root R86 docs into a precise open-work baseline
+    phase: P1
+    delivery_status: not_started
+    verification_status: not_verified
+    depends_on:
+      - P0-T2
+    owner_surfaces:
+      - R86_CODEX_HANDOFF_GUARDRAILS.md
+      - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
+      - R86_WORKED_EXAMPLES.md
+      - AI_MIGRATION_EXECUTION_PLAN.md
+    scope_in:
+      - remaining-work baseline
+    scope_out:
+      - code changes
+    acceptance_criteria:
+      - r86_open_items_explicit
+      - landed_vs_open_split_explicit
+    required_checks:
+      - document_consistency_review
+    evidence_paths: []
+    blockers: []
+    next_action: Wait for P0-T2 to settle as the canonical planning truth.
+
+  - id: P1-T2
+    title: Archive bundle disposition ledger
+    phase: P1
+    delivery_status: not_started
+    verification_status: not_verified
+    depends_on:
+      - P0-T2
+    owner_surfaces:
+      - AI_MIGRATION_EXECUTION_PLAN.md
+      - root archive artifacts
+    scope_in:
+      - archive disposition tracking
+    scope_out:
+      - direct archive merges
+    acceptance_criteria:
+      - every_root_archive_has_documented_disposition
+    required_checks:
+      - archive_disposition_review
+    evidence_paths: []
+    blockers: []
+    next_action: Wait for canonical migration ledger stabilization.
+
+  - id: P2-T1
+    title: Build function-level ownership ledger for stat_input_compiler.py
+    phase: P2
+    delivery_status: not_started
+    verification_status: not_verified
+    depends_on:
+      - P0-T1
+      - P0-T2
+    owner_surfaces:
+      - compilers/stat_input_compiler.py
+      - AI_MIGRATION_EXECUTION_PLAN.md
+    scope_in:
+      - function ownership mapping
+    scope_out:
+      - formula changes
+    acceptance_criteria:
+      - no_owner_ambiguous_major_function_without_justification
+    required_checks:
+      - boundary_review
+    evidence_paths: []
+    blockers: []
+    next_action: Start once P0 control artifacts are accepted.
+
+  - id: P2-T2
+    title: Finish extraction of KB routing/query prep from stat_input_compiler.py
+    phase: P2
+    delivery_status: not_started
+    verification_status: not_verified
+    depends_on:
+      - P2-T1
+    owner_surfaces:
+      - compilers/stat_input_compiler.py
+      - engine/query_routing.py
+    scope_in:
+      - compiler/query seam cleanup
+    scope_out:
+      - unrelated engine refactors
+    acceptance_criteria:
+      - no_uncontrolled_straddle
+      - regression_coverage_updated
+    required_checks:
+      - regression_tests_updated
+      - boundary_doc_updated
+    evidence_paths: []
+    blockers: []
+    next_action: Wait for function-level ownership ledger.
+
+  - id: P2-T3
+    title: Establish governed manual-advisory input lane under input/
+    phase: P2
+    delivery_status: implemented
+    verification_status: partial
+    depends_on:
+      - P0-T2
+    owner_surfaces:
+      - input/manual_advisory_inputs.contract.yaml
+      - input/manual_advisory_inputs.example.json
+      - AI_MIGRATION_EXECUTION_PLAN.md
+    scope_in:
+      - input contract/example files
+      - planning integration
+    scope_out:
+      - consumer runtime wiring
+    acceptance_criteria:
+      - manual_inputs_explicit_scoped_and_not_kb_truth
+      - replacement_targets_defined
+      - consumers_can_fail_closed_when_input_missing
+    required_checks:
+      - contract_review
+      - example_review
+      - planning_doc_review
+    evidence_paths:
+      - input/manual_advisory_inputs.contract.yaml
+      - input/manual_advisory_inputs.example.json
+      - AI_MIGRATION_EXECUTION_PLAN.md
+    blockers: []
+    next_action: Add consumer adoption only when a tranche explicitly scopes it in.
+
+  - id: P3-T1
+    title: Delegate covered families from resolve_stats() to the query kernel
+    phase: P3
+    delivery_status: not_started
+    verification_status: not_verified
+    depends_on:
+      - P2-T2
+    owner_surfaces:
+      - engine/stat_engine.py
+      - engine/stat_resolution_core.py
+      - engine/stat_query_kernel.py
+    scope_in:
+      - covered-family delegation
+    scope_out:
+      - uncovered-family rewrites
+    acceptance_criteria:
+      - resolve_stats_public_api_preserved
+      - covered_family_ownership_query_first
+    required_checks:
+      - parity_tests
+    evidence_paths: []
+    blockers: []
+    next_action: Wait for seam cleanup completion.
