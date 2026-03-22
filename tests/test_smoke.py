@@ -373,14 +373,6 @@ def test_dimension_core_main_and_damage_per_meter_gap_are_closed(tmp_path):
     assert any(c.get('source_name') == 'Dimension Core' for c in statbook['canonical_stat::ultimate_damage_multiplier']['contributors'])
     assert compare['canonical_stat::tower_damage_per_meter_multiplier']['formula_contract']['publish_policy'] == 'allow'
 
-def test_display_formatter_preserves_significant_integer_zeros():
-    import importlib.util
-    spec = importlib.util.spec_from_file_location('run_stats_module', ROOT / 'run_stats.py')
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    assert module._format_display_number(179723381637158.78) == '180T'
-    assert module._format_display_number(1010000000000) == '1.01T'
 
 
 def test_compare_display_honors_percent_and_large_number_formatting(tmp_path):

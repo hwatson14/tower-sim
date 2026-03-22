@@ -47,6 +47,11 @@ if str(ROOT) not in sys.path:
 from parsers.ids_parser import parse_ids
 from compilers.account_state_compiler import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs, SUPPORTED_STATE_MODES, normalize_state_mode, state_mode_support
+from engine.display import (
+    _format_display_number,
+    annotate_compare_display_fields as _annotate_compare_display_fields,
+    annotate_display_fields as _annotate_display_fields,
+)
 from engine.stat_engine import resolve_stats
 from engine.verification import (
     annotate_compare_display_fields as _annotate_compare_display_fields,
