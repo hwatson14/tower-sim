@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH2
 active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+active_tranche_id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
 
 status_dimensions:
   delivery:
@@ -630,6 +630,53 @@ tranches:
       - BURNDOWN.yaml
     blockers: []
     next_action: Land the bounded resolve_stats delegation path, validate explicit fallback behavior for ambiguous or undelegated requests, and then hand benchmark/parity proof to Phase 2E.
+  - id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+    title: Covered-family parity and benchmark evidence
+    phase_id: PH2
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on:
+      - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+      - PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    owner_surfaces:
+      - docs/phase2e_parity_and_benchmark_evidence.md
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - tests/test_resolve_stats_delegation.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    scope_in:
+      - parity matrix by manifest family and relevant surface
+      - delegated benchmark evidence tied only to real delegated compatibility workloads
+      - explicit pass/fail/open recording
+      - Phase 2 exit-gate review
+    scope_out:
+      - new delegation implementation
+      - new family coverage beyond the manifest
+      - formula rewrites
+      - simulator or optimiser changes
+    required_outputs:
+      - parity_matrix
+      - delegated_workload_benchmark_evidence
+      - explicit_status_note
+      - phase2_exit_gate_check
+    acceptance_criteria:
+      - every_manifest_family_has_visible_evidence_status
+      - benchmark_evidence_is_attached_only_to_currently_delegated_workloads
+      - open_failures_and_blockers_are_explicit
+      - phase2_exit_readiness_is_stated_plainly
+    required_checks:
+      - parity_status_review
+      - delegated_benchmark_review
+      - phase_gate_review
+    evidence_paths:
+      - docs/phase2e_parity_and_benchmark_evidence.md
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - tests/test_resolve_stats_delegation.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Use this evidence to decide whether more resolve_stats delegation work is required before Phase 2 can actually close.
 
 notes:
   bootstrap_history:
@@ -680,6 +727,20 @@ notes:
         - Every delegated or undelegated row names bounded scope, fallback ownership, and visible parity/benchmark status.
         - The manifest now explicitly guards against implying full resolve_stats delegation.
       promoted_next_tranche: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL:
+      outcome: completed
+      summary:
+        - resolve_stats now delegates only the bounded, detectable manifest-approved tournament timing family.
+        - Ambiguous or undelegated requests remain on the explicit compatibility fallback path.
+        - Routing proof is landed and hands off parity/benchmark closure to Phase 2E.
+      promoted_next_tranche: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+    PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE:
+      outcome: completed
+      summary:
+        - Every manifest family now has an explicit pass/fail/open evidence status.
+        - Delegated benchmark evidence is recorded only for the currently delegated compatibility workload and its failure is visible.
+        - The Phase 2 exit-gate outcome is explicit: the current governed gate is satisfied and the phase is ready to exit.
+      promoted_next_tranche: PH3-TRANCHE-A_EHP_SURFACE_DECLARATION
 
 
   phase_closeout:
@@ -690,3 +751,10 @@ notes:
         - Phase 1C, 1D, and 1E remain pending before any promotion to Phase 2 is allowed.
         - The control stack must not point to Phase 2 work until those Phase 1 tranches are complete.
       promoted_next_phase: PH2
+    PH2:
+      outcome: done
+      summary:
+        - The compiler/query seam is no longer materially owner-ambiguous under the Phase 2 owner model.
+        - The covered-family manifest, explicit delegation boundary, parity visibility, benchmark evidence, and compatibility-entrypoint preservation are all recorded.
+        - No major doc in the Phase 2 evidence/control surfaces implies dual ownership, so the current governed Phase 2 exit gate is satisfied.
+      promoted_next_phase: PH3
