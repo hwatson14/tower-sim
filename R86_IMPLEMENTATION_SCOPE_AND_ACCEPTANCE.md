@@ -18,6 +18,19 @@
 - global resolved-baseline caches
 - unbounded family expansion
 
+
+## Tracked status
+1. Global parity validation across declared query-owned families — still open.
+2. End-to-end overlay and invalidation closure — still open.
+3. Residual progression bridge cleanup and stale transitional references — partially complete, finish remaining cleanup.
+4. Gate F benchmark evidence for timing + progression workloads — still open.
+5. KB-routing authority extraction from `compilers/stat_input_compiler.py` into Query Engine ownership — still open.
+
+### Status notes after `a97f469` / `d278c18`
+- Treat progression recalc ownership migration as largely completed for the bounded progression runtime/reference path.
+- Keep the thread focused on remaining acceptance evidence and stale-transition cleanup rather than redoing already-landed bridge work.
+- Audit `engine/progression_recalc_bridge.py` wording against the current tests when touching bridge-adjacent notes or handoff text.
+
 ## Acceptance gates
 ### Gate A: contract integrity
 - all new stat-query contracts layer onto existing runtime/state contracts
