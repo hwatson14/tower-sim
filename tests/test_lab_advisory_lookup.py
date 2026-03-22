@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -47,6 +48,24 @@ def test_lab_advisory_rows_are_non_mechanical_and_fail_closed_to_known_registry(
     registry_row = registry_rows[0]
     assert registry_row.canonical_location == 'kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv'
     assert 'mechanics|lab_costs|lab_durations|runtime_formula_truth' == registry_row.do_not_use_for
+
+
+def test_lab_advisory_rows_map_to_repo_canonical_lab_catalog_with_only_documented_manual_overrides():
+    rows = load_lab_advisory_rows()
+    catalog_path = ROOT / 'kb' / 'ledgers' / 'sources' / 'raw' / 'repo-meta' / 'registry' / 'catalog.yaml'
+    catalog_text = catalog_path.read_text(encoding='utf-8')
+    catalog_ids = set(re.findall(r'canonical_id:\s+(LAB_[A-Z0-9_]+)', catalog_text))
+
+    advisory_ids = {row.lab_canonical_id for row in rows}
+    assert advisory_ids <= catalog_ids
+
+    manual_override_rows = {row.lab_name: row.lab_canonical_id for row in rows if row.mapping_status == 'manual_alias_override'}
+    assert manual_override_rows == {
+        'Workshop Enhancements': 'LAB_WORKSHOP_ENHANCEMENT',
+        'Enhancement Attack - Coin Discount': 'LAB_ENHANCEMENT_ATTACK_COIN_DISCOUNT',
+        'Enhancement Defense - Coin Discount': 'LAB_ENHANCEMENT_DEFENSE_COIN_DISCOUNT',
+        'Enhancement Utility - Coin Discount': 'LAB_ENHANCEMENT_UTILITY_COIN_DISCOUNT',
+    }
 
 
 def test_lab_advisory_rankings_are_not_routed_into_mechanical_or_optimizer_surfaces():
