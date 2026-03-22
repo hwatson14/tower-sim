@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH2
 active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+active_tranche_id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
 
 status_dimensions:
   delivery:
@@ -534,9 +534,9 @@ tranches:
   - id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
     title: Covered-family delegation manifest
     phase_id: PH2
-    delivery_status: in_progress
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     owner_surfaces:
@@ -581,7 +581,55 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Finalize the covered-family manifest and then hand the governed family/status surface to Phase 2D/2E without implying full resolve_stats delegation.
+    next_action: Completed; the governed covered-family manifest is now the routing boundary for Phase 2D and the evidence target for Phase 2E.
+
+  - id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    title: resolve_stats() delegation to query kernel
+    phase_id: PH2
+    delivery_status: in_progress
+    verification_status: partial
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+      - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+    owner_surfaces:
+      - engine/stat_engine.py
+      - engine/stat_resolution_core.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - tests/test_resolve_stats_delegation.py
+      - docs/phase2c_covered_family_delegation_manifest.md
+    scope_in:
+      - compatibility-entrypoint delegation routing
+      - delegation only for manifest-approved covered families
+      - explicit fallback preservation for undelegated and ambiguous families
+      - no-false-implication routing proof
+    scope_out:
+      - new family coverage beyond the manifest
+      - formula rewrites
+      - benchmark closure
+      - simulator or optimiser changes
+    required_outputs:
+      - explicit_delegation_path
+      - explicit_fallback_path
+      - preserved_public_compatibility_entrypoint
+      - targeted_routing_regressions
+    acceptance_criteria:
+      - declared_covered_families_delegate_through_query_kernel_when_identifiable_without_guessing
+      - undelegated_families_still_resolve_via_explicit_fallback
+      - compatibility_entrypoint_preserved
+      - routing_does_not_imply_full_delegation
+    required_checks:
+      - delegated_family_routing_review
+      - fallback_preservation_review
+      - no_false_implication_review
+    evidence_paths:
+      - engine/stat_engine.py
+      - tests/test_resolve_stats_delegation.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Land the bounded resolve_stats delegation path, validate explicit fallback behavior for ambiguous or undelegated requests, and then hand benchmark/parity proof to Phase 2E.
 
 notes:
   bootstrap_history:
@@ -625,6 +673,13 @@ notes:
         - Every move or split candidate names a target owner and destination module.
         - Regression anchors are recorded without implying that Phase 2B extraction already happened.
       promoted_next_tranche: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST:
+      outcome: completed
+      summary:
+        - The covered-family list is finalized from the governed Query Engine family contracts.
+        - Every delegated or undelegated row names bounded scope, fallback ownership, and visible parity/benchmark status.
+        - The manifest now explicitly guards against implying full resolve_stats delegation.
+      promoted_next_tranche: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
 
 
   phase_closeout:
