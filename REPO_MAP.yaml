@@ -1,0 +1,185 @@
+version: 1
+
+repo_intent: working_core_not_document_shelf
+
+top_level:
+  kb:
+    owner: canonical_truth_and_governance
+    description: authoritative mechanics, tables, contracts, notes, and ledgers
+    allows:
+      - canonical_truth
+      - canonical_governance
+
+  input:
+    owner: runtime_inputs
+    description: runtime inputs, manual assumptions, scenario inputs, and committed source inputs
+    allows:
+      - runtime_input
+
+  parsers:
+    owner: raw_source_ingestion
+    description: source parsing and decode logic
+    allows:
+      - runtime_code_asset
+
+  compilers:
+    owner: state_compilation
+    description: account-state and stat-input compilation
+    allows:
+      - runtime_code_asset
+
+  models:
+    owner: typed_runtime_structures
+    description: typed runtime data structures and state carriers
+    allows:
+      - runtime_code_asset
+
+  engine:
+    owner: runtime_resolution_and_simulation
+    description: query/stat/runtime evaluation and simulation logic
+    allows:
+      - runtime_code_asset
+
+  optimizer:
+    owner: optimisation_and_scoring
+    description: scoring, ranking, planning, and optimisation logic
+    allows:
+      - runtime_code_asset
+
+  scripts:
+    owner: workflow_helpers
+    description: small workflow helpers only
+    allows:
+      - runtime_code_asset
+
+  templates:
+    owner: static_runtime_or_test_assets
+    description: static assets required by runtime workflows or tests
+    allows:
+      - runtime_code_asset
+      - test_fixture
+
+  tests:
+    owner: verification
+    description: regression, contract, smoke, and fixture assets
+    allows:
+      - test_fixture
+
+  out:
+    owner: generated_outputs
+    description: committed generated outputs consumed by tests and workflows
+    allows:
+      - generated_output
+
+  docs:
+    status: retired
+    description: retired generic bucket
+    allows: []
+    rule: do_not_create_files_here
+
+  config:
+    status: retired
+    description: retired generic bucket
+    allows: []
+    rule: do_not_create_files_here
+
+root_control_files:
+  AI_EXECUTION_PLAN.md:
+    artifact_type: execution_control
+    permanence: permanent
+    purpose: canonical whole-program plan
+
+  ACTIVE_TRANCHE.md:
+    artifact_type: execution_control
+    permanence: tranche_scoped
+    purpose: active implementation scope and tranche-local analysis
+
+  BURNDOWN.yaml:
+    artifact_type: execution_control
+    permanence: live
+    purpose: delivery and verification state
+
+artifact_types:
+  canonical_truth:
+    preferred_locations:
+      - kb
+
+  canonical_governance:
+    preferred_locations:
+      - kb/ledgers
+      - kb/contracts
+      - kb
+
+  runtime_input:
+    preferred_locations:
+      - input
+
+  runtime_code_asset:
+    preferred_locations:
+      - parsers
+      - compilers
+      - models
+      - engine
+      - optimizer
+      - scripts
+      - templates
+
+  test_fixture:
+    preferred_locations:
+      - tests
+      - templates
+
+  generated_output:
+    preferred_locations:
+      - out
+
+  execution_control:
+    preferred_locations:
+      - root
+    note: use declared root control files rather than ad-hoc new root artifacts
+
+  temporary_analysis:
+    preferred_locations:
+      - ACTIVE_TRANCHE.md
+    standalone_allowed_by_default: false
+    rule: fold_into_active_tranche_unless_user_explicitly_requires_a_separate_file
+
+placement_defaults:
+  ownership_ledger:
+    artifact_type: temporary_analysis
+    preferred_location: ACTIVE_TRANCHE.md
+
+  dependency_edge_csv:
+    artifact_type: canonical_governance
+    preferred_location: kb/ledgers
+    default_name_pattern: "<domain>_dependency_edges.csv"
+
+  governance_policy_ledger:
+    artifact_type: canonical_governance
+    preferred_location: kb/ledgers
+    default_name_pattern: "<surface>_policy.yaml"
+
+  local_kb_explanatory_note:
+    artifact_type: canonical_governance
+    preferred_location: owning_kb_directory
+    default_name_pattern: "README.md"
+
+naming_v2:
+  required: true
+  rules:
+    - no_phase_or_tranche_prefixes
+    - no_numbered_sequence_prefixes
+    - no_temp_or_migration_history_names
+    - filename_describes_owned_surface_not_implementation_history
+    - prefer_concise_domain_first_names
+    - use_readme_for_local_explanatory_notes
+    - use_ledger_or_policy_names_for_structured_governance_files
+
+new_file_gate:
+  required_fields:
+    - artifact_type
+    - owner_surface
+    - permanence
+    - why_existing_file_is_insufficient
+    - deletion_condition_if_non_permanent
+  fail_closed: true
