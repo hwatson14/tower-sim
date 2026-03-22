@@ -9,17 +9,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from parsers.ids_parser import parse_ids
-from compilers.account_state_compiler import compile_account_state
 from compilers import stat_input_compiler as compiler
 from compilers.stat_input_compiler import compile_stat_inputs
-
-
-def _build_state(perks_filename: str):
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
-    loadout = json.loads((ROOT / "input" / "loadout.json").read_text())
-    perks = json.loads((ROOT / "input" / perks_filename).read_text())
-    return compile_account_state(ids, default_preset="Farming", loadout_config=loadout, perk_config=perks)
+from helpers import build_state, cached_run_stats_output
 
 
 def _perk_rows(inputs, perk_name: str):
@@ -27,7 +19,7 @@ def _perk_rows(inputs, perk_name: str):
 
 
 def test_standard_perk_bonus_scales_max_health_perk_from_lab_level():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     hp_rows = _perk_rows(rows, "x1.20 Max Health")
     assert len(hp_rows) == 1
@@ -36,7 +28,7 @@ def test_standard_perk_bonus_scales_max_health_perk_from_lab_level():
 
 
 def test_standard_perk_bonus_scales_damage_perk_from_lab_level():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     dmg_rows = _perk_rows(rows, "x1.15 Damage")
     assert len(dmg_rows) == 1
@@ -45,7 +37,7 @@ def test_standard_perk_bonus_scales_damage_perk_from_lab_level():
 
 
 def test_tradeoff_improvement_scales_benefit_only_for_damage_tradeoff():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     tradeoff_rows = _perk_rows(rows, "x1.50 Tower Damage, but Bosses Have 8x Health")
     assert len(tradeoff_rows) == 2
@@ -56,14 +48,14 @@ def test_tradeoff_improvement_scales_benefit_only_for_damage_tradeoff():
 
 
 def test_banned_tradeoffs_are_filtered_from_perk_config():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     active_ids = {selection.perk_id for selection in state.perk_presets[state.active_perk_preset]}
     assert "PERK_ENEMIES_HAVE_50_HEALTH_BUT_TOWER_HEALTH_REGEN_AND_LIFESTEAL_90" not in active_ids
     assert "PERK_ENEMIES_SPEED_40_BUT_ENEMIES_DAMAGE_X2_5" not in active_ids
 
 
 def test_active_tradeoffs_materialize_both_positive_and_negative_sides():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     tradeoff_rows = [r for r in rows if r.source_family == "perk" and "but" in r.source_name.lower()]
     by_name = {}
@@ -86,7 +78,7 @@ def test_active_tradeoffs_materialize_both_positive_and_negative_sides():
 
 
 def test_ranged_tradeoff_positive_side_is_preserved_but_not_bound_to_a_calculated_stat():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     tradeoff_rows = _perk_rows(rows, "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3")
     assert len(tradeoff_rows) == 2
@@ -173,13 +165,7 @@ def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty
 @pytest.mark.slow
 def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'regen_compare'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_regen']
     contributors = row['package_contributors']
@@ -196,13 +182,7 @@ def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path)
 @pytest.mark.slow
 def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'regen_semantics'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     report = json.loads((out / 'tower_regen_ep_semantic_gap_report.json').read_text())
     hypotheses = report['ep_formula_hypotheses']
     assert report['compare_state_key'] == 'Farming__perks_on'
@@ -217,10 +197,7 @@ def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses
 @pytest.mark.slow
 def test_tower_defense_absolute_semantic_gap_report_identifies_standard_perk_ep_semantics(tmp_path):
     import json, subprocess, sys
-    from pathlib import Path
-    repo = Path(__file__).resolve().parents[1]
-    out = tmp_path / 'out_test_defabs_semantics'
-    subprocess.run([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], cwd=repo, check=True)
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     report = json.loads((out / 'tower_defense_absolute_semantic_gap_report.json').read_text())
     assert report['current_factors']['standard_perk_factor'] == pytest.approx(2.1875)
     assert report['ep_formula_hypotheses']['ep_standard_perk_factor'] == pytest.approx(2.1875)
@@ -252,13 +229,7 @@ def test_parse_ep_value_q_and_q_suffixes_have_distinct_magnitudes():
 @pytest.mark.slow
 def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_keys(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'compare_policy_milestone'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     policy = diagnostics['compare_situation_policy']
     assert 'milestone_engine' in policy
@@ -269,13 +240,7 @@ def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_
 @pytest.mark.slow
 def test_package_compare_capability_has_single_nested_perk_state_field(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'package_compare_capability_shape'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     cap = diagnostics['ep_compare_stage_rules']['package_compare_capability']
     assert 'perk_state' in cap
@@ -285,13 +250,7 @@ def test_package_compare_capability_has_single_nested_perk_state_field(tmp_path)
 @pytest.mark.slow
 def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
     import json, subprocess, sys
-    out = tmp_path / 'damage_runtime_gap'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     report = json.loads((out / 'tower_damage_runtime_gap_report.json').read_text())
     assert report['current_assumption_parameters']['project_funding_cash_assumption'] == pytest.approx(50_000_000_000.0)
     assert report['ep_evidence']['evidence_strength'] == 'user_provided_for_current_ep_compare_basis'
@@ -306,13 +265,7 @@ def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
 @pytest.mark.slow
 def test_farming_survivability_compare_respects_perk_bans(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'perk_bans'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     audit = diagnostics.get('perk_contributor_audit', {})
     for key in [
@@ -329,13 +282,7 @@ def test_farming_survivability_compare_respects_perk_bans(tmp_path):
 @pytest.mark.slow
 def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'tower_hp_compare'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_hp']
     contributors = row['package_contributors']
@@ -350,13 +297,7 @@ def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
 @pytest.mark.slow
 def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_perk_semantics(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'tower_hp_semantics'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_hp']
     assert float(row['package_value']) == pytest.approx(float(row['ep_value']), rel=6e-4)
@@ -365,13 +306,7 @@ def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_per
 @pytest.mark.slow
 def test_free_upgrades_enhancement_applies_to_all_three_free_upgrade_stats(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'free_upgrades_enh'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     statbook = json.loads((out / 'statbook.json').read_text())['rows']
     attack = statbook['canonical_stat::free_attack_upgrade_chance_pct']['final_value']
     defense = statbook['canonical_stat::free_defense_upgrade_chance_pct']['final_value']
@@ -399,13 +334,7 @@ def test_tradeoff_regen_positive_side_scales_full_multiplier_with_ito():
 @pytest.mark.slow
 def test_tower_regen_compare_closes_after_module_efficiency_fix(tmp_path):
     import subprocess, sys, json, math
-    out = tmp_path / 'regen_fixed'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_regen']
     assert row['compare_preset'] == 'Farming'
@@ -500,13 +429,7 @@ def test_remaining_exception_set_promoted_in_formula_ledger():
 @pytest.mark.slow
 def test_promoted_family_outputs_hold_on_v85_run(tmp_path):
     import subprocess, sys, json
-    out = tmp_path / 'v85_promotions'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     assert compare['canonical_stat::package_chance_pct']['status'] == 'matched_exact'
     assert compare['canonical_stat::tower_damage_per_meter_multiplier']['status'] == 'matched_exact'
@@ -562,7 +485,7 @@ def test_remaining_count_add_perks_keep_spb_but_round_to_integer():
 
 
 def test_free_upgrades_card_is_split_into_canonical_free_upgrade_stats_and_values_match_ep_baseline():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     free_upgrade_card_rows = [r for r in rows if r.source_family == "card" and r.source_name == "Free Upgrades"]
     assert {r.destination_id for r in free_upgrade_card_rows} == {
@@ -600,7 +523,7 @@ def test_max_rend_mult_exact_formula_uses_enhancement_base_cap_lab_and_module_su
 def test_coin_surface_kb_split_and_transition_mirror():
     from engine.stat_engine import resolve_stats
 
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     statbook = resolve_stats(inputs)
 
@@ -643,7 +566,7 @@ def test_coin_surface_kb_split_and_transition_mirror():
 def test_all_coin_bonus_multiplier_uses_farming_tier_and_numeric_pack_multipliers():
     from engine.stat_engine import resolve_stats
 
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     statbook = resolve_stats(inputs)
 
@@ -659,7 +582,7 @@ def test_all_coin_bonus_multiplier_uses_farming_tier_and_numeric_pack_multiplier
 
 
 def test_coin_perks_route_to_coins_per_kill_bonus_not_coin_bonus_multiplier():
-    state = _build_state("perks_projected_max.json")
+    state = build_state(perks_filename="perks_projected_max.json")
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=True)
     all_coin_rows = _perk_rows(rows, "x1.15 All Coin Bonuses")
     tradeoff_rows = _perk_rows(rows, "x1.80 coins, but Tower Max Health -70%")

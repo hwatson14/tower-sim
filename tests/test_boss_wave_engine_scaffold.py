@@ -10,7 +10,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 import engine.boss_wave_engine as boss_wave_engine_module
 from engine.boss_wave_engine import BossWaveEngine, BossWaveEngineConfig
 from engine.perk_timeline_state import PerkTimelineEvent
@@ -19,15 +18,10 @@ from engine.progression_state import build_progression_init_state
 from engine.scenario_engine import ScenarioConfig, compute_scenario_surfaces
 from engine.workshop_progression_policy import WorkshopUpgradeEvent
 from models.statbook import StatBook, StatRow
-from parsers.ids_parser import parse_ids
+from helpers import build_state
 
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.slow
-
-
-def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
 
 
 def test_boss_wave_engine_resolves_progression_bundle_values_from_declared_bounded_bundles(monkeypatch):
@@ -51,7 +45,7 @@ def test_boss_wave_engine_resolves_progression_bundle_values_from_declared_bound
     monkeypatch.setattr(boss_wave_engine_module, 'resolve_progression_consumer_bundle', _fake_bundle)
 
     values = BossWaveEngine._resolve_progression_bundle_values(
-        patched_account_state=_build_state(),
+        patched_account_state=build_state(),
         config=BossWaveEngineConfig(
             preset_name='Farming',
             mode_id='farming',
@@ -97,7 +91,7 @@ def test_boss_wave_engine_resolves_progression_family_values_from_bounded_query_
     monkeypatch.setattr(boss_wave_engine_module, 'resolve_progression_family_query', _fake_family_query)
 
     values = BossWaveEngine._resolve_progression_family_values(
-        patched_account_state=_build_state(),
+        patched_account_state=build_state(),
         config=BossWaveEngineConfig(
             preset_name='Farming',
             mode_id='farming',
@@ -124,7 +118,7 @@ def test_boss_wave_engine_resolves_progression_family_values_from_bounded_query_
 
 
 def test_boss_wave_engine_scaffold_emits_blocked_rows_until_ttk_inputs_closed():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[PerkTimelineEvent(wave=10, perk_id='PERK_ORBS_1', perk_name='Orbs +1')])
     engine = BossWaveEngine()
     result = engine.run(
@@ -148,7 +142,7 @@ def test_boss_wave_engine_scaffold_emits_blocked_rows_until_ttk_inputs_closed():
 
 
 def test_boss_wave_engine_auto_resolves_orb_boss_hit_pct_from_account_lab():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -168,7 +162,7 @@ def test_boss_wave_engine_auto_resolves_orb_boss_hit_pct_from_account_lab():
     assert 'governed_orb_boss_hit_pct_or_override' not in row.block_reason
 
 def test_boss_wave_engine_scaffold_consumes_timeline_counts():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[
         PerkTimelineEvent(wave=10, perk_id='PERK_ORBS_1', perk_name='Orbs +1'),
         PerkTimelineEvent(wave=30, perk_id='PERK_X1_20_MAX_HEALTH', perk_name='x1.20 Max Health'),
@@ -180,7 +174,7 @@ def test_boss_wave_engine_scaffold_consumes_timeline_counts():
 
 
 def test_boss_wave_engine_scaffold_applies_workshop_progression_events():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -202,7 +196,7 @@ def test_boss_wave_engine_scaffold_applies_workshop_progression_events():
 
 
 def test_boss_wave_engine_ttk_slice_runs_when_explicit_overrides_provided():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -230,7 +224,7 @@ def test_boss_wave_engine_ttk_slice_runs_when_explicit_overrides_provided():
 
 
 def test_boss_wave_engine_ttk_uses_thorns_contact_when_available():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     fast_contact = engine.run(
@@ -270,7 +264,7 @@ def test_boss_wave_engine_ttk_uses_thorns_contact_when_available():
 
 
 def test_boss_wave_engine_damage_intake_slice_runs_after_ttk():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -300,7 +294,7 @@ def test_boss_wave_engine_damage_intake_slice_runs_after_ttk():
 
 
 def test_boss_wave_engine_damage_intake_uses_override_when_supplied():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     base = engine.run(
@@ -343,7 +337,7 @@ def test_boss_wave_engine_damage_intake_uses_override_when_supplied():
 
 
 def test_boss_wave_engine_attack_and_health_wave_use_skip_policy():
-    account_state = _build_state()
+    account_state = build_state()
     init_state = build_progression_init_state(account_state, preset_name='Farming', perk_timeline_path=ROOT / 'input' / 'perks_projected_max.timeline.json')
     engine = BossWaveEngine()
     result = engine.run(account_state=account_state, init_state=init_state, config=BossWaveEngineConfig(preset_name='Farming', mode_id='farming', tier_column='Tier 12', start_boss_wave=100, end_boss_wave=100, perks_enabled=True, perk_preset_name='projected_max'))
@@ -354,7 +348,7 @@ def test_boss_wave_engine_attack_and_health_wave_use_skip_policy():
 
 
 def test_boss_wave_engine_generates_free_upgrades_from_chance_surfaces():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -395,7 +389,7 @@ def _inject_runtime_surfaces(engine: BossWaveEngine, surfaces: dict[str, float])
 
 
 def test_boss_wave_engine_consumes_governed_runtime_surfaces_when_present():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     _inject_runtime_surfaces(engine, {
@@ -428,7 +422,7 @@ def test_boss_wave_engine_consumes_governed_runtime_surfaces_when_present():
 
 
 def test_boss_wave_engine_consumes_scenario_runtime_inputs_when_governed_surfaces_absent():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -461,7 +455,7 @@ def test_boss_wave_engine_consumes_scenario_runtime_inputs_when_governed_surface
 
 
 def test_boss_wave_engine_prefers_governed_surfaces_over_scenario_runtime_inputs():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     _inject_runtime_surfaces(engine, {
@@ -498,7 +492,7 @@ def test_boss_wave_engine_prefers_governed_surfaces_over_scenario_runtime_inputs
     assert result.diagnostics['boss_hit_interval_seconds'] == 4.0
 
 def test_boss_wave_engine_prefers_governed_runtime_surfaces_over_overrides():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     _inject_runtime_surfaces(engine, {
@@ -532,7 +526,7 @@ def test_boss_wave_engine_prefers_governed_runtime_surfaces_over_overrides():
 
 
 def test_boss_wave_engine_consumes_scenario_engine_hit_interval_when_runtime_surface_absent():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -557,7 +551,7 @@ def test_boss_wave_engine_consumes_scenario_engine_hit_interval_when_runtime_sur
 
 
 def test_boss_wave_engine_uses_timing_engine_for_encounter_damage_reduction_when_no_explicit_surface():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     _inject_runtime_surfaces(engine, {

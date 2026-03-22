@@ -18,7 +18,7 @@ from engine.timing_engine import (
     resolve_timing_consumer_bundle,
     resolve_timing_family_query,
 )
-from tests.helpers import build_state
+from helpers import build_family_baseline, build_state
 
 
 def _tourney_query_state():
@@ -193,6 +193,7 @@ def test_timing_query_replaces_base_uw_duration_rows_with_scenario_effective_val
     assert all(row.source_class == 'scenario_rules' for row in response.contributor_rows)
 
 
+@pytest.mark.expensive
 def test_timing_query_helper_matches_direct_kernel_resolution():
     state = build_state()
     config = ScenarioConfig(mode_id='farming', tier=14)
@@ -210,13 +211,7 @@ def test_timing_query_helper_matches_direct_kernel_resolution():
         requested_surface_ids=requested_surface_ids,
         trace_mode='full_trace',
     )
-    baseline = materialize_timing_family_baseline(
-        account_state=state,
-        family_id='timing_farm_with_perks',
-        preset_name='Farming',
-        scenario_config=config,
-        perks_enabled=True,
-    )
+    baseline = build_family_baseline('timing_farm_with_perks')
     direct_response = StatQueryKernel().resolve_surfaces(
         baseline,
         requested_surface_ids=requested_surface_ids,
@@ -229,6 +224,7 @@ def test_timing_query_helper_matches_direct_kernel_resolution():
     assert helper_response.dependency_trace == direct_response.dependency_trace
 
 
+@pytest.mark.expensive
 def test_timing_consumer_bundle_helper_matches_family_query_for_declared_bundle():
     state = build_state()
     config = ScenarioConfig(mode_id='farming', tier=14)

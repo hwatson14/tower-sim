@@ -16,6 +16,7 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
+  "pytest-xdist>=3.6",
 ]
 
 [tool.setuptools]
@@ -26,7 +27,8 @@ include = ["engine*", "compilers*", "models*", "parsers*", "optimizer*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-m 'not slow'"
+addopts = "-m 'not slow and not expensive'"
 markers = [
   "slow: subprocess-heavy integration/regression coverage excluded from the default test run",
+  "expensive: query-stack parity and completion coverage excluded from the default fast test run",
 ]

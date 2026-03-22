@@ -7,19 +7,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine.incremental_cache_fingerprint import IncrementalCacheFingerprintBuilder
-from parsers.ids_parser import parse_ids
-
-
-def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
-
+from helpers import build_state
 
 def test_cache_fingerprint_ignores_workshop_only_mutation():
-    state = _build_state()
+    state = build_state()
     base_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run')
     base_fp = IncrementalCacheFingerprintBuilder().build(
         stat_inputs=base_inputs,
@@ -47,7 +40,7 @@ def test_cache_fingerprint_ignores_workshop_only_mutation():
 
 
 def test_cache_fingerprint_changes_when_non_workshop_inputs_change():
-    state = _build_state()
+    state = build_state()
     base_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run')
     base_fp = IncrementalCacheFingerprintBuilder().build(
         stat_inputs=base_inputs,
