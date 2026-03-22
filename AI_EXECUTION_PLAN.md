@@ -81,6 +81,46 @@ This is the core execution rule.
 - Progression Optimiser
 - Build Transition Advisor
 
+### Product operating principle
+TowerSim should feel like one coherent planner, not a bag of isolated calculators or isolated recommendation tools. Internally it may contain many calculators, simulators, optimisers, and advisor flows, but the user-facing experience should stay unified around answering concrete planning questions.
+
+### Core product principles
+- one optimiser, many queries
+- keep repeated user questions central when choosing surfaces
+- explanation is part of the product, not optional packaging
+- time-to-earn matters for progression advice
+- reversibility matters for spend and allocation advice
+- not every resource deserves equal modelling depth in v1
+- module shards and rerolls are separate planning problems and should not be collapsed into one model prematurely
+- advisors must not become a garbage layer that hides mechanics or bypasses lower owners
+- trust labels matter and must remain explicit
+
+### Progression-planning distinctions
+- **Resource** = a scarce thing earned, spent, saved, or allocated.
+- **Domain** = the sink or system where one or more resources are invested.
+- Progression planning must preserve this distinction so “what resource is constrained?” does not get blurred with “which domain should receive it?”.
+
+### Optimiser family distinctions
+- **Standard ROI/path optimisers** rank deterministic or simulated action paths against a chosen objective.
+- **Breakpoint/allocation optimisers** search for threshold hits, split points, and allocation mixes.
+- **Probabilistic target optimisers** handle target-reaching questions where cost-to-target is stochastic rather than deterministic.
+
+### Recommendation trust labels
+- **Canonical** — directly KB-backed and query/simulator governed with strong evidence.
+- **Strong model** — model-driven and trusted for use, but still dependent on bounded assumptions.
+- **Accepted model** — explicitly accepted approximation with known limitations.
+- **Policy heuristic** — advice rule or policy shortcut, not a claim of canonical mechanic truth.
+
+### Product-scope policy
+- **Earlier scope / true v1** prioritises coins, lab time, and stones plus the minimum simulator/loadout/progression/advisor outputs needed to answer repeated user questions well.
+- **Later scope** may expand into medals, module shards, rerolls, and deeper build-transition planning once lower-layer owners and trust labels are stable.
+
+### Representative user questions by surface
+- **Estimator / Simulator:** “What happens if I run this setup?”, “How far will it go?”, “What is limiting the run?”
+- **Loadout Optimiser:** “What is my best setup for max waves/econ/tournament?”, “What if I refuse to change modules?”
+- **Progression Optimiser:** “What should I spend coins or stones on next?”, “Should I spend now or save?”, “What is the best 1-week or 1-month plan?”
+- **Build Transition Advisor:** “Is GC realistic yet?”, “How far away is a viable switch?”, “What upgrades make the transition correct fastest?”
+
 ### Immediate architectural rule
 Do not expand product surfaces on top of unstable ownership boundaries.
 
@@ -111,7 +151,7 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 - root R86 docs are retained as historical handoff inputs with Phase 1 obligation mapping now absorbed into this plan
 - naming patch/zip artifacts are design inputs only, not direct implementation truth
 - root archive artifacts are classified in the Phase 1 archive disposition ledger below
-- the standalone roadmap is historical only and no longer execution truth
+- the standalone roadmap has been absorbed into this plan and is no longer needed as an active planning source
 
 ---
 
@@ -283,7 +323,7 @@ Tranches in this phase may run in parallel, but all must be complete before Phas
 
 | artifact | disposition | why | absorbed_into | still_open_items | retirement_condition | merge_as_is_allowed |
 |---|---|---|---|---|---|---|
-| `towersim_canonical_product_roadmap_v6.md` | historical_noncanonical_reference | Product-thinking context remains useful, but execution truth now lives in the control stack. | `AI_EXECUTION_PLAN.md` for canonical plan/control truth. | None for Phase 1. | May retire in Phase 10 once no active docs need a historical pointer. | no |
+| `towersim_canonical_product_roadmap_v6.md` | absorbed_then_deleted | Remaining useful product-planning truth was compressed into this plan during Phase 1B so the roadmap no longer needs to persist as a parallel historical authority. | `AI_EXECUTION_PLAN.md` for product principles, trust taxonomy, optimiser family distinctions, scope policy, and representative questions. | None. | Retire immediately once docs and control files stop pointing to it as an active reference. | no |
 | `R86_CODEX_HANDOFF_GUARDRAILS.md` | historical_handoff_reference | Preserves bounded-scope implementation constraints that informed Query Engine work. | Phase 1C ledger in this plan and future Phase 2 execution. | Query Engine ownership completion remains open in Phase 2. | May retire after Phase 2 once all surviving guardrails are either landed or rejected explicitly. | no |
 | `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | historical_handoff_reference | Preserves acceptance framing and tracked status context for the R86 workstream. | Phase 1C ledger in this plan and future Phase 2 tranche outputs. | Phase 2A-2E remain open. | May retire after Phase 2 once every mapped obligation has concrete landed evidence or explicit rejection. | no |
 | `R86_WORKED_EXAMPLES.md` | retained_reference_fixture | Still useful as compact human-readable examples for contributor maps, overlays, and query responses. | Future Query Engine tests/docs; referenced by the Phase 1C ledger. | Preserve examples until equivalent or better governed test fixtures exist. | May retire after equivalent governed fixtures are established and referenced from tests/docs. | no |
@@ -294,7 +334,7 @@ Tranches in this phase may run in parallel, but all must be complete before Phas
 
 ### Phase 1 completion note
 
-Phase 1 is complete when the control stack records: one canonical plan, one active tranche, mapped R86 obligations, documented root-archive dispositions, and no major doc claiming a competing roadmap or layer vocabulary. The current repo state now meets that bar and promotes execution to Phase 2.
+Phase 1 is complete when the control stack records: one canonical plan, one active tranche, mapped R86 obligations, documented root-archive dispositions, and no major doc claiming a competing roadmap or layer vocabulary. Phase 1B specifically closes when the old roadmap is either fully absorbed and deleted or explicitly retained with a written reason. Later phase promotion must still wait for the remaining Phase 1 tranches to be the active completed truth.
 
 ---
 

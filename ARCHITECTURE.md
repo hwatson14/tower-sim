@@ -4,7 +4,7 @@ This document defines the architectural intent for the TowerSim repo. It describ
 
 Every architectural choice must respect the KB-alignment rule: if the Knowledge Base defines a mechanic, the code must implement that mechanic or explicitly declare a temporary accepted model. Code is never self-justifying proof of mechanic truth.
 
-This document follows the canonical planning vocabulary from `AI_EXECUTION_PLAN.md`. The standalone roadmap file `towersim_canonical_product_roadmap_v6.md` is historical only and must not be treated as competing execution truth.
+This document follows the canonical planning vocabulary from `AI_EXECUTION_PLAN.md`. No separate roadmap file should be treated as competing execution truth or as required planning authority.
 
 ---
 

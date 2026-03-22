@@ -84,7 +84,7 @@ This pipeline is the current implementation path, not a contradictory architectu
 
 ## Planning note
 
-The old standalone roadmap now survives only as a historical input document. `towersim_canonical_product_roadmap_v6.md` is superseded by `AI_EXECUTION_PLAN.md` and must not be treated as execution truth.
+The old standalone roadmap has been absorbed into `AI_EXECUTION_PLAN.md`. No separate roadmap file should be treated as canonical or required for current planning truth.
 
 ## Current handover goal
 

@@ -1,9 +1,9 @@
 version: 2
 program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
-active_phase_id: PH2
-active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+active_phase_id: PH1
+active_phase_name: Canonical planning truth and archive closure
+active_tranche_id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
 
 status_dimensions:
   delivery:
@@ -109,14 +109,14 @@ tranches:
     scope_in:
       - canonical plan finalization
       - terminology alignment across major docs
-      - roadmap retirement note
+      - roadmap deletion_or_retention_decision
     scope_out:
       - runtime mechanic changes
       - product feature implementation
     required_outputs:
       - canonical_execution_plan
       - aligned_major_doc_language
-      - roadmap_retirement_note
+      - roadmap_deletion_or_retention_decision
     acceptance_criteria:
       - one_canonical_execution_plan_exists
       - no_major_doc_contradicts_layer_or_phase_language
@@ -128,18 +128,17 @@ tranches:
       - AI_EXECUTION_PLAN.md
       - README.md
       - ARCHITECTURE.md
-      - towersim_canonical_product_roadmap_v6.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Completed; canonical naming is aligned and the standalone roadmap is explicitly superseded.
+    next_action: Completed; AI_EXECUTION_PLAN.md now absorbs the remaining roadmap-only planning truth and the roadmap artifact can be deleted safely.
 
   - id: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     title: R86 obligation closure ledger
     phase_id: PH1
-    delivery_status: done
-    verification_status: verified
-    review_status: ready_for_review
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
     depends_on:
       - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
@@ -179,14 +178,14 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Completed; R86 obligations are mapped to current phase/tranche work and no longer float as vague status notes.
+    next_action: Wait for Phase 1B completion, then execute the R86 obligation closure ledger without beginning Phase 1D or later work early.
 
   - id: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
     title: Archive disposition ledger
     phase_id: PH1
-    delivery_status: done
-    verification_status: verified
-    review_status: ready_for_review
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
     depends_on:
       - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
@@ -216,7 +215,6 @@ tranches:
       - retirement_condition_review
     evidence_paths:
       - AI_EXECUTION_PLAN.md
-      - towersim_canonical_product_roadmap_v6.md
       - R86_CODEX_HANDOFF_GUARDRAILS.md
       - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
       - R86_WORKED_EXAMPLES.md
@@ -226,14 +224,14 @@ tranches:
       - els_coin_calc_final_merge_candidate_r94.zip
       - BURNDOWN.yaml
     blockers: []
-    next_action: Completed; every root archive artifact now has an explicit disposition and retirement condition.
+    next_action: Wait for Phase 1C completion, then execute archive disposition tracking for the remaining root artifacts.
 
   - id: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
     title: Control-stack alignment
     phase_id: PH1
-    delivery_status: done
-    verification_status: verified
-    review_status: ready_for_review
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
     depends_on:
       - PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
       - PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
@@ -264,14 +262,13 @@ tranches:
       - AI_EXECUTION_PLAN.md
       - README.md
       - ARCHITECTURE.md
-      - towersim_canonical_product_roadmap_v6.md
     blockers: []
-    next_action: Completed; the control stack now points cleanly at Phase 2 work with Phase 1 closed.
+    next_action: Wait until Phase 1B, 1C, and 1D are completed; only then align the control stack and promote Phase 2.
 
   - id: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     title: stat_input_compiler.py function-level ownership ledger
     phase_id: PH2
-    delivery_status: in_progress
+    delivery_status: not_started
     verification_status: not_verified
     review_status: draft
     depends_on:
@@ -311,7 +308,7 @@ tranches:
       - regression_anchor_review
     evidence_paths: []
     blockers: []
-    next_action: Execute now that Phase 1 is complete and the control stack points to Query Engine ownership work.
+    next_action: Wait until all Phase 1 tranches are completed and the control stack is explicitly promoted to Phase 2.
 
 notes:
   bootstrap_history:
@@ -330,36 +327,32 @@ notes:
       outcome: completed
       summary:
         - AI_EXECUTION_PLAN.md remains the single canonical execution plan.
-        - README.md and ARCHITECTURE.md now use the same canonical layer and control-file vocabulary.
-        - towersim_canonical_product_roadmap_v6.md is explicitly marked historical and non-canonical.
+        - Remaining roadmap-only product planning truth is now compressed into AI_EXECUTION_PLAN.md.
+        - README.md and ARCHITECTURE.md now avoid treating any separate roadmap file as required planning authority.
+        - towersim_canonical_product_roadmap_v6.md can be deleted safely because no still-useful unique planning truth remains outside the canonical plan.
       promoted_next_tranche: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER:
-      outcome: completed
+      outcome: not_started
       summary:
-        - R86 obligations are mapped to concrete current phase/tranche work in the canonical plan.
-        - R86 handoff docs are preserved as historical references rather than active status truth.
-        - Vague open/partial wording is replaced by explicit mapped status language.
+        - Pending after Phase 1B.
       promoted_next_tranche: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
     PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER:
-      outcome: completed
+      outcome: not_started
       summary:
-        - Every root archive artifact now has a single documented disposition.
-        - Direct-merge-forbidden bundles are named explicitly.
-        - Retirement conditions are recorded for later cleanup phases.
+        - Pending after Phase 1C.
       promoted_next_tranche: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
     PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT:
-      outcome: completed
+      outcome: not_started
       summary:
-        - Active tranche, burndown state, and major doc pointers now agree on post-Phase-1 truth.
-        - Phase 1 exits with one canonical plan, mapped obligations, and classified archive artifacts.
-        - The control stack now points at Phase 2A.
+        - Pending after Phase 1B, 1C, and 1D complete.
       promoted_next_tranche: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+
 
   phase_closeout:
     PH1:
-      outcome: completed
+      outcome: in_progress
       summary:
-        - Canonical planning terminology now uses Simulator as the fourth layer name across the repo.
-        - R86 obligations are mapped to concrete current work and root archive artifacts have explicit dispositions.
-        - The control stack promotes directly into Phase 2 Query Engine ownership work without Phase 1 ambiguity.
+        - Phase 1A is closed and Phase 1B is now completed with roadmap absorption into the canonical plan.
+        - Phase 1C, 1D, and 1E remain pending before any promotion to Phase 2 is allowed.
+        - The control stack must not point to Phase 2 work until those Phase 1 tranches are complete.
       promoted_next_phase: PH2
