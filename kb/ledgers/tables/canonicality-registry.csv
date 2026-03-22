@@ -142,7 +142,7 @@ kb/guardians/tables/wiki-guardian-ally-levels-1-31-slice.csv,guardians,table,can
 kb/guardians/tables/wiki-guardian-attack-levels-full.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/guardians/tables/wiki-guardian-bonus-scaling.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/guardians/tables/wiki-guardian-types.csv,guardians,table,canonical_table,wiki,external_source_closed,Externally source-closed from uploaded primary evidence and/or wiki.
-kb/labs/advisory/notes/lab-tier-list.md,labs,note,advisory_noncanonical,mixed,noncanonical,Archived lab tier-list guidance note
+kb/labs/advisory/README.md,labs,note,advisory_noncanonical,mixed,noncanonical,Lab advisory consumer guidance
 kb/labs/advisory/registry/lab-advisory-source-registry.csv,labs,registry,advisory_noncanonical,mixed,noncanonical,Archived lab tier-list provenance registry
 kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv,labs,table,advisory_noncanonical,mixed,noncanonical,Archived workbook tier-list mapped to canonical lab ids
 kb/labs/contracts/lab-domain-contract.md,labs,contract,canonical,derived-and-reproducible,uploaded_corpus_closed,Labs domain contract
