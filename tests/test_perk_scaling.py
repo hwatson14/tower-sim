@@ -12,6 +12,8 @@ from compilers import stat_input_compiler as compiler
 from compilers.stat_input_compiler import compile_stat_inputs
 from tests.helpers import build_state, run_stats_subprocess
 
+# Fast-path baseline assertions read the committed max-progression artifacts.
+# Tests that need custom inputs still rerun `run_stats.py` and are marked slow.
 OUT = ROOT / 'out'
 
 

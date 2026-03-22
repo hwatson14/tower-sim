@@ -8,6 +8,8 @@ import pytest
 from tests.helpers import run_stats_subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+# Fast-path smoke assertions read the committed baseline artifacts from `out/`.
+# Tests that mutate inputs or require a fresh runtime execution are marked slow.
 OUT = ROOT / 'out'
 
 
