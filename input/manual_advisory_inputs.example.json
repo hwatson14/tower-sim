@@ -1,18 +1,18 @@
 {
   "inputs": [
     {
-      "input_id": "estimator.boss_orb_damage_pct",
+      "input_id": "simulator.boss_orb_damage_pct",
       "input_kind": "simplification_assumption",
       "value_type": "pct",
       "value": 2.0,
       "unit": "pct",
       "consumer_scope": [
-        "estimator",
+        "simulator",
         "survivability"
       ],
       "trust_label": "accepted_model",
       "rationale": "Temporary boss-damage-from-orbs simplification until a richer boss-contact / orb-hit evaluator exists.",
-      "replacement_target": "future_estimator::boss_orb_damage_model_v1",
+      "replacement_target": "future_simulator::boss_orb_damage_model_v1",
       "notes": "Example placeholder supplied manually by the user."
     },
     {

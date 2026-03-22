@@ -1,5 +1,7 @@
 # TowerSim Canonical Product Roadmap v6
 
+> Historical note: this file is superseded by `AI_EXECUTION_PLAN.md` as of Phase 1B. It remains design input only and is not canonical execution truth.
+
 ## Purpose
 
 TowerSim should become a practical decision tool for The Tower.
@@ -12,7 +14,7 @@ It should not feel like a bag of isolated calculators. It should feel like one c
 4. advise what I should do next
 5. explain why
 
-This document is the canonical product roadmap and layer model for TowerSim. It preserves the agreed six-layer stack while explicitly merging back in the sharper progression-planning detail from the progression advisor plan.
+This document is preserved as historical product-planning context. The canonical whole-program plan, tranche scope, and verification truth now live in `AI_EXECUTION_PLAN.md`, `ACTIVE_TRANCHE.md`, and `BURNDOWN.yaml`.
 
 ---
 
@@ -26,7 +28,7 @@ At the highest level, TowerSim should answer four recurring user questions:
 4. **When is it realistic to change build archetype, such as switching to glass cannon?**
 
 These define the main product surfaces:
-- Estimator
+- Simulator
 - Loadout Optimiser
 - Progression Optimiser
 - Build Transition Advisor
@@ -40,7 +42,7 @@ The clean layer stack for TowerSim is:
 1. **Knowledge Base**
 2. **Inputs**
 3. **Query Engine**
-4. **Estimators**
+4. **Simulators**
 5. **Optimisers**
 6. **Advisors**
 
@@ -51,7 +53,7 @@ This is the canonical framing going forward.
 - **Knowledge Base** owns game truth
 - **Inputs** define the current problem state
 - **Query Engine** resolves canonical truth for that state on demand
-- **Estimators** forecast likely outcomes
+- **Simulators** forecast likely outcomes
 - **Optimisers** search for the best choice under a goal and constraints
 - **Advisors** turn all of that into practical guidance
 
@@ -59,7 +61,7 @@ This is the canonical framing going forward.
 
 The dependency direction should remain:
 
-**Knowledge Base -> Query Engine -> Estimators -> Optimisers -> Advisors**
+**Knowledge Base -> Query Engine -> Simulators -> Optimisers -> Advisors**
 
 Inputs feed into the relevant downstream layers as needed.
 
@@ -73,7 +75,7 @@ TowerSim should feel like **one coherent account planner**, not a bag of separat
 
 Internally it may contain:
 - many calculators
-- many estimators
+- many simulators
 - several optimisers
 - different recommendation surfaces
 
@@ -127,7 +129,7 @@ They are related, but they are not the same planning problem.
 - rerolls = probabilistic target-planning problem
 
 ### 8. Query Engine must become the real truth source
-Higher layers should consume query surfaces, not invent their own local truth models unless explicitly estimator logic.
+Higher layers should consume query surfaces, not invent their own local truth models unless explicitly simulator logic.
 
 ### 9. Advisors must not become a garbage layer
 Advisors should summarise, sequence, compare, and explain.
@@ -359,22 +361,22 @@ Likely major component families inside the query engine:
 
 ---
 
-# Layer 4: Estimators
+# Layer 4: Simulators
 
 ## Role
 
-Estimators forecast what is likely to happen.
+Simulators forecast what is likely to happen.
 
 They answer:
 - what is likely to happen if I run this setup?
 - what is likely to happen if I follow this path?
 - what is the expected cost or gain of this action?
 
-Estimators should make assumptions explicit. They should not silently pose as query-engine truth.
+Simulators should make assumptions explicit. They should not silently pose as query-engine truth.
 
 ## Major elements
 
-### A. Outcome estimators
+### A. Outcome simulators
 - max-wave estimate
 - run outcome estimate
 - survivability-limited estimate
@@ -382,7 +384,7 @@ Estimators should make assumptions explicit. They should not silently pose as qu
 - boss-limited estimate
 - mixed-limit estimate
 
-### B. Income estimators
+### B. Income simulators
 - expected coin income
 - expected medal income
 - expected shard income
@@ -390,20 +392,20 @@ Estimators should make assumptions explicit. They should not silently pose as qu
 - expected horizon-based gains
 - other meaningful resource incomes later
 
-### C. Expected-value estimators
+### C. Expected-value simulators
 - expected reroll cost to target
 - expected reroll cost to partial improvement
 - expected value of breakpoint push
 - expected value of waiting
 - expected value of a candidate path
 
-### D. Time-horizon estimators
+### D. Time-horizon simulators
 - expected 7-day income
 - expected 30-day income
 - expected state after a candidate plan
 - expected compounding return over time
 
-### E. Comparison estimators
+### E. Comparison simulators
 - current vs projected setup outcome
 - current vs optimised setup outcome
 - current path vs alternate path
@@ -657,7 +659,7 @@ A particularly useful advisor behaviour is:
 
 Using the six-layer stack above, the main product surfaces remain:
 
-1. **Estimator**
+1. **Simulator**
 2. **Loadout Optimiser**
 3. **Progression Optimiser**
 4. **Build Transition Advisor**
@@ -666,10 +668,10 @@ These are product surfaces built on top of the canonical layer model.
 
 ---
 
-# Product Surface 1: Estimator
+# Product Surface 1: Simulator
 
 ## Purpose
-The estimator answers:
+The simulator answers:
 - what happens if I run this setup?
 - how far will it get?
 - how much econ will it produce?
@@ -684,10 +686,10 @@ The estimator answers:
 
 ## Major future expansions
 - better damage-aware max-wave estimates
-- richer income estimators
-- stronger comparison estimators
-- compound-return estimators
-- expected-cost estimators
+- richer income simulators
+- stronger comparison simulators
+- compound-return simulators
+- expected-cost simulators
 
 ## Why it matters
 This is the foundation for everything else.
@@ -915,7 +917,7 @@ This is especially important for:
 
 ## Recommended roadmap order
 
-### Phase 1: Strengthen the Estimator
+### Phase 1: Strengthen the Simulator
 Focus:
 - make max-wave estimation more comprehensive
 - include damage as well as survivability
@@ -957,7 +959,7 @@ Focus:
 If scope needs to stay tight, true v1 should be:
 
 ### Product surfaces
-- stronger estimator
+- stronger simulator
 - loadout optimiser
 - progression optimiser
 - advisor outputs with trust labels
@@ -1024,7 +1026,7 @@ If the canonical doc becomes too broad, the sharper resource/domain/planning dis
 
 ## Example user questions TowerSim should answer
 
-### Estimator
+### Simulator
 - how far will this setup go?
 - is this run damage-limited or survivability-limited?
 - how much better is this setup than my current one?
@@ -1060,12 +1062,12 @@ The clean final model is:
 1. Knowledge Base
 2. Inputs
 3. Query Engine
-4. Estimators
+4. Simulators
 5. Optimisers
 6. Advisors
 
 ### Main product surfaces
-1. Estimator
+1. Simulator
 2. Loadout Optimiser
 3. Progression Optimiser
 4. Build Transition Advisor

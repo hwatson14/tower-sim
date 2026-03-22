@@ -1,6 +1,6 @@
 contract_id: manual_advisory_inputs_v1
 purpose: >-
-  User-supplied manual inputs required by current calculators, estimators, optimisers,
+  User-supplied manual inputs required by current calculators, simulators, optimisers,
   or advisors when the value is either not yet query-resolvable or is intentionally
   sourced from an external observation/personal estimate.
 required_top_level_fields:

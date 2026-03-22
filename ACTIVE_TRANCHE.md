@@ -1,55 +1,53 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION`
+`PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER`
 
 ## Phase
-`Phase 1 — Canonical planning truth and archive closure`
+`Phase 2 — Query Engine ownership completion`
 
 ## Objective
-Finalize the canonical planning vocabulary across the major repo documents now that the bootstrap control tranche is closed and the phase-gated execution system is live.
+Classify every meaningful unit in `compilers/stat_input_compiler.py` by owner and action so the approved Query Engine seam can move without guessing or broad rewrite.
 
 ## Scope in
-- `AI_EXECUTION_PLAN.md`
-- `README.md`
-- `ARCHITECTURE.md`
-- `AGENTS.md`
-- explicit retirement or supersession note for parallel planning language
-- terminology alignment needed so major docs describe the same canonical layers, phases, and control files
+- `compilers/stat_input_compiler.py`
+- function-level ownership mapping needed to separate Inputs-owned compilation from Query Engine-owned routing/query preparation
+- destination mapping for every candidate move, split, or temporary stay
+- regression anchors and test hooks needed before seam extraction
 
 ## Scope out
-- runtime mechanic changes
-- Query Engine code changes
-- archive ledger implementation beyond naming and terminology alignment
-- objective-state promotion work
-- evaluator, optimiser, or advisor implementation
+- direct code edits beyond minimal ledger-hosting scaffolding if needed
+- formula rewrites
+- opportunistic cleanup
+- unrelated engine refactors
+- Phase 2B seam extraction work
 
 ## Required outputs
-- one canonical execution-plan file
-- aligned terminology in major docs
-- explicit roadmap retirement or supersession note
-- tranche closeout note if any major document still carries stale planning terminology
+- one function-level ownership ledger for `stat_input_compiler.py`
+- explicit owner/action classification for every meaningful unit
+- destination module mapping for every move or split
+- regression/test anchors for risky ownership changes
 
 ## Required verification
-- major docs reviewed for canonical layer and phase wording
-- no major doc contradicts the canonical execution plan
-- roadmap content is either absorbed into `AI_EXECUTION_PLAN.md` or explicitly marked non-canonical
-- control files and major docs use the same plan filename and tranche vocabulary where referenced
+- no major unit remains unclassified
+- every move or split has a destination
+- risky moves identify regression anchors
+- the tranche does not imply seam extraction happened early
 
 ## Acceptance criteria
-- one canonical execution-plan file exists and is current
-- no major doc contradicts layer or phase language from `AI_EXECUTION_PLAN.md`
-- any surviving roadmap language is explicitly retired, superseded, or scoped as historical only
-- the tranche leaves Phase 1 terminology more uniform than it found it
+- every meaningful unit in `stat_input_compiler.py` is classified by owner and action
+- every move/split row names a target module
+- no code-first seam extraction happens before the ledger exists
+- the tranche leaves the compiler/query boundary less ambiguous than it found it
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once the canonical terminology is aligned across the major docs in scope and any residual parallel-planning language is explicitly retired or superseded.
+Stop once the ownership ledger is complete enough to govern Phase 2B extraction without guessing about unit ownership or destination surfaces.
 
 ## Non-goals
-- do not start Phase 1C or later implementation work here
-- do not change runtime code
-- do not rewrite archive content beyond necessary terminology/pointer updates
-- do not add new architecture layers
+- do not rewrite formulas
+- do not move code in this tranche
+- do not redesign the `StatInput` schema
+- do not begin undeclared family expansion
