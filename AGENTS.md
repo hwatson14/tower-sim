@@ -61,6 +61,59 @@ pytest
 - `tests/`: regression and contract coverage
 - `out/`: committed generated outputs used by current tests and workflows
 
+## Artifact placement and file-creation rules
+
+Top-level `docs/` and `config/` are retired generic buckets and are banned destinations for new files unless the user explicitly approves a specific exception.
+
+Do not place any of the following in `docs/` or `config/`:
+- tranche notes
+- ownership ledgers
+- dependency CSVs
+- temporary analysis artifacts
+- governance ledgers
+- local KB explanatory notes
+
+Place artifacts in the owning surface:
+- canonical mechanic truth -> `kb/`
+- canonical governance, ledgers, and contracts -> `kb/ledgers/` or `kb/contracts/` or the owning KB directory
+- runtime inputs and manual assumptions -> `input/`
+- code-owned runtime assets -> owning code directory
+- test fixtures and verification assets -> `tests/`
+- generated outputs -> `out/`
+- tranche-scoped execution analysis -> `ACTIVE_TRANCHE.md` unless a separate canonical owner clearly exists
+
+Before creating a new file, determine all of the following:
+1. artifact type
+2. owner surface
+3. permanence (`permanent`, `tranche_scoped`, `generated`, or `disposable`)
+4. why an existing file is insufficient
+5. deletion condition for any non-permanent artifact
+
+Prefer editing an existing owner file over creating a new one.
+
+Do not create standalone tranche-analysis files by default.
+
+If tranche analysis is needed, prefer:
+1. folding durable conclusions into `ACTIVE_TRANCHE.md`
+2. folding canonical conclusions into an existing KB-owned file
+3. deleting the analysis artifact once the implementation decision is captured
+
+All new filenames must follow naming v2:
+- no tranche/history prefixes such as `phase2`, `phase2a`, `tranche3`, `migration`, `temp`, or `new`
+- no numbered sequencing prefixes such as `01_` or `42_`
+- filename describes owned surface or purpose, not implementation history
+- prefer concise domain-first names
+- use `README.md` for local explanatory notes in an owning directory
+- use ledger/policy names for structured governance files under `kb/ledgers/`
+- do not use `contract` in a filename unless the file is a true canonical contract surface
+
+Before calling work complete, verify all of the following:
+- no new files were created under retired `docs/` or `config/`
+- any tranche-scoped conclusions were folded into the correct control file or deleted
+- any new file has a clear owner and lifetime
+- no stale references remain to retired paths
+- the repo still reads like a coherent operating core
+
 ## Hard rules
 
 ### 1. KB alignment is mandatory

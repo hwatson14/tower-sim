@@ -410,7 +410,7 @@ No later work should build on an unstable core stat-resolution boundary.
 **Goal**
 - Make delegation scope explicit before broader routing changes continue.
 
-Implementation evidence now lives in `docs/phase2c_covered_family_delegation_manifest.md`. The design-only prep ledger below remains as planning history, but the governed Phase 2C target surface is the manifest document.
+Implementation evidence now lives in `ACTIVE_TRANCHE.md`. The design-only prep ledger below remains as planning history, but the governed Phase 2C target surface is the folded active-tranche record.
 
 **Required output schema**
 - `family_id`
