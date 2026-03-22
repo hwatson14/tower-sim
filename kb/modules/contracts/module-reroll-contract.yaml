@@ -14,6 +14,7 @@ numeric_cost_ladder:
   fail_closed: true
   accepted_model_helper_allowed: false
   rationale: Do not invent reroll shard ladders until a row-closed source is captured under kb/modules.
+assumption_registry_ref: kb/modules/tables/module-workbook-assumption-registry.csv
 accepted_model_helpers:
   - helper_id: module.assist.unique_rarity_upgrade_costs
     closure_class: accepted_model_helper

@@ -49,11 +49,11 @@ kb/cards/sources/raw/repo-cache/wiki/cards-epic.csv,cards,source,raw_source_arti
 kb/cards/sources/raw/repo-cache/wiki/cards-rare.csv,cards,source,raw_source_artifact,supporting_reference,wiki_raw,preserve source-faithful naming
 kb/cards/sources/raw/repo-inputs/cards/card-masteries.csv,cards,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/cards/sources/wiki-cards-and-card-masteries.md,cards,source,supporting_reference,supporting_reference,wiki,
+kb/cards/tables/card-base-ladders.csv,cards,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/cards/tables/card-masteries.csv,cards,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/cards/tables/index.md,cards,tables,supporting_note,current,mixed,added_in_v15_rationalization
 kb/cards/tables/wiki-card-mastery-lab-costs.csv,cards,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/cards/tables/wiki-card-slots-and-costs.csv,cards,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
-kb/cards/tables/card-base-ladders.csv,cards,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/combat/contracts/enemy-class-interaction-matrix.csv,combat,contract,canonical_runtime_doc,supporting_reference,derived,
 kb/combat/contracts/runtime-damage-pipeline.csv,combat,contract,canonical_runtime_doc,supporting_reference,derived,
 kb/combat/contracts/runtime-effect-catalog.csv,combat,contract,canonical_runtime_doc,supporting_reference,derived,
@@ -135,12 +135,12 @@ kb/global-rules/sources/wiki-source-index.md,global-rules,source,supporting_refe
 kb/global-rules/sources/wiki-verified-baselines.md,global-rules,source,supporting_reference,supporting_reference,wiki,
 kb/global-rules/sources/workbook-and-repo-evidence-summary.md,global-rules,source,supporting_reference,supporting_reference,repo,
 kb/global-rules/tables/index.md,global-rules,tables,supporting_note,current,mixed,added_in_v15_rationalization
-kb/global-rules/tables/sub-module-effects-core-and-utility.csv,global-rules,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/global-rules/tables/wiki-module-pull-rates-and-levels.csv,global-rules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/global-rules/tables/module-unique-effects-reference.csv,global-rules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/global-rules/tables/note-derived-orb-boss-hit-levels-1-10.csv,global-rules,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
-kb/global-rules/tables/wiki-tier-scaling-multipliers.csv,global-rules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/global-rules/tables/note-derived-wave-boss-intervals.csv,global-rules,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/global-rules/tables/sub-module-effects-core-and-utility.csv,global-rules,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
+kb/global-rules/tables/wiki-module-pull-rates-and-levels.csv,global-rules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/global-rules/tables/wiki-tier-scaling-multipliers.csv,global-rules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/guardians/contracts/guardian-runtime-contract.md,guardians,contract,canonical,external_source_closed,wiki-verified,Guardian semantics
 kb/guardians/notes/guardian-effects.md,guardians,note,canonical_note,supporting_reference,mixed,
 kb/guardians/notes/guardian-system.md,guardians,note,canonical_note,supporting_reference,mixed,
@@ -152,6 +152,9 @@ kb/guardians/tables/wiki-guardian-ally-levels-1-31-slice.csv,guardians,table,can
 kb/guardians/tables/wiki-guardian-attack-levels-full.csv,guardians,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/guardians/tables/wiki-guardian-bonus-scaling.csv,guardians,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/guardians/tables/wiki-guardian-types.csv,guardians,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/labs/advisory/notes/lab-tier-list.md,labs,note,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list guidance note
+kb/labs/advisory/registry/lab-advisory-source-registry.csv,labs,registry,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list provenance registry
+kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv,labs,table,advisory_noncanonical,noncanonical,mixed,Archived workbook tier-list mapped to canonical lab ids
 kb/labs/contracts/lab-domain-contract.md,labs,contract,canonical,uploaded_corpus_closed,derived-and-reproducible,Labs domain contract
 kb/labs/notes/lab-system.md,labs,note,canonical,uploaded_corpus_closed,derived-and-reproducible,Canonical labs note
 kb/labs/sources/raw/effective-paths/sheet-exports/dvt-laboratory-formulas.csv,labs,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
@@ -168,8 +171,8 @@ kb/labs/sources/raw/repo-cache/wiki/wall-lab-wall-regen.csv,labs,source,raw_sour
 kb/labs/sources/wiki-labs-baselines.md,labs,source,supporting,supporting_reference,wiki-verified,Labs provenance summary
 kb/labs/tables/index.md,labs,tables,supporting_note,current,mixed,added_in_v15_rationalization
 kb/labs/tables/lab-values.csv,labs,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/labs/tables/wiki-game-speed-lab.csv,labs,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/labs/tables/module-drop-labs.csv,labs,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/labs/tables/wiki-game-speed-lab.csv,labs,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/ledgers/notes/scope-boundary-registry.md,ledgers,note,canonical_governance_doc,supporting_reference,mixed,
 kb/ledgers/sources/raw/repo-meta/merged-inventory.csv,ledgers,source,supporting_reference,supporting_reference,mixed,
 kb/ledgers/sources/raw/repo-meta/merged-section-coverage.csv,ledgers,source,supporting_reference,supporting_reference,mixed,
@@ -184,9 +187,11 @@ kb/ledgers/sources/raw/repo-meta/source-packages-summary.csv,ledgers,source,supp
 kb/ledgers/tables/canonical-id-registry.csv,ledgers,table,canonical_registry,uploaded_corpus_closed,derived,Canonical within uploaded-source corpus; upstream external closure not always available.
 kb/ledgers/tables/canonicality-registry.csv,ledgers,table,canonical_registry,uploaded_corpus_closed,derived,Canonical within uploaded-source corpus; upstream external closure not always available.
 kb/ledgers/tables/towersim-static-ledger.csv,ledgers,table,supporting_reference,supporting_reference,derived,
+kb/modules/contracts/module-pack14-nonruntime-draft.yaml,modules,contract,supporting_contract,current,derived,Non-runtime Pack14 draft while R86 proof obligations remain open
 kb/modules/contracts/module-unique-mechanic-contracts.csv,modules,contract,canonical_runtime_doc,supporting_reference,derived,
 kb/modules/contracts/module-unique-runtime-catalog.csv,modules,contract,canonical_runtime_doc,supporting_reference,derived,
 kb/modules/contracts/module-unique-runtime-semantics.md,modules,contract,canonical_runtime_doc,supporting_reference,mixed,
+kb/modules/notes/module-pack14-prep-boundary.md,modules,note,supporting_note,current,wiki,Pack14 boundary and provenance note
 kb/modules/notes/module-unique-effects.md,modules,note,canonical_note,supporting_reference,mixed,
 kb/modules/sources/raw/effective-paths/defined-names/module-defined-names.csv,modules,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
 kb/modules/sources/raw/effective-paths/module-main-effects/module-main-effect-base.csv,modules,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
@@ -213,10 +218,13 @@ kb/modules/tables/assist-stone-levels.csv,modules,table,canonical_table,uploaded
 kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,modules,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/modules/tables/core-submodule-effects-quant.csv,modules,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/modules/tables/index.md,modules,tables,supporting_note,current,mixed,added_in_v15_rationalization
+kb/modules/tables/module-cost-truth.csv,modules,table,canonical_table,external_source_closed,wiki,Source-closed Pack14 module economy truth rows
 kb/modules/tables/module-main-effect-bands.csv,modules,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/modules/tables/module-main-effect-bases.csv,modules,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
+kb/modules/tables/module-reroll-constants.csv,modules,table,canonical_table,external_source_closed,wiki,Source-closed qualitative reroll policy constants
 kb/modules/tables/module-substats.csv,modules,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/modules/tables/module-unique-effects.csv,modules,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/modules/tables/module-workbook-assumption-registry.csv,modules,table,supporting_reference,supporting_reference,mixed,Workbook-derived assumption classification for Pack14 prep
 kb/modules/tables/utility-submodule-effects-quant.csv,modules,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/perks/contracts/perk-runtime-contract.md,perks,contract,canonical,external_source_closed,wiki-verified,Perk runtime semantics
 kb/perks/notes/perk-system.md,perks,note,canonical,external_source_closed,wiki-verified,Canonical perks note
@@ -243,25 +251,25 @@ kb/tournaments/sources/raw/repo-inputs/tournament/tournament-league-rules.csv,to
 kb/tournaments/sources/raw/repo-inputs/tournament/tournament-more-bosses-static.csv,tournaments,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/tournaments/sources/wiki-battle-conditions-and-tournaments.md,tournaments,source,supporting_reference,supporting_reference,wiki,
 kb/tournaments/tables/battle-condition-behavior-reference.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/tournaments/tables/battle-condition-magnitudes.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/tournaments/tables/battle-condition-reduction-lab.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/battle-condition-group-2-reduction-lab.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/battle-condition-group-3-reduction-lab.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/battle-condition-group-4-reduction-lab.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
+kb/tournaments/tables/battle-condition-magnitudes.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
+kb/tournaments/tables/battle-condition-reduction-baselines.csv,tournaments,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
+kb/tournaments/tables/battle-condition-reduction-lab.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/heat-battle-condition-registry.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/heat-scale-long.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/index.md,tournaments,tables,supporting_note,current,mixed,added_in_v15_rationalization
+kb/tournaments/tables/note-derived-battle-condition-groups.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/note-derived-enemy-heat-scaling-reference.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/note-derived-tournament-leagues.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
+kb/tournaments/tables/note-derived-tournament-wave-structure.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/tournaments/tables/tier-battle-condition-levels.csv,tournaments,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/tier-battle-conditions.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/tournament-heat-battle-condition-values-long.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/tournament-heat-steps.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/tournament-league-rules.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/tournaments/tables/tournament-more-bosses-intervals.csv,tournaments,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/tournaments/tables/note-derived-battle-condition-groups.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
-kb/tournaments/tables/battle-condition-reduction-baselines.csv,tournaments,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
-kb/tournaments/tables/note-derived-enemy-heat-scaling-reference.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
-kb/tournaments/tables/note-derived-tournament-leagues.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
-kb/tournaments/tables/note-derived-tournament-wave-structure.csv,tournaments,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/ultimate-weapons/contracts/ultimate-weapon-plus-runtime-contract.md,ultimate-weapons,contract,canonical,external_source_closed,wiki-verified,Ultimate Weapon Plus (UW+) shared runtime semantics
 kb/ultimate-weapons/contracts/ultimate-weapon-runtime-contract.md,ultimate-weapons,contract,canonical,external_source_closed,wiki-verified,Shared UW runtime semantics
 kb/ultimate-weapons/notes/ultimate-weapon-economy-and-sync-models.md,ultimate-weapons,note,canonical_note,supporting_reference,mixed,
@@ -269,16 +277,17 @@ kb/ultimate-weapons/notes/ultimate-weapon-lab-ladders.md,ultimate-weapons,note,c
 kb/ultimate-weapons/notes/ultimate-weapon-lab-mechanics.md,ultimate-weapons,note,canonical_note,supporting_reference,mixed,
 kb/ultimate-weapons/sources/raw/effective-paths/sheet-exports/all-uws-formulas.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/effective-paths/sheet-exports/all-uws-values.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
-kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-plus-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-plus-ladders-recommended.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-plus-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-purchase-costs.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
-kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-track-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-track-ladders-recommended.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
+kb/ultimate-weapons/sources/raw/repo-inputs/uw/uw-track-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,repo_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/repo-inputs/uw/wiki-verified-uw-plus-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,wiki_raw,preserve source-faithful naming
 kb/ultimate-weapons/sources/raw/repo-inputs/uw/wiki-verified-uw-track-ladders.csv,ultimate-weapons,source,raw_source_artifact,supporting_reference,wiki_raw,preserve source-faithful naming
-kb/ultimate-weapons/sources/wiki-ultimate-weapons-and-spotlight-baselines.md,ultimate-weapons,source,supporting_reference,supporting_reference,wiki,
 kb/ultimate-weapons/sources/wiki-ultimate-weapon-detailed-baselines.md,ultimate-weapons,source,supporting_reference,supporting_reference,wiki,
+kb/ultimate-weapons/sources/wiki-ultimate-weapons-and-spotlight-baselines.md,ultimate-weapons,source,supporting_reference,supporting_reference,wiki,
 kb/ultimate-weapons/tables/black-hole-basic-upgrades.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
+kb/ultimate-weapons/tables/black-hole-coin-bonus-levels-1-17.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/black-hole-consume-ultimate-weapon-plus.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/black-hole-size-duration-extension.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/death-wave-basic-upgrades.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
@@ -286,19 +295,18 @@ kb/ultimate-weapons/tables/death-wave-damage-extension.csv,ultimate-weapons,tabl
 kb/ultimate-weapons/tables/golden-tower-basic-upgrades.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/golden-tower-duration-extension.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/index.md,ultimate-weapons,tables,supporting_note,current,mixed,added_in_v15_rationalization
+kb/ultimate-weapons/tables/note-derived-ultimate-weapon-plus-chain-lightning-and-poison-swamp.csv,ultimate-weapons,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/ultimate-weapons/tables/spotlight-basic-upgrades-extended.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/spotlight-missiles-lab-1-16.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/ultimate-weapon-cooldown-step-costs.csv,ultimate-weapons,table,canonical_table,external_source_closed,ep,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/ultimate-weapon-plus-ladders.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/ultimate-weapon-purchase-costs.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,mixed,| Canonical within uploaded-source corpus; upstream external closure not always available
 kb/ultimate-weapons/tables/ultimate-weapon-track-ladders.csv,ultimate-weapons,table,canonical_table,uploaded_corpus_closed,repo,| Canonical within uploaded-source corpus; upstream external closure not always available
-kb/ultimate-weapons/tables/black-hole-coin-bonus-levels-1-17.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/wiki-death-wave-cell-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/wiki-death-wave-coin-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/wiki-death-wave-health-levels-full.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/wiki-golden-tower-bonus-levels-full.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
 kb/ultimate-weapons/tables/wiki-golden-tower-duration-levels-full.csv,ultimate-weapons,table,canonical_table,external_source_closed,wiki,Externally source-closed from uploaded primary evidence and/or wiki.
-kb/ultimate-weapons/tables/note-derived-ultimate-weapon-plus-chain-lightning-and-poison-swamp.csv,ultimate-weapons,table,canonical_table,externally_verified_live_wiki_2026-03-14,notes_or_prompt_reconstruction,"Renamed from wiki-* because the surface is reconstructed from notes, not row-verified live wiki canon."
 kb/workshop/contracts/workshop-runtime-contract.md,workshop,contract,canonical,uploaded_corpus_closed,derived-and-reproducible,Workshop runtime semantics
 kb/workshop/notes/workshop-system.md,workshop,note,canonical,uploaded_corpus_closed,derived-and-reproducible,Canonical workshop system note
 kb/workshop/sources/raw/effective-paths/sheet-exports/dvt-workshop-formulas.csv,workshop,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
@@ -306,9 +314,6 @@ kb/workshop/sources/raw/effective-paths/sheet-exports/dvt-workshop-values.csv,wo
 kb/workshop/sources/raw/effective-paths/sheet-exports/wsvalues-formulas.csv,workshop,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
 kb/workshop/sources/raw/effective-paths/sheet-exports/wsvalues-values.csv,workshop,source,raw_source_artifact,supporting_reference,ep_raw,preserve source-faithful naming
 kb/workshop/sources/wiki-and-effective-paths-workshop-baselines.md,workshop,source,supporting,supporting_reference,wiki-verified,Workshop provenance summary
-kb/workshop/tables/index.md,workshop,tables,supporting_note,current,mixed,added_in_v15_rationalization
 kb/workshop/tables/enhancements-values.csv,workshop,table,canonical,external_source_closed,ep-verified,Promoted Effective Paths enhancement ladders
+kb/workshop/tables/index.md,workshop,tables,supporting_note,current,mixed,added_in_v15_rationalization
 kb/workshop/tables/workshop-values.csv,workshop,table,canonical,external_source_closed,ep-verified,Promoted Effective Paths workshop ladders
-kb/labs/advisory/notes/lab-tier-list.md,labs,note,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list guidance note
-kb/labs/advisory/registry/lab-advisory-source-registry.csv,labs,registry,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list provenance registry
-kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv,labs,table,advisory_noncanonical,noncanonical,mixed,Archived workbook tier-list mapped to canonical lab ids
