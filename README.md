@@ -84,7 +84,7 @@ This pipeline is the current implementation path, not a contradictory architectu
 
 ## Planning note
 
-The old standalone roadmap has been absorbed into `AI_EXECUTION_PLAN.md`. No separate roadmap file should be treated as canonical or required for current planning truth.
+`AI_EXECUTION_PLAN.md` is the sole long-lived planning authority. Product principles, scope cuts, optimiser-family distinctions, trust labels, and representative user questions must live there instead of in a parallel roadmap file.
 
 ## Current handover goal
 

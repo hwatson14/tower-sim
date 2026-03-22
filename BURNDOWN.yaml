@@ -1,9 +1,9 @@
 version: 2
 program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
-active_phase_id: PH1
-active_phase_name: Canonical planning truth and archive closure
-active_tranche_id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+active_phase_id: PH2
+active_phase_name: Query Engine ownership completion
+active_tranche_id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
 
 status_dimensions:
   delivery:
@@ -268,9 +268,9 @@ tranches:
   - id: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     title: stat_input_compiler.py function-level ownership ledger
     phase_id: PH2
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
     owner_surfaces:
@@ -306,9 +306,103 @@ tranches:
     required_checks:
       - ownership_ledger_review
       - regression_anchor_review
+    evidence_paths:
+      - docs/phase2a_stat_input_compiler_ownership_ledger.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Completed; use the ledger to govern Phase 2B seam extraction without guessing about unit ownership or destination surfaces.
+
+  - id: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    title: Compiler/query seam extraction
+    phase_id: PH2
+    delivery_status: in_progress
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    owner_surfaces:
+      - compilers/stat_input_compiler.py
+      - engine/query_routing.py
+      - Query Engine owner surfaces approved by the Phase 2A ledger
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    scope_in:
+      - approved Query Engine-owned seam extraction
+      - compatibility entrypoint preservation
+      - targeted regression coverage for moved behavior
+    scope_out:
+      - formula rewrites
+      - StatInput schema redesign
+      - generic helper sinks
+      - undeclared family expansion
+    required_outputs:
+      - extracted_owner_correct_code_changes
+      - updated_boundary_rationale
+      - updated_regression_coverage
+    acceptance_criteria:
+      - only_ledger_approved_query_engine_units_move
+      - compatibility_entrypoint_preserved
+      - targeted_regressions_cover_moved_behavior
+      - compiler_query_boundary_is_less_owner_ambiguous
+    required_checks:
+      - seam_extraction_review
+      - compatibility_regression_review
     evidence_paths: []
     blockers: []
-    next_action: Wait until all Phase 1 tranches are completed and the control stack is explicitly promoted to Phase 2.
+    next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
+
+  - id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+    title: Covered-family delegation manifest
+    phase_id: PH2
+    delivery_status: in_progress
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    owner_surfaces:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-scenario-families.yaml
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+      - engine/stat_engine.py
+    scope_in:
+      - finalized covered-family list
+      - explicit delegated scope per family
+      - explicit fallback ownership for undelegated families and non-covered remainder
+      - visible parity and benchmark status by manifest row
+      - no-false-implication review of manifest language
+    scope_out:
+      - resolve_stats routing changes
+      - formula rewrites
+      - undeclared family expansion
+      - simulator or optimiser work
+      - benchmark execution beyond status declaration
+    required_outputs:
+      - covered_family_delegation_manifest
+      - explicit_delegated_scope_notes
+      - explicit_fallback_owner_declarations
+      - visible_parity_and_benchmark_statuses
+    acceptance_criteria:
+      - covered_family_list_is_finalized_from_governed_declarations
+      - delegated_scope_is_explicit
+      - fallback_owner_is_named_for_every_undelegated_area
+      - manifest_does_not_imply_full_delegation
+      - parity_and_benchmark_status_exist_for_every_row
+    required_checks:
+      - manifest_scope_review
+      - fallback_owner_review
+      - no_false_implication_review
+    evidence_paths:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Finalize the covered-family manifest and then hand the governed family/status surface to Phase 2D/2E without implying full resolve_stats delegation.
 
 notes:
   bootstrap_history:
@@ -327,9 +421,8 @@ notes:
       outcome: completed
       summary:
         - AI_EXECUTION_PLAN.md remains the single canonical execution plan.
-        - Remaining roadmap-only product planning truth is now compressed into AI_EXECUTION_PLAN.md.
-        - README.md and ARCHITECTURE.md now avoid treating any separate roadmap file as required planning authority.
-        - towersim_canonical_product_roadmap_v6.md can be deleted safely because no still-useful unique planning truth remains outside the canonical plan.
+        - README.md and ARCHITECTURE.md now use the same canonical layer and control-file vocabulary.
+        - Remaining roadmap-only planning truth is absorbed into AI_EXECUTION_PLAN.md, so no parallel roadmap file remains canonical.
       promoted_next_tranche: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER:
       outcome: not_started
@@ -346,6 +439,13 @@ notes:
       summary:
         - Pending after Phase 1B, 1C, and 1D complete.
       promoted_next_tranche: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER:
+      outcome: completed
+      summary:
+        - Every meaningful helper, constant block, and compilation/query-preparation section in compilers/stat_input_compiler.py is now classified.
+        - Every move or split candidate names a target owner and destination module.
+        - Regression anchors are recorded without implying that Phase 2B extraction already happened.
+      promoted_next_tranche: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
 
 
   phase_closeout:

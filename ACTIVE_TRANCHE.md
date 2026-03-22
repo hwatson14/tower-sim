@@ -1,52 +1,56 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION`
+`PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST`
 
 ## Phase
 `Phase 1 — Canonical planning truth and archive closure`
 
 ## Objective
-Finalize canonical planning vocabulary across the major repo docs and make `AI_EXECUTION_PLAN.md` the sole long-lived planning authority without losing still-useful product-planning truth.
+Finalize the governed covered-family delegation manifest using the completed Phase 2A ownership ledger and the bounded Query Engine family contracts as the governing boundary.
 
 ## Scope in
-- `AI_EXECUTION_PLAN.md` as the canonical whole-program plan
-- compressed absorption of any still-useful roadmap-only planning truth into `AI_EXECUTION_PLAN.md`
-- terminology alignment in `README.md`, `ARCHITECTURE.md`, and other control-surface docs if needed
-- roadmap deletion decision and any minimal control-file wording needed to reflect the result
+- finalized covered-family list for Phase 2C
+- explicit delegated scope per declared family
+- explicit fallback ownership for every undelegated family or non-covered remainder
+- visible parity and benchmark status per manifest row
+- no-false-implication review against KB contracts and the public compatibility entrypoint
 
 ## Scope out
-- runtime mechanic changes
-- Query Engine code changes
-- objective-state promotion work
-- evaluator implementation
-- optimiser or advisor implementation
-- Phase 1C or later tranche execution
+- code-path routing changes for `resolve_stats()`
+- formula rewrites
+- undeclared family expansion beyond the governed Query Engine contracts
+- simulator or optimiser changes
+- benchmark execution beyond status declaration
 
 ## Required outputs
-- one canonical execution-plan file
-- aligned terminology in major docs
-- explicit roadmap deletion or retention decision
+- covered-family delegation manifest
+- explicit delegated-scope notes for each declared family
+- explicit fallback-owner declaration for undelegated areas
+- visible parity and benchmark status for every manifest row
 
 ## Required verification
-- no major doc contradicts canonical layer or phase language
-- roadmap content is either absorbed into `AI_EXECUTION_PLAN.md` or explicitly rejected
-- no stale reference treats `AI_MIGRATION_EXECUTION_PLAN.md` or the deleted roadmap as canonical
+- covered-family scope is explicit and bounded
+- fallback owner is named for every undelegated family or non-covered remainder
+- manifest language does not imply full delegation
+- parity and benchmark status are visible for Phase 2E handoff
+- docs and tranche state reflect the new manifest truth
 
 ## Acceptance criteria
-- `AI_EXECUTION_PLAN.md` contains the remaining useful product-planning truth that was unique to the roadmap, or explicitly rejects it
-- no major doc depends on a parallel roadmap authority
-- the roadmap is either safely deleted or explicitly retained with a clear reason
-- terminology is more uniform than before
+- the Phase 2C family list is finalized from governed Query Engine declarations
+- delegated scope is explicit for each delegated row
+- undelegated areas are visible, bounded, and name their fallback owner
+- parity and benchmark status exist for every manifest row
+- no major doc implies full `resolve_stats()` delegation
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once Phase 1B canonical-planning truth is self-contained and later Phase 1 work can proceed without needing the old roadmap to answer product-shaping questions.
+Stop once the covered-family manifest is finalized, undelegated fallback ownership is explicit, and status visibility is landed for Phase 2E handoff.
 
 ## Non-goals
-- do not edit runtime mechanics
-- do not begin Query Engine seam work
-- do not promote later-phase implementation work early
-- do not perform broad repo cleanup unrelated to canonical planning truth
+- do not rewrite formulas
+- do not implement `resolve_stats()` delegation routing in this tranche
+- do not add undeclared families to the manifest
+- do not claim parity or benchmark completion without evidence
