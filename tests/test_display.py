@@ -26,6 +26,8 @@ def test_run_stats_reexports_format_display_number():
     assert spec.loader is not None
     spec.loader.exec_module(module)
     assert module._format_display_number is _format_display_number
+    assert module._annotate_display_fields is annotate_display_fields
+    assert module._annotate_compare_display_fields is annotate_compare_display_fields
 
 
 def test_display_helpers_preserve_output_contract():
