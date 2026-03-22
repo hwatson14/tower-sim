@@ -7,25 +7,16 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-
-from pathlib import Path
-
-from compilers.account_state_compiler import compile_account_state
 import engine.progression_recalc_bridge as progression_recalc_bridge
 from engine.incremental_recalc_runtime import IncrementalPlan
 from engine.progression_recalc_bridge import ProgressionRecalcBridge, ProgressionRecalcRequest
-from parsers.ids_parser import parse_ids
+from helpers import build_state
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
-
-
 def test_recalc_bridge_preserves_start_of_run_and_applies_specific_override():
-    state = _build_state()
+    state = build_state()
     original = state.workshop['Wall Health'].preset_levels['Farming']
     bridge = ProgressionRecalcBridge()
     result = bridge.recompute(
@@ -44,7 +35,7 @@ def test_recalc_bridge_preserves_start_of_run_and_applies_specific_override():
 
 
 def test_recalc_bridge_rejects_invalid_workshop_level():
-    state = _build_state()
+    state = build_state()
     bridge = ProgressionRecalcBridge()
     try:
         bridge.recompute(
@@ -60,7 +51,7 @@ def test_recalc_bridge_rejects_invalid_workshop_level():
         raise AssertionError('Expected invalid workshop level to raise ValueError')
 
 def test_recalc_bridge_uses_structural_overlay_without_mutating_original_nested_state():
-    state = _build_state()
+    state = build_state()
     original_workshop_entry = state.workshop['Wall Health']
     original_preset_levels = state.workshop['Wall Health'].preset_levels
     bridge = ProgressionRecalcBridge()
@@ -83,7 +74,7 @@ def test_recalc_bridge_uses_structural_overlay_without_mutating_original_nested_
 
 
 def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_probe(monkeypatch):
-    state = _build_state()
+    state = build_state()
 
     def _boom(_):
         raise AssertionError('resolve_stats should not be used for supported incremental_targeted_probe_guarded progression requests')
@@ -107,7 +98,7 @@ def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_prob
 
 
 def test_recalc_bridge_full_safe_uses_bounded_family_reference(monkeypatch):
-    state = _build_state()
+    state = build_state()
 
     def _boom(_):
         raise AssertionError('resolve_stats should not be used for full_safe progression requests once bounded family reference is available')
@@ -127,7 +118,7 @@ def test_recalc_bridge_full_safe_uses_bounded_family_reference(monkeypatch):
 
 
 def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_bundle(monkeypatch):
-    state = _build_state()
+    state = build_state()
     seen_calls = []
     original = progression_recalc_bridge.resolve_progression_consumer_bundle
 
@@ -154,7 +145,7 @@ def test_recalc_bridge_full_safe_runtime_publication_uses_bounded_progression_bu
 
 
 def test_recalc_bridge_fallback_plans_use_bounded_family_reference(monkeypatch):
-    state = _build_state()
+    state = build_state()
 
     def _fallback_plan(self, workshop_levels_current):
         return IncrementalPlan(

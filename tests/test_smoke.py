@@ -7,14 +7,14 @@ import sys
 
 import pytest
 
+from helpers import cached_run_stats_output
+
 ROOT = Path(__file__).resolve().parents[1]
 pytestmark = pytest.mark.slow
 
 
 def test_smoke(tmp_path) -> None:
-    out = tmp_path / 'smoke_output'
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'start_of_run', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    out = cached_run_stats_output('--state-mode', 'start_of_run')
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     account_state = json.loads((out / 'account_state.json').read_text())
     statbook = json.loads((out / 'statbook.json').read_text())
@@ -909,10 +909,8 @@ def test_thorns_damage_is_not_hard_capped_at_100():
 
 
 def test_attack_defects_cash_per_wave_knockback_and_land_mine_scope(tmp_path):
-    import json, subprocess, sys
-    out = tmp_path / 'out'
-    result = subprocess.run([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    import json
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     rows = json.loads((out / 'statbook.json').read_text())['rows']
 
     cash = rows['canonical_stat::cash_per_wave']
@@ -944,10 +942,8 @@ def test_package_chance_is_not_hard_capped_at_100():
 
 
 def test_coin_kill_compare_uses_farming_perks_off_and_matches_close(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "coin_kill_compare"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    import json
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     compare = json.loads((out / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::coins_per_kill_bonus']
     assert row['compare_preset'] == 'Farming'
@@ -956,10 +952,8 @@ def test_coin_kill_compare_uses_farming_perks_off_and_matches_close(tmp_path):
 
 
 def test_land_mine_damage_resolves_from_runtime_family(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "land_mine_runtime"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    import json
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     statbook = json.loads((out / 'statbook.json').read_text())['rows']
     row = statbook['canonical_stat::tower_land_mine_damage']
     assert row['status'] == 'resolved'
@@ -968,10 +962,8 @@ def test_land_mine_damage_resolves_from_runtime_family(tmp_path):
 
 
 def test_orbital_augment_electron_count_resolves_as_count(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "electron_count"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    import json
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     statbook = json.loads((out / 'statbook.json').read_text())['rows']
     row = statbook['mechanic_param::module.orbital_augment.electron_count']
     assert row['status'] == 'resolved'
@@ -980,15 +972,8 @@ def test_orbital_augment_electron_count_resolves_as_count(tmp_path):
 
 
 def test_tower_orb_count_consumes_perk_and_rounds_to_integer(tmp_path):
-    import json, subprocess, sys
-    out = tmp_path / 'orb_perk_run'
-    result = subprocess.run([
-        sys.executable,
-        str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
+    import json
+    out = cached_run_stats_output('--state-mode', 'max_progression')
     rows = json.loads((out / 'statbook.json').read_text())['rows']
     orb = rows['canonical_stat::tower_orb_count']
     assert orb['final_value'] == 8
