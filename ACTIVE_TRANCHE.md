@@ -1,61 +1,55 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT`
+`PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION`
 
 ## Phase
 `Phase 1 — Canonical planning truth and archive closure`
 
 ## Objective
-Close or explicitly supersede the current bootstrap control tranche and promote the repo onto the new phase-gated execution system so future Codex runs operate from:
-- durable rules in `AGENTS.md`
-- canonical whole-program truth in `AI_EXECUTION_PLAN.md`
-- one active tranche file
-- machine-readable phase/tranche delivery and verification state in `BURNDOWN.yaml`
+Finalize the canonical planning vocabulary across the major repo documents now that the bootstrap control tranche is closed and the phase-gated execution system is live.
 
 ## Scope in
 - `AI_EXECUTION_PLAN.md`
-- `ACTIVE_TRANCHE.md`
-- `BURNDOWN.yaml`
-- major doc pointers that still reference `AI_MIGRATION_EXECUTION_PLAN.md`
+- `README.md`
+- `ARCHITECTURE.md`
+- `AGENTS.md`
+- explicit retirement or supersession note for parallel planning language
+- terminology alignment needed so major docs describe the same canonical layers, phases, and control files
 
 ## Scope out
 - runtime mechanic changes
 - Query Engine code changes
-- `stat_input_compiler.py` seam code changes
+- archive ledger implementation beyond naming and terminology alignment
 - objective-state promotion work
 - evaluator, optimiser, or advisor implementation
-- archive content implementation
 
 ## Required outputs
-- control-stack closeout note
-- explicit bootstrap status: completed, superseded, or blocked
-- first promoted tranche ID under the phase-gated system
-- updated `ACTIVE_TRANCHE.md`
-- updated `BURNDOWN.yaml`
-- updated major doc pointers to `AI_EXECUTION_PLAN.md`
+- one canonical execution-plan file
+- aligned terminology in major docs
+- explicit roadmap retirement or supersession note
+- tranche closeout note if any major document still carries stale planning terminology
 
 ## Required verification
-- current bootstrap acceptance criteria checked against repo truth
-- control-file naming and references reviewed
-- stale IDs identified or removed
-- active tranche, burndown, and canonical plan use the same phase and tranche vocabulary
+- major docs reviewed for canonical layer and phase wording
+- no major doc contradicts the canonical execution plan
+- roadmap content is either absorbed into `AI_EXECUTION_PLAN.md` or explicitly marked non-canonical
+- control files and major docs use the same plan filename and tranche vocabulary where referenced
 
 ## Acceptance criteria
-- the old bootstrap tranche is explicitly closed or superseded
-- `ACTIVE_TRANCHE.md` points at the phase-gated system
-- `BURNDOWN.yaml` uses phase-gated tranche IDs and plan references
-- no major control file still points to `AI_MIGRATION_EXECUTION_PLAN.md`
-- the next executable Phase 1 tranche is unambiguous
+- one canonical execution-plan file exists and is current
+- no major doc contradicts layer or phase language from `AI_EXECUTION_PLAN.md`
+- any surviving roadmap language is explicitly retired, superseded, or scoped as historical only
+- the tranche leaves Phase 1 terminology more uniform than it found it
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once the acceptance criteria above are satisfied and the burndown reflects the promoted control-stack state.
+Stop once the canonical terminology is aligned across the major docs in scope and any residual parallel-planning language is explicitly retired or superseded.
 
 ## Non-goals
-- do not start Phase 1B or later implementation work here
+- do not start Phase 1C or later implementation work here
 - do not change runtime code
-- do not rewrite archive content
+- do not rewrite archive content beyond necessary terminology/pointer updates
 - do not add new architecture layers
