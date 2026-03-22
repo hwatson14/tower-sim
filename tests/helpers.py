@@ -6,7 +6,6 @@ import json
 import subprocess
 import sys
 import tempfile
-from dataclasses import replace
 from functools import lru_cache
 from pathlib import Path
 
@@ -43,57 +42,6 @@ def _compiled_state(loadout_filename: str, perks_filename: str):
 
 def build_state(*, loadout_filename: str = 'loadout.json', perks_filename: str = 'perks.json'):
     return copy.deepcopy(_compiled_state(loadout_filename, perks_filename))
-
-
-@lru_cache(maxsize=None)
-def _timing_query_state(family_id: str):
-    state = _compiled_state('loadout.json', 'perks.json')
-    if family_id == 'timing_tournament_no_perks':
-        return replace(
-            state,
-            default_preset='Tourney',
-            active_card_preset='Tourney',
-            active_module_preset='Tourney',
-            active_perk_preset='Tourney',
-        )
-    return state
-
-
-def timing_family_context(family_id: str) -> tuple[ScenarioConfig, bool, str]:
-    if family_id == 'timing_tournament_no_perks':
-        return ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150), False, 'Tourney'
-    if family_id == 'timing_farm_with_perks':
-        return ScenarioConfig(mode_id='farming', tier=14), True, 'Farming'
-    if family_id == 'timing_scenario_probe':
-        return ScenarioConfig(mode_id='scenario_probe', tier=14), False, 'Farming'
-    raise ValueError(f'Unsupported timing family {family_id!r}.')
-
-
-@lru_cache(maxsize=None)
-def _family_baseline(family_id: str):
-    if family_id.startswith('progression_'):
-        return materialize_progression_family_baseline(
-            account_state=_compiled_state('loadout.json', 'perks.json'),
-            family_id=family_id,
-            preset_name='Farming',
-            perks_enabled=family_id.endswith('with_perks'),
-        )
-
-    if family_id.startswith('timing_'):
-        scenario_config, perks_enabled, preset_name = timing_family_context(family_id)
-        return materialize_timing_family_baseline(
-            account_state=_timing_query_state(family_id),
-            family_id=family_id,
-            preset_name=preset_name,
-            scenario_config=scenario_config,
-            perks_enabled=perks_enabled,
-        )
-
-    raise ValueError(f'Unsupported family {family_id!r}.')
-
-
-def build_family_baseline(family_id: str):
-    return _family_baseline(family_id)
 
 
 @lru_cache(maxsize=None)
