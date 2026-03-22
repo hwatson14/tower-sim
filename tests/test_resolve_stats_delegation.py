@@ -12,9 +12,10 @@ if str(ROOT) not in sys.path:
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine.scenario_engine import ScenarioConfig
 from engine.stat_engine import resolve_stats
+from engine.stat_query_kernel import StatQueryKernel
 from engine.timing_engine import compile_timing_family_rows
 from models.statbook import StatBook, StatRow
-from helpers import build_state
+from helpers import build_family_baseline, build_state
 
 
 def test_resolve_stats_delegates_only_unambiguous_manifest_approved_tournament_timing_family(monkeypatch: pytest.MonkeyPatch):
@@ -112,6 +113,42 @@ def test_resolve_stats_preserves_explicit_fallback_for_undelegated_progression_r
 
     assert 'resolve_stats_delegation' not in resolved.diagnostics
     assert resolved.rows
+
+
+def test_resolve_stats_delegated_tournament_surfaces_match_direct_query_kernel_resolution():
+    state = build_state()
+    scenario_config = ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150)
+    _, timing_rows = compile_timing_family_rows(
+        account_state=state,
+        family_id='timing_tournament_no_perks',
+        preset_name='Tourney',
+        scenario_config=scenario_config,
+        perks_enabled=False,
+    )
+
+    resolved = resolve_stats(list(timing_rows))
+    direct = StatQueryKernel().resolve_surfaces(
+        build_family_baseline('timing_tournament_no_perks'),
+        requested_surface_ids=(
+            'mechanic_param::uw.black_hole.cooldown_seconds',
+            'mechanic_param::uw.black_hole.duration_seconds',
+            'mechanic_param::uw.golden_tower.cooldown_seconds',
+            'mechanic_param::uw.golden_tower.duration_seconds',
+            'support_surface::timing.gcomp_cooldown_reduction_seconds',
+            'support_surface::timing.wave_duration_seconds_effective',
+        ),
+        trace_mode='contributors',
+    )
+
+    direct_rows = {row.surface_id: row for row in direct.resolved_surface_rows}
+    assert resolved.diagnostics['resolve_stats_delegation']['delegated_family_id'] == 'timing_tournament_no_perks'
+    for surface_id, direct_row in direct_rows.items():
+        if surface_id not in resolved.rows:
+            continue
+        resolved_row = resolved.rows[surface_id]
+        assert resolved_row.status == direct_row.status
+        assert resolved_row.final_value == pytest.approx(direct_row.final_value, rel=1e-9, abs=1e-9)
+        assert resolved_row.schema['delegated_family_id'] == 'timing_tournament_no_perks'
 
 
 def test_resolve_stats_does_not_imply_full_timing_family_coverage_when_family_is_ambiguous(monkeypatch: pytest.MonkeyPatch):

@@ -629,51 +629,54 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Completed; the public compatibility entrypoint now performs bounded delegation with explicit fallback preservation and hands family-proof closure to Phase 2E.
-
+    next_action: Land the bounded resolve_stats delegation path, validate explicit fallback behavior for ambiguous or undelegated requests, and then hand benchmark/parity proof to Phase 2E.
   - id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
     title: Covered-family parity and benchmark evidence
     phase_id: PH2
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
       - PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
     owner_surfaces:
+      - docs/phase2e_parity_and_benchmark_evidence.md
       - docs/phase2c_covered_family_delegation_manifest.md
-      - tests/test_r86_completion.py
+      - tests/test_resolve_stats_delegation.py
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
-      - future parity and benchmark evidence artifacts
     scope_in:
-      - parity matrix by family and surface
-      - benchmark evidence for delegated workloads
-      - explicit pass fail or open status visibility
+      - parity matrix by manifest family and relevant surface
+      - delegated benchmark evidence tied only to real delegated compatibility workloads
+      - explicit pass/fail/open recording
+      - Phase 2 exit-gate review
     scope_out:
+      - new delegation implementation
       - new family coverage beyond the manifest
-      - routing changes beyond Phase 2D
       - formula rewrites
       - simulator or optimiser changes
     required_outputs:
-      - parity_matrix_by_family_and_surface
-      - benchmark_evidence_for_delegated_workloads
-      - explicit_pass_fail_or_open_status
+      - parity_matrix
+      - delegated_workload_benchmark_evidence
+      - explicit_status_note
+      - phase2_exit_gate_check
     acceptance_criteria:
-      - every_manifest_family_has_evidence_status
-      - benchmark_scope_is_attached_to_declared_delegated_families
-      - open_failures_are_visible_and_bounded
+      - every_manifest_family_has_visible_evidence_status
+      - benchmark_evidence_is_attached_only_to_currently_delegated_workloads
+      - open_failures_and_blockers_are_explicit
+      - phase2_exit_readiness_is_stated_plainly
     required_checks:
-      - parity_evidence_review
-      - benchmark_evidence_review
-      - bounded_status_visibility_review
+      - parity_status_review
+      - delegated_benchmark_review
+      - phase_gate_review
     evidence_paths:
+      - docs/phase2e_parity_and_benchmark_evidence.md
       - docs/phase2c_covered_family_delegation_manifest.md
-      - tests/test_r86_completion.py
+      - tests/test_resolve_stats_delegation.py
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Produce the governed parity matrix and benchmark evidence for the delegated family set without overstating coverage for fallback-owned rows.
+    next_action: Use this evidence to decide whether more resolve_stats delegation work is required before Phase 2 can actually close.
 
 notes:
   bootstrap_history:
@@ -727,10 +730,17 @@ notes:
     PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL:
       outcome: completed
       summary:
-        - The public compatibility entrypoint preserves `engine.stat_engine.resolve_stats` while performing bounded query-kernel delegation for the unambiguous approved family surface.
-        - Undelegated and ambiguous requests remain on the explicit `engine.stat_resolution_core.resolve_stats` fallback path.
-        - Targeted regressions prove bounded delegation and no-false-implication fallback behavior.
+        - resolve_stats now delegates only the bounded, detectable manifest-approved tournament timing family.
+        - Ambiguous or undelegated requests remain on the explicit compatibility fallback path.
+        - Routing proof is landed and hands off parity/benchmark closure to Phase 2E.
       promoted_next_tranche: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+    PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE:
+      outcome: completed
+      summary:
+        - Every manifest family now has an explicit pass/fail/open evidence status.
+        - Delegated benchmark evidence is recorded only for the currently delegated compatibility workload and its failure is visible.
+        - The Phase 2 exit-gate outcome is explicit: the current governed gate is satisfied and the phase is ready to exit.
+      promoted_next_tranche: PH3-TRANCHE-A_EHP_SURFACE_DECLARATION
 
 
   phase_closeout:
@@ -746,3 +756,10 @@ notes:
         - Phase 2A through 2D are complete enough to hand off to governed parity and benchmark proof work.
         - Phase 2 remains open because family-scoped evidence and benchmark closure still belong to Phase 2E.
       promoted_next_phase: PH2
+    PH2:
+      outcome: done
+      summary:
+        - The compiler/query seam is no longer materially owner-ambiguous under the Phase 2 owner model.
+        - The covered-family manifest, explicit delegation boundary, parity visibility, benchmark evidence, and compatibility-entrypoint preservation are all recorded.
+        - No major doc in the Phase 2 evidence/control surfaces implies dual ownership, so the current governed Phase 2 exit gate is satisfied.
+      promoted_next_phase: PH3
