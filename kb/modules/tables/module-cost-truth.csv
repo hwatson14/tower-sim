@@ -1,0 +1,10 @@
+surface_id,currency,value,closure_class,source_type,source_ref,notes
+module.draw.single.gems,gems,20,canonical_kb_truth,wiki_verified,kb/modules/sources/wiki-modules-and-submodules.md,Single gem draw price from the Modules wiki baseline summary.
+module.draw.ten.gems,gems,200,canonical_kb_truth,wiki_verified,kb/modules/sources/wiki-modules-and-submodules.md,Ten-pull gem draw price from the Modules wiki baseline summary.
+module.shatter.common.shards,shards,5,canonical_kb_truth,wiki_verified,kb/modules/sources/wiki-modules-and-submodules.md,Common module shatter yield.
+module.shatter.rare.shards,shards,10,canonical_kb_truth,wiki_verified,kb/modules/sources/wiki-modules-and-submodules.md,Rare module shatter yield.
+module.assist.slot_unlock.epic.stones,stones,1000,canonical_kb_truth,wiki_verified,kb/modules/sources/wiki-source-closure-baselines.md,Per-assist-slot unlock cost.
+module.assist.unique_rarity.locked_to_epic.stones,stones,1000,accepted_model_helper,user_prompt_materialized,kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,Prompt-materialized cost retained for Pack14 prep but not promoted to canonical wiki-verified truth in this tranche.
+module.assist.unique_rarity.epic_to_legendary.stones,stones,1000,accepted_model_helper,user_prompt_materialized,kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,Prompt-materialized cost retained for Pack14 prep but not promoted to canonical wiki-verified truth in this tranche.
+module.assist.unique_rarity.legendary_to_mythic.stones,stones,1200,accepted_model_helper,user_prompt_materialized,kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,Prompt-materialized cost retained for Pack14 prep but not promoted to canonical wiki-verified truth in this tranche.
+module.assist.unique_rarity.mythic_to_ancestral.stones,stones,1400,accepted_model_helper,user_prompt_materialized,kb/modules/tables/assist-unique-rarity-upgrade-costs.csv,Prompt-materialized cost retained for Pack14 prep but not promoted to canonical wiki-verified truth in this tranche.

@@ -310,6 +310,38 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved Orbital Augment electron count available to progression-driven boss-wave queries.
+      - surface_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: modules
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: false
+        debug_only: true
+        scenario_scoped: true
+        semantics: resolved Black Hole Digestor per-free-upgrade temporary coin/kill bonus percent reserved for future optimizer analysis.
+      - surface_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+        surface_kind: runtime_mechanic_surface
+        surface_class: surface
+        domain: modules
+        owning_families:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        query_resolvable_phase_1: true
+        queryable_directly: true
+        consumer_only: false
+        support_only: false
+        publish_default: false
+        debug_only: true
+        scenario_scoped: true
+        semantics: resolved Primordial Collapse enemy damage reduction percent inside Black Hole reserved for bounded optimizer analysis.
       - surface_id: canonical_stat::free_attack_upgrade_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
@@ -421,6 +453,11 @@ families:
         surface_ids:
           - canonical_stat::enemy_attack_level_skip_pct
           - canonical_stat::enemy_health_level_skip_pct
+      - bundle_id: optimizer_module_effects
+        surface_ids:
+          - mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+          - mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+          - mechanic_param::module.orbital_augment.electron_count
 promotion_review:
   reviewed_nodes:
     - node_id: mechanic_param::uw.black_hole.cooldown_seconds

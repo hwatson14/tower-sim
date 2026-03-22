@@ -8,9 +8,11 @@ Module active tables now prefer concise verified or quantitative tables, with ve
 - `assist-stone-levels.csv`
 - `assist-unique-rarity-upgrade-costs.csv`
 - `core-submodule-effects-quant.csv`
+- `module-cost-truth.csv`
 - `module-main-effect-bands.csv`
 - `module-main-effect-bases.csv`
 - `module-main-effect-total-multipliers.csv`
+- `module-reroll-constants.csv`
 - `module-substats.csv`
 - `module-unique-effects.csv`
 - `utility-submodule-effects-quant.csv`
@@ -18,3 +20,4 @@ Module active tables now prefer concise verified or quantitative tables, with ve
 ## Notes
 - Main-effect ladders are closed for simulator use from structured Effective Paths exports bundled inside this repo.
 - Live wiki confirms module families, rarity/max-level progression, and unique/sub-module behavior, but does not provide the full numeric main-effect ladder directly.
+- Pack14 prep cost/reroll tables distinguish canonical KB truth from accepted-model helper rows so runtime work can fail closed.

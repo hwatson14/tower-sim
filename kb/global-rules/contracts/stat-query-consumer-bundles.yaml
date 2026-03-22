@@ -126,6 +126,21 @@ consumers:
         overlays_allowed: false
         publish_default: false
         debug_only: true
+      - bundle_id: optimizer_module_effects
+        family_bundle_id: optimizer_module_effects
+        allowed_family_ids:
+          - progression_start_of_run
+          - progression_runtime_no_perks
+          - progression_runtime_with_perks
+        required_surface_ids:
+          - mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+        optional_surface_ids:
+          - mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+          - mechanic_param::module.orbital_augment.electron_count
+        minimum_trace_mode: contributors
+        overlays_allowed: false
+        publish_default: false
+        debug_only: true
   - consumer_id: advisor_reporting
     bundles:
       - bundle_id: timing_wave_duration

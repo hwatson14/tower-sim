@@ -90,6 +90,16 @@ surface_nodes:
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
+  - node_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    ownership_class: surface
+    ownership_status: query_owned
+    governed_by: canonical_query_engine
+    downstream_policy: consume_only_no_rederivation
   - node_id: canonical_stat::free_attack_upgrade_chance_pct
     ownership_class: surface
     ownership_status: query_owned
