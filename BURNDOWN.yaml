@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH2
 active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+active_tranche_id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
 
 status_dimensions:
   delivery:
@@ -351,6 +351,58 @@ tranches:
     evidence_paths: []
     blockers: []
     next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
+
+  - id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+    title: Covered-family delegation manifest
+    phase_id: PH2
+    delivery_status: in_progress
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    owner_surfaces:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-scenario-families.yaml
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+      - engine/stat_engine.py
+    scope_in:
+      - finalized covered-family list
+      - explicit delegated scope per family
+      - explicit fallback ownership for undelegated families and non-covered remainder
+      - visible parity and benchmark status by manifest row
+      - no-false-implication review of manifest language
+    scope_out:
+      - resolve_stats routing changes
+      - formula rewrites
+      - undeclared family expansion
+      - simulator or optimiser work
+      - benchmark execution beyond status declaration
+    required_outputs:
+      - covered_family_delegation_manifest
+      - explicit_delegated_scope_notes
+      - explicit_fallback_owner_declarations
+      - visible_parity_and_benchmark_statuses
+    acceptance_criteria:
+      - covered_family_list_is_finalized_from_governed_declarations
+      - delegated_scope_is_explicit
+      - fallback_owner_is_named_for_every_undelegated_area
+      - manifest_does_not_imply_full_delegation
+      - parity_and_benchmark_status_exist_for_every_row
+    required_checks:
+      - manifest_scope_review
+      - fallback_owner_review
+      - no_false_implication_review
+    evidence_paths:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Finalize the covered-family manifest and then hand the governed family/status surface to Phase 2D/2E without implying full resolve_stats delegation.
 
 notes:
   bootstrap_history:
