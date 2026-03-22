@@ -128,7 +128,6 @@ tranches:
       - AI_EXECUTION_PLAN.md
       - README.md
       - ARCHITECTURE.md
-      - towersim_canonical_product_roadmap_v6.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
@@ -216,7 +215,6 @@ tranches:
       - retirement_condition_review
     evidence_paths:
       - AI_EXECUTION_PLAN.md
-      - towersim_canonical_product_roadmap_v6.md
       - R86_CODEX_HANDOFF_GUARDRAILS.md
       - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
       - R86_WORKED_EXAMPLES.md
@@ -264,7 +262,6 @@ tranches:
       - AI_EXECUTION_PLAN.md
       - README.md
       - ARCHITECTURE.md
-      - towersim_canonical_product_roadmap_v6.md
     blockers: []
     next_action: Completed; the control stack now points cleanly at Phase 2 work with Phase 1 closed.
 
@@ -373,7 +370,7 @@ notes:
       summary:
         - AI_EXECUTION_PLAN.md remains the single canonical execution plan.
         - README.md and ARCHITECTURE.md now use the same canonical layer and control-file vocabulary.
-        - towersim_canonical_product_roadmap_v6.md is explicitly marked historical and non-canonical.
+        - Remaining roadmap-only planning truth is absorbed into AI_EXECUTION_PLAN.md, so no parallel roadmap file remains canonical.
       promoted_next_tranche: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER:
       outcome: completed
