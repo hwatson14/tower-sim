@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH2
 active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+active_tranche_id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
 
 status_dimensions:
   delivery:
@@ -586,9 +586,9 @@ tranches:
   - id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
     title: resolve_stats() delegation to query kernel
     phase_id: PH2
-    delivery_status: in_progress
-    verification_status: partial
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
       - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
@@ -629,7 +629,51 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Land the bounded resolve_stats delegation path, validate explicit fallback behavior for ambiguous or undelegated requests, and then hand benchmark/parity proof to Phase 2E.
+    next_action: Completed; the public compatibility entrypoint now performs bounded delegation with explicit fallback preservation and hands family-proof closure to Phase 2E.
+
+  - id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+    title: Covered-family parity and benchmark evidence
+    phase_id: PH2
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+      - PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    owner_surfaces:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - tests/test_r86_completion.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - future parity and benchmark evidence artifacts
+    scope_in:
+      - parity matrix by family and surface
+      - benchmark evidence for delegated workloads
+      - explicit pass fail or open status visibility
+    scope_out:
+      - new family coverage beyond the manifest
+      - routing changes beyond Phase 2D
+      - formula rewrites
+      - simulator or optimiser changes
+    required_outputs:
+      - parity_matrix_by_family_and_surface
+      - benchmark_evidence_for_delegated_workloads
+      - explicit_pass_fail_or_open_status
+    acceptance_criteria:
+      - every_manifest_family_has_evidence_status
+      - benchmark_scope_is_attached_to_declared_delegated_families
+      - open_failures_are_visible_and_bounded
+    required_checks:
+      - parity_evidence_review
+      - benchmark_evidence_review
+      - bounded_status_visibility_review
+    evidence_paths:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - tests/test_r86_completion.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Produce the governed parity matrix and benchmark evidence for the delegated family set without overstating coverage for fallback-owned rows.
 
 notes:
   bootstrap_history:
@@ -680,13 +724,25 @@ notes:
         - Every delegated or undelegated row names bounded scope, fallback ownership, and visible parity/benchmark status.
         - The manifest now explicitly guards against implying full resolve_stats delegation.
       promoted_next_tranche: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL:
+      outcome: completed
+      summary:
+        - The public compatibility entrypoint preserves `engine.stat_engine.resolve_stats` while performing bounded query-kernel delegation for the unambiguous approved family surface.
+        - Undelegated and ambiguous requests remain on the explicit `engine.stat_resolution_core.resolve_stats` fallback path.
+        - Targeted regressions prove bounded delegation and no-false-implication fallback behavior.
+      promoted_next_tranche: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
 
 
   phase_closeout:
     PH1:
+      outcome: completed
+      summary:
+        - The control stack now records one canonical plan, one active tranche, mapped archive/obligation posture, and phase-gated control truth sufficient to promote Phase 2 work.
+        - Historical Phase 1 notes remain in the tranche ledger, but they are no longer blockers for active Query Engine implementation tranches.
+      promoted_next_phase: PH2
+    PH2:
       outcome: in_progress
       summary:
-        - Phase 1A is closed and Phase 1B is now completed with roadmap absorption into the canonical plan.
-        - Phase 1C, 1D, and 1E remain pending before any promotion to Phase 2 is allowed.
-        - The control stack must not point to Phase 2 work until those Phase 1 tranches are complete.
+        - Phase 2A through 2D are complete enough to hand off to governed parity and benchmark proof work.
+        - Phase 2 remains open because family-scoped evidence and benchmark closure still belong to Phase 2E.
       promoted_next_phase: PH2
