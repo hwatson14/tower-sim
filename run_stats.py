@@ -54,7 +54,6 @@ from engine.display import (
 )
 from engine.stat_engine import resolve_stats
 from engine.verification import (
-    annotate_compare_display_fields as _annotate_compare_display_fields,
     build_compare_status_summary as _build_compare_status_summary,
     build_ep_compare as _build_ep_compare,
     build_line_by_line_verification as _build_line_by_line_verification,
@@ -567,62 +566,6 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
         'unsupported_facets': unsupported_facets,
         'notes': notes,
     }
-
-DISPLAY_SUFFIXES = [
-    (1e24, 'S'),
-    (1e21, 's'),
-    (1e18, 'Q'),
-    (1e15, 'q'),
-    (1e12, 'T'),
-    (1e9, 'B'),
-    (1e6, 'M'),
-    (1e3, 'k'),
-]
-
-
-def _trim_decimal_string(text: str) -> str:
-    return text.rstrip('0').rstrip('.') if '.' in text else text
-
-
-def _format_display_number(value) -> str | None:
-    try:
-        v = float(value)
-    except (TypeError, ValueError):
-        return None
-    sign = '-' if v < 0 else ''
-    av = abs(v)
-    for threshold, suffix in DISPLAY_SUFFIXES:
-        if av >= threshold:
-            scaled = av / threshold
-            decimals = 2 if scaled < 10 else (1 if scaled < 100 else 0)
-            txt = _trim_decimal_string(f"{scaled:.{decimals}f}")
-            return f"{sign}{txt}{suffix}"
-    if av == int(av):
-        return f"{int(v)}"
-    return _trim_decimal_string(f"{v:.3f}")
-
-
-def _format_display_value(value, value_type: str | None) -> str | None:
-    if value is None:
-        return None
-    vt = value_type or ''
-    if isinstance(value, bool):
-        return 'true' if value else 'false'
-    if vt in {'pct', 'percent_display'}:
-        num = _format_display_number(value)
-        return f"{num}%" if num is not None else str(value)
-    if vt in {'multiplier', 'multiplier_display'}:
-        num = _format_display_number(value)
-        return f"x{num}" if num is not None else f"x{value}"
-    return _format_display_number(value) or str(value)
-
-
-def _annotate_display_fields(statbook_dict: dict) -> None:
-    for row in statbook_dict.get('rows', {}).values():
-        row['display_value'] = _format_display_value(row.get('final_value'), row.get('value_type'))
-        for contributor in row.get('contributors', []):
-            contributor['display_value'] = _format_display_value(contributor.get('value'), contributor.get('value_type'))
-
 
 def _build_tower_regen_closure_report(ep_compare: dict) -> dict:
     dest = 'canonical_stat::tower_regen'
