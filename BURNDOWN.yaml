@@ -330,7 +330,6 @@ tranches:
       - ownership_ledger_review
       - regression_anchor_review
     evidence_paths:
-      - docs/phase2a_stat_input_compiler_ownership_ledger.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
@@ -376,7 +375,6 @@ tranches:
       - engine/query_state_mode_policy.py
       - engine/query_perk_compiler.py
       - engine/query_routing.py
-      - docs/phase2b_compiler_query_boundary_rationale.md
       - tests/test_state_mode_contracts.py
       - tests/test_perk_scaling.py
       - tests/test_r86_completion.py
@@ -540,7 +538,6 @@ tranches:
     depends_on:
       - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     owner_surfaces:
-      - docs/phase2c_covered_family_delegation_manifest.md
       - AI_EXECUTION_PLAN.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
@@ -576,7 +573,6 @@ tranches:
       - fallback_owner_review
       - no_false_implication_review
     evidence_paths:
-      - docs/phase2c_covered_family_delegation_manifest.md
       - AI_EXECUTION_PLAN.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
@@ -598,7 +594,6 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
       - tests/test_resolve_stats_delegation.py
-      - docs/phase2c_covered_family_delegation_manifest.md
     scope_in:
       - compatibility-entrypoint delegation routing
       - delegation only for manifest-approved covered families
@@ -640,8 +635,6 @@ tranches:
       - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
       - PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
     owner_surfaces:
-      - docs/phase2e_parity_and_benchmark_evidence.md
-      - docs/phase2c_covered_family_delegation_manifest.md
       - tests/test_resolve_stats_delegation.py
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
@@ -670,8 +663,6 @@ tranches:
       - delegated_benchmark_review
       - phase_gate_review
     evidence_paths:
-      - docs/phase2e_parity_and_benchmark_evidence.md
-      - docs/phase2c_covered_family_delegation_manifest.md
       - tests/test_resolve_stats_delegation.py
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
