@@ -13,3 +13,5 @@
 - Use `lab-values.csv` for exact numeric ladder lookups.
 - Use `lab-application-registry.csv` to route a lab into the correct simulator stat surface.
 - Use `lab-simulator-boundary-registry.csv` as the lab boundary registry and fail closed where an exact ladder is not bundled.
+
+- Advisory tables live under `../advisory/` and remain non-mechanical planner metadata.
