@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import importlib.util
+import ast
 from pathlib import Path
 import sys
 
@@ -21,13 +21,18 @@ def test_format_display_number_preserves_significant_integer_zeros():
 
 
 def test_run_stats_reexports_format_display_number():
-    spec = importlib.util.spec_from_file_location('run_stats_module', ROOT / 'run_stats.py')
-    module = importlib.util.module_from_spec(spec)
-    assert spec.loader is not None
-    spec.loader.exec_module(module)
-    assert module._format_display_number is _format_display_number
-    assert module._annotate_display_fields is annotate_display_fields
-    assert module._annotate_compare_display_fields is annotate_compare_display_fields
+    module = ast.parse((ROOT / 'run_stats.py').read_text())
+    engine_display_import = next(
+        node for node in module.body
+        if isinstance(node, ast.ImportFrom) and node.module == 'engine.display'
+    )
+    aliases = {alias.name: alias.asname for alias in engine_display_import.names}
+    assert aliases['_format_display_number'] is None
+    assert aliases['annotate_display_fields'] == '_annotate_display_fields'
+    assert aliases['annotate_compare_display_fields'] == '_annotate_compare_display_fields'
+    assert _format_display_number.__module__ == 'engine.display'
+    assert annotate_display_fields.__module__ == 'engine.display'
+    assert annotate_compare_display_fields.__module__ == 'engine.display'
 
 
 def test_display_helpers_preserve_output_contract():

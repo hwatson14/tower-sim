@@ -9,16 +9,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 from engine.boss_wave_engine import BossWaveEngine, BossWaveEngineConfig, ProgressionFixedInputs
 from engine.progression_state import build_progression_init_state
-from parsers.ids_parser import parse_ids
+from helpers import build_state
 
 pytestmark = pytest.mark.slow
-
-def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
 
 
 def test_enemy_table_lookup_interpolates_sparse_rows():
@@ -33,7 +28,7 @@ def test_enemy_table_lookup_interpolates_sparse_rows():
 
 
 def test_run_many_groups_configs_by_progression_signature():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     calls = {'count': 0}
@@ -58,7 +53,7 @@ def test_run_many_groups_configs_by_progression_signature():
 
 
 def test_boss_wave_engine_uses_no_warmup_skip_in_live_run():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -78,7 +73,7 @@ def test_boss_wave_engine_uses_no_warmup_skip_in_live_run():
 
 
 def test_run_many_splits_groups_when_skip_reduction_differs():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     calls = {'count': 0}
@@ -116,7 +111,7 @@ def test_run_many_splits_groups_when_skip_reduction_differs():
 
 
 def test_run_honours_scenario_owned_boss_cadence_interval():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     result = engine.run(
@@ -137,7 +132,7 @@ def test_run_honours_scenario_owned_boss_cadence_interval():
 
 
 def test_build_progression_snapshots_avoids_full_recompute_when_state_is_unchanged():
-    state = _build_state()
+    state = build_state()
     init = build_progression_init_state(state, preset_name='Farming', perk_timeline=[])
     engine = BossWaveEngine()
     calls = {'count': 0}
