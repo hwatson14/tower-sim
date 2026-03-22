@@ -21,6 +21,10 @@ KB_CANONICAL_STATS_PATH = KB_CONTRACTS / 'canonical-stats.yaml'
 KB_ALIASES_PATH = KB_CONTRACTS / 'name-aliases.yaml'
 RELIC_REGISTRY_PATH = KB_TABLES / 'relic-input-registry.csv'
 
+CARD_EFFECT_REGISTRY_PATH = KB / 'cards' / 'tables' / 'card-effect-registry.csv'
+THEME_SONG_REGISTRY_PATH = KB_TABLES / 'theme-song-input-registry.csv'
+LAB_APPLICATION_REGISTRY_PATH = KB / 'labs' / 'tables' / 'lab-application-registry.csv'
+
 COMPILER_ROUTING_POLICY_PATH = KB_CONTRACTS / 'compiler-routing-policy.yaml'
 
 
@@ -142,6 +146,49 @@ def _load_compiler_routing_policy() -> dict:
 
 def compiler_routing_policy() -> dict:
     return _load_compiler_routing_policy()
+
+
+@lru_cache(maxsize=1)
+def load_card_effect_targets() -> Dict[str, Tuple[str, str]]:
+    out: Dict[str, Tuple[str, str]] = {}
+    with CARD_EFFECT_REGISTRY_PATH.open(newline='') as f:
+        for row in csv.DictReader(f):
+            if row.get('layer') != 'base_card':
+                continue
+            target = row.get('target_surface', '').strip()
+            destination = CARD_TARGET_SURFACE_TO_DESTINATION.get(target)
+            if destination:
+                out[row['card_id']] = destination
+    return out
+
+
+@lru_cache(maxsize=1)
+def load_lab_application_registry() -> Dict[str, Dict[str, str]]:
+    out: Dict[str, Dict[str, str]] = {}
+    with LAB_APPLICATION_REGISTRY_PATH.open(newline='') as f:
+        for row in csv.DictReader(f):
+            name = str(row['lab_primary_name']).strip()
+            out[name] = row
+            out[slug_text(name)] = row
+    return out
+
+
+@lru_cache(maxsize=1)
+def load_theme_song_registry() -> Dict[str, Tuple[str, str, str]]:
+    out: Dict[str, Tuple[str, str, str]] = {}
+    if not THEME_SONG_REGISTRY_PATH.exists():
+        return out
+    with THEME_SONG_REGISTRY_PATH.open(newline='', encoding='utf-8') as fh:
+        reader = csv.DictReader(fh)
+        for row in reader:
+            cid = (row.get('contributor_id') or '').strip()
+            if cid:
+                out[cid] = (
+                    (row.get('destination_object_type') or '').strip(),
+                    (row.get('destination_id') or '').strip(),
+                    (row.get('resolver_id') or '').strip(),
+                )
+    return out
 
 # UW lab destinations for labs not yet in LAB_APPLICATION_TARGET_TO_DESTINATION
 _UW_LAB_DIRECT_DESTINATION: Dict[str, Tuple[str, str]] = {

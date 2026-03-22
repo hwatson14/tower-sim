@@ -316,9 +316,9 @@ tranches:
   - id: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
     title: Compiler/query seam extraction
     phase_id: PH2
-    delivery_status: in_progress
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     owner_surfaces:
@@ -348,7 +348,15 @@ tranches:
     required_checks:
       - seam_extraction_review
       - compatibility_regression_review
-    evidence_paths: []
+    evidence_paths:
+      - compilers/stat_input_compiler.py
+      - engine/query_state_mode_policy.py
+      - engine/query_perk_compiler.py
+      - engine/query_routing.py
+      - docs/phase2b_compiler_query_boundary_rationale.md
+      - tests/test_state_mode_contracts.py
+      - tests/test_perk_scaling.py
+      - tests/test_r86_completion.py
     blockers: []
     next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
 
