@@ -1,9 +1,9 @@
 version: 2
 program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
-active_phase_id: PH2
-active_phase_name: Query Engine ownership completion
-active_tranche_id: PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+active_phase_id: PH3
+active_phase_name: Objective-state promotion
+active_tranche_id: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
 
 status_dimensions:
   delivery:
@@ -159,9 +159,9 @@ tranches:
   - id: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     title: R86 obligation closure ledger
     phase_id: PH1
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
@@ -201,14 +201,14 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
     blockers: []
-    next_action: Wait for Phase 1B completion, then execute the R86 obligation closure ledger without beginning Phase 1D or later work early.
+    next_action: Completed; the R86 obligation closure ledger now lives in AI_EXECUTION_PLAN.md, so legacy obligations are mapped without parallel active-scope ambiguity.
 
   - id: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
     title: Archive disposition ledger
     phase_id: PH1
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
@@ -247,14 +247,14 @@ tranches:
       - els_coin_calc_final_merge_candidate_r94.zip
       - BURNDOWN.yaml
     blockers: []
-    next_action: Wait for Phase 1C completion, then execute archive disposition tracking for the remaining root artifacts.
+    next_action: Completed; AI_EXECUTION_PLAN.md now owns the archive disposition ledger and root archive artifacts are bounded as historical inputs rather than parallel implementation truth.
 
   - id: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
     title: Control-stack alignment
     phase_id: PH1
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
       - PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
@@ -286,7 +286,7 @@ tranches:
       - README.md
       - ARCHITECTURE.md
     blockers: []
-    next_action: Wait until Phase 1B, 1C, and 1D are completed; only then align the control stack and promote Phase 2.
+    next_action: Completed; control-stack files and major doc pointers were aligned to the canonical plan, making Phase 2 promotion unambiguous.
 
   - id: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     title: stat_input_compiler.py function-level ownership ledger
@@ -381,6 +381,50 @@ tranches:
     blockers: []
     next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
 
+
+  - id: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
+    title: Objective-state contracts and maturity ledger
+    phase_id: PH3
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
+    scope_in:
+      - objective-state contract declarations for eHP, eDamage, and eEcon
+      - maturity labels and known-gap statements
+      - contributor-trace expectation definitions for each objective surface
+    scope_out:
+      - objective formula implementation changes
+      - optimizer rewires
+      - evaluator implementation
+    required_outputs:
+      - objective_state_contract_rows
+      - objective_state_maturity_ledger
+      - contributor_trace_expectation_rows
+    acceptance_criteria:
+      - all_three_objective_states_have_declared_query_surfaces
+      - maturity_labels_and_known_gap_statements_are_explicit
+      - contributor_trace_expectations_are_defined_for_each_objective_surface
+      - the_next_phase3_promotion_tranches_are_unblocked_without_guessing
+    required_checks:
+      - objective_state_contract_review
+      - maturity_ledger_review
+      - trace_expectation_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
+    blockers: []
+    next_action: Start Phase 3 by declaring the governed objective-state contract and maturity surfaces before any per-objective implementation tranche begins.
 
   - id: PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
     title: Resource-income query surfaces for deterministic economy truth
@@ -690,19 +734,22 @@ notes:
         - Remaining roadmap-only planning truth is absorbed into AI_EXECUTION_PLAN.md, so no parallel roadmap file remains canonical.
       promoted_next_tranche: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
     PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER:
-      outcome: not_started
+      outcome: completed
       summary:
-        - Pending after Phase 1B.
+        - The remaining R86 obligation map is now absorbed into AI_EXECUTION_PLAN.md as the canonical ledger.
+        - Landed obligations are separated from open work so legacy R86 language no longer acts as ambiguous active scope.
       promoted_next_tranche: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
     PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER:
-      outcome: not_started
+      outcome: completed
       summary:
-        - Pending after Phase 1C.
+        - Root archive artifact disposition and retirement posture now live in AI_EXECUTION_PLAN.md as the canonical archive ledger.
+        - Archive inputs remain historical evidence only and are no longer parallel implementation truth.
       promoted_next_tranche: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
     PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT:
-      outcome: not_started
+      outcome: completed
       summary:
-        - Pending after Phase 1B, 1C, and 1D complete.
+        - ACTIVE_TRANCHE.md, BURNDOWN.yaml, and major doc pointers were aligned to the canonical execution plan and phase-gated control stack.
+        - Phase 2 promotion became unambiguous once the absorbed Phase 1 ledgers landed in AI_EXECUTION_PLAN.md.
       promoted_next_tranche: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
     PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER:
       outcome: completed
@@ -731,7 +778,7 @@ notes:
         - Every manifest family now has an explicit pass/fail/open evidence status.
         - Delegated benchmark evidence is recorded only for the currently delegated compatibility workload and its failure is visible.
         - The Phase 2 exit-gate outcome is explicit: the current governed gate is satisfied and the phase is ready to exit.
-      promoted_next_tranche: PH3-TRANCHE-A_EHP_SURFACE_DECLARATION
+      promoted_next_tranche: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
 
 
   phase_closeout:
@@ -742,13 +789,7 @@ notes:
         - Historical Phase 1 notes remain in the tranche ledger, but they are no longer blockers for active Query Engine implementation tranches.
       promoted_next_phase: PH2
     PH2:
-      outcome: in_progress
-      summary:
-        - Phase 2A through 2D are complete enough to hand off to governed parity and benchmark proof work.
-        - Phase 2 remains open because family-scoped evidence and benchmark closure still belong to Phase 2E.
-      promoted_next_phase: PH2
-    PH2:
-      outcome: done
+      outcome: completed
       summary:
         - The compiler/query seam is no longer materially owner-ambiguous under the Phase 2 owner model.
         - The covered-family manifest, explicit delegation boundary, parity visibility, benchmark evidence, and compatibility-entrypoint preservation are all recorded.

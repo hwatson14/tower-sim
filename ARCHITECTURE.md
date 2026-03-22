@@ -85,7 +85,7 @@ kb/{domain}/
 |---|---|---|
 | `parsers/ids_parser.py` | 101 | Parse raw IDS CSV export into structured sections |
 | `compilers/account_state_compiler.py` | 534 | Build AccountState from parsed IDS + loadout + perk config |
-| `compilers/stat_input_compiler.py` | 2,135 | Compile stat input rows (straddles Inputs and Query Engine — see note above) |
+| `compilers/stat_input_compiler.py` | 1,354 | Compile stat input rows (straddles Inputs and Query Engine — see note above) |
 | `models/account_state.py` | 118 | AccountState data model |
 | `models/ids_raw.py` | 13 | Raw IDS data model |
 | `models/stat_input.py` | 26 | StatInput data model |
@@ -237,7 +237,7 @@ python run_stats.py
           Output serialisation
 ```
 
-`run_stats.py` is 3,066 lines because it currently owns orchestration plus ~2,000 lines of embedded verification, analysis, and formatting concerns. These will eventually migrate into their proper layers as the architecture matures. This is a known debt, not a surprise.
+`run_stats.py` is 2,643 lines because it currently owns orchestration plus ~2,000 lines of embedded verification, analysis, and formatting concerns. These will eventually migrate into their proper layers as the architecture matures. This is a known debt, not a surprise.
 
 ---
 
