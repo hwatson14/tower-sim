@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import math
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -19,29 +20,34 @@ def _load_statbook():
     return json.loads(path.read_text())
 
 
+@lru_cache(maxsize=1)
+def _optimizer_scores():
+    sb = _load_statbook()
+    if sb is None:
+        return None
+    return compute_optimizer_scores(sb)
+
+
 # ═══ Structure tests ═══
 
 
 def test_has_all_objectives():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     assert 'objectives' in result
     for name in ('ehp', 'edamage', 'eecon'):
         assert name in result['objectives']
 
 
 def test_has_meta_v3():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     assert result['meta']['version'] == 'v3'
 
 
 def test_each_objective_has_required_keys():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     for name, obj in result['objectives'].items():
         assert 'score' in obj, f'{name} missing score'
         assert 'display' in obj, f'{name} missing display'
@@ -53,33 +59,29 @@ def test_each_objective_has_required_keys():
 
 
 def test_scores_are_positive_and_finite():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     for name, obj in result['objectives'].items():
         assert obj['score'] > 0, f'{name} score should be positive'
         assert math.isfinite(obj['score']), f'{name} score is not finite'
 
 
 def test_display_not_empty():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     for name, obj in result['objectives'].items():
         assert obj['display'] and obj['display'] != 'N/A', f'{name} display is empty'
 
 
 def test_ehp_accuracy_is_ep_verified():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     assert result['objectives']['ehp']['accuracy'] == 'ep_verified'
 
 
 def test_edamage_and_eecon_accuracy_is_expanded_proxy():
-    sb = _load_statbook()
-    if sb is None: return
-    result = compute_optimizer_scores(sb)
+    result = _optimizer_scores()
+    if result is None: return
     assert result['objectives']['edamage']['accuracy'] == 'expanded_proxy'
     assert result['objectives']['eecon']['accuracy'] == 'expanded_proxy'
 
