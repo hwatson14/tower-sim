@@ -14,6 +14,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from compilers.account_state_compiler import compile_account_state
+from engine.progression_recalc_bridge import materialize_progression_family_baseline
+from engine.scenario_engine import ScenarioConfig
+from engine.timing_engine import materialize_timing_family_baseline
 from parsers.ids_parser import parse_ids
 
 

@@ -1,6 +1,6 @@
 contract_id: stat_query_surface_ownership_ledger_v3
 surface_nodes:
-  - node_id: canonical_stat::package_chance_pct
+  - node_id: state::tower.package_chance_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
@@ -30,7 +30,7 @@ surface_nodes:
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+  - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     ownership_class: environment
     ownership_status: query_owned
     governed_by: canonical_query_engine
@@ -40,47 +40,47 @@ surface_nodes:
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::tower_hp
+  - node_id: state::tower.hp
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::wall_hp
+  - node_id: state::wall.hp
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::wall_regen
+  - node_id: state::wall.regen
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::wall_fortification_multiplier
+  - node_id: state::wall.fortification_multiplier
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::tower_defense_pct
+  - node_id: state::tower.defense_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::tower_thorns_damage_pct
+  - node_id: state::tower.thorns_damage_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::tower_orb_count
+  - node_id: state::tower.orb_count
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::tower_orb_speed_rpm
+  - node_id: state::tower.orb_speed_rpm
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: runtime_mechanic_param::cards.plasma_cannon.effect_pct
+  - node_id: state::cards.plasma_cannon.effect_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
@@ -100,27 +100,27 @@ surface_nodes:
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::free_attack_upgrade_chance_pct
+  - node_id: state::tower.free_attack_upgrade_chance_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::free_defense_upgrade_chance_pct
+  - node_id: state::tower.free_defense_upgrade_chance_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::free_utility_upgrade_chance_pct
+  - node_id: state::tower.free_utility_upgrade_chance_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::enemy_attack_level_skip_pct
+  - node_id: state::tower.enemy_attack_level_skip_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
     downstream_policy: consume_only_no_rederivation
-  - node_id: canonical_stat::enemy_health_level_skip_pct
+  - node_id: state::tower.enemy_health_level_skip_pct
     ownership_class: surface
     ownership_status: query_owned
     governed_by: canonical_query_engine
@@ -137,14 +137,14 @@ runtime_consumers:
     governed_by: runtime_simulation
     downstream_policy: consume_query_owned_surfaces_only
     consumes:
-      - canonical_stat::enemy_attack_level_skip_pct
+      - state::tower.enemy_attack_level_skip_pct
   - node_id: runtime_consumer::wave_progression.health_wave
     ownership_class: surface
     ownership_status: simulator_owned
     governed_by: runtime_simulation
     downstream_policy: consume_query_owned_surfaces_only
     consumes:
-      - canonical_stat::enemy_health_level_skip_pct
+      - state::tower.enemy_health_level_skip_pct
 runtime_domains:
   - node_id: runtime_domain::event_ordering
     ownership_class: out_of_scope

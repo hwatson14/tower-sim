@@ -2,7 +2,7 @@ contract_id: stat_query_initial_surface_set_v3
 families:
   timing_v1:
     surfaces:
-      - surface_id: canonical_stat::package_chance_pct
+      - surface_id: state::tower.package_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: timing
@@ -99,7 +99,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: Galaxy Compressor unique-effect cooldown reduction seconds consumed by timing mechanics.
-      - surface_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+      - surface_id: state::cards.wave_accelerator.spawn_rate_acceleration
         surface_kind: runtime_mechanic_surface
         surface_class: environment
         domain: cards
@@ -145,12 +145,12 @@ families:
           - support_surface::timing.gcomp_cooldown_reduction_seconds
       - bundle_id: timing_wave_duration
         surface_ids:
-          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+          - state::cards.wave_accelerator.spawn_rate_acceleration
           - support_surface::timing.wave_duration_seconds_effective
-          - canonical_stat::package_chance_pct
+          - state::tower.package_chance_pct
   progression_v1:
     surfaces:
-      - surface_id: canonical_stat::tower_hp
+      - surface_id: state::tower.hp
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -166,7 +166,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved tower health stat available to progression queries.
-      - surface_id: canonical_stat::wall_hp
+      - surface_id: state::wall.hp
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -182,7 +182,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved wall health stat available to progression queries.
-      - surface_id: canonical_stat::wall_regen
+      - surface_id: state::wall.regen
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -198,7 +198,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved wall regen stat available to progression queries.
-      - surface_id: canonical_stat::wall_fortification_multiplier
+      - surface_id: state::wall.fortification_multiplier
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -214,7 +214,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved wall fortification multiplier available to progression queries.
-      - surface_id: canonical_stat::tower_defense_pct
+      - surface_id: state::tower.defense_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -230,7 +230,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved tower defense percent available to progression queries.
-      - surface_id: canonical_stat::tower_thorns_damage_pct
+      - surface_id: state::tower.thorns_damage_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -246,7 +246,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved tower thorns damage percent available to progression queries.
-      - surface_id: canonical_stat::tower_orb_count
+      - surface_id: state::tower.orb_count
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -262,7 +262,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved orb count stat consumed by progression and combat-adjacent deterministic queries.
-      - surface_id: canonical_stat::tower_orb_speed_rpm
+      - surface_id: state::tower.orb_speed_rpm
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -278,7 +278,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved orb speed in revolutions per minute consumed by progression and combat-adjacent deterministic queries.
-      - surface_id: runtime_mechanic_param::cards.plasma_cannon.effect_pct
+      - surface_id: state::cards.plasma_cannon.effect_pct
         surface_kind: runtime_mechanic_surface
         surface_class: surface
         domain: cards
@@ -342,7 +342,7 @@ families:
         debug_only: true
         scenario_scoped: true
         semantics: resolved Primordial Collapse enemy damage reduction percent inside Black Hole reserved for bounded optimizer analysis.
-      - surface_id: canonical_stat::free_attack_upgrade_chance_pct
+      - surface_id: state::tower.free_attack_upgrade_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -358,7 +358,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved free attack upgrade chance percent before runtime wave mutation deltas.
-      - surface_id: canonical_stat::free_defense_upgrade_chance_pct
+      - surface_id: state::tower.free_defense_upgrade_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -374,7 +374,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved free defense upgrade chance percent before runtime wave mutation deltas.
-      - surface_id: canonical_stat::free_utility_upgrade_chance_pct
+      - surface_id: state::tower.free_utility_upgrade_chance_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -390,7 +390,7 @@ families:
         debug_only: false
         scenario_scoped: false
         semantics: resolved free utility upgrade chance percent before runtime wave mutation deltas.
-      - surface_id: canonical_stat::enemy_attack_level_skip_pct
+      - surface_id: state::tower.enemy_attack_level_skip_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -406,7 +406,7 @@ families:
         debug_only: false
         scenario_scoped: true
         semantics: resolved enemy attack level skip percent consumed by wave progression runtime consumers.
-      - surface_id: canonical_stat::enemy_health_level_skip_pct
+      - surface_id: state::tower.enemy_health_level_skip_pct
         surface_kind: canonical_surface
         surface_class: surface
         domain: progression
@@ -445,14 +445,14 @@ families:
     query_bundles:
       - bundle_id: progression_free_upgrades
         surface_ids:
-          - canonical_stat::free_attack_upgrade_chance_pct
-          - canonical_stat::free_defense_upgrade_chance_pct
-          - canonical_stat::free_utility_upgrade_chance_pct
+          - state::tower.free_attack_upgrade_chance_pct
+          - state::tower.free_defense_upgrade_chance_pct
+          - state::tower.free_utility_upgrade_chance_pct
           - support_surface::free_upgrade_multiplier
       - bundle_id: progression_wave_skips
         surface_ids:
-          - canonical_stat::enemy_attack_level_skip_pct
-          - canonical_stat::enemy_health_level_skip_pct
+          - state::tower.enemy_attack_level_skip_pct
+          - state::tower.enemy_health_level_skip_pct
       - bundle_id: optimizer_module_effects
         surface_ids:
           - mechanic_param::module.primordial_collapse.bh_damage_reduction_pct

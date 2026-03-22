@@ -1,5 +1,7 @@
 # R86 worked examples
 
+> Historical note: these examples are preserved as human-readable reference fixtures. Current tranche and status truth lives in the control stack and `AI_EXECUTION_PLAN.md`.
+
 ## Example 1: baseline contributor-map rows
 
 Scenario:
@@ -83,3 +85,7 @@ trace:
     - canonical_stat::package_chance_pct
     - support_surface::timing.gcomp_cooldown_reduction_seconds
 ```
+
+## Phase 1C disposition
+- Preserve these examples as reference material for future Query Engine tests and parity/trace evidence.
+- Do not treat this file as a second status ledger or a permission slip for broader scope expansion.

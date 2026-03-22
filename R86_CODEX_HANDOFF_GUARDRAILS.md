@@ -1,5 +1,7 @@
 # R86 Codex handoff guardrails
 
+> Historical note: this handoff file is preserved as bounded-scope context. Current obligation/status truth is mapped in `AI_EXECUTION_PLAN.md` and the active control stack.
+
 ## Hard rules
 1. Do not create a parallel scenario contract stack.
 2. Do not create a second truth-owning stat engine.
@@ -29,3 +31,8 @@
 - one baseline contributor-map example
 - one overlay delta example
 - one resolved query response example
+
+## Phase 1C disposition
+- Treat the hard rules here as preserved implementation constraints, not as a second active plan.
+- Treat the allowed domains and worked-example preservation notes as historical guardrails now mapped to Phase 2 Query Engine work.
+- If this file conflicts with `AI_EXECUTION_PLAN.md`, the execution plan and control stack win.

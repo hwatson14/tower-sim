@@ -13,6 +13,20 @@ The repo truth model is:
 
 Do not invent mechanics, aliases, caps, or formulas. If the KB and code disagree, stop and resolve the mismatch before adding more code.
 
+## Execution control
+
+When the repo contains the control stack files below, use them as the execution system for Codex work:
+- `AI_EXECUTION_PLAN.md` = canonical whole-program plan
+- `ACTIVE_TRANCHE.md` = only active implementation scope
+- `BURNDOWN.yaml` = live phase/tranche delivery and verification state
+
+Rules:
+- Do not infer active scope from the execution plan alone when `ACTIVE_TRANCHE.md` exists.
+- Do not treat `BURNDOWN.yaml` dependencies or phase gates as advisory; respect them as ordering constraints.
+- All work is phase-gated: all tranches in the current phase must complete before the next phase begins.
+- Parallel work is allowed only across tranches inside the same phase and only when they do not touch the same owner surfaces.
+- Update tranche and burndown state when work changes their truth.
+
 ## Core commands
 
 Install editable dev environment:

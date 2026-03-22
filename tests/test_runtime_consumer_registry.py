@@ -25,12 +25,12 @@ def test_runtime_consumer_registry_exposes_skip_consumers():
     rules = {rule.consumer_id: rule for rule in list_runtime_consumer_rules()}
     assert 'runtime_consumer::wave_progression.attack_wave' in rules
     assert 'runtime_consumer::wave_progression.health_wave' in rules
-    assert rules['runtime_consumer::wave_progression.attack_wave'].source_node_ids == ('canonical_stat::enemy_attack_level_skip_pct',)
-    assert rules['runtime_consumer::wave_progression.health_wave'].source_node_ids == ('canonical_stat::enemy_health_level_skip_pct',)
+    assert rules['runtime_consumer::wave_progression.attack_wave'].source_node_ids == ('state::tower.enemy_attack_level_skip_pct',)
+    assert rules['runtime_consumer::wave_progression.health_wave'].source_node_ids == ('state::tower.enemy_health_level_skip_pct',)
 
 
 def test_impacted_runtime_consumers_filters_by_dirty_nodes():
-    impacted = {rule.consumer_id for rule in impacted_runtime_consumers({'canonical_stat::enemy_attack_level_skip_pct'})}
+    impacted = {rule.consumer_id for rule in impacted_runtime_consumers({'state::tower.enemy_attack_level_skip_pct'})}
     assert impacted == {'runtime_consumer::wave_progression.attack_wave'}
 
 
@@ -59,12 +59,12 @@ def test_runtime_consumers_consume_query_owned_surfaces_without_rederiving_them(
             'must be simulator_owned and governed_by runtime_simulation',
         ),
         (
-            lambda ledger: ledger['runtime_consumers'][0].__setitem__('consumes', ['canonical_stat::tower_hp']),
+            lambda ledger: ledger['runtime_consumers'][0].__setitem__('consumes', ['state::tower.hp']),
             'ownership ledger consumes',
         ),
         (
             lambda ledger: next(
-                row for row in ledger['surface_nodes'] if row['node_id'] == 'canonical_stat::enemy_attack_level_skip_pct'
+                row for row in ledger['surface_nodes'] if row['node_id'] == 'state::tower.enemy_attack_level_skip_pct'
             ).__setitem__('downstream_policy', 'rederive_allowed'),
             'must forbid downstream re-derivation',
         ),
@@ -88,7 +88,7 @@ def test_runtime_consumer_ownership_contract_fails_closed_for_invalid_ledgers(tm
 
 def test_runtime_consumer_bundle_contract_fails_closed_for_mismatched_bundle_surfaces(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     contract = copy.deepcopy(runtime_consumer_registry.load_consumer_bundle_contract())
-    contract['consumers'][1]['bundles'][0]['required_surface_ids'] = ['canonical_stat::enemy_health_level_skip_pct']
+    contract['consumers'][1]['bundles'][0]['required_surface_ids'] = ['state::tower.enemy_health_level_skip_pct']
     contract_path = tmp_path / 'stat-query-consumer-bundles.yaml'
     contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
     monkeypatch.setattr(runtime_consumer_registry, '_CONSUMER_BUNDLE_PATH', contract_path)

@@ -1,0 +1,692 @@
+version: 2
+program: tower-sim-execution
+canonical_plan: AI_EXECUTION_PLAN.md
+active_phase_id: PH2
+active_phase_name: Query Engine ownership completion
+active_tranche_id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+
+status_dimensions:
+  delivery:
+    - not_started
+    - in_progress
+    - implemented
+    - blocked
+    - done
+  verification:
+    - not_verified
+    - partial
+    - verified
+  review:
+    - draft
+    - ready_for_review
+    - approved
+
+phase_gates:
+  - phase_id: PH1
+    phase_name: Canonical planning truth and archive closure
+    exit_requires:
+      - bootstrap_tranche_closed_or_superseded
+      - one_canonical_plan_exists_and_is_current
+      - roadmap_content_absorbed
+      - major_docs_do_not_contradict_plan
+      - all_root_archive_artifacts_have_documented_disposition
+      - current_open_obligations_mapped_to_concrete_work
+      - control_files_use_same_phase_and_tranche_vocabulary
+  - phase_id: PH2
+    phase_name: Query Engine ownership completion
+    exit_requires:
+      - compiler_query_seam_not_materially_owner_ambiguous
+      - covered_family_manifest_exists_and_is_current
+      - covered_family_delegation_is_explicit_and_governed
+      - parity_status_exists_by_declared_family_and_surface
+      - benchmark_evidence_exists_for_delegated_path
+      - compatibility_entrypoint_preserved
+      - no_major_doc_implies_dual_ownership
+  - phase_id: PH3
+    phase_name: Objective-state promotion
+    exit_requires:
+      - all_three_objective_states_have_declared_query_surfaces
+      - optimizer_does_not_own_canonical_objective_formulas
+      - maturity_labels_and_known_gap_statements_are_explicit
+      - parity_or_accepted_model_evidence_exists_per_objective_state
+      - contributor_trace_expectations_are_defined_for_each_objective_surface
+  - phase_id: PH4
+    phase_name: Verification and evaluator foundation
+    exit_requires:
+      - governed_verification_registries_exist
+      - evaluator_inputs_outputs_and_assumptions_are_explicit
+      - reference_corpus_exists_for_evaluator_verification
+      - evaluator_verification_status_is_visible_by_case_family
+      - comparison_and_verification_are_less_embedded_in_run_stats
+  - phase_id: PH8
+    phase_name: Optimiser product surfaces
+    exit_requires:
+      - optimizers_consume_stable_lower_layer_surfaces
+      - objective_families_are_explicit
+      - recommendation_confidence_and_trust_logic_are_visible
+      - save_vs_spend_branching_is_governed_not_ad_hoc
+
+tranches:
+  - id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    title: Control-stack closeout and tranche promotion
+    phase_id: PH1
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on: []
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
+    scope_in:
+      - bootstrap tranche closeout
+      - canonical plan reference rename
+      - phase-gated control-stack promotion
+      - major doc pointer alignment
+    scope_out:
+      - runtime mechanic changes
+      - Query Engine code changes
+      - archive content implementation
+      - simulator or optimiser work
+    required_outputs:
+      - control_stack_closeout_note
+      - updated_active_tranche
+      - updated_burndown
+      - updated_major_doc_pointers
+    acceptance_criteria:
+      - bootstrap_tranche_closed_or_superseded
+      - active_tranche_points_to_phase_gated_system
+      - burndown_uses_phase_gated_ids
+      - no_major_control_file_points_to_old_plan_name
+      - next_executable_phase1_tranche_is_unambiguous
+    required_checks:
+      - bootstrap_acceptance_review
+      - control_file_consistency_review
+      - stale_reference_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
+    blockers: []
+    next_action: Execute Phase 1B now that the bootstrap tranche is closed and the control stack is promoted.
+
+  - id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+    title: Canonical plan and terminology unification
+    phase_id: PH1
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on:
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - ARCHITECTURE.md
+      - README.md
+      - AGENTS.md
+    scope_in:
+      - canonical plan finalization
+      - terminology alignment across major docs
+      - roadmap deletion_or_retention_decision
+    scope_out:
+      - runtime mechanic changes
+      - product feature implementation
+    required_outputs:
+      - canonical_execution_plan
+      - aligned_major_doc_language
+      - roadmap_deletion_or_retention_decision
+    acceptance_criteria:
+      - one_canonical_execution_plan_exists
+      - no_major_doc_contradicts_layer_or_phase_language
+      - roadmap_content_absorbed_or_explicitly_rejected
+    required_checks:
+      - terminology_consistency_review
+      - major_doc_pointer_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - README.md
+      - ARCHITECTURE.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Completed; AI_EXECUTION_PLAN.md now absorbs the remaining roadmap-only planning truth and the roadmap artifact can be deleted safely.
+
+  - id: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
+    title: R86 obligation closure ledger
+    phase_id: PH1
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - R86_CODEX_HANDOFF_GUARDRAILS.md
+      - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
+      - R86_WORKED_EXAMPLES.md
+    scope_in:
+      - legacy obligation mapping
+    scope_out:
+      - direct code changes
+      - archive merges
+    required_outputs:
+      - r86_obligation_closure_ledger
+    required_output_schema:
+      - source_doc
+      - source_section
+      - obligation_type
+      - current_status
+      - mapped_phase
+      - mapped_tranche
+      - owner_surface
+      - evidence_or_gap
+      - notes
+    acceptance_criteria:
+      - every_still_relevant_r86_obligation_is_mapped
+      - landed_items_are_separated_from_open_items
+      - vague_r86_complete_incomplete_wording_removed
+    required_checks:
+      - r86_mapping_review
+      - obligation_status_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - R86_CODEX_HANDOFF_GUARDRAILS.md
+      - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
+      - R86_WORKED_EXAMPLES.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Wait for Phase 1B completion, then execute the R86 obligation closure ledger without beginning Phase 1D or later work early.
+
+  - id: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
+    title: Archive disposition ledger
+    phase_id: PH1
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - root_archive_artifacts
+    scope_in:
+      - archive disposition tracking
+    scope_out:
+      - archive content implementation
+      - runtime feature work
+    required_outputs:
+      - archive_disposition_ledger
+    required_output_schema:
+      - artifact
+      - disposition
+      - why
+      - absorbed_into
+      - still_open_items
+      - retirement_condition
+      - merge_as_is_allowed
+    acceptance_criteria:
+      - each_root_artifact_has_one_disposition_only
+      - retirement_conditions_are_explicit
+      - direct_merge_forbidden_artifacts_are_named
+    required_checks:
+      - archive_disposition_review
+      - retirement_condition_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - R86_CODEX_HANDOFF_GUARDRAILS.md
+      - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
+      - R86_WORKED_EXAMPLES.md
+      - final_naming_contract_reconstruction.patch
+      - towersim_merge_candidate_r93_phases1to3.zip
+      - module_optimiser_pack14_cumulative_merge_candidate.zip
+      - els_coin_calc_final_merge_candidate_r94.zip
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Wait for Phase 1C completion, then execute archive disposition tracking for the remaining root artifacts.
+
+  - id: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
+    title: Control-stack alignment
+    phase_id: PH1
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+      - PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
+      - PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
+    owner_surfaces:
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
+    scope_in:
+      - control-file and doc pointer alignment
+    scope_out:
+      - Phase 2 implementation work
+    required_outputs:
+      - updated_active_tranche
+      - updated_burndown
+      - updated_doc_references
+    acceptance_criteria:
+      - phase_and_tranche_ids_are_consistent
+      - no_stale_plan_filename_remains
+      - control_files_point_to_canonical_truth
+    required_checks:
+      - control_stack_consistency_review
+    evidence_paths:
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - AI_EXECUTION_PLAN.md
+      - README.md
+      - ARCHITECTURE.md
+    blockers: []
+    next_action: Wait until Phase 1B, 1C, and 1D are completed; only then align the control stack and promote Phase 2.
+
+  - id: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    title: stat_input_compiler.py function-level ownership ledger
+    phase_id: PH2
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on:
+      - PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
+    owner_surfaces:
+      - compilers/stat_input_compiler.py
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    scope_in:
+      - function-level ownership classification
+      - target-owner mapping
+      - regression-anchor mapping
+    scope_out:
+      - code extraction
+      - formula rewrites
+      - opportunistic cleanup
+    required_outputs:
+      - stat_input_compiler_function_level_ownership_ledger
+    required_output_schema:
+      - unit_id
+      - unit_type
+      - source_lines
+      - current_owner
+      - target_owner
+      - action
+      - justification
+      - target_module
+      - test_anchor
+      - move_now_or_later
+    acceptance_criteria:
+      - no_major_unit_remains_unclassified
+      - every_move_or_split_has_a_destination
+      - risky_moves_identify_regression_anchors
+    required_checks:
+      - ownership_ledger_review
+      - regression_anchor_review
+    evidence_paths:
+      - docs/phase2a_stat_input_compiler_ownership_ledger.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Completed; use the ledger to govern Phase 2B seam extraction without guessing about unit ownership or destination surfaces.
+
+  - id: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    title: Compiler/query seam extraction
+    phase_id: PH2
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on:
+      - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    owner_surfaces:
+      - compilers/stat_input_compiler.py
+      - engine/query_routing.py
+      - Query Engine owner surfaces approved by the Phase 2A ledger
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    scope_in:
+      - approved Query Engine-owned seam extraction
+      - compatibility entrypoint preservation
+      - targeted regression coverage for moved behavior
+    scope_out:
+      - formula rewrites
+      - StatInput schema redesign
+      - generic helper sinks
+      - undeclared family expansion
+    required_outputs:
+      - extracted_owner_correct_code_changes
+      - updated_boundary_rationale
+      - updated_regression_coverage
+    acceptance_criteria:
+      - only_ledger_approved_query_engine_units_move
+      - compatibility_entrypoint_preserved
+      - targeted_regressions_cover_moved_behavior
+      - compiler_query_boundary_is_less_owner_ambiguous
+    required_checks:
+      - seam_extraction_review
+      - compatibility_regression_review
+    evidence_paths:
+      - compilers/stat_input_compiler.py
+      - engine/query_state_mode_policy.py
+      - engine/query_perk_compiler.py
+      - engine/query_routing.py
+      - docs/phase2b_compiler_query_boundary_rationale.md
+      - tests/test_state_mode_contracts.py
+      - tests/test_perk_scaling.py
+      - tests/test_r86_completion.py
+    blockers: []
+    next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
+
+
+  - id: PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    title: Resource-income query surfaces for deterministic economy truth
+    phase_id: PH3
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - kb/economy/contracts
+      - kb/economy/tables
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - deterministic resource-income semantic contract
+      - query-owned resource-income surface promotion
+      - explicit unsupported-resource declarations for non-deterministic income surfaces
+      - eecon lower-layer economy inputs needed for later optimiser/evaluator consumers
+    scope_out:
+      - optimiser recommendation logic
+      - evaluator implementation
+      - save-vs-spend branching
+      - advisory-only guessed income models
+    required_outputs:
+      - resource_income_contract_rows
+      - query_owned_resource_income_surfaces
+      - ownership_ledger_updates
+      - bounded_consumer_bundle_updates
+    acceptance_criteria:
+      - every_supported_resource_income_surface_has_kb_backed_semantics_and_units
+      - unsupported_resource_income_surfaces_fail_closed_explicitly
+      - objective_state_eecon_inputs_are_query_governed_not_optimizer_local
+      - resource_income_surfaces_are_declared_and_owned_once
+    required_checks:
+      - economy_contract_review
+      - query_surface_registry_review
+      - bounded_consumer_bundle_review
+    evidence_paths: []
+    blockers: []
+    next_action: Start after Phase 2 completes and Phase 3 objective-state contract work is stable.
+
+  - id: PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
+    title: Optimizer rewire to consume resource-income and eecon query surfaces
+    phase_id: PH3
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    owner_surfaces:
+      - optimizer/scorer.py
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - optimizer consumption of query-owned economy truth
+      - removal of canonical economy ownership from optimizer-local formulas
+      - targeted regression coverage for eecon/resource-income consumers
+    scope_out:
+      - resource-family optimizer product expansion
+      - evaluator implementation
+      - save-vs-spend branching
+    required_outputs:
+      - optimizer_resource_income_bundle_consumption
+      - reduced_optimizer_local_economy_derivation
+      - targeted_regression_updates
+    acceptance_criteria:
+      - optimizer_does_not_own_canonical_resource_income_formulas
+      - optimizer_consumes_declared_query_owned_economy_surfaces
+      - eecon_consumer_path_is_traceable_to_query_truth
+    required_checks:
+      - optimizer_boundary_review
+      - eecon_consumer_regression_review
+    evidence_paths: []
+    blockers: []
+    next_action: Begin once the promoted Phase 3D economy surfaces are stable enough for bounded consumption.
+
+  - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+    title: Evaluator contracts for resource-income query surfaces
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - evaluator contracts
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - evaluator input contract declarations for resource-income surfaces
+      - case-family assumptions and trust labels
+      - bounded evaluator-consumer bundle definitions
+    scope_out:
+      - evaluator implementation details
+      - optimiser product recommendations
+    required_outputs:
+      - evaluator_resource_income_input_contracts
+      - evaluator_case_family_assumption_rows
+    acceptance_criteria:
+      - evaluator_resource_income_inputs_are_explicit
+      - evaluator_assumptions_and_bounds_are_visible
+      - evaluator_consumers_do_not_rederive_query_owned_income_truth
+    required_checks:
+      - evaluator_contract_review
+      - bounded_consumer_review
+    evidence_paths: []
+    blockers: []
+    next_action: Land after Phase 4B starts and the Phase 3 resource-income surfaces are stable.
+
+  - id: PH8-TRANCHE-C1_RESOURCE_FAMILY_OPTIMIZER_EXPANSION
+    title: Resource-family optimizer expansion on governed income surfaces
+    phase_id: PH8
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
+      - PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - optimizer product surfaces
+    scope_in:
+      - resource-family optimizer behaviours
+      - governed use of resource-income surfaces across optimization families
+      - planning-level resource tradeoff expansion
+    scope_out:
+      - lower-layer economy truth ownership
+      - evaluator substrate creation
+    required_outputs:
+      - resource_family_optimizer_behaviours
+      - confidence_and_tradeoff_policy_updates
+    acceptance_criteria:
+      - resource_family_optimizers_consume_governed_income_surfaces
+      - recommendation_confidence_is_visible
+      - lower_layer_ownership_remains_unchanged
+    required_checks:
+      - optimizer_product_scope_review
+      - trust_logic_review
+    evidence_paths: []
+    blockers: []
+    next_action: Start only after lower-layer economy truth and evaluator contracts are already governed.
+  - id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+    title: Covered-family delegation manifest
+    phase_id: PH2
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
+    depends_on:
+      - PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    owner_surfaces:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-scenario-families.yaml
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+      - engine/stat_engine.py
+    scope_in:
+      - finalized covered-family list
+      - explicit delegated scope per family
+      - explicit fallback ownership for undelegated families and non-covered remainder
+      - visible parity and benchmark status by manifest row
+      - no-false-implication review of manifest language
+    scope_out:
+      - resolve_stats routing changes
+      - formula rewrites
+      - undeclared family expansion
+      - simulator or optimiser work
+      - benchmark execution beyond status declaration
+    required_outputs:
+      - covered_family_delegation_manifest
+      - explicit_delegated_scope_notes
+      - explicit_fallback_owner_declarations
+      - visible_parity_and_benchmark_statuses
+    acceptance_criteria:
+      - covered_family_list_is_finalized_from_governed_declarations
+      - delegated_scope_is_explicit
+      - fallback_owner_is_named_for_every_undelegated_area
+      - manifest_does_not_imply_full_delegation
+      - parity_and_benchmark_status_exist_for_every_row
+    required_checks:
+      - manifest_scope_review
+      - fallback_owner_review
+      - no_false_implication_review
+    evidence_paths:
+      - docs/phase2c_covered_family_delegation_manifest.md
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Completed; the governed covered-family manifest is now the routing boundary for Phase 2D and the evidence target for Phase 2E.
+
+  - id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+    title: resolve_stats() delegation to query kernel
+    phase_id: PH2
+    delivery_status: in_progress
+    verification_status: partial
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+      - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
+    owner_surfaces:
+      - engine/stat_engine.py
+      - engine/stat_resolution_core.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - tests/test_resolve_stats_delegation.py
+      - docs/phase2c_covered_family_delegation_manifest.md
+    scope_in:
+      - compatibility-entrypoint delegation routing
+      - delegation only for manifest-approved covered families
+      - explicit fallback preservation for undelegated and ambiguous families
+      - no-false-implication routing proof
+    scope_out:
+      - new family coverage beyond the manifest
+      - formula rewrites
+      - benchmark closure
+      - simulator or optimiser changes
+    required_outputs:
+      - explicit_delegation_path
+      - explicit_fallback_path
+      - preserved_public_compatibility_entrypoint
+      - targeted_routing_regressions
+    acceptance_criteria:
+      - declared_covered_families_delegate_through_query_kernel_when_identifiable_without_guessing
+      - undelegated_families_still_resolve_via_explicit_fallback
+      - compatibility_entrypoint_preserved
+      - routing_does_not_imply_full_delegation
+    required_checks:
+      - delegated_family_routing_review
+      - fallback_preservation_review
+      - no_false_implication_review
+    evidence_paths:
+      - engine/stat_engine.py
+      - tests/test_resolve_stats_delegation.py
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Land the bounded resolve_stats delegation path, validate explicit fallback behavior for ambiguous or undelegated requests, and then hand benchmark/parity proof to Phase 2E.
+
+notes:
+  bootstrap_history:
+    prior_active_tranche_id: TRANCHE_BOOTSTRAP_CONTROL_SYSTEM_V1
+    prior_plan_name: AI_MIGRATION_EXECUTION_PLAN.md
+    status: superseded_and_closed
+  tranche_closeout:
+    PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT:
+      outcome: completed
+      summary:
+        - Bootstrap control tranche acceptance criteria reviewed against repo truth.
+        - Canonical control files now use AI_EXECUTION_PLAN.md and phase-gated tranche IDs.
+        - No major control-file pointer to AI_MIGRATION_EXECUTION_PLAN.md remains outside historical notes.
+      promoted_next_tranche: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+    PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION:
+      outcome: completed
+      summary:
+        - AI_EXECUTION_PLAN.md remains the single canonical execution plan.
+        - README.md and ARCHITECTURE.md now use the same canonical layer and control-file vocabulary.
+        - Remaining roadmap-only planning truth is absorbed into AI_EXECUTION_PLAN.md, so no parallel roadmap file remains canonical.
+      promoted_next_tranche: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
+    PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER:
+      outcome: not_started
+      summary:
+        - Pending after Phase 1B.
+      promoted_next_tranche: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
+    PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER:
+      outcome: not_started
+      summary:
+        - Pending after Phase 1C.
+      promoted_next_tranche: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
+    PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT:
+      outcome: not_started
+      summary:
+        - Pending after Phase 1B, 1C, and 1D complete.
+      promoted_next_tranche: PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER
+    PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER:
+      outcome: completed
+      summary:
+        - Every meaningful helper, constant block, and compilation/query-preparation section in compilers/stat_input_compiler.py is now classified.
+        - Every move or split candidate names a target owner and destination module.
+        - Regression anchors are recorded without implying that Phase 2B extraction already happened.
+      promoted_next_tranche: PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST:
+      outcome: completed
+      summary:
+        - The covered-family list is finalized from the governed Query Engine family contracts.
+        - Every delegated or undelegated row names bounded scope, fallback ownership, and visible parity/benchmark status.
+        - The manifest now explicitly guards against implying full resolve_stats delegation.
+      promoted_next_tranche: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
+
+
+  phase_closeout:
+    PH1:
+      outcome: in_progress
+      summary:
+        - Phase 1A is closed and Phase 1B is now completed with roadmap absorption into the canonical plan.
+        - Phase 1C, 1D, and 1E remain pending before any promotion to Phase 2 is allowed.
+        - The control stack must not point to Phase 2 work until those Phase 1 tranches are complete.
+      promoted_next_phase: PH2

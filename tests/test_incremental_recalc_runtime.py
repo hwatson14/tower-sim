@@ -14,8 +14,8 @@ def test_runtime_plans_health_chain():
     plan = IncrementalRecalcRuntime().plan_from_workshop_overrides({'Health': 1})
     assert plan.fallback_required is False
     assert 'source_input::workshop:Health' in plan.mutated_source_nodes
-    assert 'canonical_stat::tower_hp' in plan.publishable_dirty_nodes
-    assert 'canonical_stat::wall_hp' in plan.publishable_dirty_nodes
+    assert 'state::tower.hp' in plan.publishable_dirty_nodes
+    assert 'state::wall.hp' in plan.publishable_dirty_nodes
 
 
 def test_runtime_rejects_unknown_mutation_key():

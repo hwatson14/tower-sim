@@ -66,34 +66,15 @@ def test_progression_family_materializer_normalizes_rows_to_contract_shape():
     baseline = materializer.materialize(bound, 'progression_runtime_no_perks')
     rows_by_surface = baseline.contributor_rows_by_surface
 
-    assert set(rows_by_surface).issubset(
-        {
-            'canonical_stat::tower_hp',
-            'canonical_stat::wall_hp',
-            'canonical_stat::wall_regen',
-            'canonical_stat::wall_fortification_multiplier',
-            'canonical_stat::tower_defense_pct',
-            'canonical_stat::tower_thorns_damage_pct',
-            'canonical_stat::tower_orb_count',
-            'canonical_stat::tower_orb_speed_rpm',
-            'runtime_mechanic_param::cards.plasma_cannon.effect_pct',
-            'mechanic_param::module.orbital_augment.electron_count',
-            'canonical_stat::free_attack_upgrade_chance_pct',
-            'canonical_stat::free_defense_upgrade_chance_pct',
-            'canonical_stat::free_utility_upgrade_chance_pct',
-            'canonical_stat::enemy_attack_level_skip_pct',
-            'canonical_stat::enemy_health_level_skip_pct',
-            'support_surface::free_upgrade_multiplier',
-        }
-    )
+    assert set(rows_by_surface).issubset(load_family_surface_ids()['progression_runtime_no_perks'])
     free_upgrade_support = rows_by_surface['support_surface::free_upgrade_multiplier']
     assert all(row.composition_stage == 'multiplicative' for row in free_upgrade_support)
     assert all(row.surface_class == 'surface' for row in free_upgrade_support)
     assert all(row.domain == 'progression' for row in free_upgrade_support)
-    tower_hp_sources = {row.source_class for row in rows_by_surface['canonical_stat::tower_hp']}
+    tower_hp_sources = {row.source_class for row in rows_by_surface['state::tower.hp']}
     assert {'labs', 'workshop'}.issubset(tower_hp_sources)
-    assert all(row.surface_class == 'surface' for row in rows_by_surface['canonical_stat::tower_hp'])
-    assert all(row.domain == 'progression' for row in rows_by_surface['canonical_stat::tower_hp'])
+    assert all(row.surface_class == 'surface' for row in rows_by_surface['state::tower.hp'])
+    assert all(row.domain == 'progression' for row in rows_by_surface['state::tower.hp'])
     assert all(row.provenance_ref for row in baseline.contributor_rows)
     assert all(row.contributor_id for row in baseline.contributor_rows)
 
@@ -114,19 +95,8 @@ def test_timing_family_materializer_is_bounded_to_timing_surface_set():
 
     assert baseline.family_id == 'timing_tournament_no_perks'
     assert baseline.contributor_rows
-    assert {row.surface_id for row in baseline.contributor_rows}.issubset(
-        {
-            'canonical_stat::package_chance_pct',
-            'mechanic_param::uw.black_hole.cooldown_seconds',
-            'mechanic_param::uw.black_hole.duration_seconds',
-            'mechanic_param::uw.golden_tower.cooldown_seconds',
-            'mechanic_param::uw.golden_tower.duration_seconds',
-            'support_surface::timing.gcomp_cooldown_reduction_seconds',
-            'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
-            'support_surface::timing.wave_duration_seconds_effective',
-        }
-    )
-    assert 'canonical_stat::tower_hp' not in {row.surface_id for row in baseline.contributor_rows}
+    assert {row.surface_id for row in baseline.contributor_rows}.issubset(load_family_surface_ids()['timing_tournament_no_perks'])
+    assert 'state::tower.hp' not in {row.surface_id for row in baseline.contributor_rows}
     assert all(row.domain in {'timing', 'ultimate_weapons', 'modules', 'cards'} for row in baseline.contributor_rows)
 
 
@@ -145,7 +115,7 @@ def test_materializer_backfills_declared_surfaces_with_gated_placeholders_when_i
 
     declared = load_family_surface_ids()['timing_tournament_no_perks']
     assert declared.issubset(set(baseline.contributor_rows_by_surface))
-    placeholder = baseline.contributor_rows_by_surface['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'][0]
+    placeholder = baseline.contributor_rows_by_surface['state::cards.wave_accelerator.spawn_rate_acceleration'][0]
     assert placeholder.active is False
     assert placeholder.composition_stage == 'gate_enable_disable'
     assert placeholder.gate_reason == 'surface_absent_from_bound_inputs'

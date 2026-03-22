@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 import compilers.stat_input_compiler as stat_input_compiler
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine import query_routing
@@ -31,22 +30,15 @@ from engine.timing_engine import (
     materialize_timing_family_baseline,
     resolve_timing_family_query,
 )
-from parsers.ids_parser import parse_ids
+from helpers import build_family_baseline, build_state, timing_family_context
 
 
 def _state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
+    return build_state()
 
 
 def _timing_family_config(family_id: str) -> tuple[ScenarioConfig, bool, str]:
-    if family_id == 'timing_tournament_no_perks':
-        return ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150), False, 'Tourney'
-    if family_id == 'timing_farm_with_perks':
-        return ScenarioConfig(mode_id='farming', tier=14), True, 'Farming'
-    if family_id == 'timing_scenario_probe':
-        return ScenarioConfig(mode_id='scenario_probe', tier=14), False, 'Farming'
-    raise ValueError(f'Unsupported timing family {family_id!r}.')
+    return timing_family_context(family_id)
 
 
 def test_stat_input_compiler_uses_query_engine_owned_routing_authority():
@@ -57,6 +49,9 @@ def test_stat_input_compiler_uses_query_engine_owned_routing_authority():
     assert stat_input_compiler.bind_perk_effect_destination is query_routing.bind_perk_effect_destination
     assert stat_input_compiler.WORKSHOP_IDS_TO_CONTRIBUTOR is query_routing.WORKSHOP_IDS_TO_CONTRIBUTOR
     assert stat_input_compiler.LAB_APPLICATION_TARGET_TO_DESTINATION is query_routing.LAB_APPLICATION_TARGET_TO_DESTINATION
+    assert stat_input_compiler.load_card_effect_targets is query_routing.load_card_effect_targets
+    assert stat_input_compiler.load_lab_application_registry is query_routing.load_lab_application_registry
+    assert stat_input_compiler.load_theme_song_registry is query_routing.load_theme_song_registry
     assert not hasattr(stat_input_compiler, '_load_mapping_index')
     assert not hasattr(stat_input_compiler, '_bind_kb_fields')
     assert not hasattr(stat_input_compiler, '_bind_alias_destination')
@@ -117,16 +112,16 @@ def test_progression_query_kernel_support_surfaces_match_canonical_stat_engine(f
         (
             'progression_runtime_no_perks',
             (
-                'canonical_stat::enemy_attack_level_skip_pct',
-                'canonical_stat::enemy_health_level_skip_pct',
+                'state::tower.enemy_attack_level_skip_pct',
+                'state::tower.enemy_health_level_skip_pct',
             ),
         ),
         (
             'progression_runtime_with_perks',
             (
-                'canonical_stat::free_attack_upgrade_chance_pct',
-                'canonical_stat::free_defense_upgrade_chance_pct',
-                'canonical_stat::free_utility_upgrade_chance_pct',
+                'state::tower.free_attack_upgrade_chance_pct',
+                'state::tower.free_defense_upgrade_chance_pct',
+                'state::tower.free_utility_upgrade_chance_pct',
             ),
         ),
     ],
@@ -148,10 +143,17 @@ def test_progression_bounded_executor_publishable_surfaces_match_canonical_stat_
     )
 
     for surface_id in requested_surface_ids:
+        reference_surface_id = {
+            'state::tower.enemy_attack_level_skip_pct': 'canonical_stat::enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct': 'canonical_stat::enemy_health_level_skip_pct',
+            'state::tower.free_attack_upgrade_chance_pct': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct': 'canonical_stat::free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct': 'canonical_stat::free_utility_upgrade_chance_pct',
+        }.get(surface_id, surface_id)
         assert surface_id in candidate
-        assert surface_id in reference.rows
-        assert candidate[surface_id].status == reference.rows[surface_id].status == 'resolved'
-        assert candidate[surface_id].final_value == pytest.approx(reference.rows[surface_id].final_value, rel=1e-9, abs=1e-9)
+        assert reference_surface_id in reference.rows
+        assert candidate[surface_id].status == reference.rows[reference_surface_id].status == 'resolved'
+        assert candidate[surface_id].final_value == pytest.approx(reference.rows[reference_surface_id].final_value, rel=1e-9, abs=1e-9)
 
 
 @pytest.mark.parametrize(
@@ -206,7 +208,7 @@ def test_progression_overlay_and_invalidation_plan_publish_guarded_matches_bound
     original_level = int(state.workshop['Enemy Attack Level Skip'].preset_levels['Farming'])
     plan = IncrementalRecalcRuntime().plan_from_workshop_overrides({'Enemy Attack Level Skip': original_level + 1})
     assert plan.fallback_required is False
-    assert 'canonical_stat::enemy_attack_level_skip_pct' in plan.dirty_nodes
+    assert 'state::tower.enemy_attack_level_skip_pct' in plan.dirty_nodes
     assert 'runtime_consumer::wave_progression.attack_wave' in plan.runtime_consumer_ids
 
     bridge = ProgressionRecalcBridge()
@@ -246,15 +248,23 @@ def test_progression_overlay_and_invalidation_plan_publish_guarded_matches_bound
     assert published.incremental_diagnostics['status'] == 'published_candidate_overlay_over_cached_reference'
     assert published.incremental_diagnostics['cache_validation']['is_valid'] is True
     for surface_id in plan.publishable_dirty_nodes:
+        reference_surface_id = {
+            'state::tower.enemy_attack_level_skip_pct': 'canonical_stat::enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct': 'canonical_stat::enemy_health_level_skip_pct',
+            'state::tower.free_attack_upgrade_chance_pct': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct': 'canonical_stat::free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct': 'canonical_stat::free_utility_upgrade_chance_pct',
+        }.get(surface_id, surface_id)
         assert surface_id in published.statbook.rows
-        assert surface_id in patched_reference.rows
+        assert reference_surface_id in patched_reference.rows
         assert published.statbook.rows[surface_id].final_value == pytest.approx(
-            patched_reference.rows[surface_id].final_value,
+            patched_reference.rows[reference_surface_id].final_value,
             rel=1e-9,
             abs=1e-9,
         )
 
 
+@pytest.mark.expensive
 def test_progression_overlay_and_invalidation_plan_runtime_publication_matches_bounded_bundle():
     state = _state()
     original_level = int(state.workshop['Enemy Attack Level Skip'].preset_levels['Farming'])
@@ -296,21 +306,17 @@ def test_progression_overlay_and_invalidation_plan_runtime_publication_matches_b
         )
     )
     assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
-    assert result.statbook.rows['canonical_stat::enemy_attack_level_skip_pct'].final_value == pytest.approx(
+    assert result.statbook.rows['state::tower.enemy_attack_level_skip_pct'].final_value == pytest.approx(
         patched_reference.rows['canonical_stat::enemy_attack_level_skip_pct'].final_value,
         rel=1e-9,
         abs=1e-9,
     )
 
 
+@pytest.mark.expensive
 def test_progression_family_query_still_matches_direct_kernel_for_support_surface_reference_path():
     state = _state()
-    baseline = materialize_progression_family_baseline(
-        account_state=state,
-        family_id='progression_runtime_no_perks',
-        preset_name='Farming',
-        perks_enabled=False,
-    )
+    baseline = build_family_baseline('progression_runtime_no_perks')
     direct_response = StatQueryKernel().resolve_surfaces(
         baseline,
         requested_surface_ids=('support_surface::free_upgrade_multiplier',),
@@ -336,6 +342,7 @@ def _median_ms(fn, iterations: int = 11) -> float:
     return statistics.median(samples)
 
 
+@pytest.mark.expensive
 def test_r86_benchmarks_show_positive_value_for_progression_and_timing_queries():
     state = _state()
 
@@ -345,15 +352,10 @@ def test_r86_benchmarks_show_positive_value_for_progression_and_timing_queries()
         state_mode='start_of_run',
         perks_enabled=False,
     )
-    progression_baseline = materialize_progression_family_baseline(
-        account_state=state,
-        family_id='progression_runtime_no_perks',
-        preset_name='Farming',
-        perks_enabled=False,
-    )
+    progression_baseline = build_family_baseline('progression_runtime_no_perks')
     progression_request = (
-        'canonical_stat::enemy_attack_level_skip_pct',
-        'canonical_stat::enemy_health_level_skip_pct',
+        'state::tower.enemy_attack_level_skip_pct',
+        'state::tower.enemy_health_level_skip_pct',
         'support_surface::free_upgrade_multiplier',
     )
 
@@ -365,15 +367,9 @@ def test_r86_benchmarks_show_positive_value_for_progression_and_timing_queries()
         scenario_config=timing_config,
         perks_enabled=True,
     )
-    timing_baseline = materialize_timing_family_baseline(
-        account_state=state,
-        family_id='timing_farm_with_perks',
-        preset_name='Farming',
-        scenario_config=timing_config,
-        perks_enabled=True,
-    )
+    timing_baseline = build_family_baseline('timing_farm_with_perks')
     timing_request = (
-        'canonical_stat::package_chance_pct',
+        'state::tower.package_chance_pct',
         'support_surface::timing.gcomp_cooldown_reduction_seconds',
     )
 

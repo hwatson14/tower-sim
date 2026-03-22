@@ -67,7 +67,7 @@ from optimizer.scorer import compute_optimizer_scores
 from models.stat_input import StatInput
 from models.statbook import StatBook, StatRow
 
-FORMULA_LEDGER_PATH = ROOT / 'config' / 'destination_formula_ledger.yaml'
+FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 LOADOUT_CONFIG_PATH = ROOT / 'input' / 'loadout.json'
 PERKS_CONFIG_PATH = ROOT / 'input' / 'perks.json'
 PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'input' / 'perks_projected_max.json'
@@ -1582,7 +1582,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
             'gap_id': f"formula_contract::{item['destination_id']}",
             'bucket': 'KB missing executable contract',
             'surface': item['destination_id'],
-            'files': ['config/destination_formula_ledger.yaml', 'engine/stat_engine.py'],
+            'files': ['kb/ledgers/formula_surface_policy.yaml', 'engine/stat_engine.py'],
             'evidence': f"publish_policy=block for {item['destination_id']}",
             'why_it_matters': 'Surface remains intentionally fail-closed until formula contract is fully closed.',
             'what_would_close_it': 'Tighten the KB/contract rationale and verify the implemented destination-specific formula is correct enough to publish.',

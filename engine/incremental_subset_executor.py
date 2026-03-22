@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Mapping, Sequence
 
 from engine.dependency_registry import DependencyRegistry
+from engine.query_routing import to_legacy_surface_id, to_v2_surface_id
 from engine.stat_resolution_core import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
 from models.stat_input import StatInput
 from models.statbook import StatRow
@@ -31,7 +32,8 @@ class IncrementalSubsetExecutor:
         family_id: str | None = None,
         scenario_mode_id: str | None = None,
     ) -> Dict[str, StatRow]:
-        requested_nodes = [self._normalize_target(node) for node in target_nodes]
+        original_to_requested = {self._normalize_target(node): str(node) for node in target_nodes}
+        requested_nodes = list(original_to_requested)
         if not requested_nodes:
             return {}
         self._assert_supported_targets(requested_nodes, family_id=family_id)
@@ -51,14 +53,21 @@ class IncrementalSubsetExecutor:
             if row is None:
                 raise ValueError(f'Unsupported bounded query target nodes: {node!r}')
             resolved[node] = row
+            original_requested = original_to_requested.get(node)
+            if original_requested is not None and original_requested != node:
+                resolved[original_requested] = row
             alias_output = _ALIAS_OUTPUTS.get(node)
             if alias_output is not None:
                 resolved[alias_output] = row
         return resolved
 
-    @staticmethod
-    def _normalize_target(node: str) -> str:
-        return str(node)
+    def _normalize_target(self, node: str) -> str:
+        node = str(node)
+        candidates = (node, to_v2_surface_id(node), to_legacy_surface_id(node))
+        for candidate in candidates:
+            if self._registry.node(candidate) is not None:
+                return candidate
+        return to_v2_surface_id(node)
 
     def _assert_supported_targets(self, requested_nodes: Sequence[str], *, family_id: str | None) -> None:
         unknown = [node for node in requested_nodes if self._registry.node(node) is None]
@@ -225,4 +234,5 @@ class IncrementalSubsetExecutor:
 
     @staticmethod
     def _bucket_key_for_node(node: str) -> str:
-        return _NODE_TO_BUCKET.get(node, node)
+        legacy_node = to_legacy_surface_id(node)
+        return _NODE_TO_BUCKET.get(legacy_node, legacy_node)

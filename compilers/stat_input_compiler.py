@@ -9,6 +9,16 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 import pandas as pd
 
+from engine.query_perk_compiler import (
+    TRADE_OFF_BENEFIT_EFFECT_INDEXES,
+    TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES,
+    active_perk_selections as _active_perk_selections,
+    normalized_multiplier as _normalized_multiplier,
+    perk_lab_state as _perk_lab_state,
+    perk_value_from_effect as _perk_value_from_effect,
+    perk_value_type_for_operation as _perk_value_type_for_operation,
+    scaled_perk_value as _scaled_perk_value,
+)
 from engine.query_routing import (
     CARD_NAME_FALLBACK_DESTINATION,
     CARD_TARGET_SURFACE_TO_DESTINATION,
@@ -35,74 +45,31 @@ from engine.query_routing import (
     bind_kb_fields,
     bind_perk_effect_destination,
     compiler_routing_indexes,
+    compiler_routing_policy,
+    load_card_effect_targets,
+    load_lab_application_registry,
+    load_theme_song_registry,
     mapping_lookup_for_family_name,
     slug_text,
     uw_contributor_id,
+)
+from engine.query_state_mode_policy import (
+    SUPPORTED_STATE_MODES,
+    normalize_state_mode,
+    row_in_state_mode,
+    state_mode_support,
+    supported_state_modes,
 )
 from models.account_state import AccountState
 from models.stat_input import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'
-KB_CONTRACTS = KB / 'global-rules' / 'contracts'
-STATE_MODE_CONTRACTS_PATH = KB_CONTRACTS / 'state-modes.yaml'
-@lru_cache(maxsize=1)
-def _load_state_mode_contracts() -> dict:
-    raw = yaml.safe_load(STATE_MODE_CONTRACTS_PATH.read_text()) or {}
-    aliases = raw.get('state_mode_aliases') or {}
-    modes = raw.get('state_modes') or {}
-    normalized_modes = {}
-    for mode_name, spec in modes.items():
-        spec = spec or {}
-        normalized_modes[mode_name] = {
-            'excluded_source_families': set(spec.get('excluded_source_families') or []),
-            'projection_facets_applied': list(spec.get('projection_facets_applied') or []),
-            'notes': list(spec.get('notes') or []),
-        }
-    return {
-        'aliases': aliases,
-        'modes': normalized_modes,
-    }
-
-
-def supported_state_modes() -> tuple[str, ...]:
-    return tuple(_load_state_mode_contracts()['modes'].keys())
-
-
-SUPPORTED_STATE_MODES = supported_state_modes()
+KB_TABLES = KB / 'global-rules' / 'tables'
 
 
 def _set_row_field(row: StatInput, field_name: str, value) -> None:
     object.__setattr__(row, field_name, value)
-
-
-def normalize_state_mode(state_mode: str | None) -> str:
-    contracts = _load_state_mode_contracts()
-    mode = (state_mode or 'start_of_run').strip()
-    mode = contracts['aliases'].get(mode, mode)
-    if mode not in contracts['modes']:
-        raise ValueError(f'Unsupported state_mode: {state_mode}')
-    return mode
-
-
-def state_mode_support(state_mode: str | None) -> dict:
-    mode = normalize_state_mode(state_mode)
-    spec = _load_state_mode_contracts()['modes'][mode]
-    return {
-        'state_mode': mode,
-        'supported': True,
-        'projection_facets_applied': list(spec['projection_facets_applied']),
-        'projection_facets_missing': [],
-        'notes': list(spec['notes']),
-    }
-
-
-def row_in_state_mode(row: StatInput, state_mode: str | None) -> bool:
-    mode = normalize_state_mode(state_mode)
-    excluded = _load_state_mode_contracts()['modes'][mode]['excluded_source_families']
-    return row.source_family not in excluded
-
-KB_TABLES = KB / 'global-rules' / 'tables'
 
 LAB_VALUES_PATH = KB / 'labs' / 'tables' / 'lab-values.csv'
 WORKSHOP_VALUES_PATH = KB / 'workshop' / 'tables' / 'workshop-values.csv'
@@ -316,33 +283,6 @@ def _load_card_ladders() -> Dict[Tuple[str, int], Dict[str, str]]:
 
 
 @lru_cache(maxsize=1)
-def _load_card_effect_targets() -> Dict[str, Tuple[str, str]]:
-    out: Dict[str, Tuple[str, str]] = {}
-    with CARD_EFFECT_REGISTRY_PATH.open(newline='') as f:
-        for row in csv.DictReader(f):
-            if row.get('layer') != 'base_card':
-                continue
-            target = row.get('target_surface', '').strip()
-            destination = CARD_TARGET_SURFACE_TO_DESTINATION.get(target)
-            if destination:
-                out[row['card_id']] = destination
-    return out
-
-
-@lru_cache(maxsize=1)
-def _load_lab_application_registry() -> Dict[str, Dict[str, str]]:
-    out: Dict[str, Dict[str, str]] = {}
-    path = KB / 'labs' / 'tables' / 'lab-application-registry.csv'
-    with path.open(newline='') as f:
-        for row in csv.DictReader(f):
-            name = str(row['lab_primary_name']).strip()
-            out[name] = row
-            out[slug_text(name)] = row
-    return out
-
-
-
-@lru_cache(maxsize=1)
 def _load_bot_track_values() -> Dict[Tuple[str, str, int], float]:
     out: Dict[Tuple[str, str, int], float] = {}
     with BOT_TRACK_VALUES_PATH.open(newline='') as f:
@@ -426,20 +366,6 @@ def _load_uw_track_values() -> Dict[Tuple[str, str, int], float]:
 
 
 
-
-@lru_cache(maxsize=1)
-def _load_theme_song_registry() -> Dict[str, Tuple[str, str, str]]:
-    out: Dict[str, Tuple[str, str, str]] = {}
-    path = THEME_SONG_REGISTRY_PATH
-    if not path.exists():
-        return out
-    with path.open(newline='', encoding='utf-8') as fh:
-        reader = csv.DictReader(fh)
-        for row in reader:
-            cid = (row.get('contributor_id') or '').strip()
-            if cid:
-                out[cid] = ((row.get('destination_object_type') or '').strip(), (row.get('destination_id') or '').strip(), (row.get('resolver_id') or '').strip())
-    return out
 
 @lru_cache(maxsize=1)
 def _load_uw_plus_values() -> Dict[Tuple[str, str, int], float]:
@@ -724,119 +650,6 @@ def _make_instance_contributor_id(base_id: str | None, *, source_name: str, role
     return '@@'.join(parts)
 
 
-TRADE_OFF_BENEFIT_EFFECT_INDEXES = {
-    'PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH': {'1'},
-    'PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70': {'1'},
-    'PERK_ENEMIES_HAVE_50_HEALTH_BUT_TOWER_HEALTH_REGEN_AND_LIFESTEAL_90': {'1'},
-    'PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50': {'1'},
-    'PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3': {'1'},
-    'PERK_ENEMIES_SPEED_40_BUT_ENEMIES_DAMAGE_X2_5': {'1'},
-    'PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH': {'1'},
-    'PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60': {'1'},
-    'PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50': {'1'},
-    'PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70': {'1'},
-}
-
-TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES = {
-    perk_id: indexes.copy()
-    for perk_id, indexes in TRADE_OFF_BENEFIT_EFFECT_INDEXES.items()
-}
-TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES['PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3'] = set()
-
-
-def _active_perk_selections(account_state: AccountState, preset: str) -> List[tuple[str, int]]:
-    preset_keys = [preset]
-    if account_state.active_perk_preset:
-        preset_keys.append(account_state.active_perk_preset)
-    preset_keys.append('default')
-    seen: set[str] = set()
-    out: List[tuple[str, int]] = []
-    for key in preset_keys:
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        for selection in account_state.perk_presets.get(key, []):
-            if selection.perk_id and selection.picks > 0:
-                out.append((selection.perk_id, selection.picks))
-    return out
-
-
-def _perk_lab_state(account_state: AccountState) -> Dict[str, float]:
-    standard_bonus_level = int(account_state.labs.get('Standard Perks Bonus') or 0)
-    tradeoff_bonus_level = int(account_state.labs.get('Improve Trade-off Perks') or 0)
-    return {
-        'standard_bonus_multiplier': 1.0 + (standard_bonus_level / 100.0),
-        'tradeoff_bonus_multiplier': 1.0 + (tradeoff_bonus_level / 100.0),
-    }
-
-
-def _scaled_perk_value(*, perk_meta: Dict[str, object], perk_id: str, operation: str, raw_value: str, picks: int, effect_index: str, perk_lab_state: Dict[str, float], perk_effect_meta: Optional[Dict[str, object]] = None):
-    base_value = _perk_value_from_effect(operation, raw_value)
-    if not isinstance(base_value, (int, float)):
-        return base_value
-    effect_meta = perk_effect_meta or {}
-    category = str(perk_meta.get('category') or '').strip().lower()
-    picks = max(1, int(picks))
-    spb_applies = str(effect_meta.get('spb_applies') or '').strip().lower()
-    spb_formula_class = str(effect_meta.get('spb_formula_class') or '').strip().lower()
-    integrality_policy = str(effect_meta.get('integrality_policy') or '').strip().lower()
-    if category == 'standard':
-        standard_mult = float(perk_lab_state.get('standard_bonus_multiplier', 1.0) or 1.0)
-        spb_enabled = spb_applies != 'no'
-        if operation == 'multiplier' and float(base_value) > 1.0:
-            if spb_formula_class == 'multiplicative' or not spb_formula_class:
-                return (1.0 + ((float(base_value) - 1.0) * picks)) * (standard_mult if spb_enabled else 1.0)
-            return (1.0 + ((float(base_value) - 1.0) * picks))
-        if operation == 'remaining_fraction':
-            delta = float(base_value) - 1.0
-            return 1.0 + (delta * picks * (standard_mult if spb_enabled else 1.0))
-        if operation in {'percentage_points_add', 'count_add', 'seconds_add', 'raw_add'}:
-            scaled = float(base_value) * picks * (standard_mult if spb_enabled else 1.0)
-            if integrality_policy == 'round_final':
-                return float(round(scaled))
-            return scaled
-    if category == 'trade_off' and effect_index in TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES.get(perk_id, set()):
-        improve_mult = float(perk_lab_state.get('tradeoff_bonus_multiplier', 1.0) or 1.0)
-        if operation == 'multiplier' and float(base_value) > 1.0:
-            return float(base_value) * improve_mult
-        if operation == 'remaining_fraction' and 0.0 <= float(base_value) <= 1.0:
-            reduction = 1.0 - float(base_value)
-            improved = min(0.999999, reduction * improve_mult)
-            return 1.0 - improved
-        if operation == 'percentage_points_add':
-            return float(base_value) * improve_mult
-    return base_value
-
-
-def _perk_value_type_for_operation(operation: str) -> str:
-    return {
-        'multiplier': 'multiplier',
-        'remaining_fraction': 'multiplier',
-        'percentage_points_add': 'pct',
-        'count_add': 'flat',
-        'seconds_add': 'flat',
-        'raw_add': 'flat',
-        'set_to': 'resolved_value',
-        'special_unlock': 'bool',
-        'special_reduction': 'raw_text',
-    }.get(operation, 'resolved_value')
-
-
-def _perk_value_from_effect(operation: str, raw_value: str):
-    if operation == 'special_unlock':
-        return True
-    if operation == 'special_reduction':
-        return raw_value
-    try:
-        return float(raw_value)
-    except (TypeError, ValueError):
-        return raw_value
-
-def _normalized_multiplier(value: float) -> float:
-    # Supports inputs represented as 0.05 (+5%) or 1.14 (x1.14).
-    return value if value > 1.0 else 1.0 + value
-
-
 def _append(out: List[StatInput], row: StatInput) -> None:
     out.append(row)
 
@@ -856,21 +669,20 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     lab_summary = _load_lab_summary_lookup()
     workshop_values = _load_workshop_value_lookup()
     card_ladders = _load_card_ladders()
-    card_effect_targets = _load_card_effect_targets()
+    card_effect_targets = load_card_effect_targets()
     module_substat_units = _load_module_substat_units()
     perk_entities = _load_perk_entities()
     perk_effects = _load_perk_effects()
     module_substat_values = _load_module_substat_values()
     module_unique_effect_values = _load_module_unique_effect_values()
     assist_efficiency_lookup = _load_assist_efficiency_lookup()
-    lab_application_registry = _load_lab_application_registry()
+    lab_application_registry = load_lab_application_registry()
     uw_lab_wiki_values = _load_uw_lab_wiki_values()
     bot_track_values = _load_bot_track_values()
     bot_lab_rules = _load_bot_lab_rules()
     guardian_track_values = _load_guardian_track_values()
     uw_track_values = _load_uw_track_values()
     uw_plus_values = _load_uw_plus_values()
-    theme_song_registry = _load_theme_song_registry()
     uw_track_order = _load_uw_track_order()
     guardian_scout_values = _load_guardian_scout_values()
     out: List[StatInput] = []

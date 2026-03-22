@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict
 
+from engine.query_routing import to_legacy_surface_id
 from models.statbook import StatBook, StatRow
 
 
@@ -30,6 +31,10 @@ class IncrementalParityHarness:
         for node in compared:
             candidate = candidate_rows[node]
             reference = reference_statbook.rows.get(node)
+            if reference is None:
+                legacy_node = to_legacy_surface_id(node)
+                if legacy_node != node:
+                    reference = reference_statbook.rows.get(legacy_node)
             if reference is None:
                 mismatches[node] = {'reason': 'missing_reference_row'}
                 continue
