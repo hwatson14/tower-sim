@@ -4,7 +4,7 @@
 `PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST`
 
 ## Phase
-`Phase 2 — Query Engine ownership completion`
+`Phase 1 — Canonical planning truth and archive closure`
 
 ## Objective
 Finalize the governed covered-family delegation manifest using the completed Phase 2A ownership ledger and the bounded Query Engine family contracts as the governing boundary.
