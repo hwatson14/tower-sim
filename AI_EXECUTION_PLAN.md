@@ -529,6 +529,30 @@ eHP, eDamage, and eEcon are important enough to be first-class governed surfaces
 - Phase 3E — Optimiser rewire to consume query-owned objective states
 - Phase 3F — Objective-state parity and accepted-model evidence
 
+### Resource-income implementation timing
+Resource-income surfaces requested for optimiser and evaluator consumption should be scheduled as lower-layer economy truth rather than deferred as a product-only optimiser feature.
+
+#### Phase 3D scope expansion — resource-income query surfaces
+Phase 3D should include the governed promotion work for deterministic per-resource income surfaces that underpin `objective_state::eecon`.
+
+Required work inside 3D:
+- define KB-backed income semantics, units, and supported-resource boundaries for each resource surface promoted now
+- add query-owned resource-income surfaces for every deterministically calculable resource
+- mark non-deterministic or advisory-only resources as explicitly unsupported rather than inferred
+- make `objective_state::eecon` consume those governed surfaces instead of leaving canonical economy ownership in optimiser code
+
+#### Phase 3E follow-on — optimiser consumption
+Once the relevant 3D surfaces are stable, 3E should rewire optimiser consumers to read the query-owned resource-income/eEcon surfaces instead of re-deriving canonical economy truth locally.
+
+#### Phase 4 evaluator timing
+Evaluator consumption of resource-income surfaces should begin only in Phase 4, after evaluator contracts and verification exist:
+- 4B defines evaluator inputs and assumptions for resource-income consumption
+- 4D implements or hardens evaluator paths against the query-owned surfaces
+- 4E records verification status by evaluator family/case
+
+#### Phase 8C product expansion boundary
+Phase 8C remains the right place for resource-family optimiser product expansion, save/spend logic, and broader planning behaviour built on top of the already-governed lower-layer income surfaces.
+
 ### Gate to exit Phase 3
 All of the following must be true:
 - all three objective states have declared owners and query surfaces
