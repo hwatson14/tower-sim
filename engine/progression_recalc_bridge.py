@@ -55,11 +55,11 @@ class ProgressionRecalcResult:
 
 
 class ProgressionRecalcBridge:
-    """Transitional bridge between query-owned bounded progression execution and legacy full stat-engine reference paths.
+    """Bridge between query-owned bounded progression execution modes.
 
     Bounded migrated publishable surfaces now flow through the planner + IncrementalSubsetExecutor path.
-    Full-safe, fallback, cache-recovery, and parity-reference branches remain explicitly transitional
-    and still use the full stat engine until the broader migration is complete.
+    Full-safe, fallback, cache-recovery, and parity-reference branches all resolve against the
+    bounded progression family reference rather than the legacy full stat-engine path.
     """
 
     def apply_workshop_overrides(self, account_state: AccountState, *, preset_name: str, workshop_levels_current: Dict[str, int]) -> AccountState:

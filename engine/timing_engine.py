@@ -11,7 +11,7 @@ from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 from engine.family_baseline_materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
 from engine.runtime_consumer_registry import resolve_consumer_bundle
 from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
-from engine.state_identity import compile_stat_inputs_with_identity
+from engine.state_identity import BoundStatInputs, compile_stat_inputs_with_identity
 from engine.stat_query_kernel import QueryResponse, StatQueryKernel
 from models.account_state import AccountState
 from models.stat_input import StatInput
@@ -462,6 +462,34 @@ def materialize_timing_family_baseline(
     perk_preset_name: str | None = None,
     materializer: FamilyBaselineMaterializer | None = None,
 ) -> FamilyBaselineContributorMap:
+    bound, rows = compile_timing_family_rows(
+        account_state=account_state,
+        family_id=family_id,
+        preset_name=preset_name,
+        scenario_config=scenario_config,
+        state_mode=state_mode,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+    )
+    return (materializer or FamilyBaselineMaterializer()).materialize_from_rows(bound.binding.identity, family_id, rows)
+
+
+def compile_timing_family_rows(
+    *,
+    account_state: AccountState,
+    family_id: str,
+    preset_name: str,
+    scenario_config: ScenarioConfig,
+    state_mode: str = 'start_of_run',
+    perks_enabled: bool,
+    runtime_branch_id: str = 'branch_base',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+) -> tuple[BoundStatInputs, tuple[StatInput, ...]]:
     _validate_timing_family_request(family_id=family_id, scenario_config=scenario_config, perks_enabled=perks_enabled)
     bound = compile_stat_inputs_with_identity(
         account_state,
@@ -492,8 +520,7 @@ def materialize_timing_family_baseline(
         row for row in bound.stat_inputs
         if (row.destination_object_type, row.destination_id) not in replaced_surface_keys
     )
-    rows = base_rows + derived_rows
-    return (materializer or FamilyBaselineMaterializer()).materialize_from_rows(bound.binding.identity, family_id, rows)
+    return bound, base_rows + derived_rows
 
 
 def resolve_timing_family_query(
