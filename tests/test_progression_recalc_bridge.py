@@ -39,7 +39,7 @@ def test_recalc_bridge_preserves_start_of_run_and_applies_specific_override():
     )
     assert state.workshop['Wall Health'].preset_levels['Farming'] == original
     assert result.patched_account_state.workshop['Wall Health'].preset_levels['Farming'] == original + 1
-    wall_hp = result.statbook.rows['canonical_stat::wall_hp']
+    wall_hp = result.statbook.rows['state::wall.hp']
     assert wall_hp.status == 'resolved'
 
 
@@ -103,7 +103,7 @@ def test_recalc_bridge_uses_bounded_native_subset_for_supported_progression_prob
     assert result.incremental_diagnostics['ownership_boundary'] == 'bounded_query_owned_publishable_subset'
     assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
     assert result.incremental_diagnostics['runtime_publication']['outputs']['attack_wave'] is not None
-    assert 'canonical_stat::enemy_attack_level_skip_pct' in result.statbook.rows
+    assert 'state::tower.enemy_attack_level_skip_pct' in result.statbook.rows
 
 
 def test_recalc_bridge_full_safe_uses_bounded_family_reference(monkeypatch):

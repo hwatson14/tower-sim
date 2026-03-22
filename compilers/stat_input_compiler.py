@@ -35,6 +35,7 @@ from engine.query_routing import (
     bind_kb_fields,
     bind_perk_effect_destination,
     compiler_routing_indexes,
+    compiler_routing_policy,
     mapping_lookup_for_family_name,
     slug_text,
     uw_contributor_id,

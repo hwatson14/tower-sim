@@ -8,7 +8,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop Health track.
-  - node_id: canonical_stat::tower_hp
+  - node_id: state::tower.hp
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -16,7 +16,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned tower health surface.
-  - node_id: canonical_stat::wall_hp
+  - node_id: state::wall.hp
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -32,7 +32,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop Orbs track.
-  - node_id: canonical_stat::tower_orb_count
+  - node_id: state::tower.orb_count
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -48,7 +48,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop defense track.
-  - node_id: canonical_stat::tower_defense_pct
+  - node_id: state::tower.defense_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -64,7 +64,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop thorn damage track.
-  - node_id: canonical_stat::tower_thorns_damage_pct
+  - node_id: state::tower.thorns_damage_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -80,7 +80,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable workshop orb speed track.
-  - node_id: canonical_stat::tower_orb_speed_rpm
+  - node_id: state::tower.orb_speed_rpm
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -168,7 +168,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Shared query-owned free-upgrade support multiplier.
-  - node_id: canonical_stat::free_attack_upgrade_chance_pct
+  - node_id: state::tower.free_attack_upgrade_chance_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -176,7 +176,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned free attack chance surface.
-  - node_id: canonical_stat::free_defense_upgrade_chance_pct
+  - node_id: state::tower.free_defense_upgrade_chance_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -184,7 +184,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned free defense chance surface.
-  - node_id: canonical_stat::free_utility_upgrade_chance_pct
+  - node_id: state::tower.free_utility_upgrade_chance_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -208,7 +208,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Mutable health skip track.
-  - node_id: canonical_stat::enemy_attack_level_skip_pct
+  - node_id: state::tower.enemy_attack_level_skip_pct
     node_kind: surface
     family_ids: [progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -216,7 +216,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned attack skip surface.
-  - node_id: canonical_stat::enemy_health_level_skip_pct
+  - node_id: state::tower.enemy_health_level_skip_pct
     node_kind: surface
     family_ids: [progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -248,7 +248,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Recovery Package Chance card assertion source.
-  - node_id: canonical_stat::package_chance_pct
+  - node_id: state::tower.package_chance_pct
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: true
@@ -329,7 +329,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Wave Accelerator card assertion source.
-  - node_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+  - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     node_kind: environment
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: false
@@ -347,42 +347,42 @@ nodes:
     notes: Scenario-adjusted effective wave duration surface.
 edges:
   - upstream_node_id: source_input::workshop:Health
-    downstream_node_id: canonical_stat::tower_hp
+    downstream_node_id: state::tower.hp
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Health contributes to tower HP.
-  - upstream_node_id: canonical_stat::tower_hp
-    downstream_node_id: canonical_stat::wall_hp
+  - upstream_node_id: state::tower.hp
+    downstream_node_id: state::wall.hp
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall HP depends on tower HP.
   - upstream_node_id: source_input::workshop:Orbs
-    downstream_node_id: canonical_stat::tower_orb_count
+    downstream_node_id: state::tower.orb_count
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Orbs routes to orb count.
   - upstream_node_id: source_input::workshop:Defense %
-    downstream_node_id: canonical_stat::tower_defense_pct
+    downstream_node_id: state::tower.defense_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Defense routes to tower defense.
   - upstream_node_id: source_input::workshop:Thorn Damage
-    downstream_node_id: canonical_stat::tower_thorns_damage_pct
+    downstream_node_id: state::tower.thorns_damage_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Thorn Damage routes to thorns surface.
   - upstream_node_id: source_input::workshop:Orb Speed
-    downstream_node_id: canonical_stat::tower_orb_speed_rpm
+    downstream_node_id: state::tower.orb_speed_rpm
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation]
     publication_relevance: publishable_path
@@ -410,69 +410,69 @@ edges:
     verification_status: verified
     notes: Module assertions govern the draft Primordial Collapse optimizer surface.
   - upstream_node_id: source_input::workshop:Free Attack Upgrade
-    downstream_node_id: canonical_stat::free_attack_upgrade_chance_pct
+    downstream_node_id: state::tower.free_attack_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation, free_upgrade_runtime_state]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop free-attack chance routes directly.
   - upstream_node_id: source_input::workshop:Free Defense Upgrade
-    downstream_node_id: canonical_stat::free_defense_upgrade_chance_pct
+    downstream_node_id: state::tower.free_defense_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation, free_upgrade_runtime_state]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop free-defense chance routes directly.
   - upstream_node_id: source_input::workshop:Free Utility Upgrade
-    downstream_node_id: canonical_stat::free_utility_upgrade_chance_pct
+    downstream_node_id: state::tower.free_utility_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation, free_upgrade_runtime_state]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop free-utility chance routes directly.
   - upstream_node_id: support_surface::free_upgrade_multiplier
-    downstream_node_id: canonical_stat::free_attack_upgrade_chance_pct
+    downstream_node_id: state::tower.free_attack_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [free_upgrade_runtime_state, perk_count_overrides]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Shared multiplier composes into free attack chance.
   - upstream_node_id: support_surface::free_upgrade_multiplier
-    downstream_node_id: canonical_stat::free_defense_upgrade_chance_pct
+    downstream_node_id: state::tower.free_defense_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [free_upgrade_runtime_state, perk_count_overrides]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Shared multiplier composes into free defense chance.
   - upstream_node_id: support_surface::free_upgrade_multiplier
-    downstream_node_id: canonical_stat::free_utility_upgrade_chance_pct
+    downstream_node_id: state::tower.free_utility_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [free_upgrade_runtime_state, perk_count_overrides]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Shared multiplier composes into free utility chance.
   - upstream_node_id: source_input::workshop:Enemy Attack Level Skip
-    downstream_node_id: canonical_stat::enemy_attack_level_skip_pct
+    downstream_node_id: state::tower.enemy_attack_level_skip_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation, runtime_wave_state]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop attack skip routes directly.
   - upstream_node_id: source_input::workshop:Enemy Health Level Skip
-    downstream_node_id: canonical_stat::enemy_health_level_skip_pct
+    downstream_node_id: state::tower.enemy_health_level_skip_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [workshop_mutation, runtime_wave_state]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop health skip routes directly.
-  - upstream_node_id: canonical_stat::enemy_attack_level_skip_pct
+  - upstream_node_id: state::tower.enemy_attack_level_skip_pct
     downstream_node_id: runtime_consumer::wave_progression.attack_wave
     invalidation_semantics: impact_runtime_consumer
     mutation_classes: [workshop_mutation, runtime_wave_state]
     publication_relevance: runtime_consumer_path
     verification_status: verified
     notes: Attack wave consumer depends on attack skip pct.
-  - upstream_node_id: canonical_stat::enemy_health_level_skip_pct
+  - upstream_node_id: state::tower.enemy_health_level_skip_pct
     downstream_node_id: runtime_consumer::wave_progression.health_wave
     invalidation_semantics: impact_runtime_consumer
     mutation_classes: [workshop_mutation, runtime_wave_state]
@@ -480,7 +480,7 @@ edges:
     verification_status: verified
     notes: Health wave consumer depends on health skip pct.
   - upstream_node_id: source_input::card:Recovery Package Chance
-    downstream_node_id: canonical_stat::package_chance_pct
+    downstream_node_id: state::tower.package_chance_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [card_assertions]
     publication_relevance: publishable_path
@@ -537,13 +537,13 @@ edges:
     verification_status: verified
     notes: Scenario timing inputs publish GT cooldown.
   - upstream_node_id: source_input::card:Wave Accelerator
-    downstream_node_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+    downstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     invalidation_semantics: recompute_downstream
     mutation_classes: [card_assertions]
     publication_relevance: support_only
     verification_status: verified
     notes: Wave Accelerator card affects spawn acceleration.
-  - upstream_node_id: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+  - upstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     downstream_node_id: support_surface::timing.wave_duration_seconds_effective
     invalidation_semantics: recompute_downstream
     mutation_classes: [card_assertions, runtime_target_display_wave, package_event_model]
@@ -658,14 +658,14 @@ mutation_triggers:
     notes: Runtime free-upgrade state touches the shared multiplier.
   - mutation_class: runtime_wave_state
     trigger_key: wave_skip_runtime
-    source_node_id: canonical_stat::enemy_attack_level_skip_pct
+    source_node_id: state::tower.enemy_attack_level_skip_pct
     invalidation_semantics: impact_runtime_consumer
     publication_relevance: runtime_consumer_path
     verification_status: verified
     notes: Runtime wave-state mutations impact attack-wave publication path.
   - mutation_class: runtime_wave_state
     trigger_key: wave_skip_runtime_health
-    source_node_id: canonical_stat::enemy_health_level_skip_pct
+    source_node_id: state::tower.enemy_health_level_skip_pct
     invalidation_semantics: impact_runtime_consumer
     publication_relevance: runtime_consumer_path
     verification_status: verified

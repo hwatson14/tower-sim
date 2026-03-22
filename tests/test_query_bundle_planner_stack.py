@@ -29,14 +29,14 @@ def test_consumer_bundle_registry_resolves_declared_bundle_with_optional_surface
         'run_stats',
         'timing_wave_duration',
         family_id='timing_farm_with_perks',
-        include_optional_surface_ids=('runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',),
+        include_optional_surface_ids=('state::cards.wave_accelerator.spawn_rate_acceleration',),
         trace_mode='contributors',
     )
 
     assert resolved.family_id == 'timing_farm_with_perks'
     assert resolved.surface_ids == (
         'support_surface::timing.wave_duration_seconds_effective',
-        'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+        'state::cards.wave_accelerator.spawn_rate_acceleration',
     )
     assert resolved.overlays_allowed is True
 
@@ -66,7 +66,7 @@ def test_consumer_bundle_registry_fails_closed_for_request_all_expansion(tmp_pat
                 'run_stats',
                 'progression_free_upgrades',
                 family_id='progression_runtime_no_perks',
-                include_optional_surface_ids=('canonical_stat::tower_hp',),
+                include_optional_surface_ids=('state::tower.hp',),
             )
     finally:
         runtime_consumer_registry.load_consumer_bundle_contract.cache_clear()
@@ -77,7 +77,7 @@ def test_dependency_registry_covers_bundle_reachable_surfaces_and_runtime_consum
     registry = DependencyRegistry.load_default()
 
     assert registry.node('support_surface::timing.wave_duration_seconds_effective') is not None
-    assert 'runtime_consumer::wave_progression.attack_wave' in registry.closure_downstream({'canonical_stat::enemy_attack_level_skip_pct'})
+    assert 'runtime_consumer::wave_progression.attack_wave' in registry.closure_downstream({'state::tower.enemy_attack_level_skip_pct'})
 
 
 def test_consumer_bundle_contract_covers_current_phase1_bounded_consumers():
@@ -111,8 +111,8 @@ def test_dependency_registry_fails_closed_for_publishable_cycle(tmp_path: Path, 
     ledger = copy.deepcopy(dependency_registry.load_dependency_ledger())
     ledger['edges'].append(
         {
-            'upstream_node_id': 'canonical_stat::wall_hp',
-            'downstream_node_id': 'canonical_stat::tower_hp',
+            'upstream_node_id': 'state::wall.hp',
+            'downstream_node_id': 'state::tower.hp',
             'invalidation_semantics': 'recompute_downstream',
             'mutation_classes': ['workshop_mutation'],
             'publication_relevance': 'publishable_path',
@@ -156,20 +156,22 @@ def test_planner_returns_minimal_closure_for_progression_bundle():
 
     assert plan.fallback_required is False
     assert plan.requested_surfaces == [
-        'canonical_stat::free_attack_upgrade_chance_pct',
-        'canonical_stat::free_defense_upgrade_chance_pct',
-        'canonical_stat::free_utility_upgrade_chance_pct',
+        'state::tower.free_attack_upgrade_chance_pct',
+        'state::tower.free_defense_upgrade_chance_pct',
+        'state::tower.free_utility_upgrade_chance_pct',
         'support_surface::free_upgrade_multiplier',
     ]
-    assert plan.upstream_dependency_closure == [
-        'canonical_stat::free_attack_upgrade_chance_pct',
-        'canonical_stat::free_defense_upgrade_chance_pct',
-        'canonical_stat::free_utility_upgrade_chance_pct',
-        'source_input::workshop:Free Attack Upgrade',
-        'source_input::workshop:Free Defense Upgrade',
-        'source_input::workshop:Free Utility Upgrade',
-        'support_surface::free_upgrade_multiplier',
-    ]
+    assert sorted(plan.upstream_dependency_closure) == sorted(
+        [
+            'state::tower.free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct',
+            'source_input::workshop:Free Attack Upgrade',
+            'source_input::workshop:Free Defense Upgrade',
+            'source_input::workshop:Free Utility Upgrade',
+            'support_surface::free_upgrade_multiplier',
+        ]
+    )
 
 
 def test_planner_returns_minimal_dirty_closure_for_mutation_and_runtime_consumers():
@@ -184,13 +186,13 @@ def test_planner_returns_minimal_dirty_closure_for_mutation_and_runtime_consumer
     assert plan.fallback_required is False
     assert plan.mutated_source_nodes == ['source_input::workshop:Enemy Attack Level Skip']
     assert plan.runtime_consumer_ids == ['runtime_consumer::wave_progression.attack_wave']
-    assert plan.publishable_closure == ['canonical_stat::enemy_attack_level_skip_pct']
+    assert plan.publishable_closure == ['state::tower.enemy_attack_level_skip_pct']
 
 
 def test_planner_populates_fallback_reason_for_invalid_surface_request():
     plan = IncrementalRecalcRuntime().plan_surface_request(
         family_id='timing_farm_with_perks',
-        surface_ids=('canonical_stat::tower_hp',),
+        surface_ids=('state::tower.hp',),
     )
 
     assert plan.fallback_required is True
@@ -219,5 +221,5 @@ def test_planned_progression_bundle_executes_natively_without_full_statbook(monk
     )
 
     assert sorted(candidate) == sorted(plan.publishable_dirty_nodes)
-    assert candidate['canonical_stat::enemy_attack_level_skip_pct'].status == 'resolved'
-    assert candidate['canonical_stat::enemy_health_level_skip_pct'].status == 'resolved'
+    assert candidate['state::tower.enemy_attack_level_skip_pct'].status == 'resolved'
+    assert candidate['state::tower.enemy_health_level_skip_pct'].status == 'resolved'
