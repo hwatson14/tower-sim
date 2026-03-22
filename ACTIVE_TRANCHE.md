@@ -1,56 +1,52 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST`
+`PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL`
 
 ## Phase
-`Phase 1 — Canonical planning truth and archive closure`
+`Phase 2 — Query Engine ownership completion`
 
 ## Objective
-Finalize the governed covered-family delegation manifest using the completed Phase 2A ownership ledger and the bounded Query Engine family contracts as the governing boundary.
+Route only the manifest-approved covered `resolve_stats()` families through the query kernel while preserving the public compatibility entrypoint and an explicit fallback path for undelegated or non-covered families.
 
 ## Scope in
-- finalized covered-family list for Phase 2C
-- explicit delegated scope per declared family
-- explicit fallback ownership for every undelegated family or non-covered remainder
-- visible parity and benchmark status per manifest row
-- no-false-implication review against KB contracts and the public compatibility entrypoint
+- internal `resolve_stats()` delegation routing
+- delegation only for declared manifest-approved covered families
+- explicit fallback preservation for undelegated families and non-covered outputs
+- public compatibility entrypoint preservation
+- no-false-implication review of partial delegation coverage
 
 ## Scope out
-- code-path routing changes for `resolve_stats()`
+- new family coverage beyond the Phase 2C manifest
 - formula rewrites
-- undeclared family expansion beyond the governed Query Engine contracts
+- benchmark closure work beyond routing-proof checks
 - simulator or optimiser changes
-- benchmark execution beyond status declaration
 
 ## Required outputs
-- covered-family delegation manifest
-- explicit delegated-scope notes for each declared family
-- explicit fallback-owner declaration for undelegated areas
-- visible parity and benchmark status for every manifest row
+- explicit query-kernel delegation path for approved families
+- explicit fallback path for undelegated families
+- preserved public compatibility entrypoint
+- verification that routing does not imply full delegation
 
 ## Required verification
-- covered-family scope is explicit and bounded
-- fallback owner is named for every undelegated family or non-covered remainder
-- manifest language does not imply full delegation
-- parity and benchmark status are visible for Phase 2E handoff
-- docs and tranche state reflect the new manifest truth
+- declared covered families delegate only when the compatibility entrypoint can identify them without guessing
+- undelegated families still resolve through the explicit fallback owner
+- public `engine.stat_engine.resolve_stats` entrypoint remains intact
+- no doc or diagnostic language implies repo-wide full delegation
 
 ## Acceptance criteria
-- the Phase 2C family list is finalized from governed Query Engine declarations
-- delegated scope is explicit for each delegated row
-- undelegated areas are visible, bounded, and name their fallback owner
-- parity and benchmark status exist for every manifest row
-- no major doc implies full `resolve_stats()` delegation
+- internal routing delegates only governed, manifest-approved families
+- undelegated and ambiguous requests remain on the explicit compatibility fallback path
+- public entrypoint signature and import surface remain preserved
+- tests prove both delegated routing and undelegated fallback behavior
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once the covered-family manifest is finalized, undelegated fallback ownership is explicit, and status visibility is landed for Phase 2E handoff.
+Stop once the compatibility entrypoint delegates only the governed, detectable family subset, preserves explicit fallback behavior for everything else, and targeted verification covers the bounded routing truth.
 
 ## Non-goals
-- do not rewrite formulas
-- do not implement `resolve_stats()` delegation routing in this tranche
-- do not add undeclared families to the manifest
-- do not claim parity or benchmark completion without evidence
+- do not expand the covered-family manifest
+- do not treat ambiguous family identification as delegated proof
+- do not claim Phase 2E parity or benchmark completion
