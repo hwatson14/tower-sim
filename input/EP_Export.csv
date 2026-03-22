@@ -4,12 +4,12 @@ EP Base URL,https://docs.google.com/spreadsheets/d/1Q8RYXr9nQPxjuIEXtlTzvR63MRb0
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,20.84 O,20.84 O
+edmg,edmg,eDMG,298.57 O,298.57 O
 edmg,damage,Damage,746.86 B,746.86 B
 edmg,attack_speed,Attack Speed,41.505253125,41.505253125
 edmg,crit_chance,Critical Chance,0.9700000000000001,0.9700000000000001
 edmg,crit_factor,Critical Factor,171.6912,171.6912
-edmg,range,Range,69.5,69.5
+edmg,range,Range,109.48863512309427,109.48863512309427
 edmg,damage_per_meter,Damage / Meter,0.13030102799999999,0.13030102799999999
 edmg,multishot_chance,Multishot Chance,0.495,0.495
 edmg,multishot_targets,Multishot Targets,13,13
