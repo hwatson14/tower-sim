@@ -4,6 +4,7 @@ import re
 from collections import Counter
 from typing import Callable
 
+from engine.display import _format_display_number, _format_display_value
 
 
 def kb_alignment_status_from_compare_status(compare_status: str | None) -> str:
@@ -78,7 +79,11 @@ def classify_compare_status(destination: str, contract: dict, package_row, ep_en
     return 'mismatch', delta, rel_pct, notes
 
 
-def annotate_compare_display_fields(ep_compare: dict, format_display_value: Callable[[object, object], str | None], format_display_number: Callable[[object], str | None]) -> None:
+def annotate_compare_display_fields(
+    ep_compare: dict,
+    format_display_value: Callable[[object, object], str | None] = _format_display_value,
+    format_display_number: Callable[[object], str | None] = _format_display_number,
+) -> None:
     for payload in ep_compare.values():
         package_value = payload.get('package_value')
         package_value_type = payload.get('package_value_type')

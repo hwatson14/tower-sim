@@ -83,6 +83,28 @@ def test_build_ep_compare_and_display_annotation_preserve_compare_payload_shape(
     assert tower_hp['relative_delta_display'] == '11.111%'
 
 
+def test_verification_display_annotation_defaults_match_run_stats_usage():
+    compare = {
+        'canonical_stat::tower_hp': {
+            'package_value': 1250.0,
+            'package_value_type': 'flat',
+            'ep_value_parsed': 12.5,
+            'ep_value_type': 'pct',
+            'delta': 0.25,
+            'relative_delta_pct': 2.0,
+            'compare_notes': ['ep_decimal_fraction_scaled_to_percent_points'],
+        }
+    }
+
+    annotate_compare_display_fields(compare)
+
+    tower_hp = compare['canonical_stat::tower_hp']
+    assert tower_hp['package_value_display'] == '1.25k'
+    assert tower_hp['ep_value_display'] == '1.25k%'
+    assert tower_hp['delta_display'] == '0.25'
+    assert tower_hp['relative_delta_display'] == '2%'
+
+
 def test_build_line_by_line_verification_preserves_payload_shape_and_statuses():
     statbook = {
         'rows': {
