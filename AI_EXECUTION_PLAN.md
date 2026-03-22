@@ -81,6 +81,44 @@ This is the core execution rule.
 - Progression Optimiser
 - Build Transition Advisor
 
+### Product operating principle
+TowerSim must feel like one coherent planner, not a bag of isolated calculators or disconnected tools.
+Every product surface should read like a different query or decision mode over the same governed lower-layer truth.
+
+### Core product principles
+- One optimiser, many queries: avoid inventing separate features when the distinction is really objective, constraint, or horizon selection.
+- Keep user questions central: repeated player questions decide whether a surface deserves product attention.
+- Explanation is part of the product: recommendations without reasons are incomplete product work.
+- Time matters: progression recommendations must account for time-to-earn, not only raw gain.
+- Reversibility matters: save/spend and transition advice must consider whether a decision is locked, frictional, or freely adjustable.
+- Not every resource deserves equal modelling effort: deepen only the resources that materially change real decisions.
+- Module shards and rerolls are separate problems: shards are breakpoint/allocation planning; rerolls are probabilistic target planning.
+- Advisors must not become a garbage layer: they summarise, compare, sequence, and explain, but must not hide mechanic invention or bypass lower-layer owners.
+- Trust labels matter: every immature or model-governed recommendation surface must expose its confidence class.
+
+### Product-planning distinctions that remain canonical
+- Resource = scarce thing earned, spent, allocated, or consumed.
+- Domain = sink/system where a resource is invested.
+- Progression planning must optimise resources across domains without conflating the two.
+- Optimiser families remain distinct: standard ROI/path optimisers, breakpoint/allocation optimisers, and probabilistic target optimisers are not the same planning problem.
+
+### Trust-label taxonomy
+Until explicitly replaced by a stronger governed taxonomy, product and planning surfaces should use:
+- Canonical
+- Strong model
+- Accepted model
+- Policy heuristic
+
+### Representative user questions by surface
+- Simulator: What happens if I run this setup, how far does it go, and what is limiting it?
+- Loadout Optimiser: What is my best setup for a stated goal or constraint, and what setup changes explain the win?
+- Progression Optimiser: What should I spend next, should I save instead, and what plan best uses my scarce resources over the chosen horizon?
+- Build Transition Advisor: When is a build switch realistic, what blocks it, and what path gets there fastest?
+
+### Product scope policy
+- True earlier scope should prioritise coins, lab time, and stones as the first progression-resource families.
+- Later expansion may add medals, module shards, rerolls, and deeper build-transition planning once lower layers and trust labels are stable.
+
 ### Immediate architectural rule
 Do not expand product surfaces on top of unstable ownership boundaries.
 
@@ -111,7 +149,7 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 - root R86 docs are retained as historical handoff inputs with Phase 1 obligation mapping now absorbed into this plan
 - naming patch/zip artifacts are design inputs only, not direct implementation truth
 - root archive artifacts are classified in the Phase 1 archive disposition ledger below
-- the standalone roadmap is historical only and no longer execution truth
+- standalone-roadmap planning truth has now been absorbed into this file; no parallel roadmap remains canonical
 
 ---
 
@@ -176,7 +214,7 @@ The repo still has archive-driven ambiguity and overlapping planning truth.
 **Required outputs**
 - one canonical execution-plan file
 - aligned terminology in major docs
-- explicit removal or retirement note for the standalone roadmap
+- explicit absorption note and, if safe, deletion of the standalone roadmap
 
 **Required verification**
 - no major doc contradicts canonical layer or phase language
@@ -253,7 +291,7 @@ The repo still has archive-driven ambiguity and overlapping planning truth.
 All of the following must be true:
 - bootstrap tranche is closed or explicitly superseded
 - one canonical plan exists and is current
-- roadmap content has been absorbed here
+- roadmap-only planning truth has been absorbed or explicitly rejected here
 - major docs do not contradict the canonical plan
 - all root archive artifacts have a documented disposition
 - current open obligations are mapped to concrete work items
@@ -283,7 +321,7 @@ Tranches in this phase may run in parallel, but all must be complete before Phas
 
 | artifact | disposition | why | absorbed_into | still_open_items | retirement_condition | merge_as_is_allowed |
 |---|---|---|---|---|---|---|
-| `towersim_canonical_product_roadmap_v6.md` | historical_noncanonical_reference | Product-thinking context remains useful, but execution truth now lives in the control stack. | `AI_EXECUTION_PLAN.md` for canonical plan/control truth. | None for Phase 1. | May retire in Phase 10 once no active docs need a historical pointer. | no |
+| `towersim_canonical_product_roadmap_v6.md` | absorbed_and_deleted | Remaining useful product-planning truth has been compressed into this plan, so the standalone roadmap no longer adds canonical or necessary historical guidance. | `AI_EXECUTION_PLAN.md` sections on product principles, optimiser families, trust labels, scope policy, and representative user questions. | None. | Retired now; do not recreate a parallel roadmap unless new unique planning truth cannot fit the canonical plan. | no |
 | `R86_CODEX_HANDOFF_GUARDRAILS.md` | historical_handoff_reference | Preserves bounded-scope implementation constraints that informed Query Engine work. | Phase 1C ledger in this plan and future Phase 2 execution. | Query Engine ownership completion remains open in Phase 2. | May retire after Phase 2 once all surviving guardrails are either landed or rejected explicitly. | no |
 | `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | historical_handoff_reference | Preserves acceptance framing and tracked status context for the R86 workstream. | Phase 1C ledger in this plan and future Phase 2 tranche outputs. | Phase 2A-2E remain open. | May retire after Phase 2 once every mapped obligation has concrete landed evidence or explicit rejection. | no |
 | `R86_WORKED_EXAMPLES.md` | retained_reference_fixture | Still useful as compact human-readable examples for contributor maps, overlays, and query responses. | Future Query Engine tests/docs; referenced by the Phase 1C ledger. | Preserve examples until equivalent or better governed test fixtures exist. | May retire after equivalent governed fixtures are established and referenced from tests/docs. | no |
@@ -294,7 +332,7 @@ Tranches in this phase may run in parallel, but all must be complete before Phas
 
 ### Phase 1 completion note
 
-Phase 1 is complete when the control stack records: one canonical plan, one active tranche, mapped R86 obligations, documented root-archive dispositions, and no major doc claiming a competing roadmap or layer vocabulary. The current repo state now meets that bar and promotes execution to Phase 2.
+Phase 1 is complete when the control stack records: one canonical plan, one active tranche, mapped R86 obligations, documented root-archive dispositions, and no major doc claiming a competing roadmap or layer vocabulary. The standalone roadmap's remaining planning truth is now absorbed here and the file can be retired without losing future product-shaping guidance. The current repo state now meets that bar and promotes execution to Phase 2.
 
 ---
 
@@ -372,6 +410,8 @@ No later work should build on an unstable core stat-resolution boundary.
 **Goal**
 - Make delegation scope explicit before broader routing changes continue.
 
+Implementation evidence now lives in `docs/phase2c_covered_family_delegation_manifest.md`. The design-only prep ledger below remains as planning history, but the governed Phase 2C target surface is the manifest document.
+
 **Required output schema**
 - `family_id`
 - `delegated_now`
@@ -389,7 +429,7 @@ No later work should build on an unstable core stat-resolution boundary.
 - unrelated family expansion
 - simulator or optimiser work
 
-##### Phase 2C design-only prep ledger
+##### Phase 2C design-only prep ledger (historical prep notes)
 
 This design note records the Phase 2C manifest population method and the draft family classification that may be prepared in parallel with Phase 2A. It does not imply that Phase 2C is implemented early; it exists so later routing work does not guess about manifest semantics or undelegated fallback ownership.
 
@@ -750,9 +790,8 @@ All of the following must be true:
 Retire superseded root artifacts only after their truth has been absorbed or explicitly rejected.
 
 ### Tranches
-- Phase 10A — roadmap retirement
-- Phase 10B — archive artifact retirement
-- Phase 10C — final pointer cleanup across docs and repo surfaces
+- Phase 10A — remaining archive artifact retirement
+- Phase 10B — final pointer cleanup across docs and repo surfaces
 
 ### Gate to exit Phase 10
 All of the following must be true:
