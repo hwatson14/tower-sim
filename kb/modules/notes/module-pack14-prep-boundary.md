@@ -24,10 +24,11 @@ These are now restated in concise Pack14-prep tables so downstream work can fail
 
 - `assist-unique-rarity-upgrade-costs.csv` remains accepted-model helper material because the current provenance is prompt-materialized rather than row-closed from the live wiki or a first-party export.
 - Effective Paths workbook material may continue to support helper planning notes and package-canon main-effect closure, but it must not be silently promoted into new module economy or reroll canon.
+- `kb/modules/tables/module-workbook-assumption-registry.csv` now records which workbook-derived assumptions are canonical owners versus accepted-model helper logic so downstream loaders can fail closed on provenance rather than ad hoc interpretation.
 
 ## Future optimizer consumer bundle boundary
 
-The future Pack14 optimizer-facing module bundle is drafted as:
+The future Pack14 optimizer-facing module bundle is drafted in `kb/modules/contracts/module-pack14-nonruntime-draft.yaml` as:
 
 - `consumer_id: optimizer_analysis`
 - `bundle_id: optimizer_module_effects`
@@ -41,7 +42,7 @@ This keeps the draft bounded to already-governed progression-family module surfa
 
 ## Overlay delta requirements
 
-For future optimizer experimentation, the only drafted overlay classes are:
+For future optimizer experimentation, the only drafted overlay classes in the non-runtime draft are:
 
 - required: `module_assertions`
 - optional: `assist_slot_choice`
