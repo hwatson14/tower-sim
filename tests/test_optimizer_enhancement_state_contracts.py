@@ -23,10 +23,13 @@ from optimizer.enhancement_state_contracts import (
 def test_enhancement_state_prep_contract_loads_and_pins_expected_bundle():
     contract = load_enhancement_state_prep_contract()
 
-    assert contract['change_classification'] == ['Routing correction', 'Output correction']
+    assert contract['change_classification'] == ['Routing correction', 'Output correction', 'Test correction']
     assert contract['future_query_bundle']['bundle_id'] == 'optimizer_enhancement_state'
+    assert contract['future_query_bundle']['requirements']['failure_mode'].startswith('Fail closed')
     assert contract['output_labels']['strong_model_coin_bonus']['strength'] == 'strong_model'
+    assert contract['output_labels']['strong_model_coin_bonus']['trust_payload']['trust_level'] == 'strong_model'
     assert contract['output_labels']['accepted_model_els_helpers']['strength'] == 'accepted_model'
+    assert contract['output_labels']['accepted_model_els_helpers']['trust_payload']['runtime_status'] == 'prep_only'
 
 
 def test_observed_run_els_contract_and_inputs_load_in_declared_order():
@@ -37,6 +40,7 @@ def test_observed_run_els_contract_and_inputs_load_in_declared_order():
         'observed_run_enemy_attack_skip',
         'observed_run_enemy_health_skip',
     )
+    assert tuple(contract['allowed_scenario_kinds']) == ('observed_run',)
     assert tuple(scenario.scenario_id for scenario in scenarios) == tuple(contract['required_scenarios'])
     assert {scenario.skip_track for scenario in scenarios} == {
         'enemy_attack_level_skip',
@@ -85,3 +89,45 @@ def test_enhancement_state_prep_contract_fails_closed_for_missing_value_table(tm
     finally:
         enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
 
+
+
+def test_observed_run_els_inputs_fail_closed_for_scenario_contract_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    payload = json.loads((ROOT / 'input' / 'observed_run_els_scenarios.json').read_text())
+    payload['scenarios'][0]['skip_track'] = 'enemy_health_level_skip'
+    input_path = tmp_path / 'observed_run_els_scenarios.json'
+    input_path.write_text(json.dumps(payload, indent=2))
+    monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
+    enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
+    try:
+        with pytest.raises(ValueError, match='mismatches skip_track contract'):
+            load_observed_run_els_scenarios()
+    finally:
+        enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
+
+
+def test_enhancement_state_prep_contract_fails_closed_for_missing_trust_payload_key(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    contract = copy.deepcopy(load_enhancement_state_prep_contract())
+    del contract['output_labels']['strong_model_coin_bonus']['trust_payload']['formula_owner']
+    contract_path = tmp_path / 'enhancement-state-prep.yaml'
+    contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
+    monkeypatch.setattr(enhancement_state_contracts, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
+    enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
+    try:
+        with pytest.raises(ValueError, match='trust_payload missing keys'):
+            load_enhancement_state_prep_contract()
+    finally:
+        enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
+
+
+def test_enhancement_state_prep_contract_fails_closed_for_missing_query_bundle_requirements(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    contract = copy.deepcopy(load_enhancement_state_prep_contract())
+    del contract['future_query_bundle']['requirements']['failure_mode']
+    contract_path = tmp_path / 'enhancement-state-prep.yaml'
+    contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
+    monkeypatch.setattr(enhancement_state_contracts, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
+    enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
+    try:
+        with pytest.raises(ValueError, match='requirements missing keys'):
+            load_enhancement_state_prep_contract()
+    finally:
+        enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()

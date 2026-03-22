@@ -1,4 +1,4 @@
-contract_id: observed_run_els_scenarios_v1
+contract_id: observed_run_els_scenarios_v2
 required_fields:
   - scenario_id
   - scenario_kind
@@ -9,6 +9,23 @@ required_fields:
 required_scenarios:
   - observed_run_enemy_attack_skip
   - observed_run_enemy_health_skip
+allowed_scenario_kinds:
+  - observed_run
+allowed_skip_tracks:
+  - enemy_attack_level_skip
+  - enemy_health_level_skip
+scenario_contracts:
+  observed_run_enemy_attack_skip:
+    scenario_kind: observed_run
+    skip_track: enemy_attack_level_skip
+    observed_run_label: observed_run_attack_skip_reduction_probe
+    notes_must_include: accepted-model ELS helper evaluation
+  observed_run_enemy_health_skip:
+    scenario_kind: observed_run
+    skip_track: enemy_health_level_skip
+    observed_run_label: observed_run_health_skip_reduction_probe
+    notes_must_include: accepted-model ELS helper evaluation
 notes:
   - Observed-run ELS scenarios are bounded prep inputs for optimizer-side helper evaluation only.
   - enemy_level_skip_reduction_pp is an observed external reduction applied to the relevant skip track.
+  - Contracts pin exact scenario_kind, skip_track, observed_run_label, and notes intent so prep outputs fail closed before runtime integration.
