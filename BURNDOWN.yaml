@@ -1,6 +1,10 @@
-version: 1
-program: tower-sim-migration
-active_tranche_id: TRANCHE_BOOTSTRAP_CONTROL_SYSTEM_V1
+version: 2
+program: tower-sim-execution
+canonical_plan: AI_EXECUTION_PLAN.md
+active_phase_id: PH1
+active_phase_name: Canonical planning truth and archive closure
+active_tranche_id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+
 status_dimensions:
   delivery:
     - not_started
@@ -12,210 +16,230 @@ status_dimensions:
     - not_verified
     - partial
     - verified
+  review:
+    - draft
+    - ready_for_review
+    - approved
 
-tasks:
-  - id: P0-T1
-    title: Lock canonical ownership truth
-    phase: P0
-    delivery_status: implemented
+phase_gates:
+  - phase_id: PH1
+    phase_name: Canonical planning truth and archive closure
+    exit_requires:
+      - bootstrap_tranche_closed_or_superseded
+      - one_canonical_plan_exists_and_is_current
+      - roadmap_content_absorbed
+      - major_docs_do_not_contradict_plan
+      - all_root_archive_artifacts_have_documented_disposition
+      - current_open_obligations_mapped_to_concrete_work
+      - control_files_use_same_phase_and_tranche_vocabulary
+  - phase_id: PH2
+    phase_name: Query Engine ownership completion
+    exit_requires:
+      - compiler_query_seam_not_materially_owner_ambiguous
+      - covered_family_manifest_exists_and_is_current
+      - covered_family_delegation_is_explicit_and_governed
+      - parity_status_exists_by_declared_family_and_surface
+      - benchmark_evidence_exists_for_delegated_path
+      - compatibility_entrypoint_preserved
+      - no_major_doc_implies_dual_ownership
+
+tranches:
+  - id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    title: Control-stack closeout and tranche promotion
+    phase_id: PH1
+    delivery_status: in_progress
     verification_status: partial
+    review_status: ready_for_review
     depends_on: []
     owner_surfaces:
-      - ARCHITECTURE.md
-      - README.md
-      - engine/stat_engine.py
-      - engine/stat_resolution_core.py
-    scope_in:
-      - docs/comments/import-facing ownership wording
-    scope_out:
-      - runtime formula changes
-    acceptance_criteria:
-      - no_major_doc_implies_dual_ownership
-      - compatibility_surfaces_named_explicitly
-      - canonical_owner_stated_consistently
-    required_checks:
-      - ownership_wording_review
-    evidence_paths: []
-    blockers: []
-    next_action: Align durable ownership wording in the major docs and execution-control rails.
-
-  - id: P0-T2
-    title: Create canonical migration/status ledger and control-artifact bootstrap
-    phase: P0
-    delivery_status: implemented
-    verification_status: partial
-    depends_on:
-      - P0-T1
-    owner_surfaces:
-      - AI_MIGRATION_EXECUTION_PLAN.md
+      - AI_EXECUTION_PLAN.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
+      - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
     scope_in:
-      - canonical migration status structure
-      - archive disposition structure
-      - execution-control artifact structure
-      - control-artifact establishment
+      - bootstrap tranche closeout
+      - canonical plan reference rename
+      - phase-gated control-stack promotion
+      - major doc pointer alignment
     scope_out:
       - runtime mechanic changes
+      - Query Engine code changes
+      - archive content implementation
+      - estimator or optimiser work
+    required_outputs:
+      - control_stack_closeout_note
+      - updated_active_tranche
+      - updated_burndown
+      - updated_major_doc_pointers
     acceptance_criteria:
-      - canonical_ledger_exists
-      - active_tranche_exists
-      - burndown_exists
-      - no_major_doc_contradicts_ledger_role
+      - bootstrap_tranche_closed_or_superseded
+      - active_tranche_points_to_phase_gated_system
+      - burndown_uses_phase_gated_ids
+      - no_major_control_file_points_to_old_plan_name
+      - next_executable_phase1_tranche_is_unambiguous
     required_checks:
+      - bootstrap_acceptance_review
       - control_file_consistency_review
+      - stale_reference_review
     evidence_paths:
-      - AI_MIGRATION_EXECUTION_PLAN.md
+      - AI_EXECUTION_PLAN.md
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
+      - AGENTS.md
     blockers: []
-    next_action: Finish syncing major docs to the canonical ledger and control-system model.
+    next_action: Close bootstrap control state and promote the first real Phase 1 tranche.
 
-  - id: P1-T1
-    title: Convert root R86 docs into a precise open-work baseline
-    phase: P1
+  - id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+    title: Canonical plan and terminology unification
+    phase_id: PH1
     delivery_status: not_started
     verification_status: not_verified
+    review_status: draft
     depends_on:
-      - P0-T2
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - ARCHITECTURE.md
+      - README.md
+      - AGENTS.md
+    scope_in:
+      - canonical plan finalization
+      - terminology alignment across major docs
+      - roadmap retirement note
+    scope_out:
+      - runtime mechanic changes
+      - product feature implementation
+    required_outputs:
+      - canonical_execution_plan
+      - aligned_major_doc_language
+      - roadmap_retirement_note
+    acceptance_criteria:
+      - one_canonical_execution_plan_exists
+      - no_major_doc_contradicts_layer_or_phase_language
+      - roadmap_content_absorbed_or_explicitly_rejected
+    required_checks:
+      - terminology_consistency_review
+      - major_doc_pointer_review
+    evidence_paths: []
+    blockers: []
+    next_action: Finalize canonical naming and remove parallel planning truth.
+
+  - id: PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
+    title: R86 obligation closure ledger
+    phase_id: PH1
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
       - R86_CODEX_HANDOFF_GUARDRAILS.md
       - R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md
       - R86_WORKED_EXAMPLES.md
-      - AI_MIGRATION_EXECUTION_PLAN.md
     scope_in:
-      - remaining-work baseline
+      - legacy obligation mapping
     scope_out:
-      - code changes
+      - direct code changes
+      - archive merges
+    required_outputs:
+      - r86_obligation_closure_ledger
+    required_output_schema:
+      - source_doc
+      - source_section
+      - obligation_type
+      - current_status
+      - mapped_phase
+      - mapped_tranche
+      - owner_surface
+      - evidence_or_gap
+      - notes
     acceptance_criteria:
-      - r86_open_items_explicit
-      - landed_vs_open_split_explicit
+      - every_still_relevant_r86_obligation_is_mapped
+      - landed_items_are_separated_from_open_items
+      - vague_r86_complete_incomplete_wording_removed
     required_checks:
-      - document_consistency_review
+      - r86_mapping_review
+      - obligation_status_review
     evidence_paths: []
     blockers: []
-    next_action: Wait for P0-T2 to settle as the canonical planning truth.
+    next_action: Convert R86 from vague historical status into concrete current work items.
 
-  - id: P1-T2
-    title: Archive bundle disposition ledger
-    phase: P1
+  - id: PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
+    title: Archive disposition ledger
+    phase_id: PH1
     delivery_status: not_started
     verification_status: not_verified
+    review_status: draft
     depends_on:
-      - P0-T2
+      - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     owner_surfaces:
-      - AI_MIGRATION_EXECUTION_PLAN.md
-      - root archive artifacts
+      - AI_EXECUTION_PLAN.md
+      - root_archive_artifacts
     scope_in:
       - archive disposition tracking
     scope_out:
-      - direct archive merges
+      - archive content implementation
+      - runtime feature work
+    required_outputs:
+      - archive_disposition_ledger
+    required_output_schema:
+      - artifact
+      - disposition
+      - why
+      - absorbed_into
+      - still_open_items
+      - retirement_condition
+      - merge_as_is_allowed
     acceptance_criteria:
-      - every_root_archive_has_documented_disposition
+      - each_root_artifact_has_one_disposition_only
+      - retirement_conditions_are_explicit
+      - direct_merge_forbidden_artifacts_are_named
     required_checks:
       - archive_disposition_review
+      - retirement_condition_review
     evidence_paths: []
     blockers: []
-    next_action: Wait for canonical migration ledger stabilization.
+    next_action: Classify every root artifact before any retirement or reuse.
 
-  - id: P2-T1
-    title: Build function-level ownership ledger for stat_input_compiler.py
-    phase: P2
+  - id: PH1-TRANCHE-E_CONTROL_STACK_ALIGNMENT
+    title: Control-stack alignment
+    phase_id: PH1
     delivery_status: not_started
     verification_status: not_verified
+    review_status: draft
     depends_on:
-      - P0-T1
-      - P0-T2
+      - PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
+      - PH1-TRANCHE-C_R86_OBLIGATION_CLOSURE_LEDGER
+      - PH1-TRANCHE-D_ARCHIVE_DISPOSITION_LEDGER
     owner_surfaces:
-      - compilers/stat_input_compiler.py
-      - AI_MIGRATION_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
     scope_in:
-      - function ownership mapping
+      - control-file and doc pointer alignment
     scope_out:
-      - formula changes
+      - Phase 2 implementation work
+    required_outputs:
+      - updated_active_tranche
+      - updated_burndown
+      - updated_doc_references
     acceptance_criteria:
-      - no_owner_ambiguous_major_function_without_justification
+      - phase_and_tranche_ids_are_consistent
+      - no_stale_plan_filename_remains
+      - control_files_point_to_canonical_truth
     required_checks:
-      - boundary_review
+      - control_stack_consistency_review
     evidence_paths: []
     blockers: []
-    next_action: Start once P0 control artifacts are accepted.
+    next_action: Complete the Phase 1 control stack so Phase 2 can begin without ambiguity.
 
-  - id: P2-T2
-    title: Finish extraction of KB routing/query prep from stat_input_compiler.py
-    phase: P2
-    delivery_status: not_started
-    verification_status: not_verified
-    depends_on:
-      - P2-T1
-    owner_surfaces:
-      - compilers/stat_input_compiler.py
-      - engine/query_routing.py
-    scope_in:
-      - compiler/query seam cleanup
-    scope_out:
-      - unrelated engine refactors
-    acceptance_criteria:
-      - no_uncontrolled_straddle
-      - regression_coverage_updated
-    required_checks:
-      - regression_tests_updated
-      - boundary_doc_updated
-    evidence_paths: []
-    blockers: []
-    next_action: Wait for function-level ownership ledger.
-
-  - id: P2-T3
-    title: Establish governed manual-advisory input lane under input/
-    phase: P2
-    delivery_status: implemented
-    verification_status: partial
-    depends_on:
-      - P0-T2
-    owner_surfaces:
-      - input/manual_advisory_inputs.contract.yaml
-      - input/manual_advisory_inputs.example.json
-      - AI_MIGRATION_EXECUTION_PLAN.md
-    scope_in:
-      - input contract/example files
-      - planning integration
-    scope_out:
-      - consumer runtime wiring
-    acceptance_criteria:
-      - manual_inputs_explicit_scoped_and_not_kb_truth
-      - replacement_targets_defined
-      - consumers_can_fail_closed_when_input_missing
-    required_checks:
-      - contract_review
-      - example_review
-      - planning_doc_review
-    evidence_paths:
-      - input/manual_advisory_inputs.contract.yaml
-      - input/manual_advisory_inputs.example.json
-      - AI_MIGRATION_EXECUTION_PLAN.md
-    blockers: []
-    next_action: Add consumer adoption only when a tranche explicitly scopes it in.
-
-  - id: P3-T1
-    title: Delegate covered families from resolve_stats() to the query kernel
-    phase: P3
-    delivery_status: not_started
-    verification_status: not_verified
-    depends_on:
-      - P2-T2
-    owner_surfaces:
-      - engine/stat_engine.py
-      - engine/stat_resolution_core.py
-      - engine/stat_query_kernel.py
-    scope_in:
-      - covered-family delegation
-    scope_out:
-      - uncovered-family rewrites
-    acceptance_criteria:
-      - resolve_stats_public_api_preserved
-      - covered_family_ownership_query_first
-    required_checks:
-      - parity_tests
-    evidence_paths: []
-    blockers: []
-    next_action: Wait for seam cleanup completion.
+notes:
+  bootstrap_history:
+    prior_active_tranche_id: TRANCHE_BOOTSTRAP_CONTROL_SYSTEM_V1
+    prior_plan_name: AI_MIGRATION_EXECUTION_PLAN.md
+    status: superseded_pending_closeout
