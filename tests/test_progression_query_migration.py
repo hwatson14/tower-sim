@@ -21,8 +21,8 @@ from helpers import build_family_baseline, build_state
 def test_progression_query_helper_matches_direct_kernel_resolution_without_perks():
     state = build_state()
     requested_surface_ids = (
-        'canonical_stat::enemy_attack_level_skip_pct',
-        'canonical_stat::enemy_health_level_skip_pct',
+        'state::tower.enemy_attack_level_skip_pct',
+        'state::tower.enemy_health_level_skip_pct',
         'support_surface::free_upgrade_multiplier',
     )
 
@@ -51,9 +51,9 @@ def test_progression_query_helper_matches_direct_kernel_resolution_without_perks
 def test_progression_query_helper_matches_direct_kernel_resolution_with_perks():
     state = build_state()
     requested_surface_ids = (
-        'canonical_stat::free_attack_upgrade_chance_pct',
-        'canonical_stat::free_defense_upgrade_chance_pct',
-        'canonical_stat::free_utility_upgrade_chance_pct',
+        'state::tower.free_attack_upgrade_chance_pct',
+        'state::tower.free_defense_upgrade_chance_pct',
+        'state::tower.free_utility_upgrade_chance_pct',
     )
 
     helper_response = resolve_progression_family_query(
@@ -96,9 +96,9 @@ def test_progression_consumer_bundle_helper_matches_family_query_for_declared_bu
         preset_name='Farming',
         perks_enabled=True,
         requested_surface_ids=(
-            'canonical_stat::free_attack_upgrade_chance_pct',
-            'canonical_stat::free_defense_upgrade_chance_pct',
-            'canonical_stat::free_utility_upgrade_chance_pct',
+            'state::tower.free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct',
             'support_surface::free_upgrade_multiplier',
         ),
         trace_mode='contributors',

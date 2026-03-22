@@ -116,7 +116,7 @@ def test_timing_query_wave_accelerator_assertions_hold():
     assert resolved['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'] > 0
     assert resolved['support_surface::timing.wave_duration_seconds_effective'] < 35.0
     assert any('wave_accelerator' in row.contributor_id for row in with_card.contributor_rows)
-    without_wave_accel = without_card_baseline.contributor_rows_by_surface['runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration'][0]
+    without_wave_accel = without_card_baseline.contributor_rows_by_surface['state::cards.wave_accelerator.spawn_rate_acceleration'][0]
     assert without_wave_accel.active is False
     assert without_wave_accel.gate_reason == 'surface_absent_from_bound_inputs'
     assert resolved['support_surface::timing.wave_duration_seconds_effective'] == pytest.approx(16.1)
@@ -238,8 +238,8 @@ def test_timing_consumer_bundle_helper_matches_family_query_for_declared_bundle(
         scenario_config=config,
         perks_enabled=True,
         include_optional_surface_ids=(
-            'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
-            'canonical_stat::package_chance_pct',
+            'state::cards.wave_accelerator.spawn_rate_acceleration',
+            'state::tower.package_chance_pct',
         ),
         trace_mode='contributors',
     )
@@ -251,8 +251,8 @@ def test_timing_consumer_bundle_helper_matches_family_query_for_declared_bundle(
         perks_enabled=True,
         requested_surface_ids=(
             'support_surface::timing.wave_duration_seconds_effective',
-            'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
-            'canonical_stat::package_chance_pct',
+            'state::cards.wave_accelerator.spawn_rate_acceleration',
+            'state::tower.package_chance_pct',
         ),
         trace_mode='contributors',
     )

@@ -7,6 +7,7 @@ from typing import Any, Iterable, Mapping, Sequence
 
 import yaml
 
+from engine.query_routing import to_legacy_surface_id, to_v2_surface_id
 
 ROOT = Path(__file__).resolve().parents[1]
 _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
@@ -58,13 +59,13 @@ class ResolvedConsumerBundle:
 _RUNTIME_CONSUMER_RULES: tuple[RuntimeConsumerRule, ...] = (
     RuntimeConsumerRule(
         consumer_id='runtime_consumer::wave_progression.attack_wave',
-        source_node_ids=('canonical_stat::enemy_attack_level_skip_pct',),
+        source_node_ids=('state::tower.enemy_attack_level_skip_pct',),
         evidence='engine/wave_progression_policy.py; engine/boss_wave_engine.py',
         notes='Attack-wave advancement is deterministically suppressed by effective enemy attack level skip pct.',
     ),
     RuntimeConsumerRule(
         consumer_id='runtime_consumer::wave_progression.health_wave',
-        source_node_ids=('canonical_stat::enemy_health_level_skip_pct',),
+        source_node_ids=('state::tower.enemy_health_level_skip_pct',),
         evidence='engine/wave_progression_policy.py; engine/boss_wave_engine.py',
         notes='Health-wave advancement is deterministically suppressed by effective enemy health level skip pct.',
     ),
@@ -284,8 +285,17 @@ def resolve_consumer_bundle(
         raise ValueError(f'Consumer {consumer_id!r} is not allowed to request bundle {bundle_id!r}.')
     if family_id not in definition.allowed_family_ids:
         raise ValueError(f'Consumer bundle {key!r} is not allowed for family_id {family_id!r}.')
-    optional_requested = tuple(str(surface_id) for surface_id in include_optional_surface_ids)
-    unknown_optional = sorted(set(optional_requested) - set(definition.optional_surface_ids))
+    resolved_optional: list[str] = []
+    unknown_optional: list[str] = []
+    declared_optional = set(definition.optional_surface_ids)
+    for surface_id in (str(surface_id) for surface_id in include_optional_surface_ids):
+        candidates = (surface_id, to_v2_surface_id(surface_id), to_legacy_surface_id(surface_id))
+        matched = next((candidate for candidate in candidates if candidate in declared_optional), None)
+        if matched is None:
+            unknown_optional.append(surface_id)
+            continue
+        resolved_optional.append(surface_id)
+    optional_requested = tuple(resolved_optional)
     if unknown_optional:
         raise ValueError(f'Consumer bundle {key!r} cannot request undeclared optional surfaces {unknown_optional}.')
     if trace_mode is not None and _TRACE_MODE_RANK[str(trace_mode)] < _TRACE_MODE_RANK[definition.minimum_trace_mode]:

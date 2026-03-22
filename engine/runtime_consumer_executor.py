@@ -4,12 +4,13 @@ from dataclasses import dataclass, asdict
 from typing import Dict, Any
 
 from engine.wave_progression_policy import WaveProgressionPolicy, WaveProgressionState
+from engine.query_routing import to_legacy_surface_id
 from models.statbook import StatBook
 
 
 _WAVE_SKIP_SURFACE_IDS = (
-    'canonical_stat::enemy_attack_level_skip_pct',
-    'canonical_stat::enemy_health_level_skip_pct',
+    'state::tower.enemy_attack_level_skip_pct',
+    'state::tower.enemy_health_level_skip_pct',
 )
 
 
@@ -37,8 +38,8 @@ class RuntimeConsumerExecutor:
 
     def execute_skip_wave_outputs(self, *, statbook: StatBook, target_display_wave: int) -> RuntimeConsumerOutputs:
         self._assert_required_wave_skip_rows_present(statbook)
-        attack_skip_pct = self._row_float(statbook, 'canonical_stat::enemy_attack_level_skip_pct')
-        health_skip_pct = self._row_float(statbook, 'canonical_stat::enemy_health_level_skip_pct')
+        attack_skip_pct = self._row_float(statbook, 'state::tower.enemy_attack_level_skip_pct')
+        health_skip_pct = self._row_float(statbook, 'state::tower.enemy_health_level_skip_pct')
         state = self._policy.advance_to_wave(
             state=WaveProgressionState(),
             target_display_wave=int(target_display_wave),
@@ -55,15 +56,27 @@ class RuntimeConsumerExecutor:
 
     @staticmethod
     def _row_float(statbook: StatBook, stat_name: str) -> float | None:
-        row = statbook.rows.get(stat_name)
+        row = RuntimeConsumerExecutor._lookup_surface_row(statbook, stat_name)
         if row is None or row.final_value is None:
             return None
         return float(row.final_value)
 
     @staticmethod
+    def _lookup_surface_row(statbook: StatBook, surface_id: str):
+        row = statbook.rows.get(surface_id)
+        if row is not None:
+            return row
+        legacy_surface_id = to_legacy_surface_id(surface_id)
+        if legacy_surface_id != surface_id:
+            row = statbook.rows.get(legacy_surface_id)
+            if row is not None:
+                return row
+        return None
+
+    @staticmethod
     def _assert_required_wave_skip_rows_present(statbook: StatBook) -> None:
         for surface_id in _WAVE_SKIP_SURFACE_IDS:
-            row = statbook.rows.get(surface_id)
+            row = RuntimeConsumerExecutor._lookup_surface_row(statbook, surface_id)
             if row is None:
                 raise ValueError(
                     f'Runtime skip-wave execution requires wave skip surface {surface_id!r}; row is missing.'

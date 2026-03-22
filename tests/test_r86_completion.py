@@ -109,16 +109,16 @@ def test_progression_query_kernel_support_surfaces_match_canonical_stat_engine(f
         (
             'progression_runtime_no_perks',
             (
-                'canonical_stat::enemy_attack_level_skip_pct',
-                'canonical_stat::enemy_health_level_skip_pct',
+                'state::tower.enemy_attack_level_skip_pct',
+                'state::tower.enemy_health_level_skip_pct',
             ),
         ),
         (
             'progression_runtime_with_perks',
             (
-                'canonical_stat::free_attack_upgrade_chance_pct',
-                'canonical_stat::free_defense_upgrade_chance_pct',
-                'canonical_stat::free_utility_upgrade_chance_pct',
+                'state::tower.free_attack_upgrade_chance_pct',
+                'state::tower.free_defense_upgrade_chance_pct',
+                'state::tower.free_utility_upgrade_chance_pct',
             ),
         ),
     ],
@@ -140,10 +140,17 @@ def test_progression_bounded_executor_publishable_surfaces_match_canonical_stat_
     )
 
     for surface_id in requested_surface_ids:
+        reference_surface_id = {
+            'state::tower.enemy_attack_level_skip_pct': 'canonical_stat::enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct': 'canonical_stat::enemy_health_level_skip_pct',
+            'state::tower.free_attack_upgrade_chance_pct': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct': 'canonical_stat::free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct': 'canonical_stat::free_utility_upgrade_chance_pct',
+        }.get(surface_id, surface_id)
         assert surface_id in candidate
-        assert surface_id in reference.rows
-        assert candidate[surface_id].status == reference.rows[surface_id].status == 'resolved'
-        assert candidate[surface_id].final_value == pytest.approx(reference.rows[surface_id].final_value, rel=1e-9, abs=1e-9)
+        assert reference_surface_id in reference.rows
+        assert candidate[surface_id].status == reference.rows[reference_surface_id].status == 'resolved'
+        assert candidate[surface_id].final_value == pytest.approx(reference.rows[reference_surface_id].final_value, rel=1e-9, abs=1e-9)
 
 
 @pytest.mark.parametrize(
@@ -198,7 +205,7 @@ def test_progression_overlay_and_invalidation_plan_publish_guarded_matches_bound
     original_level = int(state.workshop['Enemy Attack Level Skip'].preset_levels['Farming'])
     plan = IncrementalRecalcRuntime().plan_from_workshop_overrides({'Enemy Attack Level Skip': original_level + 1})
     assert plan.fallback_required is False
-    assert 'canonical_stat::enemy_attack_level_skip_pct' in plan.dirty_nodes
+    assert 'state::tower.enemy_attack_level_skip_pct' in plan.dirty_nodes
     assert 'runtime_consumer::wave_progression.attack_wave' in plan.runtime_consumer_ids
 
     bridge = ProgressionRecalcBridge()
@@ -238,10 +245,17 @@ def test_progression_overlay_and_invalidation_plan_publish_guarded_matches_bound
     assert published.incremental_diagnostics['status'] == 'published_candidate_overlay_over_cached_reference'
     assert published.incremental_diagnostics['cache_validation']['is_valid'] is True
     for surface_id in plan.publishable_dirty_nodes:
+        reference_surface_id = {
+            'state::tower.enemy_attack_level_skip_pct': 'canonical_stat::enemy_attack_level_skip_pct',
+            'state::tower.enemy_health_level_skip_pct': 'canonical_stat::enemy_health_level_skip_pct',
+            'state::tower.free_attack_upgrade_chance_pct': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'state::tower.free_defense_upgrade_chance_pct': 'canonical_stat::free_defense_upgrade_chance_pct',
+            'state::tower.free_utility_upgrade_chance_pct': 'canonical_stat::free_utility_upgrade_chance_pct',
+        }.get(surface_id, surface_id)
         assert surface_id in published.statbook.rows
-        assert surface_id in patched_reference.rows
+        assert reference_surface_id in patched_reference.rows
         assert published.statbook.rows[surface_id].final_value == pytest.approx(
-            patched_reference.rows[surface_id].final_value,
+            patched_reference.rows[reference_surface_id].final_value,
             rel=1e-9,
             abs=1e-9,
         )
@@ -289,7 +303,7 @@ def test_progression_overlay_and_invalidation_plan_runtime_publication_matches_b
         )
     )
     assert result.incremental_diagnostics['runtime_publication']['status'] == 'published_from_bounded_progression_bundle'
-    assert result.statbook.rows['canonical_stat::enemy_attack_level_skip_pct'].final_value == pytest.approx(
+    assert result.statbook.rows['state::tower.enemy_attack_level_skip_pct'].final_value == pytest.approx(
         patched_reference.rows['canonical_stat::enemy_attack_level_skip_pct'].final_value,
         rel=1e-9,
         abs=1e-9,
@@ -337,8 +351,8 @@ def test_r86_benchmarks_show_positive_value_for_progression_and_timing_queries()
     )
     progression_baseline = build_family_baseline('progression_runtime_no_perks')
     progression_request = (
-        'canonical_stat::enemy_attack_level_skip_pct',
-        'canonical_stat::enemy_health_level_skip_pct',
+        'state::tower.enemy_attack_level_skip_pct',
+        'state::tower.enemy_health_level_skip_pct',
         'support_surface::free_upgrade_multiplier',
     )
 
@@ -352,7 +366,7 @@ def test_r86_benchmarks_show_positive_value_for_progression_and_timing_queries()
     )
     timing_baseline = build_family_baseline('timing_farm_with_perks')
     timing_request = (
-        'canonical_stat::package_chance_pct',
+        'state::tower.package_chance_pct',
         'support_surface::timing.gcomp_cooldown_reduction_seconds',
     )
 

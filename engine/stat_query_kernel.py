@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from math import prod
 from pathlib import Path
 from types import MappingProxyType
@@ -16,6 +16,7 @@ from engine.family_baseline_materializer import (
     contributor_row_sort_key,
     load_surface_metadata_by_id,
 )
+from engine.query_routing import to_legacy_surface_id, to_v2_surface_id
 from engine.state_identity import BoundStatInputs
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -262,19 +263,44 @@ class StatQueryKernel:
         trace_mode = str(trace_mode)
         if trace_mode not in self._allowed_trace_modes:
             raise ValueError(f'Unsupported trace_mode {trace_mode!r}.')
-        requested = tuple(requested_surface_ids)
+        requested = tuple(str(surface_id) for surface_id in requested_surface_ids)
         available = overlay_applied_contributor_map.contributor_rows_by_surface
-        missing = sorted(set(requested) - set(available))
+
+        def _resolve_available_surface_id(surface_id: str) -> str | None:
+            candidates = (surface_id, to_v2_surface_id(surface_id), to_legacy_surface_id(surface_id))
+            for candidate in candidates:
+                if candidate in available:
+                    return candidate
+            return None
+
+        available_requested = tuple(_resolve_available_surface_id(surface_id) for surface_id in requested)
+        missing = sorted(surface_id for surface_id, available_surface_id in zip(requested, available_requested) if available_surface_id is None)
         if missing:
             raise ValueError(f'Requested surfaces are not covered by family {overlay_applied_contributor_map.family_id!r}: {missing}.')
 
-        resolved_rows = tuple(self._resolve_surface(surface_id, available[surface_id]) for surface_id in requested)
-        contributor_rows = () if trace_mode == 'none' else tuple(
-            row
-            for surface_id in requested
-            for row in available[surface_id]
+        published_requested = requested
+        publish_lookup = {
+            available_surface_id: requested_surface_id
+            for requested_surface_id, available_surface_id in zip(requested, available_requested)
+            if available_surface_id is not None
+        }
+        resolved_rows = tuple(
+            replace(self._resolve_surface(available_surface_id, available[available_surface_id]), surface_id=publish_lookup[available_surface_id])
+            for available_surface_id in available_requested
+            if available_surface_id is not None
         )
-        dependency_trace = {'requested_surface_ids': requested, 'dependency_closure': self._dependency_closure(requested, trace_mode)}
+        contributor_rows = () if trace_mode == 'none' else tuple(
+            replace(row, surface_id=publish_lookup.get(row.surface_id, row.surface_id))
+            for available_surface_id in available_requested
+            if available_surface_id is not None
+            for row in available[available_surface_id]
+        )
+        dependency_seeds = tuple(available_surface_id for available_surface_id in available_requested if available_surface_id is not None)
+        dependency_closure = self._dependency_closure(dependency_seeds, trace_mode)
+        dependency_trace = {
+            'requested_surface_ids': published_requested,
+            'dependency_closure': tuple(publish_lookup.get(surface_id, surface_id) for surface_id in dependency_closure),
+        }
         return QueryResponse(
             family_id=overlay_applied_contributor_map.family_id,
             resolved_surface_rows=resolved_rows,

@@ -8,6 +8,7 @@ from typing import Any, Iterable, Mapping
 
 import yaml
 
+from engine.query_routing import to_legacy_surface_id, to_v2_surface_id
 from engine.state_identity import BoundStatInputs, StateIdentity
 from models.stat_input import StatInput
 
@@ -117,9 +118,9 @@ class FamilyBaselineMaterializer:
         self.assert_family_supported(family_id)
         allowed_surfaces = self._family_surface_ids[family_id]
         normalized_rows = [
-            self._normalize_row(stat_input)
+            self._normalize_row(stat_input, surface_id=resolved_surface_id)
             for stat_input in bound_inputs.stat_inputs
-            if _normalized_surface_id(stat_input) in allowed_surfaces
+            if (resolved_surface_id := self._resolve_allowed_surface_id(stat_input, allowed_surfaces)) is not None
         ]
         rows = tuple(
             sorted(
@@ -141,9 +142,9 @@ class FamilyBaselineMaterializer:
         self.assert_family_supported(family_id)
         allowed_surfaces = self._family_surface_ids[family_id]
         normalized_rows = [
-            self._normalize_row(stat_input)
+            self._normalize_row(stat_input, surface_id=resolved_surface_id)
             for stat_input in stat_inputs
-            if _normalized_surface_id(stat_input) in allowed_surfaces
+            if (resolved_surface_id := self._resolve_allowed_surface_id(stat_input, allowed_surfaces)) is not None
         ]
         rows = tuple(
             sorted(
@@ -185,8 +186,14 @@ class FamilyBaselineMaterializer:
         if scenario_mode_id is not None and scenario_mode_id != expected_mode_id:
             raise ValueError(f'Family {family_id!r} requires scenario mode_id={expected_mode_id!r}, got {scenario_mode_id!r}.')
 
-    def _normalize_row(self, row: StatInput) -> BaselineContributorRow:
-        surface_id = _normalized_surface_id(row)
+    def _resolve_allowed_surface_id(self, row: StatInput, allowed_surfaces: frozenset[str]) -> str | None:
+        for surface_id in _surface_id_candidates(row):
+            if surface_id in allowed_surfaces:
+                return surface_id
+        return None
+
+    def _normalize_row(self, row: StatInput, *, surface_id: str | None = None) -> BaselineContributorRow:
+        surface_id = surface_id or _normalized_surface_id(row)
         if surface_id is None:
             raise ValueError(f'Stat input {row!r} is missing destination routing and cannot be materialized.')
         surface_metadata = self._surface_metadata_by_id.get(surface_id)
@@ -382,10 +389,20 @@ def _normalize_source_class(row: StatInput) -> str:
 
 
 def _normalized_surface_id(row: StatInput) -> str | None:
+    candidates = _surface_id_candidates(row)
+    return candidates[-1] if candidates else None
+
+
+def _surface_id_candidates(row: StatInput) -> tuple[str, ...]:
     if not row.destination_object_type or not row.destination_id:
-        return None
+        return ()
     raw_surface_id = f'{row.destination_object_type}::{row.destination_id}'
-    return _SURFACE_ID_ALIASES.get(raw_surface_id, raw_surface_id)
+    aliased_surface_id = _SURFACE_ID_ALIASES.get(raw_surface_id, raw_surface_id)
+    candidates: list[str] = []
+    for candidate in (raw_surface_id, aliased_surface_id, to_v2_surface_id(aliased_surface_id), to_legacy_surface_id(aliased_surface_id)):
+        if candidate not in candidates:
+            candidates.append(candidate)
+    return tuple(candidates)
 
 
 def _fallback_contributor_id(row: StatInput) -> str:

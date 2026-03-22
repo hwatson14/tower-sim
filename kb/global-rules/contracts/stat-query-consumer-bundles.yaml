@@ -9,9 +9,9 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::free_attack_upgrade_chance_pct
-          - canonical_stat::free_defense_upgrade_chance_pct
-          - canonical_stat::free_utility_upgrade_chance_pct
+          - state::tower.free_attack_upgrade_chance_pct
+          - state::tower.free_defense_upgrade_chance_pct
+          - state::tower.free_utility_upgrade_chance_pct
         optional_surface_ids:
           - support_surface::free_upgrade_multiplier
         minimum_trace_mode: contributors
@@ -44,8 +44,8 @@ consumers:
         required_surface_ids:
           - support_surface::timing.wave_duration_seconds_effective
         optional_surface_ids:
-          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
-          - canonical_stat::package_chance_pct
+          - state::cards.wave_accelerator.spawn_rate_acceleration
+          - state::tower.package_chance_pct
         minimum_trace_mode: contributors
         overlays_allowed: true
         publish_default: true
@@ -58,7 +58,7 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::enemy_attack_level_skip_pct
+          - state::tower.enemy_attack_level_skip_pct
         optional_surface_ids: []
         minimum_trace_mode: none
         overlays_allowed: true
@@ -72,7 +72,7 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::enemy_health_level_skip_pct
+          - state::tower.enemy_health_level_skip_pct
         optional_surface_ids: []
         minimum_trace_mode: none
         overlays_allowed: true
@@ -86,8 +86,8 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::enemy_attack_level_skip_pct
-          - canonical_stat::enemy_health_level_skip_pct
+          - state::tower.enemy_attack_level_skip_pct
+          - state::tower.enemy_health_level_skip_pct
         optional_surface_ids: []
         minimum_trace_mode: contributors
         overlays_allowed: true
@@ -99,9 +99,9 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::free_attack_upgrade_chance_pct
-          - canonical_stat::free_defense_upgrade_chance_pct
-          - canonical_stat::free_utility_upgrade_chance_pct
+          - state::tower.free_attack_upgrade_chance_pct
+          - state::tower.free_defense_upgrade_chance_pct
+          - state::tower.free_utility_upgrade_chance_pct
         optional_surface_ids:
           - support_surface::free_upgrade_multiplier
         minimum_trace_mode: contributors
@@ -117,9 +117,9 @@ consumers:
           - progression_runtime_no_perks
           - progression_runtime_with_perks
         required_surface_ids:
-          - canonical_stat::free_attack_upgrade_chance_pct
-          - canonical_stat::free_defense_upgrade_chance_pct
-          - canonical_stat::free_utility_upgrade_chance_pct
+          - state::tower.free_attack_upgrade_chance_pct
+          - state::tower.free_defense_upgrade_chance_pct
+          - state::tower.free_utility_upgrade_chance_pct
         optional_surface_ids:
           - support_surface::free_upgrade_multiplier
         minimum_trace_mode: contributors
@@ -151,9 +151,9 @@ consumers:
           - timing_scenario_probe
         required_surface_ids:
           - support_surface::timing.wave_duration_seconds_effective
-          - canonical_stat::package_chance_pct
+          - state::tower.package_chance_pct
         optional_surface_ids:
-          - runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration
+          - state::cards.wave_accelerator.spawn_rate_acceleration
         minimum_trace_mode: contributors
         overlays_allowed: false
         publish_default: true

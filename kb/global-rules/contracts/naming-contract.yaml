@@ -55,6 +55,40 @@ policy:
   - Do not encode source provenance into canonical stat ids.
   - Do not create multiple canonical ids for the same mechanic just to satisfy UI
     wording.
+  semantic_taxonomy:
+    notes:
+    - state = player, loadout, progression, or run-owned quantities.
+    - context = external environment, tier, heat, enemy, or battle-condition quantities.
+    - derived = post-resolution computed surfaces such as eHP, eDamage, and eEcon.
+    - Companion remap ledger for pack-v2 migration work lives at
+      kb/global-rules/contracts/naming-contract-pack-v2-remap.csv.
+    domains:
+      state:
+      - tower
+      - wall
+      - economy
+      - meta
+      - capability
+      - cards
+      - perk
+      - uw
+      - uw_plus
+      - bot
+      - guardian
+      - lab
+      - shock
+      - module
+      context:
+      - bc
+      - tier
+      - heat
+      - tournament
+      - enemy
+      - boss
+      derived:
+      - survivability
+      - damage
+      - economy
   alias_policy:
   - Raw source names stay under sources/raw when exact fidelity matters.
   - Human shorthand such as BH, GT, EALS, EHLS, and Workshop Plus belongs in alias

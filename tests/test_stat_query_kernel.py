@@ -65,7 +65,7 @@ def _overlay(
         'runtime_branch_id': runtime_branch_id,
         'affected_family_id': 'progression_runtime_no_perks',
         'delta_type': delta_type,
-        'target_scope': target_scope or {'surface_ids': ['canonical_stat::enemy_attack_level_skip_pct']},
+        'target_scope': target_scope or {'surface_ids': ['state::tower.enemy_attack_level_skip_pct']},
         'changed_contributors': changed_contributors or [],
         'changed_masks': [],
         'changed_assertions': [],
@@ -113,14 +113,14 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
 
     assert baseline.account_snapshot_id == 'acct_demo_v1'
     active_rows = [row.__dict__ for row in baseline.contributor_rows if row.active]
-    assert [row.__dict__ for row in baseline.contributor_rows_by_surface['canonical_stat::enemy_attack_level_skip_pct']] == [
+    assert [row.__dict__ for row in baseline.contributor_rows_by_surface['state::tower.enemy_attack_level_skip_pct']] == [
         {
-            'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+            'surface_id': 'state::tower.enemy_attack_level_skip_pct',
             'surface_class': 'surface',
             'domain': 'progression',
             'source_class': 'base',
             'composition_stage': 'gate_enable_disable',
-            'contributor_id': 'query_placeholder::canonical_stat::enemy_attack_level_skip_pct',
+            'contributor_id': 'query_placeholder::state::tower.enemy_attack_level_skip_pct',
             'value': False,
             'value_type': 'scalar',
             'active': False,
@@ -130,7 +130,7 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
     ]
     assert active_rows == [
         {
-            'surface_id': 'canonical_stat::free_attack_upgrade_chance_pct',
+            'surface_id': 'state::tower.free_attack_upgrade_chance_pct',
             'surface_class': 'surface',
             'domain': 'progression',
             'source_class': 'workshop',
@@ -175,7 +175,7 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
             },
             {
                 'operation': 'add',
-                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_id': 'state::tower.enemy_attack_level_skip_pct',
                 'surface_class': 'surface',
                 'domain': 'progression',
                 'source_class': 'cards',
@@ -220,7 +220,7 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
         (
             {
                 'operation': 'add',
-                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_id': 'state::tower.enemy_attack_level_skip_pct',
                 'surface_class': 'context_resource',
                 'domain': 'progression',
                 'source_class': 'cards',
@@ -235,7 +235,7 @@ def test_overlay_applicator_supports_replace_add_remove_and_multiply_without_mut
         (
             {
                 'operation': 'add',
-                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_id': 'state::tower.enemy_attack_level_skip_pct',
                 'surface_class': 'surface',
                 'domain': 'timing',
                 'source_class': 'cards',
@@ -272,7 +272,7 @@ def test_overlay_applicator_rejects_metadata_drift_for_mutated_rows():
         },
         contributor_rows=(
             BaselineContributorRow(
-                surface_id='canonical_stat::enemy_attack_level_skip_pct',
+                surface_id='state::tower.enemy_attack_level_skip_pct',
                 surface_class='context_resource',
                 domain='progression',
                 source_class='workshop',
@@ -292,7 +292,7 @@ def test_overlay_applicator_rejects_metadata_drift_for_mutated_rows():
         'runtime_branch_id': 'branch_wave_189',
         'affected_family_id': 'progression_runtime_no_perks',
         'delta_type': 'workshop_mutation',
-        'target_scope': {'surface_ids': ['canonical_stat::enemy_attack_level_skip_pct']},
+        'target_scope': {'surface_ids': ['state::tower.enemy_attack_level_skip_pct']},
         'changed_contributors': [
             {
                 'contributor_id': 'workshop.enemy_attack_level_skip.base',
@@ -362,7 +362,7 @@ def test_overlay_applicator_rejects_surface_targets_outside_target_scope():
         changed_contributors=[
             {
                 'operation': 'add',
-                'surface_id': 'canonical_stat::enemy_attack_level_skip_pct',
+                'surface_id': 'state::tower.enemy_attack_level_skip_pct',
                 'surface_class': 'surface',
                 'domain': 'progression',
                 'source_class': 'cards',
