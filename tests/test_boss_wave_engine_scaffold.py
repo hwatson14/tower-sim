@@ -3,11 +3,12 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 from engine.boss_wave_engine import BossWaveEngine, BossWaveEngineConfig
 from engine.perk_timeline_state import PerkTimelineEvent
 from engine.progression_recalc_bridge import ProgressionRecalcResult
@@ -15,14 +16,14 @@ from engine.progression_state import build_progression_init_state
 from engine.scenario_engine import ScenarioConfig, compute_scenario_surfaces
 from engine.workshop_progression_policy import WorkshopUpgradeEvent
 from models.statbook import StatBook, StatRow
-from parsers.ids_parser import parse_ids
+from tests.helpers import build_state
 
 ROOT = Path(__file__).resolve().parents[1]
+pytestmark = pytest.mark.slow
 
 
 def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
+    return build_state()
 
 
 def test_boss_wave_engine_scaffold_emits_blocked_rows_until_ttk_inputs_closed():

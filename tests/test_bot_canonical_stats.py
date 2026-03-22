@@ -1,21 +1,18 @@
 from pathlib import Path
-import json
 import sys
+from functools import lru_cache
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from parsers.ids_parser import parse_ids
-from compilers.account_state_compiler import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine.stat_engine import resolve_stats
+from tests.helpers import build_state
 
 
+@lru_cache(maxsize=None)
 def _book(state_mode: str = 'start_of_run'):
-    ids = parse_ids(ROOT / 'input' / '_IDS.csv')
-    loadout = json.load(open(ROOT / 'input' / 'loadout.json'))
-    perks = json.load(open(ROOT / 'input' / 'perks.json'))
-    acct = compile_account_state(ids, loadout_config=loadout, perk_config=perks)
+    acct = build_state()
     rows = compile_stat_inputs(acct, preset_name='Farming', state_mode=state_mode)
     return resolve_stats(rows)
 

@@ -1,7 +1,6 @@
 from __future__ import annotations
 import pytest
 
-import json
 import math
 import sys
 from pathlib import Path
@@ -9,17 +8,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from parsers.ids_parser import parse_ids
-from compilers.account_state_compiler import compile_account_state
 from compilers import stat_input_compiler as compiler
 from compilers.stat_input_compiler import compile_stat_inputs
+from tests.helpers import build_state, run_stats_subprocess
+
+OUT = ROOT / 'out'
 
 
 def _build_state(perks_filename: str):
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
-    loadout = json.loads((ROOT / "input" / "loadout.json").read_text())
-    perks = json.loads((ROOT / "input" / perks_filename).read_text())
-    return compile_account_state(ids, default_preset="Farming", loadout_config=loadout, perk_config=perks)
+    return build_state(perks_filename=perks_filename)
 
 
 def _perk_rows(inputs, perk_name: str):
@@ -94,10 +91,11 @@ def test_ranged_tradeoff_positive_side_is_preserved_but_not_bound_to_a_calculate
     assert any(r.destination_id == "enemy.ranged.damage_multiplier" and abs(float(r.value) - 3.0) < 1e-9 for r in tradeoff_rows)
 
 
+@pytest.mark.slow
 def test_tourney_compare_for_offense_uses_perks_off_even_when_engine_perks_on(tmp_path):
     import subprocess, sys, json
     out = tmp_path / "compare_policy"
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable, str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
         '--perk-state', 'on',
@@ -151,12 +149,13 @@ def test_wall_hp_uses_additive_ratio_bonuses_not_ratio_times_one_plus_bonus():
     expected = 100.0 * (2.0 + 1.0 + 1.2) * 1.59 * 2.5
     assert row.final_value == pytest.approx(expected)
 
+@pytest.mark.slow
 def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty(tmp_path):
     import subprocess, sys, json
     empty_perks = tmp_path / 'perks.json'
     empty_perks.write_text(json.dumps({'perk_presets': {}, 'active_perk_preset': None}))
     out = tmp_path / 'fallback_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable, str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
         '--perks', str(empty_perks),
@@ -168,16 +167,9 @@ def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty
     assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('input/perks_projected_max.json')
 
 
-def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'regen_compare'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_tower_regen_compare_contributors_use_farming_perks_on_context():
+    import json
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_regen']
     contributors = row['package_contributors']
     assert row['compare_preset'] == 'Farming'
@@ -185,21 +177,14 @@ def test_tower_regen_compare_contributors_use_farming_perks_on_context(tmp_path)
     assert any(c['source_family'] == 'perk' and c['source_name'] == 'x1.75 Health Regen' for c in contributors)
     assert any(c['source_family'] == 'module_substat' and c['source_name'] == 'Sharp Fortitude' and c['preset_name'] == 'Farming' for c in contributors)
     assert any(c['source_family'] == 'module_substat' and c['source_name'] == 'Orbital Augment' and c['preset_name'] == 'Farming' for c in contributors)
-    regen_closure = json.loads((out / 'tower_regen_closure_report.json').read_text())
+    regen_closure = json.loads((OUT / 'tower_regen_closure_report.json').read_text())
     assert regen_closure['compare_preset'] == 'Farming'
     assert regen_closure['compare_perk_state'] == 'on'
 
 
-def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'regen_semantics'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    report = json.loads((out / 'tower_regen_ep_semantic_gap_report.json').read_text())
+def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses():
+    import json
+    report = json.loads((OUT / 'tower_regen_ep_semantic_gap_report.json').read_text())
     hypotheses = report['ep_formula_hypotheses']
     assert report['compare_state_key'] == 'Farming__perks_on'
     assert hypotheses['ep_standard_perk_factor'] == pytest.approx(report['current_factors']['standard_perk_factor'])
@@ -210,13 +195,9 @@ def test_tower_regen_ep_semantic_gap_report_emits_farming_context_and_hypotheses
     assert report['assessment']['calculator_change_recommended'] is False
 
 
-def test_tower_defense_absolute_semantic_gap_report_identifies_standard_perk_ep_semantics(tmp_path):
-    import json, subprocess, sys
-    from pathlib import Path
-    repo = Path(__file__).resolve().parents[1]
-    out = tmp_path / 'out_test_defabs_semantics'
-    subprocess.run([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], cwd=repo, check=True)
-    report = json.loads((out / 'tower_defense_absolute_semantic_gap_report.json').read_text())
+def test_tower_defense_absolute_semantic_gap_report_identifies_standard_perk_ep_semantics():
+    import json
+    report = json.loads((OUT / 'tower_defense_absolute_semantic_gap_report.json').read_text())
     assert report['current_factors']['standard_perk_factor'] == pytest.approx(2.1875)
     assert report['ep_formula_hypotheses']['ep_standard_perk_factor'] == pytest.approx(2.1875)
     scenarios = {row['scenario']: row for row in report['scenarios']}
@@ -244,47 +225,26 @@ def test_parse_ep_value_q_and_q_suffixes_have_distinct_magnitudes():
     assert Q_value == pytest.approx(1e18)
 
 
-def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_keys(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'compare_policy_milestone'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    diagnostics = json.loads((out / 'diagnostics.json').read_text())
+def test_compare_situation_policy_exposes_distinct_milestone_engine_and_compare_keys():
+    import json
+    diagnostics = json.loads((OUT / 'diagnostics.json').read_text())
     policy = diagnostics['compare_situation_policy']
     assert 'milestone_engine' in policy
     assert 'milestone_compare_policy' in policy
     assert policy['milestone_compare_policy']['preset'] == 'Milestone'
 
 
-def test_package_compare_capability_has_single_nested_perk_state_field(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'package_compare_capability_shape'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    diagnostics = json.loads((out / 'diagnostics.json').read_text())
+def test_package_compare_capability_has_single_nested_perk_state_field():
+    import json
+    diagnostics = json.loads((OUT / 'diagnostics.json').read_text())
     cap = diagnostics['ep_compare_stage_rules']['package_compare_capability']
     assert 'perk_state' in cap
     assert diagnostics['ep_compare_stage_rules'].get('perk_state') is None
 
 
-def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
-    import json, subprocess, sys
-    out = tmp_path / 'damage_runtime_gap'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    report = json.loads((out / 'tower_damage_runtime_gap_report.json').read_text())
+def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption():
+    import json
+    report = json.loads((OUT / 'tower_damage_runtime_gap_report.json').read_text())
     assert report['current_assumption_parameters']['project_funding_cash_assumption'] == pytest.approx(50_000_000_000.0)
     assert report['ep_evidence']['evidence_strength'] == 'user_provided_for_current_ep_compare_basis'
     scenarios = {row['scenario']: row for row in report['scenarios']}
@@ -295,16 +255,9 @@ def test_tower_damage_runtime_gap_report_uses_ep_cash_50b_assumption(tmp_path):
     assert report['assessment']['calculator_change_recommended'] is False
 
 
-def test_farming_survivability_compare_respects_perk_bans(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'perk_bans'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    diagnostics = json.loads((out / 'diagnostics.json').read_text())
+def test_farming_survivability_compare_respects_perk_bans():
+    import json
+    diagnostics = json.loads((OUT / 'diagnostics.json').read_text())
     audit = diagnostics.get('perk_contributor_audit', {})
     for key in [
         'canonical_stat::tower_hp',
@@ -317,16 +270,9 @@ def test_farming_survivability_compare_respects_perk_bans(tmp_path):
 
 
 
-def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'tower_hp_compare'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor():
+    import json
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_hp']
     contributors = row['package_contributors']
     by_name = {c['source_name']: c for c in contributors}
@@ -337,30 +283,16 @@ def test_tower_hp_compare_includes_dwhp_and_ep_armor_assist_factor(tmp_path):
     assert row['compare_perk_state'] == 'on'
 
 
-def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_perk_semantics(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'tower_hp_semantics'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_tower_hp_gap_after_dwhp_and_armor_assist_fix_reduces_to_ep_standard_perk_semantics():
+    import json
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_hp']
     assert float(row['package_value']) == pytest.approx(float(row['ep_value']), rel=6e-4)
 
 
-def test_free_upgrades_enhancement_applies_to_all_three_free_upgrade_stats(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'free_upgrades_enh'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    statbook = json.loads((out / 'statbook.json').read_text())['rows']
+def test_free_upgrades_enhancement_applies_to_all_three_free_upgrade_stats():
+    import json
+    statbook = json.loads((OUT / 'statbook.json').read_text())['rows']
     attack = statbook['canonical_stat::free_attack_upgrade_chance_pct']['final_value']
     defense = statbook['canonical_stat::free_defense_upgrade_chance_pct']['final_value']
     utility = statbook['canonical_stat::free_utility_upgrade_chance_pct']['final_value']
@@ -384,16 +316,9 @@ def test_tradeoff_regen_positive_side_scales_full_multiplier_with_ito():
     assert value == 8.8
 
 
-def test_tower_regen_compare_closes_after_module_efficiency_fix(tmp_path):
-    import subprocess, sys, json, math
-    out = tmp_path / 'regen_fixed'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_tower_regen_compare_closes_after_module_efficiency_fix():
+    import json, math
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::tower_regen']
     assert row['compare_preset'] == 'Farming'
     assert row['compare_perk_state'] == 'on'
@@ -484,21 +409,14 @@ def test_remaining_exception_set_promoted_in_formula_ledger():
         assert surfaces[key]['formula_class'] == 'generic_family_promoted'
 
 
-def test_promoted_family_outputs_hold_on_v85_run(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / 'v85_promotions'
-    result = subprocess.run([
-        sys.executable, str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_promoted_family_outputs_hold_on_v85_run():
+    import json
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     assert compare['canonical_stat::package_chance_pct']['status'] == 'matched_exact'
     assert compare['canonical_stat::tower_damage_per_meter_multiplier']['status'] == 'matched_exact'
     assert compare['canonical_stat::tower_hp']['status'] == 'matched_close'
     assert compare['canonical_stat::tower_regen']['status'] == 'matched_close'
-    statbook = json.loads((out / 'statbook.json').read_text())['rows']
+    statbook = json.loads((OUT / 'statbook.json').read_text())['rows']
     assert 'Promoted shared support-multiplier family' in statbook['canonical_stat::free_attack_upgrade_chance_pct']['notes']
     assert 'Promoted shared support-multiplier family' in statbook['canonical_stat::free_defense_upgrade_chance_pct']['notes']
     assert 'Promoted shared support-multiplier family' in statbook['canonical_stat::free_utility_upgrade_chance_pct']['notes']
@@ -656,6 +574,7 @@ def test_coin_perks_route_to_coins_per_kill_bonus_not_coin_bonus_multiplier():
     assert positive[0].destination_id == "coins_per_kill_bonus"
 
 
+@pytest.mark.slow
 def test_coin_surfaces_match_expected_farming_start_and_max_progression(tmp_path):
     import subprocess, sys, json
     expected = {
@@ -670,7 +589,7 @@ def test_coin_surfaces_match_expected_farming_start_and_max_progression(tmp_path
     }
     for mode, targets in expected.items():
         out = tmp_path / mode
-        result = subprocess.run([
+        result = run_stats_subprocess([
             sys.executable, str(ROOT / 'run_stats.py'),
             '--preset', 'Farming',
             '--state-mode', mode,

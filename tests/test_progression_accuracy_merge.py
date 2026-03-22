@@ -3,18 +3,20 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
 from engine.boss_wave_engine import BossWaveEngine, BossWaveEngineConfig, ProgressionFixedInputs
 from engine.progression_state import build_progression_init_state
-from parsers.ids_parser import parse_ids
+from tests.helpers import build_state
+
+pytestmark = pytest.mark.slow
 
 def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
-    return compile_account_state(ids_raw, default_preset='Farming')
+    return build_state()
 
 
 def test_enemy_table_lookup_interpolates_sparse_rows():
