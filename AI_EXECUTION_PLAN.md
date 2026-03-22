@@ -389,6 +389,73 @@ No later work should build on an unstable core stat-resolution boundary.
 - unrelated family expansion
 - simulator or optimiser work
 
+##### Phase 2C design-only prep ledger
+
+This design note records the Phase 2C manifest population method and the draft family classification that may be prepared in parallel with Phase 2A. It does not imply that Phase 2C is implemented early; it exists so later routing work does not guess about manifest semantics or undelegated fallback ownership.
+
+**Manifest population method**
+- The Phase 2C manifest should be generated from governed Query Engine family declarations first, not from ad hoc `resolve_stats()` call sites.
+- The source-of-truth seed set is the bounded family list already declared in `kb/global-rules/contracts/stat-query-scenario-families.yaml`.
+- The manifest should cross-check each candidate family against `kb/global-rules/contracts/stat-query-initial-surface-set.yaml`, `kb/global-rules/contracts/stat-query-consumer-bundles.yaml`, and the current compatibility entrypoint in `engine/stat_engine.py`.
+- Each manifest row must be maintained as an explicit reviewed declaration; later automation may prefill rows from the contracts above, but status fields must remain visible and human-reviewed rather than inferred silently.
+- The manifest schema is confirmed to include exactly these governance fields: `family_id`, `delegated_now`, `fallback_owner`, `parity_status`, `benchmark_status`, and `blocker_if_not_delegated`.
+- If a family cannot name a fallback owner, the manifest must fail closed and Phase 2C is not complete.
+
+**Status vocab and evidence expectations**
+- `parity_status` vocabulary:
+  - `not_started`: no parity case or comparison artifact exists yet.
+  - `planned`: the family is declared and the intended parity comparison surface set is identified, but no executed evidence is recorded yet.
+  - `in_progress`: some parity execution or fixture work exists, but the family does not yet have a complete pass/fail/open disposition.
+  - `pass`: declared query surfaces for the family match the compatibility/reference path for the approved comparison scope.
+  - `fail`: executed evidence shows a mismatch that blocks treating the delegated family as closed.
+  - `blocked`: parity cannot yet be evaluated because ownership or routing truth is still unresolved upstream.
+- `benchmark_status` vocabulary:
+  - `not_started`: no benchmark plan or result exists yet.
+  - `planned`: benchmark scope is named, but no measured run has been recorded.
+  - `in_progress`: benchmark harness or capture is underway, but no final disposition exists.
+  - `pass`: benchmark evidence for the delegated family has been executed and accepted for the approved workload.
+  - `fail`: benchmark evidence shows the delegated path does not yet meet the accepted threshold or exposes a regression.
+  - `not_required_yet`: visible placeholder status for undelegated families whose benchmark proof should not be implied prematurely.
+  - `blocked`: benchmark work cannot proceed because the owner boundary or delegated path is not yet approved.
+- Evidence expectation for Phase 2E:
+  - every manifest row must keep the status visible even before evidence exists;
+  - `pass` or `fail` requires a cited evidence artifact or test/harness result;
+  - `planned`, `in_progress`, and `blocked` require a short bounded note naming the missing proof or dependency;
+  - `not_required_yet` is allowed only when `delegated_now` is `false`.
+
+**Draft candidate covered-family list**
+
+Likely delegated-now families:
+
+| family_id | why likely delegated now | fallback_owner | parity_status | benchmark_status | blocker_if_not_delegated |
+|---|---|---|---|---|---|
+| `timing_tournament_no_perks` | Bounded timing family already declared in scenario-family and initial-surface-set contracts and already exercised by timing query parity tests. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `planned` | `planned` | |
+| `timing_farm_with_perks` | Same bounded timing family pattern, with governed perks-enabled semantics and existing timing query coverage. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `planned` | `planned` | |
+| `timing_scenario_probe` | Declared timing family with explicit scenario semantics and bounded query surface ownership. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `planned` | `planned` | |
+| `progression_runtime_no_perks` | Declared progression runtime family with bounded executor, bridge, overlay, and parity-reference coverage already present. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `planned` | `planned` | |
+| `progression_runtime_with_perks` | Same as the no-perks runtime family, but with explicit perks-enabled semantics and existing bounded-query coverage. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `planned` | `planned` | |
+
+Clearly fallback-owned families:
+
+| family_id | why fallback-owned now | fallback_owner | parity_status | benchmark_status | blocker_if_not_delegated |
+|---|---|---|---|---|---|
+| `all_other_resolve_stats_outputs` | Any statbook row not owned by a declared family in the Query Engine contracts must remain outside the covered-family manifest for Phase 2C and continue to resolve through the compatibility/reference path. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `not_started` | `not_required_yet` | Not a declared Query Engine family yet; Phase 2C must not imply repo-wide delegation. |
+
+Undecided families blocked by ownership ambiguity:
+
+| family_id | why undecided | fallback_owner | parity_status | benchmark_status | blocker_if_not_delegated |
+|---|---|---|---|---|---|
+| `progression_start_of_run` | Final inclusion is likely, but the manifest should not mark it delegated until Phase 2A confirms that the remaining compiler/query boundary does not leave start-of-run-only routing logic owned by Inputs. | `engine.stat_resolution_core.resolve_stats` via compatibility entrypoint `engine.stat_engine.resolve_stats` | `blocked` if 2A finds unresolved ownership; otherwise `planned` | `blocked` if 2A finds unresolved ownership; otherwise `planned` | Depends on Phase 2A confirming whether start-of-run progression compilation is fully on the Query Engine side of the seam or still partly compiler-owned. |
+
+**2A blocker map for finalizing 2C**
+- Phase 2C can draft the manifest structure now, but it cannot finalize any row whose delegated/fallback split still depends on unresolved owner boundaries inside `compilers/stat_input_compiler.py`.
+- The highest-risk family is `progression_start_of_run`, because it is declared in Query Engine contracts but may still rely on start-of-run routing or compilation behavior that Phase 2A must classify precisely before 2C can mark it unambiguously delegated.
+- The progression runtime families are lower-risk because bridge, overlay, and bounded-executor evidence already point at a query-owned runtime path, but they should still inherit any owner-boundary corrections Phase 2A discovers.
+- The timing families are the least ownership-ambiguous because they already compile through dedicated timing-family flows, yet the manifest should still preserve explicit fallback ownership until 2D lands the compatibility-entrypoint routing declaration.
+- Any future family not already declared in the bounded family contracts is automatically blocked from manifest inclusion until both of these are true:
+  - Phase 2A/2B identify the correct owner boundary for the relevant routing path.
+  - a governed Query Engine family declaration exists in the KB contracts.
+
 #### Phase 2D — `resolve_stats()` delegation to query kernel
 **Goal**
 - Route declared covered families through the query kernel while preserving the public compatibility entrypoint.
