@@ -586,9 +586,9 @@ tranches:
   - id: PH2-TRANCHE-D_RESOLVE_STATS_DELEGATION_TO_QUERY_KERNEL
     title: resolve_stats() delegation to query kernel
     phase_id: PH2
-    delivery_status: in_progress
-    verification_status: partial
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
       - PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
@@ -745,11 +745,16 @@ notes:
 
   phase_closeout:
     PH1:
+      outcome: completed
+      summary:
+        - The control stack now records one canonical plan, one active tranche, mapped archive/obligation posture, and phase-gated control truth sufficient to promote Phase 2 work.
+        - Historical Phase 1 notes remain in the tranche ledger, but they are no longer blockers for active Query Engine implementation tranches.
+      promoted_next_phase: PH2
+    PH2:
       outcome: in_progress
       summary:
-        - Phase 1A is closed and Phase 1B is now completed with roadmap absorption into the canonical plan.
-        - Phase 1C, 1D, and 1E remain pending before any promotion to Phase 2 is allowed.
-        - The control stack must not point to Phase 2 work until those Phase 1 tranches are complete.
+        - Phase 2A through 2D are complete enough to hand off to governed parity and benchmark proof work.
+        - Phase 2 remains open because family-scoped evidence and benchmark closure still belong to Phase 2E.
       promoted_next_phase: PH2
     PH2:
       outcome: done
