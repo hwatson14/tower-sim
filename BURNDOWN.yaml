@@ -42,6 +42,29 @@ phase_gates:
       - benchmark_evidence_exists_for_delegated_path
       - compatibility_entrypoint_preserved
       - no_major_doc_implies_dual_ownership
+  - phase_id: PH3
+    phase_name: Objective-state promotion
+    exit_requires:
+      - all_three_objective_states_have_declared_query_surfaces
+      - optimizer_does_not_own_canonical_objective_formulas
+      - maturity_labels_and_known_gap_statements_are_explicit
+      - parity_or_accepted_model_evidence_exists_per_objective_state
+      - contributor_trace_expectations_are_defined_for_each_objective_surface
+  - phase_id: PH4
+    phase_name: Verification and evaluator foundation
+    exit_requires:
+      - governed_verification_registries_exist
+      - evaluator_inputs_outputs_and_assumptions_are_explicit
+      - reference_corpus_exists_for_evaluator_verification
+      - evaluator_verification_status_is_visible_by_case_family
+      - comparison_and_verification_are_less_embedded_in_run_stats
+  - phase_id: PH8
+    phase_name: Optimiser product surfaces
+    exit_requires:
+      - optimizers_consume_stable_lower_layer_surfaces
+      - objective_families_are_explicit
+      - recommendation_confidence_and_trust_logic_are_visible
+      - save_vs_spend_branching_is_governed_not_ad_hoc
 
 tranches:
   - id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
@@ -360,6 +383,154 @@ tranches:
     blockers: []
     next_action: Execute the approved seam extraction now that Phase 2A ownership classification is complete.
 
+
+  - id: PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    title: Resource-income query surfaces for deterministic economy truth
+    phase_id: PH3
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - kb/economy/contracts
+      - kb/economy/tables
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - deterministic resource-income semantic contract
+      - query-owned resource-income surface promotion
+      - explicit unsupported-resource declarations for non-deterministic income surfaces
+      - eecon lower-layer economy inputs needed for later optimiser/evaluator consumers
+    scope_out:
+      - optimiser recommendation logic
+      - evaluator implementation
+      - save-vs-spend branching
+      - advisory-only guessed income models
+    required_outputs:
+      - resource_income_contract_rows
+      - query_owned_resource_income_surfaces
+      - ownership_ledger_updates
+      - bounded_consumer_bundle_updates
+    acceptance_criteria:
+      - every_supported_resource_income_surface_has_kb_backed_semantics_and_units
+      - unsupported_resource_income_surfaces_fail_closed_explicitly
+      - objective_state_eecon_inputs_are_query_governed_not_optimizer_local
+      - resource_income_surfaces_are_declared_and_owned_once
+    required_checks:
+      - economy_contract_review
+      - query_surface_registry_review
+      - bounded_consumer_bundle_review
+    evidence_paths: []
+    blockers: []
+    next_action: Start after Phase 2 completes and Phase 3 objective-state contract work is stable.
+
+  - id: PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
+    title: Optimizer rewire to consume resource-income and eecon query surfaces
+    phase_id: PH3
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    owner_surfaces:
+      - optimizer/scorer.py
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - optimizer consumption of query-owned economy truth
+      - removal of canonical economy ownership from optimizer-local formulas
+      - targeted regression coverage for eecon/resource-income consumers
+    scope_out:
+      - resource-family optimizer product expansion
+      - evaluator implementation
+      - save-vs-spend branching
+    required_outputs:
+      - optimizer_resource_income_bundle_consumption
+      - reduced_optimizer_local_economy_derivation
+      - targeted_regression_updates
+    acceptance_criteria:
+      - optimizer_does_not_own_canonical_resource_income_formulas
+      - optimizer_consumes_declared_query_owned_economy_surfaces
+      - eecon_consumer_path_is_traceable_to_query_truth
+    required_checks:
+      - optimizer_boundary_review
+      - eecon_consumer_regression_review
+    evidence_paths: []
+    blockers: []
+    next_action: Begin once the promoted Phase 3D economy surfaces are stable enough for bounded consumption.
+
+  - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+    title: Evaluator contracts for resource-income query surfaces
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - evaluator contracts
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    scope_in:
+      - evaluator input contract declarations for resource-income surfaces
+      - case-family assumptions and trust labels
+      - bounded evaluator-consumer bundle definitions
+    scope_out:
+      - evaluator implementation details
+      - optimiser product recommendations
+    required_outputs:
+      - evaluator_resource_income_input_contracts
+      - evaluator_case_family_assumption_rows
+    acceptance_criteria:
+      - evaluator_resource_income_inputs_are_explicit
+      - evaluator_assumptions_and_bounds_are_visible
+      - evaluator_consumers_do_not_rederive_query_owned_income_truth
+    required_checks:
+      - evaluator_contract_review
+      - bounded_consumer_review
+    evidence_paths: []
+    blockers: []
+    next_action: Land after Phase 4B starts and the Phase 3 resource-income surfaces are stable.
+
+  - id: PH8-TRANCHE-C1_RESOURCE_FAMILY_OPTIMIZER_EXPANSION
+    title: Resource-family optimizer expansion on governed income surfaces
+    phase_id: PH8
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
+      - PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - BURNDOWN.yaml
+      - optimizer product surfaces
+    scope_in:
+      - resource-family optimizer behaviours
+      - governed use of resource-income surfaces across optimization families
+      - planning-level resource tradeoff expansion
+    scope_out:
+      - lower-layer economy truth ownership
+      - evaluator substrate creation
+    required_outputs:
+      - resource_family_optimizer_behaviours
+      - confidence_and_tradeoff_policy_updates
+    acceptance_criteria:
+      - resource_family_optimizers_consume_governed_income_surfaces
+      - recommendation_confidence_is_visible
+      - lower_layer_ownership_remains_unchanged
+    required_checks:
+      - optimizer_product_scope_review
+      - trust_logic_review
+    evidence_paths: []
+    blockers: []
+    next_action: Start only after lower-layer economy truth and evaluator contracts are already governed.
   - id: PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST
     title: Covered-family delegation manifest
     phase_id: PH2
