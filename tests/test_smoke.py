@@ -2,17 +2,18 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import subprocess
 import sys
 
 import pytest
+from tests.helpers import run_stats_subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
+OUT = ROOT / 'out'
 
 
 def test_smoke(tmp_path) -> None:
     out = tmp_path / 'smoke_output'
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'start_of_run', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
+    result = run_stats_subprocess([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'start_of_run', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     account_state = json.loads((out / 'account_state.json').read_text())
@@ -184,6 +185,7 @@ def test_card_inventory_includes_damage_and_excludes_locked_aoe():
     assert 'Damage' in account_state['card_presets']['Tourney']
 
 
+@pytest.mark.slow
 def test_all_state_modes_runnable(tmp_path):
     import json
     import subprocess
@@ -191,7 +193,7 @@ def test_all_state_modes_runnable(tmp_path):
     states = ['account_baseline', 'gem_respec', 'start_of_run', 'max_progression']
     for state in states:
         out = tmp_path / state
-        result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', state, '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
+        result = run_stats_subprocess([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', state, '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
         assert result.returncode == 0, result.stderr
         diagnostics = json.loads((out / 'diagnostics.json').read_text())
         assert diagnostics['state_mode'] == state
@@ -203,6 +205,7 @@ def test_all_state_modes_runnable(tmp_path):
 
 
 
+@pytest.mark.slow
 def test_loadout_config_overrides_card_and_module_presets(tmp_path):
     import json
     import subprocess
@@ -221,7 +224,7 @@ def test_loadout_config_overrides_card_and_module_presets(tmp_path):
     }))
     perks.write_text(json.dumps({}))
     out = tmp_path / 'loadout_run'
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--loadout', str(loadout), '--perks', str(perks), '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
+    result = run_stats_subprocess([sys.executable, str(ROOT / 'run_stats.py'), '--loadout', str(loadout), '--perks', str(perks), '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     account_state = json.loads((out / 'account_state.json').read_text())
     assert account_state['card_presets']['Farming'] == ['Damage']
@@ -229,6 +232,7 @@ def test_loadout_config_overrides_card_and_module_presets(tmp_path):
     assert account_state['module_presets']['Farming']['cannon']['assist'] == 'Amplifying Strike'
 
 
+@pytest.mark.slow
 def test_perk_infrastructure_from_perks_config(tmp_path):
     import json
     import subprocess
@@ -247,7 +251,7 @@ def test_perk_infrastructure_from_perks_config(tmp_path):
         'active_perk_preset': 'Farming',
     }))
     out = tmp_path / 'perk_run'
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--loadout', str(loadout), '--perks', str(perks), '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
+    result = run_stats_subprocess([sys.executable, str(ROOT / 'run_stats.py'), '--loadout', str(loadout), '--perks', str(perks), '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     account_state = json.loads((out / 'account_state.json').read_text())
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
@@ -264,6 +268,7 @@ def test_perk_infrastructure_from_perks_config(tmp_path):
     assert rows['canonical_stat::tower_hp']['status'] == 'resolved'
 
 
+@pytest.mark.slow
 def test_max_progression_with_perks_reduces_stage_scope_mismatches(tmp_path):
     import json
     import subprocess
@@ -282,7 +287,7 @@ def test_max_progression_with_perks_reduces_stage_scope_mismatches(tmp_path):
         },
         'active_perk_preset': 'Farming',
     }))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -303,6 +308,7 @@ def test_max_progression_with_perks_reduces_stage_scope_mismatches(tmp_path):
 
 
 
+@pytest.mark.slow
 def test_loadout_can_override_active_card_and_module_presets(tmp_path):
     import json
     import subprocess
@@ -315,7 +321,7 @@ def test_loadout_can_override_active_card_and_module_presets(tmp_path):
         'active_module_preset': 'Tourney',
     }))
     perks.write_text(json.dumps({}))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--loadout', str(loadout),
@@ -331,6 +337,7 @@ def test_loadout_can_override_active_card_and_module_presets(tmp_path):
     assert diagnostics['active_module_preset'] == 'Tourney'
 
 
+@pytest.mark.slow
 def test_diagnostics_surface_kb_incomplete_areas(tmp_path):
     import json
     import subprocess
@@ -340,7 +347,7 @@ def test_diagnostics_surface_kb_incomplete_areas(tmp_path):
     out = tmp_path / 'kb_gap_run'
     loadout.write_text(json.dumps({}))
     perks.write_text(json.dumps({}))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--loadout', str(loadout),
@@ -355,12 +362,13 @@ def test_diagnostics_surface_kb_incomplete_areas(tmp_path):
     assert not any(item['stat_name'] == 'Dimension Core::main' for item in gaps['active_unmapped_inputs'])
 
 
+@pytest.mark.slow
 def test_dimension_core_main_and_damage_per_meter_gap_are_closed(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'closure_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--out', str(out),
@@ -382,6 +390,7 @@ def test_display_formatter_preserves_significant_integer_zeros():
     assert module._format_display_number(1010000000000) == '1.01T'
 
 
+@pytest.mark.slow
 def test_compare_display_honors_percent_and_large_number_formatting(tmp_path):
     import json
     import subprocess
@@ -391,7 +400,7 @@ def test_compare_display_honors_percent_and_large_number_formatting(tmp_path):
     out = tmp_path / 'compare_display_run'
     loadout.write_text(json.dumps({}))
     perks.write_text(json.dumps({}))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -433,6 +442,7 @@ def test_critical_chance_card_is_kb_routed_into_tower_crit_chance():
     assert any(c["source_family"] == "card" and c["source_name"] == "Critical Chance" for c in row.contributors)
 
 
+@pytest.mark.slow
 def test_active_loadout_presets_affect_stat_inputs(tmp_path):
     import json
     import subprocess
@@ -445,7 +455,7 @@ def test_active_loadout_presets_affect_stat_inputs(tmp_path):
         'active_module_preset': 'Tourney',
     }))
     perks.write_text(json.dumps({}))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -460,12 +470,13 @@ def test_active_loadout_presets_affect_stat_inputs(tmp_path):
     assert any(c['source_family'] == 'module' and c['source_name'] == 'Amplifying Strike' and c.get('preset_name') == 'Tourney' for c in damage['contributors'])
 
 
+@pytest.mark.slow
 def test_kb_gap_register_is_present_and_bucketed(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'kb_gap_register_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--out', str(out),
@@ -487,12 +498,13 @@ def test_kb_gap_register_is_present_and_bucketed(tmp_path):
     assert 'KB contract ambiguous' in reg['summary']
 
 
+@pytest.mark.slow
 def test_diagnostics_include_projected_compare_view(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / "projection_view_run"
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / "run_stats.py"),
         "--out", str(out),
@@ -505,6 +517,7 @@ def test_diagnostics_include_projected_compare_view(tmp_path):
     assert views["projected_max_progression"]["ep_stage_scope_mismatch_count"] <= views["current_state_mode"]["ep_stage_scope_mismatch_count"]
 
 
+@pytest.mark.slow
 def test_projected_compare_view_honors_explicit_perks(tmp_path):
     import json
     import subprocess
@@ -522,7 +535,7 @@ def test_projected_compare_view_honors_explicit_perks(tmp_path):
         },
         "active_perk_preset": "Farming",
     }))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / "run_stats.py"),
         "--loadout", str(loadout),
@@ -535,12 +548,13 @@ def test_projected_compare_view_honors_explicit_perks(tmp_path):
     assert projected["active_perk_preset"] == "Farming"
 
 
+@pytest.mark.slow
 def test_projected_tower_damage_uses_berserker_max_assumption_under_max_progression(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / "projection_runtime_card_run"
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / "run_stats.py"),
         "--state-mode", "max_progression",
@@ -558,12 +572,13 @@ def test_projected_tower_damage_uses_berserker_max_assumption_under_max_progress
     assert abs(float(damage["relative_delta_pct"])) < 1.0
 
 
+@pytest.mark.slow
 def test_top_level_ep_compare_summary_matches_current_view(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / "compare_summary_run"
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / "run_stats.py"),
         "--out", str(out),
@@ -574,12 +589,13 @@ def test_top_level_ep_compare_summary_matches_current_view(tmp_path):
     assert diagnostics["ep_compare_summary"] == {k: current[k] for k in diagnostics["ep_compare_summary"].keys()}
 
 
+@pytest.mark.slow
 def test_projected_tower_damage_residue_analysis(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'max_proj_damage'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -601,12 +617,13 @@ def test_projected_tower_damage_residue_analysis(tmp_path):
     assert residue['required_project_funding_coefficient_at_cash_50b_if_berserker_x8_to_match_ep'] > 0.0
 
 
+@pytest.mark.slow
 def test_lineage_backed_run_perk_destinations_are_emitted_and_include_expected_surfaces(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'lineage_backed_perk_scope_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -623,12 +640,13 @@ def test_lineage_backed_run_perk_destinations_are_emitted_and_include_expected_s
     assert 'canonical_stat::package_chance_pct' not in destinations
 
 
+@pytest.mark.slow
 def test_projected_package_chance_is_not_marked_run_perk_stage_scope_under_lineage_backed_classification(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'package_scope_projection_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -644,6 +662,7 @@ def test_projected_package_chance_is_not_marked_run_perk_stage_scope_under_linea
     assert projected['ep_stage_scope_mismatch_count'] == 0
 
 
+@pytest.mark.slow
 def test_defense_absolute_perk_affects_resolved_stat(tmp_path):
     import json
     import subprocess
@@ -660,7 +679,7 @@ def test_defense_absolute_perk_affects_resolved_stat(tmp_path):
         },
         'active_perk_preset': 'Farming',
     }))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--loadout', str(loadout),
@@ -677,12 +696,13 @@ def test_defense_absolute_perk_affects_resolved_stat(tmp_path):
     assert ratio == pytest.approx(23.0 / 35.0)
 
 
+@pytest.mark.slow
 def test_run_perk_residue_analysis_surfaces_stage_scope_rows(tmp_path):
     import json
     import subprocess
     import sys
     out = tmp_path / 'perk_residue_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -695,6 +715,7 @@ def test_run_perk_residue_analysis_surfaces_stage_scope_rows(tmp_path):
     assert residue['stage_scope_rows'] == []
 
 
+@pytest.mark.slow
 def test_perk_state_off_disables_perk_rows_even_with_active_preset(tmp_path):
     import json
     import subprocess
@@ -712,7 +733,7 @@ def test_perk_state_off_disables_perk_rows_even_with_active_preset(tmp_path):
         },
         'active_perk_preset': 'Milestone',
     }))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--loadout', str(loadout),
@@ -729,6 +750,7 @@ def test_perk_state_off_disables_perk_rows_even_with_active_preset(tmp_path):
     assert not [r for r in stat_inputs if r.get('source_family') == 'perk']
 
 
+@pytest.mark.slow
 def test_perk_state_on_materializes_active_preset_for_any_run_type(tmp_path):
     import json
     import subprocess
@@ -746,7 +768,7 @@ def test_perk_state_on_materializes_active_preset_for_any_run_type(tmp_path):
         },
         'active_perk_preset': 'Milestone',
     }))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--loadout', str(loadout),
@@ -765,6 +787,7 @@ def test_perk_state_on_materializes_active_preset_for_any_run_type(tmp_path):
     assert any(r.get('destination_id') == 'tower_hp' for r in perk_rows)
 
 
+@pytest.mark.slow
 def test_sharp_fortitude_unique_uses_kb_rarity_value(tmp_path):
     import json
     import subprocess
@@ -774,7 +797,7 @@ def test_sharp_fortitude_unique_uses_kb_rarity_value(tmp_path):
     out = tmp_path / 'sf_unique_run'
     loadout.write_text(json.dumps({}))
     perks.write_text(json.dumps({}))
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -789,9 +812,10 @@ def test_sharp_fortitude_unique_uses_kb_rarity_value(tmp_path):
     assert sf_values == [2.5]
 
 
+@pytest.mark.slow
 def test_package_chance_compare_uses_tourney_preset_and_matches_ep(tmp_path):
     output_dir = tmp_path / "out"
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / "run_stats.py"),
         "--ids",
@@ -817,9 +841,10 @@ def test_package_chance_compare_uses_tourney_preset_and_matches_ep(tmp_path):
     assert abs(row["package_value"] - 78.8) < 1e-9
 
 
+@pytest.mark.slow
 def test_compare_situation_fit_matrix_emitted(tmp_path):
     output_dir = tmp_path / 'out'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable,
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
@@ -837,9 +862,10 @@ def test_compare_situation_fit_matrix_emitted(tmp_path):
     assert tower_damage['state_key'].endswith('__perks_off')
 
 
+@pytest.mark.slow
 def test_survivability_compare_policy_by_destination(tmp_path):
     out_dir = tmp_path / "out_surv"
-    subprocess.run([
+    run_stats_subprocess([
         sys.executable,
         "run_stats.py",
         "--state-mode",
@@ -871,10 +897,11 @@ def test_survivability_compare_policy_by_destination(tmp_path):
         assert row["ep_stage_context"]["ep_run_state"] == "farming_perks_on"
 
 
+@pytest.mark.slow
 def test_promoted_shared_family_for_tower_damage_and_defense_absolute(tmp_path):
     import subprocess, sys, json
     out = tmp_path / 'out'
-    subprocess.run([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], check=True)
+    run_stats_subprocess([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], check=True)
     statbook = json.loads((out / 'statbook.json').read_text())
     rows = statbook['rows']
     for key in ['canonical_stat::tower_damage', 'canonical_stat::tower_defense_absolute']:
@@ -915,12 +942,9 @@ def test_thorns_damage_is_not_hard_capped_at_100():
     assert row.final_value == 129.0
 
 
-def test_attack_defects_cash_per_wave_knockback_and_land_mine_scope(tmp_path):
-    import json, subprocess, sys
-    out = tmp_path / 'out'
-    result = subprocess.run([sys.executable, 'run_stats.py', '--state-mode', 'max_progression', '--out', str(out)], capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    rows = json.loads((out / 'statbook.json').read_text())['rows']
+def test_attack_defects_cash_per_wave_knockback_and_land_mine_scope():
+    import json
+    rows = json.loads((OUT / 'statbook.json').read_text())['rows']
 
     cash = rows['canonical_stat::cash_per_wave']
     assert cash['status'] == 'resolved'
@@ -950,53 +974,36 @@ def test_package_chance_is_not_hard_capped_at_100():
     assert row.final_value == 117.0
 
 
-def test_coin_kill_compare_uses_farming_perks_off_and_matches_close(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "coin_kill_compare"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    compare = json.loads((out / 'ep_oracle_compare.json').read_text())
+def test_coin_kill_compare_uses_farming_perks_off_and_matches_close():
+    import json
+    compare = json.loads((OUT / 'ep_oracle_compare.json').read_text())
     row = compare['canonical_stat::coins_per_kill_bonus']
     assert row['compare_preset'] == 'Farming'
     assert row['compare_perk_state'] == 'on'
     assert row['status'] == 'matched_exact'
 
 
-def test_land_mine_damage_resolves_from_runtime_family(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "land_mine_runtime"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    statbook = json.loads((out / 'statbook.json').read_text())['rows']
+def test_land_mine_damage_resolves_from_runtime_family():
+    import json
+    statbook = json.loads((OUT / 'statbook.json').read_text())['rows']
     row = statbook['canonical_stat::tower_land_mine_damage']
     assert row['status'] == 'resolved'
     assert row['final_value'] is not None
     assert row['final_value'] < 1e18
 
 
-def test_orbital_augment_electron_count_resolves_as_count(tmp_path):
-    import subprocess, sys, json
-    out = tmp_path / "electron_count"
-    result = subprocess.run([sys.executable, str(ROOT / 'run_stats.py'), '--state-mode', 'max_progression', '--out', str(out)], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    statbook = json.loads((out / 'statbook.json').read_text())['rows']
+def test_orbital_augment_electron_count_resolves_as_count():
+    import json
+    statbook = json.loads((OUT / 'statbook.json').read_text())['rows']
     row = statbook['mechanic_param::module.orbital_augment.electrons_count']
     assert row['status'] == 'resolved'
     assert row['schema']['unit'] == 'count'
     assert row['final_value'] == 2
 
 
-def test_tower_orb_count_consumes_perk_and_rounds_to_integer(tmp_path):
-    import json, subprocess, sys
-    out = tmp_path / 'orb_perk_run'
-    result = subprocess.run([
-        sys.executable,
-        str(ROOT / 'run_stats.py'),
-        '--state-mode', 'max_progression',
-        '--out', str(out),
-    ], cwd=ROOT, capture_output=True, text=True)
-    assert result.returncode == 0, result.stderr
-    rows = json.loads((out / 'statbook.json').read_text())['rows']
+def test_tower_orb_count_consumes_perk_and_rounds_to_integer():
+    import json
+    rows = json.loads((OUT / 'statbook.json').read_text())['rows']
     orb = rows['canonical_stat::tower_orb_count']
     assert orb['final_value'] == 8
     assert 'Consumed 5/5 contributors' in (orb.get('notes') or '')
@@ -1017,6 +1024,7 @@ def test_orb_and_bounce_count_perks_do_not_receive_standard_perk_bonus_scaling()
     assert bounce_value == 6.0
 
 
+@pytest.mark.slow
 def test_contributor_consumption_issue_surfaces_for_unconsumed_rows(tmp_path):
     import json, subprocess, sys
     perks = tmp_path / 'perks.json'
@@ -1025,7 +1033,7 @@ def test_contributor_consumption_issue_surfaces_for_unconsumed_rows(tmp_path):
         'active_perk_preset': 'Farming',
     }))
     out = tmp_path / 'consumption_audit_run'
-    result = subprocess.run([
+    result = run_stats_subprocess([
         sys.executable, str(ROOT / 'run_stats.py'), '--perks', str(perks), '--out', str(out)
     ], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
