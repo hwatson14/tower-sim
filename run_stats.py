@@ -397,10 +397,11 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
 }
 
 def _load_lineage_backed_run_perk_destinations() -> set[str]:
-    from compilers.stat_input_compiler import _load_perk_effects, _load_mapping_index, PERK_TARGET_DESTINATION_OVERRIDES
+    from compilers.stat_input_compiler import _load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
+    from engine.query_routing import compiler_routing_indexes
 
     perk_effects = _load_perk_effects()
-    _, canon_stats, alias_index, _, _ = _load_mapping_index()
+    _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
     destinations: set[str] = set()
     for effects in perk_effects.values():
         for effect in effects:
@@ -2277,13 +2278,14 @@ def _perk_operation_supported(operation: str) -> bool:
 
 
 def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from compilers.stat_input_compiler import _load_perk_entities, _load_perk_effects, _load_mapping_index, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
+    from compilers.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
+    from engine.query_routing import compiler_routing_indexes
     from models.account_state import PerkSelection
     from dataclasses import replace
 
     perk_entities = _load_perk_entities()
     perk_effects = _load_perk_effects()
-    _, canon_stats, alias_index, _, _ = _load_mapping_index()
+    _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
 
     audit_perk_presets = {
         '__audit_all_perks__': [PerkSelection(perk_id=perk_id, picks=int(meta.get('max_picks') or 1)) for perk_id, meta in sorted(perk_entities.items())]

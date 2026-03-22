@@ -98,7 +98,7 @@ kb/{domain}/
 
 **Ownership rule:** One stat, one resolution path, one owner. The Query Engine must produce identical results for identical inputs. It must never silently cache, approximate, or re-derive a surface that it has already resolved. Contributor-ledger visibility is a first-class requirement: every resolved stat must be traceable to its contributing sources.
 
-**Current state:** The core resolver exists and works (`stat_engine.py`), and the phase-1 query API primitives now exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. The remaining work is confirmation and migration: prove parity against the canonical stat engine across declared families, exercise allowed overlay classes end-to-end, and retire transitional full-stat-engine reference paths such as the progression recalc bridge once bounded coverage is complete.
+**Current state:** The core resolver exists and works (`stat_engine.py`), and the phase-1 query API primitives now exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. Declared phase-1 families now have repo-level parity coverage against the canonical stat engine, end-to-end overlay/invalidation coverage for bounded progression mutations, bounded-family reference publication in the progression recalc bridge, and benchmark coverage demonstrating positive query-time value once a family baseline is materialised.
 
 **Key interfaces:**
 - Consumes: `AccountState` from Inputs, mechanic contracts and tables from the KB
@@ -119,7 +119,7 @@ kb/{domain}/
 | `engine/stat_query_kernel.py` | 420 | Bounded query API kernel for baseline resolution, overlays, and trace output |
 | `models/statbook.py` | 28 | StatBook output data model |
 
-**Planned (R86):** Complete parity validation for declared query-owned families, expand end-to-end overlay/invalidation coverage, finish progression_v1 migration off transitional full-stat-engine reference paths, and continue moving primary orchestration onto the bounded query API surface. See `kb/global-rules/contracts/stat-query-*.yaml` for the contract definitions.
+**Planned (post-R86):** Continue moving primary orchestration onto the bounded query API surface and use the existing contract/test stack to extend bounded family coverage deliberately. See `kb/global-rules/contracts/stat-query-*.yaml` for the contract definitions.
 
 ---
 
