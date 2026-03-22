@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH1
 active_phase_name: Canonical planning truth and archive closure
-active_tranche_id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
+active_tranche_id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
 
 status_dimensions:
   delivery:
@@ -47,8 +47,8 @@ tranches:
   - id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     title: Control-stack closeout and tranche promotion
     phase_id: PH1
-    delivery_status: in_progress
-    verification_status: partial
+    delivery_status: done
+    verification_status: verified
     review_status: ready_for_review
     depends_on: []
     owner_surfaces:
@@ -88,14 +88,16 @@ tranches:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
       - AGENTS.md
+      - README.md
+      - ARCHITECTURE.md
     blockers: []
-    next_action: Close bootstrap control state and promote the first real Phase 1 tranche.
+    next_action: Execute Phase 1B now that the bootstrap tranche is closed and the control stack is promoted.
 
   - id: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
     title: Canonical plan and terminology unification
     phase_id: PH1
-    delivery_status: not_started
-    verification_status: not_verified
+    delivery_status: in_progress
+    verification_status: partial
     review_status: draft
     depends_on:
       - PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
@@ -242,4 +244,12 @@ notes:
   bootstrap_history:
     prior_active_tranche_id: TRANCHE_BOOTSTRAP_CONTROL_SYSTEM_V1
     prior_plan_name: AI_MIGRATION_EXECUTION_PLAN.md
-    status: superseded_pending_closeout
+    status: superseded_and_closed
+  tranche_closeout:
+    PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT:
+      outcome: completed
+      summary:
+        - Bootstrap control tranche acceptance criteria reviewed against repo truth.
+        - Canonical control files now use AI_EXECUTION_PLAN.md and phase-gated tranche IDs.
+        - No major control-file pointer to AI_MIGRATION_EXECUTION_PLAN.md remains outside historical notes.
+      promoted_next_tranche: PH1-TRANCHE-B_CANONICAL_PLAN_AND_TERMINOLOGY_UNIFICATION
