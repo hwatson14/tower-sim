@@ -1,0 +1,17 @@
+{
+  "rows_extracted": 180,
+  "mapped_rows": 180,
+  "unmatched_rows": 0,
+  "manual_alias_overrides": 4,
+  "ranking_primary_counts": {
+    "F": 32,
+    "D": 31,
+    "C": 29,
+    "A": 29,
+    "B": 24,
+    "S": 17,
+    "S+": 9,
+    "QOL": 9
+  },
+  "ranking_conditional_nonnull_count": 26
+}

@@ -6,7 +6,8 @@ lab system structure, lab ladders, and lab-specific baselines.
 1. local `kb/labs/tables/`
 2. local `contracts/`
 3. local `sources/`
-4. local `notes/`
+4. local `advisory/` for non-mechanical lab guidance
+5. local `notes/`
 
 ## Tables
 - `kb/labs/tables/lab-values.csv`
@@ -21,3 +22,8 @@ lab system structure, lab ladders, and lab-specific baselines.
 
 ## Notes
 - `notes/lab-system.md`
+
+## Advisory
+- `advisory/tables/lab-tier-list-v27_0_3.csv`
+- `advisory/registry/lab-advisory-source-registry.csv`
+- `advisory/notes/lab-tier-list.md`

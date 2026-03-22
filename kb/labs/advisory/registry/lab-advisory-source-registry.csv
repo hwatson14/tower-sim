@@ -1,0 +1,2 @@
+advisory_surface_id,surface_name,surface_kind,canonical_location,source_workbook,source_sheet,provenance_note,usage_role,do_not_use_for,version_tag
+LAB_TIER_LIST_V27_0_3,Lab Tier List,advisory_metadata,kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv,Copy of Laboratory v2.5.7.xlsx,Tier List / Remote Tier List,"Cached workbook values, mapped to canonical lab IDs using repo catalog aliases plus four explicit manual overrides",planner_prior|advisor_explanation|tie_breaker|fallback_weight,mechanics|lab_costs|lab_durations|runtime_formula_truth,v27.0.3

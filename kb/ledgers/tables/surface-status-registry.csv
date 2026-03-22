@@ -309,3 +309,6 @@ kb/workshop/sources/wiki-and-effective-paths-workshop-baselines.md,workshop,sour
 kb/workshop/tables/index.md,workshop,tables,supporting_note,current,mixed,added_in_v15_rationalization
 kb/workshop/tables/enhancements-values.csv,workshop,table,canonical,external_source_closed,ep-verified,Promoted Effective Paths enhancement ladders
 kb/workshop/tables/workshop-values.csv,workshop,table,canonical,external_source_closed,ep-verified,Promoted Effective Paths workshop ladders
+kb/labs/advisory/notes/lab-tier-list.md,labs,note,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list guidance note
+kb/labs/advisory/registry/lab-advisory-source-registry.csv,labs,registry,advisory_noncanonical,noncanonical,mixed,Archived lab tier-list provenance registry
+kb/labs/advisory/tables/lab-tier-list-v27_0_3.csv,labs,table,advisory_noncanonical,noncanonical,mixed,Archived workbook tier-list mapped to canonical lab ids
