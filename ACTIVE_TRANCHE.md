@@ -1,53 +1,51 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH2-TRANCHE-A_STAT_INPUT_COMPILER_FUNCTION_LEVEL_OWNERSHIP_LEDGER`
+`PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION`
 
 ## Phase
 `Phase 2 — Query Engine ownership completion`
 
 ## Objective
-Classify every meaningful unit in `compilers/stat_input_compiler.py` by owner and action so the approved Query Engine seam can move without guessing or broad rewrite.
+Extract only the approved Query Engine-owned seam from `compilers/stat_input_compiler.py` into canonical owner surfaces, using the completed Phase 2A ownership ledger as the governing boundary.
 
 ## Scope in
-- `compilers/stat_input_compiler.py`
-- function-level ownership mapping needed to separate Inputs-owned compilation from Query Engine-owned routing/query preparation
-- destination mapping for every candidate move, split, or temporary stay
-- regression anchors and test hooks needed before seam extraction
+- approved Query Engine-owned logic identified in `docs/phase2a_stat_input_compiler_ownership_ledger.md`
+- `compilers/stat_input_compiler.py` compatibility-entrypoint preservation
+- owner-correct extraction into Query Engine surfaces
+- targeted regression coverage and boundary rationale updates for moved logic
 
 ## Scope out
-- direct code edits beyond minimal ledger-hosting scaffolding if needed
 - formula rewrites
-- opportunistic cleanup
-- unrelated engine refactors
-- Phase 2B seam extraction work
+- `StatInput` schema redesign
+- generic helper-sink creation
+- opportunistic cleanup unrelated to the approved seam
+- undeclared family expansion beyond the ledger-governed moves
 
 ## Required outputs
-- one function-level ownership ledger for `stat_input_compiler.py`
-- explicit owner/action classification for every meaningful unit
-- destination module mapping for every move or split
-- regression/test anchors for risky ownership changes
+- extracted owner-correct code changes for the approved seam
+- updated boundary rationale for the compiler/query split
+- updated targeted regression coverage for the moved behavior
 
 ## Required verification
-- no major unit remains unclassified
-- every move or split has a destination
-- risky moves identify regression anchors
-- the tranche does not imply seam extraction happened early
+- runtime behavior remains stable for the compatibility entrypoint
+- moved behavior is covered by targeted tests
+- docs and tranche state reflect the new boundary truth
 
 ## Acceptance criteria
-- every meaningful unit in `stat_input_compiler.py` is classified by owner and action
-- every move/split row names a target module
-- no code-first seam extraction happens before the ledger exists
-- the tranche leaves the compiler/query boundary less ambiguous than it found it
+- only ledger-approved Query Engine-owned units move
+- `compilers/stat_input_compiler.py` remains a valid compatibility entrypoint
+- targeted regressions cover moved behavior
+- the compiler/query boundary is less owner-ambiguous than before extraction
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once the ownership ledger is complete enough to govern Phase 2B extraction without guessing about unit ownership or destination surfaces.
+Stop once the approved seam is extracted, compatibility behavior is preserved, and targeted regression evidence is landed.
 
 ## Non-goals
 - do not rewrite formulas
-- do not move code in this tranche
-- do not redesign the `StatInput` schema
-- do not begin undeclared family expansion
+- do not redesign `StatInput`
+- do not move undeclared Inputs-owned compilation logic
+- do not begin Phase 2C delegation-manifest work inside this tranche
