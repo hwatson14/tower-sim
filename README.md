@@ -12,7 +12,20 @@ python run_stats.py
 pytest
 ```
 
-## Pipeline
+## Canonical layer model
+
+The canonical program stack is:
+
+1. Knowledge Base
+2. Inputs
+3. Query Engine
+4. Simulators
+5. Optimisers
+6. Advisors
+
+`AI_EXECUTION_PLAN.md` is the canonical whole-program plan. `ACTIVE_TRANCHE.md` defines the only tranche Codex should execute now, and `BURNDOWN.yaml` records delivery and verification state.
+
+## Current execution pipeline
 
 ```text
 parsers/ids_parser.py
@@ -21,6 +34,8 @@ parsers/ids_parser.py
 → engine/stat_engine.py
 → optimizer/scorer.py
 ```
+
+This pipeline is the current implementation path, not a contradictory architecture model. In canonical terminology, the runtime and event-model code in `engine/` is the current Simulator layer while `optimizer/` remains the current optimiser owner.
 
 `run_stats.py` is the orchestration entrypoint. It compiles runtime state, emits output artifacts into `out/`, runs comparison and diagnostic routines, and formats current generated surfaces.
 
@@ -66,6 +81,10 @@ parsers/ids_parser.py
 - Keep mechanics aligned to KB sources.
 - Remove stale references when retiring paths.
 - Rebuild outputs when a change affects committed generated artifacts.
+
+## Planning note
+
+The old standalone roadmap now survives only as a historical input document. `towersim_canonical_product_roadmap_v6.md` is superseded by `AI_EXECUTION_PLAN.md` and must not be treated as execution truth.
 
 ## Current handover goal
 

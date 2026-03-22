@@ -4,11 +4,13 @@ This document defines the architectural intent for the TowerSim repo. It describ
 
 Every architectural choice must respect the KB-alignment rule: if the Knowledge Base defines a mechanic, the code must implement that mechanic or explicitly declare a temporary accepted model. Code is never self-justifying proof of mechanic truth.
 
+This document follows the canonical planning vocabulary from `AI_EXECUTION_PLAN.md`. The standalone roadmap file `towersim_canonical_product_roadmap_v6.md` is historical only and must not be treated as competing execution truth.
+
 ---
 
 ## The Six Layers
 
-TowerSim is organised around six layers. Each layer depends only on layers above it.
+TowerSim is organised around six canonical layers. Each layer depends only on layers above it.
 
 ```
 ┌─────────────────────────────────────────────────┐
@@ -22,7 +24,7 @@ TowerSim is organised around six layers. Each layer depends only on layers above
 │  What is stat X for player Y in scenario Z?      │
 ├─────────────────────────────────────────────────┤
 │  Simulators                                      │
-│  What happens at runtime?                        │
+│  What is likely to happen from this state?       │
 ├─────────────────────────────────────────────────┤
 │  Optimisers                                      │
 │  What should I upgrade next?                     │
@@ -32,7 +34,9 @@ TowerSim is organised around six layers. Each layer depends only on layers above
 └─────────────────────────────────────────────────┘
 ```
 
-Dependency flows downward only. Advisors may consume from any layer above. Optimisers consume from the Query Engine and Simulators but never modify them. The Query Engine reads the KB and Inputs but does not depend on Simulators, Optimisers, or Advisors.
+Dependency flows downward only. Advisors may consume from any layer above. Optimisers consume from the Query Engine and Simulator surfaces but never modify them. The Query Engine reads the KB and Inputs but does not depend on Simulators, Optimisers, or Advisors.
+
+Runtime and event-model simulators in `engine/` are the canonical Simulator layer for this repo. No alternate layer name should be inferred from earlier roadmap wording.
 
 ---
 
@@ -125,28 +129,30 @@ kb/{domain}/
 
 ### 4. Simulators
 
-**Question they answer:** What happens at runtime?
+**Question they answer:** What is likely to happen from this state?
 
-**Scope:** Modelling dynamic, temporal, or stochastic game behaviour that cannot be resolved from static stats alone. Wave progression, boss encounters, run timing, survivability estimation, wall-contact geometry, workshop upgrade progression, perk timeline projection, and incremental recalculation.
+**Scope:** Deterministic or governed runtime models built from Query Engine truth plus event-model simulation. Simulators cover wave progression, boss encounters, run timing, survivability modelling, wall-contact geometry, workshop upgrade progression, perk timeline projection, and incremental recalculation.
 
 **Distinction from the Query Engine:** The Query Engine resolves "what is Tower Damage right now?" — a static, deterministic answer. A Simulator answers "how many waves does the tower survive?" or "how long until wave 1000?" — questions that require modelling sequences of events, interactions between stats, and temporal dynamics.
 
-**Ownership rule:** Each simulator owns a specific modelling domain. Simulators consume Query Engine outputs (resolved stats) as their input parameters. They do not re-derive stats, re-route contributors, or bypass the Query Engine. If a simulator needs a stat value, it asks the Query Engine.
+**Ownership rule:** Simulators own runtime-model surfaces for a modelling domain. They consume Query Engine outputs as their input parameters. They do not re-derive stats, re-route contributors, or bypass the Query Engine. If a simulator needs a stat value, it asks the Query Engine.
 
-**Current state:** Multiple simulators exist in various stages of maturity. The boss wave engine and timing engine are the most complete. The geometry pipeline is structurally complete but out of scope for Phase 1 extension. The incremental recalc subsystem optimises repeated simulation runs. Several simulation-adjacent functions currently live inside `run_stats.py` as gap/closure/residue reports — these are analytically simulator-flavoured and may eventually migrate.
+**Current state:** Multiple simulator subsystems already exist in various stages of maturity. The boss wave engine and timing engine are the most complete. The geometry pipeline is structurally complete but out of scope for Phase 1 extension. The incremental recalc subsystem optimises repeated simulation runs. Several simulation-adjacent functions currently live inside `run_stats.py` as gap/closure/residue reports — these are candidates for later extraction into cleaner simulator surfaces.
+
+**Implementation note:** Earlier planning text used alternate naming for this layer. That wording is retired. Simulator is the canonical layer name across the repo.
 
 **Where the code lives:**
 
 | Subsystem | Files | Lines | Maturity |
 |---|---|---|---|
-| Boss wave engine | `engine/boss_wave_engine.py` | 979 | Active, functional |
-| Timing engine | `engine/timing_engine.py` | 453 | Active, functional |
-| Wave progression | `engine/wave_progression_policy.py` | 78 | Active |
+| Boss wave engine | `engine/boss_wave_engine.py` | 979 | Active simulator subsystem |
+| Timing engine | `engine/timing_engine.py` | 453 | Active simulator subsystem |
+| Wave progression | `engine/wave_progression_policy.py` | 78 | Active simulator policy |
 | Geometry wall-contact | `engine/geometry_wall_contact_*.py` (10 files) | ~780 | Structurally complete; Phase 1 out of scope |
-| Workshop progression | `engine/progression_state.py`, `engine/workshop_progression_policy.py`, `engine/free_upgrade_generation_policy.py` | ~414 | Active |
-| Perk timeline | `engine/perk_timeline_generator.py`, `engine/perk_timeline_state.py`, `engine/perk_tables.py` | ~280 | Active |
-| Incremental recalc | `engine/incremental_*.py` (6 files), `engine/progression_recalc_bridge.py` | ~713 | Active optimisation layer |
-| Runtime consumers | `engine/runtime_consumer_executor.py`, `engine/runtime_consumer_registry.py` | ~96 | Active |
+| Workshop progression | `engine/progression_state.py`, `engine/workshop_progression_policy.py`, `engine/free_upgrade_generation_policy.py` | ~414 | Active simulator subsystem |
+| Perk timeline | `engine/perk_timeline_generator.py`, `engine/perk_timeline_state.py`, `engine/perk_tables.py` | ~280 | Active simulator subsystem |
+| Incremental recalc | `engine/incremental_*.py` (6 files), `engine/progression_recalc_bridge.py` | ~713 | Active optimisation support |
+| Runtime consumers | `engine/runtime_consumer_executor.py`, `engine/runtime_consumer_registry.py` | ~96 | Active simulator plumbing |
 | Gap/residue analysis | Functions in `run_stats.py` | ~1,400 | Embedded; candidates for future extraction |
 
 ---
@@ -157,13 +163,13 @@ kb/{domain}/
 
 **Scope:** Sensitivity analysis, marginal-value scoring, upgrade path ranking, resource allocation evaluation. Given the current state of an account and a defined objective, identify which action produces the greatest improvement per unit of cost.
 
-**Distinction from Simulators:** A Simulator models "what happens." An Optimiser evaluates "what should I do." Optimisers consume Simulator outputs (projected outcomes) and Query Engine outputs (current stats) and score candidate actions against defined objectives.
+**Distinction from Simulators:** A Simulator models what is likely to happen. An Optimiser evaluates what should be done. Optimisers consume Simulator outputs (projected outcomes) and Query Engine outputs (current stats) and score candidate actions against defined objectives.
 
 **Ownership rule:** Each optimiser owns a specific objective function or family of objectives. Optimisers are consumers, not producers, of mechanic truth. They do not define formulas or modify stats. They score and rank.
 
-**Current state:** A working scorer and path ranker exist, reverse-engineered against the EP v5.03.02 spreadsheet. Documented accuracy gaps exist in eDamage (missing UW damage channels) and eEcon (missing economy terms). As the Query Engine and Simulators mature, the Optimiser input surface becomes richer and more accurate.
+**Current state:** A working scorer and path ranker exist, reverse-engineered against the EP v5.03.02 spreadsheet. Documented accuracy gaps exist in eDamage (missing UW damage channels) and eEcon (missing economy terms). As the Query Engine and simulator subsystems mature, the Optimiser input surface becomes richer and more accurate.
 
-**Planned evolution:** Multiple optimisers for different objective families — survivability optimisation, economy optimisation, tournament optimisation, balanced multi-objective optimisation. Each consumes different Simulator outputs and weights objectives differently.
+**Planned evolution:** Multiple optimisers for different objective families — survivability optimisation, economy optimisation, tournament optimisation, balanced multi-objective optimisation. Each consumes different simulator outputs and weights objectives differently.
 
 **Where the code lives:**
 
@@ -241,12 +247,12 @@ python run_stats.py
 
 - **KB → everything:** All layers read from the KB. No layer writes to the KB at runtime.
 - **Inputs → Query Engine:** Inputs produces an `AccountState`; the Query Engine consumes it. This boundary is well-defined.
-- **Query Engine → Optimisers:** The Query Engine produces a `StatBook`; the Optimiser scores it. Clean consumer relationship.
+- **Query Engine → Simulators/Optimisers:** The Query Engine produces canonical truth consumed directly by current optimisers and by simulator subsystems.
 
 ### Active seams (resolve these over time)
 
 - **`stat_input_compiler.py` straddles Inputs and Query Engine.** The R86 baseline materialiser extracts the KB-routing concern into the Query Engine. This is the highest-priority seam.
-- **`engine/` is flat.** Query Engine files, Simulator files, and perk timeline files all live in one directory. As the Query Engine gets its own API surface (R86), the natural split point will emerge. Do not force a premature directory restructure — let the code boundaries drive it.
+- **`engine/` is flat.** Query Engine files, simulator subsystems, and perk timeline files all live in one directory. As the Query Engine gets its own API surface (R86), the natural split point will emerge. Do not force a premature directory restructure — let the code boundaries drive it.
 - **`run_stats.py` touches all layers.** It will shrink as each layer gets a proper API. The eventual target is a thin orchestrator that calls layer APIs in sequence.
 
 ### Future boundaries (do not build yet)
@@ -263,7 +269,7 @@ python run_stats.py
 | A new game mechanic formula | `kb/` (as a contract or table) | Nothing — it is consumed |
 | A new input parser or account compilation step | `parsers/` or `compilers/` | KB routing contracts |
 | A new stat resolution path or query surface | `engine/` (Query Engine subset) | KB contracts, Inputs |
-| A new runtime model (timing, waves, survivability) | `engine/` (Simulators subset) | Query Engine outputs |
+| A new runtime model or forecast surface (timing, waves, survivability) | `engine/` (Simulator subset) | Query Engine outputs |
 | A new objective scorer or path ranker | `optimizer/` | Query Engine, Simulators |
 | A new planner, strategy engine, or advisory tool | `advisors/` | KB advisory content, Query Engine, Simulators, Optimisers |
 | Strategy knowledge, reasoning frameworks, meta-models | `kb/advisory/` | Nothing — it is consumed |

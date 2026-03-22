@@ -65,19 +65,18 @@ This is the core execution rule.
 1. Knowledge Base
 2. Inputs
 3. Query Engine
-4. Estimators
+4. Simulators
 5. Optimisers
 6. Advisors
 
 ### Clarification
 - Query Engine answers: what is true now for this account, scenario, and state.
-- Simulators are runtime or event-model components used beneath estimator surfaces.
-- Estimators are the forecast surfaces built from Query Engine truth plus simulator logic.
+- Simulators answer: what is likely to happen when those truths play out over runtime, timing, and progression.
 - Optimisers search and rank.
 - Advisors package action guidance.
 
 ### Core product surfaces
-- Estimator
+- Simulator
 - Loadout Optimiser
 - Progression Optimiser
 - Build Transition Advisor
@@ -98,7 +97,6 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 - strong KB base and active runtime core
 
 ### Still open
-- canonical archive and R86 disposition closure
 - full `stat_input_compiler.py` seam completion
 - query-kernel delegation for covered families
 - parity and benchmark closure for delegated families
@@ -110,10 +108,10 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 - broader product-surface implementation
 
 ### Archive posture
-- root R86 docs remain active references until absorbed into this plan and ledger
-- naming zip is design input only, not direct implementation truth
-- archive bundles must be classified before retirement
-- the old standalone roadmap should be removed once fully absorbed here
+- root R86 docs are retained as historical handoff inputs with Phase 1 obligation mapping now absorbed into this plan
+- naming patch/zip artifacts are design inputs only, not direct implementation truth
+- root archive artifacts are classified in the Phase 1 archive disposition ledger below
+- the standalone roadmap is historical only and no longer execution truth
 
 ---
 
@@ -186,7 +184,7 @@ The repo still has archive-driven ambiguity and overlapping planning truth.
 
 **Scope out**
 - runtime mechanic changes
-- estimator or optimiser implementation
+- simulator or optimiser implementation
 
 #### Phase 1C — R86 obligation closure ledger
 **Goal**
@@ -263,6 +261,40 @@ All of the following must be true:
 
 ### Parallelisation rule
 Tranches in this phase may run in parallel, but all must be complete before Phase 2 starts.
+
+---
+
+## Phase 1 closeout ledgers
+
+### Phase 1C — R86 obligation closure ledger
+
+| source_doc | source_section | obligation_type | current_status | mapped_phase | mapped_tranche | owner_surface | evidence_or_gap | notes |
+|---|---|---|---|---|---|---|---|---|
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | `Tracked status` item 1 | parity evidence | open | Phase 2 | Phase 2E | `AI_EXECUTION_PLAN.md`; future parity matrix outputs | Declared-family parity evidence is still required before Phase 2 can exit. | Keep visible as acceptance evidence, not vague historical open work. |
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | `Tracked status` item 2 | overlay/invalidation closure | open | Phase 2 | Phase 2E | `AI_EXECUTION_PLAN.md`; query-kernel verification surfaces | End-to-end overlay and invalidation evidence remains required. | Bound to declared covered families rather than repo-wide undefined closure. |
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | `Tracked status` item 3 | transitional cleanup | partially_landed_open_tail | Phase 2 | Phase 2A / Phase 2B | `compilers/stat_input_compiler.py`; `engine/progression_recalc_bridge.py` | Bridge path is landed for the bounded runtime/reference path, but residual ownership cleanup still needs explicit function-level classification and approved extraction. | Treat landed bridge work as preserved; do not redo it during ledgering. |
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | `Tracked status` item 4 | benchmark evidence | open | Phase 2 | Phase 2E | `AI_EXECUTION_PLAN.md`; future benchmark evidence outputs | Gate F requires one timing-family and one progression-family benchmark result against the reference path. | Leave open until benchmark evidence is recorded. |
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | `Tracked status` item 5 | ownership extraction | open | Phase 2 | Phase 2A / Phase 2B | `compilers/stat_input_compiler.py`; Query Engine owner surfaces | KB-routing authority extraction is explicitly Phase 2 work. | Starts with the ownership ledger before any seam extraction. |
+| `R86_CODEX_HANDOFF_GUARDRAILS.md` | `Hard rules` | preserved_guardrail | active_constraint | Phase 2 | Phase 2A-2E | `AI_EXECUTION_PLAN.md`; affected runtime/code surfaces | Guardrails remain binding implementation constraints until the compiler/query seam work is complete. | They are constraints, not open implementation items by themselves. |
+| `R86_CODEX_HANDOFF_GUARDRAILS.md` | `Required worked examples to preserve in code/tests` | preserved_example_obligation | landed_and_preserve | Phase 2 | Phase 2B / Phase 2E | tests and query evidence surfaces | Worked examples remain preserved reference examples for future code/tests. | No rewrite required in Phase 1; preservation remains part of later Query Engine proof. |
+| `R86_WORKED_EXAMPLES.md` | all examples | worked_example_reference | landed_reference | Phase 2 | Phase 2B / Phase 2E | `R86_WORKED_EXAMPLES.md`; future tests/docs | Example baseline rows, overlay delta, and query response stay as reference fixtures. | Historical examples retained until stronger query-owned tests supersede them. |
+
+### Phase 1D — Root archive disposition ledger
+
+| artifact | disposition | why | absorbed_into | still_open_items | retirement_condition | merge_as_is_allowed |
+|---|---|---|---|---|---|---|
+| `towersim_canonical_product_roadmap_v6.md` | historical_noncanonical_reference | Product-thinking context remains useful, but execution truth now lives in the control stack. | `AI_EXECUTION_PLAN.md` for canonical plan/control truth. | None for Phase 1. | May retire in Phase 10 once no active docs need a historical pointer. | no |
+| `R86_CODEX_HANDOFF_GUARDRAILS.md` | historical_handoff_reference | Preserves bounded-scope implementation constraints that informed Query Engine work. | Phase 1C ledger in this plan and future Phase 2 execution. | Query Engine ownership completion remains open in Phase 2. | May retire after Phase 2 once all surviving guardrails are either landed or rejected explicitly. | no |
+| `R86_IMPLEMENTATION_SCOPE_AND_ACCEPTANCE.md` | historical_handoff_reference | Preserves acceptance framing and tracked status context for the R86 workstream. | Phase 1C ledger in this plan and future Phase 2 tranche outputs. | Phase 2A-2E remain open. | May retire after Phase 2 once every mapped obligation has concrete landed evidence or explicit rejection. | no |
+| `R86_WORKED_EXAMPLES.md` | retained_reference_fixture | Still useful as compact human-readable examples for contributor maps, overlays, and query responses. | Future Query Engine tests/docs; referenced by the Phase 1C ledger. | Preserve examples until equivalent or better governed test fixtures exist. | May retire after equivalent governed fixtures are established and referenced from tests/docs. | no |
+| `final_naming_contract_reconstruction.patch` | design_input_only | Historical naming reconstruction artifact; not repo truth. | Absorbed naming decisions in `AI_EXECUTION_PLAN.md`, `README.md`, and `ARCHITECTURE.md`. | None. | May retire in Phase 10 once no active document points to legacy naming reconstruction. | no |
+| `towersim_merge_candidate_r93_phases1to3.zip` | archive_bundle_do_not_merge | Historical merge candidate bundle; direct merge would bypass tranche and owner-surface governance. | Relevant accepted truth must be re-landed deliberately through current tranche work. | Classify any needed content before retirement if referenced later. | May retire in Phase 10 when confirmed not needed as a historical comparison bundle. | no |
+| `module_optimiser_pack14_cumulative_merge_candidate.zip` | archive_bundle_do_not_merge | Historical merge candidate bundle; direct merge would bypass current owner surfaces and review history. | Relevant accepted truth must be re-landed deliberately through current tranche work. | Classify any needed content before retirement if referenced later. | May retire in Phase 10 when confirmed not needed as a historical comparison bundle. | no |
+| `els_coin_calc_final_merge_candidate_r94.zip` | archive_bundle_do_not_merge | Historical merge candidate bundle; direct merge would bypass current owner surfaces and review history. | Relevant accepted truth must be re-landed deliberately through current tranche work. | Classify any needed content before retirement if referenced later. | May retire in Phase 10 when confirmed not needed as a historical comparison bundle. | no |
+
+### Phase 1 completion note
+
+Phase 1 is complete when the control stack records: one canonical plan, one active tranche, mapped R86 obligations, documented root-archive dispositions, and no major doc claiming a competing roadmap or layer vocabulary. The current repo state now meets that bar and promotes execution to Phase 2.
 
 ---
 
@@ -355,7 +387,7 @@ No later work should build on an unstable core stat-resolution boundary.
 
 **Scope out**
 - unrelated family expansion
-- estimator or optimiser work
+- simulator or optimiser work
 
 #### Phase 2D — `resolve_stats()` delegation to query kernel
 **Goal**
@@ -547,23 +579,23 @@ All of the following must be true:
 
 ---
 
-## Phase 7 — Estimator product surfaces
+## Phase 7 — Simulator product surfaces
 
 ### Purpose
-Build the first true estimator surfaces on top of stable query truth and evaluator substrate.
+Build the first true simulator product surfaces on top of stable query truth and evaluator substrate.
 
 ### Tranches
-- Phase 7A — survivability estimator
-- Phase 7B — damage-aware run-limit estimator
-- Phase 7C — setup comparison estimator
+- Phase 7A — survivability simulator
+- Phase 7B — damage-aware run-limit simulator
+- Phase 7C — setup comparison simulator
 - Phase 7D — richer run-outcome explanation
 
 ### Gate to exit Phase 7
 All of the following must be true:
-- estimator interfaces are consistent
+- simulator interfaces are consistent
 - failure-mode classification is explicit
-- run-outcome estimators use governed lower-layer surfaces
-- estimator maturity and trust labels are explicit
+- run-outcome simulators use governed lower-layer surfaces
+- simulator maturity and trust labels are explicit
 
 ### Parallelisation rule
 7A should land first.
@@ -692,7 +724,7 @@ A later phase may be designed early, but not implemented early.
 
 ## Manual user inputs posture
 
-`input/` must contain an explicit section for user-supplied manual inputs needed by current estimators, optimisers, or advisors.
+`input/` must contain an explicit section for user-supplied manual inputs needed by current simulators, optimisers, or advisors.
 
 These inputs:
 - are Inputs-layer artifacts

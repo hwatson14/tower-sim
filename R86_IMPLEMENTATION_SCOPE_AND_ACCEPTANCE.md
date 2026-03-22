@@ -1,5 +1,7 @@
 # R86 implementation scope and acceptance
 
+> Historical note: this file is preserved as R86 handoff context. Current obligation/status truth is mapped in `AI_EXECUTION_PLAN.md`, `ACTIVE_TRANCHE.md`, and `BURNDOWN.yaml`.
+
 ## In scope
 - explicit state identity binding to existing runtime/state contracts
 - bounded scenario family definitions and state-mode mapping
@@ -19,15 +21,18 @@
 - unbounded family expansion
 
 
-## Tracked status
-1. Global parity validation across declared query-owned families — still open.
-2. End-to-end overlay and invalidation closure — still open.
-3. Residual progression bridge cleanup and stale transitional references — partially complete, finish remaining cleanup.
-4. Gate F benchmark evidence for timing + progression workloads — still open.
-5. KB-routing authority extraction from `compilers/stat_input_compiler.py` into Query Engine ownership — still open.
+## Phase 1C mapped status ledger
+
+| tracked_item | current_status | mapped_phase | mapped_tranche | owner_surface | notes |
+|---|---|---|---|---|---|
+| Global parity validation across declared query-owned families | open | Phase 2 | Phase 2E | parity evidence outputs for declared covered families | Remains required before Query Engine ownership completion can close. |
+| End-to-end overlay and invalidation closure | open | Phase 2 | Phase 2E | query-kernel verification surfaces | Keep as explicit evidence work, not vague open-ended cleanup. |
+| Residual progression bridge cleanup and stale transitional references | partially_landed_open_tail | Phase 2 | Phase 2A / Phase 2B | `compilers/stat_input_compiler.py`; `engine/progression_recalc_bridge.py` | Treat the bounded progression bridge as landed for the bounded runtime/reference path; only owner-surface cleanup remains. |
+| Gate F benchmark evidence for timing + progression workloads | open | Phase 2 | Phase 2E | benchmark evidence outputs | Requires at least one timing-family and one progression-family benchmark against the reference path. |
+| KB-routing authority extraction from `compilers/stat_input_compiler.py` into Query Engine ownership | open | Phase 2 | Phase 2A / Phase 2B | `compilers/stat_input_compiler.py`; Query Engine owner surfaces | Starts with function-level ownership classification before any approved extraction. |
 
 ### Status notes after `a97f469` / `d278c18`
-- Treat progression recalc ownership migration as largely completed for the bounded progression runtime/reference path.
+- Treat progression recalc ownership migration as landed for the bounded progression runtime/reference path.
 - Keep the thread focused on remaining acceptance evidence and stale-transition cleanup rather than redoing already-landed bridge work.
 - Audit `engine/progression_recalc_bridge.py` wording against the current tests when touching bridge-adjacent notes or handoff text.
 
@@ -69,3 +74,7 @@ Phase 1 must not:
 - emit giant repo-wide baseline artifacts
 
 Compiler refactor may happen later only if the bounded baseline materialiser proves insufficient.
+
+## Phase 1C disposition
+- The tracked items above are now mapped to current phase/tranche work rather than left as free-floating R86 status notes.
+- This file remains useful as acceptance framing, but it is no longer the active execution ledger.
