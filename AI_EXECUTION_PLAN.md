@@ -372,6 +372,8 @@ No later work should build on an unstable core stat-resolution boundary.
 **Goal**
 - Make delegation scope explicit before broader routing changes continue.
 
+Implementation evidence now lives in `docs/phase2c_covered_family_delegation_manifest.md`. The design-only prep ledger below remains as planning history, but the governed Phase 2C target surface is the manifest document.
+
 **Required output schema**
 - `family_id`
 - `delegated_now`
@@ -389,7 +391,7 @@ No later work should build on an unstable core stat-resolution boundary.
 - unrelated family expansion
 - simulator or optimiser work
 
-##### Phase 2C design-only prep ledger
+##### Phase 2C design-only prep ledger (historical prep notes)
 
 This design note records the Phase 2C manifest population method and the draft family classification that may be prepared in parallel with Phase 2A. It does not imply that Phase 2C is implemented early; it exists so later routing work does not guess about manifest semantics or undelegated fallback ownership.
 

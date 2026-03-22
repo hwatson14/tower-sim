@@ -1,51 +1,56 @@
 # ACTIVE_TRANCHE
 
 ## Tranche ID
-`PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION`
+`PH2-TRANCHE-C_COVERED_FAMILY_DELEGATION_MANIFEST`
 
 ## Phase
 `Phase 2 — Query Engine ownership completion`
 
 ## Objective
-Extract only the approved Query Engine-owned seam from `compilers/stat_input_compiler.py` into canonical owner surfaces, using the completed Phase 2A ownership ledger as the governing boundary.
+Finalize the governed covered-family delegation manifest using the completed Phase 2A ownership ledger and the bounded Query Engine family contracts as the governing boundary.
 
 ## Scope in
-- approved Query Engine-owned logic identified in `docs/phase2a_stat_input_compiler_ownership_ledger.md`
-- `compilers/stat_input_compiler.py` compatibility-entrypoint preservation
-- owner-correct extraction into Query Engine surfaces
-- targeted regression coverage and boundary rationale updates for moved logic
+- finalized covered-family list for Phase 2C
+- explicit delegated scope per declared family
+- explicit fallback ownership for every undelegated family or non-covered remainder
+- visible parity and benchmark status per manifest row
+- no-false-implication review against KB contracts and the public compatibility entrypoint
 
 ## Scope out
+- code-path routing changes for `resolve_stats()`
 - formula rewrites
-- `StatInput` schema redesign
-- generic helper-sink creation
-- opportunistic cleanup unrelated to the approved seam
-- undeclared family expansion beyond the ledger-governed moves
+- undeclared family expansion beyond the governed Query Engine contracts
+- simulator or optimiser changes
+- benchmark execution beyond status declaration
 
 ## Required outputs
-- extracted owner-correct code changes for the approved seam
-- updated boundary rationale for the compiler/query split
-- updated targeted regression coverage for the moved behavior
+- covered-family delegation manifest
+- explicit delegated-scope notes for each declared family
+- explicit fallback-owner declaration for undelegated areas
+- visible parity and benchmark status for every manifest row
 
 ## Required verification
-- runtime behavior remains stable for the compatibility entrypoint
-- moved behavior is covered by targeted tests
-- docs and tranche state reflect the new boundary truth
+- covered-family scope is explicit and bounded
+- fallback owner is named for every undelegated family or non-covered remainder
+- manifest language does not imply full delegation
+- parity and benchmark status are visible for Phase 2E handoff
+- docs and tranche state reflect the new manifest truth
 
 ## Acceptance criteria
-- only ledger-approved Query Engine-owned units move
-- `compilers/stat_input_compiler.py` remains a valid compatibility entrypoint
-- targeted regressions cover moved behavior
-- the compiler/query boundary is less owner-ambiguous than before extraction
+- the Phase 2C family list is finalized from governed Query Engine declarations
+- delegated scope is explicit for each delegated row
+- undelegated areas are visible, bounded, and name their fallback owner
+- parity and benchmark status exist for every manifest row
+- no major doc implies full `resolve_stats()` delegation
 
 ## Blockers
 - none
 
 ## Stop conditions
-Stop once the approved seam is extracted, compatibility behavior is preserved, and targeted regression evidence is landed.
+Stop once the covered-family manifest is finalized, undelegated fallback ownership is explicit, and status visibility is landed for Phase 2E handoff.
 
 ## Non-goals
 - do not rewrite formulas
-- do not redesign `StatInput`
-- do not move undeclared Inputs-owned compilation logic
-- do not begin Phase 2C delegation-manifest work inside this tranche
+- do not implement `resolve_stats()` delegation routing in this tranche
+- do not add undeclared families to the manifest
+- do not claim parity or benchmark completion without evidence
