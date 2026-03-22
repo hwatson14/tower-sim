@@ -26,4 +26,4 @@ lab system structure, lab ladders, and lab-specific baselines.
 ## Advisory
 - `advisory/tables/lab-tier-list-v27_0_3.csv`
 - `advisory/registry/lab-advisory-source-registry.csv`
-- `advisory/notes/lab-tier-list.md`
+- `advisory/README.md`

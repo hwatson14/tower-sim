@@ -413,7 +413,7 @@ def test_all_standard_additive_perks_use_additive_spb_rule():
 
 def test_remaining_exception_set_promoted_in_formula_ledger():
     import yaml
-    surfaces = yaml.safe_load((ROOT / 'config' / 'destination_formula_ledger.yaml').read_text())['surfaces']
+    surfaces = yaml.safe_load((ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml').read_text())['surfaces']
     promoted = {
         'canonical_stat::free_attack_upgrade_chance_pct',
         'canonical_stat::free_defense_upgrade_chance_pct',
