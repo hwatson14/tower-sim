@@ -51,6 +51,16 @@ This is the core execution rule.
 - Simulators and evaluators may consume query-owned surfaces but must not re-derive them.
 - Optimisers and advisors may aggregate truth-owned surfaces but must not replace their owners.
 
+### Legacy-surface rule after Phase 4
+If `engine/stat_engine.py` and/or `engine/stat_resolution_core.py` remain after Phase 4, they remain only as:
+- thin compatibility entrypoints, and/or
+- non-canonical legacy merge/reference aids for reconciling work built from older baselines.
+
+They must not:
+- be named canonical owners of stat-resolution truth
+- receive new canonical stat logic
+- become routing destinations for new stat surfaces entering scope
+
 ### Current active seams
 - `compilers/stat_input_compiler.py` still materially straddles Inputs-owned compilation and Query Engine-owned query preparation.
 - `run_stats.py` still contains orchestration plus embedded verification, reporting, and comparison concerns.
@@ -155,14 +165,18 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 
 ## Program workstreams
 
-The repo now has six primary workstreams:
+The repo now has ten primary workstreams:
 
 1. Ownership and archive closure
 2. Query Engine completion
 3. Objective-state promotion
-4. Verification and evaluator foundation
-5. Test and CI acceleration
-6. Product surfaces
+4. Full stat-resolution migration to Query Engine
+5. Verification, evaluator foundation, and test acceleration
+6. `run_stats.py` decomposition and thin orchestration
+7. Simulator product surfaces
+8. Optimiser product surfaces
+9. Advisor surfaces and external interfaces
+10. Archive retirement and cleanup closure
 
 These are governed by the phase order below.
 
@@ -608,179 +622,457 @@ All of the following must be true:
 
 ---
 
-## Phase 4 — Verification and evaluator foundation
+## Phase 4 — Full stat-resolution migration to Query Engine
 
 ### Purpose
-Make verification a first-class system and establish the governed evaluator substrate, starting with max-wave evaluation.
+Make Query Engine the practical and declared owner of canonical stat-resolution truth, fully vacate `engine/stat_resolution_core.py` as a canonical logic owner, and leave `engine/stat_engine.py` only as thin compatibility entrypoint if still needed.
 
-### Why this phase exists
-The repo needs a proof system before broader product expansion.
+### Target end-state
+By end of Phase 4:
+- canonical stat-resolution scope is KB aligned
+- canonical stat-resolution scope resolves through Query Engine-owned paths
+- `engine/stat_engine.py` may remain only as thin compatibility entrypoint
+- `engine/stat_resolution_core.py` owns no canonical stat logic
+- retained legacy files, if any, exist only as non-canonical merge/reference aids for reconciling code built from older baselines
+- new stat surfaces coming into scope must plug into KB + QE, not legacy paths
+
+### Phase-wide rules
+- New canonical stat logic may not be added to `engine/stat_engine.py` or `engine/stat_resolution_core.py`.
+- If either legacy file is retained after Phase 4, its role must be explicitly non-canonical and reference-only.
+- Presence of a legacy file does not imply permission to route new stat truth through it.
+- Phase 4 scope denominator must be frozen before code migration begins.
+- Completion is measured by ownership and routing truth, not by file deletion aesthetics.
+
+### Canonical denominator freeze
+Phase 4 must freeze the denominator before migration code begins. That denominator governs exactly what counts as:
+- canonical stat-resolution families in scope
+- canonical stat groups in scope
+- allowed retained legacy merge/reference residue
+- parity-covered migrated scope
+- benchmark-covered migrated workloads
+
+The frozen denominator must explicitly classify every surface or group into one of these categories only:
+1. `family_scoped_canonical_resolution`
+2. `non_family_canonical_stat_resolution`
+3. `compatibility_only_surface`
+4. `legacy_merge_reference_residue`
+5. `out_of_phase4_scope`
+
+No Phase 4 tranche may:
+- add a new in-scope category
+- move a surface between categories
+- expand canonical scope silently
+- claim migration completion against a changed denominator
+
+unless the three control files are deliberately revised first.
+
+PH4-A must freeze, in one explicit ledger, all of the following before code migration begins:
+- the exact family universe counted as migrated/not-migrated
+- the exact canonical stat groups counted as migrated/not-migrated
+- the exact residual buckets allowed after Phase 4, if any
+- the exact parity denominator
+- the exact benchmark denominator
+
+No later tranche may silently expand or shrink those denominators. If the denominator must change, stop and update all three control files before continuing.
 
 ### Tranches
-- Phase 4A — Surface verification registry
-- Phase 4B — Evaluator contract framework
-- Phase 4C — Max-wave evaluator reference corpus
-- Phase 4D — Max-wave evaluator implementation or hardening
-- Phase 4E — Evaluator verification matrix
-- Phase 4F — Query-backed comparison and verification extraction from `run_stats.py`
+- PH4-A — Canonical migration ledger and denominator freeze
+- PH4-B — Declared family cutover to Query Engine
+- PH4-C — Canonical stat group migration by dependency order
+- PH4-D — Parity matrix and benchmark closure for migrated scope
+- PH4-E — Control-truth cutover and legacy demotion
+- PH4-F — Post-cutover hardening and closeout
 
-### Verification classes
-- surface verification
-- evaluator verification
-- system verification
+### PH4-A — Canonical migration ledger and denominator freeze
+Goal:
+- freeze exactly what counts as canonical stat-resolution scope, residual scope, migrated scope, and benchmark/parity denominator
 
-### Gate to exit Phase 4
-All of the following must be true:
-- governed verification registries exist
-- max-wave evaluator inputs, outputs, and assumptions are explicit
-- a reference corpus exists for max-wave verification
-- evaluator verification status is visible by case family
-- comparison and verification responsibilities are less embedded in `run_stats.py`
+Scope in:
+- full migration ledger
+- current-owner vs target-owner mapping
+- residual categories
+- explicit allowed legacy merge-reference status
 
-### Parallelisation rule
-4A and 4B may run in parallel.
-4C may begin once 4B is stable.
-4D and 4F may overlap where surfaces are stable.
-4E closes the phase.
+Scope out:
+- code migration
+- formula changes
+- parity execution
+- benchmark execution
+
+Owner surfaces:
+- `AI_EXECUTION_PLAN.md`
+- `ACTIVE_TRANCHE.md`
+- `BURNDOWN.yaml`
+- `engine/stat_resolution_core.py`
+- `engine/stat_engine.py`
+- `engine/stat_query_kernel.py`
+- `kb/global-rules/contracts/stat-query-scenario-families.yaml`
+- `kb/global-rules/contracts/stat-query-initial-surface-set.yaml`
+- `kb/global-rules/contracts/stat-query-consumer-bundles.yaml`
+
+Forbidden surfaces:
+- `optimizer/`
+- simulator product modules
+- evaluator implementation modules
+- `run_stats.py` beyond inventory support if strictly necessary
+
+Required outputs:
+- canonical migration ledger
+- denominator freeze note
+- residual bucket statement
+- explicit post-Phase-4 legacy-file rule
+
+Required verification:
+- every in-scope canonical stat family/group is named
+- every row names current owner and target owner
+- every row names whether any post-phase residue is allowed
+- no code migration begins before denominator is frozen
+
+Stop conditions:
+- stop if a canonical stat group cannot name target QE owner
+- stop if a surface cannot be assigned to either canonical scope or explicit residual bucket
+- stop if a denominator change is discovered after implementation begins without updating all three control files first
+
+### PH4-B — Declared family cutover to Query Engine
+Goal:
+- move all already-declared scenario families to live Query Engine-owned resolution
+
+Scope in:
+- live cutover for all declared families
+- query routing/materializer/kernel work needed for those families
+- family-level regression tests
+
+Scope out:
+- undeclared family expansion
+- long-tail non-family stat migration
+- optimiser/evaluator feature work
+
+Owner surfaces:
+- `engine/stat_engine.py`
+- `engine/stat_query_kernel.py`
+- `engine/family_baseline_materializer.py`
+- `engine/query_routing.py`
+- `engine/query_state_mode_policy.py`
+- `engine/query_perk_compiler.py`
+- `compilers/stat_input_compiler.py`
+- `kb/global-rules/contracts/stat-query-scenario-families.yaml`
+- `kb/global-rules/contracts/stat-query-initial-surface-set.yaml`
+- `kb/global-rules/contracts/stat-query-consumer-bundles.yaml`
+- `tests/test_resolve_stats_delegation.py`
+
+Forbidden surfaces:
+- `optimizer/`
+- simulator product modules
+- evaluator implementation modules
+- new generic helper sink files
+
+Required outputs:
+- live delegation for all declared families
+- updated family routing logic
+- family coverage tests
+- updated migration KPI counts
+
+Required verification:
+- all declared families are live-routable through QE path
+- undeclared surfaces are not swept into family routing silently
+- any blocked family residue is explicit and bounded
+
+Stop conditions:
+- stop if family coverage would require changing undeclared consumer semantics
+- stop if a family cannot be routed without inventing new surface classes
+- stop if code changes would touch files outside listed owner surfaces without control-file update
+
+### PH4-C — Canonical stat group migration by dependency order
+Goal:
+- move remaining canonical stat-resolution logic out of legacy ownership and into QE-owned paths in strict dependency order
+
+Scope in:
+- migration of canonical stat groups named in PH4-A ledger only
+- duplicate-logic removal as groups move
+- targeted tests and parity support per group
+
+Scope out:
+- simulator product work
+- optimiser feature work
+- archive cleanup
+- undocumented long-tail helper beautification outside frozen denominator
+
+Owner surfaces:
+- `engine/stat_resolution_core.py`
+- `engine/stat_engine.py`
+- `engine/stat_query_kernel.py`
+- `engine/family_baseline_materializer.py`
+- `engine/dependency_registry.py`
+- `kb/global-rules/contracts/stat-query-initial-surface-set.yaml`
+- `kb/global-rules/contracts/stat-query-consumer-bundles.yaml`
+- `tests/`
+
+Forbidden surfaces:
+- broad `run_stats.py` refactor
+- `optimizer/`
+- `advisors/`
+- new architecture layers
+
+Required outputs:
+- migrated canonical stat groups from frozen denominator only
+- explicit residual list after each migrated group
+- parity fixtures/tests per group
+- updated ownership statements
+
+Required verification:
+- each migrated group has explicit before/after ownership
+- no migrated group still relies on legacy formula truth for final value
+- any blocked surface is added to explicit residual ledger
+- no duplicate logic remains for migrated surfaces
+
+Stop conditions:
+- stop if a lower-dependency group is incomplete but a higher-dependency group is about to start
+- stop if a group cannot be migrated without changing mechanics not yet governed in KB
+- stop if a migrated surface still needs legacy final-value truth to compute output
+- stop if a change would migrate a surface not frozen in PH4-A denominator
+
+### PH4-D — Parity matrix and benchmark closure for migrated scope
+Goal:
+- prove migrated QE surfaces match acceptable reference truth closely enough to cut over ownership
+
+Scope in:
+- family parity matrix
+- canonical stat group parity matrix
+- benchmark capture for migrated workloads
+- explicit cutover readiness decision
+
+Scope out:
+- new migration work beyond bugfixes triggered by parity failure
+- simulator/optimiser feature work
+
+Owner surfaces:
+- `tests/`
+- `out/` when rebuilt governed artifacts are needed as evidence
+- `BURNDOWN.yaml`
+- `ACTIVE_TRANCHE.md`
+
+Forbidden surfaces:
+- broad new code paths
+- new families
+- new layer creation
+
+Required outputs:
+- parity matrix by family/group/surface
+- benchmark evidence for migrated workloads
+- explicit pass/fail/open status
+- cutover readiness note
+
+Required verification:
+- every migrated family/group has visible parity status
+- benchmark evidence exists for workloads that matter for cutover
+- failures are explicit and bounded
+
+Stop conditions:
+- stop if parity denominator is unclear
+- stop if benchmark workload is not tied to actually migrated path
+- stop if any claimed pass cannot be defended with concrete evidence
+
+### PH4-E — Control-truth cutover and legacy demotion
+Goal:
+- make QE the declared canonical owner in control truth and narrow legacy code to non-canonical residue only if any remains
+
+Scope in:
+- control-truth cutover
+- narrowed compatibility path
+- legacy demotion/quarantine statement
+- canonical owner statement updates
+
+Scope out:
+- new feature work
+- unrelated cleanup
+- broad `run_stats.py` decomposition
+
+Owner surfaces:
+- `AI_EXECUTION_PLAN.md`
+- `BURNDOWN.yaml`
+- `ACTIVE_TRANCHE.md`
+- `engine/stat_engine.py`
+- `engine/stat_resolution_core.py`
+- `ARCHITECTURE.md`
+- `README.md`
+- affected tests/docs
+
+Forbidden surfaces:
+- simulator product modules
+- optimiser feature work
+- advisor work
+- new compatibility shims unless explicitly named residuals require them
+
+Required outputs:
+- updated canonical ownership wording
+- narrowed compatibility path
+- legacy demotion/quarantine statement
+- residual ledger of anything not fully retired
+
+Required verification:
+- control truth no longer names `stat_resolution_core.py` as canonical owner
+- `stat_engine.py` is clearly thin compatibility only
+- any remaining residue is named, bounded, and temporary
+- dual ownership language is removed from major docs
+
+Stop conditions:
+- stop if cutover would hide unresolved residuals
+- stop if docs would claim full retirement while code still depends materially on legacy final-value truth
+- stop if a compatibility shim is added without explicit residual ownership note
+
+### PH4-F — Post-cutover hardening and closeout
+Goal:
+- close the phase cleanly after cutover, prove no control drift remains, and hand stable ownership to later phases
+
+Scope in:
+- post-cutover smoke/proof pass
+- final KPI values
+- stale-reference cleanup
+- phase closeout and promotion readiness
+
+Scope out:
+- new migration work
+- new feature work
+- opportunistic cleanup beyond directly stale references
+
+Owner surfaces:
+- `AI_EXECUTION_PLAN.md`
+- `BURNDOWN.yaml`
+- `ACTIVE_TRANCHE.md`
+- `README.md`
+- `ARCHITECTURE.md`
+- directly stale test/docs references
+
+Forbidden surfaces:
+- new architectural changes
+- product features
+- new files unless required by control truth and explicitly justified
+
+Required outputs:
+- phase closeout note
+- final migration KPI values
+- stale-reference cleanup
+- next-phase promotion note
+
+Required verification:
+- all PH4 exit-gate conditions are explicitly satisfied or blocked with named exception
+- stale references to legacy canonical ownership are removed
+- next phase can begin without ownership ambiguity
+
+Stop conditions:
+- stop if phase closeout would require claiming stronger cutover than evidence supports
+- stop if any major doc still implies dual ownership
+- stop if KPI ledger has unresolved contradictions
+
+### Phase 4 exit gate
+- canonical stat-resolution scope is KB aligned
+- canonical stat-resolution scope resolves through QE-owned paths
+- `engine/stat_engine.py` is thin compatibility only if retained
+- `engine/stat_resolution_core.py` owns no canonical stat logic
+- any retained legacy file exists only as non-canonical merge/reference aid
+- parity exists for migrated scope
+- benchmark evidence exists for migrated workloads
+- control files, tests, and docs no longer imply dual ownership
 
 ---
 
-## Phase 5 — Test and CI acceleration
+## Phase 5 — Verification, evaluator foundation, and test acceleration
 
 ### Purpose
-Make the repo fast enough and reliable enough for iterative Codex work.
-
-### Why this phase exists
-The current marker model is only a starting point; the repo needs explicit test lanes and measured speed improvements.
+Make verification first-class, establish evaluator substrate, and create explicit test-lane/benchmark policy on top of a stable stat-resolution owner model.
 
 ### Tranches
-- Phase 5A — Test inventory and timing profile
-- Phase 5B — Test lane redesign
-- Phase 5C — Fixture and artifact strategy cleanup
-- Phase 5D — Default fast suite and heavy-suite separation
-- Phase 5E — CI and benchmark policy alignment
+- PH5-A — Surface verification registry
+- PH5-B — Evaluator contract framework
+- PH5-C — Max-wave evaluator reference corpus
+- PH5-D — Max-wave evaluator implementation or hardening
+- PH5-E — Evaluator verification matrix
+- PH5-F — Test inventory and timing profile
+- PH5-G — Test lane redesign and CI policy alignment
 
-### Target test lanes
-- unit_fast
-- contract
-- parity
-- evaluator
-- integration
-- benchmark
-
-### Gate to exit Phase 5
-All of the following must be true:
-- test lanes are explicitly defined
-- default developer-fast validation path exists
-- heavy proof suites are separated from default runs
-- timing bottlenecks are known and addressed at least for top offenders
-- CI policy matches the lane model
-
-### Parallelisation rule
-5A should happen first.
-5B, 5C, and 5D may run in parallel after 5A.
-5E closes the phase.
+### Exit gate
+- governed verification registries exist
+- evaluator inputs/outputs/assumptions are explicit
+- reference corpus exists for evaluator verification
+- evaluator verification status is visible by case family
+- test lanes are defined and CI policy matches them
 
 ---
 
 ## Phase 6 — `run_stats.py` decomposition and thin orchestration
 
 ### Purpose
-Shrink `run_stats.py` only after the core owners, objective surfaces, verification model, and test system are stable enough.
-
-### Why this phase exists
-Earlier decomposition risks moving unstable boundaries.
+Shrink `run_stats.py` after ownership and proof systems are stable.
 
 ### Tranches
-- Phase 6A — `run_stats.py` decomposition map
-- Phase 6B — reporting extraction
-- Phase 6C — verification and comparison extraction cleanup
-- Phase 6D — output emission and orchestration cleanup
+- PH6-A — `run_stats.py` decomposition map
+- PH6-B — reporting extraction
+- PH6-C — verification/comparison extraction cleanup
+- PH6-D — output emission and orchestration cleanup
 
-### Gate to exit Phase 6
-All of the following must be true:
+### Exit gate
 - every major remaining concern in `run_stats.py` has a target owner
 - extracted modules have clear ownership
 - `run_stats.py` is primarily orchestration
 - outputs remain stable and validated
-
-### Parallelisation rule
-6A must happen first.
-6B, 6C, and 6D may partially overlap after 6A.
 
 ---
 
 ## Phase 7 — Simulator product surfaces
 
 ### Purpose
-Build the first true simulator product surfaces on top of stable query truth and evaluator substrate.
+Build simulator product surfaces on top of QE-owned stat truth and evaluator substrate.
 
 ### Tranches
-- Phase 7A — survivability simulator
-- Phase 7B — damage-aware run-limit simulator
-- Phase 7C — setup comparison simulator
-- Phase 7D — richer run-outcome explanation
+- PH7-A — survivability simulator
+- PH7-B — damage-aware run-limit simulator
+- PH7-C — setup comparison simulator
+- PH7-D — richer run-outcome explanation
 
-### Gate to exit Phase 7
-All of the following must be true:
+### Exit gate
 - simulator interfaces are consistent
 - failure-mode classification is explicit
-- run-outcome simulators use governed lower-layer surfaces
-- simulator maturity and trust labels are explicit
-
-### Parallelisation rule
-7A should land first.
-7B, 7C, and 7D may follow in parallel where dependencies permit.
+- simulator surfaces use governed lower-layer truth
+- maturity and trust labels are explicit
 
 ---
 
 ## Phase 8 — Optimiser product surfaces
 
 ### Purpose
-Build stable optimiser families on top of query-owned objective states and verified evaluators.
+Build optimiser families on top of QE-owned objective states and verified evaluators.
 
 ### Tranches
-- Phase 8A — loadout optimiser
-- Phase 8B — progression optimiser core
-- Phase 8C — resource-family optimiser expansion
-- Phase 8D — save-vs-spend and branching logic
-- Phase 8E — archive helper re-homing where justified
+- PH8-A — loadout optimiser
+- PH8-B — progression optimiser core
+- PH8-C — resource-family optimiser expansion
+- PH8-D — save-vs-spend and branching logic
+- PH8-E — archive helper re-homing where justified
 
-### Gate to exit Phase 8
-All of the following must be true:
+### Exit gate
 - optimisers consume stable lower-layer surfaces
 - objective families are explicit
-- recommendation confidence and trust logic is visible
-- save-vs-spend branching is governed, not ad hoc
-
-### Parallelisation rule
-8A and 8B may run in parallel once the lower phases are complete.
-8C and 8D may overlap later.
-8E is selective and should only occur where ownership is already stable.
+- recommendation confidence and trust logic are visible
+- save-vs-spend branching is governed
 
 ---
 
 ## Phase 9 — Advisor surfaces and external interfaces
 
 ### Purpose
-Build the user-facing planning and strategy surfaces after the lower stack is trustworthy.
+Build user-facing planning and strategy surfaces after lower layers are trustworthy.
 
 ### Tranches
-- Phase 9A — progression-planning advisor
-- Phase 9B — build-transition advisor
-- Phase 9C — external query and API schema
-- Phase 9D — advisor explanation and trust-label packaging
+- PH9-A — progression-planning advisor
+- PH9-B — build-transition advisor
+- PH9-C — external query and API schema
+- PH9-D — advisor explanation and trust-label packaging
 
-### Gate to exit Phase 9
-All of the following must be true:
+### Exit gate
 - advisor outputs consume governed lower layers
-- strategy explanations are traceable to model outputs and KB knowledge
+- strategy explanations are traceable
 - external interfaces expose stable schema
 - trust labels remain explicit
-
-### Parallelisation rule
-9A, 9B, and 9C may run in parallel where safe.
-9D closes the phase.
 
 ---
 
@@ -790,31 +1082,13 @@ All of the following must be true:
 Retire superseded root artifacts only after their truth has been absorbed or explicitly rejected.
 
 ### Tranches
-- Phase 10A — remaining archive artifact retirement
-- Phase 10B — final pointer cleanup across docs and repo surfaces
+- PH10-A — remaining archive artifact retirement
+- PH10-B — final pointer cleanup across docs and repo surfaces
 
-### Gate to exit Phase 10
-All of the following must be true:
+### Exit gate
 - no active work depends on retired root artifacts
 - all retained truths are represented in canonical in-repo sources
 - repo docs point to current truth, not legacy bundles
-
----
-
-## Detailed tranche ledger
-
-Each tranche should carry:
-- goal
-- scope in
-- scope out
-- touched owner surfaces
-- forbidden surfaces
-- required outputs
-- required verification
-- blockers
-- stop conditions
-
-This detail belongs in `ACTIVE_TRANCHE.md` and `BURNDOWN.yaml`, not repeated exhaustively here.
 
 ---
 

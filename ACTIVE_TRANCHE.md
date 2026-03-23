@@ -1,48 +1,54 @@
-# ACTIVE_TRANCHE
+# ACTIVE_TRANCHE.md
 
-## Tranche ID
-`PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY`
+## Role
 
-## Phase
-`Phase 4 — Verification and evaluator foundation`
+This file is the live execution cursor.
+
+It identifies:
+- the exact active tranche
+- the exact plan section Codex should execute
+- tranche-local residue and stop conditions only
+
+It is not a second plan.
+Canonical tranche-contract truth lives in `AI_EXECUTION_PLAN.md`.
+Machine state lives in `BURNDOWN.yaml`.
+Do not duplicate tranche contract text here. If contract truth changes, update `AI_EXECUTION_PLAN.md` first and then update this file only to point at the revised truth.
+
+## Active phase
+`PH4 — Full stat-resolution migration to Query Engine`
+
+## Active tranche
+`PH4-A — Canonical migration ledger and denominator freeze`
+
+## Authoritative plan section
+`AI_EXECUTION_PLAN.md -> Phase 4 — Full stat-resolution migration to Query Engine -> PH4-A — Canonical migration ledger and denominator freeze`
 
 ## Objective
-Promote Phase 4 by making `PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY` the current executable tranche and align the control stack around the next governed verification owner surface.
+Freeze the exact Phase 4 migration denominator before any code migration begins so the repo has one explicit ledger for canonical stat-resolution scope, residual buckets, parity denominator, and benchmark denominator.
 
-## Why this tranche exists
-Phase 3 bounded verification is now evidenced and Phase 3 closeout is complete. The next executable work is to establish the governed surface-verification registry that Phase 4 needs before broader evaluator or comparison work can proceed. This control-stack promotion PR only updates repo truth to reflect that sequencing; it does not implement Phase 4 work.
+## Allowed local residue in this file
+- active-slice clarification that does not modify tranche contract truth
+- bounded blocker notes discovered while executing the active tranche
+- denominator-freeze findings that must stay visible while PH4-A is active
+- immediate stop conditions triggered by live repo truth
 
-## Change classification
-- **Cleanup only**: control-stack truth promotion from completed Phase 3 closeout to active Phase 4 entry.
-- **Control-stack reconciliation**: make the active phase and tranche unambiguous across the control files.
-- **Plan alignment**: remove stale wording that still describes Query Engine-owned objective surfaces as optimizer-local or Phase 3 as still open.
+## Current tranche-local notes
+- Phase 3 closeout remains complete in repo truth and is the prerequisite that promoted the repo into Phase 4.
+- PH4-A is a control-and-ledger tranche first; it must freeze the migration denominator before any Phase 4 code migration or parity execution starts.
+- The denominator freeze must classify every named family or stat group into canonical scope, compatibility-only scope, legacy merge-reference residue, or explicit out-of-phase scope.
 
-## Scope in
-- promote the active phase from PH3 to PH4
-- set `PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY` as the current executable tranche
-- align `ACTIVE_TRANCHE.md`, `BURNDOWN.yaml`, and `AI_EXECUTION_PLAN.md` to the same control-stack truth
-- keep Phase 3 recorded as complete and Phase 4 as active
+## Legacy-surface rule after Phase 4
+If `engine/stat_engine.py` and/or `engine/stat_resolution_core.py` remain after Phase 4, they remain only as:
+- thin compatibility entrypoints, and/or
+- non-canonical legacy merge/reference aids for reconciling work built from older baselines.
 
-## Scope out
-- implementation of the Phase 4 surface-verification registry
-- evaluator contract or evaluator runtime work
-- new code paths, registries, or verification helpers
-- full `pytest` or unrelated test cleanup
-- opportunistic doc cleanup outside the major control files
+They must not:
+- be named canonical owners of stat-resolution truth
+- receive new canonical stat logic
+- become routing destinations for new stat surfaces entering scope
 
-## Required outputs
-- updated `ACTIVE_TRANCHE.md` for the Phase 4A active tranche
-- updated `BURNDOWN.yaml` with `active_phase_id: PH4` and `active_tranche_id: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY`
-- updated `AI_EXECUTION_PLAN.md` wording so no major control file claims stale Phase 3 state
-
-## Acceptance criteria
-- Phase 3 remains recorded as complete in the control stack
-- Phase 4 is the active phase
-- `PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY` is the current executable tranche
-- no major control file still says `derived::ehp`, `derived::edamage`, or `derived::eecon` are optimizer-local
-- no major control file still implies that Phase 3 closeout is open
-
-## Current status
-- Phase 3 bounded verification was evidenced on 2026-03-23 and its closeout remains complete in repo truth.
-- Phase 4 is now the active phase in the control stack.
-- Phase 4A is selected as the current executable tranche, but no Phase 4 implementation work is part of this PR.
+## Immediate stop conditions
+- Stop if a canonical stat group cannot name a Query Engine target owner.
+- Stop if a surface cannot be assigned to either canonical Phase 4 scope or an explicit residual bucket.
+- Stop if denominator scope changes after implementation begins without updating `AI_EXECUTION_PLAN.md`, `BURNDOWN.yaml`, and `ACTIVE_TRANCHE.md` first.
+- Stop if execution would add new canonical stat logic to `engine/stat_engine.py` or `engine/stat_resolution_core.py`.
