@@ -70,7 +70,7 @@ def _inject_css() -> None:
             border-radius: 14px;
             padding: 0.9rem 0.95rem 0.7rem 0.95rem;
             margin-bottom: 1rem;
-            background: linear-gradient(180deg, var(--accent-soft), rgba(255,255,255,0.03));
+            background: linear-gradient(180deg, var(--accent-soft), rgba(255,255,255,0.018));
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
         }
         .ts-card h4 {
@@ -107,12 +107,11 @@ def _inject_css() -> None:
             margin: 0.35rem 0 0.9rem 0;
         }
         .ts-pill {
-            border: 1px solid rgba(255,255,255,0.10);
+            border: 1px solid rgba(255,255,255,0.09);
             border-radius: 999px;
             padding: 0.28rem 0.62rem;
             font-size: 0.79rem;
-            background: rgba(255,255,255,0.04);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            background: rgba(255,255,255,0.03);
         }
         .ts-small-note {
             color: rgba(250,250,250,0.62);
@@ -123,7 +122,7 @@ def _inject_css() -> None:
             border: 1px solid rgba(255,255,255,0.08);
             border-radius: 10px;
             overflow: hidden;
-            background: color-mix(in srgb, var(--accent) 20%, rgba(10,14,24,0.96));
+            background: color-mix(in srgb, var(--accent) 12%, rgba(10,14,24,0.96));
         }
         table.ts-html-table {
             width: 100%;
@@ -135,20 +134,21 @@ def _inject_css() -> None:
             text-align: left;
             font-weight: 700;
             padding: 0.55rem 0.7rem;
-            background: color-mix(in srgb, var(--accent) 30%, rgba(16,20,30,0.98));
+            background: color-mix(in srgb, var(--accent) 22%, rgba(16,20,30,0.98));
             border-bottom: 1px solid rgba(255,255,255,0.10);
         }
         .ts-html-table tbody td {
             padding: 0.48rem 0.7rem;
             border-top: 1px solid rgba(255,255,255,0.06);
-            background: color-mix(in srgb, var(--accent) 16%, rgba(8,12,20,0.96));
+            background: color-mix(in srgb, var(--accent) 8%, rgba(8,12,20,0.96));
             vertical-align: top;
             white-space: nowrap;
         }
         .ts-html-table tbody tr:nth-child(even) td {
-            background: color-mix(in srgb, var(--accent) 20%, rgba(8,12,20,0.96));
+            background: color-mix(in srgb, var(--accent) 11%, rgba(8,12,20,0.96));
         }
         .ts-preview-wrap {
+            margin-top: 0.15rem;
             overflow: auto;
             max-height: var(--table-height);
             border: 1px solid rgba(255,255,255,0.06);
@@ -583,35 +583,35 @@ def _clean_max_detail(value) -> Optional[str]:
     return text.replace("max=", "")
 
 
-def _render_preview_html(df: pd.DataFrame, accent: str, height: int = 320):
+def _preview_html_string(df: pd.DataFrame, accent: str, height: int = 320) -> str:
     if df is None or df.empty:
-        st.write("No data")
-        return
+        return '<div class="ts-muted">No data</div>'
     show = df.fillna("").astype(str).copy()
-    html = show.to_html(index=False, escape=False, border=0)
-    st.markdown(
-        f'<div class="ts-preview-wrap" style="--table-height:{height}px; --accent:{accent};">{html}</div>',
-        unsafe_allow_html=True,
-    )
+    table_html = show.to_html(index=False, escape=False, border=0)
+    return f'<div class="ts-preview-wrap" style="--table-height:{height}px; --accent:{accent};">{table_html}</div>'
+
+
+def _render_visual_card(section_name: str, subtitle: str, df: pd.DataFrame, height: int = 320, max_rows: int = 12):
+    base_name = section_name.replace("QE ", "").replace("/Vault", "")
+    color = SECTION_COLORS.get(base_name, "#79c0ff")
+    soft = _hex_to_rgba(color, 0.10)
+    preview_html = _preview_html_string(df.head(max_rows) if df is not None else df, color, height=height)
+    subtitle_html = subtitle if subtitle else ""
+    html_block = f"""
+    <div class="ts-card" style="--accent:{color}; --accent-soft:{soft};">
+        <div class="ts-card-head">
+            <h4>{section_name}</h4>
+        </div>
+        <div class="ts-muted">{subtitle_html}</div>
+        {preview_html}
+    </div>
+    """
+    st.markdown(html_block, unsafe_allow_html=True)
 
 
 def _status_banner(kind: str, message: str):
     klass = "ts-ok" if kind == "ok" else "ts-alert"
     st.markdown(f'<div class="{klass}">{message}</div>', unsafe_allow_html=True)
-
-
-def _card_open(section_name: str):
-    base_name = section_name.replace("QE ", "").replace("/Vault", "")
-    color = SECTION_COLORS.get(base_name, "#79c0ff")
-    soft = _hex_to_rgba(color, 0.10)
-    st.markdown(
-        f'<div class="ts-card" style="--accent:{color}; --accent-soft:{soft};"><div class="ts-card-head"><h4>{section_name}</h4></div>',
-        unsafe_allow_html=True,
-    )
-
-
-def _card_close():
-    st.markdown("</div>", unsafe_allow_html=True)
 
 
 def _render_table(df: pd.DataFrame, height: int = 280):
@@ -789,6 +789,37 @@ def _render_html_table(df: pd.DataFrame, section_name: str, max_rows: int = 40):
     st.markdown(html_block, unsafe_allow_html=True)
 
 
+
+def suspicious_qe_rows(df: pd.DataFrame) -> pd.DataFrame:
+    if df is None or df.empty:
+        return pd.DataFrame()
+    out = df.copy()
+    out["flag_unmapped"] = ~out["kb_mapped"].fillna(False).astype(bool)
+    out["flag_missing_destination"] = out["destination_id"].fillna("").astype(str).str.strip().eq("")
+    out["flag_missing_resolver"] = out["resolver_id"].fillna("").astype(str).str.strip().eq("")
+    out["flag_missing_contributor"] = out["contributor_id"].fillna("").astype(str).str.strip().eq("")
+    out["flag_has_notes"] = out["notes"].fillna("").astype(str).str.strip().ne("")
+    fanin = out["destination"].fillna("(blank)").value_counts()
+    out["flag_shared_destination"] = out["destination"].fillna("(blank)").map(fanin).fillna(0).astype(int) > 1
+    flag_cols = [c for c in out.columns if c.startswith("flag_")]
+    out["flag_count"] = out[flag_cols].sum(axis=1)
+    issues = out[out["flag_count"] > 0].copy()
+    if issues.empty:
+        return issues
+    issues["flags"] = issues.apply(
+        lambda r: ", ".join([
+            name.replace("flag_", "").replace("_", " ")
+            for name in flag_cols if bool(r[name])
+        ]),
+        axis=1,
+    )
+    cols = [
+        "section", "source_family", "source_name", "stat_name", "value", "destination",
+        "kb_mapped", "resolver_id", "contributor_id", "notes", "flags", "flag_count"
+    ]
+    return issues[cols].sort_values(["flag_count", "section", "source_family", "source_name"], ascending=[False, True, True, True])
+
+
 def _metrics_row(items: list[tuple[str, str | int | float]]):
     cols = st.columns(len(items))
     for col, (label, value) in zip(cols, items):
@@ -833,6 +864,7 @@ st.sidebar.markdown("**Active view context**")
 st.sidebar.markdown(f"- Preset: `{selected_preset}`")
 st.sidebar.markdown(f"- State mode: `{selected_state_mode}`")
 st.sidebar.markdown(f"- Perks: `{selected_perk_state}`")
+preview_rows = st.sidebar.slider("Visual preview rows", min_value=8, max_value=30, value=12, step=2)
 
 try:
     sections = parse_ids_text(ids_text)
@@ -865,24 +897,26 @@ except Exception as exc:
     qe_state = None
     qe_error = str(exc)
 
+issues_df = suspicious_qe_rows(qe_df) if not qe_df.empty else pd.DataFrame()
+
 top_cols = st.columns(5)
 top_cols[0].metric("IDS rows", int(len(ids_levels_df)))
 top_cols[1].metric("Compiled rows", int(len(compiled_df)) if not compiled_df.empty else 0)
 top_cols[2].metric("QE rows", int(len(qe_df)) if not qe_df.empty else 0)
 top_cols[3].metric("QE mapped", int(qe_df["kb_mapped"].fillna(False).astype(bool).sum()) if not qe_df.empty else 0)
 top_cols[4].metric("QE mapped %", _safe_pct(int(qe_df["kb_mapped"].fillna(False).astype(bool).sum()) if not qe_df.empty else 0, int(len(qe_df))))
-
-if qe_error:
-    st.warning(f"Global note: query engine unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
+if not issues_df.empty:
+    _status_banner("error", f"<strong>QE issues flagged:</strong> {len(issues_df)} rows with one or more suspicious conditions.")
 
 if compiled_error:
     _status_banner("error", f"<strong>Compiled account state unavailable.</strong><br>{compiled_error}")
 if qe_error:
     _status_banner("error", f"<strong>Query engine unavailable.</strong><br>{qe_error}")
 
-tab_compiled_visual, tab_qe_visual, tab_qe_table, tab_compiled_table, tab_ids_visual, tab_ids_table = st.tabs([
+tab_compiled_visual, tab_qe_visual, tab_issues, tab_qe_table, tab_compiled_table, tab_ids_visual, tab_ids_table = st.tabs([
     "Compiled visual",
     "Query engine visual",
+    "Issues",
     "Query engine table",
     "Compiled table",
     "IDS visual",
@@ -891,7 +925,7 @@ tab_compiled_visual, tab_qe_visual, tab_qe_table, tab_compiled_table, tab_ids_vi
 
 with tab_compiled_visual:
     st.subheader("Compiled visual")
-    st.caption("Normalized account-state interpretation grouped into readable sections.")
+    st.caption(f"Normalized account-state interpretation grouped into readable sections. Showing up to {preview_rows} rows per card preview.")
     if compiled_error:
         st.warning(f"Compiled account-state unavailable: {compiled_error}")
     elif compiled_df.empty:
@@ -911,18 +945,15 @@ with tab_compiled_visual:
             cols = st.columns(cols_per_row)
             for col, section_name in zip(cols, section_order[row_start: row_start + cols_per_row]):
                 with col:
-                    _card_open(section_name)
                     section_rows = compiled_df[compiled_df["section"] == section_name]
-                    st.markdown(f'<div class="ts-muted">{len(section_rows)} compiled rows</div>', unsafe_allow_html=True)
                     preview = compiled_preview_df(section_name, compiled_df)
-                    _render_preview_html(preview, SECTION_COLORS.get(section_name, "#79c0ff"), height=360)
-                    _card_close()
+                    _render_visual_card(section_name, f"{len(section_rows)} compiled rows", preview, height=360, max_rows=preview_rows)
 
 with tab_qe_visual:
     st.subheader("Query engine visual")
-    st.caption("Query-prep rows from compile_stat_inputs grouped by source family and destination flow.")
+    st.caption(f"Query-prep rows from compile_stat_inputs grouped by source family and destination flow. Showing up to {preview_rows} rows per card preview.")
     if qe_error:
-        st.warning(f"Query engine view unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
+        st.warning(f"Query engine view unavailable: {qe_error}")
     elif qe_df.empty:
         st.write("No query rows found.")
     else:
@@ -942,20 +973,45 @@ with tab_qe_visual:
             cols = st.columns(cols_per_row)
             for col, section_name in zip(cols, section_order[row_start: row_start + cols_per_row]):
                 with col:
-                    _card_open(section_name)
                     section_rows = qe_df[qe_df["section"] == section_name]
                     mapped_section = int(section_rows["kb_mapped"].fillna(False).astype(bool).sum()) if not section_rows.empty else 0
-                    st.markdown(f'<div class="ts-muted">{len(section_rows)} query rows · mapped {mapped_section}</div>', unsafe_allow_html=True)
                     preview = query_preview_df(section_name, qe_df)
-                    base = section_name.replace("QE ", "").replace("/Vault", "")
-                    _render_preview_html(preview, SECTION_COLORS.get(base, "#79c0ff"), height=360)
-                    _card_close()
+                    _render_visual_card(section_name, f"{len(section_rows)} query rows · mapped {mapped_section}", preview, height=360, max_rows=preview_rows)
+
+
+with tab_issues:
+    st.subheader("Issues")
+    st.caption("Suspicious or incomplete query-engine rows worth reviewing first.")
+    if qe_error:
+        st.warning(f"Query engine view unavailable: {qe_error}.")
+    elif issues_df.empty:
+        _status_banner("ok", "No suspicious QE rows were flagged by the current checks.")
+    else:
+        _metrics_row([
+            ("Issue rows", int(len(issues_df))),
+            ("Unmapped", int((~qe_df["kb_mapped"].fillna(False).astype(bool)).sum())),
+            ("Missing destination", int(qe_df["destination_id"].fillna("").astype(str).str.strip().eq("").sum())),
+            ("With notes", int(qe_df["notes"].fillna("").astype(str).str.strip().ne("").sum())),
+        ])
+        search_text = st.text_input("Search issue rows", value="", key="issues_search").strip().lower()
+        shown = issues_df.copy()
+        if search_text:
+            mask = (
+                shown["source_name"].fillna("").astype(str).str.lower().str.contains(search_text)
+                | shown["stat_name"].fillna("").astype(str).str.lower().str.contains(search_text)
+                | shown["destination"].fillna("").astype(str).str.lower().str.contains(search_text)
+                | shown["flags"].fillna("").astype(str).str.lower().str.contains(search_text)
+                | shown["notes"].fillna("").astype(str).str.lower().str.contains(search_text)
+            )
+            shown = shown[mask]
+        _render_table(shown, height=760)
+
 
 with tab_qe_table:
     st.subheader("Query engine table")
     st.caption("Full compile_stat_inputs ledger with routing and KB-mapped status.")
     if qe_error:
-        st.warning(f"Query engine view unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
+        st.warning(f"Query engine view unavailable: {qe_error}")
     elif qe_df.empty:
         st.write("No query rows found.")
     else:
@@ -1002,7 +1058,7 @@ with tab_compiled_table:
 
 with tab_ids_visual:
     st.subheader("IDS visual")
-    st.caption("Source-level view grouped by IDS section with readable section-specific headers.")
+    st.caption(f"Source-level view grouped by IDS section with readable section-specific headers. Showing up to {preview_rows} rows per card preview.")
     _metrics_row([
         ("Sections", len(SECTION_SPECS)),
         ("IDS rows", int(sum(len(sections[s.name]["rows"]) for s in SECTION_SPECS))),
