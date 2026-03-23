@@ -34,8 +34,13 @@ Freeze the exact Phase 4 migration denominator before any code migration begins 
 
 ## Current tranche-local notes
 - Phase 3 closeout remains complete in repo truth and is the prerequisite that promoted the repo into Phase 4.
+- `PH4A_CANONICAL_MIGRATION_LEDGER.md` is now merged and is the bounded working denominator artifact for PH4-A.
+- `PH4A_FAMILY_ENTRY_MATRIX.md` is now merged and freezes the practical PH4-B entry boundary against current code and test truth.
 - PH4-A is a control-and-ledger tranche first; it must freeze the migration denominator before any Phase 4 code migration or parity execution starts.
 - The denominator freeze must classify every named family or stat group into canonical scope, compatibility-only scope, legacy merge-reference residue, or explicit out-of-phase scope.
+- PH4-B remains blocked until live control-state markers reflect the denominator freeze and the current one-family-only delegation limit is visible in control truth.
+- Current code still delegates only `timing_tournament_no_perks`; all other declared families remain on explicit fallback through legacy resolution.
+- The timing-family boundary still includes a naming mismatch between the declared denominator surface `state::cards.wave_accelerator.spawn_rate_acceleration` and the current delegated runtime alias path; this must be treated as a blocker, not as PH4-B progress.
 
 ## Legacy-surface rule after Phase 4
 If `engine/stat_engine.py` and/or `engine/stat_resolution_core.py` remain after Phase 4, they remain only as:
