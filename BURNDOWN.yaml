@@ -36,15 +36,15 @@ migration_kpis:
     stat_engine_role: thin_compatibility_entrypoint_only_if_retained
     stat_resolution_core_role: non_canonical_legacy_merge_reference_only_or_deleted
   tracked_phase4_metrics:
-    frozen_family_denominator: not_started
-    frozen_stat_group_denominator: not_started
+    frozen_family_denominator: verified
+    frozen_stat_group_denominator: partial
     migrated_family_count: 0
     migrated_stat_group_count: 0
     parity_covered_family_count: 0
     parity_covered_stat_group_count: 0
     benchmarked_migrated_workload_count: 0
-    explicit_residual_bucket_count: 0
-    legacy_owned_canonical_stat_group_count: unknown_until_PH4-A
+    explicit_residual_bucket_count: 7
+    legacy_owned_canonical_stat_group_count: 8
     legacy_merge_reference_allowed: true
     legacy_canonical_owner_allowed: false
     new_logic_allowed_in_legacy_surfaces: false
@@ -55,10 +55,10 @@ migration_kpis:
     - legacy_merge_reference_residue
     - out_of_phase4_scope
     frozen_scope_category_changes_after_phase4a: 0
-    legacy_merge_reference_residue_count: 0
-    compatibility_only_surface_count: 0
-    out_of_phase4_scope_count: 0
-    canonical_scope_total_count: 0
+    legacy_merge_reference_residue_count: 3
+    compatibility_only_surface_count: 4
+    out_of_phase4_scope_count: 4
+    canonical_scope_total_count: 14
     canonical_scope_migrated_count: 0
 phase_gates:
 - phase_id: PH1
@@ -657,9 +657,9 @@ tranches:
   - id: PH4-A
     title: Canonical migration ledger and denominator freeze
     phase_id: PH4
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: in_progress
+    verification_status: partial
+    review_status: ready_for_review
     depends_on:
     - PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
     owner_surfaces:
@@ -689,10 +689,14 @@ tranches:
     - AI_EXECUTION_PLAN.md
     - ACTIVE_TRANCHE.md
     - BURNDOWN.yaml
+    - PH4A_CANONICAL_MIGRATION_LEDGER.md
+    - PH4A_FAMILY_ENTRY_MATRIX.md
     stop_conditions:
     - stop if a canonical stat group cannot name target QE owner
     - stop if a surface cannot be assigned to either canonical scope or explicit residual bucket
     - stop if denominator change is discovered after implementation begins without updating all three control files
+    - stop if PH4-B starts while only one declared family has live delegation at the compatibility entrypoint
+    - stop if the timing-family surface naming mismatch remains implicit rather than explicitly resolved or normalized
     next_action: Freeze scope denominator before any Phase 4 code migration begins.
     machine_enforced: true
     status_claim_requires:
