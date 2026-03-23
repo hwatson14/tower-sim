@@ -1,9 +1,10 @@
-version: 2
+version: 4
 program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH4
-active_phase_name: Verification and evaluator foundation
-active_tranche_id: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
+active_phase_name: Full stat-resolution migration to Query Engine
+active_tranche_id: PH4-A
+active_tranche_plan_section: "Phase 4 — Full stat-resolution migration to Query Engine / PH4-A — Canonical migration ledger and denominator freeze"
 
 status_dimensions:
   delivery:
@@ -21,51 +22,127 @@ status_dimensions:
     - ready_for_review
     - approved
 
+migration_kpis:
+  baseline_from_git_version:
+    declared_scenario_family_count: 6
+    live_delegated_family_count: 1
+    live_delegated_surface_count: 8
+    current_git_version_canonical_stat_owner: engine/stat_resolution_core.py
+    current_git_version_compatibility_entrypoint: engine/stat_engine.py
+  target_after_phase4:
+    canonical_stat_resolution_owned_by_qe: true
+    canonical_logic_allowed_in_engine_stat_engine: false
+    canonical_logic_allowed_in_engine_stat_resolution_core: false
+    stat_engine_role: thin_compatibility_entrypoint_only_if_retained
+    stat_resolution_core_role: non_canonical_legacy_merge_reference_only_or_deleted
+  tracked_phase4_metrics:
+    frozen_family_denominator: not_started
+    frozen_stat_group_denominator: not_started
+    migrated_family_count: 0
+    migrated_stat_group_count: 0
+    parity_covered_family_count: 0
+    parity_covered_stat_group_count: 0
+    benchmarked_migrated_workload_count: 0
+    explicit_residual_bucket_count: 0
+    legacy_owned_canonical_stat_group_count: unknown_until_PH4-A
+    legacy_merge_reference_allowed: true
+    legacy_canonical_owner_allowed: false
+    new_logic_allowed_in_legacy_surfaces: false
+    frozen_scope_categories:
+    - family_scoped_canonical_resolution
+    - non_family_canonical_stat_resolution
+    - compatibility_only_surface
+    - legacy_merge_reference_residue
+    - out_of_phase4_scope
+    frozen_scope_category_changes_after_phase4a: 0
+    legacy_merge_reference_residue_count: 0
+    compatibility_only_surface_count: 0
+    out_of_phase4_scope_count: 0
+    canonical_scope_total_count: 0
+    canonical_scope_migrated_count: 0
 phase_gates:
-  - phase_id: PH1
-    phase_name: Canonical planning truth and archive closure
-    exit_requires:
-      - bootstrap_tranche_closed_or_superseded
-      - one_canonical_plan_exists_and_is_current
-      - roadmap_content_absorbed
-      - major_docs_do_not_contradict_plan
-      - all_root_archive_artifacts_have_documented_disposition
-      - current_open_obligations_mapped_to_concrete_work
-      - control_files_use_same_phase_and_tranche_vocabulary
-  - phase_id: PH2
-    phase_name: Query Engine ownership completion
-    exit_requires:
-      - compiler_query_seam_not_materially_owner_ambiguous
-      - covered_family_manifest_exists_and_is_current
-      - covered_family_delegation_is_explicit_and_governed
-      - parity_status_exists_by_declared_family_and_surface
-      - benchmark_evidence_exists_for_delegated_path
-      - compatibility_entrypoint_preserved
-      - no_major_doc_implies_dual_ownership
-  - phase_id: PH3
-    phase_name: Objective-state promotion
-    exit_requires:
-      - all_three_objective_states_have_declared_query_surfaces
-      - optimizer_does_not_own_canonical_objective_formulas
-      - maturity_labels_and_known_gap_statements_are_explicit
-      - parity_or_accepted_model_evidence_exists_per_objective_state
-      - contributor_trace_expectations_are_defined_for_each_objective_surface
-  - phase_id: PH4
-    phase_name: Verification and evaluator foundation
-    exit_requires:
-      - governed_verification_registries_exist
-      - evaluator_inputs_outputs_and_assumptions_are_explicit
-      - reference_corpus_exists_for_evaluator_verification
-      - evaluator_verification_status_is_visible_by_case_family
-      - comparison_and_verification_are_less_embedded_in_run_stats
-  - phase_id: PH8
-    phase_name: Optimiser product surfaces
-    exit_requires:
-      - optimizers_consume_stable_lower_layer_surfaces
-      - objective_families_are_explicit
-      - recommendation_confidence_and_trust_logic_are_visible
-      - save_vs_spend_branching_is_governed_not_ad_hoc
-
+- phase_id: PH1
+  phase_name: Canonical planning truth and archive closure
+  exit_requires:
+  - bootstrap_tranche_closed_or_superseded
+  - one_canonical_plan_exists_and_is_current
+  - roadmap_content_absorbed_or_explicitly_rejected
+  - major_docs_do_not_contradict_canonical_plan
+  - all_root_archive_artifacts_have_documented_disposition
+  - current_open_obligations_mapped_to_concrete_work
+  - control_files_use_same_phase_and_tranche_vocabulary
+- phase_id: PH2
+  phase_name: Query Engine seam completion and bounded family delegation
+  exit_requires:
+  - compiler_query_seam_not_materially_owner_ambiguous
+  - covered_family_manifest_exists_and_is_current
+  - bounded_family_delegation_is_explicit_and_governed
+  - parity_status_exists_by_declared_family_and_surface
+  - benchmark_evidence_exists_for_delegated_path
+  - compatibility_entrypoint_preserved
+  - no_major_doc_implies_repo_wide_full_delegation
+- phase_id: PH3
+  phase_name: Objective-state promotion
+  exit_requires:
+  - all_three_objective_states_have_declared_query_surfaces
+  - optimizer_does_not_own_canonical_objective_formulas
+  - maturity_labels_and_known_gap_statements_are_explicit
+  - parity_or_accepted_model_evidence_exists_per_objective_state
+  - contributor_trace_expectations_are_defined_for_each_objective_surface
+  - phase4_dependency_debt_is_frozen_and_explicit
+- phase_id: PH4
+  phase_name: Full stat-resolution migration to Query Engine
+  exit_requires:
+  - canonical_stat_resolution_scope_is_kb_aligned
+  - canonical_stat_resolution_scope_resolves_through_qe_owned_paths
+  - engine_stat_engine_is_thin_compatibility_only_if_retained
+  - engine_stat_resolution_core_owns_no_canonical_stat_logic
+  - retained_legacy_files_are_non_canonical_merge_reference_only
+  - parity_exists_for_migrated_scope
+  - benchmark_evidence_exists_for_migrated_workloads
+  - control_docs_and_tests_no_longer_imply_dual_ownership
+- phase_id: PH5
+  phase_name: Verification, evaluator foundation, and test acceleration
+  exit_requires:
+  - governed_verification_registries_exist
+  - evaluator_inputs_outputs_and_assumptions_are_explicit
+  - reference_corpus_exists_for_evaluator_verification
+  - evaluator_verification_status_is_visible_by_case_family
+  - test_lanes_are_defined_and_ci_policy_matches_them
+- phase_id: PH6
+  phase_name: run_stats decomposition and thin orchestration
+  exit_requires:
+  - every_major_remaining_run_stats_concern_has_target_owner
+  - extracted_modules_have_clear_ownership
+  - run_stats_is_primarily_orchestration
+  - outputs_remain_stable_and_validated
+- phase_id: PH7
+  phase_name: Simulator product surfaces
+  exit_requires:
+  - simulator_interfaces_are_consistent
+  - failure_mode_classification_is_explicit
+  - simulator_surfaces_use_governed_lower_layer_truth
+  - maturity_and_trust_labels_are_explicit
+- phase_id: PH8
+  phase_name: Optimiser product surfaces
+  exit_requires:
+  - optimisers_consume_stable_lower_layer_surfaces
+  - objective_families_are_explicit
+  - recommendation_confidence_and_trust_logic_are_visible
+  - save_vs_spend_branching_is_governed
+- phase_id: PH9
+  phase_name: Advisor surfaces and external interfaces
+  exit_requires:
+  - advisor_outputs_consume_governed_lower_layers
+  - strategy_explanations_are_traceable
+  - external_interfaces_expose_stable_schema
+  - trust_labels_remain_explicit
+- phase_id: PH10
+  phase_name: Archive retirement and cleanup closure
+  exit_requires:
+  - no_active_work_depends_on_retired_root_artifacts
+  - all_retained_truths_are_represented_in_canonical_in_repo_sources
+  - repo_docs_point_to_current_truth_not_legacy_bundles
 tranches:
   - id: PH1-TRANCHE-A_CONTROL_STACK_CLOSEOUT
     title: Control-stack closeout and tranche promotion
@@ -576,55 +653,286 @@ tranches:
     blockers: []
     next_action: Completed; Phase 3 closeout is evidenced and Phase 4A is now the active executable tranche.
 
-  - id: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
-    title: Surface verification registry
-    phase_id: PH4
-    delivery_status: in_progress
-    verification_status: not_verified
-    review_status: draft
-    depends_on:
-      - PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
-    owner_surfaces:
-      - AI_EXECUTION_PLAN.md
-      - ACTIVE_TRANCHE.md
-      - BURNDOWN.yaml
-      - governed surface verification registry
-    scope_in:
-      - governed verification registry structure for query-owned surfaces
-      - verification-class declarations for surface verification
-      - registry ownership and contribution expectations
-    scope_out:
-      - evaluator implementation
-      - max-wave corpus creation
-      - query runtime code changes
-      - full-suite verification
-    required_outputs:
-      - surface_verification_registry
-      - verification_class_declarations
-      - updated_control_stack_truth
-    acceptance_criteria:
-      - governed_surface_verification_registry_exists
-      - registry_scope_and_owner_are_explicit
-      - phase4_entry_is_unambiguous_in_control_files
-      - no_major_control_file_implies_phase3_is_still_open
-    required_checks:
-      - control_file_consistency_review
-      - phase_transition_review
-    evidence_paths:
-      - AI_EXECUTION_PLAN.md
-      - ACTIVE_TRANCHE.md
-      - BURNDOWN.yaml
-    blockers: []
-    next_action: Define the governed surface verification registry for query-owned surfaces before starting later Phase 4 evaluator tranches.
 
-  - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
-    title: Evaluator contracts for resource-income query surfaces
+  - id: PH4-A
+    title: Canonical migration ledger and denominator freeze
     phase_id: PH4
     delivery_status: not_started
     verification_status: not_verified
     review_status: draft
     depends_on:
+    - PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
+    owner_surfaces:
+    - AI_EXECUTION_PLAN.md
+    - ACTIVE_TRANCHE.md
+    - BURNDOWN.yaml
+    - engine/stat_resolution_core.py
+    - engine/stat_engine.py
+    - engine/stat_query_kernel.py
+    - kb/global-rules/contracts/stat-query-scenario-families.yaml
+    - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+    - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    forbidden_surfaces:
+    - optimizer/
+    - simulator product modules
+    - evaluator implementation modules
+    required_outputs:
+    - canonical_migration_ledger
+    - denominator_freeze_note
+    - residual_bucket_statement
+    - legacy_file_rule_note
+    required_checks:
+    - migration_denominator_review
+    - owner_surface_review
+    - residual_bucket_review
+    evidence_paths:
+    - AI_EXECUTION_PLAN.md
+    - ACTIVE_TRANCHE.md
+    - BURNDOWN.yaml
+    stop_conditions:
+    - stop if a canonical stat group cannot name target QE owner
+    - stop if a surface cannot be assigned to either canonical scope or explicit residual bucket
+    - stop if denominator change is discovered after implementation begins without updating all three control files
+    next_action: Freeze scope denominator before any Phase 4 code migration begins.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH4-B
+    title: Declared family cutover to Query Engine
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+    - PH4-A
+    owner_surfaces:
+    - engine/stat_engine.py
+    - engine/stat_query_kernel.py
+    - engine/family_baseline_materializer.py
+    - engine/query_routing.py
+    - engine/query_state_mode_policy.py
+    - engine/query_perk_compiler.py
+    - compilers/stat_input_compiler.py
+    - kb/global-rules/contracts/stat-query-scenario-families.yaml
+    - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+    - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    - tests/test_resolve_stats_delegation.py
+    forbidden_surfaces:
+    - optimizer/
+    - simulator product modules
+    - new generic helper sink files
+    required_outputs:
+    - live_delegation_for_all_declared_families
+    - updated_family_routing_logic
+    - family_coverage_tests
+    - updated_migration_kpi_counts
+    required_checks:
+    - family_routing_review
+    - fallback_preservation_review
+    - targeted_regression_review
+    evidence_paths:
+    - engine/stat_engine.py
+    - tests/test_resolve_stats_delegation.py
+    - BURNDOWN.yaml
+    stop_conditions:
+    - stop if family coverage would require changing undeclared consumer semantics
+    - stop if a family cannot be routed without inventing new surface classes
+    - stop if code changes would touch files outside listed owner surfaces without control-file update
+    next_action: Cut over all already-declared scenario families to live QE routing.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH4-C
+    title: Canonical stat group migration by dependency order
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+    - PH4-B
+    owner_surfaces:
+    - engine/stat_resolution_core.py
+    - engine/stat_engine.py
+    - engine/stat_query_kernel.py
+    - engine/family_baseline_materializer.py
+    - engine/dependency_registry.py
+    - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+    - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
+    - tests/
+    forbidden_surfaces:
+    - run_stats.py broad refactor
+    - optimizer/
+    - advisors/
+    - new architecture layers
+    required_outputs:
+    - migrated_canonical_stat_groups_from_frozen_denominator
+    - explicit_residual_list_after_each_group
+    - parity_fixtures_tests_per_group
+    - updated_ownership_statements
+    required_checks:
+    - group_by_group_parity_review
+    - dependency_order_review
+    - duplicate_logic_review
+    evidence_paths:
+    - tests/
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    stop_conditions:
+    - stop if a lower-dependency group is incomplete but a higher-dependency group is about to start
+    - stop if a group cannot be migrated without changing mechanics not yet governed in KB
+    - stop if a migrated surface still needs legacy final-value truth to compute output
+    - stop if a change would migrate a surface not frozen in PH4-A denominator
+    next_action: Migrate canonical stat groups in dependency order and vacate legacy ownership.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH4-D
+    title: Parity matrix and benchmark closure for migrated scope
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+    - PH4-C
+    owner_surfaces:
+    - tests/
+    - out/
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    forbidden_surfaces:
+    - broad new code paths
+    - new families
+    - new layer creation
+    required_outputs:
+    - parity_matrix_by_family_group_surface
+    - benchmark_evidence_for_migrated_workloads
+    - explicit_pass_fail_open_status
+    - cutover_readiness_note
+    required_checks:
+    - parity_evidence_review
+    - benchmark_evidence_review
+    - cutover_decision_review
+    evidence_paths:
+    - tests/
+    - out/
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    stop_conditions:
+    - stop if parity denominator is unclear
+    - stop if benchmark workload is not tied to actually migrated path
+    - stop if any claimed pass cannot be defended with concrete evidence
+    next_action: Close proof burden for migrated scope before changing control truth.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH4-E
+    title: Control-truth cutover and legacy demotion
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+    - PH4-D
+    owner_surfaces:
+    - AI_EXECUTION_PLAN.md
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    - engine/stat_engine.py
+    - engine/stat_resolution_core.py
+    - ARCHITECTURE.md
+    - README.md
+    - tests/
+    forbidden_surfaces:
+    - simulator product modules
+    - optimiser feature work
+    - advisor work
+    - new compatibility shims unless explicitly named residuals require them
+    required_outputs:
+    - updated_canonical_ownership_wording
+    - narrowed_compatibility_path
+    - legacy_demotion_or_quarantine_statement
+    - residual_ledger
+    required_checks:
+    - canonical_owner_wording_review
+    - compatibility_scope_review
+    - residual_boundary_review
+    evidence_paths:
+    - AI_EXECUTION_PLAN.md
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    - ARCHITECTURE.md
+    - README.md
+    stop_conditions:
+    - stop if cutover would hide unresolved residuals
+    - stop if docs would claim full retirement while code still depends materially on legacy final-value truth
+    - stop if a compatibility shim is added without explicit residual ownership note
+    next_action: Change canonical control truth only after parity and benchmark evidence are explicit.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH4-F
+    title: Post-cutover hardening and closeout
+    phase_id: PH4
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+    - PH4-E
+    owner_surfaces:
+    - AI_EXECUTION_PLAN.md
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    - README.md
+    - ARCHITECTURE.md
+    - tests/
+    forbidden_surfaces:
+    - new architectural changes
+    - product features
+    - new files unless required by control truth and explicitly justified
+    required_outputs:
+    - phase_closeout_note
+    - final_migration_kpi_values
+    - stale_reference_cleanup
+    - next_phase_promotion_note
+    required_checks:
+    - phase_gate_review
+    - stale_reference_review
+    - control_stack_consistency_review
+    evidence_paths:
+    - AI_EXECUTION_PLAN.md
+    - BURNDOWN.yaml
+    - ACTIVE_TRANCHE.md
+    - README.md
+    - ARCHITECTURE.md
+    stop_conditions:
+    - stop if phase closeout would require claiming stronger cutover than evidence supports
+    - stop if any major doc still implies dual ownership
+    - stop if KPI ledger has unresolved contradictions
+    next_action: Close Phase 4 only when ownership truth, routing truth, and evidence all agree.
+    machine_enforced: true
+    status_claim_requires:
+    - delivery_status
+    - verification_status
+    - review_status
+  - id: PH5-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+    title: Evaluator contracts for resource-income query surfaces
+    phase_id: PH5
+    delivery_status: not_started
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
       - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+      - PH4-F
     owner_surfaces:
       - AI_EXECUTION_PLAN.md
       - BURNDOWN.yaml
@@ -649,7 +957,7 @@ tranches:
       - bounded_consumer_review
     evidence_paths: []
     blockers: []
-    next_action: Land after Phase 4B starts and the Phase 3 resource-income surfaces are stable.
+    next_action: Land after Phase 5 verification-contract work starts and the Phase 4 ownership migration is closed.
 
   - id: PH8-TRANCHE-C1_RESOURCE_FAMILY_OPTIMIZER_EXPANSION
     title: Resource-family optimizer expansion on governed income surfaces
@@ -659,7 +967,7 @@ tranches:
     review_status: draft
     depends_on:
       - PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
-      - PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
+      - PH5-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
     owner_surfaces:
       - AI_EXECUTION_PLAN.md
       - BURNDOWN.yaml
@@ -894,8 +1202,8 @@ notes:
       outcome: completed
       summary:
         - The bounded Phase 3 verification set is evidenced and the Phase 3 exit decision remains complete.
-        - Promotion to Phase 4 is now controlled through the active-tranche handoff to PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY.
-      promoted_next_tranche: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
+        - Promotion to Phase 4 is now controlled through the active-tranche handoff to PH4-A.
+      promoted_next_tranche: PH4-A
 
 
   phase_closeout:
