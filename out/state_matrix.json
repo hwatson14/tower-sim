@@ -39,9 +39,9 @@
         "Current IDS preset with active loadout applied."
       ]
     },
-    "input_count": 584,
-    "mapped_input_count": 492,
-    "resolved_stat_count": 235,
+    "input_count": 585,
+    "mapped_input_count": 493,
+    "resolved_stat_count": 236,
     "partially_resolved_stat_count": 0
   },
   "max_progression": {
@@ -57,9 +57,9 @@
         "Perks can be materialized in this state when supplied via input/perks.json or --perks."
       ]
     },
-    "input_count": 584,
-    "mapped_input_count": 492,
-    "resolved_stat_count": 235,
+    "input_count": 585,
+    "mapped_input_count": 493,
+    "resolved_stat_count": 236,
     "partially_resolved_stat_count": 0
   }
 }

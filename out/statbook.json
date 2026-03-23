@@ -21306,6 +21306,73 @@
       },
       "display_value": "true"
     },
+    "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct": {
+      "stat_name": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+      "final_value": 3.8,
+      "value_type": "unknown",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Single mapped contributor; direct value preserved.",
+      "contributors": [
+        {
+          "stat_name": "Land Mine Stun",
+          "source_family": "card",
+          "source_name": "Land Mine Stun",
+          "value": 3.8,
+          "value_type": "resolved_value",
+          "stage": "loadout_resolved",
+          "active": true,
+          "preset_name": "Farming",
+          "provenance": "IDS::Cards",
+          "notes": "kb_card_name_fallback_routed",
+          "contributor_id": null,
+          "destination_object_type": "runtime_mechanic_param",
+          "destination_id": "cards.land_mine_stun.miss_attack_chance_pct",
+          "resolver_id": "standard_scalar_param",
+          "kb_mapped": true,
+          "display_value": "3.8"
+        }
+      ],
+      "schema": {
+        "unit": "unknown",
+        "resolver": "standard_scalar_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_numeric",
+          "percentage_points",
+          "multiplier_display",
+          "multiplier_factor"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "3.8"
+    },
     "runtime_mechanic_param::uw.smart_missiles.extra_missiles": {
       "stat_name": "runtime_mechanic_param::uw.smart_missiles.extra_missiles",
       "final_value": 4.0,
@@ -29246,6 +29313,3950 @@
         "rationale": ""
       },
       "display_value": "x33.15"
+    },
+    "derived::ehp.health_lab_factor": {
+      "stat_name": "derived::ehp.health_lab_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH lab factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_card_factor": {
+      "stat_name": "derived::ehp.health_card_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH card factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_wse_factor": {
+      "stat_name": "derived::ehp.health_wse_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH workshop enhancement factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_perk_factor": {
+      "stat_name": "derived::ehp.health_perk_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH perk factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_cto_factor": {
+      "stat_name": "derived::ehp.health_cto_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH CTO factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_rto_factor": {
+      "stat_name": "derived::ehp.health_rto_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH RTO factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_relic_factor": {
+      "stat_name": "derived::ehp.health_relic_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH relic factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_vault_factor": {
+      "stat_name": "derived::ehp.health_vault_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH vault factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_dwhp_factor": {
+      "stat_name": "derived::ehp.health_dwhp_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_HEALTH death-wave HP factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.health_factor": {
+      "stat_name": "derived::ehp.health_factor",
+      "final_value": 6646573883674.219,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPH_HEALTH-like health factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "6.65T"
+    },
+    "derived::ehp.armor_primary_factor": {
+      "stat_name": "derived::ehp.armor_primary_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_ARMOR primary factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.armor_assist_factor": {
+      "stat_name": "derived::ehp.armor_assist_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_ARMOR assist factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.armor_factor": {
+      "stat_name": "derived::ehp.armor_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPH_ARMOR-like armor factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::ehp.armor_factor",
+          "source_family": "published_surface",
+          "source_name": "support_surface::ehp.armor_factor",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.armor_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.wall_health_lab_term": {
+      "stat_name": "derived::ehp.wall_health_lab_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH lab term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.wall_health_substat_term": {
+      "stat_name": "derived::ehp.wall_health_substat_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH substat term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.wall_health_wse_factor": {
+      "stat_name": "derived::ehp.wall_health_wse_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH workshop enhancement factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.wall_health_module_factor": {
+      "stat_name": "derived::ehp.wall_health_module_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH module factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.wall_health_fort_factor": {
+      "stat_name": "derived::ehp.wall_health_fort_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH fortification factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.wall_factor": {
+      "stat_name": "derived::ehp.wall_factor",
+      "final_value": 114134966730453.69,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPH_WALL_HEALTH-like factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "114T"
+    },
+    "derived::ehp.max_recovery_lab_term": {
+      "stat_name": "derived::ehp.max_recovery_lab_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_MAX_RCVR lab term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.max_recovery_substat_term": {
+      "stat_name": "derived::ehp.max_recovery_substat_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_MAX_RCVR substat term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.max_recovery_wse_factor": {
+      "stat_name": "derived::ehp.max_recovery_wse_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_MAX_RCVR workshop enhancement factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.max_recovery_vault_factor": {
+      "stat_name": "derived::ehp.max_recovery_vault_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_MAX_RCVR vault factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.recovery_package_factor": {
+      "stat_name": "derived::ehp.recovery_package_factor",
+      "final_value": 16.5,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPH_MAX_RCVR-like factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "16.5"
+    },
+    "derived::ehp.wall_or_recovery_factor": {
+      "stat_name": "derived::ehp.wall_or_recovery_factor",
+      "final_value": 114134966730470.19,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP CN5 IF(OR(CI,CJ),CI+CJ,1) factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "114T"
+    },
+    "derived::ehp.wall_pkg_factor": {
+      "stat_name": "derived::ehp.wall_pkg_factor",
+      "final_value": 114134966730470.19,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP CN5 wall/max recovery additive factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "114T"
+    },
+    "derived::ehp.base_pool": {
+      "stat_name": "derived::ehp.base_pool",
+      "final_value": 7.58606489084769e+26,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "health x armor x wall/max recovery base pool [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "759S"
+    },
+    "derived::ehp.dabs_lab_factor": {
+      "stat_name": "derived::ehp.dabs_lab_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS lab factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_card_factor": {
+      "stat_name": "derived::ehp.dabs_card_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS card factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_substat_factor": {
+      "stat_name": "derived::ehp.dabs_substat_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS substat factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_wse_factor": {
+      "stat_name": "derived::ehp.dabs_wse_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS workshop enhancement factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_perk_factor": {
+      "stat_name": "derived::ehp.dabs_perk_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS perk factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_relic_factor": {
+      "stat_name": "derived::ehp.dabs_relic_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS relic factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_vault_factor": {
+      "stat_name": "derived::ehp.dabs_vault_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS vault factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.dabs_base_factor": {
+      "stat_name": "derived::ehp.dabs_base_factor",
+      "final_value": 318932406.89537853,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DABS base factor before wall invulnerability [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "319M"
+    },
+    "derived::ehp.dabs_effective_factor": {
+      "stat_name": "derived::ehp.dabs_effective_factor",
+      "final_value": 318932406.89537853,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP CG5 additive DABS factor after wall invulnerability [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "319M"
+    },
+    "derived::ehp.dabs_factor": {
+      "stat_name": "derived::ehp.dabs_factor",
+      "final_value": 318932406.89537853,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPH_DABS-like additive absolute defense term [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_defense_absolute",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_defense_absolute",
+          "value": 318932406.89537853,
+          "value_type": "damage_block",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.dabs_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "319M"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "319M"
+    },
+    "derived::ehp.def_pct_raw": {
+      "stat_name": "derived::ehp.def_pct_raw",
+      "final_value": 0.98,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT raw defense pct before direct override [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0.98"
+    },
+    "derived::ehp.def_pct_lab_term": {
+      "stat_name": "derived::ehp.def_pct_lab_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT lab term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.def_pct_card_term": {
+      "stat_name": "derived::ehp.def_pct_card_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT card term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.def_pct_substat_term": {
+      "stat_name": "derived::ehp.def_pct_substat_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT substat term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.def_pct_perk_term": {
+      "stat_name": "derived::ehp.def_pct_perk_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT perk term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.def_pct_relic_term": {
+      "stat_name": "derived::ehp.def_pct_relic_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT relic term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.def_pct_vault_term": {
+      "stat_name": "derived::ehp.def_pct_vault_term",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPH_DEF_PCT vault term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.defense_taken_factor": {
+      "stat_name": "derived::ehp.defense_taken_factor",
+      "final_value": 49.99999999999996,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "1/(1-EPH_DEF_PCT) [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_defense_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_defense_pct",
+          "value": 98.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.defense_taken_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "98%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x50"
+    },
+    "derived::ehp.chrono_field_duration_seconds": {
+      "stat_name": "derived::ehp.chrono_field_duration_seconds",
+      "final_value": 55.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Chrono Field duration [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "55"
+    },
+    "derived::ehp.chrono_field_cooldown_seconds": {
+      "stat_name": "derived::ehp.chrono_field_cooldown_seconds",
+      "final_value": 60.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Chrono Field cooldown [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "60"
+    },
+    "derived::ehp.chrono_field_damage_reduction_pct": {
+      "stat_name": "derived::ehp.chrono_field_damage_reduction_pct",
+      "final_value": 20.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Chrono Field damage reduction pct [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "20"
+    },
+    "derived::ehp.chrono_field_uptime": {
+      "stat_name": "derived::ehp.chrono_field_uptime",
+      "final_value": 0.4782608695652174,
+      "value_type": "ratio",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "chrono field uptime [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chrono_field.duration_seconds",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chrono_field.duration_seconds",
+          "value": 55.0,
+          "value_type": "seconds",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.chrono_field_uptime",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "55"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0.478"
+    },
+    "derived::ehp.chrono_field_damage_reduction_factor": {
+      "stat_name": "derived::ehp.chrono_field_damage_reduction_factor",
+      "final_value": 1.1057692307692308,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "chrono field reduction factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chrono_field.damage_reduction_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chrono_field.damage_reduction_pct",
+          "value": 20.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.chrono_field_damage_reduction_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "20%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.106"
+    },
+    "derived::ehp.wall_invuln_reduction_pct": {
+      "stat_name": "derived::ehp.wall_invuln_reduction_pct",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Wall invulnerability reduction pct [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.wall_invuln_factor": {
+      "stat_name": "derived::ehp.wall_invuln_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "wall invulnerability factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::ehp.wall_invuln_reduction_pct",
+          "source_family": "published_surface",
+          "source_name": "support_surface::ehp.wall_invuln_reduction_pct",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.wall_invuln_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.chain_thunder_reduction_pct": {
+      "stat_name": "derived::ehp.chain_thunder_reduction_pct",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Chain Thunder reduction pct [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.chain_thunder_factor": {
+      "stat_name": "derived::ehp.chain_thunder_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP CN5 chain thunder factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.chain_thunder_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.tradeoff_defense_reduction_pct": {
+      "stat_name": "derived::ehp.tradeoff_defense_reduction_pct",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "Tradeoff defense reduction pct [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::ehp.tradeoff_defense_factor": {
+      "stat_name": "derived::ehp.tradeoff_defense_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "improve trade-off defense factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::perk.tradeoff_defense_factor",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::perk.tradeoff_defense_factor",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.tradeoff_defense_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp.pre_defense_pool": {
+      "stat_name": "derived::ehp.pre_defense_pool",
+      "final_value": 8.388437138918119e+26,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP CN5 pre-defense multiplicative pool [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "839S"
+    },
+    "derived::ehp.pre_tradeoff_ehp": {
+      "stat_name": "derived::ehp.pre_tradeoff_ehp",
+      "final_value": 4.194218569459056e+28,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP CN5 pre-tradeoff eHP [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "41942S"
+    },
+    "derived::ehp_ep_helper.ce_pool_factor": {
+      "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
+      "final_value": 6646573883674.219,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP eHP CE5 pool factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "6.65T"
+    },
+    "derived::ehp_ep_helper.cf_armor_factor": {
+      "stat_name": "derived::ehp_ep_helper.cf_armor_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CF5 armor factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::ehp.armor_factor",
+          "source_family": "published_surface",
+          "source_name": "support_surface::ehp.armor_factor",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_cf_armor_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp_ep_helper.ci_wall_factor": {
+      "stat_name": "derived::ehp_ep_helper.ci_wall_factor",
+      "final_value": 114134966730453.69,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP eHP CI5 wall factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "114T"
+    },
+    "derived::ehp_ep_helper.cj_recovery_factor": {
+      "stat_name": "derived::ehp_ep_helper.cj_recovery_factor",
+      "final_value": 16.5,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP eHP CJ5 max recovery factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "16.5"
+    },
+    "derived::ehp_ep_helper.cg_dabs_factor": {
+      "stat_name": "derived::ehp_ep_helper.cg_dabs_factor",
+      "final_value": 318932406.89537853,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CG5 DABS factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_defense_absolute",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_defense_absolute",
+          "value": 318932406.89537853,
+          "value_type": "damage_block",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_cg_dabs_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "319M"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "319M"
+    },
+    "derived::ehp_ep_helper.ch_defense_taken_factor": {
+      "stat_name": "derived::ehp_ep_helper.ch_defense_taken_factor",
+      "final_value": 49.99999999999996,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CH5 defense taken factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_defense_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_defense_pct",
+          "value": 98.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_ch_defense_taken_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "98%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x50"
+    },
+    "derived::ehp_ep_helper.ck_tradeoff_factor": {
+      "stat_name": "derived::ehp_ep_helper.ck_tradeoff_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CK5 tradeoff factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::perk.tradeoff_defense_factor",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::perk.tradeoff_defense_factor",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_ck_tradeoff_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp_ep_helper.cl_cfdr_factor": {
+      "stat_name": "derived::ehp_ep_helper.cl_cfdr_factor",
+      "final_value": 1.1057692307692308,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CL5 chrono damage reduction factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chrono_field.damage_reduction_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chrono_field.damage_reduction_pct",
+          "value": 20.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_cl_cfdr_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "20%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.106"
+    },
+    "derived::ehp_ep_helper.cm_chain_thunder_factor": {
+      "stat_name": "derived::ehp_ep_helper.cm_chain_thunder_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eHP CM5 chain thunder factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp.ep_cm_chain_thunder_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::ehp": {
+      "stat_name": "derived::ehp",
+      "final_value": 4.194218569459056e+28,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "Native eHP objective line; currently equal to EP line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "41942S"
+    },
+    "derived::ehp_ep": {
+      "stat_name": "derived::ehp_ep",
+      "final_value": 4.194218569459056e+28,
+      "value_type": "scalar",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "Exact Effective Paths eHP objective line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_hp",
+          "value": 6646573883674.219,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.65T"
+        },
+        {
+          "stat_name": "canonical_stat::wall_hp",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::wall_hp",
+          "value": 114134966730453.69,
+          "value_type": "hp",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "ehp",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "114T"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "41942S"
+    },
+    "derived::edamage.base_damage_stack": {
+      "stat_name": "derived::edamage.base_damage_stack",
+      "final_value": 7296975048.392734,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP EM5 DC5-like base damage stack [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_damage",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_damage",
+          "value": 6633613680.35703,
+          "value_type": "damage",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.base_damage_stack",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.63B"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "7.3B"
+    },
+    "derived::edamage.acp_factor": {
+      "stat_name": "derived::edamage.acp_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::module.anti_cube_portal.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::module.anti_cube_portal.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.acp_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.bullet_crit_factor": {
+      "stat_name": "derived::edamage.bullet_crit_factor",
+      "final_value": 1422.115324282536,
+      "value_type": "multiplier",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_crit_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_crit_chance_pct",
+          "value": 86.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bullet_crit_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "86%"
+        },
+        {
+          "stat_name": "canonical_stat::tower_supercrit_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_supercrit_chance_pct",
+          "value": 24.9,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bullet_crit_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "24.9%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.42k"
+    },
+    "derived::edamage.bullet_per_second": {
+      "stat_name": "derived::edamage.bullet_per_second",
+      "final_value": 368.9159543385266,
+      "value_type": "rate",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP BULLET_PER_SECOND from mechanics lineage [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_attack_speed",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_attack_speed",
+          "value": 41.505253125,
+          "value_type": "attacks_per_second",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bullet_per_second",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "41.505"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "368.916"
+    },
+    "derived::edamage.multishot_factor": {
+      "stat_name": "derived::edamage.multishot_factor",
+      "final_value": 6.9399999999999995,
+      "value_type": "multiplier",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPD_MULTISHOT-aligned multishot factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_multishot_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_multishot_chance_pct",
+          "value": 49.5,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.multishot_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "49.5%"
+        },
+        {
+          "stat_name": "canonical_stat::tower_multishot_targets",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_multishot_targets",
+          "value": 13,
+          "value_type": "count",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.multishot_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "13"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x6.94"
+    },
+    "derived::edamage.bounce_factor": {
+      "stat_name": "derived::edamage.bounce_factor",
+      "final_value": 4.261601119014793,
+      "value_type": "multiplier",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPD_BOUNCESHOT-aligned bounce factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_bounce_shot_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_bounce_shot_chance_pct",
+          "value": 77.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bounce_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "77%"
+        },
+        {
+          "stat_name": "canonical_stat::tower_bounce_shot_targets",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_bounce_shot_targets",
+          "value": 14,
+          "value_type": "count",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bounce_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "14"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x4.262"
+    },
+    "derived::edamage.rapidfire_factor": {
+      "stat_name": "derived::edamage.rapidfire_factor",
+      "final_value": 3.9956967308711326,
+      "value_type": "multiplier",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPD_RAPIDFIRE-aligned rapidfire factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_rapid_fire_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_rapid_fire_chance_pct",
+          "value": 34.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.rapidfire_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "34%"
+        },
+        {
+          "stat_name": "canonical_stat::tower_rapid_fire_duration_seconds",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_rapid_fire_duration_seconds",
+          "value": 5.55,
+          "value_type": "seconds",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.rapidfire_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "5.55"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x3.996"
+    },
+    "derived::edamage.range_dpm_factor": {
+      "stat_name": "derived::edamage.range_dpm_factor",
+      "final_value": 15.275780627679996,
+      "value_type": "multiplier",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EPD_RANGEDPM-aligned range x dpm x kill-at-range factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_damage_per_meter_multiplier",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_damage_per_meter_multiplier",
+          "value": 0.13030102799999999,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.range_dpm_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x0.13"
+        },
+        {
+          "stat_name": "canonical_stat::tower_range_m",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_range_m",
+          "value": 109.55999999999999,
+          "value_type": "m",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.range_dpm_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "109.56"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x15.276"
+    },
+    "derived::edamage.spotlight_light_range_factor": {
+      "stat_name": "derived::edamage.spotlight_light_range_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP spotlight light-range factor before coverage/final bonus [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.light_range",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.light_range",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.spotlight_light_range_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.spotlight_bonus_term": {
+      "stat_name": "derived::edamage.spotlight_bonus_term",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP spotlight bonus term before coverage [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.spotlight_bonus_term",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.spotlight_coverage": {
+      "stat_name": "derived::edamage.spotlight_coverage",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP spotlight coverage from quantity and angle [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.quantity",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.quantity",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.spotlight_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        },
+        {
+          "stat_name": "mechanic_param::uw.spotlight.angle_degrees",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.angle_degrees",
+          "value": 55.1,
+          "value_type": "degrees",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.spotlight_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "55.1"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.super_tower_factor": {
+      "stat_name": "derived::edamage.super_tower_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPD_SUPERTOWER_EFFECTIVE_BONUS-aligned factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "runtime_mechanic_param::cards.super_tower.bonus_multiplier",
+          "source_family": "published_surface",
+          "source_name": "runtime_mechanic_param::cards.super_tower.bonus_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.super_tower_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.rend_factor": {
+      "stat_name": "derived::edamage.rend_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPD_MAXREND-aligned rend factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "runtime_mechanic_param::rend.lab_level",
+          "source_family": "published_surface",
+          "source_name": "runtime_mechanic_param::rend.lab_level",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.rend_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.bullet_pipeline_factor": {
+      "stat_name": "derived::edamage.bullet_pipeline_factor",
+      "final_value": 665971.488937077,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP EM5 DV5-like bullet pipeline factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_attack_speed",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_attack_speed",
+          "value": 41.505253125,
+          "value_type": "attacks_per_second",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.bullet_pipeline_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "41.505"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "666k"
+    },
+    "derived::edamage.spotlight_factor": {
+      "stat_name": "derived::edamage.spotlight_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP spotlight final bonus with quantity and angle coverage [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.spotlight_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage.uw.death_wave_dps": {
+      "stat_name": "derived::edamage.uw.death_wave_dps",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP_DW_DPS-like death wave DPS [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.death_wave.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.death_wave.damage_multiplier",
+          "value": 63.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.death_wave_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x63"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.uw.chain_lightning_dps": {
+      "stat_name": "derived::edamage.uw.chain_lightning_dps",
+      "final_value": 57319362.19221576,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP_CL_DPS-like chain lightning DPS [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "value": 1806.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.chain_lightning_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x1.81k"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "57.3M"
+    },
+    "derived::edamage.uw.smart_missiles_dps": {
+      "stat_name": "derived::edamage.uw.smart_missiles_dps",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "smart missiles DPS or proxy [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.smart_missiles.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.smart_missiles.damage_multiplier",
+          "value": 0.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.smart_missiles_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x0"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.uw.spotlight_missiles_dps": {
+      "stat_name": "derived::edamage.uw.spotlight_missiles_dps",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "spotlight missiles DPS or proxy [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight_missiles.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight_missiles.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.spotlight_missiles_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.uw.poison_swamp_dps": {
+      "stat_name": "derived::edamage.uw.poison_swamp_dps",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "poison swamp DPS or proxy [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.poison_swamp.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.poison_swamp.damage_multiplier",
+          "value": 0.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.poison_swamp_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x0"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.uw.ilm_dps": {
+      "stat_name": "derived::edamage.uw.ilm_dps",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP_ILM_DPS-like inner land mine DPS including Space Displacer contribution [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.inner_land_mines.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.inner_land_mines.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw.ilm_dps",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage.uw_total_damage": {
+      "stat_name": "derived::edamage.uw_total_damage",
+      "final_value": 57319362.19221576,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP_UW_TOTAL_DAMAGE-like aggregate UW damage [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "value": 1806.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw_total_damage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x1.81k"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "57.3M"
+    },
+    "derived::edamage.uw_crit_factor": {
+      "stat_name": "derived::edamage.uw_crit_factor",
+      "final_value": 1283.8254272087408,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPD_UWCRITICAL-aligned UW crit factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_crit_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_crit_chance_pct",
+          "value": 86.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.uw_crit_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "86%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.28k"
+    },
+    "derived::edamage.slow_factor": {
+      "stat_name": "derived::edamage.slow_factor",
+      "final_value": 2.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP Chrono Field slow exposure multiplier [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chrono_field.slow_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chrono_field.slow_pct",
+          "value": 50.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.slow_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "50%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x2"
+    },
+    "derived::edamage_ep_helper.dx_spotlight_light_range_factor": {
+      "stat_name": "derived::edamage_ep_helper.dx_spotlight_light_range_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DX5 spotlight light-range factor alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.light_range",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.light_range",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.ep_dx_spotlight_light_range_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage_ep_helper.dx_spotlight_bonus_term": {
+      "stat_name": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DX5 spotlight bonus term alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.ep_dx_spotlight_bonus_term",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::edamage_ep_helper.dx_spotlight_coverage": {
+      "stat_name": "derived::edamage_ep_helper.dx_spotlight_coverage",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP eDamage DX5 spotlight coverage alias [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.spotlight.quantity",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.quantity",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.ep_dx_spotlight_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        },
+        {
+          "stat_name": "mechanic_param::uw.spotlight.angle_degrees",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.spotlight.angle_degrees",
+          "value": 55.1,
+          "value_type": "degrees",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage.ep_dx_spotlight_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "55.1"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::edamage_ep_helper.dc_base_damage_stack": {
+      "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
+      "final_value": 7296975048.392734,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DC5 base damage stack alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_damage",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_damage",
+          "value": 6633613680.35703,
+          "value_type": "damage",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.dc_base_damage_stack",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.63B"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "7.3B"
+    },
+    "derived::edamage_ep_helper.di_bullet_crit_factor": {
+      "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
+      "final_value": 1422.115324282536,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DI5 bullet crit factor alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_crit_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_crit_chance_pct",
+          "value": 86.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.di_bullet_crit_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "86%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.42k"
+    },
+    "derived::edamage_ep_helper.dj_uw_crit_factor": {
+      "stat_name": "derived::edamage_ep_helper.dj_uw_crit_factor",
+      "final_value": 1283.8254272087408,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DJ5 UW crit factor alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_crit_chance_pct",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_crit_chance_pct",
+          "value": 86.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.dj_uw_crit_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "86%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.28k"
+    },
+    "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
+      "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
+      "final_value": 665971.488937077,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage DV5 bullet pipeline factor alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_attack_speed",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_attack_speed",
+          "value": 41.505253125,
+          "value_type": "attacks_per_second",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.dv_bullet_pipeline_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "41.505"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "666k"
+    },
+    "derived::edamage_ep_helper.ei_uw_total_damage": {
+      "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
+      "final_value": 57319362.19221576,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage EI5 total UW damage alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
+          "value": 1806.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.ei_uw_total_damage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x1.81k"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "57.3M"
+    },
+    "derived::edamage_ep_helper.el_slow_factor": {
+      "stat_name": "derived::edamage_ep_helper.el_slow_factor",
+      "final_value": 2.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eDamage EL5 slow factor alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "mechanic_param::uw.chrono_field.slow_pct",
+          "source_family": "published_surface",
+          "source_name": "mechanic_param::uw.chrono_field.slow_pct",
+          "value": 50.0,
+          "value_type": "pct",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep_helper.el_slow_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "50%"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x2"
+    },
+    "derived::edamage": {
+      "stat_name": "derived::edamage",
+      "final_value": 1.0877621561394073e+21,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Native eDamage objective line; currently equal to EP line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_damage",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_damage",
+          "value": 6633613680.35703,
+          "value_type": "damage",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.63B"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1.09s"
+    },
+    "derived::edamage_ep": {
+      "stat_name": "derived::edamage_ep",
+      "final_value": 1.0877621561394073e+21,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Exact Effective Paths eDamage objective line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::tower_damage",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::tower_damage",
+          "value": 6633613680.35703,
+          "value_type": "damage",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "edamage_ep",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "6.63B"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1.09s"
+    },
+    "derived::eecon.base_meta_factor": {
+      "stat_name": "derived::eecon.base_meta_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "ad starter / theme / relic factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.cpk_factor": {
+      "stat_name": "derived::eecon.cpk_factor",
+      "final_value": 42.52792871250001,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPC_CPK-like coin-per-kill factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::coin_kill_multiplier",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::coin_kill_multiplier",
+          "value": 42.52792871250001,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.cpk_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x42.528"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x42.528"
+    },
+    "derived::eecon.freeup_factor": {
+      "stat_name": "derived::eecon.freeup_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "free-up factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.coin_card_factor": {
+      "stat_name": "derived::eecon.coin_card_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EPC_CARD_COINS factor [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "runtime_mechanic_param::cards.coins.multiplier",
+          "source_family": "published_surface",
+          "source_name": "runtime_mechanic_param::cards.coins.multiplier",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.coin_card_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.module_factor": {
+      "stat_name": "derived::eecon.module_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "generator module factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.cl_factor": {
+      "stat_name": "derived::eecon.cl_factor",
+      "final_value": 42.52792871250001,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon CL term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x42.528"
+    },
+    "derived::eecon.eom_factor": {
+      "stat_name": "derived::eecon.eom_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon CM term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon_ep_helper.cl_meta_stack": {
+      "stat_name": "derived::eecon_ep_helper.cl_meta_stack",
+      "final_value": 42.52792871250001,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon CL workbook grouping alias [EP helper surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x42.528"
+    },
+    "derived::eecon_ep_helper.cm_eom_factor": {
+      "stat_name": "derived::eecon_ep_helper.cm_eom_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon CM workbook grouping alias [EP helper surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.gcomp_factor": {
+      "stat_name": "derived::eecon.gcomp_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_GCOMP-like package timing factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.mvn_offset": {
+      "stat_name": "derived::eecon.mvn_offset",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_MVN-like merged cooldown offset [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon.gt_bonus_term": {
+      "stat_name": "derived::eecon.gt_bonus_term",
+      "final_value": 5.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_GTB-like GT bonus term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x5"
+    },
+    "derived::eecon.gt_duration_term": {
+      "stat_name": "derived::eecon.gt_duration_term",
+      "final_value": 15.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_GTD-like GT duration term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "15"
+    },
+    "derived::eecon.gt_cooldown_term": {
+      "stat_name": "derived::eecon.gt_cooldown_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_GTCD-like GT cooldown term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon.gt_gc_factor": {
+      "stat_name": "derived::eecon.gt_gc_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_GTGC-like GT gold-crit factor [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.bh_bonus_term": {
+      "stat_name": "derived::eecon.bh_bonus_term",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_BHCB-like BH bonus term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.bh_duration_term": {
+      "stat_name": "derived::eecon.bh_duration_term",
+      "final_value": 15.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_BHD-like BH duration term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "15"
+    },
+    "derived::eecon.bh_cooldown_term": {
+      "stat_name": "derived::eecon.bh_cooldown_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_BHCD-like BH cooldown term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon.dw_bonus_term": {
+      "stat_name": "derived::eecon.dw_bonus_term",
+      "final_value": 1.5,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPC_DWCB-like DW bonus term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1.5"
+    },
+    "derived::eecon.dw_duration_term": {
+      "stat_name": "derived::eecon.dw_duration_term",
+      "final_value": 4.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPU_DWQ*4-like DW duration term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "4"
+    },
+    "derived::eecon.dw_cooldown_term": {
+      "stat_name": "derived::eecon.dw_cooldown_term",
+      "final_value": 0.0,
+      "value_type": "scalar",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EPU_DWCD-like DW cooldown term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon.sync_factor": {
+      "stat_name": "derived::eecon.sync_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon DC term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon_ep_helper.dc_sync_factor": {
+      "stat_name": "derived::eecon_ep_helper.dc_sync_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon DC workbook grouping alias [EP helper surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.spotlight_coin_bonus_term": {
+      "stat_name": "derived::eecon.spotlight_coin_bonus_term",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP spotlight coin bonus term before coverage [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.spotlight_coin_bonus_term",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.spotlight_coin_coverage": {
+      "stat_name": "derived::eecon.spotlight_coin_coverage",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP spotlight coin coverage from quantity and angle [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::eecon.sl_quantity",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_quantity",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.spotlight_coin_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        },
+        {
+          "stat_name": "support_surface::eecon.sl_angle",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_angle",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.spotlight_coin_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon.spotlight_coin_factor": {
+      "stat_name": "derived::eecon.spotlight_coin_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eEcon DG term [EP helper support surface]",
+      "contributors": [
+        {
+          "stat_name": "runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier",
+          "source_family": "published_surface",
+          "source_name": "runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier",
+          "value": 3.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.spotlight_coin_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x3"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term": {
+      "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eEcon DG workbook bonus-term alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon_ep_helper.dg_spotlight_coin_bonus_term",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon_ep_helper.dg_spotlight_coin_coverage": {
+      "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
+      "final_value": 0.0,
+      "value_type": "ratio",
+      "source_count": 2,
+      "status": "resolved",
+      "notes": "EP eEcon DG workbook coverage alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "support_surface::eecon.sl_quantity",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_quantity",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        },
+        {
+          "stat_name": "support_surface::eecon.sl_angle",
+          "source_family": "published_surface",
+          "source_name": "support_surface::eecon.sl_angle",
+          "value": null,
+          "value_type": null,
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": false,
+          "display_value": null
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon_ep_helper.dg_spotlight_coin_factor": {
+      "stat_name": "derived::eecon_ep_helper.dg_spotlight_coin_factor",
+      "final_value": 1.0,
+      "value_type": "multiplier",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "EP eEcon DG workbook factor alias [EP helper surface]",
+      "contributors": [
+        {
+          "stat_name": "runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier",
+          "source_family": "published_surface",
+          "source_name": "runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier",
+          "value": 3.0,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon_ep_helper.dg_spotlight_coin_factor",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x3"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x1"
+    },
+    "derived::eecon.wave_factor": {
+      "stat_name": "derived::eecon.wave_factor",
+      "final_value": 8.632366359983629e-16,
+      "value_type": "multiplier",
+      "source_count": 0,
+      "status": "resolved",
+      "notes": "EP eEcon DH term [EP helper support surface]",
+      "contributors": [],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "x0"
+    },
+    "derived::eecon.base_coin_income": {
+      "stat_name": "derived::eecon.base_coin_income",
+      "final_value": 3.671166611775669e-14,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Deterministic coin-income proxy surface derived from the governed eEcon line [Phase 3 support surface]",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::coin_kill_multiplier",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::coin_kill_multiplier",
+          "value": 42.52792871250001,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon.base_coin_income",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x42.528"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon": {
+      "stat_name": "derived::eecon",
+      "final_value": 3.671166611775669e-14,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Native eEcon objective line; currently equal to EP line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::coin_kill_multiplier",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::coin_kill_multiplier",
+          "value": 42.52792871250001,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x42.528"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::eecon_ep": {
+      "stat_name": "derived::eecon_ep",
+      "final_value": 3.671166611775669e-14,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Exact Effective Paths eEcon objective line",
+      "contributors": [
+        {
+          "stat_name": "canonical_stat::coin_kill_multiplier",
+          "source_family": "published_surface",
+          "source_name": "canonical_stat::coin_kill_multiplier",
+          "value": 42.52792871250001,
+          "value_type": "multiplier",
+          "stage": "derived_surface_publication",
+          "destination_object_type": "derived",
+          "destination_id": "eecon_ep",
+          "resolver_id": "query_derived_composites",
+          "kb_mapped": true,
+          "display_value": "x42.528"
+        }
+      ],
+      "schema": {
+        "resolver": "query_derived_composites"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
+    },
+    "derived::economy.income.coins": {
+      "stat_name": "derived::economy.income.coins",
+      "final_value": 3.671166611775669e-14,
+      "value_type": "per_week",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Coin-first persistent income proxy surface derived from published eEcon base.",
+      "contributors": [
+        {
+          "surface_id": "derived::economy.income.coins",
+          "source_class": "published_surface",
+          "source_name": "derived::eecon.base_coin_income",
+          "value": 3.671166611775669e-14,
+          "unit": "coins_income_proxy",
+          "trust_label": "accepted_model",
+          "source_alignment": "EP",
+          "display_value": "0"
+        }
+      ],
+      "schema": {
+        "source_alignment": "EP",
+        "externalized": false,
+        "publisher": "query_surface_publication",
+        "unit": "coins_income_proxy"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0"
     }
   },
   "diagnostics": {
@@ -36111,12 +40122,12 @@
         "explicit_caps": {}
       }
     },
-    "mapped_input_count": 492,
+    "mapped_input_count": 493,
     "unmapped_input_count": 92,
     "input_count_by_family": {
       "bot": 16,
       "bot_unlock": 6,
-      "card": 19,
+      "card": 20,
       "enhancement": 21,
       "guardian": 15,
       "lab": 212,
@@ -36135,7 +40146,7 @@
     "mapped_count_by_family": {
       "bot": 16,
       "bot_unlock": 6,
-      "card": 18,
+      "card": 19,
       "enhancement": 21,
       "guardian": 15,
       "lab": 129,
@@ -36151,7 +40162,7 @@
       "vault": 64,
       "workshop": 48
     },
-    "resolved_stat_count": 235,
+    "resolved_stat_count": 236,
     "partially_resolved_stat_count": 0,
     "mapped_unresolved_stat_count": 49,
     "notes": [

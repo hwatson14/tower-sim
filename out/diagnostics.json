@@ -98,9 +98,9 @@
           "Current IDS preset with active loadout applied."
         ]
       },
-      "input_count": 584,
-      "mapped_input_count": 492,
-      "resolved_stat_count": 235,
+      "input_count": 585,
+      "mapped_input_count": 493,
+      "resolved_stat_count": 236,
       "partially_resolved_stat_count": 0
     },
     "max_progression": {
@@ -116,14 +116,14 @@
           "Perks can be materialized in this state when supplied via input/perks.json or --perks."
         ]
       },
-      "input_count": 584,
-      "mapped_input_count": 492,
-      "resolved_stat_count": 235,
+      "input_count": 585,
+      "mapped_input_count": 493,
+      "resolved_stat_count": 236,
       "partially_resolved_stat_count": 0
     }
   },
-  "stat_input_count": 584,
-  "statbook_row_count": 382,
+  "stat_input_count": 585,
+  "statbook_row_count": 521,
   "engine_status": "publish_gate_enforced_resolution",
   "publish_status": "forbidden_for_publish",
   "formula_ledger_version": 2,
@@ -7035,14 +7035,14 @@
       "explicit_caps": {}
     }
   },
-  "mapped_stat_input_count": 492,
+  "mapped_stat_input_count": 493,
   "unmapped_stat_input_count": 92,
-  "resolved_stat_count": 235,
+  "resolved_stat_count": 236,
   "partially_resolved_stat_count": 0,
   "burn_down": {
-    "input_mapping_pct": 84.25,
-    "fully_resolved_surface_pct_of_inputs": 40.24,
-    "resolved_or_partial_surface_pct_of_inputs": 40.24,
+    "input_mapping_pct": 84.27,
+    "fully_resolved_surface_pct_of_inputs": 40.34,
+    "resolved_or_partial_surface_pct_of_inputs": 40.34,
     "family_mapping_pct": {
       "bot": {
         "mapped": 16,
@@ -7055,9 +7055,9 @@
         "pct": 100.0
       },
       "card": {
-        "mapped": 18,
-        "total": 19,
-        "pct": 94.74
+        "mapped": 19,
+        "total": 20,
+        "pct": 95.0
       },
       "enhancement": {
         "mapped": 21,
@@ -7130,8 +7130,8 @@
         "pct": 100.0
       }
     },
-    "calculator_scope_total_inputs": 313,
-    "calculator_scope_mapped_inputs": 312,
+    "calculator_scope_total_inputs": 314,
+    "calculator_scope_mapped_inputs": 313,
     "calculator_scope_mapping_pct": 99.68,
     "calculator_scope_excluded_inputs": 271,
     "calculator_scope_excluded_examples": [
@@ -7158,7 +7158,7 @@
     ],
     "calculator_scope_family_totals": {
       "bot": 16,
-      "card": 19,
+      "card": 20,
       "enhancement": 21,
       "guardian": 15,
       "lab": 16,
@@ -7181,7 +7181,7 @@
   "calculator_scope_unmapped_examples": [
     "Intro Sprint"
   ],
-  "card_slots_unlocked": 17,
+  "card_slots_unlocked": 18,
   "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
   "configured_perk_presets": {
     "ProjectedMax_AllAllowedExceptBanned": [
@@ -7248,7 +7248,7 @@
     "summary": {
       "blocked_formula_contract_count": 0,
       "active_unmapped_input_count": 92,
-      "resolved_unknown_schema_unit_count": 103,
+      "resolved_unknown_schema_unit_count": 104,
       "ambiguous_relic_semantic_hint_count": 21
     },
     "priority_gaps": [
@@ -8374,6 +8374,12 @@
         "final_value": 33.0
       },
       {
+        "destination_id": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+        "resolver": "standard_scalar_param",
+        "value_type": "unknown",
+        "final_value": 3.8
+      },
+      {
         "destination_id": "runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
         "resolver": "standard_scalar_param",
         "value_type": "unknown",
@@ -8601,7 +8607,7 @@
   "kb_gap_register": {
     "summary": {
       "Calculator wiring / implementation gap": 1,
-      "Intentional non-goal / runtime-only surface": 177,
+      "Intentional non-goal / runtime-only surface": 178,
       "KB contract ambiguous": 1,
       "KB missing executable contract": 16,
       "KB missing fact": 1
@@ -11319,6 +11325,20 @@
         "verification_source": "package KB only"
       },
       {
+        "gap_id": "unknown_unit::runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+        "files": [
+          "engine/stat_engine.py",
+          "run_stats.py"
+        ],
+        "evidence": "Resolved publishable row still has schema.unit=unknown for runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+        "why_it_matters": "The surface publishes, but its schema is not convergence-grade clean.",
+        "what_would_close_it": "Assign a precise schema unit or explicitly classify the surface as runtime-only/administrative.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
         "gap_id": "unknown_unit::runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
         "bucket": "Intentional non-goal / runtime-only surface",
         "surface": "runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration",
@@ -11630,7 +11650,7 @@
   },
   "blocked_formula_contract_count": 0,
   "active_unmapped_input_count": 92,
-  "resolved_unknown_schema_unit_count": 103,
+  "resolved_unknown_schema_unit_count": 104,
   "ambiguous_relic_semantic_hint_count": 21,
   "perk_support": {
     "progression_state": "dynamic_current_or_projected_max_by_state_mode",
@@ -11647,8 +11667,8 @@
     "state_mode": "max_progression"
   },
   "card_preset_sizes": {
-    "Farming": 17,
-    "Tourney": 17,
+    "Farming": 18,
+    "Tourney": 18,
     "Milestone": 0,
     "Preset 4": 0,
     "Preset 5": 0
@@ -11657,7 +11677,7 @@
   "mapped_count_by_family": {
     "bot": 16,
     "bot_unlock": 6,
-    "card": 18,
+    "card": 19,
     "enhancement": 21,
     "guardian": 15,
     "lab": 129,
@@ -11676,7 +11696,7 @@
   "total_count_by_family": {
     "bot": 16,
     "bot_unlock": 6,
-    "card": 19,
+    "card": 20,
     "enhancement": 21,
     "guardian": 15,
     "lab": 212,
@@ -11701,14 +11721,13 @@
   "ep_compare_summary": {
     "ep_compare_count": 26,
     "ep_compare_status_counts": {
-      "matched_close": 7,
+      "matched_close": 8,
       "matched_exact": 14,
-      "mismatch": 1,
       "non_comparable": 3,
       "non_numeric_compare": 1
     },
-    "ep_mismatch_count": 5,
-    "ep_true_formula_mismatch_count": 1,
+    "ep_mismatch_count": 4,
+    "ep_true_formula_mismatch_count": 0,
     "ep_formula_blocked_count": 0,
     "ep_stage_scope_mismatch_count": 0,
     "ep_non_comparable_count": 3,
@@ -11716,14 +11735,13 @@
   },
   "ep_compare_count": 26,
   "ep_compare_status_counts": {
-    "matched_close": 7,
+    "matched_close": 8,
     "matched_exact": 14,
-    "mismatch": 1,
     "non_comparable": 3,
     "non_numeric_compare": 1
   },
-  "ep_mismatch_count": 5,
-  "ep_true_formula_mismatch_count": 1,
+  "ep_mismatch_count": 4,
+  "ep_true_formula_mismatch_count": 0,
   "ep_formula_blocked_count": 0,
   "ep_stage_scope_mismatch_count": 0,
   "ep_non_comparable_count": 3,
@@ -11735,14 +11753,13 @@
       "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
       "ep_compare_count": 26,
       "ep_compare_status_counts": {
-        "matched_close": 7,
+        "matched_close": 8,
         "matched_exact": 14,
-        "mismatch": 1,
         "non_comparable": 3,
         "non_numeric_compare": 1
       },
-      "ep_mismatch_count": 5,
-      "ep_true_formula_mismatch_count": 1,
+      "ep_mismatch_count": 4,
+      "ep_true_formula_mismatch_count": 0,
       "ep_formula_blocked_count": 0,
       "ep_stage_scope_mismatch_count": 0,
       "ep_non_comparable_count": 3,
@@ -11754,14 +11771,13 @@
       "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
       "ep_compare_count": 26,
       "ep_compare_status_counts": {
-        "matched_close": 7,
+        "matched_close": 8,
         "matched_exact": 14,
-        "mismatch": 1,
         "non_comparable": 3,
         "non_numeric_compare": 1
       },
-      "ep_mismatch_count": 5,
-      "ep_true_formula_mismatch_count": 1,
+      "ep_mismatch_count": 4,
+      "ep_true_formula_mismatch_count": 0,
       "ep_formula_blocked_count": 0,
       "ep_stage_scope_mismatch_count": 0,
       "ep_non_comparable_count": 3,
@@ -12240,7 +12256,466 @@
         "notes": "kb_uw_lab_direct_routed:Enemy Level Skip Reduction"
       }
     ],
-    "resolved_stats_with_unresolved_contributors": [],
+    "resolved_stats_with_unresolved_contributors": [
+      {
+        "destination": "derived::ehp.armor_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.armor_factor",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.armor_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.armor_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.wall_invuln_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.wall_invuln_reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.wall_invuln_reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.wall_invuln_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.chain_thunder_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.chain_thunder_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.tradeoff_defense_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::perk.tradeoff_defense_factor",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::perk.tradeoff_defense_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.tradeoff_defense_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cf_armor_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.armor_factor",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.armor_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cf_armor_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.ck_tradeoff_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::perk.tradeoff_defense_factor",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::perk.tradeoff_defense_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_ck_tradeoff_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cm_chain_thunder_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.chain_thunder.reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cm_chain_thunder_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.acp_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::module.anti_cube_portal.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::module.anti_cube_portal.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.acp_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_light_range_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.light_range",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.light_range",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_light_range_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.quantity",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.super_tower_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "runtime_mechanic_param::cards.super_tower.bonus_multiplier",
+            "source_family": "published_surface",
+            "source_name": "runtime_mechanic_param::cards.super_tower.bonus_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.super_tower_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.rend_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "runtime_mechanic_param::rend.lab_level",
+            "source_family": "published_surface",
+            "source_name": "runtime_mechanic_param::rend.lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.rend_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.spotlight_missiles_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight_missiles.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight_missiles.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.spotlight_missiles_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.ilm_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.inner_land_mines.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.inner_land_mines.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.ilm_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_light_range_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.light_range",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.light_range",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_light_range_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "mechanic_param::uw.spotlight.quantity",
+            "source_family": "published_surface",
+            "source_name": "mechanic_param::uw.spotlight.quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.coin_card_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "runtime_mechanic_param::cards.coins.multiplier",
+            "source_family": "published_surface",
+            "source_name": "runtime_mechanic_param::cards.coins.multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.coin_card_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.spotlight_coin_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.spotlight_coin_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_quantity",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "support_surface::eecon.sl_angle",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_angle",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_quantity",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "support_surface::eecon.sl_angle",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_angle",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      }
+    ],
     "capability_destinations_non_boolean": [],
     "blocked_boolean_type_mismatches": [],
     "compare_layer_destination_unit_inconsistencies": [
@@ -12330,9 +12805,9 @@
     ]
   },
   "line_verification_summary": {
-    "blocked": 2,
+    "blocked": 25,
     "needs_work": 49,
-    "publishable": 239,
+    "publishable": 355,
     "trace_only": 92
   },
   "presentation": {
@@ -14897,14 +15372,13 @@
         "perk_state": "off",
         "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 7,
+          "matched_close": 8,
           "matched_exact": 14,
-          "mismatch": 1,
           "non_comparable": 3,
           "non_numeric_compare": 1
         },
-        "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 1,
+        "ep_mismatch_count": 4,
+        "ep_true_formula_mismatch_count": 0,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
         "ep_non_comparable_count": 3,
@@ -14915,14 +15389,13 @@
         "perk_state": "on",
         "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 7,
+          "matched_close": 8,
           "matched_exact": 14,
-          "mismatch": 1,
           "non_comparable": 3,
           "non_numeric_compare": 1
         },
-        "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 1,
+        "ep_mismatch_count": 4,
+        "ep_true_formula_mismatch_count": 0,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
         "ep_non_comparable_count": 3,
@@ -14933,14 +15406,13 @@
         "perk_state": "off",
         "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 8,
+          "matched_close": 9,
           "matched_exact": 13,
-          "mismatch": 1,
           "non_comparable": 3,
           "non_numeric_compare": 1
         },
-        "ep_mismatch_count": 5,
-        "ep_true_formula_mismatch_count": 1,
+        "ep_mismatch_count": 4,
+        "ep_true_formula_mismatch_count": 0,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
         "ep_non_comparable_count": 3,
@@ -14951,14 +15423,14 @@
         "perk_state": "on",
         "ep_compare_count": 26,
         "ep_compare_status_counts": {
-          "matched_close": 6,
+          "matched_close": 7,
           "matched_exact": 13,
-          "mismatch": 3,
+          "mismatch": 2,
           "non_comparable": 3,
           "non_numeric_compare": 1
         },
-        "ep_mismatch_count": 7,
-        "ep_true_formula_mismatch_count": 3,
+        "ep_mismatch_count": 6,
+        "ep_true_formula_mismatch_count": 2,
         "ep_formula_blocked_count": 0,
         "ep_stage_scope_mismatch_count": 0,
         "ep_non_comparable_count": 3,
@@ -15140,11 +15612,11 @@
         "state_key": "farming__perks_off",
         "preset": "Farming",
         "perk_state": "off",
-        "status": "mismatch",
+        "status": "matched_close",
         "package_value": 109.55999999999999,
-        "ep_value": 69.5,
-        "relative_delta_pct": 57.64028776978415,
-        "abs_relative_delta_pct": 57.64028776978415
+        "ep_value": 109.48863512309427,
+        "relative_delta_pct": 0.06518016854031072,
+        "abs_relative_delta_pct": 0.06518016854031072
       },
       "canonical_stat::tower_rapid_fire_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15232,9 +15704,8 @@
       "farming__perks_off": 26
     },
     "best_fit_status_counts": {
-      "matched_close": 7,
+      "matched_close": 8,
       "matched_exact": 14,
-      "mismatch": 1,
       "non_comparable": 3,
       "non_numeric_compare": 1
     }

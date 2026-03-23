@@ -112,6 +112,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -132,7 +133,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -168,8 +170,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -368,6 +370,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -388,7 +391,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -424,8 +428,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -624,6 +628,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -644,7 +649,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -680,8 +686,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -830,24 +836,22 @@
   "canonical_stat::tower_range_m": {
     "destination": "canonical_stat::tower_range_m",
     "status": "resolved",
-    "verification_status": "blocked",
+    "verification_status": "publishable",
     "kb_alignment_status": "misaligned",
-    "verdict": "fail",
+    "verdict": "pass",
     "final_value": 109.55999999999999,
     "unit": "m",
     "resolver": "standard_scalar_stat",
     "contributor_count": 2,
-    "issues": [
-      "ep_reference_mismatch"
-    ],
+    "issues": [],
     "level_contributors": [],
     "unresolved_contributors": [],
     "semantic_mismatches": [],
-    "ep_compare_status": "mismatch",
-    "ep_compare_delta": 40.05999999999999,
+    "ep_compare_status": "matched_close",
+    "ep_compare_delta": 0.07136487690571869,
     "ep_compare_value": 109.55999999999999,
     "ep_compare_value_type": "m",
-    "ep_reference_value": 69.5,
+    "ep_reference_value": 109.48863512309427,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -882,6 +886,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -902,7 +907,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -938,8 +944,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -1141,6 +1147,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -1161,7 +1168,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -1197,8 +1205,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -1397,6 +1405,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -1417,7 +1426,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -1453,8 +1463,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -1656,6 +1666,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -1676,7 +1687,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -1712,8 +1724,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -1970,6 +1982,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -1990,7 +2003,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -2026,8 +2040,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -2226,6 +2240,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -2246,7 +2261,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -2282,8 +2298,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -2482,6 +2498,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -2502,7 +2519,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -2538,8 +2556,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -2738,6 +2756,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -2758,7 +2777,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -2794,8 +2814,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -3192,6 +3212,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -3212,7 +3233,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -3248,8 +3270,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -3477,6 +3499,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -3497,7 +3520,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -3533,8 +3557,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -3791,6 +3815,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -3811,7 +3836,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -3847,8 +3873,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -4137,6 +4163,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -4157,7 +4184,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -4193,8 +4221,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -4541,6 +4569,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -4561,7 +4590,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -4597,8 +4627,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -7855,6 +7885,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -7875,7 +7906,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -7911,8 +7943,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -8114,6 +8146,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -8134,7 +8167,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -8170,8 +8204,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -8373,6 +8407,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -8393,7 +8428,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -8429,8 +8465,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -8632,6 +8668,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -8652,7 +8689,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -8688,8 +8726,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -8891,6 +8929,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -8911,7 +8950,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -8947,8 +8987,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -9150,6 +9190,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -9170,7 +9211,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -9206,8 +9248,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -9409,6 +9451,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -9429,7 +9472,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -9465,8 +9509,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -10110,6 +10154,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -10130,7 +10175,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -10166,8 +10212,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -10366,6 +10412,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -10386,7 +10433,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -10422,8 +10470,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -10622,6 +10670,7 @@
             "Recovery Package Chance",
             "Intro Sprint",
             "Extra Orb",
+            "Land Mine Stun",
             "Cash",
             "Free Upgrades"
           ],
@@ -10642,7 +10691,8 @@
             "Slow Aura",
             "Energy Net",
             "Land Mine Stun",
-            "Second Wind"
+            "Second Wind",
+            "Wave Accelerator"
           ]
         },
         "active_modules_by_preset": {
@@ -10678,8 +10728,8 @@
               "assist": "Galaxy Compressor"
             },
             "core": {
-              "primary": "Primordial Collapse",
-              "assist": "Dimension Core"
+              "primary": "Dimension Core",
+              "assist": "Om Chip"
             }
           }
         },
@@ -14146,6 +14196,35 @@
     "final_value": true,
     "unit": "unknown",
     "resolver": "capability_passthrough",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct": {
+    "destination": "runtime_mechanic_param::cards.land_mine_stun.miss_attack_chance_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.8,
+    "unit": "unknown",
+    "resolver": "standard_scalar_param",
     "contributor_count": 1,
     "issues": [],
     "level_contributors": [],
@@ -18452,6 +18531,4106 @@
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_lab_factor": {
+    "destination": "derived::ehp.health_lab_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_card_factor": {
+    "destination": "derived::ehp.health_card_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_wse_factor": {
+    "destination": "derived::ehp.health_wse_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_perk_factor": {
+    "destination": "derived::ehp.health_perk_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_cto_factor": {
+    "destination": "derived::ehp.health_cto_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_rto_factor": {
+    "destination": "derived::ehp.health_rto_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_relic_factor": {
+    "destination": "derived::ehp.health_relic_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_vault_factor": {
+    "destination": "derived::ehp.health_vault_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_dwhp_factor": {
+    "destination": "derived::ehp.health_dwhp_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.health_factor": {
+    "destination": "derived::ehp.health_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 6646573883674.219,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.armor_primary_factor": {
+    "destination": "derived::ehp.armor_primary_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.armor_assist_factor": {
+    "destination": "derived::ehp.armor_assist_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.armor_factor": {
+    "destination": "derived::ehp.armor_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::ehp.armor_factor"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_health_lab_term": {
+    "destination": "derived::ehp.wall_health_lab_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_health_substat_term": {
+    "destination": "derived::ehp.wall_health_substat_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_health_wse_factor": {
+    "destination": "derived::ehp.wall_health_wse_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_health_module_factor": {
+    "destination": "derived::ehp.wall_health_module_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_health_fort_factor": {
+    "destination": "derived::ehp.wall_health_fort_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_factor": {
+    "destination": "derived::ehp.wall_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 114134966730453.69,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.max_recovery_lab_term": {
+    "destination": "derived::ehp.max_recovery_lab_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.max_recovery_substat_term": {
+    "destination": "derived::ehp.max_recovery_substat_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.max_recovery_wse_factor": {
+    "destination": "derived::ehp.max_recovery_wse_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.max_recovery_vault_factor": {
+    "destination": "derived::ehp.max_recovery_vault_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.recovery_package_factor": {
+    "destination": "derived::ehp.recovery_package_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 16.5,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_or_recovery_factor": {
+    "destination": "derived::ehp.wall_or_recovery_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 114134966730470.19,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_pkg_factor": {
+    "destination": "derived::ehp.wall_pkg_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 114134966730470.19,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.base_pool": {
+    "destination": "derived::ehp.base_pool",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 7.58606489084769e+26,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_lab_factor": {
+    "destination": "derived::ehp.dabs_lab_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_card_factor": {
+    "destination": "derived::ehp.dabs_card_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_substat_factor": {
+    "destination": "derived::ehp.dabs_substat_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_wse_factor": {
+    "destination": "derived::ehp.dabs_wse_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_perk_factor": {
+    "destination": "derived::ehp.dabs_perk_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_relic_factor": {
+    "destination": "derived::ehp.dabs_relic_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_vault_factor": {
+    "destination": "derived::ehp.dabs_vault_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_base_factor": {
+    "destination": "derived::ehp.dabs_base_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 318932406.89537853,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_effective_factor": {
+    "destination": "derived::ehp.dabs_effective_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 318932406.89537853,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.dabs_factor": {
+    "destination": "derived::ehp.dabs_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 318932406.89537853,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_raw": {
+    "destination": "derived::ehp.def_pct_raw",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.98,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_lab_term": {
+    "destination": "derived::ehp.def_pct_lab_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_card_term": {
+    "destination": "derived::ehp.def_pct_card_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_substat_term": {
+    "destination": "derived::ehp.def_pct_substat_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_perk_term": {
+    "destination": "derived::ehp.def_pct_perk_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_relic_term": {
+    "destination": "derived::ehp.def_pct_relic_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.def_pct_vault_term": {
+    "destination": "derived::ehp.def_pct_vault_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.defense_taken_factor": {
+    "destination": "derived::ehp.defense_taken_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 49.99999999999996,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chrono_field_duration_seconds": {
+    "destination": "derived::ehp.chrono_field_duration_seconds",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 55.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chrono_field_cooldown_seconds": {
+    "destination": "derived::ehp.chrono_field_cooldown_seconds",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 60.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chrono_field_damage_reduction_pct": {
+    "destination": "derived::ehp.chrono_field_damage_reduction_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 20.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chrono_field_uptime": {
+    "destination": "derived::ehp.chrono_field_uptime",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.4782608695652174,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chrono_field_damage_reduction_factor": {
+    "destination": "derived::ehp.chrono_field_damage_reduction_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.1057692307692308,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_invuln_reduction_pct": {
+    "destination": "derived::ehp.wall_invuln_reduction_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.wall_invuln_factor": {
+    "destination": "derived::ehp.wall_invuln_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::ehp.wall_invuln_reduction_pct"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chain_thunder_reduction_pct": {
+    "destination": "derived::ehp.chain_thunder_reduction_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.chain_thunder_factor": {
+    "destination": "derived::ehp.chain_thunder_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.chain_thunder.reduction_pct"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.tradeoff_defense_reduction_pct": {
+    "destination": "derived::ehp.tradeoff_defense_reduction_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.tradeoff_defense_factor": {
+    "destination": "derived::ehp.tradeoff_defense_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::perk.tradeoff_defense_factor"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.pre_defense_pool": {
+    "destination": "derived::ehp.pre_defense_pool",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 8.388437138918119e+26,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp.pre_tradeoff_ehp": {
+    "destination": "derived::ehp.pre_tradeoff_ehp",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 4.194218569459056e+28,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.ce_pool_factor": {
+    "destination": "derived::ehp_ep_helper.ce_pool_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 6646573883674.219,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.cf_armor_factor": {
+    "destination": "derived::ehp_ep_helper.cf_armor_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::ehp.armor_factor"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.ci_wall_factor": {
+    "destination": "derived::ehp_ep_helper.ci_wall_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 114134966730453.69,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.cj_recovery_factor": {
+    "destination": "derived::ehp_ep_helper.cj_recovery_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 16.5,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.cg_dabs_factor": {
+    "destination": "derived::ehp_ep_helper.cg_dabs_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 318932406.89537853,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.ch_defense_taken_factor": {
+    "destination": "derived::ehp_ep_helper.ch_defense_taken_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 49.99999999999996,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.ck_tradeoff_factor": {
+    "destination": "derived::ehp_ep_helper.ck_tradeoff_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::perk.tradeoff_defense_factor"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.cl_cfdr_factor": {
+    "destination": "derived::ehp_ep_helper.cl_cfdr_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.1057692307692308,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep_helper.cm_chain_thunder_factor": {
+    "destination": "derived::ehp_ep_helper.cm_chain_thunder_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.chain_thunder.reduction_pct"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp": {
+    "destination": "derived::ehp",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 4.194218569459056e+28,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::ehp_ep": {
+    "destination": "derived::ehp_ep",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 4.194218569459056e+28,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.base_damage_stack": {
+    "destination": "derived::edamage.base_damage_stack",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 7296975048.392734,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.acp_factor": {
+    "destination": "derived::edamage.acp_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::module.anti_cube_portal.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.bullet_crit_factor": {
+    "destination": "derived::edamage.bullet_crit_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1422.115324282536,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.bullet_per_second": {
+    "destination": "derived::edamage.bullet_per_second",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 368.9159543385266,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.multishot_factor": {
+    "destination": "derived::edamage.multishot_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 6.9399999999999995,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.bounce_factor": {
+    "destination": "derived::edamage.bounce_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 4.261601119014793,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.rapidfire_factor": {
+    "destination": "derived::edamage.rapidfire_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.9956967308711326,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.range_dpm_factor": {
+    "destination": "derived::edamage.range_dpm_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 15.275780627679996,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.spotlight_light_range_factor": {
+    "destination": "derived::edamage.spotlight_light_range_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.light_range"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.spotlight_bonus_term": {
+    "destination": "derived::edamage.spotlight_bonus_term",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.spotlight_coverage": {
+    "destination": "derived::edamage.spotlight_coverage",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.quantity"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.super_tower_factor": {
+    "destination": "derived::edamage.super_tower_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "runtime_mechanic_param::cards.super_tower.bonus_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.rend_factor": {
+    "destination": "derived::edamage.rend_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "runtime_mechanic_param::rend.lab_level"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.bullet_pipeline_factor": {
+    "destination": "derived::edamage.bullet_pipeline_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 665971.488937077,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.spotlight_factor": {
+    "destination": "derived::edamage.spotlight_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.death_wave_dps": {
+    "destination": "derived::edamage.uw.death_wave_dps",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.chain_lightning_dps": {
+    "destination": "derived::edamage.uw.chain_lightning_dps",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 57319362.19221576,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.smart_missiles_dps": {
+    "destination": "derived::edamage.uw.smart_missiles_dps",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.spotlight_missiles_dps": {
+    "destination": "derived::edamage.uw.spotlight_missiles_dps",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight_missiles.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.poison_swamp_dps": {
+    "destination": "derived::edamage.uw.poison_swamp_dps",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw.ilm_dps": {
+    "destination": "derived::edamage.uw.ilm_dps",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.inner_land_mines.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw_total_damage": {
+    "destination": "derived::edamage.uw_total_damage",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 57319362.19221576,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.uw_crit_factor": {
+    "destination": "derived::edamage.uw_crit_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1283.8254272087408,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage.slow_factor": {
+    "destination": "derived::edamage.slow_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 2.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dx_spotlight_light_range_factor": {
+    "destination": "derived::edamage_ep_helper.dx_spotlight_light_range_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.light_range"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dx_spotlight_bonus_term": {
+    "destination": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.damage_multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dx_spotlight_coverage": {
+    "destination": "derived::edamage_ep_helper.dx_spotlight_coverage",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "mechanic_param::uw.spotlight.quantity"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dc_base_damage_stack": {
+    "destination": "derived::edamage_ep_helper.dc_base_damage_stack",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 7296975048.392734,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.di_bullet_crit_factor": {
+    "destination": "derived::edamage_ep_helper.di_bullet_crit_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1422.115324282536,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dj_uw_crit_factor": {
+    "destination": "derived::edamage_ep_helper.dj_uw_crit_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1283.8254272087408,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
+    "destination": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 665971.488937077,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.ei_uw_total_damage": {
+    "destination": "derived::edamage_ep_helper.ei_uw_total_damage",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 57319362.19221576,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep_helper.el_slow_factor": {
+    "destination": "derived::edamage_ep_helper.el_slow_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 2.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage": {
+    "destination": "derived::edamage",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0877621561394073e+21,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::edamage_ep": {
+    "destination": "derived::edamage_ep",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0877621561394073e+21,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.base_meta_factor": {
+    "destination": "derived::eecon.base_meta_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.cpk_factor": {
+    "destination": "derived::eecon.cpk_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 42.52792871250001,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.freeup_factor": {
+    "destination": "derived::eecon.freeup_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.coin_card_factor": {
+    "destination": "derived::eecon.coin_card_factor",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "runtime_mechanic_param::cards.coins.multiplier"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.module_factor": {
+    "destination": "derived::eecon.module_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.cl_factor": {
+    "destination": "derived::eecon.cl_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 42.52792871250001,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.eom_factor": {
+    "destination": "derived::eecon.eom_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.cl_meta_stack": {
+    "destination": "derived::eecon_ep_helper.cl_meta_stack",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 42.52792871250001,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.cm_eom_factor": {
+    "destination": "derived::eecon_ep_helper.cm_eom_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.gcomp_factor": {
+    "destination": "derived::eecon.gcomp_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.mvn_offset": {
+    "destination": "derived::eecon.mvn_offset",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.gt_bonus_term": {
+    "destination": "derived::eecon.gt_bonus_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 5.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.gt_duration_term": {
+    "destination": "derived::eecon.gt_duration_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 15.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.gt_cooldown_term": {
+    "destination": "derived::eecon.gt_cooldown_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.gt_gc_factor": {
+    "destination": "derived::eecon.gt_gc_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.bh_bonus_term": {
+    "destination": "derived::eecon.bh_bonus_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.bh_duration_term": {
+    "destination": "derived::eecon.bh_duration_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 15.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.bh_cooldown_term": {
+    "destination": "derived::eecon.bh_cooldown_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.dw_bonus_term": {
+    "destination": "derived::eecon.dw_bonus_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.5,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.dw_duration_term": {
+    "destination": "derived::eecon.dw_duration_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 4.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.dw_cooldown_term": {
+    "destination": "derived::eecon.dw_cooldown_term",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.sync_factor": {
+    "destination": "derived::eecon.sync_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.dc_sync_factor": {
+    "destination": "derived::eecon_ep_helper.dc_sync_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.spotlight_coin_bonus_term": {
+    "destination": "derived::eecon.spotlight_coin_bonus_term",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::eecon.sl_coin_bonus_lab_level"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.spotlight_coin_coverage": {
+    "destination": "derived::eecon.spotlight_coin_coverage",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::eecon.sl_quantity",
+      "support_surface::eecon.sl_angle"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.spotlight_coin_factor": {
+    "destination": "derived::eecon.spotlight_coin_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term": {
+    "destination": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::eecon.sl_coin_bonus_lab_level"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.dg_spotlight_coin_coverage": {
+    "destination": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
+    "status": "resolved",
+    "verification_status": "blocked",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "fail",
+    "final_value": 0.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 2,
+    "issues": [
+      "unresolved_contributor_present"
+    ],
+    "level_contributors": [],
+    "unresolved_contributors": [
+      "support_surface::eecon.sl_quantity",
+      "support_surface::eecon.sl_angle"
+    ],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep_helper.dg_spotlight_coin_factor": {
+    "destination": "derived::eecon_ep_helper.dg_spotlight_coin_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.wave_factor": {
+    "destination": "derived::eecon.wave_factor",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 8.632366359983629e-16,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 0,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon.base_coin_income": {
+    "destination": "derived::eecon.base_coin_income",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.671166611775669e-14,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon": {
+    "destination": "derived::eecon",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.671166611775669e-14,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::eecon_ep": {
+    "destination": "derived::eecon_ep",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.671166611775669e-14,
+    "unit": null,
+    "resolver": "query_derived_composites",
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::economy.income.coins": {
+    "destination": "derived::economy.income.coins",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.671166611775669e-14,
+    "unit": "coins_income_proxy",
+    "resolver": null,
+    "contributor_count": 1,
     "issues": [],
     "level_contributors": [],
     "unresolved_contributors": [],
