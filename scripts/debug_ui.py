@@ -62,40 +62,142 @@ def _inject_css() -> None:
     st.markdown(
         """
         <style>
-        .block-container {padding-top: 1.6rem; padding-bottom: 1.2rem;}
+        .block-container {padding-top: 1.35rem; padding-bottom: 1.0rem; max-width: 1500px;}
+        .stApp, .block-container {font-size: 16px;}
         .ts-card {
-            border: 1px solid rgba(255,255,255,0.08);
-            border-left: 6px solid var(--accent);
-            border-radius: 12px;
-            padding: 0.85rem 0.9rem 0.55rem 0.9rem;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-left: 7px solid var(--accent);
+            border-radius: 14px;
+            padding: 0.9rem 0.95rem 0.7rem 0.95rem;
             margin-bottom: 1rem;
-            background: rgba(255,255,255,0.02);
+            background: linear-gradient(180deg, var(--accent-soft), rgba(255,255,255,0.03));
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
         }
         .ts-card h4 {
-            margin: 0 0 0.2rem 0;
-            font-size: 1.02rem;
+            margin: 0;
+            font-size: 1.12rem;
+            line-height: 1.2;
+            letter-spacing: 0.01em;
+        }
+        .ts-card-head {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.55rem;
+            gap: 0.5rem;
+        }
+        .ts-badge {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 999px;
+            padding: 0.18rem 0.55rem;
+            font-size: 0.76rem;
+            color: rgba(255,255,255,0.86);
+            white-space: nowrap;
         }
         .ts-muted {
-            color: rgba(250,250,250,0.68);
-            font-size: 0.82rem;
+            color: rgba(250,250,250,0.74);
+            font-size: 0.85rem;
             margin-bottom: 0.45rem;
         }
         .ts-strip {
             display: flex;
-            gap: 0.6rem;
+            gap: 0.55rem;
             flex-wrap: wrap;
-            margin-bottom: 0.75rem;
+            margin: 0.35rem 0 0.9rem 0;
         }
         .ts-pill {
-            border: 1px solid rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.10);
             border-radius: 999px;
-            padding: 0.25rem 0.6rem;
-            font-size: 0.78rem;
-            background: rgba(255,255,255,0.03);
+            padding: 0.28rem 0.62rem;
+            font-size: 0.79rem;
+            background: rgba(255,255,255,0.04);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
         }
         .ts-small-note {
             color: rgba(250,250,250,0.62);
             font-size: 0.78rem;
+        }
+        .ts-html-table-wrap {
+            margin-top: 0.45rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            background: color-mix(in srgb, var(--accent) 20%, rgba(10,14,24,0.96));
+        }
+        table.ts-html-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.92rem;
+            line-height: 1.35;
+        }
+        .ts-html-table thead th {
+            text-align: left;
+            font-weight: 700;
+            padding: 0.55rem 0.7rem;
+            background: color-mix(in srgb, var(--accent) 30%, rgba(16,20,30,0.98));
+            border-bottom: 1px solid rgba(255,255,255,0.10);
+        }
+        .ts-html-table tbody td {
+            padding: 0.48rem 0.7rem;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            background: color-mix(in srgb, var(--accent) 16%, rgba(8,12,20,0.96));
+            vertical-align: top;
+            white-space: nowrap;
+        }
+        .ts-html-table tbody tr:nth-child(even) td {
+            background: color-mix(in srgb, var(--accent) 20%, rgba(8,12,20,0.96));
+        }
+        .ts-preview-wrap {
+            overflow: auto;
+            max-height: var(--table-height);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 10px;
+            background: rgba(0,0,0,0.10);
+        }
+        .ts-preview-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            font-size: 0.95rem;
+            line-height: 1.25;
+        }
+        .ts-preview-wrap thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            background: rgba(255,255,255,0.06);
+            color: rgba(255,255,255,0.82);
+            font-weight: 600;
+            text-align: left;
+            padding: 0.55rem 0.7rem;
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            white-space: nowrap;
+        }
+        .ts-preview-wrap tbody td {
+            padding: 0.52rem 0.7rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            vertical-align: top;
+            white-space: nowrap;
+        }
+        .ts-preview-wrap tbody tr:hover td {
+            background: rgba(255,255,255,0.025);
+        }
+        .ts-alert {
+            border: 1px solid rgba(255,123,114,0.35);
+            background: rgba(255,123,114,0.10);
+            border-left: 6px solid #ff7b72;
+            padding: 0.7rem 0.9rem;
+            border-radius: 10px;
+            margin: 0.4rem 0 1rem 0;
+        }
+        .ts-ok {
+            border: 1px solid rgba(126,231,135,0.25);
+            background: rgba(126,231,135,0.08);
+            border-left: 6px solid #7ee787;
+            padding: 0.55rem 0.8rem;
+            border-radius: 10px;
+            margin: 0.4rem 0 1rem 0;
         }
         </style>
         """,
@@ -463,10 +565,47 @@ def _top_counts(df: pd.DataFrame, group_col: str, topn: int = 6) -> pd.DataFrame
     return out
 
 
-def _card_open(section_name: str):
-    color = SECTION_COLORS.get(section_name.replace("QE ", "").replace("/Vault", ""), "#79c0ff")
+
+def _hex_to_rgba(hex_color: str, alpha: float) -> str:
+    value = hex_color.lstrip("#")
+    if len(value) != 6:
+        return f"rgba(121,192,255,{alpha})"
+    r = int(value[0:2], 16)
+    g = int(value[2:4], 16)
+    b = int(value[4:6], 16)
+    return f"rgba({r},{g},{b},{alpha})"
+
+
+def _clean_max_detail(value) -> Optional[str]:
+    text = _as_text(value)
+    if not text:
+        return None
+    return text.replace("max=", "")
+
+
+def _render_preview_html(df: pd.DataFrame, accent: str, height: int = 320):
+    if df is None or df.empty:
+        st.write("No data")
+        return
+    show = df.fillna("").astype(str).copy()
+    html = show.to_html(index=False, escape=False, border=0)
     st.markdown(
-        f'<div class="ts-card" style="--accent:{color};"><h4>{section_name}</h4>',
+        f'<div class="ts-preview-wrap" style="--table-height:{height}px; --accent:{accent};">{html}</div>',
+        unsafe_allow_html=True,
+    )
+
+
+def _status_banner(kind: str, message: str):
+    klass = "ts-ok" if kind == "ok" else "ts-alert"
+    st.markdown(f'<div class="{klass}">{message}</div>', unsafe_allow_html=True)
+
+
+def _card_open(section_name: str):
+    base_name = section_name.replace("QE ", "").replace("/Vault", "")
+    color = SECTION_COLORS.get(base_name, "#79c0ff")
+    soft = _hex_to_rgba(color, 0.10)
+    st.markdown(
+        f'<div class="ts-card" style="--accent:{color}; --accent-soft:{soft};"><div class="ts-card-head"><h4>{section_name}</h4></div>',
         unsafe_allow_html=True,
     )
 
@@ -564,46 +703,90 @@ def compiled_preview_df(section_name: str, df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return pd.DataFrame()
     if section_name == "Labs":
-        return df[["name", "value"]].rename(columns={"name": "Lab", "value": "Level"}).head(40)
+        return df[["name", "value"]].rename(columns={"name": "Lab", "value": "Level"}).head(18)
     if section_name == "Workshop":
         pivot = (
             df[df["family"] == "Workshop"][["name", "preset", "value", "detail"]]
-            .pivot_table(index=["name", "detail"], columns="preset", values="value", aggfunc="first")
+            .assign(Max=lambda x: x["detail"].map(_clean_max_detail))
+            .drop(columns=["detail"])
+            .pivot_table(index=["name", "Max"], columns="preset", values="value", aggfunc="first")
             .reset_index()
-            .rename(columns={"name": "Upgrade", "detail": "Detail"})
+            .rename(columns={"name": "Upgrade"})
         )
-        cols = [c for c in ["Upgrade", "Farming", "Tourney", "Milestone", "Preset 4", "Preset 5", "Detail"] if c in pivot.columns]
-        return pivot[cols].head(40)
+        cols = [c for c in ["Upgrade", "Farming", "Tourney", "Milestone", "Preset 4", "Preset 5", "Max"] if c in pivot.columns]
+        return pivot[cols].head(18)
     if section_name == "Enhancements":
-        return df[["name", "value", "detail"]].rename(columns={"name": "Enhancement", "value": "Value", "detail": "Detail"}).head(40)
+        clean = df.copy()
+        clean["Max"] = clean["detail"].map(_clean_max_detail)
+        return clean[["name", "value", "Max"]].rename(columns={"name": "Enhancement", "value": "Value"}).head(18)
     if section_name == "UWs":
-        return df[["family", "name", "value", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Value", "detail": "Detail"}).head(40)
+        return df[["family", "name", "value", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Level", "detail": "Current"}).head(18)
     if section_name == "Cards":
-        return df[["family", "name", "value", "preset", "detail"]].rename(columns={"family": "Type", "name": "Card", "value": "Value", "preset": "Preset", "detail": "Detail"}).head(40)
+        return df[["family", "name", "value", "preset", "detail"]].rename(columns={"family": "Type", "name": "Card", "value": "Value", "preset": "Preset", "detail": "Detail"}).head(18)
     if section_name == "Modules":
-        return df[["family", "name", "value", "preset", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Value", "preset": "Preset", "detail": "Detail"}).head(40)
+        out = df[["family", "name", "value", "preset", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Value", "preset": "Preset", "detail": "Detail"}).head(18)
+        return out
     if section_name == "Bots":
-        return df[["name", "value", "detail"]].rename(columns={"name": "Bot", "value": "Value", "detail": "Attribute"}).head(40)
+        return df[["name", "detail", "value"]].rename(columns={"name": "Bot", "detail": "Attribute", "value": "Level"}).head(18)
     if section_name in {"Relics", "Vault", "Meta"}:
-        return df[["family", "name", "value", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Value", "detail": "Detail"}).head(40)
-    return df.head(40)
+        nice = df[["family", "name", "value", "detail"]].rename(columns={"family": "Type", "name": "Name", "value": "Value", "detail": "Detail"}).copy()
+        if "Detail" in nice.columns:
+            nice["Detail"] = nice["Detail"].fillna("")
+        return nice.head(18)
+    return df.head(18)
+
 
 
 def query_preview_df(section_name: str, df: pd.DataFrame) -> pd.DataFrame:
     df = df[df["section"] == section_name].copy()
     if df.empty:
         return pd.DataFrame()
-    cols = ["source_family", "source_name", "stat_name", "value", "value_type", "destination", "kb_mapped"]
+    cols = ["source_name", "stat_name", "value", "value_type", "destination", "kb_mapped"]
     nice = df[cols].rename(columns={
-        "source_family": "Family",
         "source_name": "Source",
         "stat_name": "Stat",
         "value": "Value",
-        "value_type": "Value Type",
+        "value_type": "Type",
         "destination": "Destination",
-        "kb_mapped": "KB Mapped",
-    })
-    return nice.head(50)
+        "kb_mapped": "Mapped",
+    }).copy()
+    nice["Mapped"] = nice["Mapped"].fillna(False).map(lambda x: "Yes" if bool(x) else "No")
+    return nice.head(18)
+
+
+
+
+def _render_html_table(df: pd.DataFrame, section_name: str, max_rows: int = 40):
+    if df is None or df.empty:
+        st.write("No data")
+        return
+    display_df = df.head(max_rows).copy()
+    cols = list(display_df.columns)
+    thead = "".join(f"<th>{str(c)}</th>" for c in cols)
+    body_rows = []
+    for _, row in display_df.iterrows():
+        cells = []
+        for c in cols:
+            val = row[c]
+            sval = "" if pd.isna(val) else str(val)
+            sval = (
+                sval.replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+            )
+            cells.append(f"<td>{sval}</td>")
+        body_rows.append("<tr>" + "".join(cells) + "</tr>")
+    body = "".join(body_rows)
+    color = SECTION_COLORS.get(section_name.replace("QE ", "").replace("/Vault", ""), "#79c0ff")
+    html_block = f"""
+    <div class="ts-html-table-wrap" style="--accent:{color};">
+        <table class="ts-html-table">
+            <thead><tr>{thead}</tr></thead>
+            <tbody>{body}</tbody>
+        </table>
+    </div>
+    """
+    st.markdown(html_block, unsafe_allow_html=True)
 
 
 def _metrics_row(items: list[tuple[str, str | int | float]]):
@@ -689,6 +872,14 @@ top_cols[2].metric("QE rows", int(len(qe_df)) if not qe_df.empty else 0)
 top_cols[3].metric("QE mapped", int(qe_df["kb_mapped"].fillna(False).astype(bool).sum()) if not qe_df.empty else 0)
 top_cols[4].metric("QE mapped %", _safe_pct(int(qe_df["kb_mapped"].fillna(False).astype(bool).sum()) if not qe_df.empty else 0, int(len(qe_df))))
 
+if qe_error:
+    st.warning(f"Global note: query engine unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
+
+if compiled_error:
+    _status_banner("error", f"<strong>Compiled account state unavailable.</strong><br>{compiled_error}")
+if qe_error:
+    _status_banner("error", f"<strong>Query engine unavailable.</strong><br>{qe_error}")
+
 tab_compiled_visual, tab_qe_visual, tab_qe_table, tab_compiled_table, tab_ids_visual, tab_ids_table = st.tabs([
     "Compiled visual",
     "Query engine visual",
@@ -724,17 +915,14 @@ with tab_compiled_visual:
                     section_rows = compiled_df[compiled_df["section"] == section_name]
                     st.markdown(f'<div class="ts-muted">{len(section_rows)} compiled rows</div>', unsafe_allow_html=True)
                     preview = compiled_preview_df(section_name, compiled_df)
-                    if preview.empty:
-                        st.write("No data")
-                    else:
-                        _render_table(preview, height=320)
+                    _render_preview_html(preview, SECTION_COLORS.get(section_name, "#79c0ff"), height=360)
                     _card_close()
 
 with tab_qe_visual:
     st.subheader("Query engine visual")
     st.caption("Query-prep rows from compile_stat_inputs grouped by source family and destination flow.")
     if qe_error:
-        st.warning(f"Query engine view unavailable: {qe_error}")
+        st.warning(f"Query engine view unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
     elif qe_df.empty:
         st.write("No query rows found.")
     else:
@@ -759,17 +947,15 @@ with tab_qe_visual:
                     mapped_section = int(section_rows["kb_mapped"].fillna(False).astype(bool).sum()) if not section_rows.empty else 0
                     st.markdown(f'<div class="ts-muted">{len(section_rows)} query rows · mapped {mapped_section}</div>', unsafe_allow_html=True)
                     preview = query_preview_df(section_name, qe_df)
-                    if preview.empty:
-                        st.write("No data")
-                    else:
-                        _render_table(preview, height=320)
+                    base = section_name.replace("QE ", "").replace("/Vault", "")
+                    _render_preview_html(preview, SECTION_COLORS.get(base, "#79c0ff"), height=360)
                     _card_close()
 
 with tab_qe_table:
     st.subheader("Query engine table")
     st.caption("Full compile_stat_inputs ledger with routing and KB-mapped status.")
     if qe_error:
-        st.warning(f"Query engine view unavailable: {qe_error}")
+        st.warning(f"Query engine view unavailable: {qe_error}. If this mentions yaml, add pyyaml to root requirements.txt and redeploy.")
     elif qe_df.empty:
         st.write("No query rows found.")
     else:
@@ -832,10 +1018,7 @@ with tab_ids_visual:
                 rows = sections.get(section_name, {"rows": []})["rows"]
                 st.markdown(f'<div class="ts-muted">{len(rows)} source rows</div>', unsafe_allow_html=True)
                 preview = ids_preview_df(section_name, rows)
-                if preview.empty:
-                    st.write("No data")
-                else:
-                    _render_table(preview, height=300)
+                _render_preview_html(preview, SECTION_COLORS.get(section_name, "#79c0ff"), height=320)
                 _card_close()
 
 with tab_ids_table:
