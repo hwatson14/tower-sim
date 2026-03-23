@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH3
 active_phase_name: Objective-state promotion
-active_tranche_id: PH3-TRANCHE-F_OBJECTIVE_SURFACE_VALIDATION_AND_PARITY_CLOSEOUT
+active_tranche_id: PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
 
 status_dimensions:
   delivery:
@@ -507,12 +507,12 @@ tranches:
     next_action: Implemented as fail-closed optimizer consumption of governed derived objective surfaces; keep end-to-end validation and parity closure open.
 
 
-  - id: PH3-TRANCHE-F_OBJECTIVE_SURFACE_VALIDATION_AND_PARITY_CLOSEOUT
-    title: Objective-surface validation and parity closeout
+  - id: PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
+    title: Derived-surface closeout and Phase 3 exit certification
     phase_id: PH3
-    delivery_status: in_progress
-    verification_status: partial
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
       - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
@@ -520,47 +520,61 @@ tranches:
     owner_surfaces:
       - ACTIVE_TRANCHE.md
       - BURNDOWN.yaml
-      - run_stats.py
       - engine/query_surface_publication.py
       - engine/query_derived_composites.py
       - engine/query_currency_income.py
       - optimizer/scorer.py
-      - out/
-      - tests/
-    scope_in:
-      - reviewed integration of the Phase 3 merge-candidate publication path
-      - targeted validation of derived objective publication and optimizer consumption
-      - runtime validation and parity/accepted-model closeout planning
-    scope_out:
-      - new simulator/evaluator product work
-      - unsupported income inventions
-      - declaring Phase 3 complete without broader evidence
-    required_outputs:
-      - integrated_phase3_publication_path
-      - targeted_phase3_validation_evidence
-      - explicit_remaining_phase3_gap_note
-    acceptance_criteria:
-      - reviewed Phase 3 code path is integrated cleanly
-      - optimizer consumes governed derived objective surfaces only
-      - remaining Phase 3 closure work is explicit and bounded
-    required_checks:
-      - targeted_phase3_regression_review
-      - run_stats_smoke_review
-      - broader_pytest_regression_review
-    evidence_paths:
-      - ACTIVE_TRANCHE.md
-      - BURNDOWN.yaml
       - run_stats.py
-      - engine/query_surface_publication.py
-      - engine/query_derived_composites.py
-      - engine/query_currency_income.py
-      - optimizer/scorer.py
+      - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
+      - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
+      - kb/global-rules/contracts/stat-query-consumer-bundles.yaml
       - tests/test_phase3_contract_path.py
       - tests/test_phase3_optimizer_integration.py
       - tests/test_phase3_runtime_validation.py
-      - tests/test_optimizer.py
+    scope_in:
+      - phase3 closeout reconciliation
+      - per-surface evidence certification for derived objective surfaces
+      - bounded income publication boundary certification
+      - explicit phase exit decision
+    scope_out:
+      - full pytest
+      - unrelated legacy test cleanup
+      - simulator or evaluator work
+      - new optimizer features
+      - exhaustive helper-surface parity perfection
+    required_outputs:
+      - phase3_closeout_note
+      - phase3_evidence_matrix
+      - updated_active_tranche
+      - updated_burndown
+      - explicit_phase3_exit_decision
+    acceptance_criteria:
+      - concrete_phase3_outcome_is_stated_as_derived_surface_governance
+      - optimizer_does_not_own_canonical_objective_formulas
+      - evidence_exists_for_each_required_phase3_surface
+      - accepted_model_and_known_gap_status_are_explicit
+      - parity_language_is_bounded_to_phase3_exit_needs
+      - phase3_is_not_blocked_by_unrelated_legacy_tests
+      - phase3_exit_decision_is_plainly_recorded
+    required_checks:
+      - targeted_phase3_contract_review
+      - targeted_phase3_optimizer_review
+      - targeted_phase3_runtime_publication_review
+      - run_stats_smoke_review
+      - phase3_exit_gate_review
+    evidence_paths:
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - engine/query_surface_publication.py
+      - engine/query_derived_composites.py
+      - engine/query_currency_income.py
+      - optimizer/scorer.py
+      - run_stats.py
+      - tests/test_phase3_contract_path.py
+      - tests/test_phase3_optimizer_integration.py
+      - tests/test_phase3_runtime_validation.py
     blockers: []
-    next_action: Runtime publication validation is now in place; finish parity / accepted-model evidence and any unrelated full-suite regression cleanup before declaring Phase 3 complete.
+    next_action: Phase 3 exit is recorded complete; promote the next active tranche when Phase 4 execution is selected.
 
   - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
     title: Evaluator contracts for resource-income query surfaces
