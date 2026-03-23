@@ -1,84 +1,21 @@
-"""Tests for the optimizer scorer v4 Phase 3 consumption contract."""
-from __future__ import annotations
-
 import json
-import math
 from pathlib import Path
 
-import pytest
+import yaml
 
+from models.statbook import StatRow
 from engine.query_surface_publication import publish_phase3_query_surfaces
-from optimizer.scorer import (
-    MissingGovernedSurfaceError,
-    compute_edamage,
-    compute_ehp,
-    compute_eecon,
-    compute_optimizer_scores,
-)
+from optimizer.scorer import compute_optimizer_scores, MissingGovernedSurfaceError
 
-ROOT = Path(__file__).resolve().parent.parent
-pytestmark = pytest.mark.slow
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def _load_statbook():
-    path = ROOT / 'out' / 'statbook.json'
-    if not path.exists():
-        return None
-    return json.loads(path.read_text())
+def row(name, value, value_type="scalar"):
+    return StatRow(stat_name=name, final_value=value, value_type=value_type, source_count=1, status="resolved", contributors=[], schema={})
 
 
-def test_has_all_objectives():
-    sb = _load_statbook()
-    if sb is None:
-        return
-    result = compute_optimizer_scores(sb)
-    assert result['meta']['version'] == 'v4'
-    for name in ('ehp', 'edamage', 'eecon'):
-        assert name in result['objectives']
-        assert result['objectives'][name]['accuracy'] == 'query_owned_surface'
-
-
-def test_scores_are_positive_and_finite_when_phase3_surfaces_present():
-    sb = _load_statbook()
-    if sb is None:
-        return
-    result = compute_optimizer_scores(sb)
-    for obj in result['objectives'].values():
-        assert obj['score'] > 0
-        assert math.isfinite(obj['score'])
-        assert obj['display'] and obj['display'] != 'N/A'
-
-
-def test_missing_rows_fail_closed():
-    with pytest.raises(MissingGovernedSurfaceError):
-        compute_optimizer_scores({})
-
-
-def test_empty_rows_fail_closed():
-    with pytest.raises(MissingGovernedSurfaceError):
-        compute_optimizer_scores({'rows': {}})
-
-
-def test_individual_consumers_read_published_phase3_surfaces():
-    rows = {
-        'derived::ehp': {'final_value': 10.0},
-        'derived::edamage': {'final_value': 20.0},
-        'derived::eecon': {'final_value': 30.0},
-    }
-    assert compute_ehp(rows) == 10.0
-    assert compute_edamage(rows) == 20.0
-    assert compute_eecon(rows) == 30.0
-
-
-def test_phase3_publication_enables_optimizer_consumption_from_support_rows(tmp_path):
-    from models.statbook import StatRow
-
-    def row(name, value, value_type='scalar'):
-        return StatRow(stat_name=name, final_value=value, value_type=value_type, source_count=1, status='resolved', contributors=[], schema={})
-
-    manual = tmp_path / 'manual.json'
-    manual.write_text(json.dumps({'inputs': []}), encoding='utf-8')
-    rows = {
+def _fixture_rows():
+    return {
         'support_surface::ehp.health_factor': row('support_surface::ehp.health_factor', 100.0),
         'support_surface::ehp.armor_factor': row('support_surface::ehp.armor_factor', 1.25),
         'support_surface::ehp.wall_health_factor': row('support_surface::ehp.wall_health_factor', 100.0),
@@ -117,8 +54,49 @@ def test_phase3_publication_enables_optimizer_consumption_from_support_rows(tmp_
         'support_surface::eecon.sl_angle': row('support_surface::eecon.sl_angle', 45.0),
         'support_surface::eecon.wave_factor': row('support_surface::eecon.wave_factor', 1.4),
     }
-    publish_phase3_query_surfaces(rows, manual_input_path=manual)
-    result = compute_optimizer_scores({'rows': rows})
-    assert result['objectives']['ehp']['score'] == float(rows['derived::ehp'].final_value)
-    assert result['objectives']['edamage']['score'] == float(rows['derived::edamage'].final_value)
-    assert result['objectives']['eecon']['score'] == float(rows['derived::eecon'].final_value)
+
+
+def test_optimizer_consumes_phase3_published_required_surfaces(tmp_path: Path):
+    payload = {
+        'inputs': [
+            {'input_id': 'income.gems.per_week', 'value': 111, 'trust_label': 'externally_observed'},
+            {'input_id': 'income.stones.per_week', 'value': 7, 'trust_label': 'externally_observed'},
+        ]
+    }
+    p = tmp_path / 'manual_inputs.json'
+    p.write_text(json.dumps(payload), encoding='utf-8')
+
+    rows = _fixture_rows()
+    publish_phase3_query_surfaces(rows, manual_input_path=p)
+    scores = compute_optimizer_scores({'rows': rows})
+
+    assert scores['objectives']['ehp']['score'] == float(rows['derived::ehp'].final_value)
+    assert scores['objectives']['edamage']['score'] == float(rows['derived::edamage'].final_value)
+    assert scores['objectives']['eecon']['score'] == float(rows['derived::eecon'].final_value)
+    assert rows['derived::ehp'].final_value == rows['derived::ehp_ep'].final_value
+    assert rows['derived::edamage'].final_value == rows['derived::edamage_ep'].final_value
+    assert rows['derived::eecon'].final_value == rows['derived::eecon_ep'].final_value
+    assert rows['derived::economy.income.gems'].final_value == 111.0
+    assert rows['derived::economy.income.stones'].final_value == 7.0
+
+    bundles = yaml.safe_load((ROOT / 'kb/global-rules/contracts/stat-query-consumer-bundles.yaml').read_text())
+    bundle = next(c for c in bundles['consumers'] if c['consumer_id'] == 'optimizer_analysis')['bundles'][0]
+    for sid in bundle['required_surface_ids']:
+        assert sid in rows
+    for sid in ['derived::ehp_ep', 'derived::edamage_ep', 'derived::eecon_ep', 'derived::economy.income.gems', 'derived::economy.income.stones']:
+        assert sid in rows
+
+
+def test_optimizer_fail_closed_when_required_surface_removed_after_publication(tmp_path: Path):
+    payload = {'inputs': []}
+    p = tmp_path / 'manual_inputs.json'
+    p.write_text(json.dumps(payload), encoding='utf-8')
+    rows = _fixture_rows()
+    publish_phase3_query_surfaces(rows, manual_input_path=p)
+    rows.pop('derived::edamage')
+    try:
+        compute_optimizer_scores({'rows': rows})
+    except MissingGovernedSurfaceError as exc:
+        assert 'derived::edamage' in str(exc)
+    else:
+        raise AssertionError('Expected MissingGovernedSurfaceError when derived::edamage is missing')

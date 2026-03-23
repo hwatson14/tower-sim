@@ -8262,6 +8262,23 @@
     "kb_mapped": true
   },
   {
+    "stat_name": "Land Mine Stun",
+    "source_family": "card",
+    "source_name": "Land Mine Stun",
+    "value": 3.8,
+    "value_type": "resolved_value",
+    "stage": "loadout_resolved",
+    "active": true,
+    "preset_name": "Farming",
+    "provenance": "IDS::Cards",
+    "notes": "kb_card_name_fallback_routed",
+    "contributor_id": null,
+    "destination_object_type": "runtime_mechanic_param",
+    "destination_id": "cards.land_mine_stun.miss_attack_chance_pct",
+    "resolver_id": "standard_scalar_param",
+    "kb_mapped": true
+  },
+  {
     "stat_name": "Cash",
     "source_family": "card",
     "source_name": "Cash",

@@ -46,7 +46,11 @@ def build_state(*, loadout_filename: str = 'loadout.json', perks_filename: str =
 
 @lru_cache(maxsize=None)
 def cached_run_stats_output(*args: str) -> Path:
-    key = hashlib.sha256(repr(args).encode('utf-8')).hexdigest()[:16]
+    try:
+        repo_rev = subprocess.run(["git", "rev-parse", "HEAD"], cwd=ROOT, capture_output=True, text=True, check=True).stdout.strip()
+    except Exception:
+        repo_rev = 'no-git-head'
+    key = hashlib.sha256((repo_rev + '::' + repr(args)).encode('utf-8')).hexdigest()[:16]
     out = Path(tempfile.gettempdir()) / 'tower_sim_pytest_run_stats' / key
     diagnostics_path = out / 'diagnostics.json'
     if diagnostics_path.exists():

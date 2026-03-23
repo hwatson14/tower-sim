@@ -1715,7 +1715,7 @@
       "mastery_lab_level": 0
     }
   },
-  "card_slots_unlocked": 17,
+  "card_slots_unlocked": 18,
   "card_presets": {
     "Farming": [
       "Enemy Balance",
@@ -1733,6 +1733,7 @@
       "Recovery Package Chance",
       "Intro Sprint",
       "Extra Orb",
+      "Land Mine Stun",
       "Cash",
       "Free Upgrades"
     ],
@@ -1753,7 +1754,8 @@
       "Slow Aura",
       "Energy Net",
       "Land Mine Stun",
-      "Second Wind"
+      "Second Wind",
+      "Wave Accelerator"
     ],
     "Milestone": [],
     "Preset 4": [],
@@ -1826,8 +1828,8 @@
         "assist": "Galaxy Compressor"
       },
       "core": {
-        "primary": "Primordial Collapse",
-        "assist": "Dimension Core"
+        "primary": "Dimension Core",
+        "assist": "Om Chip"
       }
     },
     "Milestone": {
@@ -1837,15 +1839,15 @@
       },
       "armor": {
         "primary": "Sharp Fortitude",
-        "assist": null
+        "assist": "Anti-Cube Portal"
       },
       "generator": {
-        "primary": "Galaxy Compressor",
-        "assist": "Restorative Bonus"
+        "primary": "Project Funding",
+        "assist": "Pulsar Harvester"
       },
       "core": {
-        "primary": "Dimension Core",
-        "assist": "Om Chip"
+        "primary": "Primordial Collapse",
+        "assist": "Dimension Core"
       }
     },
     "Preset 4": {
@@ -5231,7 +5233,7 @@
         "Wave Skip",
         "7",
         "false",
-        "Cash",
+        "Land Mine Stun",
         "Land Mine Stun",
         "",
         "",
@@ -5241,7 +5243,7 @@
         "Intro Sprint",
         "7",
         "true",
-        "Free Upgrades",
+        "Cash",
         "Second Wind",
         "",
         "",
@@ -5251,8 +5253,8 @@
         "Land Mine Stun",
         "7",
         "false",
-        "",
-        "",
+        "Free Upgrades",
+        "Wave Accelerator",
         "",
         "",
         ""
@@ -6162,7 +6164,7 @@
         "",
         "",
         "Primary Slot",
-        "Primordial Collapse",
+        "Dimension Core",
         "",
         ""
       ],
@@ -6183,7 +6185,7 @@
         "",
         "",
         "Assist Slot",
-        "Dimension Core",
+        "Om Chip",
         "",
         ""
       ],
@@ -6220,12 +6222,12 @@
         "",
         "",
         "Primary Slot",
-        "Galaxy Compressor",
+        "Project Funding",
         "",
         "",
         "",
         "Primary Slot",
-        "Dimension Core",
+        "Primordial Collapse",
         "",
         ""
       ],
@@ -6236,17 +6238,17 @@
         "",
         "",
         "Assist Slot",
-        "",
-        "",
-        "",
-        "",
-        "Assist Slot",
-        "Restorative Bonus",
+        "Anti-Cube Portal",
         "",
         "",
         "",
         "Assist Slot",
-        "Om Chip",
+        "Pulsar Harvester",
+        "",
+        "",
+        "",
+        "Assist Slot",
+        "Dimension Core",
         "",
         ""
       ],

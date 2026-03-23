@@ -44,6 +44,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -64,7 +65,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -100,8 +102,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -424,6 +426,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -444,7 +447,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -480,8 +484,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -795,6 +799,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -815,7 +820,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -851,8 +857,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -1122,6 +1128,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -1142,7 +1149,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -1178,8 +1186,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -1436,10 +1444,10 @@
   },
   "canonical_stat::tower_range_m": {
     "label": "Range",
-    "ep_value_raw": "69.5",
-    "ep_value_parsed": 69.5,
+    "ep_value_raw": "109.48863512309427",
+    "ep_value_parsed": 109.48863512309427,
     "ep_value_type": "number",
-    "ep_value": 69.5,
+    "ep_value": 109.48863512309427,
     "formula_contract": {
       "formula_class": "generic_validated",
       "publish_policy": "allow",
@@ -1477,6 +1485,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -1497,7 +1506,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -1533,8 +1543,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -1713,17 +1723,17 @@
         "notes": "state_mode=max_progression:using_workshop_max_level:kb_workshop_summary_formula_derived"
       }
     ],
-    "delta": 40.05999999999999,
-    "relative_delta_pct": 57.64028776978415,
-    "status": "mismatch",
+    "delta": 0.07136487690571869,
+    "relative_delta_pct": 0.06518016854031072,
+    "status": "matched_close",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
     "package_value_display": "109.56",
-    "ep_value_display": "69.5",
-    "delta_display": "40.06",
-    "relative_delta_display": "57.64%"
+    "ep_value_display": "109.489",
+    "delta_display": "0.071",
+    "relative_delta_display": "0.065%"
   },
   "canonical_stat::tower_damage_per_meter_multiplier": {
     "label": "Damage / Meter",
@@ -1768,6 +1778,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -1788,7 +1799,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -1824,8 +1836,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -2107,6 +2119,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -2127,7 +2140,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -2163,8 +2177,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -2402,6 +2416,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -2422,7 +2437,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -2458,8 +2474,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -2693,6 +2709,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -2713,7 +2730,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -2749,8 +2767,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -2988,6 +3006,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -3008,7 +3027,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -3044,8 +3064,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -3263,6 +3283,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -3283,7 +3304,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -3319,8 +3341,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -3574,6 +3596,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -3594,7 +3617,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -3630,8 +3654,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -3849,6 +3873,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -3869,7 +3894,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -3905,8 +3931,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -4176,6 +4202,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -4196,7 +4223,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -4232,8 +4260,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -4531,6 +4559,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -4551,7 +4580,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -4587,8 +4617,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -4874,6 +4904,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -4894,7 +4925,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -4930,8 +4962,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -5325,6 +5357,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -5345,7 +5378,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -5381,8 +5415,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -5744,6 +5778,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -5764,7 +5799,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -5800,8 +5836,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -6099,6 +6135,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -6119,7 +6156,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -6155,8 +6193,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -6490,6 +6528,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -6510,7 +6549,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -6546,8 +6586,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -6845,6 +6885,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -6865,7 +6906,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -6901,8 +6943,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -7124,6 +7166,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -7144,7 +7187,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -7180,8 +7224,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -7415,6 +7459,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -7435,7 +7480,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -7471,8 +7517,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -7802,6 +7848,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -7822,7 +7869,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -7858,8 +7906,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -8145,6 +8193,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -8165,7 +8214,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -8201,8 +8251,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },
@@ -8488,6 +8538,7 @@
           "Recovery Package Chance",
           "Intro Sprint",
           "Extra Orb",
+          "Land Mine Stun",
           "Cash",
           "Free Upgrades"
         ],
@@ -8508,7 +8559,8 @@
           "Slow Aura",
           "Energy Net",
           "Land Mine Stun",
-          "Second Wind"
+          "Second Wind",
+          "Wave Accelerator"
         ]
       },
       "active_modules_by_preset": {
@@ -8544,8 +8596,8 @@
             "assist": "Galaxy Compressor"
           },
           "core": {
-            "primary": "Primordial Collapse",
-            "assist": "Dimension Core"
+            "primary": "Dimension Core",
+            "assist": "Om Chip"
           }
         }
       },

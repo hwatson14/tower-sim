@@ -53,6 +53,7 @@ from engine.display import (
     annotate_display_fields as _annotate_display_fields,
 )
 from engine.stat_engine import resolve_stats
+from engine.query_surface_publication import publish_phase3_query_surfaces
 from engine.verification import (
     build_compare_status_summary as _build_compare_status_summary,
     build_ep_compare as _build_ep_compare,
@@ -2120,7 +2121,9 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         perk_state_by_preset[state_key] = preset_perk_state
         perk_materialized_by_preset[state_key] = perks_enabled
         inputs = compile_stat_inputs(state, preset_name=preset_name, state_mode=state_mode, perks_enabled=perks_enabled)
-        statbook_dict = resolve_stats(inputs).to_dict()
+        statbook = resolve_stats(inputs)
+        publish_phase3_query_surfaces(statbook.rows)
+        statbook_dict = statbook.to_dict()
         for destination, row in statbook_dict.get('rows', {}).items():
             row['formula_contract'] = _formula_contract(formula_ledger, destination)
         _annotate_display_fields(statbook_dict)
@@ -2374,6 +2377,7 @@ def main() -> int:
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
     stat_inputs = compile_stat_inputs(account_state, preset_name=args.preset, state_mode=args.state_mode, perks_enabled=perks_enabled)
     statbook = resolve_stats(stat_inputs)
+    publish_phase3_query_surfaces(statbook.rows)
     statbook_dict = statbook.to_dict()
     for destination, row in statbook_dict.get('rows', {}).items():
         row['formula_contract'] = _formula_contract(formula_ledger, destination)
@@ -2384,7 +2388,9 @@ def main() -> int:
     state_matrix = {}
     for state_mode in SUPPORTED_STATE_MODES:
         matrix_inputs = compile_stat_inputs(account_state, preset_name=args.preset, state_mode=state_mode, perks_enabled=perks_enabled)
-        matrix_statbook = resolve_stats(matrix_inputs).to_dict()
+        matrix_statbook_obj = resolve_stats(matrix_inputs)
+        publish_phase3_query_surfaces(matrix_statbook_obj.rows)
+        matrix_statbook = matrix_statbook_obj.to_dict()
         state_matrix[state_mode] = {
             'support': state_mode_support(state_mode),
             'input_count': len(matrix_inputs),

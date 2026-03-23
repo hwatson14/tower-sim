@@ -3,7 +3,7 @@ program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
 active_phase_id: PH3
 active_phase_name: Objective-state promotion
-active_tranche_id: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
+active_tranche_id: PH3-TRANCHE-F_OBJECTIVE_SURFACE_VALIDATION_AND_PARITY_CLOSEOUT
 
 status_dimensions:
   delivery:
@@ -385,9 +385,9 @@ tranches:
   - id: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
     title: Objective-state contracts and maturity ledger
     phase_id: PH3
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: verified
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-E_COVERED_FAMILY_PARITY_AND_BENCHMARK_EVIDENCE
     owner_surfaces:
@@ -424,14 +424,14 @@ tranches:
       - kb/global-rules/contracts/stat-query-initial-surface-set.yaml
       - kb/global-rules/contracts/stat-query-surface-ownership-ledger.yaml
     blockers: []
-    next_action: Start Phase 3 by declaring the governed objective-state contract and maturity surfaces before any per-objective implementation tranche begins.
+    next_action: Completed; governed derived-objective contract rows and ownership declarations now exist, so implementation/validation can proceed without guessing.
 
   - id: PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
     title: Resource-income query surfaces for deterministic economy truth
     phase_id: PH3
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: partial
+    review_status: ready_for_review
     depends_on:
       - PH2-TRANCHE-B_COMPILER_QUERY_SEAM_EXTRACTION
     owner_surfaces:
@@ -468,14 +468,14 @@ tranches:
       - bounded_consumer_bundle_review
     evidence_paths: []
     blockers: []
-    next_action: Start after Phase 2 completes and Phase 3 objective-state contract work is stable.
+    next_action: Implemented with explicit deterministic/manual/unsupported boundaries; keep broader runtime validation in the active closeout tranche.
 
   - id: PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
     title: Optimizer rewire to consume resource-income and eecon query surfaces
     phase_id: PH3
-    delivery_status: not_started
-    verification_status: not_verified
-    review_status: draft
+    delivery_status: done
+    verification_status: partial
+    review_status: ready_for_review
     depends_on:
       - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
     owner_surfaces:
@@ -504,7 +504,63 @@ tranches:
       - eecon_consumer_regression_review
     evidence_paths: []
     blockers: []
-    next_action: Begin once the promoted Phase 3D economy surfaces are stable enough for bounded consumption.
+    next_action: Implemented as fail-closed optimizer consumption of governed derived objective surfaces; keep end-to-end validation and parity closure open.
+
+
+  - id: PH3-TRANCHE-F_OBJECTIVE_SURFACE_VALIDATION_AND_PARITY_CLOSEOUT
+    title: Objective-surface validation and parity closeout
+    phase_id: PH3
+    delivery_status: in_progress
+    verification_status: partial
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
+      - PH3-TRANCHE-D1_RESOURCE_INCOME_QUERY_SURFACES
+      - PH3-TRANCHE-E1_OPTIMIZER_RESOURCE_INCOME_REWIRE
+    owner_surfaces:
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - run_stats.py
+      - engine/query_surface_publication.py
+      - engine/query_derived_composites.py
+      - engine/query_currency_income.py
+      - optimizer/scorer.py
+      - out/
+      - tests/
+    scope_in:
+      - reviewed integration of the Phase 3 merge-candidate publication path
+      - targeted validation of derived objective publication and optimizer consumption
+      - runtime validation and parity/accepted-model closeout planning
+    scope_out:
+      - new simulator/evaluator product work
+      - unsupported income inventions
+      - declaring Phase 3 complete without broader evidence
+    required_outputs:
+      - integrated_phase3_publication_path
+      - targeted_phase3_validation_evidence
+      - explicit_remaining_phase3_gap_note
+    acceptance_criteria:
+      - reviewed Phase 3 code path is integrated cleanly
+      - optimizer consumes governed derived objective surfaces only
+      - remaining Phase 3 closure work is explicit and bounded
+    required_checks:
+      - targeted_phase3_regression_review
+      - run_stats_smoke_review
+      - broader_pytest_regression_review
+    evidence_paths:
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - run_stats.py
+      - engine/query_surface_publication.py
+      - engine/query_derived_composites.py
+      - engine/query_currency_income.py
+      - optimizer/scorer.py
+      - tests/test_phase3_contract_path.py
+      - tests/test_phase3_optimizer_integration.py
+      - tests/test_phase3_runtime_validation.py
+      - tests/test_optimizer.py
+    blockers: []
+    next_action: Runtime publication validation is now in place; finish parity / accepted-model evidence and any unrelated full-suite regression cleanup before declaring Phase 3 complete.
 
   - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
     title: Evaluator contracts for resource-income query surfaces

@@ -1,0 +1,72 @@
+contract_id: currency_income_surfaces_v2
+purpose: >-
+  Query-owned persistent currency-income surfaces for every KB-declared persistent
+  currency type except run-local cash. Deterministic income is published where
+  repo-backed semantics exist; all other currency incomes remain explicit
+  externalized/manual surfaces until stronger governed models exist.
+currencies:
+  - resource_id: coins
+    surface_id: derived::economy.income.coins
+    persistence: persistent
+    preferred_unit: coins_income_proxy
+    resolution_mode: query_derived_deterministic
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: gems
+    surface_id: derived::economy.income.gems
+    persistence: persistent
+    preferred_unit: gems_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.gems.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: stones
+    source_resource_id: stones
+    surface_id: derived::economy.income.stones
+    persistence: persistent
+    preferred_unit: stones_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.stones.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: medals
+    surface_id: derived::economy.income.medals
+    persistence: persistent
+    preferred_unit: medals_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.medals.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: keys
+    surface_id: derived::economy.income.keys
+    persistence: persistent
+    preferred_unit: keys_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.keys.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: shards
+    surface_id: derived::economy.income.shards
+    persistence: persistent
+    preferred_unit: shards_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.shards.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+  - resource_id: bits
+    surface_id: derived::economy.income.bits
+    persistence: persistent
+    preferred_unit: bits_per_week
+    resolution_mode: externalized_manual_input
+    manual_input_id: income.bits.per_week
+    evidence_basis: kb/economy/tables/currency-summary.csv
+rules:
+  - Currency-income surfaces in Phase 3 cover persistent currencies only; cash remains a run-local economy stat and is not promoted here.
+  - Every covered persistent currency must have exactly one declared income surface.
+  - Deterministic query-owned income surfaces must not invent unsupported currencies.
+  - Externalized/manual surfaces remain explicit and user-editable until stronger governed models exist.
+
+unsupported_resources:
+  - resource_id: cash
+    reason: run_local_not_persistent
+    fail_closed: true
+  - resource_id: cells
+    reason: no_governed_phase3_income_model
+    fail_closed: true
+  - resource_id: modules
+    reason: no_governed_phase3_income_model
+    fail_closed: true
