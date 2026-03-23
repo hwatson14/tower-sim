@@ -1,5 +1,5 @@
 {
-  "generated_utc": "2026-03-22T14:25:32.692Z",
+  "generated_utc": "2026-03-23T14:25:36.053Z",
   "spreadsheet_id": "1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c",
   "dest_prefix": "input/",
   "files": {
@@ -8,7 +8,7 @@
       "sheet": "Progress",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 102,
-      "bytes": 20822
+      "bytes": 20773
     },
     "_IDS.csv": {
       "github_path": "input/_IDS.csv",
@@ -22,7 +22,7 @@
       "sheet": "EP Export",
       "rangeA1": "AUTO(lastRow/lastCol)",
       "approx_lines": 37,
-      "bytes": 1941
+      "bytes": 1933
     }
   }
 }
