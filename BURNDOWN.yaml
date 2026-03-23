@@ -1,9 +1,9 @@
 version: 2
 program: tower-sim-execution
 canonical_plan: AI_EXECUTION_PLAN.md
-active_phase_id: PH3
-active_phase_name: Objective-state promotion
-active_tranche_id: PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
+active_phase_id: PH4
+active_phase_name: Verification and evaluator foundation
+active_tranche_id: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
 
 status_dimensions:
   delivery:
@@ -574,7 +574,48 @@ tranches:
       - tests/test_phase3_optimizer_integration.py
       - tests/test_phase3_runtime_validation.py
     blockers: []
-    next_action: Phase 3 exit is recorded complete; promote the next active tranche when Phase 4 execution is selected.
+    next_action: Completed; Phase 3 closeout is evidenced and Phase 4A is now the active executable tranche.
+
+  - id: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
+    title: Surface verification registry
+    phase_id: PH4
+    delivery_status: in_progress
+    verification_status: not_verified
+    review_status: draft
+    depends_on:
+      - PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION
+    owner_surfaces:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+      - governed surface verification registry
+    scope_in:
+      - governed verification registry structure for query-owned surfaces
+      - verification-class declarations for surface verification
+      - registry ownership and contribution expectations
+    scope_out:
+      - evaluator implementation
+      - max-wave corpus creation
+      - query runtime code changes
+      - full-suite verification
+    required_outputs:
+      - surface_verification_registry
+      - verification_class_declarations
+      - updated_control_stack_truth
+    acceptance_criteria:
+      - governed_surface_verification_registry_exists
+      - registry_scope_and_owner_are_explicit
+      - phase4_entry_is_unambiguous_in_control_files
+      - no_major_control_file_implies_phase3_is_still_open
+    required_checks:
+      - control_file_consistency_review
+      - phase_transition_review
+    evidence_paths:
+      - AI_EXECUTION_PLAN.md
+      - ACTIVE_TRANCHE.md
+      - BURNDOWN.yaml
+    blockers: []
+    next_action: Define the governed surface verification registry for query-owned surfaces before starting later Phase 4 evaluator tranches.
 
   - id: PH4-TRANCHE-B2_EVALUATOR_RESOURCE_INCOME_CONTRACTS
     title: Evaluator contracts for resource-income query surfaces
@@ -849,6 +890,12 @@ notes:
         - Delegated benchmark evidence is recorded only for the currently delegated compatibility workload and its failure is visible.
         - The Phase 2 exit-gate outcome is explicit: the current governed gate is satisfied and the phase is ready to exit.
       promoted_next_tranche: PH3-TRANCHE-A_OBJECTIVE_STATE_CONTRACTS_AND_MATURITY_LEDGER
+    PH3-TRANCHE-CLOSEOUT_DERIVED_SURFACES_EXIT_CERTIFICATION:
+      outcome: completed
+      summary:
+        - The bounded Phase 3 verification set is evidenced and the Phase 3 exit decision remains complete.
+        - Promotion to Phase 4 is now controlled through the active-tranche handoff to PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY.
+      promoted_next_tranche: PH4-TRANCHE-A_SURFACE_VERIFICATION_REGISTRY
 
 
   phase_closeout:
@@ -865,3 +912,9 @@ notes:
         - The covered-family manifest, explicit delegation boundary, parity visibility, benchmark evidence, and compatibility-entrypoint preservation are all recorded.
         - No major doc in the Phase 2 evidence/control surfaces implies dual ownership, so the current governed Phase 2 exit gate is satisfied.
       promoted_next_phase: PH3
+    PH3:
+      outcome: completed
+      summary:
+        - Bounded Phase 3 verification is evidenced in the control stack and the derived objective surfaces remain query-owned rather than optimizer-local.
+        - The Phase 3 closeout tranche is complete, so objective-state promotion no longer blocks advancement to the verification/evaluator foundation phase.
+      promoted_next_phase: PH4

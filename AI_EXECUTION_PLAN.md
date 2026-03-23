@@ -54,7 +54,7 @@ This is the core execution rule.
 ### Current active seams
 - `compilers/stat_input_compiler.py` still materially straddles Inputs-owned compilation and Query Engine-owned query preparation.
 - `run_stats.py` still contains orchestration plus embedded verification, reporting, and comparison concerns.
-- eHP, eDamage, and eEcon are still effectively optimiser-local rather than fully query-owned objective surfaces.
+- eHP, eDamage, and eEcon are now query-owned derived objective surfaces; the remaining open work is governed verification and evaluator layering on top of them.
 - verification and testing are not yet structured as first-class program workstreams.
 
 ---
@@ -132,13 +132,13 @@ Do not expand product surfaces on top of unstable ownership boundaries.
 - extracted display helpers
 - extracted verification helpers
 - governed manual-input lane concept
+- Query Engine-owned promotion of `derived::ehp`, `derived::edamage`, and `derived::eecon` with bounded Phase 3 closeout evidence
 - strong KB base and active runtime core
 
 ### Still open
 - full `stat_input_compiler.py` seam completion
 - query-kernel delegation for covered families
 - parity and benchmark closure for delegated families
-- objective-state promotion for eHP, eDamage, and eEcon
 - verification substrate for surfaces and evaluators
 - structured evaluator foundation, especially max-wave evaluation
 - test-lane redesign and speed improvements
@@ -551,10 +551,10 @@ Phase 2B, 2C, 2D, and 2E may partially overlap where safe, but Phase 2 is not co
 ## Phase 3 — Objective-state promotion
 
 ### Purpose
-Promote core composite objective surfaces into Query Engine truth instead of leaving them optimiser-local.
+Record the completed promotion of core composite objective surfaces into Query Engine truth so later phases can build verification and evaluator work on top of them.
 
 ### Why this phase exists
-eHP, eDamage, and eEcon are important enough to be first-class governed surfaces.
+eHP, eDamage, and eEcon were important enough to require promotion into first-class governed surfaces; this phase is now complete and remains here as the historical plan record for that promotion.
 
 ### Objective surfaces in scope
 - `objective_state::ehp`
