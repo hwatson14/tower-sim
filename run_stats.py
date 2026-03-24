@@ -2798,6 +2798,12 @@ def main() -> int:
     (args.out / 'audit_surface_manifest.json').write_text(
         json.dumps(_json_sanitize(_build_audit_surface_manifest(account_state, args.preset)), indent=2, default=str)
     )
+    (args.out / 'artifact_contract_manifest.json').write_text(
+        json.dumps(_json_sanitize(_build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)), indent=2, default=str)
+    )
+    (args.out / 'family_completeness_matrix.json').write_text(
+        json.dumps(_json_sanitize(_build_family_completeness_matrix(account_state, stat_inputs)), indent=2, default=str)
+    )
     optimizer_scores = compute_optimizer_scores(statbook_dict)
     (args.out / 'optimizer_scores.json').write_text(json.dumps(_json_sanitize(optimizer_scores), indent=2, default=str))
     verification_rows = [
