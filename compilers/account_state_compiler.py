@@ -5,7 +5,9 @@ from typing import Dict, List, Optional, Tuple
 
 from models.account_state import (
     AccountState,
+    BotUpgradeSnapshot,
     CardSnapshot,
+    GuardianTrackSnapshot,
     ModulePresetSelection,
     ModuleSnapshot,
     ModuleSubstat,
@@ -15,20 +17,17 @@ from models.account_state import (
     SLOT_TYPES,
     TableSnapshot,
     UltimateWeaponSnapshot,
+    UwTrackSnapshot,
     UwPlusTrackSnapshot,
+    WorkshopEnhancementSnapshot,
     WorkshopEntrySnapshot,
 )
 from models.ids_raw import IdsRaw
-
-_CARD_PRESET_ALIASES = {
-    "Farming": "Farming",
-    "Tourney": "Tourney",
-    "Milestone": "Milestone",
-    "Testing": "Milestone",
-    "Preset 3": "Milestone",
-    "Preset 4": "Preset 4",
-    "Preset 5": "Preset 5",
-}
+from models.preset_contract import (
+    load_section_layout_contract,
+    normalize_preset_name,
+    require_canonical_preset_name,
+)
 
 
 def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loadout_config: Optional[dict] = None, perk_config: Optional[dict] = None) -> AccountState:
@@ -36,32 +35,37 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
     labs = _parse_labs(raw_sections.get("Labs", []))
     workshop = _parse_workshop(raw_sections.get("WS", []))
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
-    ultimate_weapons, uw_plus_tracks = _parse_uws(raw_sections.get("UWs", []))
-    relics = _parse_key_value_float(raw_sections.get("Relics", []))
-    vault = _parse_key_value_scalar(raw_sections.get("Vault", []))
-    bots, bot_upgrades = _parse_bots(raw_sections.get("Bots", []))
+    workshop_enhancement_tracks = _parse_workshop_enhancements(raw_sections.get("WS+", []))
+    ultimate_weapons, uw_tracks, uw_plus_tracks = _parse_uws(raw_sections.get("UWs", []))
+    relics = _parse_relics(raw_sections.get("Relics", []))
+    vault = _parse_vault(raw_sections.get("Vault", []))
+    bots, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
+    guardian_tracks = _parse_guardians(raw_sections.get("Guardians", []))
     player_meta = _parse_player_meta(raw_sections.get("Player & Stuff", []))
     theme_song_coin_multiplier = _parse_theme_song_coin_multiplier(raw_sections.get("Themes & Songs", []))
     cards_inventory, card_slots_unlocked, card_presets = _parse_cards(ids_raw.section_headers.get("Cards", []), raw_sections.get("Cards", []), labs)
     module_system_state, module_presets, modules_inventory = _parse_modules(raw_sections.get("Modules", []))
     _apply_loadout_overrides(loadout_config or {}, card_presets, module_presets)
-    perk_presets, active_perk_preset = _parse_perk_config(perk_config or {})
+    perk_presets, perk_preset_namespace_class, active_perk_preset = _parse_perk_config(perk_config or {})
     active_card_preset, active_module_preset = _resolve_active_loadout_presets(loadout_config or {}, default_preset)
-    if default_preset not in PRESET_NAMES:
-        raise ValueError(f"Unknown default preset: {default_preset}")
+    default_preset = require_canonical_preset_name(default_preset, field_name='default_preset')
     return AccountState(
         ids_path=ids_raw.ids_path,
         labs=labs,
         workshop=workshop,
         workshop_enhancements=workshop_enhancements,
+        workshop_enhancement_tracks=workshop_enhancement_tracks,
         ultimate_weapons=ultimate_weapons,
+        uw_tracks=uw_tracks,
         uw_plus_tracks=uw_plus_tracks,
         relics=relics,
         vault=vault,
         bots=bots,
         bot_upgrades=bot_upgrades,
+        bot_upgrade_tracks=bot_upgrade_tracks,
         guardians=guardians,
+        guardian_tracks=guardian_tracks,
         player_meta=player_meta,
         theme_song_coin_multiplier=theme_song_coin_multiplier,
         cards_inventory=cards_inventory,
@@ -71,6 +75,7 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
         module_presets=module_presets,
         modules_inventory=modules_inventory,
         perk_presets=perk_presets,
+        perk_preset_namespace_class=perk_preset_namespace_class,
         active_perk_preset=active_perk_preset,
         active_card_preset=active_card_preset,
         active_module_preset=active_module_preset,
@@ -80,12 +85,7 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
 
 
 def _normalize_preset_name(value: str) -> Optional[str]:
-    raw = value.strip()
-    if not raw:
-        return None
-    if raw in PRESET_NAMES:
-        return raw
-    return _CARD_PRESET_ALIASES.get(raw)
+    return normalize_preset_name(value, allow_aliases=True)
 
 
 def _apply_loadout_overrides(loadout_config: Dict[str, object], card_presets: Dict[str, List[str]], module_presets: Dict[str, Dict[str, ModulePresetSelection]]) -> None:
@@ -96,7 +96,7 @@ def _apply_loadout_overrides(loadout_config: Dict[str, object], card_presets: Di
                 continue
             normalized = _normalize_preset_name(preset_name)
             if normalized is None:
-                continue
+                raise ValueError(f"loadout_config.card_presets contains invalid preset name {preset_name!r}.")
             if isinstance(payload, list):
                 cards = [str(item).strip() for item in payload if str(item).strip()]
                 card_presets[normalized] = cards
@@ -108,7 +108,7 @@ def _apply_loadout_overrides(loadout_config: Dict[str, object], card_presets: Di
                 continue
             normalized = _normalize_preset_name(preset_name)
             if normalized is None:
-                continue
+                raise ValueError(f"loadout_config.module_presets contains invalid preset name {preset_name!r}.")
             for slot_type, selection in payload.items():
                 if slot_type not in SLOT_TYPES or not isinstance(selection, dict):
                     continue
@@ -127,11 +127,15 @@ def _apply_loadout_overrides(loadout_config: Dict[str, object], card_presets: Di
 def _resolve_active_loadout_presets(loadout_config: Dict[str, object], default_preset: str) -> Tuple[str, str]:
     def _pick(key: str) -> str:
         raw = loadout_config.get(key)
+        if raw is None:
+            return default_preset
         if isinstance(raw, str):
-            normalized = _normalize_preset_name(raw)
+            normalized = normalize_preset_name(raw, allow_aliases=False)
             if normalized is not None:
                 return normalized
-        return default_preset
+        if isinstance(raw, str) and not raw.strip():
+            raise ValueError(f"{key} must not be empty when explicitly provided.")
+        raise ValueError(f"{key} must use a canonical preset name, got {raw!r}.")
 
     return _pick('active_card_preset'), _pick('active_module_preset')
 
@@ -194,9 +198,7 @@ def _parse_labs(rows: List[List[str]]) -> Dict[str, Optional[int]]:
 def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
     out = {}
     # IDS chunk layout: label, farming_level, farming_cost, tourney_level, tourney_cost, testing_level, ... max
-    level_cols = {
-        'Farming': 1, 'Tourney': 3, 'Milestone': 5, 'Preset 4': 7, 'Preset 5': 9,
-    }
+    level_cols = load_section_layout_contract()['workshop']['preset_level_columns']
     for row in rows:
         name = _safe_cell(row, 0).strip()
         if not name or name == 'Workshop Upgrade':
@@ -206,8 +208,32 @@ def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
             name=name,
             unlocked=None,
             preset_levels=preset_levels,
-            max_level=_parse_optional_int(_safe_cell(row, 11)),
+            max_level=_parse_optional_int(_safe_cell(row, load_section_layout_contract()['workshop']['max_level_column'])),
             category=None,
+        )
+    return out
+
+
+def _parse_workshop_enhancements(rows: List[List[str]]) -> Dict[str, WorkshopEnhancementSnapshot]:
+    out: Dict[str, WorkshopEnhancementSnapshot] = {}
+    layout = load_section_layout_contract()['ws_plus']
+    name_col = int(layout['name_column'])
+    multiplier_col = int(layout['multiplier_column'])
+    max_col = int(layout['max_level_column'])
+    header_rows = int(layout['header_rows'])
+    preset_cols: Dict[str, int] = {
+        str(preset): int(col_idx) for preset, col_idx in layout['preset_level_columns'].items()
+    }
+    for row in rows[header_rows:]:
+        name = _safe_cell(row, name_col).strip()
+        if not name:
+            continue
+        preset_levels = {preset: _parse_optional_int(_safe_cell(row, col_idx)) for preset, col_idx in preset_cols.items()}
+        out[name] = WorkshopEnhancementSnapshot(
+            name=name,
+            current_multiplier=_parse_optional_float(_safe_cell(row, multiplier_col)),
+            preset_levels=preset_levels,
+            max_level=_parse_optional_int(_safe_cell(row, max_col)),
         )
     return out
 
@@ -224,35 +250,56 @@ def _parse_table(rows: List[List[str]]) -> TableSnapshot:
 
 
 def _iter_uw_blocks(rows: List[List[str]]) -> List[List[List[str]]]:
-    return [rows[i:i + 4] for i in range(0, len(rows), 4) if len(rows[i:i + 4]) == 4]
+    uw_layout = load_section_layout_contract()['uw']
+    block_size = int(uw_layout['block_size'])
+    return [rows[i:i + block_size] for i in range(0, len(rows), block_size) if len(rows[i:i + block_size]) == block_size]
 
 
-def _parse_uws(rows: List[List[str]]) -> Tuple[Dict[str, UltimateWeaponSnapshot], Dict[str, UwPlusTrackSnapshot]]:
+def _parse_uws(rows: List[List[str]]) -> Tuple[Dict[str, UltimateWeaponSnapshot], Dict[str, List[UwTrackSnapshot]], Dict[str, UwPlusTrackSnapshot]]:
     weapons = {}
+    uw_tracks: Dict[str, List[UwTrackSnapshot]] = {}
     tracks = {}
+    uw_layout = load_section_layout_contract()['uw']
+    name_col = int(uw_layout['name_column'])
+    attr_col = int(uw_layout['attribute_column'])
+    resolved_col = int(uw_layout['resolved_value_column'])
+    display_col = int(uw_layout['display_token_column'])
+    stat_rows_per_block = int(uw_layout['stat_rows_per_block'])
+    plus_row_index = int(uw_layout['plus_row_index'])
     for block in _iter_uw_blocks(rows):
-        uw_name = _safe_cell(block[0], 0).strip()
+        uw_name = _safe_cell(block[0], name_col).strip()
         if not uw_name:
             continue
         track_levels = []
         track_values = []
-        for stat_row in block[:3]:
-            token = _safe_cell(stat_row, 4).strip()
+        for stat_row in block[:stat_rows_per_block]:
+            token = _safe_cell(stat_row, display_col).strip()
             if token:
                 track_levels.append(token.split('|', 1)[0].strip())
-            raw_value = _parse_optional_float(_safe_cell(stat_row, 3))
+            raw_value = _parse_optional_float(_safe_cell(stat_row, resolved_col))
             track_values.append(raw_value)
-        weapons[uw_name] = UltimateWeaponSnapshot(name=uw_name, unlocked=_optional_str(_safe_cell(block[2], 0)), track_levels=track_levels, track_values=track_values)
-        plus_track_name = _safe_cell(block[3], 2).strip()
+            level = _parse_optional_int(token.split('|', 1)[0].strip()) if token else None
+            track_name = _safe_cell(stat_row, attr_col).strip() or f'track_{len(uw_tracks.get(uw_name, [])) + 1}'
+            uw_tracks.setdefault(uw_name, []).append(
+                UwTrackSnapshot(
+                    uw_name=uw_name,
+                    track_name=track_name,
+                    level=level,
+                    level_token=token,
+                    resolved_value=raw_value,
+                )
+            )
+        weapons[uw_name] = UltimateWeaponSnapshot(name=uw_name, unlocked=_optional_str(_safe_cell(block[stat_rows_per_block - 1], name_col)), track_levels=track_levels, track_values=track_values)
+        plus_track_name = _safe_cell(block[plus_row_index], attr_col).strip()
         if plus_track_name:
             key = f"{uw_name}::{plus_track_name}"
             tracks[key] = UwPlusTrackSnapshot(
                 uw_name=uw_name,
                 plus_track_name=plus_track_name,
-                current_state=_safe_cell(block[3], 3).strip(),
-                display_token=_safe_cell(block[3], 4).strip(),
+                current_state=_safe_cell(block[plus_row_index], resolved_col).strip(),
+                display_token=_safe_cell(block[plus_row_index], display_col).strip(),
             )
-    return weapons, tracks
+    return weapons, uw_tracks, tracks
 
 
 def _parse_key_value_int(rows: List[List[str]]) -> Dict[str, Optional[int]]:
@@ -282,6 +329,40 @@ def _parse_key_value_float(rows: List[List[str]]) -> Dict[str, Optional[float]]:
     return {row[0].strip(): _parse_optional_float(_safe_cell(row, 1)) for row in rows if _safe_cell(row, 0).strip()}
 
 
+def _parse_relics(rows: List[List[str]]) -> Dict[str, Optional[float]]:
+    out: Dict[str, Optional[float]] = {}
+    for row in rows:
+        key = _safe_cell(row, 0).strip()
+        if not key:
+            continue
+        value = _parse_optional_float(_safe_cell(row, 1))
+        if value is None:
+            continue
+        out[key] = value
+    return out
+
+
+def _parse_vault(rows: List[List[str]]) -> Dict[str, object]:
+    out: Dict[str, object] = {}
+    for row in rows:
+        key = _safe_cell(row, 0).strip()
+        if not key or key == 'Total Bonuses':
+            continue
+        raw = _safe_cell(row, 1).strip()
+        if not raw:
+            continue
+        b = _parse_bool(raw)
+        if b is not None:
+            out[key] = b
+            continue
+        i = _parse_optional_int(raw)
+        if i is not None:
+            out[key] = i
+            continue
+        out[key] = raw
+    return out
+
+
 
 def _parse_theme_song_coin_multiplier(rows: List[List[str]]) -> Optional[float]:
     for row in rows:
@@ -306,24 +387,91 @@ def _parse_player_meta(rows: List[List[str]]) -> Dict[str, Optional[str]]:
     return out
 
 
-def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]]]:
+def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]], Dict[str, List[BotUpgradeSnapshot]]]:
+    bot_layout = load_section_layout_contract()['bots']
+    name_col = int(bot_layout['name_column'])
+    attr_col = int(bot_layout['attribute_column'])
+    resolved_col = int(bot_layout['resolved_value_column'])
+    display_col = int(bot_layout['display_token_column'])
+    truthy_tokens = {str(token).strip().lower() for token in bot_layout.get('truthy_name_tokens', [])}
     bots = []
     upgrades: Dict[str, Dict[str, int]] = {}
+    typed_tracks: Dict[str, List[BotUpgradeSnapshot]] = {}
     current = None
     for row in rows:
-        name = _safe_cell(row, 0).strip()
-        attr = _safe_cell(row, 2).strip()
-        display = _safe_cell(row, 4).strip()
-        if name and name not in {'true', 'false'}:
+        name = _safe_cell(row, name_col).strip()
+        attr = _safe_cell(row, attr_col).strip()
+        display = _safe_cell(row, display_col).strip()
+        if name and name.lower() not in truthy_tokens:
             current = name
             if name not in bots:
                 bots.append(name)
         if current and attr and display:
             level_token = display.split('|', 1)[0].strip()
             level = _parse_optional_int(level_token)
+            resolved_value = _parse_optional_float(_safe_cell(row, resolved_col))
+            resolved_unit = _extract_display_unit(display)
             if level is not None:
                 upgrades.setdefault(current, {})[attr] = level
-    return bots, upgrades
+            typed_tracks.setdefault(current, []).append(
+                BotUpgradeSnapshot(
+                    bot_name=current,
+                    track_name=attr,
+                    level=level,
+                    resolved_value=resolved_value,
+                    resolved_unit=resolved_unit,
+                )
+            )
+    return bots, upgrades, typed_tracks
+
+
+def _extract_display_unit(display: str) -> Optional[str]:
+    parts = [segment.strip() for segment in display.split('|')]
+    if len(parts) < 2:
+        return None
+    value_token = parts[1]
+    if not value_token:
+        return None
+    if value_token.startswith('x'):
+        return 'x'
+    if value_token.endswith('%'):
+        return '%'
+    if value_token.endswith('s'):
+        return 's'
+    if value_token.endswith('m'):
+        return 'm'
+    return None
+
+
+def _parse_guardians(rows: List[List[str]]) -> Dict[str, List[GuardianTrackSnapshot]]:
+    guardian_layout = load_section_layout_contract()['guardians']
+    name_col = int(guardian_layout['name_column'])
+    attr_col = int(guardian_layout['attribute_column'])
+    resolved_col = int(guardian_layout['resolved_value_column'])
+    display_col = int(guardian_layout['display_token_column'])
+    truthy_tokens = {str(token).strip().lower() for token in guardian_layout.get('truthy_name_tokens', [])}
+    current: Optional[str] = None
+    tracks: Dict[str, List[GuardianTrackSnapshot]] = {}
+    for row in rows:
+        name = _safe_cell(row, name_col).strip()
+        attr = _safe_cell(row, attr_col).strip()
+        display = _safe_cell(row, display_col).strip()
+        if name and name.lower() not in truthy_tokens:
+            current = name
+        if not current or not attr or not display:
+            continue
+        level_token = display.split('|', 1)[0].strip()
+        level = _parse_optional_int(level_token)
+        tracks.setdefault(current, []).append(
+            GuardianTrackSnapshot(
+                guardian_name=current,
+                track_name=attr,
+                level=level,
+                resolved_value=_parse_optional_float(_safe_cell(row, resolved_col)),
+                resolved_unit=_extract_display_unit(display),
+            )
+        )
+    return tracks
 
 
 def _parse_cards(section_header: List[str], rows: List[List[str]], labs: Dict[str, Optional[int]]) -> Tuple[Dict[str, CardSnapshot], Optional[int], Dict[str, List[str]]]:
@@ -337,14 +485,12 @@ def _parse_cards(section_header: List[str], rows: List[List[str]], labs: Dict[st
     # Each row is itself a card snapshot, while columns 3..7 are fixed preset assignment columns.
     # The first row often happens to contain the human preset labels in those assignment cells,
     # so we must not infer the schema from row 0 or skip it as a header.
+    cards_contract = load_section_layout_contract()['cards']
     preset_columns: Dict[int, str] = {
-        3: 'Farming',
-        4: 'Tourney',
-        5: 'Milestone',
-        6: 'Preset 4',
-        7: 'Preset 5',
+        int(column_index): str(preset_name)
+        for preset_name, column_index in cards_contract['preset_assignment_columns'].items()
     }
-    preset_label_tokens = set(preset_columns.values()) | {'Preset 3'}
+    preset_label_tokens = set(cards_contract['label_tokens'])
 
     for row in rows:
         name = _safe_cell(row, 0).strip()
@@ -382,14 +528,7 @@ def _parse_modules(rows: List[List[str]]) -> Tuple[Dict[str, ModuleSystemState],
     system_state: Dict[str, ModuleSystemState] = {}
     presets: Dict[str, Dict[str, ModulePresetSelection]] = {preset: {} for preset in PRESET_NAMES}
     inventory: Dict[str, ModuleSnapshot] = {}
-    label_map = {
-        'Farming': 'Farming',
-        'Tourney': 'Tourney',
-        'Milestone': 'Milestone',
-        'Testing': 'Milestone',
-        'Placeholder 4th preset': 'Preset 4',
-        'Placeholder 5th preset': 'Preset 5',
-    }
+    label_map = load_section_layout_contract()['modules']['preset_label_aliases']
     for slot_index, slot_type in enumerate(SLOT_TYPES):
         slot_rows = [_extract_slot_chunk(row, slot_index) for row in rows]
         assist = None
@@ -479,9 +618,10 @@ def _parse_modules(rows: List[List[str]]) -> Tuple[Dict[str, ModuleSystemState],
     return system_state, presets, inventory
 
 
-def _parse_perk_config(loadout_config: Dict[str, object]) -> Tuple[Dict[str, List[PerkSelection]], Optional[str]]:
+def _parse_perk_config(loadout_config: Dict[str, object]) -> Tuple[Dict[str, List[PerkSelection]], str, Optional[str]]:
     raw_presets = loadout_config.get('perk_presets')
     active_perk_preset = loadout_config.get('active_perk_preset')
+    preset_namespace_class = str(loadout_config.get('preset_namespace_class') or '').strip().lower()
     raw_banned = loadout_config.get('banned_perk_ids')
     banned_perk_ids = {
         str(item).strip()
@@ -491,7 +631,9 @@ def _parse_perk_config(loadout_config: Dict[str, object]) -> Tuple[Dict[str, Lis
     out: Dict[str, List[PerkSelection]] = {}
     if not isinstance(raw_presets, dict):
         active = active_perk_preset.strip() if isinstance(active_perk_preset, str) and active_perk_preset.strip() else None
-        return out, active
+        if active and normalize_preset_name(active, allow_aliases=False) is None and preset_namespace_class != 'transient':
+            raise ValueError(f"active_perk_preset must use a canonical preset name in canonical flows, got {active!r}.")
+        return out, (preset_namespace_class or 'canonical'), active
 
     def _normalize_single(item) -> Optional[PerkSelection]:
         if isinstance(item, str) and item.strip():
@@ -510,6 +652,7 @@ def _parse_perk_config(loadout_config: Dict[str, object]) -> Tuple[Dict[str, Lis
     for preset_name, payload in raw_presets.items():
         if not isinstance(preset_name, str) or not preset_name.strip():
             continue
+        preset_name = preset_name.strip()
         selections: List[PerkSelection] = []
         if isinstance(payload, list):
             for item in payload:
@@ -528,7 +671,18 @@ def _parse_perk_config(loadout_config: Dict[str, object]) -> Tuple[Dict[str, Lis
                 if normalized_perk_id in banned_perk_ids:
                     continue
                 selections.append(PerkSelection(perk_id=normalized_perk_id, picks=max(0, picks)))
-        out[preset_name.strip()] = selections
+        normalized_preset_name = normalize_preset_name(preset_name, allow_aliases=False)
+        if normalized_preset_name is None:
+            if preset_namespace_class != 'transient':
+                raise ValueError(
+                    f"perk_presets contains non-canonical preset name {preset_name!r}; "
+                    "canonical flows must use canonical preset names only."
+                )
+            out[preset_name] = selections
+            continue
+        out[normalized_preset_name] = selections
 
     active = active_perk_preset.strip() if isinstance(active_perk_preset, str) and active_perk_preset.strip() else None
-    return out, active
+    if active and normalize_preset_name(active, allow_aliases=False) is None and preset_namespace_class != 'transient':
+        raise ValueError(f"active_perk_preset must use a canonical preset name in canonical flows, got {active!r}.")
+    return out, (preset_namespace_class or 'canonical'), active

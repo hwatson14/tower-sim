@@ -1229,16 +1229,12 @@
     }
   },
   "relics": {
-    "Relics": null,
     "Event Relics": 112.0,
     "Guild Relics": 13.0,
     "Other Relics": 22.0,
     "Total Relics": 147.0,
-    "Total Bonuses": null,
-    "Misc.": null,
     "Lab Speed": 0.395,
     "Bot Range": 9.0,
-    "Damage?": null,
     "Damage": 0.5399999999999999,
     "Ultimate Damage": 0.22000000000000003,
     "Attack Speed": 0.05,
@@ -1248,7 +1244,6 @@
     "Super Critical Chance": 0.04,
     "Super Critical Mult": 0.05,
     "Rend Armor Mult": 0.0,
-    "Defense": null,
     "Health": 0.51,
     "Health Regen": 0.22999999999999998,
     "Defense %": 0.04,
@@ -1257,7 +1252,6 @@
     "Knockback Force": 0.24,
     "Orb Speed": 0.12000000000000001,
     "Wall Rebuild": 2.0,
-    "Utility": null,
     "Cash": 0.06,
     "Coins": 0.48,
     "Free Attack Upgrade": 0.060000000000000005,
@@ -1269,8 +1263,6 @@
   },
   "vault": {
     "Keys spent": 0,
-    "Total Bonuses": "Active",
-    "Misc.": null,
     "Bot Range": 0,
     "Discount Enhancements": 0,
     "Discount Rerolls": 0,
@@ -1278,7 +1270,6 @@
     "Workshop Respec Discount": 0,
     "Bot Respec Discount": 0,
     "Ad Gems Stack": 1,
-    "Attack": null,
     "Damage": 0,
     "Ultimate Weapon Damage": 0,
     "Attack Speed": 0,
@@ -1292,7 +1283,6 @@
     "Super Crit Mult": 0,
     "Rend Armor Chance": 0,
     "Rend Armor Mult": 0,
-    "Defense": null,
     "Health": 0,
     "Health Regen": 0,
     "Defense %": 0,
@@ -1305,7 +1295,6 @@
     "Shockwave Frequency": 0,
     "Death Defy": 0,
     "Wall Rebuild": 0,
-    "Utility": null,
     "Cash": 0,
     "Cash / Wave": 0,
     "Coins / Kill": 0,
@@ -1318,7 +1307,6 @@
     "Max Recovery": 0,
     "Enemy Attack Skip": 0,
     "Enemy Health Skip": 0,
-    "Unlocks": null,
     "Demon Mode Automation": false,
     "Smart Demon Mode Automation": false,
     "Free Mission Reroll": false,
@@ -1717,26 +1705,6 @@
   },
   "card_slots_unlocked": 18,
   "card_presets": {
-    "Farming": [
-      "Enemy Balance",
-      "Extra Defense",
-      "Health",
-      "Coins",
-      "Plasma Cannon",
-      "Attack Speed",
-      "Wave Skip",
-      "Health Regen",
-      "Wave Accelerator",
-      "Critical Coin",
-      "Second Wind",
-      "Energy Shield",
-      "Recovery Package Chance",
-      "Intro Sprint",
-      "Extra Orb",
-      "Land Mine Stun",
-      "Cash",
-      "Free Upgrades"
-    ],
     "Tourney": [
       "Attack Speed",
       "Damage",
@@ -1756,6 +1724,26 @@
       "Land Mine Stun",
       "Second Wind",
       "Wave Accelerator"
+    ],
+    "Farming": [
+      "Enemy Balance",
+      "Extra Defense",
+      "Health",
+      "Coins",
+      "Plasma Cannon",
+      "Attack Speed",
+      "Wave Skip",
+      "Health Regen",
+      "Wave Accelerator",
+      "Critical Coin",
+      "Second Wind",
+      "Energy Shield",
+      "Recovery Package Chance",
+      "Intro Sprint",
+      "Extra Orb",
+      "Land Mine Stun",
+      "Cash",
+      "Free Upgrades"
     ],
     "Milestone": [],
     "Preset 4": [],
@@ -1796,24 +1784,6 @@
     }
   },
   "module_presets": {
-    "Farming": {
-      "cannon": {
-        "primary": "Amplifying Strike",
-        "assist": null
-      },
-      "armor": {
-        "primary": "Sharp Fortitude",
-        "assist": "Orbital Augment"
-      },
-      "generator": {
-        "primary": "Singularity Harness",
-        "assist": "Pulsar Harvester"
-      },
-      "core": {
-        "primary": "Primordial Collapse",
-        "assist": "Dimension Core"
-      }
-    },
     "Tourney": {
       "cannon": {
         "primary": "Amplifying Strike",
@@ -1830,6 +1800,24 @@
       "core": {
         "primary": "Dimension Core",
         "assist": "Om Chip"
+      }
+    },
+    "Farming": {
+      "cannon": {
+        "primary": "Amplifying Strike",
+        "assist": null
+      },
+      "armor": {
+        "primary": "Sharp Fortitude",
+        "assist": "Orbital Augment"
+      },
+      "generator": {
+        "primary": "Singularity Harness",
+        "assist": "Pulsar Harvester"
+      },
+      "core": {
+        "primary": "Primordial Collapse",
+        "assist": "Dimension Core"
       }
     },
     "Milestone": {
@@ -2500,7 +2488,7 @@
     }
   },
   "perk_presets": {
-    "ProjectedMax_AllAllowedExceptBanned": [
+    "Farming": [
       {
         "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
         "picks": 1
@@ -2631,7 +2619,8 @@
       }
     ]
   },
-  "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+  "perk_preset_namespace_class": "transient",
+  "active_perk_preset": "Farming",
   "active_card_preset": "Farming",
   "active_module_preset": "Farming",
   "default_preset": "Farming",

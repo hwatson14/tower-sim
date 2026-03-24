@@ -68,7 +68,7 @@
           "Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces."
         ]
       },
-      "input_count": 407,
+      "input_count": 405,
       "mapped_input_count": 317,
       "resolved_stat_count": 178,
       "partially_resolved_stat_count": 0
@@ -83,7 +83,7 @@
           "Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules."
         ]
       },
-      "input_count": 471,
+      "input_count": 469,
       "mapped_input_count": 381,
       "resolved_stat_count": 211,
       "partially_resolved_stat_count": 0
@@ -98,7 +98,7 @@
           "Current IDS preset with active loadout applied."
         ]
       },
-      "input_count": 585,
+      "input_count": 583,
       "mapped_input_count": 493,
       "resolved_stat_count": 236,
       "partially_resolved_stat_count": 0
@@ -116,14 +116,14 @@
           "Perks can be materialized in this state when supplied via input/perks.json or --perks."
         ]
       },
-      "input_count": 585,
+      "input_count": 583,
       "mapped_input_count": 493,
       "resolved_stat_count": 236,
       "partially_resolved_stat_count": 0
     }
   },
-  "stat_input_count": 585,
-  "statbook_row_count": 521,
+  "stat_input_count": 583,
+  "statbook_row_count": 519,
   "engine_status": "publish_gate_enforced_resolution",
   "publish_status": "forbidden_for_publish",
   "formula_ledger_version": 2,
@@ -161,7 +161,7 @@
       "perk_stat_input_support": true,
       "perk_resolver_support": true,
       "loadout_external_config_support": true,
-      "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+      "active_perk_preset": "Farming",
       "state_mode": "max_progression"
     },
     "notes": [
@@ -7036,13 +7036,13 @@
     }
   },
   "mapped_stat_input_count": 493,
-  "unmapped_stat_input_count": 92,
+  "unmapped_stat_input_count": 90,
   "resolved_stat_count": 236,
   "partially_resolved_stat_count": 0,
   "burn_down": {
-    "input_mapping_pct": 84.27,
-    "fully_resolved_surface_pct_of_inputs": 40.34,
-    "resolved_or_partial_surface_pct_of_inputs": 40.34,
+    "input_mapping_pct": 84.56,
+    "fully_resolved_surface_pct_of_inputs": 40.48,
+    "resolved_or_partial_surface_pct_of_inputs": 40.48,
     "family_mapping_pct": {
       "bot": {
         "mapped": 16,
@@ -7096,8 +7096,8 @@
       },
       "relic": {
         "mapped": 31,
-        "total": 31,
-        "pct": 100.0
+        "total": 35,
+        "pct": 88.57
       },
       "theme_song": {
         "mapped": 1,
@@ -7121,8 +7121,8 @@
       },
       "vault": {
         "mapped": 64,
-        "total": 71,
-        "pct": 90.14
+        "total": 65,
+        "pct": 98.46
       },
       "workshop": {
         "mapped": 48,
@@ -7130,10 +7130,10 @@
         "pct": 100.0
       }
     },
-    "calculator_scope_total_inputs": 314,
+    "calculator_scope_total_inputs": 318,
     "calculator_scope_mapped_inputs": 313,
-    "calculator_scope_mapping_pct": 99.68,
-    "calculator_scope_excluded_inputs": 271,
+    "calculator_scope_mapping_pct": 98.43,
+    "calculator_scope_excluded_inputs": 265,
     "calculator_scope_excluded_examples": [
       "+1 Wave on Death Wave::effect_1",
       "4 More Smart Missiles::effect_1",
@@ -7152,9 +7152,9 @@
       "Assist Module Substats - Cannon",
       "Assist Module Substats - Core",
       "Assist Module Substats - Generator",
-      "Attack",
       "Attack Speed Mastery",
-      "Auto Pick Perks"
+      "Auto Pick Perks",
+      "Auto Pick Ranking"
     ],
     "calculator_scope_family_totals": {
       "bot": 16,
@@ -7164,27 +7164,35 @@
       "lab": 16,
       "module": 17,
       "module_substat": 34,
-      "relic": 31,
+      "relic": 35,
       "uw": 27,
       "uw_plus": 9,
       "vault": 60,
       "workshop": 48
     },
     "calculator_scope_unmapped_examples": [
-      "Intro Sprint"
+      "Event Relics",
+      "Guild Relics",
+      "Intro Sprint",
+      "Other Relics",
+      "Total Relics"
     ],
     "note": "calculator_scope excludes preserved-only lab/admin/runtime rows and grouping/admin surfaces that are intentionally outside the current calculator publish surface."
   },
   "tests_passed": "not_run_by_run_stats",
-  "calculator_scope_mapping_pct": 99.68,
-  "calculator_scope_excluded_inputs": 271,
+  "calculator_scope_mapping_pct": 98.43,
+  "calculator_scope_excluded_inputs": 265,
   "calculator_scope_unmapped_examples": [
-    "Intro Sprint"
+    "Event Relics",
+    "Guild Relics",
+    "Intro Sprint",
+    "Other Relics",
+    "Total Relics"
   ],
   "card_slots_unlocked": 18,
-  "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+  "active_perk_preset": "Farming",
   "configured_perk_presets": {
-    "ProjectedMax_AllAllowedExceptBanned": [
+    "Farming": [
       "PERK_1_WAVE_ON_DEATH_WAVE",
       "PERK_4_MORE_SMART_MISSILES",
       "PERK_BLACK_HOLE_DURATION_12_0S",
@@ -7247,7 +7255,7 @@
   "kb_incomplete_areas": {
     "summary": {
       "blocked_formula_contract_count": 0,
-      "active_unmapped_input_count": 92,
+      "active_unmapped_input_count": 90,
       "resolved_unknown_schema_unit_count": 104,
       "ambiguous_relic_semantic_hint_count": 21
     },
@@ -7330,7 +7338,8 @@
       "card": 1,
       "lab": 83,
       "perk": 1,
-      "vault": 7
+      "relic": 4,
+      "vault": 1
     },
     "active_unmapped_inputs": [
       {
@@ -7844,45 +7853,33 @@
         "contributor_id": "perk::PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3::effect_1"
       },
       {
-        "source_family": "vault",
-        "stat_name": "Attack",
-        "value_type": "raw_text",
+        "source_family": "relic",
+        "stat_name": "Event Relics",
+        "value_type": "resolved_value",
         "contributor_id": null
       },
       {
-        "source_family": "vault",
-        "stat_name": "Defense",
-        "value_type": "raw_text",
+        "source_family": "relic",
+        "stat_name": "Guild Relics",
+        "value_type": "resolved_value",
+        "contributor_id": null
+      },
+      {
+        "source_family": "relic",
+        "stat_name": "Other Relics",
+        "value_type": "resolved_value",
+        "contributor_id": null
+      },
+      {
+        "source_family": "relic",
+        "stat_name": "Total Relics",
+        "value_type": "resolved_value",
         "contributor_id": null
       },
       {
         "source_family": "vault",
         "stat_name": "Keys spent",
         "value_type": "resolved_value",
-        "contributor_id": null
-      },
-      {
-        "source_family": "vault",
-        "stat_name": "Misc.",
-        "value_type": "raw_text",
-        "contributor_id": null
-      },
-      {
-        "source_family": "vault",
-        "stat_name": "Total Bonuses",
-        "value_type": "raw_text",
-        "contributor_id": null
-      },
-      {
-        "source_family": "vault",
-        "stat_name": "Unlocks",
-        "value_type": "raw_text",
-        "contributor_id": null
-      },
-      {
-        "source_family": "vault",
-        "stat_name": "Utility",
-        "value_type": "raw_text",
         "contributor_id": null
       }
     ],
@@ -8607,10 +8604,10 @@
   "kb_gap_register": {
     "summary": {
       "Calculator wiring / implementation gap": 1,
-      "Intentional non-goal / runtime-only surface": 178,
+      "Intentional non-goal / runtime-only surface": 172,
       "KB contract ambiguous": 1,
       "KB missing executable contract": 16,
-      "KB missing fact": 1
+      "KB missing fact": 5
     },
     "entries": [
       {
@@ -10059,9 +10056,9 @@
         "verification_source": "package KB only"
       },
       {
-        "gap_id": "unmapped::vault::Attack",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Attack",
+        "gap_id": "unmapped::relic::Event Relics",
+        "bucket": "KB missing fact",
+        "surface": "Event Relics",
         "files": [
           "compilers/stat_input_compiler.py",
           "kb/global-rules/contracts/contributor-mappings-full.yaml",
@@ -10069,16 +10066,16 @@
           "kb/cards/tables/card-effect-registry.csv",
           "kb/global-rules/tables/relic-input-registry.csv"
         ],
-        "evidence": "Active vault input remains unmapped in current package.",
+        "evidence": "Active relic input remains unmapped in current package.",
         "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
         "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
         "changed_in_this_iteration": false,
         "verification_source": "package KB only"
       },
       {
-        "gap_id": "unmapped::vault::Defense",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Defense",
+        "gap_id": "unmapped::relic::Guild Relics",
+        "bucket": "KB missing fact",
+        "surface": "Guild Relics",
         "files": [
           "compilers/stat_input_compiler.py",
           "kb/global-rules/contracts/contributor-mappings-full.yaml",
@@ -10086,7 +10083,41 @@
           "kb/cards/tables/card-effect-registry.csv",
           "kb/global-rules/tables/relic-input-registry.csv"
         ],
-        "evidence": "Active vault input remains unmapped in current package.",
+        "evidence": "Active relic input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::relic::Other Relics",
+        "bucket": "KB missing fact",
+        "surface": "Other Relics",
+        "files": [
+          "compilers/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active relic input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::relic::Total Relics",
+        "bucket": "KB missing fact",
+        "surface": "Total Relics",
+        "files": [
+          "compilers/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active relic input remains unmapped in current package.",
         "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
         "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
         "changed_in_this_iteration": false,
@@ -10096,74 +10127,6 @@
         "gap_id": "unmapped::vault::Keys spent",
         "bucket": "Intentional non-goal / runtime-only surface",
         "surface": "Keys spent",
-        "files": [
-          "compilers/stat_input_compiler.py",
-          "kb/global-rules/contracts/contributor-mappings-full.yaml",
-          "kb/labs/tables/lab-application-registry.csv",
-          "kb/cards/tables/card-effect-registry.csv",
-          "kb/global-rules/tables/relic-input-registry.csv"
-        ],
-        "evidence": "Active vault input remains unmapped in current package.",
-        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
-        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
-        "changed_in_this_iteration": false,
-        "verification_source": "package KB only"
-      },
-      {
-        "gap_id": "unmapped::vault::Misc.",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Misc.",
-        "files": [
-          "compilers/stat_input_compiler.py",
-          "kb/global-rules/contracts/contributor-mappings-full.yaml",
-          "kb/labs/tables/lab-application-registry.csv",
-          "kb/cards/tables/card-effect-registry.csv",
-          "kb/global-rules/tables/relic-input-registry.csv"
-        ],
-        "evidence": "Active vault input remains unmapped in current package.",
-        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
-        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
-        "changed_in_this_iteration": false,
-        "verification_source": "package KB only"
-      },
-      {
-        "gap_id": "unmapped::vault::Total Bonuses",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Total Bonuses",
-        "files": [
-          "compilers/stat_input_compiler.py",
-          "kb/global-rules/contracts/contributor-mappings-full.yaml",
-          "kb/labs/tables/lab-application-registry.csv",
-          "kb/cards/tables/card-effect-registry.csv",
-          "kb/global-rules/tables/relic-input-registry.csv"
-        ],
-        "evidence": "Active vault input remains unmapped in current package.",
-        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
-        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
-        "changed_in_this_iteration": false,
-        "verification_source": "package KB only"
-      },
-      {
-        "gap_id": "unmapped::vault::Unlocks",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Unlocks",
-        "files": [
-          "compilers/stat_input_compiler.py",
-          "kb/global-rules/contracts/contributor-mappings-full.yaml",
-          "kb/labs/tables/lab-application-registry.csv",
-          "kb/cards/tables/card-effect-registry.csv",
-          "kb/global-rules/tables/relic-input-registry.csv"
-        ],
-        "evidence": "Active vault input remains unmapped in current package.",
-        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
-        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
-        "changed_in_this_iteration": false,
-        "verification_source": "package KB only"
-      },
-      {
-        "gap_id": "unmapped::vault::Utility",
-        "bucket": "Intentional non-goal / runtime-only surface",
-        "surface": "Utility",
         "files": [
           "compilers/stat_input_compiler.py",
           "kb/global-rules/contracts/contributor-mappings-full.yaml",
@@ -11649,7 +11612,7 @@
     ]
   },
   "blocked_formula_contract_count": 0,
-  "active_unmapped_input_count": 92,
+  "active_unmapped_input_count": 90,
   "resolved_unknown_schema_unit_count": 104,
   "ambiguous_relic_semantic_hint_count": 21,
   "perk_support": {
@@ -11663,12 +11626,12 @@
     "perk_stat_input_support": true,
     "perk_resolver_support": true,
     "loadout_external_config_support": true,
-    "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+    "active_perk_preset": "Farming",
     "state_mode": "max_progression"
   },
   "card_preset_sizes": {
-    "Farming": 18,
     "Tourney": 18,
+    "Farming": 18,
     "Milestone": 0,
     "Preset 4": 0,
     "Preset 5": 0
@@ -11704,16 +11667,17 @@
     "module_substat": 34,
     "perk": 43,
     "player_stuff": 5,
-    "relic": 31,
+    "relic": 35,
     "theme_song": 1,
     "uw": 27,
     "uw_plus": 9,
     "uw_unlock": 9,
-    "vault": 71,
+    "vault": 65,
     "workshop": 48
   },
   "unmapped_example_by_family": {
     "lab": "Starting Cash",
+    "relic": "Event Relics",
     "vault": "Keys spent",
     "card": "Intro Sprint",
     "perk": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3::effect_1"
@@ -11750,7 +11714,7 @@
     "current_state_mode": {
       "state_mode": "max_progression",
       "perk_state": "auto",
-      "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+      "active_perk_preset": "Farming",
       "ep_compare_count": 26,
       "ep_compare_status_counts": {
         "matched_close": 8,
@@ -11768,7 +11732,7 @@
     "projected_max_progression": {
       "state_mode": "max_progression",
       "perk_state": "auto",
-      "active_perk_preset": "ProjectedMax_AllAllowedExceptBanned",
+      "active_perk_preset": "Farming",
       "ep_compare_count": 26,
       "ep_compare_status_counts": {
         "matched_close": 8,
@@ -12808,7 +12772,7 @@
     "blocked": 25,
     "needs_work": 49,
     "publishable": 355,
-    "trace_only": 92
+    "trace_only": 90
   },
   "presentation": {
     "scope": "display_fields_only",
@@ -15182,7 +15146,7 @@
           "value": 6.0,
           "value_type": "flat",
           "notes": "kb_perk_effect_routed:bounce_shot_count",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         }
       ],
       "Tourney": [
@@ -15192,7 +15156,7 @@
           "value": 6.0,
           "value_type": "flat",
           "notes": "kb_perk_effect_routed:bounce_shot_count",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         }
       ]
     },
@@ -15204,7 +15168,7 @@
           "value": 0.5,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         },
         {
           "perk_name": "x1.15 Damage",
@@ -15212,7 +15176,7 @@
           "value": 2.1874999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         },
         {
           "perk_name": "x1.50 Tower Damage, but Bosses Have 8x Health",
@@ -15220,7 +15184,7 @@
           "value": 1.6500000000000001,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         }
       ],
       "Tourney": [
@@ -15230,7 +15194,7 @@
           "value": 0.5,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         },
         {
           "perk_name": "x1.15 Damage",
@@ -15238,7 +15202,7 @@
           "value": 2.1874999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         },
         {
           "perk_name": "x1.50 Tower Damage, but Bosses Have 8x Health",
@@ -15246,7 +15210,7 @@
           "value": 1.6500000000000001,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_damage",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         }
       ]
     },
@@ -15258,7 +15222,7 @@
           "value": 2.1874999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:absolute_defense",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         }
       ],
       "Tourney": [
@@ -15268,7 +15232,7 @@
           "value": 2.1874999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:absolute_defense",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         }
       ]
     },
@@ -15280,7 +15244,7 @@
           "value": 0.4,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         },
         {
           "perk_name": "x1.20 Max Health",
@@ -15288,7 +15252,7 @@
           "value": 2.4999999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         },
         {
           "perk_name": "x1.80 coins, but Tower Max Health -70%",
@@ -15296,7 +15260,7 @@
           "value": 0.3,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         }
       ],
       "Tourney": [
@@ -15306,7 +15270,7 @@
           "value": 0.4,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         },
         {
           "perk_name": "x1.20 Max Health",
@@ -15314,7 +15278,7 @@
           "value": 2.4999999999999996,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         },
         {
           "perk_name": "x1.80 coins, but Tower Max Health -70%",
@@ -15322,7 +15286,7 @@
           "value": 0.3,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_hp",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         }
       ]
     },
@@ -15334,7 +15298,7 @@
           "value": 8.8,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_regen",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         },
         {
           "perk_name": "x1.75 Health Regen",
@@ -15342,7 +15306,7 @@
           "value": 5.9375,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_regen",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Farming"
         }
       ],
       "Tourney": [
@@ -15352,7 +15316,7 @@
           "value": 8.8,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_regen",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         },
         {
           "perk_name": "x1.75 Health Regen",
@@ -15360,7 +15324,7 @@
           "value": 5.9375,
           "value_type": "multiplier",
           "notes": "kb_perk_effect_routed:tower_regen",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned"
+          "preset_name": "Tourney"
         }
       ]
     }
@@ -15776,21 +15740,21 @@
         {
           "source_family": "perk",
           "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 0.4,
           "value_type": "multiplier"
         },
         {
           "source_family": "perk",
           "source_name": "x1.20 Max Health",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 2.4999999999999996,
           "value_type": "multiplier"
         },
         {
           "source_family": "perk",
           "source_name": "x1.80 coins, but Tower Max Health -70%",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 0.3,
           "value_type": "multiplier"
         },
@@ -15868,14 +15832,14 @@
         {
           "source_family": "perk",
           "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 8.8,
           "value_type": "multiplier"
         },
         {
           "source_family": "perk",
           "source_name": "x1.75 Health Regen",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 5.9375,
           "value_type": "multiplier"
         },
@@ -15946,7 +15910,7 @@
         {
           "source_family": "perk",
           "source_name": "x1.15 Defense Absolute",
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "value": 2.1874999999999996,
           "value_type": "multiplier"
         }
@@ -16111,7 +16075,7 @@
       {
         "source_family": "perk",
         "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-        "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+        "preset_name": "Farming",
         "raw_value": 8.8,
         "value_type": "multiplier",
         "applied_factor": 8.8
@@ -16119,7 +16083,7 @@
       {
         "source_family": "perk",
         "source_name": "x1.75 Health Regen",
-        "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+        "preset_name": "Farming",
         "raw_value": 5.9375,
         "value_type": "multiplier",
         "applied_factor": 5.9375

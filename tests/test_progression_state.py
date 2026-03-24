@@ -26,6 +26,8 @@ def test_infer_mode_id_from_preset():
     assert infer_mode_id_from_preset('Farming') == 'farming'
     assert infer_mode_id_from_preset('Tourney') == 'tournament'
     assert infer_mode_id_from_preset('Milestone') == 'milestone'
+    assert infer_mode_id_from_preset('Preset 4') == 'preset_4'
+    assert infer_mode_id_from_preset('Preset 5') == 'preset_5'
 
 
 def test_progression_init_uses_ids_backed_workshop_levels():
@@ -36,3 +38,13 @@ def test_progression_init_uses_ids_backed_workshop_levels():
     assert damage.max_level == 6000
     assert damage.remaining_levels == 250
     assert init.mode_id == 'farming'
+
+
+def test_progression_init_accepts_all_five_canonical_presets():
+    state = _build_state()
+    for preset_name in ('Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5'):
+        init = build_progression_init_state(state, preset_name=preset_name)
+        assert init.preset_name == preset_name
+        assert init.mode_id == infer_mode_id_from_preset(preset_name)
+        assert 'Damage' in init.workshop_tracks
+        assert init.workshop_tracks['Damage'].current_level is not None

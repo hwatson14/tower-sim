@@ -88,5 +88,6 @@ def apply_perk_counts_to_account_state(
     return replace(
         account_state,
         perk_presets=patched_perk_presets,
+        perk_preset_namespace_class='transient',
         active_perk_preset=preset_name,
     )

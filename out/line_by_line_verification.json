@@ -18040,8 +18040,8 @@
     },
     "contributor_consumption": null
   },
-  "raw::Keys spent": {
-    "destination": "raw::Keys spent",
+  "raw::Event Relics": {
+    "destination": "raw::Event Relics",
     "status": "unmapped",
     "verification_status": "trace_only",
     "kb_alignment_status": "not_ep_compared",
@@ -18069,8 +18069,8 @@
     },
     "contributor_consumption": null
   },
-  "raw::Total Bonuses": {
-    "destination": "raw::Total Bonuses",
+  "raw::Guild Relics": {
+    "destination": "raw::Guild Relics",
     "status": "unmapped",
     "verification_status": "trace_only",
     "kb_alignment_status": "not_ep_compared",
@@ -18079,20 +18079,10 @@
     "unit": "count",
     "resolver": "integer_count_param",
     "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
+    "issues": [],
     "level_contributors": [],
-    "unresolved_contributors": [
-      "Total Bonuses"
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Total Bonuses",
-        "value_type": "raw_text"
-      }
-    ],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
     "ep_compare_status": null,
     "ep_compare_delta": null,
     "ep_compare_value": null,
@@ -18108,8 +18098,8 @@
     },
     "contributor_consumption": null
   },
-  "raw::Misc.": {
-    "destination": "raw::Misc.",
+  "raw::Other Relics": {
+    "destination": "raw::Other Relics",
     "status": "unmapped",
     "verification_status": "trace_only",
     "kb_alignment_status": "not_ep_compared",
@@ -18118,20 +18108,10 @@
     "unit": "count",
     "resolver": "integer_count_param",
     "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
+    "issues": [],
     "level_contributors": [],
-    "unresolved_contributors": [
-      "Misc."
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Misc.",
-        "value_type": "raw_text"
-      }
-    ],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
     "ep_compare_status": null,
     "ep_compare_delta": null,
     "ep_compare_value": null,
@@ -18147,8 +18127,8 @@
     },
     "contributor_consumption": null
   },
-  "raw::Attack": {
-    "destination": "raw::Attack",
+  "raw::Total Relics": {
+    "destination": "raw::Total Relics",
     "status": "unmapped",
     "verification_status": "trace_only",
     "kb_alignment_status": "not_ep_compared",
@@ -18157,20 +18137,10 @@
     "unit": "count",
     "resolver": "integer_count_param",
     "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
+    "issues": [],
     "level_contributors": [],
-    "unresolved_contributors": [
-      "Attack"
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Attack",
-        "value_type": "raw_text"
-      }
-    ],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
     "ep_compare_status": null,
     "ep_compare_delta": null,
     "ep_compare_value": null,
@@ -18186,8 +18156,8 @@
     },
     "contributor_consumption": null
   },
-  "raw::Defense": {
-    "destination": "raw::Defense",
+  "raw::Keys spent": {
+    "destination": "raw::Keys spent",
     "status": "unmapped",
     "verification_status": "trace_only",
     "kb_alignment_status": "not_ep_compared",
@@ -18196,98 +18166,10 @@
     "unit": "count",
     "resolver": "integer_count_param",
     "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
+    "issues": [],
     "level_contributors": [],
-    "unresolved_contributors": [
-      "Defense"
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Defense",
-        "value_type": "raw_text"
-      }
-    ],
-    "ep_compare_status": null,
-    "ep_compare_delta": null,
-    "ep_compare_value": null,
-    "ep_compare_value_type": null,
-    "ep_reference_value": null,
-    "ep_reference_value_type": null,
-    "compare_context": null,
-    "formula_contract": {
-      "formula_class": "unclassified",
-      "publish_policy": "allow",
-      "compare_policy": "normal",
-      "rationale": ""
-    },
-    "contributor_consumption": null
-  },
-  "raw::Utility": {
-    "destination": "raw::Utility",
-    "status": "unmapped",
-    "verification_status": "trace_only",
-    "kb_alignment_status": "not_ep_compared",
-    "verdict": "trace_only",
-    "final_value": null,
-    "unit": "count",
-    "resolver": "integer_count_param",
-    "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
-    "level_contributors": [],
-    "unresolved_contributors": [
-      "Utility"
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Utility",
-        "value_type": "raw_text"
-      }
-    ],
-    "ep_compare_status": null,
-    "ep_compare_delta": null,
-    "ep_compare_value": null,
-    "ep_compare_value_type": null,
-    "ep_reference_value": null,
-    "ep_reference_value_type": null,
-    "compare_context": null,
-    "formula_contract": {
-      "formula_class": "unclassified",
-      "publish_policy": "allow",
-      "compare_policy": "normal",
-      "rationale": ""
-    },
-    "contributor_consumption": null
-  },
-  "raw::Unlocks": {
-    "destination": "raw::Unlocks",
-    "status": "unmapped",
-    "verification_status": "trace_only",
-    "kb_alignment_status": "not_ep_compared",
-    "verdict": "trace_only",
-    "final_value": null,
-    "unit": "count",
-    "resolver": "integer_count_param",
-    "contributor_count": 1,
-    "issues": [
-      "unresolved_contributor_present",
-      "semantically_incompatible_contributor_present"
-    ],
-    "level_contributors": [],
-    "unresolved_contributors": [
-      "Unlocks"
-    ],
-    "semantic_mismatches": [
-      {
-        "source": "Unlocks",
-        "value_type": "raw_text"
-      }
-    ],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
     "ep_compare_status": null,
     "ep_compare_delta": null,
     "ep_compare_value": null,

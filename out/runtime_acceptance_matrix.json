@@ -1,0 +1,47 @@
+{
+  "artifact": "runtime_acceptance_matrix",
+  "canonical_presets": [
+    "Farming",
+    "Tourney",
+    "Milestone",
+    "Preset 4",
+    "Preset 5"
+  ],
+  "states": {
+    "Farming": {
+      "preset_name": "Farming",
+      "mode_id": "farming",
+      "damage_current_level": 5750,
+      "damage_max_level": 6000,
+      "stat_input_count": 540
+    },
+    "Tourney": {
+      "preset_name": "Tourney",
+      "mode_id": "tournament",
+      "damage_current_level": 5750,
+      "damage_max_level": 6000,
+      "stat_input_count": 540
+    },
+    "Milestone": {
+      "preset_name": "Milestone",
+      "mode_id": "milestone",
+      "damage_current_level": 0,
+      "damage_max_level": 6000,
+      "stat_input_count": 540
+    },
+    "Preset 4": {
+      "preset_name": "Preset 4",
+      "mode_id": "preset_4",
+      "damage_current_level": 0,
+      "damage_max_level": 6000,
+      "stat_input_count": 540
+    },
+    "Preset 5": {
+      "preset_name": "Preset 5",
+      "mode_id": "preset_5",
+      "damage_current_level": 0,
+      "damage_max_level": 6000,
+      "stat_input_count": 540
+    }
+  }
+}

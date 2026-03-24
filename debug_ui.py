@@ -18,6 +18,8 @@ REPO_ROOT = APP_PATH.parents[1] if APP_PATH.parent.name == "scripts" else APP_PA
 if str(REPO_ROOT) not in sys.path:
     sys.path.insert(0, str(REPO_ROOT))
 
+from models.preset_contract import CANONICAL_PRESET_NAMES, load_section_layout_contract
+
 
 @dataclass(frozen=True)
 class SectionSpec:
@@ -265,7 +267,7 @@ def flatten_ids_levels(sections: dict[str, dict]) -> pd.DataFrame:
         if name:
             records.append({"section": "Labs", "family": "Lab", "name": name, "level": _safe_cell(row, 1), "target": _safe_cell(row, 2), "max": _safe_cell(row, 3), "preset": None, "attribute": None, "subtype": None})
 
-    workshop_presets = {"Farming": 1, "Tourney": 3, "Milestone": 5, "Preset 4": 7, "Preset 5": 9}
+    workshop_presets = load_section_layout_contract()["workshop"]["preset_level_columns"]
     for row in sections["WS"]["rows"]:
         name = _safe_cell(row, 0)
         if not name or name == "Workshop Upgrade":
@@ -803,7 +805,7 @@ _inject_css()
 st.title("TowerSim Debug UI")
 st.caption("IDS, compiled account state, and query-prep inspector.")
 
-preset_options = ["Farming", "Tourney", "Milestone", "Preset 4", "Preset 5"]
+preset_options = list(CANONICAL_PRESET_NAMES)
 selected_preset = st.sidebar.selectbox("Preset", options=preset_options, index=0)
 selected_state_mode = st.sidebar.selectbox("Query state mode", options=["start_of_run", "max_progression"], index=0)
 selected_perk_state = st.sidebar.selectbox("Perk materialization", options=["auto", "on", "off"], index=0)

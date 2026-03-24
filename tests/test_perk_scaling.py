@@ -276,7 +276,7 @@ def test_farming_survivability_compare_respects_perk_bans(tmp_path):
     ]:
         farming_rows = audit.get(key, {}).get('Farming', [])
         assert farming_rows
-        assert all(row.get('preset_name') == 'ProjectedMax_AllAllowedExceptBanned' for row in farming_rows)
+        assert all(row.get('preset_name') == 'Farming' for row in farming_rows)
 
 
 

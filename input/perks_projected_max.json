@@ -1,4 +1,5 @@
 {
+  "preset_namespace_class": "transient",
   "perk_presets": {
     "ProjectedMax_AllAllowedExceptBanned": [
       {

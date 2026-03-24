@@ -61,6 +61,8 @@ from engine.query_state_mode_policy import (
     supported_state_modes,
 )
 from models.account_state import AccountState
+from models.bound_preset_family import bind_preset_family
+from models.preset_contract import sanitize_preset_name_for_canonical_output
 from models.stat_input import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -380,22 +382,6 @@ def _load_uw_plus_values() -> Dict[Tuple[str, str, int], float]:
 
 
 @lru_cache(maxsize=1)
-def _load_uw_track_order() -> Dict[str, List[str]]:
-    out: Dict[str, List[str]] = {}
-    seen: set[tuple[str, str]] = set()
-    with UW_TRACK_VALUES_PATH.open(newline='') as f:
-        for row in csv.DictReader(f):
-            key = (row['uw_name'], row['track_name'])
-            if key in seen:
-                continue
-            seen.add(key)
-            out.setdefault(row['uw_name'], []).append(row['track_name'])
-    if out.get('Golden Tower') == ['Multiplier', 'Cooldown']:
-        out['Golden Tower'] = ['Multiplier', 'Duration', 'Cooldown']
-    return out
-
-
-@lru_cache(maxsize=1)
 def _load_uw_lab_wiki_values() -> Dict[Tuple[str, int], float]:
     """Load all wiki-verified UW lab value tables into a unified (lab_name, level) -> value lookup."""
     out: Dict[Tuple[str, int], float] = {}
@@ -657,12 +643,28 @@ def _append(out: List[StatInput], row: StatInput) -> None:
 
 def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None = None, state_mode: str = 'start_of_run', card_preset_name: str | None = None, module_preset_name: str | None = None, perk_preset_name: str | None = None, perks_enabled: bool | None = None) -> List[StatInput]:
     preset = preset_name or account_state.default_preset
-    card_preset = card_preset_name or getattr(account_state, 'active_card_preset', None) or preset
-    module_preset = module_preset_name or getattr(account_state, 'active_module_preset', None) or preset
     active_perk_preset = getattr(account_state, 'active_perk_preset', None)
-    perk_preset = perk_preset_name or active_perk_preset or preset
-    if perks_enabled is None:
-        perks_enabled = bool(active_perk_preset)
+    perk_preset_namespace_class = getattr(account_state, 'perk_preset_namespace_class', 'canonical')
+    bound = bind_preset_family(
+        preset_name=preset,
+        state_mode=state_mode,
+        perk_namespace_class=perk_preset_namespace_class,
+        explicit_card_preset_name=card_preset_name,
+        explicit_module_preset_name=module_preset_name,
+        explicit_perk_preset_name=perk_preset_name,
+        active_perk_preset_name=active_perk_preset,
+        perks_enabled=perks_enabled,
+    )
+    preset = bound.preset_name
+    card_preset = bound.card_preset_name
+    module_preset = bound.module_preset_name
+    perk_preset = bound.perk_preset_name
+    canonical_output_perk_preset = sanitize_preset_name_for_canonical_output(
+        perk_preset,
+        namespace_class=perk_preset_namespace_class,
+        fallback_preset_name=preset,
+    )
+    perks_enabled = bound.perks_enabled
     state_mode = normalize_state_mode(state_mode)
     mapping_index, canonical_stats, alias_index, relic_index, family_slug_index = compiler_routing_indexes()
     lab_values = _load_lab_values()
@@ -683,7 +685,6 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     guardian_track_values = _load_guardian_track_values()
     uw_track_values = _load_uw_track_values()
     uw_plus_values = _load_uw_plus_values()
-    uw_track_order = _load_uw_track_order()
     guardian_scout_values = _load_guardian_scout_values()
     out: List[StatInput] = []
 
@@ -845,27 +846,43 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
             _set_row_field(row, 'notes', 'kb_routing_pending_for_workshop_label')
         _append(out, row)
 
-    # Enhancements: IDS already exposes the effective multiplier/value. Route by alias only where canonical stat exists.
-    for cells in account_state.workshop_enhancements.rows:
-        if not cells or not cells[0].strip():
-            continue
-        name = cells[0].strip()
+    # Enhancements: use typed WS+ tracks so selected preset lane determines level/value.
+    enhancement_tracks = getattr(account_state, 'workshop_enhancement_tracks', {}) or {}
+    if enhancement_tracks:
+        typed_enhancement_rows = []
+        for track in enhancement_tracks.values():
+            level = track.max_level if state_mode == 'max_progression' and track.max_level is not None else track.preset_levels.get(preset)
+            value = (1.0 + float(level) / 100.0) if level is not None else track.current_multiplier
+            typed_enhancement_rows.append((track.name, level, value, track.max_level))
+    else:
+        typed_enhancement_rows = []
+        for cells in account_state.workshop_enhancements.rows:
+            if not cells or not cells[0].strip():
+                continue
+            name = cells[0].strip()
+            value = None
+            for idx in [1, 2, 3]:
+                if idx < len(cells):
+                    try:
+                        value = float(cells[idx])
+                        break
+                    except (ValueError, TypeError):
+                        continue
+            typed_enhancement_rows.append((name, None, value, None))
+    for name, level, value, max_level in typed_enhancement_rows:
         alias_name = name.rstrip('+').strip()
-        value = None
-        for idx in [1, 2, 3]:
-            if idx < len(cells):
-                try:
-                    value = float(cells[idx])
-                    break
-                except (ValueError, TypeError):
-                    continue
         if value is None:
             continue
         row = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+')
+        _set_row_field(row, 'raw_level', level)
+        _set_row_field(row, 'resolved_value', float(value))
+        _set_row_field(row, 'resolved_unit', 'x')
+        if state_mode == 'max_progression' and max_level is not None:
+            _set_row_field(row, 'notes', 'state_mode=max_progression:using_ws_plus_max_level')
         contributor_id = ENHANCEMENT_CONTRIBUTOR_OVERRIDES.get(slug_text(alias_name))
         if contributor_id:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
-            _set_row_field(row, 'notes', 'kb_contributor_override_enhancement')
+            _set_row_field(row, 'notes', ((row.notes or '') + ':kb_contributor_override_enhancement').strip(':'))
         else:
             bind_alias_destination(row, alias_name, alias_index, canonical_stats, note='kb_alias_routed_enhancement')
         alias_slug = slug_text(alias_name)
@@ -920,7 +937,7 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
 
     # Relics: registry-only direct values from IDS. These are already account-state effects, not spend levels.
     for name, value in account_state.relics.items():
-        if value is None or name in {'Relics', 'Total Bonuses', 'Misc.', 'Event Relics', 'Guild Relics', 'Other Relics', 'Total Relics'}:
+        if value is None:
             continue
         if slug_text(name) == 'bot range':
             for dest in BOT_RANGE_CANONICALS:
@@ -996,26 +1013,64 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
         _append(out, unlock_row)
 
     # Bots: route medal-funded tracks into mechanic_param canonicals via KB contributor mappings.
-    for bot_name, upgrades in account_state.bot_upgrades.items():
-        for attr, level in upgrades.items():
-            binding = BOT_UPGRADE_BINDINGS.get((bot_name, attr))
-            contributor_id, track_name = binding if binding is not None else (None, None)
-            resolved = bot_track_values.get((bot_name, track_name, level)) if track_name is not None and level is not None else None
-            row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::Bots', notes='kb_bot_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_bot_track_lookup')
-            if contributor_id is not None:
-                bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
-                _set_row_field(row, 'kb_mapped', resolved is not None)
-            else:
-                _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
-                bot_slug = slug_text(bot_name).replace(' ', '_')
-                attr_slug = (track_name or slug_text(attr)).replace(' ', '_')
-                _set_row_field(row, 'destination_id', f'bot.{bot_slug}.{attr_slug}')
-                _set_row_field(row, 'resolver_id', 'standard_scalar_param')
-                _set_row_field(row, 'kb_mapped', resolved is not None)
-            _append(out, row)
+    typed_bot_tracks = getattr(account_state, 'bot_upgrade_tracks', {}) or {}
+    if typed_bot_tracks:
+        bot_track_rows = [
+            (bot_name, track.track_name, track.level, track.resolved_value, track.resolved_unit)
+            for bot_name, tracks in typed_bot_tracks.items()
+            for track in tracks
+        ]
+    else:
+        bot_track_rows = [
+            (bot_name, attr, level, None, None)
+            for bot_name, upgrades in account_state.bot_upgrades.items()
+            for attr, level in upgrades.items()
+        ]
+    for bot_name, attr, level, ids_resolved_value, ids_resolved_unit in bot_track_rows:
+        if level is None:
+            continue
+        binding = BOT_UPGRADE_BINDINGS.get((bot_name, attr))
+        contributor_id, track_name = binding if binding is not None else (None, None)
+        resolved = bot_track_values.get((bot_name, track_name, level)) if track_name is not None and level is not None else None
+        row = StatInput(stat_name=f'{bot_name}::{attr}', source_family='bot', source_name=bot_name, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::Bots', notes='kb_bot_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_bot_track_lookup')
+        _set_row_field(row, 'raw_level', level)
+        _set_row_field(row, 'resolved_value', float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None)
+        _set_row_field(row, 'resolved_unit', ids_resolved_unit)
+        if contributor_id is not None:
+            bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
+            _set_row_field(row, 'kb_mapped', resolved is not None)
+        else:
+            _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
+            bot_slug = slug_text(bot_name).replace(' ', '_')
+            attr_slug = (track_name or slug_text(attr)).replace(' ', '_')
+            _set_row_field(row, 'destination_id', f'bot.{bot_slug}.{attr_slug}')
+            _set_row_field(row, 'resolver_id', 'standard_scalar_param')
+            _set_row_field(row, 'kb_mapped', resolved is not None)
+        _append(out, row)
 
-    if account_state.guardians.rows:
+    guardian_attr_map = {
+        'cooldown': 'cooldown',
+        'duration': 'duration',
+        'range bonus': 'range_bonus',
+        'cash bonus': 'cash_bonus',
+        'recovery amount': 'recovery_amount',
+        'max recovery': 'max_recovery',
+        'percentage': 'percentage',
+        'multiplier': 'multiplier',
+        'targets': 'targets',
+        'find chance': 'find_chance',
+        'double find chance': 'double_find_chance',
+    }
+    typed_guardian_tracks = getattr(account_state, 'guardian_tracks', {}) or {}
+    if typed_guardian_tracks:
+        guardian_rows = [
+            (guardian_name, track.track_name, track.level, track.resolved_value, track.resolved_unit)
+            for guardian_name, tracks in typed_guardian_tracks.items()
+            for track in tracks
+        ]
+    else:
         current_guardian = None
+        guardian_rows = []
         for row_cells in account_state.guardians.rows:
             name = row_cells[0].strip() if len(row_cells) > 0 else ''
             attr = row_cells[2].strip() if len(row_cells) > 2 else ''
@@ -1028,34 +1083,26 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                     level = int(float(level_token))
                 except ValueError:
                     level = None
-                guardian_attr_map = {
-                    'cooldown': 'cooldown',
-                    'duration': 'duration',
-                    'range bonus': 'range_bonus',
-                    'cash bonus': 'cash_bonus',
-                    'recovery amount': 'recovery_amount',
-                    'max recovery': 'max_recovery',
-                    'percentage': 'percentage',
-                    'multiplier': 'multiplier',
-                    'targets': 'targets',
-                    'find chance': 'find_chance',
-                    'double find chance': 'double_find_chance',
-                }
-                g_attr = guardian_attr_map.get(slug_text(attr), slug_text(attr).replace(' ', '_'))
-                resolved = guardian_track_values.get((current_guardian, g_attr, level)) if level is not None else None
-                if resolved is None and current_guardian == 'Scout' and level is not None:
-                    resolved = guardian_scout_values.get((attr, level))
-                row = StatInput(stat_name=f'{current_guardian}::{attr}', source_family='guardian', source_name=current_guardian, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::Guardians', notes='kb_guardian_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_guardian_track_lookup')
-                destination = GUARDIAN_DESTINATION_OVERRIDES.get((current_guardian, attr))
-                if destination is not None:
-                    bind_destination(row, destination, canonical_stats, note='kb_guardian_override_routed')
-                else:
-                    _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
-                    guardian_slug = slug_text(current_guardian).replace(' ', '_')
-                    _set_row_field(row, 'destination_id', f'guardian.{guardian_slug}.{g_attr}')
-                    _set_row_field(row, 'resolver_id', 'standard_scalar_param')
-                    _set_row_field(row, 'kb_mapped', resolved is not None)
-                _append(out, row)
+                guardian_rows.append((current_guardian, attr, level, None, None))
+    for current_guardian, attr, level, ids_resolved_value, ids_resolved_unit in guardian_rows:
+        g_attr = guardian_attr_map.get(slug_text(attr), slug_text(attr).replace(' ', '_'))
+        resolved = guardian_track_values.get((current_guardian, g_attr, level)) if level is not None else None
+        if resolved is None and current_guardian == 'Scout' and level is not None:
+            resolved = guardian_scout_values.get((attr, level))
+        row = StatInput(stat_name=f'{current_guardian}::{attr}', source_family='guardian', source_name=current_guardian, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::Guardians', notes='kb_guardian_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_guardian_track_lookup')
+        _set_row_field(row, 'raw_level', level)
+        _set_row_field(row, 'resolved_value', float(resolved if resolved is not None else ids_resolved_value) if (resolved is not None or ids_resolved_value is not None) else None)
+        _set_row_field(row, 'resolved_unit', ids_resolved_unit)
+        destination = GUARDIAN_DESTINATION_OVERRIDES.get((current_guardian, attr))
+        if destination is not None:
+            bind_destination(row, destination, canonical_stats, note='kb_guardian_override_routed')
+        else:
+            _set_row_field(row, 'destination_object_type', 'runtime_mechanic_param')
+            guardian_slug = slug_text(current_guardian).replace(' ', '_')
+            _set_row_field(row, 'destination_id', f'guardian.{guardian_slug}.{g_attr}')
+            _set_row_field(row, 'resolver_id', 'standard_scalar_param')
+            _set_row_field(row, 'kb_mapped', resolved is not None)
+        _append(out, row)
 
     # UWs and UW+: resolve exact track values from bundled ladders and registry-driven track order.
     for uw_name, uw in account_state.ultimate_weapons.items():
@@ -1077,19 +1124,27 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
         _set_row_field(unlock_row, 'kb_mapped', True)
         _append(out, unlock_row)
 
-        tracks = uw_track_order.get(uw_name, [])
-        for idx, raw_level in enumerate(uw.track_levels):
-            try:
-                level = int(str(raw_level).strip())
-            except ValueError:
-                level = None
-            track_name = tracks[idx] if idx < len(tracks) else f'track_{idx+1}'
-            ids_actual_value = uw.track_values[idx] if idx < len(uw.track_values) else None
+        typed_tracks = getattr(account_state, 'uw_tracks', {}).get(uw_name, [])
+        if typed_tracks:
+            uw_track_rows = [(track.track_name, track.level, track.resolved_value) for track in typed_tracks]
+        else:
+            uw_track_rows = []
+            for idx, raw_level in enumerate(uw.track_levels):
+                try:
+                    level = int(str(raw_level).strip())
+                except ValueError:
+                    level = None
+                track_name = f'track_{idx+1}'
+                ids_actual_value = uw.track_values[idx] if idx < len(uw.track_values) else None
+                uw_track_rows.append((track_name, level, ids_actual_value))
+        for track_name, level, ids_actual_value in uw_track_rows:
             resolved = ids_actual_value if ids_actual_value is not None else (uw_track_values.get((uw_name, track_name, level)) if level is not None else None)
             if resolved is None and level is not None and uw_name == 'Golden Tower' and track_name == 'Duration':
                 resolved = 15.0 + float(level)
             note = 'ids_uw_current_value_preserved' if ids_actual_value is not None else ('kb_uw_track_resolved' if resolved is not None else 'runtime_surface_preserved_pending_uw_track_lookup')
             row = StatInput(stat_name=f'{uw_name}::{track_name}', source_family='uw', source_name=uw_name, value=resolved if resolved is not None else level, value_type='resolved_value' if resolved is not None else 'level', stage='account_state', provenance='IDS::UWs', notes=note)
+            _set_row_field(row, 'raw_level', level)
+            _set_row_field(row, 'resolved_value', float(resolved) if resolved is not None else None)
             contributor_id = UW_CONTRIBUTOR_OVERRIDES.get((uw_name, track_name)) or uw_contributor_id(uw_name, track_name)
             if contributor_id in mapping_index:
                 bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -1204,7 +1259,7 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                 value=value,
                 value_type=value_type,
                 stage='run_selected',
-                preset_name=perk_preset,
+                preset_name=canonical_output_perk_preset,
                 provenance='KB::Perks',
                 notes=f"perk_id={perk_id};picks={applied_picks};operation={operation};target={target_stat_id};standard_perk_bonus_mult={perk_lab_state['standard_bonus_multiplier']:.4f};tradeoff_bonus_mult={perk_lab_state['tradeoff_bonus_multiplier']:.4f}",
                 contributor_id=f"perk::{perk_id}::effect_{effect_index}",

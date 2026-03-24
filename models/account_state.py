@@ -4,7 +4,9 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-PRESET_NAMES = ["Farming", "Tourney", "Milestone", "Preset 4", "Preset 5"]
+from models.preset_contract import CANONICAL_PRESET_NAMES
+
+PRESET_NAMES = list(CANONICAL_PRESET_NAMES)
 SLOT_TYPES = ["cannon", "armor", "generator", "core"]
 
 
@@ -40,11 +42,46 @@ class UltimateWeaponSnapshot:
 
 
 @dataclass(frozen=True)
+class UwTrackSnapshot:
+    uw_name: str
+    track_name: str
+    level: Optional[int]
+    level_token: str
+    resolved_value: Optional[float]
+
+
+@dataclass(frozen=True)
 class UwPlusTrackSnapshot:
     uw_name: str
     plus_track_name: str
     current_state: str
     display_token: str
+
+
+@dataclass(frozen=True)
+class BotUpgradeSnapshot:
+    bot_name: str
+    track_name: str
+    level: Optional[int]
+    resolved_value: Optional[float]
+    resolved_unit: Optional[str]
+
+
+@dataclass(frozen=True)
+class GuardianTrackSnapshot:
+    guardian_name: str
+    track_name: str
+    level: Optional[int]
+    resolved_value: Optional[float]
+    resolved_unit: Optional[str]
+
+
+@dataclass(frozen=True)
+class WorkshopEnhancementSnapshot:
+    name: str
+    current_multiplier: Optional[float]
+    preset_levels: Dict[str, Optional[int]]
+    max_level: Optional[int]
 
 
 @dataclass(frozen=True)
@@ -92,13 +129,17 @@ class AccountState:
     labs: Dict[str, Optional[int]]
     workshop: Dict[str, WorkshopEntrySnapshot]
     workshop_enhancements: TableSnapshot
+    workshop_enhancement_tracks: Dict[str, WorkshopEnhancementSnapshot]
     ultimate_weapons: Dict[str, UltimateWeaponSnapshot]
+    uw_tracks: Dict[str, List[UwTrackSnapshot]]
     uw_plus_tracks: Dict[str, UwPlusTrackSnapshot]
     relics: Dict[str, Optional[float]]
     vault: Dict[str, Any]
     bots: List[str]
     bot_upgrades: Dict[str, Dict[str, int]]
+    bot_upgrade_tracks: Dict[str, List[BotUpgradeSnapshot]]
     guardians: TableSnapshot
+    guardian_tracks: Dict[str, List[GuardianTrackSnapshot]]
     player_meta: Dict[str, Optional[str]]
     theme_song_coin_multiplier: Optional[float]
     cards_inventory: Dict[str, CardSnapshot]
@@ -108,6 +149,7 @@ class AccountState:
     module_presets: Dict[str, Dict[str, ModulePresetSelection]]
     modules_inventory: Dict[str, ModuleSnapshot]
     perk_presets: Dict[str, List[PerkSelection]]
+    perk_preset_namespace_class: str
     active_perk_preset: Optional[str]
     active_card_preset: str
     active_module_preset: str

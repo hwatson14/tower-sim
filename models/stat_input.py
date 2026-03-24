@@ -21,6 +21,9 @@ class StatInput:
     destination_id: Optional[str] = None
     resolver_id: Optional[str] = None
     kb_mapped: bool = False
+    raw_level: Optional[int] = None
+    resolved_value: Optional[float] = None
+    resolved_unit: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
