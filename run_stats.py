@@ -113,6 +113,75 @@ def _build_audit_surface_manifest(account_state, canonical_output_preset: str) -
     }
 
 
+
+def _synthetic_preset_names_present(account_state) -> list[str]:
+    raw_names = set()
+    for lane_map_name in ('card_presets', 'module_presets', 'perk_presets'):
+        lane_map = getattr(account_state, lane_map_name, {}) or {}
+        raw_names.update(lane_map.keys())
+    return sorted(name for name in raw_names if name not in CANONICAL_PRESET_NAMES)
+
+
+def _build_artifact_contract_manifest(account_state, canonical_output_preset: str, stat_inputs, statbook_dict: dict) -> dict:
+    return {
+        'version': 1,
+        'canonical_output_preset': canonical_output_preset,
+        'canonical_presets': list(CANONICAL_PRESET_NAMES),
+        'canonical_preset_count': len(CANONICAL_PRESET_NAMES),
+        'synthetic_preset_names_present': _synthetic_preset_names_present(account_state),
+        'artifacts': [
+            {'surface': 'account_state.json', 'artifact_class': 'canonical_snapshot', 'contract': 'full', 'provenance': 'current_run_generated', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'stat_inputs.json', 'artifact_class': 'canonical_snapshot', 'contract': 'full', 'provenance': 'current_run_generated', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'statbook.json', 'artifact_class': 'canonical_snapshot', 'contract': 'full', 'provenance': 'current_run_generated', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'state_matrix.json', 'artifact_class': 'derived_matrix', 'contract': 'full', 'provenance': 'current_run_generated', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'statbook_publishable.json', 'artifact_class': 'publishable_view', 'contract': 'partial', 'provenance': 'policy_filtered_from_current_run', 'producer': 'run_stats.py', 'canonical': False},
+            {'surface': 'diagnostics.json', 'artifact_class': 'compare_view', 'contract': 'partial', 'provenance': 'compare_generated_from_current_run_and_ep', 'producer': 'run_stats.py', 'canonical': False},
+            {'surface': 'ep_oracle_compare.json', 'artifact_class': 'compare_view', 'contract': 'partial', 'provenance': 'compare_generated_from_current_run_and_ep', 'producer': 'run_stats.py', 'canonical': False},
+            {'surface': 'line_by_line_verification.json', 'artifact_class': 'verification_view', 'contract': 'partial', 'provenance': 'verification_generated_from_current_run_and_compare', 'producer': 'run_stats.py', 'canonical': False},
+            {'surface': 'survivor_closure_report.json', 'artifact_class': 'verification_view', 'contract': 'partial', 'provenance': 'verification_generated_from_current_run_and_compare', 'producer': 'run_stats.py', 'canonical': False},
+            {'surface': 'audit_surface_manifest.json', 'artifact_class': 'audit_manifest', 'contract': 'full', 'provenance': 'manifest_generated_from_current_run', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'artifact_contract_manifest.json', 'artifact_class': 'audit_manifest', 'contract': 'full', 'provenance': 'manifest_generated_from_current_run', 'producer': 'run_stats.py', 'canonical': True},
+            {'surface': 'family_completeness_matrix.json', 'artifact_class': 'audit_manifest', 'contract': 'full', 'provenance': 'manifest_generated_from_current_run', 'producer': 'run_stats.py', 'canonical': True},
+        ],
+    }
+
+
+def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
+    from collections import Counter
+    family_totals = Counter(row.source_family for row in stat_inputs)
+    mapped_totals = Counter(row.source_family for row in stat_inputs if row.kb_mapped)
+    card_presets = getattr(account_state, 'card_presets', {}) or {}
+    module_presets = getattr(account_state, 'module_presets', {}) or {}
+    perk_presets = getattr(account_state, 'perk_presets', {}) or {}
+    preset_lane_completeness = {}
+    for preset in CANONICAL_PRESET_NAMES:
+        preset_lane_completeness[preset] = {
+            'cards_explicit': preset in card_presets,
+            'cards_empty': preset in card_presets and not bool(card_presets.get(preset)),
+            'modules_explicit': preset in module_presets,
+            'modules_empty': preset in module_presets and not bool(module_presets.get(preset)),
+            'perks_explicit': preset in perk_presets,
+            'perks_empty': preset in perk_presets and not bool(perk_presets.get(preset)),
+        }
+    families = {}
+    for family in sorted(set(family_totals) | {'workshop','lab','card','module','module_substat','relic','vault','enhancement','uw','bot','guardian','uw_plus'}):
+        total_rows = int(family_totals.get(family, 0))
+        mapped_rows = int(mapped_totals.get(family, 0))
+        families[family] = {
+            'total_rows': total_rows,
+            'mapped_rows': mapped_rows,
+            'unmapped_rows': total_rows - mapped_rows,
+        }
+    return {
+        'version': 1,
+        'canonical_output_preset': getattr(account_state, 'default_preset', None),
+        'canonical_presets': list(CANONICAL_PRESET_NAMES),
+        'synthetic_preset_names_present': _synthetic_preset_names_present(account_state),
+        'preset_lane_completeness': preset_lane_completeness,
+        'families': families,
+    }
+
+
 def _json_sanitize(obj):
     if isinstance(obj, Path):
         return _relpath_str(obj)
@@ -2728,6 +2797,12 @@ def main() -> int:
     (args.out / 'state_matrix.json').write_text(json.dumps(_json_sanitize(state_matrix), indent=2, default=str))
     (args.out / 'audit_surface_manifest.json').write_text(
         json.dumps(_json_sanitize(_build_audit_surface_manifest(account_state, args.preset)), indent=2, default=str)
+    )
+    (args.out / 'artifact_contract_manifest.json').write_text(
+        json.dumps(_json_sanitize(_build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)), indent=2, default=str)
+    )
+    (args.out / 'family_completeness_matrix.json').write_text(
+        json.dumps(_json_sanitize(_build_family_completeness_matrix(account_state, stat_inputs)), indent=2, default=str)
     )
     optimizer_scores = compute_optimizer_scores(statbook_dict)
     (args.out / 'optimizer_scores.json').write_text(json.dumps(_json_sanitize(optimizer_scores), indent=2, default=str))
