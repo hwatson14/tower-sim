@@ -76,3 +76,52 @@ def test_compile_stat_inputs_with_identity_preserves_existing_compiler_behavior(
 
     assert bound.binding.identity.runtime_branch_id == 'branch_base'
     assert bound.stat_inputs
+
+
+def test_state_identity_distinguishes_missing_and_explicit_empty_perk_state():
+    missing_state = build_state(perks_filename='perks.json')
+    base_empty_state = build_state(perks_filename='perks.json')
+    empty_perk_presets = dict(base_empty_state.perk_presets)
+    empty_perk_presets['Farming'] = []
+    empty_state = replace(
+        base_empty_state,
+        perk_presets=empty_perk_presets,
+        active_perk_preset='Farming',
+    )
+
+    missing_identity = bind_state_identity(
+        missing_state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        runtime_branch_id='branch_base',
+    ).identity
+    empty_identity = bind_state_identity(
+        empty_state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        runtime_branch_id='branch_base',
+    ).identity
+
+    assert missing_identity.loadout_id != empty_identity.loadout_id
+
+
+def test_state_identity_distinguishes_missing_and_zero_runtime_values():
+    zero_state = build_state()
+    missing_state = build_state()
+    zero_state.labs['Damage'] = 0
+    missing_state.labs.pop('Damage', None)
+
+    zero_identity = bind_state_identity(
+        zero_state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        runtime_branch_id='branch_base',
+    ).identity
+    missing_identity = bind_state_identity(
+        missing_state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        runtime_branch_id='branch_base',
+    ).identity
+
+    assert zero_identity.account_snapshot_id != missing_identity.account_snapshot_id

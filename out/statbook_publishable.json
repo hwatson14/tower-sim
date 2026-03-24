@@ -242,7 +242,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_damage",
           "contributor_id": "perk::PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50::effect_2",
@@ -260,7 +260,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_damage",
           "contributor_id": "perk::PERK_X1_15_DAMAGE::effect_1",
@@ -278,7 +278,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_damage",
           "contributor_id": "perk::PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH::effect_1",
@@ -1478,7 +1478,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_hp",
           "contributor_id": "perk::PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60::effect_2",
@@ -1496,7 +1496,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_hp",
           "contributor_id": "perk::PERK_X1_20_MAX_HEALTH::effect_1",
@@ -1514,7 +1514,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_hp",
           "contributor_id": "perk::PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70::effect_2",
@@ -1727,7 +1727,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_regen",
           "contributor_id": "perk::PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60::effect_1",
@@ -1745,7 +1745,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:tower_regen",
           "contributor_id": "perk::PERK_X1_75_HEALTH_REGEN::effect_1",
@@ -1939,7 +1939,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:absolute_defense",
           "contributor_id": "perk::PERK_X1_15_DEFENSE_ABSOLUTE::effect_1",
@@ -2095,7 +2095,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:def_pct",
           "contributor_id": "perk::PERK_DEFENSE_PERCENT_4_00::effect_1",
@@ -3285,7 +3285,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:cash_bonus",
           "contributor_id": "perk::PERK_X1_15_CASH_BONUS::effect_1",
@@ -3408,7 +3408,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:cash_per_wave",
           "contributor_id": "perk::PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH::effect_1",
@@ -3546,7 +3546,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:coins_per_kill_bonus",
           "contributor_id": "perk::PERK_X1_15_ALL_COIN_BONUSES::effect_1",
@@ -3564,7 +3564,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:coins_per_kill_bonus",
           "contributor_id": "perk::PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70::effect_1",
@@ -3825,7 +3825,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:interest",
           "contributor_id": "perk::PERK_INTEREST_X1_50::effect_1",
@@ -4927,7 +4927,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_chrono_field_duration_seconds",
           "contributor_id": "perk::PERK_CHRONO_FIELD_DURATION_5S::effect_1",
@@ -5381,7 +5381,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_golden_tower_bonus",
           "contributor_id": "perk::PERK_GOLDEN_TOWER_BONUS_X1_5::effect_1",
@@ -7495,7 +7495,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:orb_count",
           "contributor_id": "perk::PERK_ORBS_1::effect_1",
@@ -11534,7 +11534,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:bounce_shot_count",
           "contributor_id": "perk::PERK_BOUNCE_SHOT_2::effect_1",
@@ -12011,7 +12011,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:lifesteal",
           "contributor_id": "perk::PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70::effect_1",
@@ -12217,7 +12217,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:knockback_force",
           "contributor_id": "perk::PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70::effect_2",
@@ -12674,7 +12674,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:land_mine_damage",
           "contributor_id": "perk::PERK_LAND_MINE_DAMAGE_X3_50::effect_1",
@@ -12963,7 +12963,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_split_routed:free_upgrade_chance_all",
           "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
@@ -13102,7 +13102,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_split_routed:free_upgrade_chance_all",
           "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
@@ -13241,7 +13241,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_split_routed:free_upgrade_chance_all",
           "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
@@ -18213,7 +18213,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_chain_lightning_damage",
           "contributor_id": "perk::PERK_CHAIN_LIGHTNING_DAMAGE_X2::effect_1",
@@ -18887,7 +18887,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_death_wave_waves",
           "contributor_id": "perk::PERK_1_WAVE_ON_DEATH_WAVE::effect_1",
@@ -20059,7 +20059,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_black_hole_duration_seconds",
           "contributor_id": "perk::PERK_BLACK_HOLE_DURATION_12_0S::effect_1",
@@ -20313,7 +20313,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_spotlight_damage_bonus",
           "contributor_id": "perk::PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5::effect_1",
@@ -21655,7 +21655,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_smart_missiles",
           "contributor_id": "perk::PERK_4_MORE_SMART_MISSILES::effect_1",
@@ -21723,7 +21723,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:boss_health",
           "contributor_id": "perk::PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50::effect_1",
@@ -21741,7 +21741,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:boss_health",
           "contributor_id": "perk::PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH::effect_2",
@@ -21809,7 +21809,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:boss_speed",
           "contributor_id": "perk::PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50::effect_2",
@@ -21877,7 +21877,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:enemy_damage",
           "contributor_id": "perk::PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50::effect_1",
@@ -21945,7 +21945,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_inner_land_mines_sets",
           "contributor_id": "perk::PERK_EXTRA_SET_OF_INNER_MINES::effect_1",
@@ -22013,7 +22013,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:free_upgrade_chance_all",
           "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
@@ -22081,7 +22081,7 @@
           "value_type": "flat",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:max_game_speed",
           "contributor_id": "perk::PERK_INCREASE_MAX_GAME_SPEED_BY_1_00::effect_1",
@@ -22149,7 +22149,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:perk_wave_requirement",
           "contributor_id": "perk::PERK_PERK_WAVE_REQUIREMENT_20_00::effect_1",
@@ -22217,7 +22217,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:ranged_enemy_damage",
           "contributor_id": "perk::PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3::effect_2",
@@ -22285,7 +22285,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_poison_swamp_radius",
           "contributor_id": "perk::PERK_SWAMP_RADIUS_X1_5::effect_1",
@@ -22353,7 +22353,7 @@
           "value_type": "bool",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:random_uw_unlock",
           "contributor_id": "perk::PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON::effect_1",
@@ -22421,7 +22421,7 @@
           "value_type": "resolved_value",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:enemy_kill_cash",
           "contributor_id": "perk::PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH::effect_2",
@@ -28499,6 +28499,274 @@
       "publishable": false,
       "publish_notes": "Trace-only raw surface."
     },
+    "raw::Event Relics": {
+      "stat_name": "Event Relics",
+      "final_value": null,
+      "value_type": "raw_unmapped_input",
+      "source_count": 1,
+      "status": "unmapped",
+      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
+      "contributors": [
+        {
+          "stat_name": "Event Relics",
+          "source_family": "relic",
+          "source_name": "Event Relics",
+          "value": 112.0,
+          "value_type": "resolved_value",
+          "stage": "account_state",
+          "active": true,
+          "preset_name": null,
+          "provenance": "IDS::Relics",
+          "notes": "kb_alias_routed_relic_alias_missing",
+          "contributor_id": null,
+          "destination_object_type": null,
+          "destination_id": null,
+          "resolver_id": null,
+          "kb_mapped": false,
+          "display_value": "112"
+        }
+      ],
+      "schema": {
+        "unit": "count",
+        "resolver": "integer_count_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_unit_value",
+          "unit_multiplier"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": null,
+      "publishable": false,
+      "publish_notes": "Trace-only raw surface."
+    },
+    "raw::Guild Relics": {
+      "stat_name": "Guild Relics",
+      "final_value": null,
+      "value_type": "raw_unmapped_input",
+      "source_count": 1,
+      "status": "unmapped",
+      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
+      "contributors": [
+        {
+          "stat_name": "Guild Relics",
+          "source_family": "relic",
+          "source_name": "Guild Relics",
+          "value": 13.0,
+          "value_type": "resolved_value",
+          "stage": "account_state",
+          "active": true,
+          "preset_name": null,
+          "provenance": "IDS::Relics",
+          "notes": "kb_alias_routed_relic_alias_missing",
+          "contributor_id": null,
+          "destination_object_type": null,
+          "destination_id": null,
+          "resolver_id": null,
+          "kb_mapped": false,
+          "display_value": "13"
+        }
+      ],
+      "schema": {
+        "unit": "count",
+        "resolver": "integer_count_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_unit_value",
+          "unit_multiplier"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": null,
+      "publishable": false,
+      "publish_notes": "Trace-only raw surface."
+    },
+    "raw::Other Relics": {
+      "stat_name": "Other Relics",
+      "final_value": null,
+      "value_type": "raw_unmapped_input",
+      "source_count": 1,
+      "status": "unmapped",
+      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
+      "contributors": [
+        {
+          "stat_name": "Other Relics",
+          "source_family": "relic",
+          "source_name": "Other Relics",
+          "value": 22.0,
+          "value_type": "resolved_value",
+          "stage": "account_state",
+          "active": true,
+          "preset_name": null,
+          "provenance": "IDS::Relics",
+          "notes": "kb_alias_routed_relic_alias_missing",
+          "contributor_id": null,
+          "destination_object_type": null,
+          "destination_id": null,
+          "resolver_id": null,
+          "kb_mapped": false,
+          "display_value": "22"
+        }
+      ],
+      "schema": {
+        "unit": "count",
+        "resolver": "integer_count_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_unit_value",
+          "unit_multiplier"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": null,
+      "publishable": false,
+      "publish_notes": "Trace-only raw surface."
+    },
+    "raw::Total Relics": {
+      "stat_name": "Total Relics",
+      "final_value": null,
+      "value_type": "raw_unmapped_input",
+      "source_count": 1,
+      "status": "unmapped",
+      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
+      "contributors": [
+        {
+          "stat_name": "Total Relics",
+          "source_family": "relic",
+          "source_name": "Total Relics",
+          "value": 147.0,
+          "value_type": "resolved_value",
+          "stage": "account_state",
+          "active": true,
+          "preset_name": null,
+          "provenance": "IDS::Relics",
+          "notes": "kb_alias_routed_relic_alias_missing",
+          "contributor_id": null,
+          "destination_object_type": null,
+          "destination_id": null,
+          "resolver_id": null,
+          "kb_mapped": false,
+          "display_value": "147"
+        }
+      ],
+      "schema": {
+        "unit": "count",
+        "resolver": "integer_count_param",
+        "allowed_input_value_types": [
+          "bool",
+          "count",
+          "flat",
+          "multiplier",
+          "multiplier_display",
+          "pct",
+          "percent_display",
+          "resolved_value"
+        ],
+        "disallowed_input_value_types": [
+          "level",
+          "raw_text",
+          "display_token",
+          "missing_inventory"
+        ],
+        "publish_gate_rules": [
+          "no_numeric_publish_if_any_contributor_is_unresolved",
+          "no_numeric_publish_if_any_contributor_value_type_is_level",
+          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
+        ],
+        "expected_input_semantics": [
+          "resolved_unit_value",
+          "unit_multiplier"
+        ],
+        "explicit_caps": {}
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": null,
+      "publishable": false,
+      "publish_notes": "Trace-only raw surface."
+    },
     "raw::Keys spent": {
       "stat_name": "Keys spent",
       "final_value": null,
@@ -28524,408 +28792,6 @@
           "resolver_id": null,
           "kb_mapped": false,
           "display_value": "0"
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Total Bonuses": {
-      "stat_name": "Total Bonuses",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Total Bonuses",
-          "source_family": "vault",
-          "source_name": "Total Bonuses",
-          "value": "Active",
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": "Active"
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Misc.": {
-      "stat_name": "Misc.",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Misc.",
-          "source_family": "vault",
-          "source_name": "Misc.",
-          "value": null,
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": null
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Attack": {
-      "stat_name": "Attack",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Attack",
-          "source_family": "vault",
-          "source_name": "Attack",
-          "value": null,
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": null
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Defense": {
-      "stat_name": "Defense",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Defense",
-          "source_family": "vault",
-          "source_name": "Defense",
-          "value": null,
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": null
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Utility": {
-      "stat_name": "Utility",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Utility",
-          "source_family": "vault",
-          "source_name": "Utility",
-          "value": null,
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": null
-        }
-      ],
-      "schema": {
-        "unit": "count",
-        "resolver": "integer_count_param",
-        "allowed_input_value_types": [
-          "bool",
-          "count",
-          "flat",
-          "multiplier",
-          "multiplier_display",
-          "pct",
-          "percent_display",
-          "resolved_value"
-        ],
-        "disallowed_input_value_types": [
-          "level",
-          "raw_text",
-          "display_token",
-          "missing_inventory"
-        ],
-        "publish_gate_rules": [
-          "no_numeric_publish_if_any_contributor_is_unresolved",
-          "no_numeric_publish_if_any_contributor_value_type_is_level",
-          "no_numeric_publish_if_any_contributor_is_semantically_incompatible"
-        ],
-        "expected_input_semantics": [
-          "resolved_unit_value",
-          "unit_multiplier"
-        ],
-        "explicit_caps": {}
-      },
-      "formula_contract": {
-        "formula_class": "unclassified",
-        "publish_policy": "allow",
-        "compare_policy": "normal",
-        "rationale": ""
-      },
-      "display_value": null,
-      "publishable": false,
-      "publish_notes": "Trace-only raw surface."
-    },
-    "raw::Unlocks": {
-      "stat_name": "Unlocks",
-      "final_value": null,
-      "value_type": "raw_unmapped_input",
-      "source_count": 1,
-      "status": "unmapped",
-      "notes": "Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.",
-      "contributors": [
-        {
-          "stat_name": "Unlocks",
-          "source_family": "vault",
-          "source_name": "Unlocks",
-          "value": null,
-          "value_type": "raw_text",
-          "stage": "account_state",
-          "active": true,
-          "preset_name": null,
-          "provenance": "IDS::Vault",
-          "notes": "kb_alias_routed_vault_alias_missing",
-          "contributor_id": null,
-          "destination_object_type": null,
-          "destination_id": null,
-          "resolver_id": null,
-          "kb_mapped": false,
-          "display_value": null
         }
       ],
       "schema": {
@@ -29051,7 +28917,7 @@
           "value_type": "raw_text",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "perk_id=PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3;picks=1;operation=special_reduction;target=ranged_enemy_attack_distance;standard_perk_bonus_mult=1.2500;tradeoff_bonus_mult=1.1000",
           "contributor_id": "perk::PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3::effect_1",
@@ -29136,7 +29002,7 @@
           "value_type": "pct",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_split_routed:free_upgrade_chance_all",
           "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
@@ -29247,7 +29113,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:coins_per_kill_bonus",
           "contributor_id": "perk::PERK_X1_15_ALL_COIN_BONUSES::effect_1",
@@ -29265,7 +29131,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:coins_per_kill_bonus",
           "contributor_id": "perk::PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70::effect_1",
@@ -29617,7 +29483,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_chain_lightning_damage",
           "contributor_id": "perk::PERK_CHAIN_LIGHTNING_DAMAGE_X2::effect_1",
@@ -29720,7 +29586,7 @@
           "value_type": "multiplier",
           "stage": "run_selected",
           "active": true,
-          "preset_name": "ProjectedMax_AllAllowedExceptBanned",
+          "preset_name": "Farming",
           "provenance": "KB::Perks",
           "notes": "kb_perk_effect_routed:uw_spotlight_damage_bonus",
           "contributor_id": "perk::PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5::effect_1",
@@ -40736,7 +40602,7 @@
       }
     },
     "mapped_input_count": 493,
-    "unmapped_input_count": 92,
+    "unmapped_input_count": 90,
     "input_count_by_family": {
       "bot": 16,
       "bot_unlock": 6,
@@ -40748,12 +40614,12 @@
       "module_substat": 34,
       "perk": 43,
       "player_stuff": 5,
-      "relic": 31,
+      "relic": 35,
       "theme_song": 1,
       "uw": 27,
       "uw_plus": 9,
       "uw_unlock": 9,
-      "vault": 71,
+      "vault": 65,
       "workshop": 48
     },
     "mapped_count_by_family": {

@@ -8,7 +8,13 @@ from engine.perk_timeline_state import PerkTimelineEvent, load_perk_timeline
 
 from models.account_state import AccountState
 
-MODE_IDS = {"Farming": "farming", "Tourney": "tournament", "Milestone": "milestone"}
+MODE_IDS = {
+    "Farming": "farming",
+    "Tourney": "tournament",
+    "Milestone": "milestone",
+    "Preset 4": "preset_4",
+    "Preset 5": "preset_5",
+}
 
 
 @dataclass(frozen=True)

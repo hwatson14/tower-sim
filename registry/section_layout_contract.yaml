@@ -1,0 +1,67 @@
+version: 1
+sections:
+  workshop:
+    preset_level_columns:
+      Farming: 1
+      Tourney: 3
+      Milestone: 5
+      Preset 4: 7
+      Preset 5: 9
+    max_level_column: 11
+  ws_plus:
+    name_column: 0
+    multiplier_column: 1
+    preset_level_columns:
+      Farming: 2
+      Tourney: 3
+      Milestone: 4
+      Preset 4: 5
+      Preset 5: 6
+    max_level_column: 7
+    header_rows: 2
+  cards:
+    preset_assignment_columns:
+      Farming: 3
+      Tourney: 4
+      Milestone: 5
+      Preset 4: 6
+      Preset 5: 7
+    label_tokens:
+      - Farming
+      - Tourney
+      - Milestone
+      - Preset 4
+      - Preset 5
+      - Preset 3
+  modules:
+    preset_label_aliases:
+      Farming: Farming
+      Tourney: Tourney
+      Milestone: Milestone
+      Testing: Milestone
+      Placeholder 4th preset: Preset 4
+      Placeholder 5th preset: Preset 5
+  uw:
+    name_column: 0
+    attribute_column: 2
+    resolved_value_column: 3
+    display_token_column: 4
+    block_size: 4
+    stat_rows_per_block: 3
+    plus_row_index: 3
+  bots:
+    name_column: 0
+    attribute_column: 2
+    resolved_value_column: 3
+    display_token_column: 4
+    truthy_name_tokens:
+      - true
+      - false
+  guardians:
+    name_column: 0
+    attribute_column: 2
+    resolved_value_column: 3
+    display_token_column: 4
+    truthy_name_tokens:
+      - true
+      - false

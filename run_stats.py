@@ -25,6 +25,94 @@ def _relpath_str(path_like) -> str:
         except Exception:
             return str(p)
 
+def _sanitized_account_state_for_output(account_state, canonical_output_preset: str) -> dict:
+    payload = account_state.to_dict()
+    namespace_class = getattr(account_state, 'perk_preset_namespace_class', 'canonical')
+    payload['perk_presets'] = sanitize_perk_presets_for_canonical_output(
+        payload.get('perk_presets') or {},
+        namespace_class=namespace_class,
+        fallback_preset_name=canonical_output_preset,
+        active_preset_name=getattr(account_state, 'active_perk_preset', None),
+    )
+    payload['active_perk_preset'] = sanitize_preset_name_for_canonical_output(
+        getattr(account_state, 'active_perk_preset', None),
+        namespace_class=namespace_class,
+        fallback_preset_name=canonical_output_preset,
+    )
+    return payload
+
+
+def _sanitized_configured_perk_presets(account_state, canonical_output_preset: str) -> dict[str, list[str]]:
+    raw = {name: [selection.perk_id for selection in selections] for name, selections in account_state.perk_presets.items()}
+    return sanitize_perk_presets_for_canonical_output(
+        raw,
+        namespace_class=getattr(account_state, 'perk_preset_namespace_class', 'canonical'),
+        fallback_preset_name=canonical_output_preset,
+        active_preset_name=getattr(account_state, 'active_perk_preset', None),
+    )
+
+
+def _sanitized_active_perk_preset(account_state, canonical_output_preset: str) -> str | None:
+    return sanitize_preset_name_for_canonical_output(
+        getattr(account_state, 'active_perk_preset', None),
+        namespace_class=getattr(account_state, 'perk_preset_namespace_class', 'canonical'),
+        fallback_preset_name=canonical_output_preset,
+    )
+
+
+def _build_audit_surface_manifest(account_state, canonical_output_preset: str) -> dict:
+    card_presets = getattr(account_state, 'card_presets', {}) or {}
+    module_presets = getattr(account_state, 'module_presets', {}) or {}
+    perk_presets = getattr(account_state, 'perk_presets', {}) or {}
+    preset_lane_completeness = {}
+    for preset in CANONICAL_PRESET_NAMES:
+        preset_lane_completeness[preset] = {
+            'cards_explicit': preset in card_presets,
+            'cards_empty': preset in card_presets and not bool(card_presets.get(preset)),
+            'modules_explicit': preset in module_presets,
+            'modules_empty': preset in module_presets and not bool(module_presets.get(preset)),
+            'perks_explicit': preset in perk_presets,
+            'perks_empty': preset in perk_presets and not bool(perk_presets.get(preset)),
+        }
+    return {
+        'version': 1,
+        'canonical_output_preset': canonical_output_preset,
+        'surface_contracts': [
+            {
+                'surface': 'account_state.json',
+                'contract': 'full',
+                'completeness_scope': 'canonical_full_state',
+                'notes': 'canonical account-state snapshot',
+            },
+            {
+                'surface': 'state_matrix.json',
+                'contract': 'full',
+                'completeness_scope': 'state_mode_resolution_matrix',
+                'notes': 'full matrix over supported state modes',
+            },
+            {
+                'surface': 'diagnostics.json',
+                'contract': 'partial',
+                'completeness_scope': 'selected_context',
+                'notes': 'diagnostic/selected-context summaries only',
+            },
+            {
+                'surface': 'statbook_publishable.json',
+                'contract': 'partial',
+                'completeness_scope': 'publishable_filtered',
+                'notes': 'publishable policy filtered rows',
+            },
+            {
+                'surface': 'ep_oracle_compare.json',
+                'contract': 'partial',
+                'completeness_scope': 'compare_context',
+                'notes': 'compare-only selected context',
+            },
+        ],
+        'preset_lane_completeness': preset_lane_completeness,
+    }
+
+
 def _json_sanitize(obj):
     if isinstance(obj, Path):
         return _relpath_str(obj)
@@ -47,6 +135,11 @@ if str(ROOT) not in sys.path:
 from parsers.ids_parser import parse_ids
 from compilers.account_state_compiler import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs, SUPPORTED_STATE_MODES, normalize_state_mode, state_mode_support
+from models.preset_contract import (
+    CANONICAL_PRESET_NAMES,
+    sanitize_perk_presets_for_canonical_output,
+    sanitize_preset_name_for_canonical_output,
+)
 from engine.display import (
     _format_display_number,
     annotate_compare_display_fields as _annotate_compare_display_fields,
@@ -230,6 +323,7 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
             continue
         selections.append({'perk_id': meta['perk_id'], 'picks': int(picks)})
     generated = {
+        'preset_namespace_class': 'transient',
         'perk_presets': {
             'ProjectedMax_AllAllowedExceptBanned': selections,
         },
@@ -2153,7 +2247,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         'perk_materialized': _perks_enabled_for_state(default_state.active_perk_preset, _compare_perk_state_for_preset(default_preset, perk_state, forced_preset_perk_states)),
         'perk_state_by_preset': dict(sorted(perk_state_by_preset.items())),
         'perk_materialized_by_preset': dict(sorted(perk_materialized_by_preset.items())),
-        'active_perk_preset': default_state.active_perk_preset,
+        'active_perk_preset': _sanitized_active_perk_preset(default_state, default_preset),
         'default_compare_preset': default_preset,
         'forced_preset_perk_states': dict(sorted((forced_preset_perk_states or {}).items())),
         'active_cards_by_preset': {
@@ -2239,6 +2333,7 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
     audit_state = replace(
         account_state,
         perk_presets=audit_perk_presets,
+        perk_preset_namespace_class='transient',
         active_perk_preset='__audit_all_perks__',
     )
     audit_rows = [row for row in compile_stat_inputs(audit_state, preset_name=account_state.default_preset, state_mode='start_of_run') if row.source_family == 'perk']
@@ -2488,7 +2583,7 @@ def main() -> int:
                 'perk_stat_input_support': True,
                 'perk_resolver_support': True,
                 'loadout_external_config_support': True,
-                'active_perk_preset': account_state.active_perk_preset,
+                'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
                 'state_mode': args.state_mode,
             },
             'notes': [
@@ -2525,8 +2620,8 @@ def main() -> int:
         'calculator_scope_excluded_inputs': len(scope_excluded_rows),
         'calculator_scope_unmapped_examples': sorted({row.stat_name for row in scoped_rows if not row.kb_mapped})[:20],
         'card_slots_unlocked': account_state.card_slots_unlocked,
-        'active_perk_preset': account_state.active_perk_preset,
-        'configured_perk_presets': {name: [selection.perk_id for selection in selections] for name, selections in account_state.perk_presets.items()},
+        'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
+        'configured_perk_presets': _sanitized_configured_perk_presets(account_state, args.preset),
         'active_card_preset': account_state.active_card_preset,
         'active_module_preset': account_state.active_module_preset,
         'perk_input_file': _relpath_str(Path(args.perks)),
@@ -2563,13 +2658,13 @@ def main() -> int:
             'current_state_mode': {
                 'state_mode': args.state_mode,
                 'perk_state': args.perk_state,
-                'active_perk_preset': account_state.active_perk_preset,
+                'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
                 **current_compare_summary,
             },
             'projected_max_progression': {
                 'state_mode': 'max_progression',
                 'perk_state': args.perk_state,
-                'active_perk_preset': projected_account_state.active_perk_preset,
+                'active_perk_preset': _sanitized_active_perk_preset(projected_account_state, args.preset),
                 **projected_compare_summary,
             },
         },
@@ -2618,7 +2713,7 @@ def main() -> int:
         if stale_path.exists():
             stale_path.unlink()
     (args.out / 'diagnostics.json').write_text(json.dumps(_json_sanitize(diagnostics), indent=2, default=str))
-    (args.out / 'account_state.json').write_text(json.dumps(_json_sanitize(account_state.to_dict()), indent=2, default=str))
+    (args.out / 'account_state.json').write_text(json.dumps(_json_sanitize(_sanitized_account_state_for_output(account_state, args.preset)), indent=2, default=str))
     (args.out / 'stat_inputs.json').write_text(json.dumps(_json_sanitize([row.to_dict() for row in stat_inputs]), indent=2, default=str))
     (args.out / 'statbook.json').write_text(json.dumps(_json_sanitize(statbook_dict), indent=2, default=str))
     (args.out / 'statbook_publishable.json').write_text(json.dumps(_json_sanitize(statbook_publishable_dict), indent=2, default=str))
@@ -2631,6 +2726,9 @@ def main() -> int:
     (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(json.dumps(_json_sanitize(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str))
     (args.out / 'tower_damage_runtime_gap_report.json').write_text(json.dumps(_json_sanitize(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str))
     (args.out / 'state_matrix.json').write_text(json.dumps(_json_sanitize(state_matrix), indent=2, default=str))
+    (args.out / 'audit_surface_manifest.json').write_text(
+        json.dumps(_json_sanitize(_build_audit_surface_manifest(account_state, args.preset)), indent=2, default=str)
+    )
     optimizer_scores = compute_optimizer_scores(statbook_dict)
     (args.out / 'optimizer_scores.json').write_text(json.dumps(_json_sanitize(optimizer_scores), indent=2, default=str))
     verification_rows = [

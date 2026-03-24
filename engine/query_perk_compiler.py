@@ -24,20 +24,14 @@ TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES = {
 TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES['PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3'] = set()
 
 
-def active_perk_selections(account_state: AccountState, preset: str) -> list[tuple[str, int]]:
-    preset_keys = [preset]
-    if account_state.active_perk_preset:
-        preset_keys.append(account_state.active_perk_preset)
-    preset_keys.append('default')
-    seen: set[str] = set()
+def active_perk_selections(account_state: AccountState, preset: str | None) -> list[tuple[str, int]]:
+    resolved_preset = preset or account_state.active_perk_preset
+    if not resolved_preset:
+        return []
     out: list[tuple[str, int]] = []
-    for key in preset_keys:
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        for selection in account_state.perk_presets.get(key, []):
-            if selection.perk_id and selection.picks > 0:
-                out.append((selection.perk_id, selection.picks))
+    for selection in account_state.perk_presets.get(resolved_preset, []):
+        if selection.perk_id and selection.picks > 0:
+            out.append((selection.perk_id, selection.picks))
     return out
 
 

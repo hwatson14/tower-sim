@@ -9,7 +9,7 @@
         "Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces."
       ]
     },
-    "input_count": 407,
+    "input_count": 405,
     "mapped_input_count": 317,
     "resolved_stat_count": 178,
     "partially_resolved_stat_count": 0
@@ -24,7 +24,7 @@
         "Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules."
       ]
     },
-    "input_count": 471,
+    "input_count": 469,
     "mapped_input_count": 381,
     "resolved_stat_count": 211,
     "partially_resolved_stat_count": 0
@@ -39,7 +39,7 @@
         "Current IDS preset with active loadout applied."
       ]
     },
-    "input_count": 585,
+    "input_count": 583,
     "mapped_input_count": 493,
     "resolved_stat_count": 236,
     "partially_resolved_stat_count": 0
@@ -57,7 +57,7 @@
         "Perks can be materialized in this state when supplied via input/perks.json or --perks."
       ]
     },
-    "input_count": 585,
+    "input_count": 583,
     "mapped_input_count": 493,
     "resolved_stat_count": 236,
     "partially_resolved_stat_count": 0

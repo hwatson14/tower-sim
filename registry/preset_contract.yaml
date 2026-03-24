@@ -1,0 +1,19 @@
+version: 1
+canonical_presets:
+  - Tourney
+  - Farming
+  - Milestone
+  - Preset 4
+  - Preset 5
+alias_normalization_policy: ingestion_only
+aliases:
+  Preset 3: Milestone
+  Testing: Milestone
+  Placeholder 4th preset: Preset 4
+  Placeholder 5th preset: Preset 5
+post_ingestion_policy:
+  canonical_inputs_only: true
+  reject_non_canonical_names: true
+notes:
+  - Canonical artifacts, tests, fixtures, and runtime inputs must use canonical preset names only.
+  - Raw aliases may be normalized only at ingestion boundaries.

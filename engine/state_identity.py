@@ -9,6 +9,7 @@ from typing import Any, Mapping, Optional
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
 from models.account_state import AccountState, ModulePresetSelection, PerkSelection
+from models.preset_contract import sanitize_preset_name_for_canonical_output
 
 
 @dataclass(frozen=True)
@@ -56,7 +57,8 @@ def bind_state_identity(
     resolved_preset = preset_name or account_state.default_preset
     resolved_card_preset = card_preset_name or account_state.active_card_preset or resolved_preset
     resolved_module_preset = module_preset_name or account_state.active_module_preset or resolved_preset
-    resolved_perk_preset = perk_preset_name or account_state.active_perk_preset or resolved_preset
+    resolved_perk_preset = perk_preset_name or account_state.active_perk_preset
+    resolved_perk_namespace_class = getattr(account_state, 'perk_preset_namespace_class', 'canonical')
     resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
     if not runtime_branch_id or not str(runtime_branch_id).strip():
         raise ValueError('runtime_branch_id must be a non-empty string.')
@@ -89,10 +91,10 @@ def bind_state_identity(
             'preset_name': resolved_preset,
             'card_preset_name': resolved_card_preset,
             'module_preset_name': resolved_module_preset,
-            'perk_preset_name': resolved_perk_preset,
+            'perk_preset_name': sanitize_preset_name_for_canonical_output(resolved_perk_preset, namespace_class=resolved_perk_namespace_class, fallback_preset_name=resolved_preset),
             'equipped_cards': account_state.card_presets.get(resolved_card_preset),
             'equipped_modules': _serialize_module_preset(account_state, resolved_module_preset),
-            'equipped_perks': _serialize_perk_preset(account_state, resolved_perk_preset),
+            'equipped_perks': _serialize_perk_preset(account_state, resolved_perk_preset, canonical_preset_name=resolved_preset),
         },
     )
     scenario_id = _fingerprint_id(
@@ -166,16 +168,19 @@ def _serialize_module_preset(account_state: AccountState, preset_name: str) -> d
     return out
 
 
-def _serialize_perk_preset(account_state: AccountState, preset_name: str) -> list[dict[str, Any]]:
+def _serialize_perk_preset(account_state: AccountState, preset_name: str | None, *, canonical_preset_name: str) -> dict[str, Any]:
+    namespace_class = getattr(account_state, 'perk_preset_namespace_class', 'canonical')
+    if preset_name is None:
+        return {'presence': 'missing', 'namespace_class': namespace_class, 'selections': []}
     selections = account_state.perk_presets.get(preset_name)
     if selections is None:
-        return []
+        return {'presence': 'missing', 'namespace_class': namespace_class, 'preset_name': sanitize_preset_name_for_canonical_output(preset_name, namespace_class=namespace_class, fallback_preset_name=canonical_preset_name), 'selections': []}
     out: list[dict[str, Any]] = []
     for selection in selections:
         if not isinstance(selection, PerkSelection):
             raise ValueError(f'Perk preset {preset_name!r} contains an invalid selection entry.')
         out.append({'perk_id': selection.perk_id, 'picks': selection.picks})
-    return out
+    return {'presence': 'explicit', 'namespace_class': namespace_class, 'preset_name': sanitize_preset_name_for_canonical_output(preset_name, namespace_class=namespace_class, fallback_preset_name=canonical_preset_name), 'selections': out}
 
 
 def _fingerprint_id(prefix: str, payload: Mapping[str, Any]) -> str:
