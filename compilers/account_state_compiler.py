@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import warnings
 from dataclasses import replace
 from typing import Dict, List, Optional, Tuple
 
@@ -51,7 +50,7 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
     perk_presets, perk_preset_namespace_class, active_perk_preset = _parse_perk_config(perk_config or {})
     active_card_preset, active_module_preset = _resolve_active_loadout_presets(loadout_config or {}, default_preset)
     default_preset = require_canonical_preset_name(default_preset, field_name='default_preset')
-    result = AccountState(
+    return AccountState(
         ids_path=ids_raw.ids_path,
         labs=labs,
         workshop=workshop,
@@ -83,17 +82,6 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
         default_preset=default_preset,
         raw_sections=raw_sections,
     )
-    from registry.naming_contract import validate_account_snapshot_naming
-    naming_errors = validate_account_snapshot_naming(result)
-    if naming_errors:
-        warnings.warn(
-            f"Naming contract violations in account state ({len(naming_errors)}): "
-            + ", ".join(naming_errors[:10])
-            + ("..." if len(naming_errors) > 10 else ""),
-            UserWarning,
-            stacklevel=2,
-        )
-    return result
 
 
 def _normalize_preset_name(value: str) -> Optional[str]:
