@@ -367,6 +367,21 @@ def _load_uw_track_values() -> Dict[Tuple[str, str, int], float]:
     return out
 
 
+@lru_cache(maxsize=1)
+def _load_uw_track_order() -> Dict[str, List[str]]:
+    """Return {canonical_uw_name: [track_name, ...]} from the UW track registry."""
+    out: Dict[str, List[str]] = {}
+    with UW_TRACK_REGISTRY_PATH.open(newline='') as f:
+        for row in csv.DictReader(f):
+            name = row.get('canonical_name', '').strip()
+            track = row.get('track_name', '').strip()
+            if name and track:
+                out.setdefault(name, [])
+                if track not in out[name]:
+                    out[name].append(track)
+    return out
+
+
 
 
 @lru_cache(maxsize=1)

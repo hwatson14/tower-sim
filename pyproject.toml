@@ -32,3 +32,8 @@ markers = [
   "slow: subprocess-heavy integration/regression coverage excluded from the default test run",
   "expensive: query-stack parity and completion coverage excluded from the default fast test run",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+]
