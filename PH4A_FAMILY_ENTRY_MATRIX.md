@@ -8,10 +8,10 @@ The Phase 4 denominator is already frozen in `PH4A_CANONICAL_MIGRATION_LEDGER.md
 This file adds the missing operational matrix:
 - what each declared family currently does in repo truth
 - what the tests currently enforce
-- what must change before `PH4-B` can legitimately start
+- what must change before `PH4-B` can legitimately move from blocked entry state into bounded implementation
 
 This file is a Phase 4A artifact.
-It does **not** authorize family cutover.
+It does **not** authorize broad family cutover.
 
 ---
 
@@ -68,7 +68,7 @@ The current delegated timing surface IDs include:
 The declared timing denominator in `PH4A_CANONICAL_MIGRATION_LEDGER.md` uses:
 - `state::cards.wave_accelerator.spawn_rate_acceleration`
 
-This mismatch must be resolved or explicitly normalized before PH4-B begins.
+This mismatch must be resolved or explicitly normalized before PH4-B can move beyond blocked entry state.
 
 ### Constraint 4 — fallback remains the practical owner for all other families
 Outside the one delegated timing family, `resolve_stats()` still falls back to:
@@ -94,15 +94,15 @@ The current tests enforce these rules:
    - must not be delegated yet
    - current tests explicitly reject implying broader timing-family cutover
 
-Therefore the current automated truth is aligned with a **PH4-A still open** interpretation, not a PH4-B start interpretation.
+Therefore the current automated truth is aligned with a **PH4-A complete / PH4-B blocked at entry** interpretation, not a PH4-B implementation-underway interpretation.
 
 ---
 
-## PH4-B start criteria
+## PH4-B entry criteria
 
-`PH4-B` may start only when all of the following are true:
+`PH4-B` may move from blocked entry state into bounded implementation only when all of the following are true:
 
-1. `ACTIVE_TRANCHE.md` and `BURNDOWN.yaml` explicitly reflect that PH4-A denominator freeze is materially in progress or complete.
+1. `ACTIVE_TRANCHE.md` and `BURNDOWN.yaml` explicitly reflect that PH4-A denominator freeze is complete and PH4-B is the active tranche.
 2. The active control truth no longer leaves the one-family-only delegation limit implicit.
 3. The timing-family surface naming mismatch has an explicit disposition:
    - resolved to the declared denominator, or
@@ -116,7 +116,7 @@ If any of these are false, PH4-B remains blocked.
 
 ## PH4-B first-slice recommendation
 
-When PH4-B does begin, the first implementation slice should be:
+When PH4-B does move into bounded implementation, the first implementation slice should be:
 
 1. convert the current delegated timing family from heuristic compatibility proof into declared-family routing owned by the PH4 denominator
 2. resolve the `wave_accelerator.spawn_rate_acceleration` naming boundary explicitly
@@ -130,7 +130,7 @@ This preserves the current test truth instead of breaking it all at once.
 ## Non-goals
 
 This file does not:
-- begin PH4-B
+- begin broad PH4-B implementation
 - rewrite tests
 - change current family routing
 - change the denominator frozen in `PH4A_CANONICAL_MIGRATION_LEDGER.md`
@@ -141,7 +141,8 @@ This file does not:
 
 The correct current reading of repo truth is:
 
-- `PH4-A` is still open
+- `PH4-A` is complete as a control-and-ledger tranche
+- `PH4-B` is the active tranche but remains blocked at the entry boundary
 - only one declared family has bounded live delegation today
 - the test suite still enforces fallback for every other family class
-- therefore `PH4-B` has not started and should not be claimed as started yet
+- therefore PH4-B has not moved into bounded implementation yet and should not be claimed as broadly underway
