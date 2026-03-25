@@ -9,9 +9,9 @@
         "Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces."
       ]
     },
-    "input_count": 405,
-    "mapped_input_count": 317,
-    "resolved_stat_count": 178,
+    "input_count": 408,
+    "mapped_input_count": 320,
+    "resolved_stat_count": 181,
     "partially_resolved_stat_count": 0
   },
   "gem_respec": {
@@ -24,9 +24,9 @@
         "Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules."
       ]
     },
-    "input_count": 469,
-    "mapped_input_count": 381,
-    "resolved_stat_count": 211,
+    "input_count": 472,
+    "mapped_input_count": 384,
+    "resolved_stat_count": 214,
     "partially_resolved_stat_count": 0
   },
   "start_of_run": {
@@ -39,9 +39,9 @@
         "Current IDS preset with active loadout applied."
       ]
     },
-    "input_count": 583,
-    "mapped_input_count": 493,
-    "resolved_stat_count": 236,
+    "input_count": 586,
+    "mapped_input_count": 496,
+    "resolved_stat_count": 239,
     "partially_resolved_stat_count": 0
   },
   "max_progression": {
@@ -57,9 +57,9 @@
         "Perks can be materialized in this state when supplied via input/perks.json or --perks."
       ]
     },
-    "input_count": 583,
-    "mapped_input_count": 493,
-    "resolved_stat_count": 236,
+    "input_count": 586,
+    "mapped_input_count": 496,
+    "resolved_stat_count": 239,
     "partially_resolved_stat_count": 0
   }
 }

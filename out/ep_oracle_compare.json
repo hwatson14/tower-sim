@@ -1,10 +1,10 @@
 {
   "canonical_stat::tower_damage": {
     "label": "Damage",
-    "ep_value_raw": "746.86 B",
-    "ep_value_parsed": 746860000000.0,
+    "ep_value_raw": "779.9 B",
+    "ep_value_parsed": 779900000000.0,
     "ep_value_type": "scaled_number",
-    "ep_value": 746860000000.0,
+    "ep_value": 779900000000.0,
     "formula_contract": {
       "formula_class": "generic_family_promoted",
       "publish_policy": "allow",
@@ -115,8 +115,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -125,8 +125,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -135,8 +135,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -160,8 +160,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -170,13 +170,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -190,13 +190,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -210,42 +210,42 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 14703074477.674458,
+    "package_value_before_runtime_assumptions": 49210426264.05678,
     "runtime_compare_assumptions": [
       "assumed_maxed_berserker_x8_under_max_progression",
       "assumed_project_funding_at_cash_50b_under_max_progression__rarity_family_mythic__multiplier_6.349485"
     ],
-    "package_value": 746855607054.0256,
+    "package_value": 2499686908111.3857,
     "package_value_type": "damage",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -270,7 +270,7 @@
         "source_family": "enhancement",
         "source_name": "Damage +",
         "preset_name": null,
-        "value": 1.56,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -302,7 +302,7 @@
         "source_family": "module",
         "source_name": "Amplifying Strike",
         "preset_name": "Tourney",
-        "value": 9.04,
+        "value": 9.44,
         "value_type": "multiplier_display",
         "notes": "module_primary_main_effect:kb_module_base_routed"
       }
@@ -328,7 +328,7 @@
         "source_family": "enhancement",
         "source_name": "Damage +",
         "preset_name": null,
-        "value": 1.56,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -360,14 +360,14 @@
         "source_family": "module",
         "source_name": "Amplifying Strike",
         "preset_name": "Tourney",
-        "value": 9.04,
+        "value": 9.44,
         "value_type": "multiplier_display",
         "notes": "module_primary_main_effect:kb_module_base_routed"
       }
     ],
-    "delta": -4392945.974365234,
-    "relative_delta_pct": -0.0005881886798550243,
-    "status": "matched_close",
+    "delta": 1719786908111.3857,
+    "relative_delta_pct": 220.51377203633615,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [
@@ -378,10 +378,10 @@
       "assumed_maxed_berserker_x8_under_max_progression",
       "assumed_project_funding_at_cash_50b_under_max_progression__rarity_family_mythic__multiplier_6.349485"
     ],
-    "package_value_display": "747B",
-    "ep_value_display": "747B",
-    "delta_display": "-4.39M",
-    "relative_delta_display": "-0.001%"
+    "package_value_display": "2.5T",
+    "ep_value_display": "780B",
+    "delta_display": "1.72T",
+    "relative_delta_display": "220.514%"
   },
   "canonical_stat::tower_attack_speed": {
     "label": "Attack Speed",
@@ -497,8 +497,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -507,8 +507,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -517,8 +517,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -542,8 +542,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -552,13 +552,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -572,13 +572,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -592,39 +592,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 41.505253125,
+    "package_value_before_runtime_assumptions": 64.27804687500002,
     "runtime_compare_assumptions": [],
-    "package_value": 41.505253125,
+    "package_value": 64.27804687500002,
     "package_value_type": "attacks_per_second",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -649,7 +649,7 @@
         "source_family": "enhancement",
         "source_name": "Attack Speed +",
         "preset_name": null,
-        "value": 1.13,
+        "value": 1.75,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -707,7 +707,7 @@
         "source_family": "enhancement",
         "source_name": "Attack Speed +",
         "preset_name": null,
-        "value": 1.13,
+        "value": 1.75,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -744,17 +744,17 @@
         "notes": "kb_alias_routed_module_substat_primary"
       }
     ],
-    "delta": 0.0,
-    "relative_delta_pct": 0.0,
-    "status": "matched_exact",
+    "delta": 22.772793750000012,
+    "relative_delta_pct": 54.867256637168175,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "41.505",
+    "package_value_display": "64.278",
     "ep_value_display": "41.505",
-    "delta_display": "0",
-    "relative_delta_display": "0%"
+    "delta_display": "22.773",
+    "relative_delta_display": "54.867%"
   },
   "canonical_stat::tower_crit_chance_pct": {
     "label": "Critical Chance",
@@ -870,8 +870,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -880,8 +880,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -890,8 +890,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -915,8 +915,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -925,13 +925,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -945,13 +945,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -965,33 +965,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -1199,8 +1199,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -1209,8 +1209,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -1219,8 +1219,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -1244,8 +1244,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -1254,13 +1254,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -1274,13 +1274,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -1294,39 +1294,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 171.6912,
+    "package_value_before_runtime_assumptions": 536.535,
     "runtime_compare_assumptions": [],
-    "package_value": 171.6912,
+    "package_value": 536.535,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -1351,7 +1351,7 @@
         "source_family": "enhancement",
         "source_name": "Critical Factor +",
         "preset_name": null,
-        "value": 1.6,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -1401,7 +1401,7 @@
         "source_family": "enhancement",
         "source_name": "Critical Factor +",
         "preset_name": null,
-        "value": 1.6,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -1430,17 +1430,17 @@
         "notes": "kb_alias_routed_module_substat_primary"
       }
     ],
-    "delta": 0.0,
-    "relative_delta_pct": 0.0,
-    "status": "matched_exact",
+    "delta": 364.8438,
+    "relative_delta_pct": 212.49999999999997,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x171.691",
+    "package_value_display": "x536.535",
     "ep_value_display": "171.691",
-    "delta_display": "x0",
-    "relative_delta_display": "0%"
+    "delta_display": "x364.844",
+    "relative_delta_display": "212.5%"
   },
   "canonical_stat::tower_range_m": {
     "label": "Range",
@@ -1556,8 +1556,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -1566,8 +1566,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -1576,8 +1576,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -1601,8 +1601,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -1611,13 +1611,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -1631,13 +1631,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -1651,33 +1651,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -1849,8 +1849,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -1859,8 +1859,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -1869,8 +1869,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -1894,8 +1894,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -1904,13 +1904,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -1924,13 +1924,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -1944,39 +1944,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 0.13030102799999999,
+    "package_value_before_runtime_assumptions": 0.5568420000000001,
     "runtime_compare_assumptions": [],
-    "package_value": 0.13030102799999999,
+    "package_value": 0.5568420000000001,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -2001,7 +2001,7 @@
         "source_family": "enhancement",
         "source_name": "Damage / Meter +",
         "preset_name": null,
-        "value": 1.17,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -2043,7 +2043,7 @@
         "source_family": "enhancement",
         "source_name": "Damage / Meter +",
         "preset_name": null,
-        "value": 1.17,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -2064,17 +2064,17 @@
         "notes": "kb_alias_routed_vault"
       }
     ],
-    "delta": 0.0,
-    "relative_delta_pct": 0.0,
-    "status": "matched_exact",
+    "delta": 0.4265409720000001,
+    "relative_delta_pct": 327.3504273504275,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x0.13",
+    "package_value_display": "x0.557",
     "ep_value_display": "0.13",
-    "delta_display": "x0",
-    "relative_delta_display": "0%"
+    "delta_display": "x0.427",
+    "relative_delta_display": "327.35%"
   },
   "canonical_stat::tower_multishot_chance_pct": {
     "label": "Multishot Chance",
@@ -2190,8 +2190,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -2200,8 +2200,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -2210,8 +2210,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -2235,8 +2235,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -2245,13 +2245,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -2265,13 +2265,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -2285,33 +2285,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -2487,8 +2487,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -2497,8 +2497,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -2507,8 +2507,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -2532,8 +2532,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -2542,13 +2542,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -2562,13 +2562,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -2582,33 +2582,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -2780,8 +2780,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -2790,8 +2790,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -2800,8 +2800,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -2825,8 +2825,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -2835,13 +2835,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -2855,13 +2855,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -2875,33 +2875,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -3077,8 +3077,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -3087,8 +3087,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -3097,8 +3097,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -3122,8 +3122,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -3132,13 +3132,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -3152,13 +3152,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -3172,33 +3172,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -3354,8 +3354,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -3364,8 +3364,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -3374,8 +3374,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -3399,8 +3399,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -3409,13 +3409,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -3429,13 +3429,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -3449,33 +3449,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -3667,8 +3667,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -3677,8 +3677,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -3687,8 +3687,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -3712,8 +3712,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -3722,13 +3722,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -3742,13 +3742,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -3762,33 +3762,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -3944,8 +3944,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -3954,8 +3954,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -3964,8 +3964,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -3989,8 +3989,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -3999,13 +3999,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -4019,13 +4019,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -4039,33 +4039,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -4273,8 +4273,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -4283,8 +4283,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -4293,8 +4293,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -4318,8 +4318,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -4328,13 +4328,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -4348,13 +4348,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -4368,39 +4368,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 35.660351999999996,
+    "package_value_before_runtime_assumptions": 113.56799999999998,
     "runtime_compare_assumptions": [],
-    "package_value": 35.660351999999996,
+    "package_value": 113.56799999999998,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Tourney",
     "package_value_source_state_mode": "max_progression",
@@ -4425,9 +4425,9 @@
         "source_family": "enhancement",
         "source_name": "Super Crit Multi +",
         "preset_name": null,
-        "value": 1.57,
+        "value": 5.0,
         "value_type": "resolved_value",
-        "notes": "kb_contributor_override_enhancement"
+        "notes": "state_mode=max_progression:using_ws_plus_max_level:kb_contributor_override_enhancement"
       },
       {
         "source_family": "relic",
@@ -4475,9 +4475,9 @@
         "source_family": "enhancement",
         "source_name": "Super Crit Multi +",
         "preset_name": null,
-        "value": 1.57,
+        "value": 5.0,
         "value_type": "resolved_value",
-        "notes": "kb_contributor_override_enhancement"
+        "notes": "state_mode=max_progression:using_ws_plus_max_level:kb_contributor_override_enhancement"
       },
       {
         "source_family": "relic",
@@ -4504,17 +4504,17 @@
         "notes": "kb_exact_routed_module_substat_primary"
       }
     ],
-    "delta": 0.00035199999999946385,
-    "relative_delta_pct": 0.0009871003925952437,
-    "status": "matched_close",
+    "delta": 77.90799999999999,
+    "relative_delta_pct": 218.47448121144137,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x35.66",
+    "package_value_display": "x113.568",
     "ep_value_display": "x35.66",
-    "delta_display": "x0",
-    "relative_delta_display": "0.001%"
+    "delta_display": "x77.908",
+    "relative_delta_display": "218.474%"
   },
   "canonical_stat::package_chance_pct": {
     "label": "Recovery Package Chance",
@@ -4630,8 +4630,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -4640,8 +4640,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -4650,8 +4650,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -4675,8 +4675,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -4685,13 +4685,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -4705,13 +4705,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -4725,33 +4725,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -4863,10 +4863,10 @@
   },
   "canonical_stat::tower_hp": {
     "label": "Health",
-    "ep_value_raw": "6.65 T",
-    "ep_value_parsed": 6650000000000.0,
+    "ep_value_raw": "6.95 T",
+    "ep_value_parsed": 6950000000000.0,
     "ep_value_type": "scaled_number",
-    "ep_value": 6650000000000.0,
+    "ep_value": 6950000000000.0,
     "formula_contract": {
       "formula_class": "generic_family_promoted",
       "publish_policy": "allow",
@@ -4975,8 +4975,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -4985,8 +4985,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -4995,8 +4995,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -5020,8 +5020,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -5030,13 +5030,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -5050,13 +5050,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -5070,39 +5070,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 6646573883674.219,
+    "package_value_before_runtime_assumptions": 21442357509758.453,
     "runtime_compare_assumptions": [],
-    "package_value": 6646573883674.219,
+    "package_value": 21442357509758.453,
     "package_value_type": "hp",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -5135,7 +5135,7 @@
         "source_family": "enhancement",
         "source_name": "Health +",
         "preset_name": null,
-        "value": 1.62,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -5191,7 +5191,7 @@
         "source_family": "module",
         "source_name": "Sharp Fortitude",
         "preset_name": "Farming",
-        "value": 8.84,
+        "value": 9.24,
         "value_type": "multiplier_display",
         "notes": "module_primary_main_effect:kb_module_base_routed"
       },
@@ -5233,7 +5233,7 @@
         "source_family": "enhancement",
         "source_name": "Health +",
         "preset_name": null,
-        "value": 1.62,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -5289,7 +5289,7 @@
         "source_family": "module",
         "source_name": "Sharp Fortitude",
         "preset_name": "Farming",
-        "value": 8.84,
+        "value": 9.24,
         "value_type": "multiplier_display",
         "notes": "module_primary_main_effect:kb_module_base_routed"
       },
@@ -5302,17 +5302,17 @@
         "notes": "module_assist_main_effect:assist_multiplier_eff=0.01:kb_module_base_routed"
       }
     ],
-    "delta": -3426116325.78125,
-    "relative_delta_pct": -0.05152054625234962,
-    "status": "matched_close",
+    "delta": 14492357509758.453,
+    "relative_delta_pct": 208.52312963681226,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "6.65T",
-    "ep_value_display": "6.65T",
-    "delta_display": "-3.43B",
-    "relative_delta_display": "-0.052%"
+    "package_value_display": "21.4T",
+    "ep_value_display": "6.95T",
+    "delta_display": "14.5T",
+    "relative_delta_display": "208.523%"
   },
   "canonical_stat::tower_regen": {
     "label": "Health Regen",
@@ -5428,8 +5428,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -5438,8 +5438,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -5448,8 +5448,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -5473,8 +5473,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -5483,13 +5483,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -5503,13 +5503,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -5523,39 +5523,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 44638496577799.34,
+    "package_value_before_runtime_assumptions": 139495301805622.95,
     "runtime_compare_assumptions": [],
-    "package_value": 44638496577799.34,
+    "package_value": 139495301805622.95,
     "package_value_type": "hp_per_second",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -5580,7 +5580,7 @@
         "source_family": "enhancement",
         "source_name": "Health Regen +",
         "preset_name": null,
-        "value": 1.6,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -5662,7 +5662,7 @@
         "source_family": "enhancement",
         "source_name": "Health Regen +",
         "preset_name": null,
-        "value": 1.6,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -5723,17 +5723,17 @@
         "notes": "kb_alias_routed_module_substat_assist"
       }
     ],
-    "delta": -1503422200.65625,
-    "relative_delta_pct": -0.003367881273871528,
-    "status": "matched_close",
+    "delta": 94855301805622.95,
+    "relative_delta_pct": 212.48947537101918,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "44.6T",
+    "package_value_display": "139T",
     "ep_value_display": "44.6T",
-    "delta_display": "-1.5B",
-    "relative_delta_display": "-0.003%"
+    "delta_display": "94.9T",
+    "relative_delta_display": "212.489%"
   },
   "canonical_stat::tower_defense_absolute": {
     "label": "Defense Absolute",
@@ -5849,8 +5849,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -5859,8 +5859,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -5869,8 +5869,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -5894,8 +5894,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -5904,13 +5904,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -5924,13 +5924,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -5944,39 +5944,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 318932406.89537853,
+    "package_value_before_runtime_assumptions": 1594662034.4768927,
     "runtime_compare_assumptions": [],
-    "package_value": 318932406.89537853,
+    "package_value": 1594662034.4768927,
     "package_value_type": "damage_block",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -6001,7 +6001,7 @@
         "source_family": "enhancement",
         "source_name": "Defense Absolute +",
         "preset_name": null,
-        "value": 1.0,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -6051,7 +6051,7 @@
         "source_family": "enhancement",
         "source_name": "Defense Absolute +",
         "preset_name": null,
-        "value": 1.0,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -6080,17 +6080,17 @@
         "notes": "kb_perk_effect_routed:absolute_defense"
       }
     ],
-    "delta": 2406.8953785300255,
-    "relative_delta_pct": 0.0007546782612266094,
-    "status": "matched_close",
+    "delta": 1275732034.4768927,
+    "relative_delta_pct": 400.00377339130614,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "319M",
+    "package_value_display": "1.59B",
     "ep_value_display": "319M",
-    "delta_display": "2.41k",
-    "relative_delta_display": "0.001%"
+    "delta_display": "1.28B",
+    "relative_delta_display": "400.004%"
   },
   "canonical_stat::tower_defense_pct": {
     "label": "Defense %",
@@ -6206,8 +6206,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -6216,8 +6216,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -6226,8 +6226,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -6251,8 +6251,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -6261,13 +6261,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -6281,13 +6281,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -6301,33 +6301,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -6487,10 +6487,10 @@
   },
   "canonical_stat::wall_hp": {
     "label": "Wall Health",
-    "ep_value_raw": "114.13 T",
-    "ep_value_parsed": 114130000000000.0,
+    "ep_value_raw": "119.3 T",
+    "ep_value_parsed": 119300000000000.0,
     "ep_value_type": "scaled_number",
-    "ep_value": 114130000000000.0,
+    "ep_value": 119300000000000.0,
     "formula_contract": {
       "formula_class": "kb_contract_repaired",
       "publish_policy": "allow",
@@ -6599,8 +6599,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -6609,8 +6609,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -6619,8 +6619,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -6644,8 +6644,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -6654,13 +6654,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -6674,13 +6674,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -6694,39 +6694,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 114134966730453.69,
+    "package_value_before_runtime_assumptions": 1157887305526956.5,
     "runtime_compare_assumptions": [],
-    "package_value": 114134966730453.69,
+    "package_value": 1157887305526956.5,
     "package_value_type": "hp",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -6751,7 +6751,7 @@
         "source_family": "enhancement",
         "source_name": "Wall Health +",
         "preset_name": null,
-        "value": 1.5899999999999999,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -6801,7 +6801,7 @@
         "source_family": "enhancement",
         "source_name": "Wall Health +",
         "preset_name": null,
-        "value": 1.5899999999999999,
+        "value": 5.0,
         "value_type": "resolved_value",
         "notes": "kb_alias_routed_enhancement"
       },
@@ -6830,24 +6830,24 @@
         "notes": "kb_alias_routed_module_substat_assist"
       }
     ],
-    "delta": 4966730453.6875,
-    "relative_delta_pct": 0.00435181849968238,
-    "status": "matched_close",
+    "delta": 1038587305526956.5,
+    "relative_delta_pct": 870.5677330485804,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "114T",
-    "ep_value_display": "114T",
-    "delta_display": "4.97B",
-    "relative_delta_display": "0.004%"
+    "package_value_display": "1.16q",
+    "ep_value_display": "119T",
+    "delta_display": "1.04q",
+    "relative_delta_display": "870.568%"
   },
   "canonical_stat::wall_fortification_multiplier": {
     "label": "Wall Fortification",
-    "ep_value_raw": "1.19 q",
-    "ep_value_parsed": 1190000000000000.0,
+    "ep_value_raw": "1.24 q",
+    "ep_value_parsed": 1240000000000000.0,
     "ep_value_type": "scaled_number",
-    "ep_value": 1190000000000000.0,
+    "ep_value": 1240000000000000.0,
     "formula_contract": {
       "formula_class": "generic_validated",
       "publish_policy": "allow",
@@ -6956,8 +6956,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -6966,8 +6966,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -6976,8 +6976,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -7001,8 +7001,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -7011,13 +7011,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -7031,13 +7031,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -7051,33 +7051,33 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
@@ -7107,8 +7107,8 @@
         "notes": null
       }
     ],
-    "delta": -1189999999999989.5,
-    "relative_delta_pct": -99.99999999999912,
+    "delta": -1239999999999989.5,
+    "relative_delta_pct": -99.99999999999915,
     "status": "non_numeric_compare",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
@@ -7119,8 +7119,8 @@
       "scaled_ep_surface_noncomparable"
     ],
     "package_value_display": "x10.4",
-    "ep_value_display": "1.19q",
-    "delta_display": "x-1.19q",
+    "ep_value_display": "1.24q",
+    "delta_display": "x-1.24q",
     "relative_delta_display": "-100%"
   },
   "canonical_stat::wall_regen": {
@@ -7237,8 +7237,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -7247,8 +7247,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -7257,8 +7257,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -7282,8 +7282,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -7292,13 +7292,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -7312,13 +7312,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -7332,39 +7332,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 234352107033446.56,
+    "package_value_before_runtime_assumptions": 732350334479520.5,
     "runtime_compare_assumptions": [],
-    "package_value": 234352107033446.56,
+    "package_value": 732350334479520.5,
     "package_value_type": "hp_per_second",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -7404,24 +7404,24 @@
         "notes": "module_primary_unique_effect:kb_manual_sharp_fortitude_wall_regen_routed"
       }
     ],
-    "delta": 2107033446.5625,
-    "relative_delta_pct": 0.0008990968408630254,
-    "status": "matched_close",
+    "delta": 498000334479520.5,
+    "relative_delta_pct": 212.50280967762768,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "234T",
+    "package_value_display": "732T",
     "ep_value_display": "234T",
-    "delta_display": "2.11B",
-    "relative_delta_display": "0.001%"
+    "delta_display": "498T",
+    "relative_delta_display": "212.503%"
   },
   "canonical_stat::coins_per_kill_bonus": {
     "label": "Coins / Kill Bonus",
-    "ep_value_raw": "42.527928712500014",
-    "ep_value_parsed": 42.527928712500014,
+    "ep_value_raw": "42.81480472500001",
+    "ep_value_parsed": 42.81480472500001,
     "ep_value_type": "number",
-    "ep_value": 42.527928712500014,
+    "ep_value": 42.81480472500001,
     "formula_contract": {
       "formula_class": "kb_contract_repaired",
       "publish_policy": "allow",
@@ -7530,8 +7530,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -7540,8 +7540,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -7550,8 +7550,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -7575,8 +7575,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -7585,13 +7585,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -7605,13 +7605,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -7625,39 +7625,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 42.52792871250001,
+    "package_value_before_runtime_assumptions": 96.57474749999999,
     "runtime_compare_assumptions": [],
-    "package_value": 42.52792871250001,
+    "package_value": 96.57474749999999,
     "package_value_type": "multiplier",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -7666,7 +7666,7 @@
         "source_family": "lab",
         "source_name": "Coins / Kill Bonus",
         "preset_name": null,
-        "value": 2.74,
+        "value": 2.76,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -7682,7 +7682,7 @@
         "source_family": "enhancement",
         "source_name": "Coin Bonus +",
         "preset_name": null,
-        "value": 1.33,
+        "value": 3.0,
         "value_type": "resolved_value",
         "notes": "kb_dual_routed_enhancement:coins_per_kill_spillover"
       },
@@ -7732,7 +7732,7 @@
         "source_family": "lab",
         "source_name": "Coins / Kill Bonus",
         "preset_name": null,
-        "value": 2.74,
+        "value": 2.76,
         "value_type": "resolved_value",
         "notes": null
       },
@@ -7748,7 +7748,7 @@
         "source_family": "enhancement",
         "source_name": "Coin Bonus +",
         "preset_name": null,
-        "value": 1.33,
+        "value": 3.0,
         "value_type": "resolved_value",
         "notes": "kb_dual_routed_enhancement:coins_per_kill_spillover"
       },
@@ -7793,17 +7793,17 @@
         "notes": "kb_exact_routed_module_substat_assist"
       }
     ],
-    "delta": -7.105427357601002e-15,
-    "relative_delta_pct": -1.6707673222544084e-14,
-    "status": "matched_exact",
+    "delta": 53.75994277499998,
+    "relative_delta_pct": 125.56390977443603,
+    "status": "mismatch",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
     "compare_notes": [],
     "notes": [],
-    "package_value_display": "x42.528",
-    "ep_value_display": "42.528",
-    "delta_display": "x-0",
-    "relative_delta_display": "-0%"
+    "package_value_display": "x96.575",
+    "ep_value_display": "42.815",
+    "delta_display": "x53.76",
+    "relative_delta_display": "125.564%"
   },
   "canonical_stat::free_attack_upgrade_chance_pct": {
     "label": "Free Attack Upgrade",
@@ -7919,8 +7919,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -7929,8 +7929,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -7939,8 +7939,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -7964,8 +7964,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -7974,13 +7974,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -7994,13 +7994,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -8014,39 +8014,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 108.36000000000001,
+    "package_value_before_runtime_assumptions": 193.5,
     "runtime_compare_assumptions": [],
-    "package_value": 108.36000000000001,
+    "package_value": 193.5,
     "package_value_type": "pct",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -8145,7 +8145,7 @@
     "notes": [
       "formula_ledger_marked_noncomparable"
     ],
-    "package_value_display": "108.36%",
+    "package_value_display": "193.5%",
     "ep_value_display": "1.077",
     "delta_display": null,
     "relative_delta_display": null
@@ -8264,8 +8264,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -8274,8 +8274,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -8284,8 +8284,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -8309,8 +8309,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -8319,13 +8319,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -8339,13 +8339,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -8359,39 +8359,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 105.00000000000001,
+    "package_value_before_runtime_assumptions": 187.5,
     "runtime_compare_assumptions": [],
-    "package_value": 105.00000000000001,
+    "package_value": 187.5,
     "package_value_type": "pct",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -8490,7 +8490,7 @@
     "notes": [
       "formula_ledger_marked_noncomparable"
     ],
-    "package_value_display": "105%",
+    "package_value_display": "187.5%",
     "ep_value_display": "1.047",
     "delta_display": null,
     "relative_delta_display": null
@@ -8609,8 +8609,8 @@
         },
         "Being Annihilator": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Death Penalty": {
           "rarity": "Mythic+",
@@ -8619,8 +8619,8 @@
         },
         "Havoc Bringer": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Shrink Ray": {
           "rarity": "Legendary",
@@ -8629,8 +8629,8 @@
         },
         "Amplifying Strike": {
           "rarity": "Ancestral",
-          "level": 164,
-          "stat": "9.04"
+          "level": 166,
+          "stat": "9.44"
         },
         "Any Other": {
           "rarity": "Epic",
@@ -8654,8 +8654,8 @@
         },
         "Space Displacer": {
           "rarity": "Ancestral 2*",
-          "level": 163,
-          "stat": "9.467"
+          "level": 165,
+          "stat": "9.899"
         },
         "Wormhole Redirector": {
           "rarity": "Mythic+",
@@ -8664,13 +8664,13 @@
         },
         "Sharp Fortitude": {
           "rarity": "Ancestral",
-          "level": 163,
-          "stat": "8.84"
+          "level": 165,
+          "stat": "9.24"
         },
         "Orbital Augment": {
           "rarity": "Ancestral 1*",
-          "level": 163,
-          "stat": "9.154"
+          "level": 165,
+          "stat": "9.57"
         },
         "Black Hole Digestor": {
           "rarity": "Legendary",
@@ -8684,13 +8684,13 @@
         },
         "Singularity Harness": {
           "rarity": "Ancestral",
-          "level": 161,
-          "stat": "1.68"
+          "level": 164,
+          "stat": "1.71"
         },
         "Pulsar Harvester": {
           "rarity": "Ancestral 1*",
-          "level": 161,
-          "stat": "1.707"
+          "level": 164,
+          "stat": "1.738"
         },
         "Project Funding": {
           "rarity": "Mythic+",
@@ -8704,39 +8704,39 @@
         },
         "Multiverse Nexus": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         },
         "Dimension Core": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Harmony Conductor": {
           "rarity": "Ancestral 5*",
-          "level": 159,
-          "stat": "12.88"
+          "level": 163,
+          "stat": "13.96"
         },
         "Om Chip": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Magnetic Hook": {
           "rarity": "Ancestral",
-          "level": 159,
-          "stat": "10.9"
+          "level": 163,
+          "stat": "11.8"
         },
         "Primordial Collapse": {
           "rarity": "Ancestral 2*",
-          "level": 159,
-          "stat": "11.692"
+          "level": 163,
+          "stat": "12.664"
         }
       }
     },
-    "package_value_before_runtime_assumptions": 118.66400000000002,
+    "package_value_before_runtime_assumptions": 211.9,
     "runtime_compare_assumptions": [],
-    "package_value": 118.66400000000002,
+    "package_value": 211.9,
     "package_value_type": "pct",
     "package_value_source_preset": "Farming",
     "package_value_source_state_mode": "max_progression",
@@ -8867,7 +8867,7 @@
     "notes": [
       "formula_ledger_marked_noncomparable"
     ],
-    "package_value_display": "118.664%",
+    "package_value_display": "211.9%",
     "ep_value_display": "1.188",
     "delta_display": null,
     "relative_delta_display": null

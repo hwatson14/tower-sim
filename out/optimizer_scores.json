@@ -1,19 +1,19 @@
 {
   "objectives": {
     "ehp": {
-      "score": 4.194218569459056e+28,
-      "display": "41942185694.59 Q",
+      "score": 1.3726927209273216e+30,
+      "display": "1372692720927.32 Q",
       "accuracy": "query_owned_surface",
       "formula": "consumes derived::ehp"
     },
     "edamage": {
-      "score": 1.0877621561394073e+21,
-      "display": "1087.76 Q",
+      "score": 4.983499361375454e+22,
+      "display": "49834.99 Q",
       "accuracy": "query_owned_surface",
       "formula": "consumes derived::edamage"
     },
     "eecon": {
-      "score": 3.671166611775669e-14,
+      "score": 8.33668601542913e-14,
       "display": "0.0000",
       "accuracy": "query_owned_surface",
       "formula": "consumes derived::eecon"

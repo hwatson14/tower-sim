@@ -3,13 +3,13 @@
   "compare_state_key": "Farming__perks_on",
   "compare_preset": "Farming",
   "compare_perk_state": "on",
-  "package_value": 44638496577799.34,
+  "package_value": 139495301805622.95,
   "ep_value": 44640000000000.0,
-  "relative_delta_pct": -0.003367881273871528,
+  "relative_delta_pct": 212.48947537101918,
   "workshop_base": 10170855374.9115,
-  "multiplier_product": 5689.267584,
-  "recomputed_package_value": 57864717786036.17,
-  "required_missing_multiplier_to_match_ep": 0.771454553102002,
+  "multiplier_product": 17778.961199999998,
+  "recomputed_package_value": 180827243081363.0,
+  "required_missing_multiplier_to_match_ep": 0.24686545699264067,
   "contributors": [
     {
       "source_family": "lab",
@@ -31,9 +31,9 @@
       "source_family": "enhancement",
       "source_name": "Health Regen +",
       "preset_name": null,
-      "raw_value": 1.6,
+      "raw_value": 5.0,
       "value_type": "resolved_value",
-      "applied_factor": 1.6
+      "applied_factor": 5.0
     },
     {
       "source_family": "relic",

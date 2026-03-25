@@ -1,5 +1,5 @@
 {
-  "ids_path": "input/_IDS.csv",
+  "ids_path": "input\\_IDS.csv",
   "labs": {
     "Game Speed": 7,
     "Starting Cash": 6,
@@ -45,7 +45,7 @@
     "Garlic Thorns": 10,
     "Cash Bonus": 33,
     "Cash / Wave": 8,
-    "Coins / Kill Bonus": 87,
+    "Coins / Kill Bonus": 88,
     "Coins / Wave": 6,
     "Interest": 11,
     "Max Interest": 8,
@@ -66,7 +66,7 @@
     "Swamp Stun Chance": 0,
     "Swamp Stun Time": 0,
     "Golden Tower Bonus": 22,
-    "Golden Tower Duration": 19,
+    "Golden Tower Duration": 20,
     "Chain Lightning Shock": 1,
     "Shock Chance": 14,
     "Shock Multiplier": 14,
@@ -1044,6 +1044,224 @@
       ]
     ]
   },
+  "workshop_enhancement_tracks": {
+    "Damage +": {
+      "name": "Damage +",
+      "current_multiplier": 1.56,
+      "preset_levels": {
+        "Farming": 56,
+        "Tourney": 56,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Rend Armor Mult +": {
+      "name": "Rend Armor Mult +",
+      "current_multiplier": 1.21,
+      "preset_levels": {
+        "Farming": 21,
+        "Tourney": 21,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Critical Factor +": {
+      "name": "Critical Factor +",
+      "current_multiplier": 1.6,
+      "preset_levels": {
+        "Farming": 60,
+        "Tourney": 60,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Damage / Meter +": {
+      "name": "Damage / Meter +",
+      "current_multiplier": 1.17,
+      "preset_levels": {
+        "Farming": 17,
+        "Tourney": 17,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Super Crit Multi +": {
+      "name": "Super Crit Multi +",
+      "current_multiplier": 1.57,
+      "preset_levels": {
+        "Farming": 57,
+        "Tourney": 57,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Attack Speed +": {
+      "name": "Attack Speed +",
+      "current_multiplier": 1.13,
+      "preset_levels": {
+        "Farming": 13,
+        "Tourney": 13,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 75
+    },
+    "Health +": {
+      "name": "Health +",
+      "current_multiplier": 1.62,
+      "preset_levels": {
+        "Farming": 62,
+        "Tourney": 62,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Health Regen +": {
+      "name": "Health Regen +",
+      "current_multiplier": 1.6,
+      "preset_levels": {
+        "Farming": 60,
+        "Tourney": 60,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Defense Absolute +": {
+      "name": "Defense Absolute +",
+      "current_multiplier": 1.0,
+      "preset_levels": {
+        "Farming": 0,
+        "Tourney": 0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Land Mine Damage +": {
+      "name": "Land Mine Damage +",
+      "current_multiplier": 2.08,
+      "preset_levels": {
+        "Farming": 18,
+        "Tourney": 18,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Wall Health +": {
+      "name": "Wall Health +",
+      "current_multiplier": 1.5899999999999999,
+      "preset_levels": {
+        "Farming": 59,
+        "Tourney": 59,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Orb Size +": {
+      "name": "Orb Size +",
+      "current_multiplier": 1.2,
+      "preset_levels": {
+        "Farming": 20,
+        "Tourney": 20,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 200
+    },
+    "Cash Bonus +": {
+      "name": "Cash Bonus +",
+      "current_multiplier": 1.44,
+      "preset_levels": {
+        "Farming": 44,
+        "Tourney": 44,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 400
+    },
+    "Coin Bonus +": {
+      "name": "Coin Bonus +",
+      "current_multiplier": 1.33,
+      "preset_levels": {
+        "Farming": 33,
+        "Tourney": 33,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 200
+    },
+    "Cells / Kill Bonus +": {
+      "name": "Cells / Kill Bonus +",
+      "current_multiplier": 1.25,
+      "preset_levels": {
+        "Farming": 25,
+        "Tourney": 25,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 200
+    },
+    "Free Upgrades +": {
+      "name": "Free Upgrades +",
+      "current_multiplier": 1.12,
+      "preset_levels": {
+        "Farming": 12,
+        "Tourney": 12,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 100
+    },
+    "Recovery Package +": {
+      "name": "Recovery Package +",
+      "current_multiplier": 1.42,
+      "preset_levels": {
+        "Farming": 42,
+        "Tourney": 42,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 300
+    },
+    "Enemy Level Skips +": {
+      "name": "Enemy Level Skips +",
+      "current_multiplier": 1.15,
+      "preset_levels": {
+        "Farming": 15,
+        "Tourney": 15,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "max_level": 60
+    }
+  },
   "ultimate_weapons": {
     "Chain Lightning": {
       "name": "Chain Lightning",
@@ -1171,6 +1389,215 @@
         3.0
       ]
     }
+  },
+  "uw_tracks": {
+    "Chain Lightning": [
+      {
+        "uw_name": "Chain Lightning",
+        "track_name": "Damage",
+        "level": 19,
+        "level_token": "19 | x898 | Cost 302 ? | Next 362 ?",
+        "resolved_value": 898.0
+      },
+      {
+        "uw_name": "Chain Lightning",
+        "track_name": "Quantity",
+        "level": 3,
+        "level_token": "03 | #4 | Cost 150 ? | Next 400 ?",
+        "resolved_value": 4.0
+      },
+      {
+        "uw_name": "Chain Lightning",
+        "track_name": "Chance",
+        "level": 8,
+        "level_token": "08 | 17.0% | Cost 134 ? | Next 152 ?",
+        "resolved_value": 0.17
+      }
+    ],
+    "Smart Missiles": [
+      {
+        "uw_name": "Smart Missiles",
+        "track_name": "Damage",
+        "level": 0,
+        "level_token": "00 | x10 | Cost 0 ? | Next 5 ?",
+        "resolved_value": 10.0
+      },
+      {
+        "uw_name": "Smart Missiles",
+        "track_name": "Quantity",
+        "level": 0,
+        "level_token": "00 | #5 | Cost 0 ? | Next 4 ?",
+        "resolved_value": 5.0
+      },
+      {
+        "uw_name": "Smart Missiles",
+        "track_name": "Cooldown",
+        "level": 0,
+        "level_token": "00 | 180s | Cost 0 ? | Next 8 ?",
+        "resolved_value": 180.0
+      }
+    ],
+    "Death Wave": [
+      {
+        "uw_name": "Death Wave",
+        "track_name": "Damage",
+        "level": 8,
+        "level_token": "08 | x63 | Cost 47 ? | Next 53 ?",
+        "resolved_value": 63.0
+      },
+      {
+        "uw_name": "Death Wave",
+        "track_name": "Quantity",
+        "level": 2,
+        "level_token": "02 | #3 | Cost 500 ? | Next 850 ?",
+        "resolved_value": 3.0
+      },
+      {
+        "uw_name": "Death Wave",
+        "track_name": "Cooldown",
+        "level": 12,
+        "level_token": "12 | 180s | Cost 184 ? | Next 200 ?",
+        "resolved_value": 180.0
+      }
+    ],
+    "Chrono Field": [
+      {
+        "uw_name": "Chrono Field",
+        "track_name": "Duration",
+        "level": 15,
+        "level_token": "15 | 20s | Cost 131 ? | Next 140 ?",
+        "resolved_value": 20.0
+      },
+      {
+        "uw_name": "Chrono Field",
+        "track_name": "Speed Reduction",
+        "level": 6,
+        "level_token": "06 | 50% | Cost 150 ? | Next 200 ?",
+        "resolved_value": 0.5
+      },
+      {
+        "uw_name": "Chrono Field",
+        "track_name": "Cooldown",
+        "level": 12,
+        "level_token": "12 | 60s | Cost 241 ? | Maxed",
+        "resolved_value": 60.0
+      }
+    ],
+    "Inner Land Mines": [
+      {
+        "uw_name": "Inner Land Mines",
+        "track_name": "Damage",
+        "level": 0,
+        "level_token": "00 | x10 | Cost 0 ? | Next 5 ?",
+        "resolved_value": 10.0
+      },
+      {
+        "uw_name": "Inner Land Mines",
+        "track_name": "Quantity",
+        "level": 0,
+        "level_token": "00 | #3 | Cost 0 ? | Next 50 ?",
+        "resolved_value": 3.0
+      },
+      {
+        "uw_name": "Inner Land Mines",
+        "track_name": "Cooldown",
+        "level": 0,
+        "level_token": "00 | 200s | Cost 0 ? | Next 8 ?",
+        "resolved_value": 200.0
+      }
+    ],
+    "Golden Tower": [
+      {
+        "uw_name": "Golden Tower",
+        "track_name": "Multiplier",
+        "level": 12,
+        "level_token": "12 | x14.6 | Cost 162 ? | Next 250 ?",
+        "resolved_value": 14.600000000000005
+      },
+      {
+        "uw_name": "Golden Tower",
+        "track_name": "Duration",
+        "level": 7,
+        "level_token": "07 | 22s | Cost 59 ? | Next 68 ?",
+        "resolved_value": 22.0
+      },
+      {
+        "uw_name": "Golden Tower",
+        "track_name": "Cooldown",
+        "level": 12,
+        "level_token": "12 | 180s | Cost 208 ? | Next 226 ?",
+        "resolved_value": 180.0
+      }
+    ],
+    "Poison Swamp": [
+      {
+        "uw_name": "Poison Swamp",
+        "track_name": "Damage",
+        "level": 0,
+        "level_token": "00 | x10 | Cost 0 ? | Next 5 ?",
+        "resolved_value": 10.0
+      },
+      {
+        "uw_name": "Poison Swamp",
+        "track_name": "Duration",
+        "level": 0,
+        "level_token": "00 | 30s | Cost 0 ? | Next 10 ?",
+        "resolved_value": 30.0
+      },
+      {
+        "uw_name": "Poison Swamp",
+        "track_name": "Cooldown",
+        "level": 0,
+        "level_token": "00 | 125s | Cost 0 ? | Next 8 ?",
+        "resolved_value": 125.0
+      }
+    ],
+    "Black Hole": [
+      {
+        "uw_name": "Black Hole",
+        "track_name": "Size",
+        "level": 9,
+        "level_token": "09 | 48m | Cost 76 ? | Next 89 ?",
+        "resolved_value": 48.0
+      },
+      {
+        "uw_name": "Black Hole",
+        "track_name": "Duration",
+        "level": 17,
+        "level_token": "17 | 32s | Cost 224 ? | Next 308 ?",
+        "resolved_value": 32.0
+      },
+      {
+        "uw_name": "Black Hole",
+        "track_name": "Cooldown",
+        "level": 15,
+        "level_token": "15 | 50s | Cost 262 ? | Maxed",
+        "resolved_value": 50.0
+      }
+    ],
+    "Spotlight": [
+      {
+        "uw_name": "Spotlight",
+        "track_name": "Multiplier",
+        "level": 9,
+        "level_token": "09 | x20.6 | Cost 95 ? | Next 112 ?",
+        "resolved_value": 20.599999999999998
+      },
+      {
+        "uw_name": "Spotlight",
+        "track_name": "Angle",
+        "level": 9,
+        "level_token": "09 | 39? | Cost 93 ? | Next 104 ?",
+        "resolved_value": 39.0
+      },
+      {
+        "uw_name": "Spotlight",
+        "track_name": "Quantity",
+        "level": 2,
+        "level_token": "02 | #3 | Cost 850 ? | Next 2500 ?",
+        "resolved_value": 3.0
+      }
+    ]
   },
   "uw_plus_tracks": {
     "Chain Lightning::Smite": {
@@ -1356,6 +1783,128 @@
       "Range": 0
     }
   },
+  "bot_upgrade_tracks": {
+    "Flame Bot": [
+      {
+        "bot_name": "Flame Bot",
+        "track_name": "Damage R.",
+        "level": 5,
+        "resolved_value": 0.3500000000000001,
+        "resolved_unit": "%"
+      },
+      {
+        "bot_name": "Flame Bot",
+        "track_name": "Cooldown",
+        "level": 8,
+        "resolved_value": 51.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Flame Bot",
+        "track_name": "Damage",
+        "level": 0,
+        "resolved_value": 50.0,
+        "resolved_unit": "x"
+      },
+      {
+        "bot_name": "Flame Bot",
+        "track_name": "Range",
+        "level": 4,
+        "resolved_value": 46.0,
+        "resolved_unit": "m"
+      }
+    ],
+    "Thunder Bot": [
+      {
+        "bot_name": "Thunder Bot",
+        "track_name": "Duration",
+        "level": 0,
+        "resolved_value": 5.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Thunder Bot",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 120.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Thunder Bot",
+        "track_name": "Linger",
+        "level": 0,
+        "resolved_value": 0.2,
+        "resolved_unit": "%"
+      },
+      {
+        "bot_name": "Thunder Bot",
+        "track_name": "Range",
+        "level": 0,
+        "resolved_value": 25.0,
+        "resolved_unit": "m"
+      }
+    ],
+    "Golden Bot": [
+      {
+        "bot_name": "Golden Bot",
+        "track_name": "Duration",
+        "level": 12,
+        "resolved_value": 26.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Golden Bot",
+        "track_name": "Cooldown",
+        "level": 3,
+        "resolved_value": 111.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Golden Bot",
+        "track_name": "Bonus",
+        "level": 21,
+        "resolved_value": 6.200000000000004,
+        "resolved_unit": "x"
+      },
+      {
+        "bot_name": "Golden Bot",
+        "track_name": "Range",
+        "level": 15,
+        "resolved_value": 50.0,
+        "resolved_unit": "m"
+      }
+    ],
+    "Amplify Bot": [
+      {
+        "bot_name": "Amplify Bot",
+        "track_name": "Duration",
+        "level": 0,
+        "resolved_value": 20.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Amplify Bot",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 120.0,
+        "resolved_unit": "s"
+      },
+      {
+        "bot_name": "Amplify Bot",
+        "track_name": "Bonus",
+        "level": 0,
+        "resolved_value": 3.5,
+        "resolved_unit": "x"
+      },
+      {
+        "bot_name": "Amplify Bot",
+        "track_name": "Range",
+        "level": 0,
+        "resolved_value": 25.0,
+        "resolved_unit": "m"
+      }
+    ]
+  },
   "guardians": {
     "header": [
       "Attack",
@@ -1484,6 +2033,146 @@
         "5",
         "00 | 5s | Cost 0 ? | Next 10 ?"
       ]
+    ]
+  },
+  "guardian_tracks": {
+    "Attack": [
+      {
+        "guardian_name": "Attack",
+        "track_name": "Percentage",
+        "level": 0,
+        "resolved_value": 0.01,
+        "resolved_unit": "%"
+      },
+      {
+        "guardian_name": "Attack",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 120.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Attack",
+        "track_name": "Targets",
+        "level": 0,
+        "resolved_value": 1.0,
+        "resolved_unit": null
+      }
+    ],
+    "Ally": [
+      {
+        "guardian_name": "Ally",
+        "track_name": "Recovery Amount",
+        "level": 0,
+        "resolved_value": 0.01,
+        "resolved_unit": "%"
+      },
+      {
+        "guardian_name": "Ally",
+        "track_name": "Max Recovery",
+        "level": 0,
+        "resolved_value": 1.1,
+        "resolved_unit": null
+      },
+      {
+        "guardian_name": "Ally",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 120.0,
+        "resolved_unit": "s"
+      }
+    ],
+    "Bounty": [
+      {
+        "guardian_name": "Bounty",
+        "track_name": "Multiplier",
+        "level": 0,
+        "resolved_value": 0.01,
+        "resolved_unit": null
+      },
+      {
+        "guardian_name": "Bounty",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 120.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Bounty",
+        "track_name": "Targets",
+        "level": 0,
+        "resolved_value": 1.0,
+        "resolved_unit": null
+      }
+    ],
+    "Fetch": [
+      {
+        "guardian_name": "Fetch",
+        "track_name": "Cooldown",
+        "level": 32,
+        "resolved_value": 88.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Fetch",
+        "track_name": "Find Chance",
+        "level": 27,
+        "resolved_value": 0.3700000000000002,
+        "resolved_unit": "%"
+      },
+      {
+        "guardian_name": "Fetch",
+        "track_name": "Double Find Chance",
+        "level": 9,
+        "resolved_value": 0.10999999999999999,
+        "resolved_unit": "%"
+      }
+    ],
+    "Summon": [
+      {
+        "guardian_name": "Summon",
+        "track_name": "Cooldown",
+        "level": 50,
+        "resolved_value": 90.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Summon",
+        "track_name": "Duration",
+        "level": 19,
+        "resolved_value": 24.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Summon",
+        "track_name": "Cash Bonus",
+        "level": 0,
+        "resolved_value": 1.0,
+        "resolved_unit": null
+      }
+    ],
+    "Scout": [
+      {
+        "guardian_name": "Scout",
+        "track_name": "Cooldown",
+        "level": 0,
+        "resolved_value": 105.0,
+        "resolved_unit": "s"
+      },
+      {
+        "guardian_name": "Scout",
+        "track_name": "Range Bonus",
+        "level": 0,
+        "resolved_value": 2.0,
+        "resolved_unit": null
+      },
+      {
+        "guardian_name": "Scout",
+        "track_name": "Duration",
+        "level": 0,
+        "resolved_value": 5.0,
+        "resolved_unit": "s"
+      }
     ]
   },
   "player_meta": {
@@ -1769,7 +2458,7 @@
     "generator": {
       "slot_type": "generator",
       "assist_unlocked": true,
-      "assist_level": 97,
+      "assist_level": 101,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.1,
       "substat_cap": 0.1
@@ -1888,8 +2577,8 @@
       "name": "Being Annihilator",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 164,
-      "stat": "9.04",
+      "level": 166,
+      "stat": "9.44",
       "substats": [
         {
           "name": "Attack Speed",
@@ -1946,8 +2635,8 @@
       "name": "Havoc Bringer",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 164,
-      "stat": "9.04",
+      "level": 166,
+      "stat": "9.44",
       "substats": []
     },
     "Shrink Ray": {
@@ -1962,8 +2651,8 @@
       "name": "Amplifying Strike",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 164,
-      "stat": "9.04",
+      "level": 166,
+      "stat": "9.44",
       "substats": [
         {
           "name": "Bounce Shot Chance",
@@ -2044,8 +2733,8 @@
       "name": "Space Displacer",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 163,
-      "stat": "9.467",
+      "level": 165,
+      "stat": "9.899",
       "substats": []
     },
     "Wormhole Redirector": {
@@ -2076,8 +2765,8 @@
       "name": "Sharp Fortitude",
       "slot_type": "armor",
       "rarity": "Ancestral",
-      "level": 163,
-      "stat": "8.84",
+      "level": 165,
+      "stat": "9.24",
       "substats": [
         {
           "name": "Health Regen",
@@ -2115,8 +2804,8 @@
       "name": "Orbital Augment",
       "slot_type": "armor",
       "rarity": "Ancestral 1*",
-      "level": 163,
-      "stat": "9.154",
+      "level": 165,
+      "stat": "9.57",
       "substats": [
         {
           "name": "Defense %",
@@ -2192,8 +2881,8 @@
       "name": "Singularity Harness",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 161,
-      "stat": "1.68",
+      "level": 164,
+      "stat": "1.71",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -2226,8 +2915,8 @@
       "name": "Pulsar Harvester",
       "slot_type": "generator",
       "rarity": "Ancestral 1*",
-      "level": 161,
-      "stat": "1.707",
+      "level": 164,
+      "stat": "1.738",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -2323,8 +3012,8 @@
       "name": "Multiverse Nexus",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 159,
-      "stat": "11.692",
+      "level": 163,
+      "stat": "12.664",
       "substats": [
         {
           "name": "Death Wave - Quantity",
@@ -2372,8 +3061,8 @@
       "name": "Dimension Core",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 159,
-      "stat": "10.9",
+      "level": 163,
+      "stat": "11.8",
       "substats": [
         {
           "name": "Chain Lightning - Chance",
@@ -2416,16 +3105,16 @@
       "name": "Harmony Conductor",
       "slot_type": "core",
       "rarity": "Ancestral 5*",
-      "level": 159,
-      "stat": "12.88",
+      "level": 163,
+      "stat": "13.96",
       "substats": []
     },
     "Om Chip": {
       "name": "Om Chip",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 159,
-      "stat": "10.9",
+      "level": 163,
+      "stat": "11.8",
       "substats": [
         {
           "name": "Chrono Field - Duration",
@@ -2453,16 +3142,16 @@
       "name": "Magnetic Hook",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 159,
-      "stat": "10.9",
+      "level": 163,
+      "stat": "11.8",
       "substats": []
     },
     "Primordial Collapse": {
       "name": "Primordial Collapse",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 159,
-      "stat": "11.692",
+      "level": 163,
+      "stat": "12.664",
       "substats": [
         {
           "name": "Black Hole - Duration",
@@ -2892,7 +3581,7 @@
       ],
       [
         "Coins / Kill Bonus",
-        "87",
+        "88",
         "",
         "99"
       ],
@@ -3018,7 +3707,7 @@
       ],
       [
         "Golden Tower Duration",
-        "19",
+        "20",
         "",
         "20"
       ],
@@ -5960,7 +6649,7 @@
         "",
         "Assist Slot",
         "true",
-        "97",
+        "101",
         "",
         "",
         "Assist Slot",
@@ -6342,8 +7031,8 @@
         "",
         "",
         "Ancestral 2*",
-        "159",
-        "11.692",
+        "163",
+        "12.664",
         ""
       ],
       [
@@ -6558,8 +7247,8 @@
       ],
       [
         "Ancestral",
-        "164",
-        "9.04",
+        "166",
+        "9.44",
         "",
         "",
         "Legendary",
@@ -6573,8 +7262,8 @@
         "",
         "",
         "Ancestral",
-        "159",
-        "10.9",
+        "163",
+        "11.8",
         ""
       ],
       [
@@ -6773,18 +7462,18 @@
         "",
         "",
         "Ancestral 2*",
-        "163",
-        "9.467",
+        "165",
+        "9.899",
         "",
         "",
         "Ancestral",
-        "161",
-        "1.68",
+        "164",
+        "1.71",
         "",
         "",
         "Ancestral 5*",
-        "159",
-        "12.88",
+        "163",
+        "13.96",
         ""
       ],
       [
@@ -6936,8 +7625,8 @@
       ],
       [
         "Ancestral",
-        "164",
-        "9.04",
+        "166",
+        "9.44",
         "",
         "",
         "Mythic+",
@@ -6946,13 +7635,13 @@
         "",
         "",
         "Ancestral 1*",
-        "161",
-        "1.707",
+        "164",
+        "1.738",
         "",
         "",
         "Ancestral",
-        "159",
-        "10.9",
+        "163",
+        "11.8",
         ""
       ],
       [
@@ -7109,8 +7798,8 @@
         "",
         "",
         "Ancestral",
-        "163",
-        "8.84",
+        "165",
+        "9.24",
         "",
         "",
         "Mythic+",
@@ -7119,8 +7808,8 @@
         "",
         "",
         "Ancestral",
-        "159",
-        "10.9",
+        "163",
+        "11.8",
         ""
       ],
       [
@@ -7293,13 +7982,13 @@
       ],
       [
         "Ancestral",
-        "164",
-        "9.04",
+        "166",
+        "9.44",
         "",
         "",
         "Ancestral 1*",
-        "163",
-        "9.154",
+        "165",
+        "9.57",
         "",
         "",
         "Mythic+",
@@ -7308,8 +7997,8 @@
         "",
         "",
         "Ancestral 2*",
-        "159",
-        "11.692",
+        "163",
+        "12.664",
         ""
       ],
       [

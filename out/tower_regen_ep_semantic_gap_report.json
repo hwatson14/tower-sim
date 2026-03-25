@@ -3,56 +3,56 @@
   "compare_state_key": "Farming__perks_on",
   "compare_preset": "Farming",
   "compare_perk_state": "on",
-  "package_value": 44638496577799.34,
+  "package_value": 139495301805622.95,
   "ep_value": 44640000000000.0,
-  "package_value_recomputed_from_current_factors": 57864717786036.18,
+  "package_value_recomputed_from_current_factors": 180827243081363.06,
   "current_factors": {
     "standard_perk_factor": 5.9375,
     "tradeoff_regen_factor": 8.8,
-    "enhancement_factor": 1.6
+    "enhancement_factor": 5.0
   },
   "ep_formula_hypotheses": {
     "ep_standard_perk_factor": 5.9375,
     "ep_tradeoff_regen_factor": 8.8,
-    "residual_multiplier_after_ep_perk_semantics": 0.7714545531020018,
-    "inferred_wse_level_after_ep_perk_semantics": -22.854544689799816,
-    "nearest_integer_wse_level_candidate": -23,
-    "nearest_integer_wse_multiplier": 0.77
+    "residual_multiplier_after_ep_perk_semantics": 0.2468654569926406,
+    "inferred_wse_level_after_ep_perk_semantics": -75.31345430073594,
+    "nearest_integer_wse_level_candidate": -75,
+    "nearest_integer_wse_multiplier": 0.25
   },
   "scenarios": [
     {
       "scenario": "current_package_semantics",
-      "package_value": 57864717786036.18,
-      "relative_delta_pct": 29.62526385760793,
-      "required_residual_multiplier_to_match_ep": 0.7714545531020018,
+      "package_value": 180827243081363.06,
+      "relative_delta_pct": 305.0789495550248,
+      "required_residual_multiplier_to_match_ep": 0.2468654569926406,
       "note": "Current calculator semantics: standard perk and trade-off perk improve the delta only; enhancement handled as direct multiplier row."
     },
     {
       "scenario": "ep_standard_perk_semantics_only",
-      "package_value": 57864717786036.18,
-      "relative_delta_pct": 29.62526385760793,
-      "required_residual_multiplier_to_match_ep": 0.7714545531020018,
+      "package_value": 180827243081363.06,
+      "relative_delta_pct": 305.0789495550248,
+      "required_residual_multiplier_to_match_ep": 0.2468654569926406,
       "note": "EP EPH_REGEN formula multiplies the full perk result by Standard Perks Bonus rather than scaling only the perk delta."
     },
     {
       "scenario": "ep_tradeoff_semantics_only",
-      "package_value": 57864717786036.18,
-      "relative_delta_pct": 29.62526385760793,
-      "required_residual_multiplier_to_match_ep": 0.7714545531020018,
+      "package_value": 180827243081363.06,
+      "relative_delta_pct": 305.0789495550248,
+      "required_residual_multiplier_to_match_ep": 0.2468654569926406,
       "note": "EP EPH_REGEN formula applies Improve Trade-Off Perks to the full x8 regen multiplier rather than scaling only the +7 delta."
     },
     {
       "scenario": "ep_perk_semantics_bundle",
-      "package_value": 57864717786036.18,
-      "relative_delta_pct": 29.62526385760793,
-      "required_residual_multiplier_to_match_ep": 0.7714545531020018,
+      "package_value": 180827243081363.06,
+      "relative_delta_pct": 305.0789495550248,
+      "required_residual_multiplier_to_match_ep": 0.2468654569926406,
       "note": "Apply both EP-style perk semantics while leaving the rest of the calculator unchanged."
     },
     {
       "scenario": "ep_perk_semantics_plus_inferred_wse",
-      "package_value": 44555832695247.86,
-      "relative_delta_pct": -0.1885468296418921,
-      "required_residual_multiplier_to_match_ep": 1.0018890300025998,
+      "package_value": 45206810770340.766,
+      "relative_delta_pct": 1.2697373887561954,
+      "required_residual_multiplier_to_match_ep": 0.9874618279705624,
       "note": "Model the remaining residual as an EP-only WSE multiplier applied on top of the existing enhancement multiplier. This is a semantic audit scenario, not a calculator truth claim."
     }
   ],
