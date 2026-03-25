@@ -44,12 +44,36 @@ This is the core execution rule.
 - No implementation task may invent mechanics outside KB-backed truth or explicitly governed accepted-model boundaries.
 
 ### Ownership truth
-- Canonical stat-resolution owner: `engine/stat_resolution_core.py`
+
+**Phase 4 authority reset — in effect from Phase 4 entry:**
+- Query Engine (bounded API: `engine/stat_query_kernel.py`, `engine/family_baseline_materializer.py`, `engine/state_identity.py`) is the sole canonical execution path for new Phase 4 stat-resolution work.
+- `engine/stat_resolution_core.py` is **legacy/reference-only**. It was the pre-Phase-4 canonical stat-resolution owner and is being vacated under Phase 4. No new canonical stat logic may be added to it.
+- `engine/stat_engine.py` is a thin compatibility entrypoint only. It is not a canonical implementation target for new work.
+- New Phase 4 implementation work must target QE-owned paths. Adding logic to `stat_resolution_core.py` or `stat_engine.py` is a scope violation unless explicitly authorised as a compatibility shim.
+
+**Pre-Phase-4 baseline (migration context only):**
+- Pre-Phase-4 canonical stat-resolution owner: `engine/stat_resolution_core.py` (being vacated)
 - Compatibility-only stat-resolution surface: `engine/stat_engine.py`
+
+**Layer ownership (all phases):**
 - Query Engine owns query-governed published stat and objective surfaces.
 - Inputs owns account/input compilation, not final stat resolution.
 - Simulators and evaluators may consume query-owned surfaces but must not re-derive them.
 - Optimisers and advisors may aggregate truth-owned surfaces but must not replace their owners.
+
+### Naming reset — Phase 4 entry
+
+`state::` and `runtime_mechanic_param::` naming patterns are migration-era/legacy aliasing. They are not the canonical naming target for new Phase 4 work.
+
+New Phase 4 work must:
+- Target the current canonical QE naming surface and/or a governed alias contract.
+- Not silently expand old `state::` or `runtime_mechanic_param::` naming patterns.
+
+If a legacy naming pattern must be bridged for backward compatibility, that bridge must be declared explicitly in the alias contract, not inlined silently into new implementation work.
+
+The live instance of this rule is the timing-family naming mismatch: `state::cards.wave_accelerator.spawn_rate_acceleration` does not align with `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration`. This is an open blocker for PH4-B, not implied coverage. It must be resolved explicitly, not worked around.
+
+Handoff documents (`PH4A_CANONICAL_MIGRATION_LEDGER.md`, `PH4A_FAMILY_ENTRY_MATRIX.md`) are handoff artifacts, not canonical merged-control truth, unless explicitly promoted into a control file.
 
 ### Legacy-surface rule after Phase 4
 If `engine/stat_engine.py` and/or `engine/stat_resolution_core.py` remain after Phase 4, they remain only as:

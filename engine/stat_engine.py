@@ -62,8 +62,6 @@ def resolve_stats(stat_inputs: list[StatInput]) -> StatBook:
 
 
 def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | None:
-    if not _looks_like_timing_family_rows(stat_inputs):
-        return None
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
     if len(preset_names) != 1:
         return None
