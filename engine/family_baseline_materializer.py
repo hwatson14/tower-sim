@@ -40,7 +40,7 @@ _REQUIRED_SURFACE_ENTRY_FIELDS = {
     'scenario_scoped',
     'semantics',
 }
-_ALLOWED_SURFACE_CLASSES = frozenset({'surface', 'capability', 'environment', 'context_resource'})
+_ALLOWED_SURFACE_CLASSES = frozenset({'surface', 'capability', 'environment', 'context_resource', 'support_surface'})
 
 _SOURCE_CLASS_BY_FAMILY = {
     'lab': 'labs',
@@ -306,7 +306,7 @@ def load_family_surface_ids() -> dict[str, frozenset[str]]:
             owning_families = tuple(entry.get('owning_families') or ())
             if not owning_families:
                 raise ValueError(f'Surface {surface_id!r} must declare owning_families.')
-            unknown_families = sorted(set(owning_families) - declared_families)
+            unknown_families = sorted(set(owning_families) - declared_families - {family_group})
             if unknown_families:
                 raise ValueError(f'Surface {surface_id!r} references undeclared owning_families: {unknown_families}.')
             for family_id in owning_families:

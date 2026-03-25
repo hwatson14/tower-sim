@@ -593,7 +593,7 @@ families:
       semantics: Published derived effective damage composite.
     - surface_id: derived::edamage.acp_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -607,7 +607,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.acp_factor.'
     - surface_id: derived::edamage.base_damage_stack
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -621,7 +621,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.base_damage_stack.'
     - surface_id: derived::edamage.bounce_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -635,7 +635,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.bounce_factor.'
     - surface_id: derived::edamage.bullet_crit_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -649,7 +649,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.bullet_crit_factor.'
     - surface_id: derived::edamage.bullet_per_second
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -663,7 +663,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.bullet_per_second.'
     - surface_id: derived::edamage.bullet_pipeline_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -677,7 +677,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.bullet_pipeline_factor.'
     - surface_id: derived::edamage.multishot_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -691,7 +691,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.multishot_factor.'
     - surface_id: derived::edamage.range_dpm_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -705,7 +705,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.range_dpm_factor.'
     - surface_id: derived::edamage.rapidfire_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -719,7 +719,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.rapidfire_factor.'
     - surface_id: derived::edamage.rend_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -733,7 +733,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.rend_factor.'
     - surface_id: derived::edamage.slow_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -775,7 +775,7 @@ families:
       semantics: Published EP-helper support surface for edamage.spotlight_coverage.
     - surface_id: derived::edamage.spotlight_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -803,7 +803,7 @@ families:
       semantics: Published EP-helper support surface for edamage.spotlight_light_range_factor.
     - surface_id: derived::edamage.super_tower_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -817,7 +817,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.super_tower_factor.'
     - surface_id: derived::edamage.uw.chain_lightning_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -831,7 +831,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.chain_lightning_dps.'
     - surface_id: derived::edamage.uw.death_wave_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -845,7 +845,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.death_wave_dps.'
     - surface_id: derived::edamage.uw.ilm_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -859,7 +859,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.ilm_dps.'
     - surface_id: derived::edamage.uw.poison_swamp_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -873,7 +873,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.poison_swamp_dps.'
     - surface_id: derived::edamage.uw.smart_missiles_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -887,7 +887,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.smart_missiles_dps.'
     - surface_id: derived::edamage.uw.spotlight_missiles_dps
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -901,7 +901,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw.spotlight_missiles_dps.'
     - surface_id: derived::edamage.uw_crit_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -915,7 +915,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::edamage.uw_crit_factor.'
     - surface_id: derived::edamage.uw_total_damage
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -943,7 +943,7 @@ families:
       semantics: Published Effective Paths objective surface for derived::edamage_ep.
     - surface_id: derived::edamage_ep_helper.dc_base_damage_stack
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -958,7 +958,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.di_bullet_crit_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -973,7 +973,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.dj_uw_crit_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -988,7 +988,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.dv_bullet_pipeline_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1003,7 +1003,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.dx_spotlight_bonus_term
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1018,7 +1018,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.dx_spotlight_coverage
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1033,7 +1033,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.dx_spotlight_light_range_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1048,7 +1048,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.ei_uw_total_damage
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1063,7 +1063,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::edamage_ep_helper.el_slow_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1092,7 +1092,7 @@ families:
       semantics: Published derived effective economy composite.
     - surface_id: derived::eecon.base_meta_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1145,7 +1145,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.bh_duration_term.'
     - surface_id: derived::eecon.cl_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1159,7 +1159,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.cl_factor.'
     - surface_id: derived::eecon.coin_card_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1173,7 +1173,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.coin_card_factor.'
     - surface_id: derived::eecon.cpk_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1226,7 +1226,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.dw_duration_term.'
     - surface_id: derived::eecon.eom_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1240,7 +1240,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.eom_factor.'
     - surface_id: derived::eecon.freeup_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1319,7 +1319,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.gt_gc_factor.'
     - surface_id: derived::eecon.module_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1376,7 +1376,7 @@ families:
         from quantity and angle.
     - surface_id: derived::eecon.spotlight_coin_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1390,7 +1390,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.spotlight_coin_factor.'
     - surface_id: derived::eecon.sync_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1404,7 +1404,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.sync_factor.'
     - surface_id: derived::eecon.wave_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1418,7 +1418,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::eecon.wave_factor.'
     - surface_id: derived::eecon.base_coin_income
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1447,7 +1447,7 @@ families:
       semantics: Published Effective Paths objective surface for derived::eecon_ep.
     - surface_id: derived::eecon_ep_helper.cl_meta_stack
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1462,7 +1462,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::eecon_ep_helper.cm_eom_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1477,7 +1477,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::eecon_ep_helper.dc_sync_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1492,7 +1492,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::eecon_ep_helper.dg_spotlight_coin_bonus_term
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1507,7 +1507,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::eecon_ep_helper.dg_spotlight_coin_coverage
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1522,7 +1522,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::eecon_ep_helper.dg_spotlight_coin_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1565,7 +1565,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.armor_assist_factor.
     - surface_id: derived::ehp.armor_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1593,7 +1593,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.armor_primary_factor.
     - surface_id: derived::ehp.base_pool
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1607,7 +1607,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::ehp.base_pool.'
     - surface_id: derived::ehp.chain_thunder_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1649,7 +1649,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.chrono_field_cooldown_seconds.
     - surface_id: derived::ehp.chrono_field_damage_reduction_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1691,7 +1691,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.chrono_field_duration_seconds.
     - surface_id: derived::ehp.chrono_field_uptime
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1747,7 +1747,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.dabs_effective_factor.
     - surface_id: derived::ehp.dabs_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1943,7 +1943,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.def_pct_vault_term.
     - surface_id: derived::ehp.defense_taken_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -1999,7 +1999,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.health_dwhp_factor.
     - surface_id: derived::ehp.health_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2181,7 +2181,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.pre_tradeoff_ehp.
     - surface_id: derived::ehp.recovery_package_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2195,7 +2195,7 @@ families:
       semantics: 'Published EP-helper support surface for workbook parity work: derived::ehp.recovery_package_factor.'
     - surface_id: derived::ehp.tradeoff_defense_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2223,7 +2223,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.tradeoff_defense_reduction_pct.
     - surface_id: derived::ehp.wall_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2307,7 +2307,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.wall_health_wse_factor.
     - surface_id: derived::ehp.wall_invuln_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2349,7 +2349,7 @@ families:
       semantics: Published EP-helper support surface derived::ehp.wall_or_recovery_factor.
     - surface_id: derived::ehp.wall_pkg_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2377,7 +2377,7 @@ families:
       semantics: Published Effective Paths objective surface for derived::ehp_ep.
     - surface_id: derived::ehp_ep_helper.ce_pool_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2392,7 +2392,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.cf_armor_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2407,7 +2407,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.cg_dabs_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2422,7 +2422,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.ch_defense_taken_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2437,7 +2437,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.ci_wall_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2452,7 +2452,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.cj_recovery_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2467,7 +2467,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.ck_tradeoff_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2482,7 +2482,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.cl_cfdr_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
@@ -2497,7 +2497,7 @@ families:
       helper_designation: ep_helper
     - surface_id: derived::ehp_ep_helper.cm_chain_thunder_factor
       surface_kind: published_derived_surface
-      surface_class: support_surface
+      surface_class: surface
       domain: derived
       owning_families:
       - derived_v1
