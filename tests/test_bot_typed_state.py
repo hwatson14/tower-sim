@@ -18,8 +18,8 @@ def test_bot_compiled_state_preserves_level_and_resolved_value_metadata():
     golden_tracks = state.bot_upgrade_tracks.get("Golden Bot", [])
     assert golden_tracks, "Expected typed bot tracks for Golden Bot."
     bonus_track = next(track for track in golden_tracks if track.track_name == "Bonus")
-    assert bonus_track.level == 21
-    assert bonus_track.resolved_value is not None
+    assert bonus_track.level == 22
+    assert abs(bonus_track.resolved_value - 6.4) < 1e-6
     assert bonus_track.resolved_unit == "x"
 
 
@@ -30,6 +30,6 @@ def test_bot_stat_inputs_expose_level_resolved_value_and_unit():
     bot_rows = [row for row in rows if row.source_family == "bot" and row.source_name == "Golden Bot" and row.stat_name.endswith("::Bonus")]
     assert bot_rows, "Expected Golden Bot::Bonus row."
     row = bot_rows[0]
-    assert row.raw_level == 21
-    assert row.resolved_value is not None
+    assert row.raw_level == 22
+    assert abs(row.resolved_value - 6.4) < 1e-6
     assert row.resolved_unit == "x"
