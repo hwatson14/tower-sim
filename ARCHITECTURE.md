@@ -102,7 +102,9 @@ kb/{domain}/
 
 **Ownership rule:** One stat, one resolution path, one owner. The Query Engine must produce identical results for identical inputs. It must never silently cache, approximate, or re-derive a surface that it has already resolved. Contributor-ledger visibility is a first-class requirement: every resolved stat must be traceable to its contributing sources.
 
-**Current state:** The core resolver exists and works (`stat_engine.py`), and the phase-1 query API primitives now exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. The bounded progression recalc bridge now routes its runtime/reference path through declared query-owned families, but the broader R86 acceptance thread is still open: global parity validation across declared families, end-to-end overlay/invalidation closure, Gate F benchmark evidence, and the remaining KB-routing ownership extraction are still pending acceptance evidence rather than requiring a redo of the landed bridge migration.
+**Phase 4 authority reset — in effect:** The Query Engine bounded API (`engine/stat_query_kernel.py`, `engine/family_baseline_materializer.py`, `engine/state_identity.py`) is the canonical execution target for all new Phase 4 stat-resolution work. `engine/stat_resolution_core.py` is the pre-Phase-4 core resolver (legacy/reference-only under Phase 4; no new canonical stat logic may be added). `engine/stat_engine.py` is a thin compatibility entrypoint (~13 lines) only.
+
+**Current state:** The pre-Phase-4 core resolver (`engine/stat_resolution_core.py`) is functional. The bounded QE API primitives exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. The bounded progression recalc bridge routes its runtime/reference path through declared query-owned families, but the broader R86 acceptance thread is still open: global parity validation across declared families, end-to-end overlay/invalidation closure, Gate F benchmark evidence, and the remaining KB-routing ownership extraction are still pending acceptance evidence.
 
 **Key interfaces:**
 - Consumes: `AccountState` from Inputs, mechanic contracts and tables from the KB
@@ -112,8 +114,8 @@ kb/{domain}/
 
 | File | Lines | Role |
 |---|---|---|
-| `engine/stat_engine.py` | ~13 | Legacy compatibility entrypoint that re-exports the canonical resolver surface |
-| `engine/stat_resolution_core.py` | ~1,500 | Core stat resolution — the heart of this layer |
+| `engine/stat_engine.py` | ~13 | Legacy compatibility entrypoint only — not a canonical implementation target for new Phase 4 work |
+| `engine/stat_resolution_core.py` | ~1,500 | Pre-Phase-4 canonical resolver — **legacy/reference-only under Phase 4 authority reset**; no new canonical stat logic may be added |
 | `engine/scenario_engine.py` | 537 | Scenario configuration and scenario-dependent surface handling |
 | `engine/scenario_runtime_inputs.py` | 90 | Scenario input assembly |
 | `engine/derived_surface_composer.py` | 156 | Derived stat composition |
