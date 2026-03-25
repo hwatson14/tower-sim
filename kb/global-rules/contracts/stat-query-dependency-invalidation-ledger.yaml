@@ -345,6 +345,118 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted effective wave duration surface.
+  - node_id: source_input::derived_composite_analysis
+    node_kind: source_input
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: analysis_source
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Shared analysis source for derived composite bundle outputs.
+  - node_id: derived::ehp
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective HP composite.
+  - node_id: derived::edamage
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective damage composite.
+  - node_id: derived::eecon
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective economy composite.
+  - node_id: derived::ehp_ep
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective HP EP-path variant.
+  - node_id: derived::edamage_ep
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective damage EP-path variant.
+  - node_id: derived::eecon_ep
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived effective economy EP-path variant.
+  - node_id: derived::economy.income.coins
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income coins surface.
+  - node_id: derived::economy.income.gems
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income gems surface.
+  - node_id: derived::economy.income.stones
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income stones surface.
+  - node_id: derived::economy.income.medals
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income medals surface.
+  - node_id: derived::economy.income.keys
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income keys surface.
+  - node_id: derived::economy.income.shards
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income shards surface.
+  - node_id: derived::economy.income.bits
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Published derived economy income bits surface.
 edges:
   - upstream_node_id: source_input::workshop:Health
     downstream_node_id: state::tower.hp
@@ -550,6 +662,97 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wave acceleration affects effective wave duration.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::ehp
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived composite analysis produces effective HP output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::edamage
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived composite analysis produces effective damage output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::eecon
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived composite analysis produces effective economy output.
+  - upstream_node_id: derived::ehp
+    downstream_node_id: derived::ehp_ep
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Effective HP EP-path variant derived from base composite.
+  - upstream_node_id: derived::edamage
+    downstream_node_id: derived::edamage_ep
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Effective damage EP-path variant derived from base composite.
+  - upstream_node_id: derived::eecon
+    downstream_node_id: derived::eecon_ep
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Effective economy EP-path variant derived from base composite.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.coins
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income coins output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.gems
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income gems output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.stones
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income stones output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.medals
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income medals output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.keys
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income keys output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.shards
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income shards output.
+  - upstream_node_id: source_input::derived_composite_analysis
+    downstream_node_id: derived::economy.income.bits
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: analysis_output
+    verification_status: analysis_provisional
+    notes: Derived analysis produces economy income bits output.
 mutation_triggers:
   - mutation_class: workshop_mutation
     trigger_key: Health
