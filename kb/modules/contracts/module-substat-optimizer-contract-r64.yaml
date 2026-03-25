@@ -1,0 +1,17 @@
+contract_id: module_substat_optimizer_r64
+status: active
+purpose:
+  - Evaluate substat actions for a chosen objective from ranked candidate outputs.
+required_candidate_fields:
+  - action_family
+  - total_weighted_delta_raw
+optional_candidate_fields:
+  - slot_id
+  - objective_deltas
+  - reroll_cost
+  - resource_cost
+  - substat_name
+rules:
+  - optimizer filters to action_family=substat
+  - optimizer may score by objective-specific delta and cost weight
+  - output must expose best action, ranked actions, and grouped best-by-substat view

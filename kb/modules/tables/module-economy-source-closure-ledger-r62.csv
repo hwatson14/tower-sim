@@ -1,0 +1,24 @@
+domain,item_id,description,status,source_basis,used_by,notes
+drop_economy,reroll_shard_drop_chance_pct,Base boss reroll shard drop chance,source_closed,wiki,query_module_drop_economy;module_reroll_income_calculator,Closed from Modules wiki page
+drop_economy,reroll_shards_per_boss_by_tier,Reroll shard amount per successful boss drop by tier,source_closed,wiki,query_module_drop_economy;module_reroll_income_calculator,Closed from Modules wiki tier table
+drop_economy,common_module_drop_chance_pct,Base common module boss drop chance,source_closed,wiki,query_module_drop_economy;module_shard_income_calculator,Closed from Modules wiki page
+drop_economy,rare_module_drop_chance_pct,Base rare module boss drop chance,source_closed,wiki,query_module_drop_economy;module_shard_income_calculator,Closed from Modules wiki page
+shatter,common_module_shards,Common module shards from shatter,source_closed,wiki,query_module_drop_economy;module_shard_income_calculator,Closed from Modules wiki page
+shatter,rare_module_shards,Rare module shards from shatter,source_closed,wiki,query_module_drop_economy;module_shard_income_calculator,Closed from Modules wiki page
+labs,reroll_shards_bonus_per_level,Reroll Shards lab bonus per level,source_closed,wiki,query_module_lab_policy,Closed from Module Labs wiki
+labs,common_drop_chance_bonus_per_level,Common Drop Chance lab bonus per level,source_closed,wiki,query_module_lab_policy,Closed from Module Labs wiki
+labs,rare_drop_chance_bonus_per_level,Rare Drop Chance lab bonus per level,source_closed,wiki,query_module_lab_policy,Closed from Module Labs wiki
+labs,daily_mission_shards_bonus_per_level,Daily Mission Shards lab bonus per level,source_closed,wiki,query_module_lab_policy,Closed from Module Labs wiki
+labs,shatter_shards_bonus_per_level,Shatter Shards lab bonus per level,source_closed,wiki,query_module_lab_policy,Closed from Module Labs wiki
+missions,base_daily_mission_shards_by_highest_tier,Base daily mission shard reward table,source_closed,wiki,query_module_mission_economy;module_shard_income_calculator,Closed from Daily Missions wiki
+draw_policy,common_draw_rate_pct,Common module draw rate,source_closed,wiki,query_module_draw_policy;module_shard_income_calculator,Closed from Modules wiki purchasing section
+draw_policy,rare_draw_rate_pct,Rare module draw rate,source_closed,wiki,query_module_draw_policy;module_shard_income_calculator,Closed from Modules wiki purchasing section
+draw_policy,epic_draw_rate_pct,Epic module draw rate,source_closed,wiki,query_module_draw_policy,Closed from Modules wiki purchasing section
+draw_policy,epic_pity_draws,Epic pity threshold in draws,source_closed,wiki,query_module_draw_policy,Closed from Modules wiki purchasing section
+draw_policy,ten_pull_minimum_rare,Minimum one rare in every ten-pull,source_closed,wiki,query_module_draw_policy,Closed from Modules wiki purchasing section
+draw_policy,gem_cost_per_draw,Gem cost per module draw,source_closed,wiki,query_module_draw_policy;module_shard_income_calculator,Closed from Modules wiki purchasing section
+reroll_cost,lock_costs_by_lock_count,Exact reroll shard lock-cost ladder,source_closed,wiki,module_reroll_spend_calculator,Closed from Modules wiki reroll cost table
+draw_ev,epic_draw_shard_equivalent_value,Shard-equivalent value of an epic draw,unresolved,,module_shard_income_calculator,Account-state dependent duplicate/progression semantics not closed
+draw_ev,ten_pull_expected_value_model,Exact EV model including ten-pull rare guarantee,unresolved,,module_shard_income_calculator,Guarantee exists but full expected-value model not formalized
+missions,daily_mission_frequency_policy,Missions per week planner policy,manual_qe_routed,input/QE,planner resource state;module_shard_income_calculator,Manual source but routed through QE
+reroll_cost,auto_roll_time_or_iteration_model,Auto-roll timing/iterations beyond shard spend,unresolved,,not currently consumed,Out of current shard-spend calculator scope

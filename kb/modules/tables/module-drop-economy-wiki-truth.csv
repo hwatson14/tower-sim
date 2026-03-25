@@ -1,0 +1,28 @@
+topic,key,value,unit,source_note
+boss_reroll_drop,reroll_shard_drop_chance,15.0,pct,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t1,1,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t2,2,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t3,3,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t4,4,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t5,6,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t6,8,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t7,12,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t8,18,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t9,25,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t10,32,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t11,40,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t12,45,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t13,50,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t14,55,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t15,60,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t16,65,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t17,70,shards,Wiki Modules boss drops
+boss_reroll_drop,reroll_shards_t18,75,shards,Wiki Modules boss drops
+boss_module_drop,common_drop_chance_base,2.0,pct,Wiki Modules boss drops
+boss_module_drop,rare_drop_chance_base,0.5,pct,Wiki Modules boss drops
+shatter,common_module_shards,5,shards,Wiki Modules acquiring modules
+shatter,rare_module_shards,10,shards,Wiki Modules acquiring modules
+lab_bonus,daily_mission_shards_bonus_per_level,1,shards_per_mission,Wiki Daily Mission Shards lab
+lab_bonus,common_drop_chance_bonus_per_level,0.1,pct,Wiki Common Drop Chance lab
+lab_bonus,rare_drop_chance_bonus_per_level,0.1,pct,Wiki Rare Drop Chance lab
+lab_bonus,reroll_shards_bonus_per_level,1,shards,Wiki Reroll Shards lab

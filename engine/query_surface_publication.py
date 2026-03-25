@@ -5,6 +5,7 @@ from typing import Dict
 
 from engine.query_currency_income import publish_currency_income_surfaces
 from engine.query_derived_composites import publish_derived_composites
+from engine.query_module_runtime_policy import publish_module_runtime_policy_surfaces
 from models.statbook import StatRow
 
 
@@ -17,6 +18,7 @@ def publish_phase3_query_surfaces(rows: Dict[str, StatRow], manual_input_path: s
     """
     publish_derived_composites(rows)
     publish_currency_income_surfaces(rows, manual_input_path=manual_input_path)
+    publish_module_runtime_policy_surfaces(rows, manual_input_path=manual_input_path)
 
 
 

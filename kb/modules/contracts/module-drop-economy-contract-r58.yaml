@@ -1,0 +1,25 @@
+contract_id: module_drop_economy_r58
+status: active_partial
+purpose:
+  - Publish wiki-backed boss-drop and shatter truths, plus manual-routed lab/tier inputs, into QE surfaces for reroll and module economy calculators.
+published_surfaces:
+  - planner.manual_policy.module.runtime_tier_for_drop_tables
+  - planner.manual_policy.module.labs.reroll_shards_bonus
+  - planner.manual_policy.module.labs.common_drop_chance_bonus_pct
+  - planner.manual_policy.module.labs.rare_drop_chance_bonus_pct
+  - planner.manual_policy.module.labs.daily_mission_shards_bonus
+  - derived::module.drop_policy.reroll_shard_drop_chance_pct
+  - derived::module.drop_policy.reroll_shards_per_boss
+  - derived::module.drop_policy.common_module_drop_chance_pct
+  - derived::module.drop_policy.rare_module_drop_chance_pct
+  - derived::module.shatter_policy.common_module_shards
+  - derived::module.shatter_policy.rare_module_shards
+  - derived::module.mission_policy.daily_mission_shards_bonus
+  - derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss
+unresolved_items:
+  - base_daily_mission_shards_per_mission
+  - gem_draw_expected_shards_per_draw
+  - reroll_shard_auto_roll_spend_ladder
+rules:
+  - unresolved items must remain explicit and must not be faked as exact
+  - expected_shatter_equivalent_shards_per_boss is only valid under the assumption that all dropped common and rare modules are shattered

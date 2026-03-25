@@ -1,0 +1,14 @@
+contract_id: module_functional_calculators_r55
+status: active_scaffold
+purpose:
+  - Add the missing original-scope functional calculator layer on top of the existing runtime/value/planner base.
+components:
+  - module_reroll_income_calculator
+  - module_shard_income_calculator
+  - module_slot_level_optimizer
+  - module_substat_optimizer
+  - module_reroll_spend_calculator
+  - module_horizon_optimizer_outputs
+rules:
+  - blocked exactness must remain explicit where KB/source closure is incomplete
+  - advisory calculators may use explicit user/model assumptions but must label exactness honestly
