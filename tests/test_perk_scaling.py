@@ -160,7 +160,7 @@ def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty
     assert result.returncode == 0, result.stderr
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     assert diagnostics['perk_config_resolution']['fallback_applied'] is True
-    assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('generated/perks_projected_max.json') or diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('generated\\perks_projected_max.json')
+    assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('input/derived/perks_projected_max.json') or diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('input\\derived\\perks_projected_max.json')
 
 
 @pytest.mark.slow

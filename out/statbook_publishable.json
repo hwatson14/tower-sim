@@ -73,7 +73,7 @@
     },
     "meta_progression_param::laboratory.speed_multiplier": {
       "stat_name": "meta_progression_param::laboratory.speed_multiplier",
-      "final_value": 2.82,
+      "final_value": 2.84,
       "value_type": "unknown",
       "source_count": 1,
       "status": "resolved",
@@ -83,7 +83,7 @@
           "stat_name": "Labs Speed",
           "source_family": "lab",
           "source_name": "Labs Speed",
-          "value": 2.82,
+          "value": 2.84,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -98,7 +98,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "2.82"
+          "display_value": "2.84"
         }
       ],
       "schema": {
@@ -139,12 +139,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "2.82",
+      "display_value": "2.84",
       "publishable": true
     },
     "canonical_stat::tower_damage": {
       "stat_name": "canonical_stat::tower_damage",
-      "final_value": 22202360287.103737,
+      "final_value": 23244331190.764286,
       "value_type": "damage",
       "source_count": 9,
       "status": "resolved",
@@ -154,7 +154,7 @@
           "stat_name": "Damage",
           "source_family": "lab",
           "source_name": "Damage",
-          "value": 2.38,
+          "value": 2.44,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -169,7 +169,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "2.38"
+          "display_value": "2.44"
         },
         {
           "stat_name": "Damage",
@@ -322,7 +322,7 @@
           "stat_name": "Amplifying Strike::main",
           "source_family": "module",
           "source_name": "Amplifying Strike",
-          "value": 9.44,
+          "value": 9.64,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -337,7 +337,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x9.44"
+          "display_value": "x9.64"
         }
       ],
       "schema": {
@@ -379,7 +379,7 @@
         "compare_policy": "normal",
         "rationale": "KB now closes damage contributor semantics sufficiently for publish; workshop base scaled by lab/card/module/enhancement/relic/vault multipliers."
       },
-      "display_value": "22.2B",
+      "display_value": "23.2B",
       "publishable": true
     },
     "canonical_stat::tower_attack_speed": {
@@ -580,7 +580,7 @@
     },
     "canonical_stat::tower_crit_multiplier": {
       "stat_name": "canonical_stat::tower_crit_multiplier",
-      "final_value": 536.535,
+      "final_value": 532.89,
       "value_type": "multiplier",
       "source_count": 6,
       "status": "resolved",
@@ -590,7 +590,7 @@
           "stat_name": "Critical Factor",
           "source_family": "lab",
           "source_name": "Critical Factor",
-          "value": 3.4899999999999998,
+          "value": 3.46,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -605,7 +605,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "3.49"
+          "display_value": "3.46"
         },
         {
           "stat_name": "Critical Factor",
@@ -751,7 +751,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x536.535",
+      "display_value": "x532.89",
       "publishable": true
     },
     "canonical_stat::tower_range_m": {
@@ -846,7 +846,7 @@
     },
     "canonical_stat::tower_damage_per_meter_multiplier": {
       "stat_name": "canonical_stat::tower_damage_per_meter_multiplier",
-      "final_value": 0.5568420000000001,
+      "final_value": 0.56463,
       "value_type": "multiplier",
       "source_count": 5,
       "status": "resolved",
@@ -919,7 +919,7 @@
           "stat_name": "Damage / Meter",
           "source_family": "relic",
           "source_name": "Damage / Meter",
-          "value": 0.42999999999999994,
+          "value": 0.44999999999999996,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -934,7 +934,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.43"
+          "display_value": "0.45"
         },
         {
           "stat_name": "Damage / Meter",
@@ -995,7 +995,7 @@
         "compare_policy": "normal",
         "rationale": "KB and engine now close the destination-specific formula as decimal workshop bonus multiplied by lab and post multipliers."
       },
-      "display_value": "x0.557",
+      "display_value": "x0.565",
       "publishable": true
     },
     "canonical_stat::tower_supercrit_chance_pct": {
@@ -1470,7 +1470,7 @@
     },
     "canonical_stat::tower_hp": {
       "stat_name": "canonical_stat::tower_hp",
-      "final_value": 21442357509758.453,
+      "final_value": 21906477802177.465,
       "value_type": "hp",
       "source_count": 12,
       "status": "resolved",
@@ -1690,7 +1690,7 @@
           "stat_name": "Sharp Fortitude::main",
           "source_family": "module",
           "source_name": "Sharp Fortitude",
-          "value": 9.24,
+          "value": 9.44,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -1705,7 +1705,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x9.24"
+          "display_value": "x9.44"
         },
         {
           "stat_name": "Orbital Augment::main",
@@ -1768,7 +1768,7 @@
         "compare_policy": "normal",
         "rationale": "Relic health semantics are now explicit in the KB as pct_bonus, matching live-wiki guidance that relic bonuses are additive with similar relics and multiplicative with other bonuses."
       },
-      "display_value": "21.4T",
+      "display_value": "21.9T",
       "publishable": true
     },
     "canonical_stat::tower_regen": {
@@ -2781,7 +2781,7 @@
     },
     "canonical_stat::wall_hp": {
       "stat_name": "canonical_stat::wall_hp",
-      "final_value": 1157887305526956.5,
+      "final_value": 1182949801317583.0,
       "value_type": "hp",
       "source_count": 6,
       "status": "resolved",
@@ -2953,7 +2953,7 @@
         "compare_policy": "normal",
         "rationale": "Wall Health lab semantics are now explicit in the KB as additive percent points, matching the live-wiki ladder and allowing the destination-specific wall HP formula to publish."
       },
-      "display_value": "1.16q",
+      "display_value": "1.18q",
       "publishable": true
     },
     "canonical_stat::wall_rebuild_seconds": {
@@ -12686,7 +12686,7 @@
     },
     "canonical_stat::tower_thorns_damage_pct": {
       "stat_name": "canonical_stat::tower_thorns_damage_pct",
-      "final_value": 119.0,
+      "final_value": 121.0,
       "value_type": "pct",
       "source_count": 5,
       "status": "resolved",
@@ -12717,7 +12717,7 @@
           "stat_name": "Thorns",
           "source_family": "relic",
           "source_name": "Thorns",
-          "value": 0.09000000000000001,
+          "value": 0.11000000000000001,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -12732,7 +12732,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.09"
+          "display_value": "0.11"
         },
         {
           "stat_name": "Thorn Damage",
@@ -12835,7 +12835,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "119%",
+      "display_value": "121%",
       "publishable": true
     },
     "canonical_stat::tower_lifesteal_pct": {
@@ -13022,7 +13022,7 @@
     },
     "canonical_stat::tower_knockback_force": {
       "stat_name": "canonical_stat::tower_knockback_force",
-      "final_value": 2.166,
+      "final_value": 2.172,
       "value_type": "force",
       "source_count": 5,
       "status": "resolved",
@@ -13053,7 +13053,7 @@
           "stat_name": "Knockback Force",
           "source_family": "relic",
           "source_name": "Knockback Force",
-          "value": 0.24,
+          "value": 0.26,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -13068,7 +13068,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.24"
+          "display_value": "0.26"
         },
         {
           "stat_name": "Knockback Force",
@@ -13170,12 +13170,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "2.166",
+      "display_value": "2.172",
       "publishable": true
     },
     "canonical_stat::tower_orb_speed_rpm": {
       "stat_name": "canonical_stat::tower_orb_speed_rpm",
-      "final_value": 6.832000000000002,
+      "final_value": 7.1370000000000005,
       "value_type": "rpm",
       "source_count": 4,
       "status": "resolved",
@@ -13206,7 +13206,7 @@
           "stat_name": "Orb Speed",
           "source_family": "relic",
           "source_name": "Orb Speed",
-          "value": 0.12000000000000001,
+          "value": 0.17,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -13221,7 +13221,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.12"
+          "display_value": "0.17"
         },
         {
           "stat_name": "Orb Speed",
@@ -13302,7 +13302,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "6.832",
+      "display_value": "7.137",
       "publishable": true
     },
     "canonical_stat::tower_shockwave_size_m": {
@@ -13536,7 +13536,7 @@
     },
     "canonical_stat::tower_land_mine_damage": {
       "stat_name": "canonical_stat::tower_land_mine_damage",
-      "final_value": 4.6059924665085005e+17,
+      "final_value": 4.789465717423773e+17,
       "value_type": "damage",
       "source_count": 3,
       "status": "resolved",
@@ -13642,7 +13642,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "461q",
+      "display_value": "479q",
       "publishable": true
     },
     "canonical_stat::tower_land_mine_radius_m": {
@@ -14115,7 +14115,7 @@
     },
     "canonical_stat::free_utility_upgrade_chance_pct": {
       "stat_name": "canonical_stat::free_utility_upgrade_chance_pct",
-      "final_value": 211.9,
+      "final_value": 213.9,
       "value_type": "pct",
       "source_count": 8,
       "status": "resolved",
@@ -14146,7 +14146,7 @@
           "stat_name": "Free Utility Upgrade",
           "source_family": "relic",
           "source_name": "Free Utility Upgrade",
-          "value": 0.04,
+          "value": 0.05,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -14161,7 +14161,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.04"
+          "display_value": "0.05"
         },
         {
           "stat_name": "Free Utility Upgrade",
@@ -14306,7 +14306,7 @@
         "compare_policy": "noncomparable",
         "rationale": ""
       },
-      "display_value": "211.9%",
+      "display_value": "213.9%",
       "publishable": true
     },
     "runtime_mechanic_param::tower.orb_size_multiplier": {
@@ -15754,7 +15754,7 @@
     },
     "canonical_stat::ultimate_damage_multiplier": {
       "stat_name": "canonical_stat::ultimate_damage_multiplier",
-      "final_value": 20.285955039999997,
+      "final_value": 22.70389256,
       "value_type": "multiplier",
       "source_count": 4,
       "status": "resolved",
@@ -15827,13 +15827,13 @@
           "stat_name": "Dimension Core::main",
           "source_family": "module",
           "source_name": "Dimension Core",
-          "value": 1.313,
+          "value": 1.4695,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
           "preset_name": "Farming",
           "provenance": "IDS::Modules",
-          "notes": "module_assist_main_effect:assist_multiplier_eff=0.1:kb_module_base_routed",
+          "notes": "module_assist_main_effect:assist_multiplier_eff=0.15:kb_module_base_routed",
           "contributor_id": "module__core__ultimate_weapon_damage__pct@@dimension core@@assist",
           "destination_object_type": "canonical_stat",
           "destination_id": "ultimate_damage_multiplier",
@@ -15842,7 +15842,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x1.313"
+          "display_value": "x1.47"
         }
       ],
       "schema": {
@@ -15882,7 +15882,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x20.286",
+      "display_value": "x22.704",
       "publishable": true
     },
     "canonical_stat::coins_multiplier": {
@@ -18146,7 +18146,7 @@
     },
     "mechanic_param::bot.golden.bonus_multiplier": {
       "stat_name": "mechanic_param::bot.golden.bonus_multiplier",
-      "final_value": 6.2,
+      "final_value": 6.4,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -18156,7 +18156,7 @@
           "stat_name": "Golden Bot::Bonus",
           "source_family": "bot",
           "source_name": "Golden Bot",
-          "value": 6.2,
+          "value": 6.4,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -18168,10 +18168,10 @@
           "destination_id": "bot.golden.bonus_multiplier",
           "resolver_id": "standard_scalar_param",
           "kb_mapped": true,
-          "raw_level": 21,
-          "resolved_value": 6.2,
+          "raw_level": 22,
+          "resolved_value": 6.4,
           "resolved_unit": "x",
-          "display_value": "6.2"
+          "display_value": "6.4"
         }
       ],
       "schema": {
@@ -18211,7 +18211,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x6.2",
+      "display_value": "x6.4",
       "publishable": true
     },
     "mechanic_param::bot.amplify.bonus_multiplier": {
@@ -19630,7 +19630,7 @@
     },
     "mechanic_param::uw.chain_lightning.damage_multiplier": {
       "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
-      "final_value": 1806.0,
+      "final_value": 1811.0,
       "value_type": "multiplier",
       "source_count": 3,
       "status": "resolved",
@@ -19682,7 +19682,7 @@
           "stat_name": "Chain Lightning - Damage",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 5.0,
+          "value": 7.5,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -19697,7 +19697,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x5"
+          "display_value": "x7.5"
         }
       ],
       "schema": {
@@ -19773,7 +19773,7 @@
           "stat_name": "Chain Lightning - Quantity",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 0.30000000000000004,
+          "value": 0.44999999999999996,
           "value_type": "resolved_value",
           "stage": "loadout_resolved",
           "active": true,
@@ -19788,7 +19788,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0.3"
+          "display_value": "0.45"
         }
       ],
       "schema": {
@@ -19832,7 +19832,7 @@
     },
     "mechanic_param::uw.chain_lightning.chance_pct": {
       "stat_name": "mechanic_param::uw.chain_lightning.chance_pct",
-      "final_value": 18.2,
+      "final_value": 18.8,
       "value_type": "pct",
       "source_count": 2,
       "status": "resolved",
@@ -19863,7 +19863,7 @@
           "stat_name": "Chain Lightning - Chance",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 1.2000000000000002,
+          "value": 1.7999999999999998,
           "value_type": "percent_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -19878,7 +19878,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "1.2%"
+          "display_value": "1.8%"
         }
       ],
       "schema": {
@@ -19918,7 +19918,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "18.2%",
+      "display_value": "18.8%",
       "publishable": true
     },
     "capability::uw.smart_missiles.owned": {
@@ -20594,7 +20594,7 @@
     },
     "mechanic_param::uw.chrono_field.slow_pct": {
       "stat_name": "mechanic_param::uw.chrono_field.slow_pct",
-      "final_value": 50.0,
+      "final_value": 55.00000000000001,
       "value_type": "pct",
       "source_count": 1,
       "status": "resolved",
@@ -20604,7 +20604,7 @@
           "stat_name": "Chrono Field::Speed Reduction",
           "source_family": "uw",
           "source_name": "Chrono Field",
-          "value": 50.0,
+          "value": 55.00000000000001,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -20616,10 +20616,10 @@
           "destination_id": "uw.chrono_field.slow_pct",
           "resolver_id": "pct_capped_param",
           "kb_mapped": true,
-          "raw_level": 6,
-          "resolved_value": 0.5,
+          "raw_level": 7,
+          "resolved_value": 0.55,
           "resolved_unit": null,
-          "display_value": "50"
+          "display_value": "55"
         }
       ],
       "schema": {
@@ -20659,7 +20659,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "50%",
+      "display_value": "55%",
       "publishable": true
     },
     "mechanic_param::uw.chrono_field.cooldown_seconds": {
@@ -21844,7 +21844,7 @@
     },
     "mechanic_param::uw.spotlight.bonus_multiplier": {
       "stat_name": "mechanic_param::uw.spotlight.bonus_multiplier",
-      "final_value": 33.15,
+      "final_value": 34.275,
       "value_type": "multiplier",
       "source_count": 3,
       "status": "resolved",
@@ -21896,7 +21896,7 @@
           "stat_name": "Spotlight - Bonus",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 1.5,
+          "value": 2.25,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -21911,7 +21911,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x1.5"
+          "display_value": "x2.25"
         }
       ],
       "schema": {
@@ -21951,12 +21951,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x33.15",
+      "display_value": "x34.275",
       "publishable": true
     },
     "mechanic_param::uw.spotlight.angle_degrees": {
       "stat_name": "mechanic_param::uw.spotlight.angle_degrees",
-      "final_value": 55.1,
+      "final_value": 55.65,
       "value_type": "degrees",
       "source_count": 3,
       "status": "resolved",
@@ -22008,7 +22008,7 @@
           "stat_name": "Spotlight - Angle",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 1.1,
+          "value": 1.65,
           "value_type": "resolved_value",
           "stage": "loadout_resolved",
           "active": true,
@@ -22023,7 +22023,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "1.1"
+          "display_value": "1.65"
         }
       ],
       "schema": {
@@ -22064,7 +22064,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "55.1",
+      "display_value": "55.65",
       "publishable": true
     },
     "mechanic_param::uw.spotlight.count": {
@@ -26672,7 +26672,7 @@
           "stat_name": "Module Coin Cost",
           "source_family": "lab",
           "source_name": "Module Coin Cost",
-          "value": 23,
+          "value": 28,
           "value_type": "level",
           "stage": "account_state",
           "active": true,
@@ -26687,7 +26687,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "23"
+          "display_value": "28"
         }
       ],
       "schema": {
@@ -28982,7 +28982,7 @@
           "stat_name": "Intro Sprint Mastery",
           "source_family": "lab",
           "source_name": "Intro Sprint Mastery",
-          "value": 0,
+          "value": 2,
           "value_type": "level",
           "stage": "account_state",
           "active": true,
@@ -28997,7 +28997,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "0"
+          "display_value": "2"
         }
       ],
       "schema": {
@@ -30452,7 +30452,7 @@
           "stat_name": "Event Relics",
           "source_family": "relic",
           "source_name": "Event Relics",
-          "value": 112.0,
+          "value": 116.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -30467,7 +30467,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "112"
+          "display_value": "116"
         }
       ],
       "schema": {
@@ -30592,7 +30592,7 @@
           "stat_name": "Other Relics",
           "source_family": "relic",
           "source_name": "Other Relics",
-          "value": 22.0,
+          "value": 23.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -30607,7 +30607,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "22"
+          "display_value": "23"
         }
       ],
       "schema": {
@@ -30662,7 +30662,7 @@
           "stat_name": "Total Relics",
           "source_family": "relic",
           "source_name": "Total Relics",
-          "value": 147.0,
+          "value": 152.0,
           "value_type": "resolved_value",
           "stage": "account_state",
           "active": true,
@@ -30677,7 +30677,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "147"
+          "display_value": "152"
         }
       ],
       "schema": {
@@ -31358,7 +31358,7 @@
     },
     "runtime_mechanic_param::uw.chain_lightning.chance_pct": {
       "stat_name": "runtime_mechanic_param::uw.chain_lightning.chance_pct",
-      "final_value": 18.2,
+      "final_value": 18.8,
       "value_type": "pct",
       "source_count": 2,
       "status": "resolved",
@@ -31389,7 +31389,7 @@
           "stat_name": "Chain Lightning - Chance",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 1.2000000000000002,
+          "value": 1.7999999999999998,
           "value_type": "percent_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -31404,7 +31404,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "1.2%"
+          "display_value": "1.8%"
         }
       ],
       "schema": {
@@ -31444,12 +31444,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "18.2%",
+      "display_value": "18.8%",
       "publishable": true
     },
     "runtime_mechanic_param::uw.chain_lightning.damage_multiplier": {
       "stat_name": "runtime_mechanic_param::uw.chain_lightning.damage_multiplier",
-      "final_value": 1806.0,
+      "final_value": 1811.0,
       "value_type": "multiplier",
       "source_count": 3,
       "status": "resolved",
@@ -31501,7 +31501,7 @@
           "stat_name": "Chain Lightning - Damage",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 5.0,
+          "value": 7.5,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -31516,7 +31516,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x5"
+          "display_value": "x7.5"
         }
       ],
       "schema": {
@@ -31561,7 +31561,7 @@
     },
     "runtime_mechanic_param::uw.spotlight.bonus_multiplier": {
       "stat_name": "runtime_mechanic_param::uw.spotlight.bonus_multiplier",
-      "final_value": 33.15,
+      "final_value": 34.275,
       "value_type": "multiplier",
       "source_count": 3,
       "status": "resolved",
@@ -31613,7 +31613,7 @@
           "stat_name": "Spotlight - Bonus",
           "source_family": "module_substat",
           "source_name": "Dimension Core",
-          "value": 1.5,
+          "value": 2.25,
           "value_type": "multiplier_display",
           "stage": "loadout_resolved",
           "active": true,
@@ -31628,7 +31628,7 @@
           "raw_level": null,
           "resolved_value": null,
           "resolved_unit": null,
-          "display_value": "x1.5"
+          "display_value": "x2.25"
         }
       ],
       "schema": {
@@ -31668,7 +31668,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x33.15",
+      "display_value": "x34.275",
       "publishable": true
     },
     "derived::ehp.health_lab_factor": {
@@ -31853,7 +31853,7 @@
     },
     "derived::ehp.health_factor": {
       "stat_name": "derived::ehp.health_factor",
-      "final_value": 21442357509758.453,
+      "final_value": 21906477802177.465,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -31863,27 +31863,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -31895,7 +31895,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "21.4T",
+      "display_value": "21.9T",
       "publishable": true
     },
     "derived::ehp.armor_primary_factor": {
@@ -32074,7 +32074,7 @@
     },
     "derived::ehp.wall_factor": {
       "stat_name": "derived::ehp.wall_factor",
-      "final_value": 1157887305526956.5,
+      "final_value": 1182949801317583.0,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -32084,27 +32084,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -32116,7 +32116,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1.16q",
+      "display_value": "1.18q",
       "publishable": true
     },
     "derived::ehp.max_recovery_lab_term": {
@@ -32211,27 +32211,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -32248,7 +32248,7 @@
     },
     "derived::ehp.wall_or_recovery_factor": {
       "stat_name": "derived::ehp.wall_or_recovery_factor",
-      "final_value": 1157887305526973.0,
+      "final_value": 1182949801317599.5,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -32258,27 +32258,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -32290,12 +32290,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1.16q",
+      "display_value": "1.18q",
       "publishable": true
     },
     "derived::ehp.wall_pkg_factor": {
       "stat_name": "derived::ehp.wall_pkg_factor",
-      "final_value": 1157887305526973.0,
+      "final_value": 1182949801317599.5,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -32305,27 +32305,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -32337,12 +32337,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1.16q",
+      "display_value": "1.18q",
       "publishable": true
     },
     "derived::ehp.base_pool": {
       "stat_name": "derived::ehp.base_pool",
-      "final_value": 2.482783356112027e+28,
+      "final_value": 2.5914263563654234e+28,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -32352,27 +32352,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -32384,7 +32384,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "24828S",
+      "display_value": "25914S",
       "publishable": true
     },
     "derived::ehp.dabs_lab_factor": {
@@ -33067,7 +33067,7 @@
     },
     "derived::ehp.pre_defense_pool": {
       "stat_name": "derived::ehp.pre_defense_pool",
-      "final_value": 2.7453854418546455e+28,
+      "final_value": 2.8655195286733048e+28,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33077,27 +33077,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33109,12 +33109,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "27454S",
+      "display_value": "28655S",
       "publishable": true
     },
     "derived::ehp.pre_tradeoff_ehp": {
       "stat_name": "derived::ehp.pre_tradeoff_ehp",
-      "final_value": 1.3726927209273216e+30,
+      "final_value": 1.4327597643366512e+30,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33124,27 +33124,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33156,12 +33156,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1372693S",
+      "display_value": "1432760S",
       "publishable": true
     },
     "derived::ehp_ep_helper.ce_pool_factor": {
       "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
-      "final_value": 21442357509758.453,
+      "final_value": 21906477802177.465,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33171,27 +33171,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33203,7 +33203,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "21.4T",
+      "display_value": "21.9T",
       "publishable": true
     },
     "derived::ehp_ep_helper.cf_armor_factor": {
@@ -33242,7 +33242,7 @@
     },
     "derived::ehp_ep_helper.ci_wall_factor": {
       "stat_name": "derived::ehp_ep_helper.ci_wall_factor",
-      "final_value": 1157887305526956.5,
+      "final_value": 1182949801317583.0,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33252,27 +33252,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33284,7 +33284,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1.16q",
+      "display_value": "1.18q",
       "publishable": true
     },
     "derived::ehp_ep_helper.cj_recovery_factor": {
@@ -33299,27 +33299,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33506,7 +33506,7 @@
     },
     "derived::ehp": {
       "stat_name": "derived::ehp",
-      "final_value": 1.3726927209273216e+30,
+      "final_value": 1.4327597643366512e+30,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33516,27 +33516,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33548,12 +33548,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1372693S",
+      "display_value": "1432760S",
       "publishable": true
     },
     "derived::ehp_ep": {
       "stat_name": "derived::ehp_ep",
-      "final_value": 1.3726927209273216e+30,
+      "final_value": 1.4327597643366512e+30,
       "value_type": "scalar",
       "source_count": 2,
       "status": "resolved",
@@ -33563,27 +33563,27 @@
           "stat_name": "canonical_stat::tower_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_hp",
-          "value": 21442357509758.453,
+          "value": 21906477802177.465,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "21.4T"
+          "display_value": "21.9T"
         },
         {
           "stat_name": "canonical_stat::wall_hp",
           "source_family": "published_surface",
           "source_name": "canonical_stat::wall_hp",
-          "value": 1157887305526956.5,
+          "value": 1182949801317583.0,
           "value_type": "hp",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "ehp",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "1.16q"
+          "display_value": "1.18q"
         }
       ],
       "schema": {
@@ -33595,12 +33595,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "1372693S",
+      "display_value": "1432760S",
       "publishable": true
     },
     "derived::edamage.base_damage_stack": {
       "stat_name": "derived::edamage.base_damage_stack",
-      "final_value": 24422596315.814114,
+      "final_value": 25568764309.840717,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -33610,14 +33610,14 @@
           "stat_name": "canonical_stat::tower_damage",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_damage",
-          "value": 22202360287.103737,
+          "value": 23244331190.764286,
           "value_type": "damage",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage.base_damage_stack",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "22.2B"
+          "display_value": "23.2B"
         }
       ],
       "schema": {
@@ -33629,7 +33629,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "24.4B",
+      "display_value": "25.6B",
       "publishable": true
     },
     "derived::edamage.acp_factor": {
@@ -33668,7 +33668,7 @@
     },
     "derived::edamage.bullet_crit_factor": {
       "stat_name": "derived::edamage.bullet_crit_factor",
-      "final_value": 13394.903416383198,
+      "final_value": 13303.904855892799,
       "value_type": "multiplier",
       "source_count": 2,
       "status": "resolved",
@@ -33710,7 +33710,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x13.4k",
+      "display_value": "x13.3k",
       "publishable": true
     },
     "derived::edamage.bullet_per_second": {
@@ -33890,7 +33890,7 @@
     },
     "derived::edamage.range_dpm_factor": {
       "stat_name": "derived::edamage.range_dpm_factor",
-      "final_value": 62.00760952,
+      "final_value": 62.86086279999999,
       "value_type": "multiplier",
       "source_count": 2,
       "status": "resolved",
@@ -33900,14 +33900,14 @@
           "stat_name": "canonical_stat::tower_damage_per_meter_multiplier",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_damage_per_meter_multiplier",
-          "value": 0.5568420000000001,
+          "value": 0.56463,
           "value_type": "multiplier",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage.range_dpm_factor",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "x0.557"
+          "display_value": "x0.565"
         },
         {
           "stat_name": "canonical_stat::tower_range_m",
@@ -33932,7 +33932,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x62.008",
+      "display_value": "x62.861",
       "publishable": true
     },
     "derived::edamage.spotlight_light_range_factor": {
@@ -34028,14 +34028,14 @@
           "stat_name": "mechanic_param::uw.spotlight.angle_degrees",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.spotlight.angle_degrees",
-          "value": 55.1,
+          "value": 55.65,
           "value_type": "degrees",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage.spotlight_coverage",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "55.1"
+          "display_value": "55.65"
         }
       ],
       "schema": {
@@ -34120,7 +34120,7 @@
     },
     "derived::edamage.bullet_pipeline_factor": {
       "stat_name": "derived::edamage.bullet_pipeline_factor",
-      "final_value": 3899372.509244088,
+      "final_value": 3953029.671795745,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34149,7 +34149,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "3.9M",
+      "display_value": "3.95M",
       "publishable": true
     },
     "derived::edamage.spotlight_factor": {
@@ -34222,7 +34222,7 @@
     },
     "derived::edamage.uw.chain_lightning_dps": {
       "stat_name": "derived::edamage.uw.chain_lightning_dps",
-      "final_value": 82679694.23301567,
+      "final_value": 85641847.49286985,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34232,7 +34232,7 @@
           "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
-          "value": 1806.0,
+          "value": 1811.0,
           "value_type": "multiplier",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
@@ -34251,7 +34251,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "82.7M",
+      "display_value": "85.6M",
       "publishable": true
     },
     "derived::edamage.uw.smart_missiles_dps": {
@@ -34392,7 +34392,7 @@
     },
     "derived::edamage.uw_total_damage": {
       "stat_name": "derived::edamage.uw_total_damage",
-      "final_value": 82679694.23301567,
+      "final_value": 85641847.49286985,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34402,7 +34402,7 @@
           "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
-          "value": 1806.0,
+          "value": 1811.0,
           "value_type": "multiplier",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
@@ -34421,12 +34421,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "82.7M",
+      "display_value": "85.6M",
       "publishable": true
     },
     "derived::edamage.uw_crit_factor": {
       "stat_name": "derived::edamage.uw_crit_factor",
-      "final_value": 11708.22330382355,
+      "final_value": 11628.854419143807,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -34455,12 +34455,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x11.7k",
+      "display_value": "x11.6k",
       "publishable": true
     },
     "derived::edamage.slow_factor": {
       "stat_name": "derived::edamage.slow_factor",
-      "final_value": 2.0,
+      "final_value": 2.2222222222222223,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -34470,14 +34470,14 @@
           "stat_name": "mechanic_param::uw.chrono_field.slow_pct",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.chrono_field.slow_pct",
-          "value": 50.0,
+          "value": 55.00000000000001,
           "value_type": "pct",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage.slow_factor",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "50%"
+          "display_value": "55%"
         }
       ],
       "schema": {
@@ -34489,7 +34489,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x2",
+      "display_value": "x2.222",
       "publishable": true
     },
     "derived::edamage_ep_helper.dx_spotlight_light_range_factor": {
@@ -34585,14 +34585,14 @@
           "stat_name": "mechanic_param::uw.spotlight.angle_degrees",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.spotlight.angle_degrees",
-          "value": 55.1,
+          "value": 55.65,
           "value_type": "degrees",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage.ep_dx_spotlight_coverage",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "55.1"
+          "display_value": "55.65"
         }
       ],
       "schema": {
@@ -34609,7 +34609,7 @@
     },
     "derived::edamage_ep_helper.dc_base_damage_stack": {
       "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
-      "final_value": 24422596315.814114,
+      "final_value": 25568764309.840717,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34619,14 +34619,14 @@
           "stat_name": "canonical_stat::tower_damage",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_damage",
-          "value": 22202360287.103737,
+          "value": 23244331190.764286,
           "value_type": "damage",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage_ep_helper.dc_base_damage_stack",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "22.2B"
+          "display_value": "23.2B"
         }
       ],
       "schema": {
@@ -34638,12 +34638,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "24.4B",
+      "display_value": "25.6B",
       "publishable": true
     },
     "derived::edamage_ep_helper.di_bullet_crit_factor": {
       "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
-      "final_value": 13394.903416383198,
+      "final_value": 13303.904855892799,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -34672,12 +34672,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x13.4k",
+      "display_value": "x13.3k",
       "publishable": true
     },
     "derived::edamage_ep_helper.dj_uw_crit_factor": {
       "stat_name": "derived::edamage_ep_helper.dj_uw_crit_factor",
-      "final_value": 11708.22330382355,
+      "final_value": 11628.854419143807,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -34706,12 +34706,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x11.7k",
+      "display_value": "x11.6k",
       "publishable": true
     },
     "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
       "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
-      "final_value": 3899372.509244088,
+      "final_value": 3953029.671795745,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34740,12 +34740,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "3.9M",
+      "display_value": "3.95M",
       "publishable": true
     },
     "derived::edamage_ep_helper.ei_uw_total_damage": {
       "stat_name": "derived::edamage_ep_helper.ei_uw_total_damage",
-      "final_value": 82679694.23301567,
+      "final_value": 85641847.49286985,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34755,7 +34755,7 @@
           "stat_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.chain_lightning.damage_multiplier",
-          "value": 1806.0,
+          "value": 1811.0,
           "value_type": "multiplier",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
@@ -34774,12 +34774,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "82.7M",
+      "display_value": "85.6M",
       "publishable": true
     },
     "derived::edamage_ep_helper.el_slow_factor": {
       "stat_name": "derived::edamage_ep_helper.el_slow_factor",
-      "final_value": 2.0,
+      "final_value": 2.2222222222222223,
       "value_type": "multiplier",
       "source_count": 1,
       "status": "resolved",
@@ -34789,14 +34789,14 @@
           "stat_name": "mechanic_param::uw.chrono_field.slow_pct",
           "source_family": "published_surface",
           "source_name": "mechanic_param::uw.chrono_field.slow_pct",
-          "value": 50.0,
+          "value": 55.00000000000001,
           "value_type": "pct",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage_ep_helper.el_slow_factor",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "50%"
+          "display_value": "55%"
         }
       ],
       "schema": {
@@ -34808,12 +34808,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "x2",
+      "display_value": "x2.222",
       "publishable": true
     },
     "derived::edamage": {
       "stat_name": "derived::edamage",
-      "final_value": 4.983499361375454e+22,
+      "final_value": 5.9575636040432635e+22,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34823,14 +34823,14 @@
           "stat_name": "canonical_stat::tower_damage",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_damage",
-          "value": 22202360287.103737,
+          "value": 23244331190.764286,
           "value_type": "damage",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "22.2B"
+          "display_value": "23.2B"
         }
       ],
       "schema": {
@@ -34842,12 +34842,12 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "49.8s",
+      "display_value": "59.6s",
       "publishable": true
     },
     "derived::edamage_ep": {
       "stat_name": "derived::edamage_ep",
-      "final_value": 4.983499361375454e+22,
+      "final_value": 5.9575636040432635e+22,
       "value_type": "scalar",
       "source_count": 1,
       "status": "resolved",
@@ -34857,14 +34857,14 @@
           "stat_name": "canonical_stat::tower_damage",
           "source_family": "published_surface",
           "source_name": "canonical_stat::tower_damage",
-          "value": 22202360287.103737,
+          "value": 23244331190.764286,
           "value_type": "damage",
           "stage": "derived_surface_publication",
           "destination_object_type": "derived",
           "destination_id": "edamage_ep",
           "resolver_id": "query_derived_composites",
           "kb_mapped": true,
-          "display_value": "22.2B"
+          "display_value": "23.2B"
         }
       ],
       "schema": {
@@ -34876,7 +34876,7 @@
         "compare_policy": "normal",
         "rationale": ""
       },
-      "display_value": "49.8s",
+      "display_value": "59.6s",
       "publishable": true
     },
     "derived::eecon.base_meta_factor": {
@@ -35751,6 +35751,707 @@
         "rationale": ""
       },
       "display_value": "0",
+      "publishable": true
+    },
+    "derived::module.draw_policy.common_rate_pct": {
+      "stat_name": "derived::module.draw_policy.common_rate_pct",
+      "final_value": 68.5,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed common module draw rate.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 68.5,
+          "unit": "pct",
+          "display_value": "68.5"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "68.5",
+      "publishable": true
+    },
+    "derived::module.draw_policy.rare_rate_pct": {
+      "stat_name": "derived::module.draw_policy.rare_rate_pct",
+      "final_value": 29.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed rare module draw rate.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 29.0,
+          "unit": "pct",
+          "display_value": "29"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "29",
+      "publishable": true
+    },
+    "derived::module.draw_policy.epic_rate_pct": {
+      "stat_name": "derived::module.draw_policy.epic_rate_pct",
+      "final_value": 2.5,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed epic module draw rate.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 2.5,
+          "unit": "pct",
+          "display_value": "2.5"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "2.5",
+      "publishable": true
+    },
+    "derived::module.draw_policy.epic_pity_draws": {
+      "stat_name": "derived::module.draw_policy.epic_pity_draws",
+      "final_value": 150.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed epic pity threshold for module draws.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 150.0,
+          "unit": "draws",
+          "display_value": "150"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "draws"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "150",
+      "publishable": true
+    },
+    "derived::module.draw_policy.ten_pull_minimum_rare": {
+      "stat_name": "derived::module.draw_policy.ten_pull_minimum_rare",
+      "final_value": 1.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed minimum of one rare in every 10-pull.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 1.0,
+          "unit": "rare_per_ten_pull",
+          "display_value": "1"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "rare_per_ten_pull"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1",
+      "publishable": true
+    },
+    "derived::module.draw_policy.gem_cost_per_draw": {
+      "stat_name": "derived::module.draw_policy.gem_cost_per_draw",
+      "final_value": 20.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed module gem cost per single draw.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 20.0,
+          "unit": "gems",
+          "display_value": "20"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "gems"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "20",
+      "publishable": true
+    },
+    "derived::module.runtime_profile.farming_tier": {
+      "stat_name": "derived::module.runtime_profile.farming_tier",
+      "final_value": 14.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Derived from account_context farming tier (IDS Player & Stuff) for module economy publishers.",
+      "contributors": [
+        {
+          "source_class": "account_context",
+          "value": 14,
+          "unit": "tier",
+          "source_raw": "Tier 14",
+          "source_surface": "account_context::account_context.farming_tier",
+          "display_value": "14"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountContext",
+        "publisher": "query_surface_publication",
+        "unit": "tier"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "14",
+      "publishable": true
+    },
+    "derived::module.runtime_profile.highest_tier_unlocked": {
+      "stat_name": "derived::module.runtime_profile.highest_tier_unlocked",
+      "final_value": 14.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Derived from account_context farming tier (IDS Player & Stuff) for module economy publishers.",
+      "contributors": [
+        {
+          "source_class": "account_context",
+          "value": 14,
+          "unit": "tier",
+          "source_raw": "Tier 14",
+          "source_surface": "account_context::account_context.farming_tier",
+          "display_value": "14"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountContext",
+        "publisher": "query_surface_publication",
+        "unit": "tier"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "14",
+      "publishable": true
+    },
+    "derived::module.lab.reroll_shards_bonus": {
+      "stat_name": "derived::module.lab.reroll_shards_bonus",
+      "final_value": 100.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed module lab value derived from account_state.labs using wiki-backed level semantics.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "lab_name": "Reroll Shards",
+          "level": 100,
+          "value": 100.0,
+          "unit": "shards",
+          "source_alignment": "AccountState+Wiki",
+          "display_value": "100"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountState+Wiki",
+        "publisher": "query_surface_publication",
+        "lab_name": "Reroll Shards",
+        "level": 100,
+        "unit": "shards"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "100",
+      "publishable": true
+    },
+    "derived::module.lab.common_drop_chance_bonus_pct": {
+      "stat_name": "derived::module.lab.common_drop_chance_bonus_pct",
+      "final_value": 1.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed module lab value derived from account_state.labs using wiki-backed level semantics.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "lab_name": "Common Drop Chance",
+          "level": 10,
+          "value": 1.0,
+          "unit": "pct",
+          "source_alignment": "AccountState+Wiki",
+          "display_value": "1"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountState+Wiki",
+        "publisher": "query_surface_publication",
+        "lab_name": "Common Drop Chance",
+        "level": 10,
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1",
+      "publishable": true
+    },
+    "derived::module.lab.rare_drop_chance_bonus_pct": {
+      "stat_name": "derived::module.lab.rare_drop_chance_bonus_pct",
+      "final_value": 1.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed module lab value derived from account_state.labs using wiki-backed level semantics.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "lab_name": "Rare Drop Chance",
+          "level": 10,
+          "value": 1.0,
+          "unit": "pct",
+          "source_alignment": "AccountState+Wiki",
+          "display_value": "1"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountState+Wiki",
+        "publisher": "query_surface_publication",
+        "lab_name": "Rare Drop Chance",
+        "level": 10,
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1",
+      "publishable": true
+    },
+    "derived::module.lab.daily_mission_shards_bonus": {
+      "stat_name": "derived::module.lab.daily_mission_shards_bonus",
+      "final_value": 50.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed module lab value derived from account_state.labs using wiki-backed level semantics.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "lab_name": "Daily Mission Shards",
+          "level": 50,
+          "value": 50.0,
+          "unit": "shards_per_mission",
+          "source_alignment": "AccountState+Wiki",
+          "display_value": "50"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountState+Wiki",
+        "publisher": "query_surface_publication",
+        "lab_name": "Daily Mission Shards",
+        "level": 50,
+        "unit": "shards_per_mission"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "50",
+      "publishable": true
+    },
+    "derived::module.lab.shatter_shards_bonus_pct": {
+      "stat_name": "derived::module.lab.shatter_shards_bonus_pct",
+      "final_value": 100.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed module lab value derived from account_state.labs using wiki-backed level semantics.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "lab_name": "Shatter Shards",
+          "level": 5,
+          "value": 100.0,
+          "unit": "pct",
+          "source_alignment": "AccountState+Wiki",
+          "display_value": "100"
+        }
+      ],
+      "schema": {
+        "source_alignment": "AccountState+Wiki",
+        "publisher": "query_surface_publication",
+        "lab_name": "Shatter Shards",
+        "level": 5,
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "100",
+      "publishable": true
+    },
+    "derived::module.drop_policy.reroll_shard_drop_chance_pct": {
+      "stat_name": "derived::module.drop_policy.reroll_shard_drop_chance_pct",
+      "final_value": 15.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed base boss reroll shard drop chance.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 15.0,
+          "unit": "pct",
+          "display_value": "15"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "15",
+      "publishable": true
+    },
+    "derived::module.drop_policy.reroll_shards_per_boss": {
+      "stat_name": "derived::module.drop_policy.reroll_shards_per_boss",
+      "final_value": 155.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed tier reroll shard amount per successful boss drop plus QE-routed lab bonus.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 55.0,
+          "unit": "shards",
+          "display_value": "55"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "tier": 14,
+        "unit": "shards"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "155",
+      "publishable": true
+    },
+    "derived::module.drop_policy.common_module_drop_chance_pct": {
+      "stat_name": "derived::module.drop_policy.common_module_drop_chance_pct",
+      "final_value": 3.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed base common module boss drop chance plus QE-routed lab bonus.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 2.0,
+          "unit": "pct",
+          "display_value": "2"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "3",
+      "publishable": true
+    },
+    "derived::module.drop_policy.rare_module_drop_chance_pct": {
+      "stat_name": "derived::module.drop_policy.rare_module_drop_chance_pct",
+      "final_value": 1.5,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed base rare module boss drop chance plus QE-routed lab bonus.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 0.5,
+          "unit": "pct",
+          "display_value": "0.5"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "unit": "pct"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "1.5",
+      "publishable": true
+    },
+    "derived::module.shatter_policy.common_module_shards": {
+      "stat_name": "derived::module.shatter_policy.common_module_shards",
+      "final_value": 10.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed common module shatter shards with QE-routed shatter-shards lab applied.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 5.0,
+          "unit": "shards",
+          "display_value": "5"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "unit": "shards"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "10",
+      "publishable": true
+    },
+    "derived::module.shatter_policy.rare_module_shards": {
+      "stat_name": "derived::module.shatter_policy.rare_module_shards",
+      "final_value": 20.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed rare module shatter shards with QE-routed shatter-shards lab applied.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 10.0,
+          "unit": "shards",
+          "display_value": "10"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "unit": "shards"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "20",
+      "publishable": true
+    },
+    "derived::module.mission_policy.daily_mission_shards_bonus": {
+      "stat_name": "derived::module.mission_policy.daily_mission_shards_bonus",
+      "final_value": 50.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "QE-routed daily mission shard bonus lab value. Base mission shard reward remains unresolved.",
+      "contributors": [
+        {
+          "source_class": "account_state_lab",
+          "value": 50.0,
+          "unit": "shards_per_mission",
+          "display_value": "50"
+        }
+      ],
+      "schema": {
+        "source_alignment": "QE",
+        "publisher": "query_surface_publication",
+        "base_mission_shards_unresolved": true,
+        "unit": "shards_per_mission"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "50",
+      "publishable": true
+    },
+    "derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss": {
+      "stat_name": "derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss",
+      "final_value": 0.6,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Computed shatter-equivalent expected shard value of boss module drops assuming all dropped common/rare modules are shattered.",
+      "contributors": [
+        {
+          "source_class": "computed_from_wiki_truth",
+          "value": 0.6,
+          "unit": "shards_per_boss",
+          "display_value": "0.6"
+        }
+      ],
+      "schema": {
+        "source_alignment": "WikiDerived+QE",
+        "publisher": "query_surface_publication",
+        "assumption": "all_dropped_common_and_rare_modules_shattered",
+        "unit": "shards_per_boss"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "0.6",
+      "publishable": true
+    },
+    "derived::module.mission_policy.base_daily_mission_shards": {
+      "stat_name": "derived::module.mission_policy.base_daily_mission_shards",
+      "final_value": 55.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Wiki-backed base daily mission shard reward by highest tier unlocked.",
+      "contributors": [
+        {
+          "source_class": "wiki_truth",
+          "value": 55.0,
+          "unit": "shards_per_mission",
+          "display_value": "55"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki",
+        "publisher": "query_surface_publication",
+        "highest_tier_unlocked": 14,
+        "unit": "shards_per_mission"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "55",
+      "publishable": true
+    },
+    "derived::module.mission_policy.total_daily_mission_shards": {
+      "stat_name": "derived::module.mission_policy.total_daily_mission_shards",
+      "final_value": 105.0,
+      "value_type": "scalar",
+      "source_count": 1,
+      "status": "resolved",
+      "notes": "Total daily mission shard reward per mission: wiki-backed base plus QE-routed lab bonus.",
+      "contributors": [
+        {
+          "source_class": "computed_from_wiki_and_qe",
+          "value": 105.0,
+          "unit": "shards_per_mission",
+          "display_value": "105"
+        }
+      ],
+      "schema": {
+        "source_alignment": "Wiki+QE",
+        "publisher": "query_surface_publication",
+        "highest_tier_unlocked": 14,
+        "unit": "shards_per_mission"
+      },
+      "formula_contract": {
+        "formula_class": "unclassified",
+        "publish_policy": "allow",
+        "compare_policy": "normal",
+        "rationale": ""
+      },
+      "display_value": "105",
       "publishable": true
     }
   },

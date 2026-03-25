@@ -121,8 +121,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -131,8 +131,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -141,8 +141,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -166,8 +166,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -176,13 +176,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -254,11 +254,11 @@
       "issues": [
         "ep_reference_mismatch"
       ],
-      "final_value": 21442357509758.453,
-      "ep_compare_value": 21442357509758.453,
-      "ep_reference_value": 6950000000000.0,
-      "delta": 14492357509758.453,
-      "relative_delta_pct": 208.52312963681226,
+      "final_value": 21906477802177.465,
+      "ep_compare_value": 21906477802177.465,
+      "ep_reference_value": 7100000000000.0,
+      "delta": 14806477802177.465,
+      "relative_delta_pct": 208.54194087573893,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -361,8 +361,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -371,8 +371,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -381,8 +381,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -406,8 +406,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -416,13 +416,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -601,8 +601,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -611,8 +611,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -621,8 +621,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -646,8 +646,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -656,13 +656,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -734,11 +734,11 @@
       "issues": [
         "ep_reference_mismatch"
       ],
-      "final_value": 22202360287.103737,
-      "ep_compare_value": 2499686908111.3857,
-      "ep_reference_value": 779900000000.0,
-      "delta": 1719786908111.3857,
-      "relative_delta_pct": 220.51377203633615,
+      "final_value": 23244331190.764286,
+      "ep_compare_value": 2616998806163.3306,
+      "ep_reference_value": 816500000000.0,
+      "delta": 1800498806163.3306,
+      "relative_delta_pct": 220.5142444780564,
       "compare_preset": "Tourney",
       "compare_perk_state": "off",
       "package_value_source_state_mode": "max_progression",
@@ -843,8 +843,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -853,8 +853,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -863,8 +863,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -888,8 +888,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -898,13 +898,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -976,11 +976,11 @@
       "issues": [
         "ep_reference_mismatch"
       ],
-      "final_value": 1157887305526956.5,
-      "ep_compare_value": 1157887305526956.5,
-      "ep_reference_value": 119300000000000.0,
-      "delta": 1038587305526956.5,
-      "relative_delta_pct": 870.5677330485804,
+      "final_value": 1182949801317583.0,
+      "ep_compare_value": 1182949801317583.0,
+      "ep_reference_value": 124180000000000.0,
+      "delta": 1058769801317583.0,
+      "relative_delta_pct": 852.6089558041416,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -1083,8 +1083,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -1093,8 +1093,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -1103,8 +1103,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1128,8 +1128,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1138,13 +1138,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -1323,8 +1323,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -1333,8 +1333,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -1343,8 +1343,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1368,8 +1368,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1378,13 +1378,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",

@@ -77,7 +77,7 @@ Place artifacts in the owning surface:
 - canonical mechanic truth -> `kb/`
 - canonical governance, ledgers, and contracts -> `kb/ledgers/` or `kb/contracts/` or the owning KB directory
 - runtime inputs and manual assumptions -> `input/` (manual config in `assumptions.yaml`; imported CSVs in `input/imports/`)
-- runtime-generated artifacts -> `generated/`
+- runtime-generated artifacts -> `input/derived/`
 - code-owned runtime assets -> owning code directory
 - test fixtures and verification assets -> `tests/`
 - generated outputs -> `out/`

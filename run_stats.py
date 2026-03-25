@@ -234,7 +234,7 @@ FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 ASSUMPTIONS_PATH = ROOT / 'input' / 'assumptions.yaml'
 LOADOUT_CONFIG_PATH = ROOT / 'input' / 'loadout.json'
 PERKS_CONFIG_PATH = ROOT / 'input' / 'perks.json'
-PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'generated' / 'perks_projected_max.json'
+PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'input' / 'derived' / 'perks_projected_max.json'
 
 
 def _load_json_config(path: Path) -> dict:
@@ -384,8 +384,8 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         'priority_order': priority_order,
         'first_perk_choice': first_perk_choice,
     }
-    (ROOT / 'generated').mkdir(parents=True, exist_ok=True)
-    policy_runtime_path = ROOT / 'generated' / 'perks_max_progression_policy.runtime.json'
+    (ROOT / 'input' / 'derived').mkdir(parents=True, exist_ok=True)
+    policy_runtime_path = ROOT / 'input' / 'derived' / 'perks_max_progression_policy.runtime.json'
     policy_runtime_path.write_text(json.dumps(policy_payload, indent=2), encoding='utf-8')
     timeline, diag = generate_timeline(policy_runtime_path)
     taken_counts = perk_state_at_wave(timeline, policy_payload['target_wave'])
@@ -420,14 +420,14 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
             'banned_perks_effective': banned_names,
             'banned_perk_aliases': list(raw_policy.get('banned_perk_aliases', []) or []),
             'unknown_generated_perk_names': unknown_names,
-            'timeline_file': 'generated/perks_projected_max.timeline.json',
-            'final_state_file': 'generated/perks_projected_max.final_state.json',
-            'diagnostics_file': 'generated/perks_projected_max.diagnostics.json',
+            'timeline_file': 'input/derived/perks_projected_max.timeline.json',
+            'final_state_file': 'input/derived/perks_projected_max.final_state.json',
+            'diagnostics_file': 'input/derived/perks_projected_max.diagnostics.json',
         }
     }
-    (ROOT / 'generated' / 'perks_projected_max.timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
-    (ROOT / 'generated' / 'perks_projected_max.final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
-    (ROOT / 'generated' / 'perks_projected_max.diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
+    (ROOT / 'input' / 'derived' / 'perks_projected_max.timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
+    (ROOT / 'input' / 'derived' / 'perks_projected_max.final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
+    (ROOT / 'input' / 'derived' / 'perks_projected_max.diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
     PROJECTED_MAX_PERKS_CONFIG_PATH.write_text(json.dumps(generated, indent=2), encoding='utf-8')
     metadata = {
         'requested_perks_path': str(PERKS_CONFIG_PATH),
@@ -435,8 +435,8 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         'fallback_applied': True,
         'fallback_reason': 'max_progression_generated_from_timeline_policy',
         'generation_policy_path': str(default_policy_path),
-        'generated_timeline_path': str(ROOT / 'generated' / 'perks_projected_max.timeline.json'),
-        'generated_diagnostics_path': str(ROOT / 'generated' / 'perks_projected_max.diagnostics.json'),
+        'generated_timeline_path': str(ROOT / 'input' / 'derived' / 'perks_projected_max.timeline.json'),
+        'generated_diagnostics_path': str(ROOT / 'input' / 'derived' / 'perks_projected_max.diagnostics.json'),
         'generated_runtime_policy_path': str(policy_runtime_path),
     }
     return generated, metadata
