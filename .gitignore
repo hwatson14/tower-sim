@@ -30,3 +30,4 @@ htmlcov/
 
 # Keep shipped deterministic outputs tracked unless policy changes.
 # Add generated directories here later only if you choose to stop versioning them.
+/.claude/worktrees
