@@ -12,24 +12,38 @@ from engine.stat_resolution_core import (
 from models.stat_input import StatInput
 from models.statbook import StatBook, StatRow
 
-# Declared preset → family map.  Contract source: stat-query-scenario-families.yaml.
-# Extend this map (not the heuristic logic) when new timing families reach live delegation.
-_TIMING_PRESET_TO_FAMILY: dict[str, str] = {
-    'Tourney': 'timing_tournament_no_perks',
-}
+_TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
+_TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
+
+# Canonical timing-v1 surface IDs declared in stat-query-initial-surface-set.yaml (timing_v1 group).
+# All declared timing families share this surface set.
+# wave_accelerator uses state:: (canonical per naming-contract-pack-v2-remap.csv and KB contracts),
+# not the legacy runtime_mechanic_param:: prefix.
+_TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
+    'mechanic_param::uw.black_hole.cooldown_seconds',
+    'mechanic_param::uw.black_hole.duration_seconds',
+    'mechanic_param::uw.golden_tower.cooldown_seconds',
+    'mechanic_param::uw.golden_tower.duration_seconds',
+    'state::tower.package_chance_pct',
+    'support_surface::timing.gcomp_cooldown_reduction_seconds',
+    'support_surface::timing.wave_duration_seconds_effective',
+    'state::cards.wave_accelerator.spawn_rate_acceleration',
+)
 
 _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
-    'timing_tournament_no_perks': (
-        'mechanic_param::uw.black_hole.cooldown_seconds',
-        'mechanic_param::uw.black_hole.duration_seconds',
-        'mechanic_param::uw.golden_tower.cooldown_seconds',
-        'mechanic_param::uw.golden_tower.duration_seconds',
-        'state::tower.package_chance_pct',
-        'support_surface::timing.gcomp_cooldown_reduction_seconds',
-        'support_surface::timing.wave_duration_seconds_effective',
-        'state::cards.wave_accelerator.spawn_rate_acceleration',
-    ),
+    _TIMING_TOURNAMENT_NO_PERKS: _TIMING_V1_SURFACE_IDS,
+    _TIMING_FARM_WITH_PERKS: _TIMING_V1_SURFACE_IDS,
 }
+
+# Unambiguous preset-name → declared timing family mapping used by _infer_manifest_approved_family.
+# timing_scenario_probe is not included: it has no fixed preset-name convention and is not
+# delegated through the resolve_stats compatibility entrypoint in PH4-B.
+_TIMING_FAMILY_BY_PRESET: dict[str, str] = {
+    'Tourney': _TIMING_TOURNAMENT_NO_PERKS,
+    'Farming': _TIMING_FARM_WITH_PERKS,
+}
+
+
 def resolve_stats(stat_inputs: list[StatInput]) -> StatBook:
     fallback_statbook = _fallback_resolve_stats(stat_inputs)
     delegated_family_id = _infer_manifest_approved_family(stat_inputs)
@@ -51,7 +65,28 @@ def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | N
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
     if len(preset_names) != 1:
         return None
-    return _TIMING_PRESET_TO_FAMILY.get(next(iter(preset_names)))
+    return _TIMING_FAMILY_BY_PRESET.get(next(iter(preset_names)))
+
+
+def _looks_like_timing_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
+    destination_keys = {
+        (row.destination_object_type, row.destination_id)
+        for row in stat_inputs
+        if row.destination_object_type and row.destination_id
+    }
+    required_timing_keys = {
+        ('mechanic_param', 'uw.black_hole.cooldown_seconds'),
+        ('mechanic_param', 'uw.black_hole.duration_seconds'),
+        ('mechanic_param', 'uw.golden_tower.cooldown_seconds'),
+        ('mechanic_param', 'uw.golden_tower.duration_seconds'),
+        ('support_surface', 'timing.wave_duration_seconds_effective'),
+    }
+    if not required_timing_keys.issubset(destination_keys):
+        return False
+    return any(
+        row.source_family == 'scenario_rules' and row.stage == 'scenario_runtime'
+        for row in stat_inputs
+    )
 
 
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:
@@ -61,8 +96,8 @@ def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[S
     baseline = query_kernel.materializer.materialize_from_rows(
         StateIdentity(
             account_snapshot_id='resolve_stats_compatibility_entrypoint',
-            loadout_id='resolve_stats_tourney_loadout',
-            scenario_id='resolve_stats_timing_tournament_no_perks',
+            loadout_id=f'resolve_stats_{family_id}_loadout',
+            scenario_id=f'resolve_stats_{family_id}',
             runtime_branch_id='branch_base',
         ),
         family_id,
@@ -119,6 +154,8 @@ def _merge_delegated_family_rows(
         'bounded_only': True,
     }
     return StatBook(rows=merged_rows, diagnostics=diagnostics)
+
+
 __all__ = [
     'resolve_stats',
     '_multiplier_from_value',

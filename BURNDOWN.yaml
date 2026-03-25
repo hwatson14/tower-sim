@@ -719,7 +719,7 @@ tranches:
     title: Declared family cutover to Query Engine
     phase_id: PH4
     delivery_status: in_progress
-    verification_status: partial
+    verification_status: timing_family_verified
     review_status: draft
     depends_on:
     - PH4-A
@@ -758,13 +758,23 @@ tranches:
     - stop if family coverage would require changing undeclared consumer semantics
     - stop if a family cannot be routed without inventing new surface classes
     - stop if code changes would touch files outside listed owner surfaces without control-file update
-    - stop if _TIMING_PRESET_TO_FAMILY is extended to a new family before its surface set and tests are covered
-    next_action: Widen _TIMING_PRESET_TO_FAMILY to cover timing_farm_with_perks and timing_scenario_probe; then add progression family routing.
+    - stop if timing_scenario_probe is described as live-delegated without corresponding code and test truth
+    - stop if progression-family delegation starts before progression-family test infrastructure is confirmed in place
+    completed_slices:
+    - id: timing_family_pack
+      description: "Timing-family naming mismatch resolved and live delegation expanded"
+      families_live_delegated:
+      - timing_tournament_no_perks
+      - timing_farm_with_perks
+      canonical_naming_choice: "state::cards.wave_accelerator.spawn_rate_acceleration (v2 canonical per naming-contract-pack-v2-remap.csv)"
+      verified_by:
+      - tests/test_resolve_stats_delegation.py (5 passed)
+      - tests/test_timing_query_migration.py (5 passed)
+    next_action: "Begin progression-family cutover slice: progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks."
     machine_enforced: true
-    blockers: []
-    completed_entry_conditions:
-    - "naming mismatch resolved: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration corrected to state::cards.wave_accelerator.spawn_rate_acceleration"
-    - "declared routing: heuristic _looks_like_timing_family_rows replaced with contract-backed _TIMING_PRESET_TO_FAMILY map"
+    blockers:
+    - "timing_scenario_probe has no preset-name detection path and no test infrastructure; not yet live-delegated"
+    - all three progression families still fall back through legacy resolution
     status_claim_requires:
     - delivery_status
     - verification_status

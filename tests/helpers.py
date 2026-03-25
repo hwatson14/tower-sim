@@ -54,39 +54,30 @@ def build_state(*, loadout_filename: str = 'loadout.json', perks_filename: str =
     return copy.deepcopy(_compiled_state(loadout_filename, perks_filename))
 
 
+_TIMING_FAMILY_CANONICAL_PARAMS: dict[str, dict] = {
+    'timing_tournament_no_perks': {
+        'preset_name': 'Tourney',
+        'scenario_config': ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150),
+        'perks_enabled': False,
+    },
+    'timing_farm_with_perks': {
+        'preset_name': 'Farming',
+        'scenario_config': ScenarioConfig(mode_id='farming', tier=14),
+        'perks_enabled': True,
+    },
+}
+
+
 def build_family_baseline(family_id: str):
-    """Materialize a family baseline using the golden account state and canonical defaults per family."""
-    state = build_state()
-    if family_id == 'timing_tournament_no_perks':
+    """Return a FamilyBaselineContributorMap for the given declared family_id using canonical test params."""
+    if family_id in _TIMING_FAMILY_CANONICAL_PARAMS:
+        params = _TIMING_FAMILY_CANONICAL_PARAMS[family_id]
         return materialize_timing_family_baseline(
-            account_state=state,
+            account_state=build_state(),
             family_id=family_id,
-            preset_name='Tourney',
-            scenario_config=ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150),
-            perks_enabled=False,
+            **params,
         )
-    if family_id == 'timing_farm_with_perks':
-        return materialize_timing_family_baseline(
-            account_state=state,
-            family_id=family_id,
-            preset_name='Farming',
-            scenario_config=ScenarioConfig(mode_id='farming', tier=14),
-            perks_enabled=True,
-        )
-    if family_id == 'timing_scenario_probe':
-        return materialize_timing_family_baseline(
-            account_state=state,
-            family_id=family_id,
-            preset_name='Farming',
-            scenario_config=ScenarioConfig(mode_id='scenario_probe', tier=14),
-            perks_enabled=False,
-        )
-    if family_id in ('progression_start_of_run', 'progression_runtime_no_perks', 'progression_runtime_with_perks'):
-        return materialize_progression_family_baseline(
-            account_state=state,
-            family_id=family_id,
-        )
-    raise ValueError(f'build_family_baseline: unknown family_id {family_id!r}')
+    raise NotImplementedError(f'No canonical test params registered for family_id={family_id!r}')
 
 
 @lru_cache(maxsize=None)
