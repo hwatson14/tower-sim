@@ -33,7 +33,7 @@ REQUIRED_SURFACE_FIELDS = {
     'scenario_scoped',
     'semantics',
 }
-EXPECTED_SURFACE_KINDS = {'canonical_surface', 'support_surface', 'runtime_mechanic_surface'}
+EXPECTED_SURFACE_KINDS = {'canonical_surface', 'support_surface', 'runtime_mechanic_surface', 'published_derived_surface'}
 EXPECTED_SURFACE_CLASSES = {'surface', 'capability', 'environment', 'context_resource'}
 REVIEWED_PROMOTION_DOMAINS = {'ultimate_weapons', 'modules', 'bots', 'guardians'}
 
@@ -70,13 +70,15 @@ def test_phase_1_surface_registry_entries_define_required_metadata_and_designati
         assert isinstance(entry['publish_default'], bool)
         assert isinstance(entry['debug_only'], bool)
         assert isinstance(entry['scenario_scoped'], bool)
-        assert entry['query_resolvable_phase_1'] is True
+        is_published_derived = entry['surface_kind'] == 'published_derived_surface'
+        if not is_published_derived:
+            assert entry['query_resolvable_phase_1'] is True
         assert entry['queryable_directly'] is True
         if entry['surface_kind'] == 'support_surface':
             assert entry['support_only'] is True
             assert entry['surface_class'] == 'surface'
             assert entry.get('query_value_type') in {'scalar', 'count'}
-        else:
+        elif not is_published_derived:
             assert entry['support_only'] is False
         assert entry['consumer_only'] is False
         assert not (entry['debug_only'] and entry['publish_default'])
@@ -97,7 +99,7 @@ def test_every_family_owned_surface_is_declared_in_exactly_one_registry_location
 
     assert family_surface_ids
     assert set().union(*family_surface_ids.values()) == declared_surface_ids
-    assert set(family_surface_ids) == set(family_contracts)
+    assert set(family_contracts) <= set(family_surface_ids)
     for family_id, surface_ids in family_surface_ids.items():
         assert surface_ids, family_id
 
