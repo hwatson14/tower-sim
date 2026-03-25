@@ -1,5 +1,5 @@
 {
-  "ids_path": "input\\_IDS.csv",
+  "ids_path": "input\\imports\\ids.csv",
   "labs": {
     "Game Speed": 7,
     "Starting Cash": 6,
@@ -7,7 +7,7 @@
     "Workshop Defense Discount": 28,
     "Workshop Utility Discount": 41,
     "Labs Coin Discount": 68,
-    "Labs Speed": 91,
+    "Labs Speed": 92,
     "Buy Multiplier": 4,
     "More Round Stats": 1,
     "Target Priority": 2,
@@ -18,9 +18,9 @@
     "Enhancement Attack - Coin Discount": 0,
     "Enhancement Defense - Coin Discount": 0,
     "Enhancement Utility - Coin Discount": 0,
-    "Damage": 69,
+    "Damage": 72,
     "Attack Speed": 75,
-    "Critical Factor": 83,
+    "Critical Factor": 82,
     "Range": 33,
     "Damage / Meter": 16,
     "Super Crit Chance": 9,
@@ -145,7 +145,7 @@
     "Reroll Shards": 100,
     "Daily Mission Shards": 50,
     "Module Shards Cost": 30,
-    "Module Coin Cost": 23,
+    "Module Coin Cost": 28,
     "Rare Drop Chance": 10,
     "Unmerge Module": 1,
     "Shatter Shards": 5,
@@ -178,7 +178,7 @@
     "Plasma Cannon Mastery": 0,
     "Critical Coin Mastery": 0,
     "Wave Skip Mastery": 0,
-    "Intro Sprint Mastery": 0,
+    "Intro Sprint Mastery": 2,
     "Land Mine Stun Mastery": 0,
     "Recovery Package Chance Mastery": 3,
     "Death Ray Mastery": 0,
@@ -849,7 +849,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "7 q"
+      "10.44 q"
     ],
     "rows": [
       [
@@ -874,9 +874,9 @@
       ],
       [
         "Rend Armor Mult +",
-        "1.21",
-        "21",
-        "21",
+        "1.2",
+        "20",
+        "20",
         "",
         "",
         "",
@@ -894,9 +894,9 @@
       ],
       [
         "Damage / Meter +",
-        "1.17",
-        "17",
-        "17",
+        "1.2",
+        "20",
+        "20",
         "",
         "",
         "",
@@ -904,9 +904,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.57",
-        "57",
-        "57",
+        "1.56",
+        "56",
+        "56",
         "",
         "",
         "",
@@ -914,9 +914,9 @@
       ],
       [
         "Attack Speed +",
-        "1.13",
-        "13",
-        "13",
+        "1.15",
+        "15",
+        "15",
         "",
         "",
         "",
@@ -954,9 +954,9 @@
       ],
       [
         "Land Mine Damage +",
-        "2.08",
-        "18",
-        "18",
+        "1",
+        "0",
+        "0",
         "",
         "",
         "",
@@ -964,9 +964,9 @@
       ],
       [
         "Wall Health +",
-        "1.5899999999999999",
-        "59",
-        "59",
+        "1.62",
+        "62",
+        "62",
         "",
         "",
         "",
@@ -974,9 +974,9 @@
       ],
       [
         "Orb Size +",
-        "1.2",
-        "20",
-        "20",
+        "1.24",
+        "24",
+        "24",
         "",
         "",
         "",
@@ -984,9 +984,9 @@
       ],
       [
         "Cash Bonus +",
-        "1.44",
-        "44",
-        "44",
+        "1.3",
+        "30",
+        "30",
         "",
         "",
         "",
@@ -994,9 +994,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.33",
-        "33",
-        "33",
+        "1.35",
+        "35",
+        "35",
         "",
         "",
         "",
@@ -1004,9 +1004,9 @@
       ],
       [
         "Cells / Kill Bonus +",
-        "1.25",
-        "25",
-        "25",
+        "1.3",
+        "30",
+        "30",
         "",
         "",
         "",
@@ -1014,9 +1014,9 @@
       ],
       [
         "Free Upgrades +",
-        "1.12",
-        "12",
-        "12",
+        "1.15",
+        "15",
+        "15",
         "",
         "",
         "",
@@ -1024,9 +1024,9 @@
       ],
       [
         "Recovery Package +",
-        "1.42",
-        "42",
-        "42",
+        "1",
+        "0",
+        "0",
         "",
         "",
         "",
@@ -1034,9 +1034,9 @@
       ],
       [
         "Enemy Level Skips +",
-        "1.15",
-        "15",
-        "15",
+        "1.16",
+        "16",
+        "16",
         "",
         "",
         "",
@@ -1059,10 +1059,10 @@
     },
     "Rend Armor Mult +": {
       "name": "Rend Armor Mult +",
-      "current_multiplier": 1.21,
+      "current_multiplier": 1.2,
       "preset_levels": {
-        "Farming": 21,
-        "Tourney": 21,
+        "Farming": 20,
+        "Tourney": 20,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1083,10 +1083,10 @@
     },
     "Damage / Meter +": {
       "name": "Damage / Meter +",
-      "current_multiplier": 1.17,
+      "current_multiplier": 1.2,
       "preset_levels": {
-        "Farming": 17,
-        "Tourney": 17,
+        "Farming": 20,
+        "Tourney": 20,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1095,10 +1095,10 @@
     },
     "Super Crit Multi +": {
       "name": "Super Crit Multi +",
-      "current_multiplier": 1.57,
+      "current_multiplier": 1.56,
       "preset_levels": {
-        "Farming": 57,
-        "Tourney": 57,
+        "Farming": 56,
+        "Tourney": 56,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1107,10 +1107,10 @@
     },
     "Attack Speed +": {
       "name": "Attack Speed +",
-      "current_multiplier": 1.13,
+      "current_multiplier": 1.15,
       "preset_levels": {
-        "Farming": 13,
-        "Tourney": 13,
+        "Farming": 15,
+        "Tourney": 15,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1155,10 +1155,10 @@
     },
     "Land Mine Damage +": {
       "name": "Land Mine Damage +",
-      "current_multiplier": 2.08,
+      "current_multiplier": 1.0,
       "preset_levels": {
-        "Farming": 18,
-        "Tourney": 18,
+        "Farming": 0,
+        "Tourney": 0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1167,10 +1167,10 @@
     },
     "Wall Health +": {
       "name": "Wall Health +",
-      "current_multiplier": 1.5899999999999999,
+      "current_multiplier": 1.62,
       "preset_levels": {
-        "Farming": 59,
-        "Tourney": 59,
+        "Farming": 62,
+        "Tourney": 62,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1179,10 +1179,10 @@
     },
     "Orb Size +": {
       "name": "Orb Size +",
-      "current_multiplier": 1.2,
+      "current_multiplier": 1.24,
       "preset_levels": {
-        "Farming": 20,
-        "Tourney": 20,
+        "Farming": 24,
+        "Tourney": 24,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1191,10 +1191,10 @@
     },
     "Cash Bonus +": {
       "name": "Cash Bonus +",
-      "current_multiplier": 1.44,
+      "current_multiplier": 1.3,
       "preset_levels": {
-        "Farming": 44,
-        "Tourney": 44,
+        "Farming": 30,
+        "Tourney": 30,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1203,10 +1203,10 @@
     },
     "Coin Bonus +": {
       "name": "Coin Bonus +",
-      "current_multiplier": 1.33,
+      "current_multiplier": 1.35,
       "preset_levels": {
-        "Farming": 33,
-        "Tourney": 33,
+        "Farming": 35,
+        "Tourney": 35,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1215,10 +1215,10 @@
     },
     "Cells / Kill Bonus +": {
       "name": "Cells / Kill Bonus +",
-      "current_multiplier": 1.25,
+      "current_multiplier": 1.3,
       "preset_levels": {
-        "Farming": 25,
-        "Tourney": 25,
+        "Farming": 30,
+        "Tourney": 30,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1227,10 +1227,10 @@
     },
     "Free Upgrades +": {
       "name": "Free Upgrades +",
-      "current_multiplier": 1.12,
+      "current_multiplier": 1.15,
       "preset_levels": {
-        "Farming": 12,
-        "Tourney": 12,
+        "Farming": 15,
+        "Tourney": 15,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1239,10 +1239,10 @@
     },
     "Recovery Package +": {
       "name": "Recovery Package +",
-      "current_multiplier": 1.42,
+      "current_multiplier": 1.0,
       "preset_levels": {
-        "Farming": 42,
-        "Tourney": 42,
+        "Farming": 0,
+        "Tourney": 0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1251,10 +1251,10 @@
     },
     "Enemy Level Skips +": {
       "name": "Enemy Level Skips +",
-      "current_multiplier": 1.15,
+      "current_multiplier": 1.16,
       "preset_levels": {
-        "Farming": 15,
-        "Tourney": 15,
+        "Farming": 16,
+        "Tourney": 16,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1310,12 +1310,12 @@
       "unlocked": "true",
       "track_levels": [
         "15",
-        "06",
+        "07",
         "12"
       ],
       "track_values": [
         20.0,
-        0.5,
+        0.55,
         60.0
       ]
     },
@@ -1471,9 +1471,9 @@
       {
         "uw_name": "Chrono Field",
         "track_name": "Speed Reduction",
-        "level": 6,
-        "level_token": "06 | 50% | Cost 150 ? | Next 200 ?",
-        "resolved_value": 0.5
+        "level": 7,
+        "level_token": "07 | 55% | Cost 200 ? | Next 300 ?",
+        "resolved_value": 0.55
       },
       {
         "uw_name": "Chrono Field",
@@ -1656,10 +1656,10 @@
     }
   },
   "relics": {
-    "Event Relics": 112.0,
+    "Event Relics": 116.0,
     "Guild Relics": 13.0,
-    "Other Relics": 22.0,
-    "Total Relics": 147.0,
+    "Other Relics": 23.0,
+    "Total Relics": 152.0,
     "Lab Speed": 0.395,
     "Bot Range": 9.0,
     "Damage": 0.5399999999999999,
@@ -1667,7 +1667,7 @@
     "Attack Speed": 0.05,
     "Crit Chance": 0.06,
     "Crit Factor": 0.5,
-    "Damage / Meter": 0.42999999999999994,
+    "Damage / Meter": 0.44999999999999996,
     "Super Critical Chance": 0.04,
     "Super Critical Mult": 0.05,
     "Rend Armor Mult": 0.0,
@@ -1675,15 +1675,15 @@
     "Health Regen": 0.22999999999999998,
     "Defense %": 0.04,
     "Defense Absolute": 0.28,
-    "Thorns": 0.09000000000000001,
-    "Knockback Force": 0.24,
-    "Orb Speed": 0.12000000000000001,
+    "Thorns": 0.11000000000000001,
+    "Knockback Force": 0.26,
+    "Orb Speed": 0.17,
     "Wall Rebuild": 2.0,
     "Cash": 0.06,
     "Coins": 0.48,
     "Free Attack Upgrade": 0.060000000000000005,
     "Free Defense Upgrade": 0.03,
-    "Free Utility Upgrade": 0.04,
+    "Free Utility Upgrade": 0.05,
     "Recovery Amount": 0.11,
     "Enemy Attack Level Skip": 0.02,
     "Enemy Health Level Skip": 0.02
@@ -1773,7 +1773,7 @@
     "Golden Bot": {
       "Duration": 12,
       "Cooldown": 3,
-      "Bonus": 21,
+      "Bonus": 22,
       "Range": 15
     },
     "Amplify Bot": {
@@ -1862,8 +1862,8 @@
       {
         "bot_name": "Golden Bot",
         "track_name": "Bonus",
-        "level": 21,
-        "resolved_value": 6.200000000000004,
+        "level": 22,
+        "resolved_value": 6.400000000000004,
         "resolved_unit": "x"
       },
       {
@@ -2209,6 +2209,9 @@
     "Tier 20": "0",
     "Tier 21": "0"
   },
+  "tier_progression_waves": {},
+  "highest_tier_unlocked_number": null,
+  "highest_tier_unlocked_label": null,
   "theme_song_coin_multiplier": 1.682,
   "cards_inventory": {
     "Damage": {
@@ -2317,7 +2320,7 @@
       "name": "Intro Sprint",
       "level": 7,
       "mastery_unlocked": true,
-      "mastery_lab_level": 0
+      "mastery_lab_level": 2
     },
     "Land Mine Stun": {
       "name": "Land Mine Stun",
@@ -2468,8 +2471,8 @@
       "assist_unlocked": true,
       "assist_level": 101,
       "rarity_cap": "Epic",
-      "multiplier_cap": 0.1,
-      "substat_cap": 0.1
+      "multiplier_cap": 0.15,
+      "substat_cap": 0.15
     }
   },
   "module_presets": {
@@ -2577,8 +2580,8 @@
       "name": "Being Annihilator",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "9.44",
+      "level": 167,
+      "stat": "9.64",
       "substats": [
         {
           "name": "Attack Speed",
@@ -2635,8 +2638,8 @@
       "name": "Havoc Bringer",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "9.44",
+      "level": 167,
+      "stat": "9.64",
       "substats": []
     },
     "Shrink Ray": {
@@ -2651,8 +2654,8 @@
       "name": "Amplifying Strike",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "9.44",
+      "level": 167,
+      "stat": "9.64",
       "substats": [
         {
           "name": "Bounce Shot Chance",
@@ -2733,8 +2736,8 @@
       "name": "Space Displacer",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 165,
-      "stat": "9.899",
+      "level": 166,
+      "stat": "10.115",
       "substats": []
     },
     "Wormhole Redirector": {
@@ -2765,8 +2768,8 @@
       "name": "Sharp Fortitude",
       "slot_type": "armor",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "9.24",
+      "level": 166,
+      "stat": "9.44",
       "substats": [
         {
           "name": "Health Regen",
@@ -2804,8 +2807,8 @@
       "name": "Orbital Augment",
       "slot_type": "armor",
       "rarity": "Ancestral 1*",
-      "level": 165,
-      "stat": "9.57",
+      "level": 166,
+      "stat": "9.778",
       "substats": [
         {
           "name": "Defense %",
@@ -3353,7 +3356,7 @@
       ],
       [
         "Labs Speed",
-        "91",
+        "92",
         "",
         "99"
       ],
@@ -3419,7 +3422,7 @@
       ],
       [
         "Damage",
-        "69",
+        "72",
         "",
         "100"
       ],
@@ -3431,7 +3434,7 @@
       ],
       [
         "Critical Factor",
-        "83",
+        "82",
         "",
         "99"
       ],
@@ -4181,7 +4184,7 @@
       ],
       [
         "Module Coin Cost",
-        "23",
+        "28",
         "",
         "30"
       ],
@@ -4379,7 +4382,7 @@
       ],
       [
         "Intro Sprint Mastery",
-        "0",
+        "2",
         "",
         "9"
       ],
@@ -5299,7 +5302,7 @@
         "Preset 3",
         "Preset 4",
         "Preset 5",
-        "7 q"
+        "10.44 q"
       ],
       [
         "",
@@ -5323,9 +5326,9 @@
       ],
       [
         "Rend Armor Mult +",
-        "1.21",
-        "21",
-        "21",
+        "1.2",
+        "20",
+        "20",
         "",
         "",
         "",
@@ -5343,9 +5346,9 @@
       ],
       [
         "Damage / Meter +",
-        "1.17",
-        "17",
-        "17",
+        "1.2",
+        "20",
+        "20",
         "",
         "",
         "",
@@ -5353,9 +5356,9 @@
       ],
       [
         "Super Crit Multi +",
-        "1.57",
-        "57",
-        "57",
+        "1.56",
+        "56",
+        "56",
         "",
         "",
         "",
@@ -5363,9 +5366,9 @@
       ],
       [
         "Attack Speed +",
-        "1.13",
-        "13",
-        "13",
+        "1.15",
+        "15",
+        "15",
         "",
         "",
         "",
@@ -5403,9 +5406,9 @@
       ],
       [
         "Land Mine Damage +",
-        "2.08",
-        "18",
-        "18",
+        "1",
+        "0",
+        "0",
         "",
         "",
         "",
@@ -5413,9 +5416,9 @@
       ],
       [
         "Wall Health +",
-        "1.5899999999999999",
-        "59",
-        "59",
+        "1.62",
+        "62",
+        "62",
         "",
         "",
         "",
@@ -5423,9 +5426,9 @@
       ],
       [
         "Orb Size +",
-        "1.2",
-        "20",
-        "20",
+        "1.24",
+        "24",
+        "24",
         "",
         "",
         "",
@@ -5433,9 +5436,9 @@
       ],
       [
         "Cash Bonus +",
-        "1.44",
-        "44",
-        "44",
+        "1.3",
+        "30",
+        "30",
         "",
         "",
         "",
@@ -5443,9 +5446,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.33",
-        "33",
-        "33",
+        "1.35",
+        "35",
+        "35",
         "",
         "",
         "",
@@ -5453,9 +5456,9 @@
       ],
       [
         "Cells / Kill Bonus +",
-        "1.25",
-        "25",
-        "25",
+        "1.3",
+        "30",
+        "30",
         "",
         "",
         "",
@@ -5463,9 +5466,9 @@
       ],
       [
         "Free Upgrades +",
-        "1.12",
-        "12",
-        "12",
+        "1.15",
+        "15",
+        "15",
         "",
         "",
         "",
@@ -5473,9 +5476,9 @@
       ],
       [
         "Recovery Package +",
-        "1.42",
-        "42",
-        "42",
+        "1",
+        "0",
+        "0",
         "",
         "",
         "",
@@ -5483,9 +5486,9 @@
       ],
       [
         "Enemy Level Skips +",
-        "1.15",
-        "15",
-        "15",
+        "1.16",
+        "16",
+        "16",
         "",
         "",
         "",
@@ -5588,8 +5591,8 @@
         "",
         "",
         "Speed Reduction",
-        "0.5",
-        "06 | 50% | Cost 150 ? | Next 200 ?"
+        "0.55",
+        "07 | 55% | Cost 200 ? | Next 300 ?"
       ],
       [
         "true",
@@ -6066,7 +6069,7 @@
       ],
       [
         "Event Relics",
-        "112",
+        "116",
         ""
       ],
       [
@@ -6076,12 +6079,12 @@
       ],
       [
         "Other Relics",
-        "22",
+        "23",
         ""
       ],
       [
         "Total Relics",
-        "147",
+        "152",
         ""
       ],
       [
@@ -6136,7 +6139,7 @@
       ],
       [
         "Damage / Meter",
-        "0.42999999999999994",
+        "0.44999999999999996",
         ""
       ],
       [
@@ -6181,17 +6184,17 @@
       ],
       [
         "Thorns",
-        "0.09000000000000001",
+        "0.11000000000000001",
         ""
       ],
       [
         "Knockback Force",
-        "0.24",
+        "0.26",
         ""
       ],
       [
         "Orb Speed",
-        "0.12000000000000001",
+        "0.17",
         ""
       ],
       [
@@ -6226,7 +6229,7 @@
       ],
       [
         "Free Utility Upgrade",
-        "0.04",
+        "0.05",
         ""
       ],
       [
@@ -6590,8 +6593,8 @@
         "",
         "",
         "Bonus",
-        "6.200000000000004",
-        "21 | x6.2 | Cost 900 ? | Next 940 ?"
+        "6.400000000000004",
+        "22 | x6.4 | Cost 940 ? | Next 980 ?"
       ],
       [
         "true",
@@ -6695,8 +6698,8 @@
         "",
         "",
         "Multiplier Cap",
-        "0.1",
-        "09 | 10% | Cost 39 ? | Next 42 ?",
+        "0.15",
+        "14 | 15% | Cost 54 ? | Next 57 ?",
         ""
       ],
       [
@@ -6716,8 +6719,8 @@
         "",
         "",
         "Substat Cap",
-        "0.1",
-        "09 | 10% | Cost 39 ? | Next 42 ?",
+        "0.15",
+        "14 | 15% | Cost 54 ? | Next 57 ?",
         ""
       ],
       [
@@ -7247,8 +7250,8 @@
       ],
       [
         "Ancestral",
-        "166",
-        "9.44",
+        "167",
+        "9.64",
         "",
         "",
         "Legendary",
@@ -7462,8 +7465,8 @@
         "",
         "",
         "Ancestral 2*",
-        "165",
-        "9.899",
+        "166",
+        "10.115",
         "",
         "",
         "Ancestral",
@@ -7625,8 +7628,8 @@
       ],
       [
         "Ancestral",
-        "166",
-        "9.44",
+        "167",
+        "9.64",
         "",
         "",
         "Mythic+",
@@ -7798,8 +7801,8 @@
         "",
         "",
         "Ancestral",
-        "165",
-        "9.24",
+        "166",
+        "9.44",
         "",
         "",
         "Mythic+",
@@ -7982,13 +7985,13 @@
       ],
       [
         "Ancestral",
-        "166",
-        "9.44",
+        "167",
+        "9.64",
         "",
         "",
         "Ancestral 1*",
-        "165",
-        "9.57",
+        "166",
+        "9.778",
         "",
         "",
         "Mythic+",

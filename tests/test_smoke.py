@@ -792,7 +792,7 @@ def test_package_chance_compare_uses_tourney_preset_and_matches_ep(tmp_path):
         "--loadout",
         "input/loadout.json",
         "--perks",
-        "generated/perks_projected_max.json",
+        "input/derived/perks_projected_max.json",
         "--state-mode",
         "max_progression",
         "--perk-state",
@@ -817,7 +817,7 @@ def test_compare_situation_fit_matrix_emitted(tmp_path):
         str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
         '--perk-state', 'on',
-        '--perks', 'generated/perks_projected_max.json',
+        '--perks', 'input/derived/perks_projected_max.json',
         '--out', str(output_dir),
     ], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
@@ -840,7 +840,7 @@ def test_survivability_compare_policy_by_destination(tmp_path):
         "--perk-state",
         "on",
         "--perks",
-        "generated/perks_projected_max.json",
+        "input/derived/perks_projected_max.json",
         "--out",
         str(out_dir),
     ], check=True)

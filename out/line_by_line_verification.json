@@ -34,7 +34,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.82,
+    "final_value": 2.84,
     "unit": "unknown",
     "resolver": "standard_scalar_param",
     "contributor_count": 1,
@@ -63,7 +63,7 @@
     "verification_status": "blocked",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
-    "final_value": 22202360287.103737,
+    "final_value": 23244331190.764286,
     "unit": "damage",
     "resolver": "standard_scalar_stat",
     "contributor_count": 9,
@@ -74,10 +74,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 1719786908111.3857,
-    "ep_compare_value": 2499686908111.3857,
+    "ep_compare_delta": 1800498806163.3306,
+    "ep_compare_value": 2616998806163.3306,
     "ep_compare_value_type": "damage",
-    "ep_reference_value": 779900000000.0,
+    "ep_reference_value": 816500000000.0,
     "ep_reference_value_type": "scaled_number",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -185,8 +185,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -195,8 +195,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -205,8 +205,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -230,8 +230,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -240,13 +240,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -336,10 +336,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 22.772793750000012,
+    "ep_compare_delta": 22.038187500000014,
     "ep_compare_value": 64.27804687500002,
     "ep_compare_value_type": "attacks_per_second",
-    "ep_reference_value": 41.505253125,
+    "ep_reference_value": 42.239859375,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -445,8 +445,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -455,8 +455,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -465,8 +465,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -490,8 +490,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -500,13 +500,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -585,7 +585,7 @@
     "verification_status": "blocked",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
-    "final_value": 536.535,
+    "final_value": 532.89,
     "unit": "multiplier",
     "resolver": "standard_scalar_stat",
     "contributor_count": 6,
@@ -596,10 +596,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 364.8438,
-    "ep_compare_value": 536.535,
+    "ep_compare_delta": 362.36519999999996,
+    "ep_compare_value": 532.89,
     "ep_compare_value_type": "multiplier",
-    "ep_reference_value": 171.6912,
+    "ep_reference_value": 170.5248,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -705,8 +705,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -715,8 +715,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -725,8 +725,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -750,8 +750,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -760,13 +760,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -963,8 +963,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -973,8 +973,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -983,8 +983,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1008,8 +1008,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1018,13 +1018,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -1106,7 +1106,7 @@
     "verification_status": "blocked",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
-    "final_value": 0.5568420000000001,
+    "final_value": 0.56463,
     "unit": "multiplier",
     "resolver": "standard_scalar_stat",
     "contributor_count": 5,
@@ -1117,10 +1117,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 0.4265409720000001,
-    "ep_compare_value": 0.5568420000000001,
+    "ep_compare_delta": 0.42911879999999997,
+    "ep_compare_value": 0.56463,
     "ep_compare_value_type": "multiplier",
-    "ep_reference_value": 0.13030102799999999,
+    "ep_reference_value": 0.1355112,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -1226,8 +1226,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -1236,8 +1236,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -1246,8 +1246,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1271,8 +1271,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1281,13 +1281,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -1484,8 +1484,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -1494,8 +1494,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -1504,8 +1504,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1529,8 +1529,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1539,13 +1539,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -1638,10 +1638,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 77.90799999999999,
+    "ep_compare_delta": 78.13799999999998,
     "ep_compare_value": 113.56799999999998,
     "ep_compare_value_type": "multiplier",
-    "ep_reference_value": 35.66,
+    "ep_reference_value": 35.43,
     "ep_reference_value_type": "multiplier_display",
     "compare_context": {
       "compare_preset": "Tourney",
@@ -1747,8 +1747,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -1757,8 +1757,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -1767,8 +1767,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -1792,8 +1792,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -1802,13 +1802,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -1945,7 +1945,7 @@
     "verification_status": "blocked",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
-    "final_value": 21442357509758.453,
+    "final_value": 21906477802177.465,
     "unit": "hp",
     "resolver": "standard_scalar_stat",
     "contributor_count": 12,
@@ -1956,10 +1956,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 14492357509758.453,
-    "ep_compare_value": 21442357509758.453,
+    "ep_compare_delta": 14806477802177.465,
+    "ep_compare_value": 21906477802177.465,
     "ep_compare_value_type": "hp",
-    "ep_reference_value": 6950000000000.0,
+    "ep_reference_value": 7100000000000.0,
     "ep_reference_value_type": "scaled_number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -2065,8 +2065,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -2075,8 +2075,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -2085,8 +2085,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -2110,8 +2110,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -2120,13 +2120,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -2325,8 +2325,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -2335,8 +2335,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -2345,8 +2345,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -2370,8 +2370,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -2380,13 +2380,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -2585,8 +2585,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -2595,8 +2595,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -2605,8 +2605,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -2630,8 +2630,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -2640,13 +2640,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -2843,8 +2843,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -2853,8 +2853,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -2863,8 +2863,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -2888,8 +2888,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -2898,13 +2898,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -3181,7 +3181,7 @@
     "verification_status": "blocked",
     "kb_alignment_status": "misaligned",
     "verdict": "fail",
-    "final_value": 1157887305526956.5,
+    "final_value": 1182949801317583.0,
     "unit": "hp",
     "resolver": "standard_scalar_stat",
     "contributor_count": 6,
@@ -3192,10 +3192,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 1038587305526956.5,
-    "ep_compare_value": 1157887305526956.5,
+    "ep_compare_delta": 1058769801317583.0,
+    "ep_compare_value": 1182949801317583.0,
     "ep_compare_value_type": "hp",
-    "ep_reference_value": 119300000000000.0,
+    "ep_reference_value": 124180000000000.0,
     "ep_reference_value_type": "scaled_number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -3301,8 +3301,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -3311,8 +3311,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -3321,8 +3321,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -3346,8 +3346,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -3356,13 +3356,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -3590,8 +3590,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -3600,8 +3600,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -3610,8 +3610,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -3635,8 +3635,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -3645,13 +3645,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -3797,10 +3797,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "non_numeric_compare",
-    "ep_compare_delta": -1239999999999989.5,
+    "ep_compare_delta": -1289999999999989.5,
     "ep_compare_value": 10.4,
     "ep_compare_value_type": "multiplier",
-    "ep_reference_value": 1240000000000000.0,
+    "ep_reference_value": 1290000000000000.0,
     "ep_reference_value_type": "scaled_number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -3906,8 +3906,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -3916,8 +3916,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -3926,8 +3926,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -3951,8 +3951,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -3961,13 +3961,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -4147,10 +4147,10 @@
     "unresolved_contributors": [],
     "semantic_mismatches": [],
     "ep_compare_status": "mismatch",
-    "ep_compare_delta": 53.75994277499998,
+    "ep_compare_delta": 53.11611112499998,
     "ep_compare_value": 96.57474749999999,
     "ep_compare_value_type": "multiplier",
-    "ep_reference_value": 42.81480472500001,
+    "ep_reference_value": 43.458636375000005,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -4256,8 +4256,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -4266,8 +4266,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -4276,8 +4276,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -4301,8 +4301,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -4311,13 +4311,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -4662,8 +4662,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -4672,8 +4672,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -4682,8 +4682,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -4707,8 +4707,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -4717,13 +4717,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -7978,8 +7978,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -7988,8 +7988,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -7998,8 +7998,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -8023,8 +8023,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -8033,13 +8033,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -8239,8 +8239,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -8249,8 +8249,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -8259,8 +8259,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -8284,8 +8284,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -8294,13 +8294,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -8500,8 +8500,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -8510,8 +8510,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -8520,8 +8520,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -8545,8 +8545,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -8555,13 +8555,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -8761,8 +8761,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -8771,8 +8771,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -8781,8 +8781,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -8806,8 +8806,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -8816,13 +8816,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -9022,8 +9022,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -9032,8 +9032,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -9042,8 +9042,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -9067,8 +9067,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -9077,13 +9077,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -9283,8 +9283,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -9293,8 +9293,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -9303,8 +9303,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -9328,8 +9328,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -9338,13 +9338,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -9544,8 +9544,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -9554,8 +9554,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -9564,8 +9564,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -9589,8 +9589,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -9599,13 +9599,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -9783,7 +9783,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 119.0,
+    "final_value": 121.0,
     "unit": "pct",
     "resolver": "standard_scalar_stat",
     "contributor_count": 5,
@@ -9879,7 +9879,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.166,
+    "final_value": 2.172,
     "unit": "force",
     "resolver": "standard_scalar_stat",
     "contributor_count": 5,
@@ -9908,7 +9908,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 6.832000000000002,
+    "final_value": 7.1370000000000005,
     "unit": "rpm",
     "resolver": "standard_scalar_stat",
     "contributor_count": 4,
@@ -10036,7 +10036,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 4.6059924665085005e+17,
+    "final_value": 4.789465717423773e+17,
     "unit": "damage",
     "resolver": "standard_scalar_stat",
     "contributor_count": 3,
@@ -10141,7 +10141,7 @@
     "ep_compare_delta": null,
     "ep_compare_value": 193.5,
     "ep_compare_value_type": "pct",
-    "ep_reference_value": 1.0773840000000001,
+    "ep_reference_value": 1.1062424999999998,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -10247,8 +10247,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -10257,8 +10257,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -10267,8 +10267,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -10292,8 +10292,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -10302,13 +10302,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -10399,7 +10399,7 @@
     "ep_compare_delta": null,
     "ep_compare_value": 187.5,
     "ep_compare_value_type": "pct",
-    "ep_reference_value": 1.046892,
+    "ep_reference_value": 1.0749337499999998,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -10505,8 +10505,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -10515,8 +10515,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -10525,8 +10525,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -10550,8 +10550,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -10560,13 +10560,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -10645,7 +10645,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "misaligned",
     "verdict": "pass",
-    "final_value": 211.9,
+    "final_value": 213.9,
     "unit": "pct",
     "resolver": "standard_scalar_stat",
     "contributor_count": 7,
@@ -10655,9 +10655,9 @@
     "semantic_mismatches": [],
     "ep_compare_status": "non_comparable",
     "ep_compare_delta": null,
-    "ep_compare_value": 211.9,
+    "ep_compare_value": 213.9,
     "ep_compare_value_type": "pct",
-    "ep_reference_value": 1.1875136000000002,
+    "ep_reference_value": 1.2310462500000001,
     "ep_reference_value_type": "number",
     "compare_context": {
       "compare_preset": "Farming",
@@ -10763,8 +10763,8 @@
           },
           "Being Annihilator": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Death Penalty": {
             "rarity": "Mythic+",
@@ -10773,8 +10773,8 @@
           },
           "Havoc Bringer": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Shrink Ray": {
             "rarity": "Legendary",
@@ -10783,8 +10783,8 @@
           },
           "Amplifying Strike": {
             "rarity": "Ancestral",
-            "level": 166,
-            "stat": "9.44"
+            "level": 167,
+            "stat": "9.64"
           },
           "Any Other": {
             "rarity": "Epic",
@@ -10808,8 +10808,8 @@
           },
           "Space Displacer": {
             "rarity": "Ancestral 2*",
-            "level": 165,
-            "stat": "9.899"
+            "level": 166,
+            "stat": "10.115"
           },
           "Wormhole Redirector": {
             "rarity": "Mythic+",
@@ -10818,13 +10818,13 @@
           },
           "Sharp Fortitude": {
             "rarity": "Ancestral",
-            "level": 165,
-            "stat": "9.24"
+            "level": 166,
+            "stat": "9.44"
           },
           "Orbital Augment": {
             "rarity": "Ancestral 1*",
-            "level": 165,
-            "stat": "9.57"
+            "level": 166,
+            "stat": "9.778"
           },
           "Black Hole Digestor": {
             "rarity": "Legendary",
@@ -11428,7 +11428,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 20.285955039999997,
+    "final_value": 22.70389256,
     "unit": "multiplier",
     "resolver": "standard_scalar_stat",
     "contributor_count": 4,
@@ -12359,7 +12359,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 6.2,
+    "final_value": 6.4,
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 1,
@@ -12968,7 +12968,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1806.0,
+    "final_value": 1811.0,
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
@@ -13026,7 +13026,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 18.2,
+    "final_value": 18.8,
     "unit": "pct",
     "resolver": "pct_capped_param",
     "contributor_count": 2,
@@ -13316,7 +13316,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 50.0,
+    "final_value": 55.00000000000001,
     "unit": "pct",
     "resolver": "pct_capped_param",
     "contributor_count": 1,
@@ -13809,7 +13809,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 33.15,
+    "final_value": 34.275,
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
@@ -13838,7 +13838,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 55.1,
+    "final_value": 55.65,
     "unit": "degrees",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
@@ -18460,7 +18460,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 18.2,
+    "final_value": 18.8,
     "unit": "pct",
     "resolver": "pct_capped_param",
     "contributor_count": 2,
@@ -18489,7 +18489,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1806.0,
+    "final_value": 1811.0,
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
@@ -18518,7 +18518,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 33.15,
+    "final_value": 34.275,
     "unit": "multiplier",
     "resolver": "standard_scalar_param",
     "contributor_count": 3,
@@ -18808,7 +18808,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 21442357509758.453,
+    "final_value": 21906477802177.465,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -19073,7 +19073,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1157887305526956.5,
+    "final_value": 1182949801317583.0,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -19247,7 +19247,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1157887305526973.0,
+    "final_value": 1182949801317599.5,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -19276,7 +19276,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1157887305526973.0,
+    "final_value": 1182949801317599.5,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -19305,7 +19305,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.482783356112027e+28,
+    "final_value": 2.5914263563654234e+28,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20187,7 +20187,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.7453854418546455e+28,
+    "final_value": 2.8655195286733048e+28,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20216,7 +20216,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1.3726927209273216e+30,
+    "final_value": 1.4327597643366512e+30,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20245,7 +20245,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 21442357509758.453,
+    "final_value": 21906477802177.465,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20307,7 +20307,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1157887305526956.5,
+    "final_value": 1182949801317583.0,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20518,7 +20518,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1.3726927209273216e+30,
+    "final_value": 1.4327597643366512e+30,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20547,7 +20547,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 1.3726927209273216e+30,
+    "final_value": 1.4327597643366512e+30,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20576,7 +20576,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 24422596315.814114,
+    "final_value": 25568764309.840717,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -20638,7 +20638,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 13394.903416383198,
+    "final_value": 13303.904855892799,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20783,7 +20783,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 62.00760952,
+    "final_value": 62.86086279999999,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 2,
@@ -20977,7 +20977,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 3899372.509244088,
+    "final_value": 3953029.671795745,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21068,7 +21068,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 82679694.23301567,
+    "final_value": 85641847.49286985,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21221,7 +21221,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 82679694.23301567,
+    "final_value": 85641847.49286985,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21250,7 +21250,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 11708.22330382355,
+    "final_value": 11628.854419143807,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21279,7 +21279,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.0,
+    "final_value": 2.2222222222222223,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21407,7 +21407,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 24422596315.814114,
+    "final_value": 25568764309.840717,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21436,7 +21436,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 13394.903416383198,
+    "final_value": 13303.904855892799,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21465,7 +21465,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 11708.22330382355,
+    "final_value": 11628.854419143807,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21494,7 +21494,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 3899372.509244088,
+    "final_value": 3953029.671795745,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21523,7 +21523,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 82679694.23301567,
+    "final_value": 85641847.49286985,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21552,7 +21552,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 2.0,
+    "final_value": 2.2222222222222223,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21581,7 +21581,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 4.983499361375454e+22,
+    "final_value": 5.9575636040432635e+22,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -21610,7 +21610,7 @@
     "verification_status": "publishable",
     "kb_alignment_status": "not_ep_compared",
     "verdict": "pass",
-    "final_value": 4.983499361375454e+22,
+    "final_value": 5.9575636040432635e+22,
     "unit": null,
     "resolver": "query_derived_composites",
     "contributor_count": 1,
@@ -22620,6 +22620,673 @@
     "verdict": "pass",
     "final_value": 8.33668601542913e-14,
     "unit": "coins_income_proxy",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.common_rate_pct": {
+    "destination": "derived::module.draw_policy.common_rate_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 68.5,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.rare_rate_pct": {
+    "destination": "derived::module.draw_policy.rare_rate_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 29.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.epic_rate_pct": {
+    "destination": "derived::module.draw_policy.epic_rate_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 2.5,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.epic_pity_draws": {
+    "destination": "derived::module.draw_policy.epic_pity_draws",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 150.0,
+    "unit": "draws",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.ten_pull_minimum_rare": {
+    "destination": "derived::module.draw_policy.ten_pull_minimum_rare",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": "rare_per_ten_pull",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.draw_policy.gem_cost_per_draw": {
+    "destination": "derived::module.draw_policy.gem_cost_per_draw",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 20.0,
+    "unit": "gems",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.runtime_profile.farming_tier": {
+    "destination": "derived::module.runtime_profile.farming_tier",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 14.0,
+    "unit": "tier",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.runtime_profile.highest_tier_unlocked": {
+    "destination": "derived::module.runtime_profile.highest_tier_unlocked",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 14.0,
+    "unit": "tier",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.lab.reroll_shards_bonus": {
+    "destination": "derived::module.lab.reroll_shards_bonus",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 100.0,
+    "unit": "shards",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.lab.common_drop_chance_bonus_pct": {
+    "destination": "derived::module.lab.common_drop_chance_bonus_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.lab.rare_drop_chance_bonus_pct": {
+    "destination": "derived::module.lab.rare_drop_chance_bonus_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.lab.daily_mission_shards_bonus": {
+    "destination": "derived::module.lab.daily_mission_shards_bonus",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 50.0,
+    "unit": "shards_per_mission",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.lab.shatter_shards_bonus_pct": {
+    "destination": "derived::module.lab.shatter_shards_bonus_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 100.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.drop_policy.reroll_shard_drop_chance_pct": {
+    "destination": "derived::module.drop_policy.reroll_shard_drop_chance_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 15.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.drop_policy.reroll_shards_per_boss": {
+    "destination": "derived::module.drop_policy.reroll_shards_per_boss",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 155.0,
+    "unit": "shards",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.drop_policy.common_module_drop_chance_pct": {
+    "destination": "derived::module.drop_policy.common_module_drop_chance_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 3.0,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.drop_policy.rare_module_drop_chance_pct": {
+    "destination": "derived::module.drop_policy.rare_module_drop_chance_pct",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 1.5,
+    "unit": "pct",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.shatter_policy.common_module_shards": {
+    "destination": "derived::module.shatter_policy.common_module_shards",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 10.0,
+    "unit": "shards",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.shatter_policy.rare_module_shards": {
+    "destination": "derived::module.shatter_policy.rare_module_shards",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 20.0,
+    "unit": "shards",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.mission_policy.daily_mission_shards_bonus": {
+    "destination": "derived::module.mission_policy.daily_mission_shards_bonus",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 50.0,
+    "unit": "shards_per_mission",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss": {
+    "destination": "derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 0.6,
+    "unit": "shards_per_boss",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.mission_policy.base_daily_mission_shards": {
+    "destination": "derived::module.mission_policy.base_daily_mission_shards",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 55.0,
+    "unit": "shards_per_mission",
+    "resolver": null,
+    "contributor_count": 1,
+    "issues": [],
+    "level_contributors": [],
+    "unresolved_contributors": [],
+    "semantic_mismatches": [],
+    "ep_compare_status": null,
+    "ep_compare_delta": null,
+    "ep_compare_value": null,
+    "ep_compare_value_type": null,
+    "ep_reference_value": null,
+    "ep_reference_value_type": null,
+    "compare_context": null,
+    "formula_contract": {
+      "formula_class": "unclassified",
+      "publish_policy": "allow",
+      "compare_policy": "normal",
+      "rationale": ""
+    },
+    "contributor_consumption": null
+  },
+  "derived::module.mission_policy.total_daily_mission_shards": {
+    "destination": "derived::module.mission_policy.total_daily_mission_shards",
+    "status": "resolved",
+    "verification_status": "publishable",
+    "kb_alignment_status": "not_ep_compared",
+    "verdict": "pass",
+    "final_value": 105.0,
+    "unit": "shards_per_mission",
     "resolver": null,
     "contributor_count": 1,
     "issues": [],

@@ -30,14 +30,14 @@
   "default_preset": "Farming",
   "state_mode": "max_progression",
   "perk_config_resolution": {
-    "requested_perks_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks.json",
-    "resolved_perks_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks_projected_max.json",
+    "requested_perks_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\perks.json",
+    "resolved_perks_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\derived\\perks_projected_max.json",
     "fallback_applied": true,
     "fallback_reason": "max_progression_generated_from_timeline_policy",
-    "generation_policy_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks_max_progression_policy.json",
-    "generated_timeline_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks_projected_max.timeline.json",
-    "generated_diagnostics_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks_projected_max.diagnostics.json",
-    "generated_runtime_policy_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\perks_max_progression_policy.runtime.json"
+    "generation_policy_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\assumptions.yaml",
+    "generated_timeline_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\derived\\perks_projected_max.timeline.json",
+    "generated_diagnostics_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\derived\\perks_projected_max.diagnostics.json",
+    "generated_runtime_policy_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\nervous-raman\\input\\derived\\perks_max_progression_policy.runtime.json"
   },
   "state_mode_support": {
     "state_mode": "max_progression",
@@ -123,7 +123,7 @@
     }
   },
   "stat_input_count": 586,
-  "statbook_row_count": 522,
+  "statbook_row_count": 545,
   "engine_status": "publish_gate_enforced_resolution",
   "publish_status": "forbidden_for_publish",
   "formula_ledger_version": 2,
@@ -8356,7 +8356,7 @@
         "destination_id": "meta_progression_param::laboratory.speed_multiplier",
         "resolver": "standard_scalar_param",
         "value_type": "unknown",
-        "final_value": 2.82
+        "final_value": 2.84
       },
       {
         "destination_id": "meta_progression_param::milestones.waves_required_delta",
@@ -12835,7 +12835,7 @@
   "line_verification_summary": {
     "blocked": 36,
     "needs_work": 49,
-    "publishable": 347,
+    "publishable": 370,
     "trace_only": 90
   },
   "presentation": {
@@ -12924,8 +12924,8 @@
       },
       "tower_hp": {
         "status": "resolved",
-        "final_value": 21442357509758.453,
-        "display_value": "21.4T",
+        "final_value": 21906477802177.465,
+        "display_value": "21.9T",
         "contributor_families": [
           "card",
           "enhancement",
@@ -13020,8 +13020,8 @@
           {
             "source_family": "module",
             "source_name": "Sharp Fortitude",
-            "value": 9.24,
-            "display_value": "x9.24",
+            "value": 9.44,
+            "display_value": "x9.44",
             "value_type": "multiplier_display",
             "notes": "module_primary_main_effect:kb_module_base_routed"
           },
@@ -13134,8 +13134,8 @@
       },
       "wall_hp": {
         "status": "resolved",
-        "final_value": 1157887305526956.5,
-        "display_value": "1.16q",
+        "final_value": 1182949801317583.0,
+        "display_value": "1.18q",
         "contributor_families": [
           "enhancement",
           "lab",
@@ -13289,8 +13289,8 @@
     "surfaces": {
       "tower_damage": {
         "status": "resolved",
-        "final_value": 22202360287.103737,
-        "display_value": "22.2B",
+        "final_value": 23244331190.764286,
+        "display_value": "23.2B",
         "admissible_families": [
           "workshop",
           "lab",
@@ -14862,19 +14862,19 @@
   },
   "tower_damage_residue_analysis": {
     "destination": "canonical_stat::tower_damage",
-    "package_value_before_runtime_assumptions": 49210426264.05678,
-    "package_value_after_runtime_assumptions": 2499686908111.3857,
-    "ep_value": 779900000000.0,
+    "package_value_before_runtime_assumptions": 51519902899.010025,
+    "package_value_after_runtime_assumptions": 2616998806163.3306,
+    "ep_value": 816500000000.0,
     "runtime_compare_assumptions": [
       "assumed_maxed_berserker_x8_under_max_progression",
       "assumed_project_funding_at_cash_50b_under_max_progression__rarity_family_mythic__multiplier_6.349485"
     ],
     "applied_runtime_multiplier": 50.795880017344075,
-    "required_total_runtime_multiplier_to_match_ep": 15.848267515813774,
-    "required_project_funding_multiplier_at_berserker_x8_to_match_ep": 1.9810334394767217,
-    "required_project_funding_coefficient_at_cash_50b_if_berserker_x8_to_match_ep": 0.08385639411957795,
-    "residue_after_current_assumptions": 1719786908111.3857,
-    "residue_relative_pct_after_current_assumptions": 220.51377203633615
+    "required_total_runtime_multiplier_to_match_ep": 15.848244155283323,
+    "required_project_funding_multiplier_at_berserker_x8_to_match_ep": 1.9810305194104154,
+    "required_project_funding_coefficient_at_cash_50b_if_berserker_x8_to_match_ep": 0.0838561445192879,
+    "residue_after_current_assumptions": 1800498806163.3306,
+    "residue_relative_pct_after_current_assumptions": 220.5142444780564
   },
   "run_perk_residue_analysis": {
     "lineage_backed_destinations": [
@@ -15477,9 +15477,9 @@
         "perk_state": "off",
         "status": "stage_scope_mismatch",
         "package_value": 96.57474749999999,
-        "ep_value": 42.81480472500001,
-        "relative_delta_pct": 125.56390977443603,
-        "abs_relative_delta_pct": 125.56390977443603
+        "ep_value": 43.458636375000005,
+        "relative_delta_pct": 122.22222222222216,
+        "abs_relative_delta_pct": 122.22222222222216
       },
       "canonical_stat::free_attack_upgrade_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15487,7 +15487,7 @@
         "perk_state": "off",
         "status": "non_comparable",
         "package_value": 131.0,
-        "ep_value": 1.0773840000000001,
+        "ep_value": 1.1062424999999998,
         "relative_delta_pct": null,
         "abs_relative_delta_pct": null
       },
@@ -15497,7 +15497,7 @@
         "perk_state": "off",
         "status": "non_comparable",
         "package_value": 125.0,
-        "ep_value": 1.046892,
+        "ep_value": 1.0749337499999998,
         "relative_delta_pct": null,
         "abs_relative_delta_pct": null
       },
@@ -15506,8 +15506,8 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "non_comparable",
-        "package_value": 149.4,
-        "ep_value": 1.1875136000000002,
+        "package_value": 151.4,
+        "ep_value": 1.2310462500000001,
         "relative_delta_pct": null,
         "abs_relative_delta_pct": null
       },
@@ -15527,9 +15527,9 @@
         "perk_state": "off",
         "status": "mismatch",
         "package_value": 64.27804687500002,
-        "ep_value": 41.505253125,
-        "relative_delta_pct": 54.867256637168175,
-        "abs_relative_delta_pct": 54.867256637168175
+        "ep_value": 42.239859375,
+        "relative_delta_pct": 52.17391304347829,
+        "abs_relative_delta_pct": 52.17391304347829
       },
       "canonical_stat::tower_bounce_shot_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15566,8 +15566,8 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "mismatch",
-        "package_value": 536.535,
-        "ep_value": 171.6912,
+        "package_value": 532.89,
+        "ep_value": 170.5248,
         "relative_delta_pct": 212.49999999999997,
         "abs_relative_delta_pct": 212.49999999999997
       },
@@ -15576,20 +15576,20 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "mismatch",
-        "package_value": 2499686908111.3857,
-        "ep_value": 779900000000.0,
-        "relative_delta_pct": 220.51377203633615,
-        "abs_relative_delta_pct": 220.51377203633615
+        "package_value": 2616998806163.3306,
+        "ep_value": 816500000000.0,
+        "relative_delta_pct": 220.5142444780564,
+        "abs_relative_delta_pct": 220.5142444780564
       },
       "canonical_stat::tower_damage_per_meter_multiplier": {
         "state_key": "farming__perks_off",
         "preset": "Farming",
         "perk_state": "off",
         "status": "mismatch",
-        "package_value": 0.5568420000000001,
-        "ep_value": 0.13030102799999999,
-        "relative_delta_pct": 327.3504273504275,
-        "abs_relative_delta_pct": 327.3504273504275
+        "package_value": 0.56463,
+        "ep_value": 0.1355112,
+        "relative_delta_pct": 316.66666666666663,
+        "abs_relative_delta_pct": 316.66666666666663
       },
       "canonical_stat::tower_defense_absolute": {
         "state_key": "farming__perks_off",
@@ -15616,10 +15616,10 @@
         "preset": "Farming",
         "perk_state": "off",
         "status": "stage_scope_mismatch",
-        "package_value": 21442357509758.453,
-        "ep_value": 6950000000000.0,
-        "relative_delta_pct": 208.52312963681226,
-        "abs_relative_delta_pct": 208.52312963681226
+        "package_value": 21906477802177.465,
+        "ep_value": 7100000000000.0,
+        "relative_delta_pct": 208.54194087573893,
+        "abs_relative_delta_pct": 208.54194087573893
       },
       "canonical_stat::tower_multishot_chance_pct": {
         "state_key": "farming__perks_off",
@@ -15697,9 +15697,9 @@
         "perk_state": "off",
         "status": "mismatch",
         "package_value": 113.56799999999998,
-        "ep_value": 35.66,
-        "relative_delta_pct": 218.47448121144137,
-        "abs_relative_delta_pct": 218.47448121144137
+        "ep_value": 35.43,
+        "relative_delta_pct": 220.54191363251473,
+        "abs_relative_delta_pct": 220.54191363251473
       },
       "canonical_stat::wall_fortification_multiplier": {
         "state_key": "farming__perks_off",
@@ -15707,19 +15707,19 @@
         "perk_state": "off",
         "status": "non_numeric_compare",
         "package_value": 10.4,
-        "ep_value": 1240000000000000.0,
-        "relative_delta_pct": -99.99999999999915,
-        "abs_relative_delta_pct": 99.99999999999915
+        "ep_value": 1290000000000000.0,
+        "relative_delta_pct": -99.99999999999918,
+        "abs_relative_delta_pct": 99.99999999999918
       },
       "canonical_stat::wall_hp": {
         "state_key": "farming__perks_off",
         "preset": "Farming",
         "perk_state": "off",
         "status": "stage_scope_mismatch",
-        "package_value": 1157887305526956.5,
-        "ep_value": 119300000000000.0,
-        "relative_delta_pct": 870.5677330485804,
-        "abs_relative_delta_pct": 870.5677330485804
+        "package_value": 1182949801317583.0,
+        "ep_value": 124180000000000.0,
+        "relative_delta_pct": 852.6089558041416,
+        "abs_relative_delta_pct": 852.6089558041416
       },
       "canonical_stat::wall_regen": {
         "state_key": "farming__perks_off",
@@ -15748,10 +15748,10 @@
   "survivability_residue_analysis": {
     "canonical_stat::tower_hp": {
       "status": "mismatch",
-      "package_value": 21442357509758.453,
-      "ep_value": 6950000000000.0,
-      "relative_delta_pct": 208.52312963681226,
-      "package_to_ep_ratio": 3.0852312963681228,
+      "package_value": 21906477802177.465,
+      "ep_value": 7100000000000.0,
+      "relative_delta_pct": 208.54194087573893,
+      "package_to_ep_ratio": 3.0854194087573896,
       "best_fit_state_key": "farming__perks_off",
       "best_fit_preset": "Farming",
       "best_fit_perk_state": "off",
@@ -15833,7 +15833,7 @@
           "source_family": "module",
           "source_name": "Sharp Fortitude",
           "preset_name": "Farming",
-          "value": 9.24,
+          "value": 9.44,
           "value_type": "multiplier_display"
         },
         {
@@ -15989,10 +15989,10 @@
     },
     "canonical_stat::wall_hp": {
       "status": "mismatch",
-      "package_value": 1157887305526956.5,
-      "ep_value": 119300000000000.0,
-      "relative_delta_pct": 870.5677330485804,
-      "package_to_ep_ratio": 9.705677330485805,
+      "package_value": 1182949801317583.0,
+      "ep_value": 124180000000000.0,
+      "relative_delta_pct": 852.6089558041416,
+      "package_to_ep_ratio": 9.526089558041416,
       "best_fit_state_key": "farming__perks_off",
       "best_fit_preset": "Farming",
       "best_fit_perk_state": "off",
@@ -16074,11 +16074,11 @@
       ]
     },
     "_shared_residue_summary": {
-      "tower_hp_ratio": 3.0852312963681228,
-      "wall_hp_ratio": 9.705677330485805,
+      "tower_hp_ratio": 3.0854194087573896,
+      "wall_hp_ratio": 9.526089558041416,
       "tower_regen_ratio": 3.1248947537101914,
       "wall_regen_ratio": 3.125028096776277,
-      "tower_hp_vs_wall_hp_ratio_gap": 6.620446034117682,
+      "tower_hp_vs_wall_hp_ratio_gap": 6.440670149284027,
       "tower_regen_vs_wall_regen_ratio_gap": 0.00013334306608570046
     }
   },
@@ -16182,15 +16182,15 @@
     "compare_state_key": "Farming__perks_on",
     "compare_preset": "Farming",
     "compare_perk_state": "on",
-    "package_value": 21442357509758.453,
-    "ep_value": 6950000000000.0,
-    "package_value_recomputed_from_current_factors": 21442357509758.453,
+    "package_value": 21906477802177.465,
+    "ep_value": 7100000000000.0,
+    "package_value_recomputed_from_current_factors": 21906477802177.465,
     "current_factors": {
       "standard_perk_factor": 2.4999999999999996,
       "coin_health_tradeoff_factor": 0.3,
       "regen_health_tradeoff_factor": 0.4,
       "death_wave_health_factor": 12.5,
-      "armor_primary_factor": 9.24,
+      "armor_primary_factor": 9.44,
       "armor_assist_factor": 1.00466
     },
     "ep_formula_hypotheses": {
@@ -16207,23 +16207,23 @@
     "scenarios": [
       {
         "scenario": "current_package_semantics",
-        "package_value": 21442357509758.453,
-        "relative_delta_pct": 208.52312963681229,
-        "required_residual_multiplier_to_match_ep": 0.32412480749082945,
+        "package_value": 21906477802177.465,
+        "relative_delta_pct": 208.54194087573896,
+        "required_residual_multiplier_to_match_ep": 0.32410504619297004,
         "note": "Current calculator semantics and compare-row inputs as emitted."
       },
       {
         "scenario": "ep_standard_perk_semantics_only",
-        "package_value": 21442357509758.457,
-        "relative_delta_pct": 208.5231296368123,
-        "required_residual_multiplier_to_match_ep": 0.3241248074908294,
+        "package_value": 21906477802177.47,
+        "relative_delta_pct": 208.54194087573902,
+        "required_residual_multiplier_to_match_ep": 0.32410504619297,
         "note": "EP EPH_HEALTH formula multiplies the full perk result by Standard Perks Bonus. This is an EP workbook scenario, not a calculator truth claim."
       },
       {
         "scenario": "current_package_with_ep_standard_perk_semantics",
-        "package_value": 21442357509758.457,
-        "relative_delta_pct": 208.5231296368123,
-        "required_residual_multiplier_to_match_ep": 0.3241248074908294,
+        "package_value": 21906477802177.47,
+        "relative_delta_pct": 208.54194087573902,
+        "required_residual_multiplier_to_match_ep": 0.32410504619297,
         "note": "Model EP workbook full-result Standard Perk Bonus semantics on top of the current package contributors."
       }
     ]
@@ -16334,9 +16334,9 @@
     "compare_state_key": "Tourney__perks_off",
     "compare_preset": "Tourney",
     "compare_perk_state": "off",
-    "package_value_before_runtime_assumptions": 49210426264.05678,
-    "package_value_after_runtime_assumptions": 2499686908111.3857,
-    "ep_value": 779900000000.0,
+    "package_value_before_runtime_assumptions": 51519902899.010025,
+    "package_value_after_runtime_assumptions": 2616998806163.3306,
+    "ep_value": 816500000000.0,
     "runtime_compare_assumptions": [
       "assumed_maxed_berserker_x8_under_max_progression",
       "assumed_project_funding_at_cash_50b_under_max_progression__rarity_family_mythic__multiplier_6.349485"
@@ -16354,8 +16354,8 @@
     },
     "derived_fit": {
       "applied_runtime_multiplier": 50.795880017344075,
-      "required_total_runtime_multiplier_to_match_ep": 15.848267515813774,
-      "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": 2.4959925900135898
+      "required_total_runtime_multiplier_to_match_ep": 15.848244155283323,
+      "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": 2.4959889108915125
     },
     "assessment": {
       "calculator_change_recommended": false,
@@ -16366,23 +16366,23 @@
       {
         "scenario": "current_package_runtime_assumptions",
         "runtime_multiplier": 50.795880017344075,
-        "package_value": 2499686908111.3857,
-        "relative_delta_pct": 220.51377203633615,
-        "required_residual_multiplier_to_match_ep": 0.3119990737516987,
+        "package_value": 2616998806163.3306,
+        "relative_delta_pct": 220.51424447805638,
+        "required_residual_multiplier_to_match_ep": 0.31199861386143907,
         "note": "Current compare-only runtime assumptions as emitted by the package."
       },
       {
         "scenario": "ep_cash_50b_with_berserker_x8",
         "runtime_multiplier": 50.795880017344075,
-        "package_value": 2499686908111.3857,
-        "relative_delta_pct": 220.51377203633615,
-        "required_residual_multiplier_to_match_ep": 0.3119990737516987,
+        "package_value": 2616998806163.3306,
+        "relative_delta_pct": 220.51424447805638,
+        "required_residual_multiplier_to_match_ep": 0.31199861386143907,
         "note": "EP compare uses Project Funding cash assumption of 50b; this scenario keeps Berserker at x8 and swaps only the PF cash assumption."
       },
       {
         "scenario": "ep_cash_50b_with_fitted_berserker",
-        "runtime_multiplier": 15.848267515813774,
-        "package_value": 779900000000.0,
+        "runtime_multiplier": 15.848244155283323,
+        "package_value": 816500000000.0,
         "relative_delta_pct": 0.0,
         "required_residual_multiplier_to_match_ep": 1.0,
         "note": "Diagnostic only: if 50b cash is fixed, this is the Berserker multiplier that would exactly close the EP row."
