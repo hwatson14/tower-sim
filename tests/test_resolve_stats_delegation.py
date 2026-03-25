@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace as dc_replace
 from pathlib import Path
 import sys
 
@@ -154,7 +155,7 @@ def test_resolve_stats_delegated_tournament_surfaces_match_direct_query_kernel_r
         assert resolved_row.schema['delegated_family_id'] == 'timing_tournament_no_perks'
 
 
-def test_resolve_stats_does_not_imply_full_timing_family_coverage_when_family_is_ambiguous(monkeypatch: pytest.MonkeyPatch):
+def test_resolve_stats_delegates_farming_timing_family_when_unambiguous(monkeypatch: pytest.MonkeyPatch):
     state = build_state()
     _, timing_rows = compile_timing_family_rows(
         account_state=state,
@@ -163,13 +164,65 @@ def test_resolve_stats_does_not_imply_full_timing_family_coverage_when_family_is
         scenario_config=ScenarioConfig(mode_id='farming', tier=14),
         perks_enabled=True,
     )
+    seen = {'delegated_family_id': None}
+
+    def _fake_delegate(*, family_id, stat_inputs):
+        seen['delegated_family_id'] = family_id
+
+        class _Response:
+            resolved_surface_rows = (
+                type('Row', (), {
+                    'surface_id': 'mechanic_param::uw.black_hole.cooldown_seconds',
+                    'final_value': 10.0,
+                    'value_type': 'seconds',
+                    'status': 'resolved',
+                })(),
+            )
+            contributor_rows = (
+                type('Contributor', (), {
+                    'surface_id': 'mechanic_param::uw.black_hole.cooldown_seconds',
+                    'surface_class': 'surface',
+                    'domain': 'ultimate_weapons',
+                    'source_class': 'scenario_rules',
+                    'composition_stage': 'scenario_runtime',
+                    'contributor_id': 'timing.black_hole.effective_cooldown',
+                    'value': 10.0,
+                    'value_type': 'seconds',
+                    'active': True,
+                    'gate_reason': '',
+                    'provenance_ref': 'test',
+                })(),
+            )
+
+        return _Response()
+
+    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _fake_delegate)
+
+    resolve_stats(list(timing_rows))
+
+    assert seen['delegated_family_id'] == 'timing_farm_with_perks'
+
+
+def test_resolve_stats_does_not_delegate_timing_rows_with_unrecognized_preset(monkeypatch: pytest.MonkeyPatch):
+    state = build_state()
+    _, timing_rows = compile_timing_family_rows(
+        account_state=state,
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=ScenarioConfig(mode_id='farming', tier=14),
+        perks_enabled=True,
+    )
+    # Override preset_name on all rows to simulate a preset not in _TIMING_FAMILY_BY_PRESET.
+    # The rows are still timing-shaped so _looks_like_timing_family_rows passes, but no family
+    # can be inferred from the preset and delegation must not fire.
+    unrecognized_rows = [dc_replace(row, preset_name='UnrecognizedPreset') for row in timing_rows]
 
     def _boom(*args, **kwargs):
-        raise AssertionError('ambiguous timing families must not be delegated through resolve_stats yet')
+        raise AssertionError('timing rows with unrecognized preset must not be delegated')
 
     monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _boom)
 
-    resolved = resolve_stats(list(timing_rows))
+    resolved = resolve_stats(unrecognized_rows)
 
     assert 'resolve_stats_delegation' not in resolved.diagnostics
     assert 'support_surface::timing.wave_duration_seconds_effective' in resolved.rows

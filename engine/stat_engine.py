@@ -13,18 +13,37 @@ from models.stat_input import StatInput
 from models.statbook import StatBook, StatRow
 
 _TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
+_TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
+
+# Canonical timing-v1 surface IDs declared in stat-query-initial-surface-set.yaml (timing_v1 group).
+# All declared timing families share this surface set.
+# wave_accelerator uses state:: (canonical per naming-contract-pack-v2-remap.csv and KB contracts),
+# not the legacy runtime_mechanic_param:: prefix.
+_TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
+    'mechanic_param::uw.black_hole.cooldown_seconds',
+    'mechanic_param::uw.black_hole.duration_seconds',
+    'mechanic_param::uw.golden_tower.cooldown_seconds',
+    'mechanic_param::uw.golden_tower.duration_seconds',
+    'state::tower.package_chance_pct',
+    'support_surface::timing.gcomp_cooldown_reduction_seconds',
+    'support_surface::timing.wave_duration_seconds_effective',
+    'state::cards.wave_accelerator.spawn_rate_acceleration',
+)
+
 _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
-    _TIMING_TOURNAMENT_NO_PERKS: (
-        'mechanic_param::uw.black_hole.cooldown_seconds',
-        'mechanic_param::uw.black_hole.duration_seconds',
-        'mechanic_param::uw.golden_tower.cooldown_seconds',
-        'mechanic_param::uw.golden_tower.duration_seconds',
-        'state::tower.package_chance_pct',
-        'support_surface::timing.gcomp_cooldown_reduction_seconds',
-        'support_surface::timing.wave_duration_seconds_effective',
-        'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
-    ),
+    _TIMING_TOURNAMENT_NO_PERKS: _TIMING_V1_SURFACE_IDS,
+    _TIMING_FARM_WITH_PERKS: _TIMING_V1_SURFACE_IDS,
 }
+
+# Unambiguous preset-name → declared timing family mapping used by _infer_manifest_approved_family.
+# timing_scenario_probe is not included: it has no fixed preset-name convention and is not
+# delegated through the resolve_stats compatibility entrypoint in PH4-B.
+_TIMING_FAMILY_BY_PRESET: dict[str, str] = {
+    'Tourney': _TIMING_TOURNAMENT_NO_PERKS,
+    'Farming': _TIMING_FARM_WITH_PERKS,
+}
+
+
 def resolve_stats(stat_inputs: list[StatInput]) -> StatBook:
     fallback_statbook = _fallback_resolve_stats(stat_inputs)
     delegated_family_id = _infer_manifest_approved_family(stat_inputs)
@@ -46,9 +65,9 @@ def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | N
     if not _looks_like_timing_family_rows(stat_inputs):
         return None
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
-    if preset_names == {'Tourney'}:
-        return _TIMING_TOURNAMENT_NO_PERKS
-    return None
+    if len(preset_names) != 1:
+        return None
+    return _TIMING_FAMILY_BY_PRESET.get(next(iter(preset_names)))
 
 
 def _looks_like_timing_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
@@ -73,14 +92,14 @@ def _looks_like_timing_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
 
 
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:
-    if family_id != _TIMING_TOURNAMENT_NO_PERKS:
+    if family_id not in _DELEGATED_FAMILY_SURFACE_IDS:
         raise ValueError(f'Unsupported manifest-approved resolve_stats delegation family {family_id!r}.')
     query_kernel = StatQueryKernel()
     baseline = query_kernel.materializer.materialize_from_rows(
         StateIdentity(
             account_snapshot_id='resolve_stats_compatibility_entrypoint',
-            loadout_id='resolve_stats_tourney_loadout',
-            scenario_id='resolve_stats_timing_tournament_no_perks',
+            loadout_id=f'resolve_stats_{family_id}_loadout',
+            scenario_id=f'resolve_stats_{family_id}',
             runtime_branch_id='branch_base',
         ),
         family_id,
@@ -137,6 +156,8 @@ def _merge_delegated_family_rows(
         'bounded_only': True,
     }
     return StatBook(rows=merged_rows, diagnostics=diagnostics)
+
+
 __all__ = [
     'resolve_stats',
     '_multiplier_from_value',

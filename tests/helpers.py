@@ -54,6 +54,32 @@ def build_state(*, loadout_filename: str = 'loadout.json', perks_filename: str =
     return copy.deepcopy(_compiled_state(loadout_filename, perks_filename))
 
 
+_TIMING_FAMILY_CANONICAL_PARAMS: dict[str, dict] = {
+    'timing_tournament_no_perks': {
+        'preset_name': 'Tourney',
+        'scenario_config': ScenarioConfig(mode_id='tournament', league='champion', tournament_wave=150),
+        'perks_enabled': False,
+    },
+    'timing_farm_with_perks': {
+        'preset_name': 'Farming',
+        'scenario_config': ScenarioConfig(mode_id='farming', tier=14),
+        'perks_enabled': True,
+    },
+}
+
+
+def build_family_baseline(family_id: str):
+    """Return a FamilyBaselineContributorMap for the given declared family_id using canonical test params."""
+    if family_id in _TIMING_FAMILY_CANONICAL_PARAMS:
+        params = _TIMING_FAMILY_CANONICAL_PARAMS[family_id]
+        return materialize_timing_family_baseline(
+            account_state=build_state(),
+            family_id=family_id,
+            **params,
+        )
+    raise NotImplementedError(f'No canonical test params registered for family_id={family_id!r}')
+
+
 @lru_cache(maxsize=None)
 def cached_run_stats_output(*args: str) -> Path:
     try:
