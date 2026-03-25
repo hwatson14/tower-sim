@@ -722,18 +722,18 @@ def build_default_econ_timing_mechanics(statbook_rows: Dict[str, dict]) -> List[
             mechanic_id="golden_tower",
             active_duration_s=_get("mechanic_param::uw.golden_tower.duration_seconds"),
             cooldown_s=_get("mechanic_param::uw.golden_tower.cooldown_seconds"),
-            active_multiplier=max(0.0, 1.0 + _get("mechanic_param::uw.golden_tower.bonus_multiplier") + _get("runtime_mechanic_param::uw.golden_tower.bonus_multiplier")),
+            active_multiplier=max(0.0, _get("mechanic_param::uw.golden_tower.bonus_multiplier")),
         ),
         TimingMechanic(
             mechanic_id="black_hole_coin",
             active_duration_s=_tp("mechanic_param::uw.black_hole.duration_seconds", "runtime_mechanic_param::uw.black_hole.duration_seconds"),
             cooldown_s=_tp("mechanic_param::uw.black_hole.cooldown_seconds", "runtime_mechanic_param::uw.black_hole.cooldown_seconds"),
-            active_multiplier=max(0.0, 1.0 + _get("runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier")),
+            active_multiplier=max(0.0, _get("runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier")),
         ),
         TimingMechanic(
             mechanic_id="golden_bot",
             active_duration_s=_get("mechanic_param::bot.golden.duration_seconds"),
             cooldown_s=_get("mechanic_param::bot.golden.cooldown_seconds"),
-            active_multiplier=max(0.0, 1.0 + _get("mechanic_param::bot.golden.bonus_multiplier")),
+            active_multiplier=max(0.0, _get("mechanic_param::bot.golden.bonus_multiplier")),
         ),
     ]
