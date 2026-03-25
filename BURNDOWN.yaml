@@ -35,6 +35,17 @@ migration_kpis:
     canonical_logic_allowed_in_engine_stat_resolution_core: false
     stat_engine_role: thin_compatibility_entrypoint_only_if_retained
     stat_resolution_core_role: non_canonical_legacy_merge_reference_only_or_deleted
+  ph4_authority_reset:
+    applied: true
+    qe_is_canonical_execution_path_for_new_work: true
+    stat_resolution_core_is_legacy_reference_only: true
+    new_logic_forbidden_in_legacy_surfaces: true
+    naming_reset_applied: true
+    state_namespace_is_legacy_alias: true
+    runtime_mechanic_param_namespace_is_legacy_alias: true
+    new_work_must_target_canonical_qe_naming: true
+    silent_expansion_of_legacy_naming_forbidden: true
+    handoff_docs_are_not_canonical_control_artifacts: true
   tracked_phase4_metrics:
     frozen_family_denominator: verified
     frozen_stat_group_denominator: partial

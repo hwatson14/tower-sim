@@ -18,13 +18,13 @@ Do not duplicate tranche contract text here. If contract truth changes, update `
 `PH4 — Full stat-resolution migration to Query Engine`
 
 ## Active tranche
-`PH4-B — Declared family cutover to Query Engine`
+`PH4-B — Declared family cutover to Query Engine` (blocked at entry gate; authority reset applied)
 
 ## Authoritative plan section
 `AI_EXECUTION_PLAN.md -> Phase 4 — Full stat-resolution migration to Query Engine -> PH4-B — Declared family cutover to Query Engine`
 
 ## Objective
-Advance only the declared-family cutover tranche for Phase 4 once the PH4-A denominator freeze is closed in control truth, while keeping PH4-B explicitly blocked until the repo can move beyond one-family-only live delegation and the timing-family naming mismatch is resolved.
+PH4-B is blocked at its entry gate. The current active work is the Phase 4 authority reset: establishing QE as the canonical execution path for all new Phase 4 work, demoting `stat_resolution_core.py` to legacy/reference-only status, and encoding the naming reset rule for `state::` / `runtime_mechanic_param::` patterns. No PH4-B family-cutover implementation may begin until the entry gate blockers below are cleared.
 
 ## Allowed local residue in this file
 - active-slice clarification that does not modify tranche contract truth
@@ -33,6 +33,19 @@ Advance only the declared-family cutover tranche for Phase 4 once the PH4-A deno
 - immediate stop conditions triggered by live repo truth
 
 ## Current tranche-local notes
+
+### Authority reset (applied this tranche)
+- Query Engine (bounded API: `stat_query_kernel.py`, `family_baseline_materializer.py`, `state_identity.py`) is the sole canonical execution path for new Phase 4 stat-resolution work. This is now encoded in `AI_EXECUTION_PLAN.md` governing truth and `ARCHITECTURE.md`.
+- `engine/stat_resolution_core.py` is legacy/reference-only under Phase 4. No new canonical stat logic may be added. The "canonical stat-resolution owner" label it held before Phase 4 is vacated.
+- `engine/stat_engine.py` is thin compatibility entrypoint only. Not a canonical implementation target.
+- Handoff docs (`PH4A_CANONICAL_MIGRATION_LEDGER.md`, `PH4A_FAMILY_ENTRY_MATRIX.md`) are handoff artifacts, not canonical merged-control truth, unless explicitly promoted.
+
+### Naming reset (applied this tranche)
+- `state::` and `runtime_mechanic_param::` naming patterns are migration-era/legacy aliasing. They are not the canonical naming target for new Phase 4 work.
+- New Phase 4 work must not silently expand old `state::` or `runtime_mechanic_param::` naming. Any backward-compatibility bridge must be declared in the alias contract explicitly.
+- The live instance: `state::cards.wave_accelerator.spawn_rate_acceleration` vs `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration` is an open PH4-B entry blocker, not implied coverage.
+
+### PH4-A closeout status
 - Phase 3 closeout remains complete in repo truth and is the prerequisite that promoted the repo into Phase 4.
 - `PH4A_CANONICAL_MIGRATION_LEDGER.md` and `PH4A_FAMILY_ENTRY_MATRIX.md` are merged; PH4-A is complete as a control-and-ledger tranche.
 - PH4-B entry conditions are now cleared; the tranche is in progress under bounded first-slice scope.
