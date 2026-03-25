@@ -50,6 +50,7 @@ migration_kpis:
     frozen_family_denominator: verified
     frozen_stat_group_denominator: partial
     migrated_family_count: 0
+    declared_routed_family_count: 1
     migrated_stat_group_count: 0
     parity_covered_family_count: 0
     parity_covered_stat_group_count: 0
@@ -717,8 +718,8 @@ tranches:
   - id: PH4-B
     title: Declared family cutover to Query Engine
     phase_id: PH4
-    delivery_status: blocked
-    verification_status: not_verified
+    delivery_status: in_progress
+    verification_status: partial
     review_status: draft
     depends_on:
     - PH4-A
@@ -757,15 +758,13 @@ tranches:
     - stop if family coverage would require changing undeclared consumer semantics
     - stop if a family cannot be routed without inventing new surface classes
     - stop if code changes would touch files outside listed owner surfaces without control-file update
-    - stop if PH4-B is presented as underway while only one declared family has live delegation at the compatibility entrypoint
-    - stop if the timing-family naming mismatch remains unresolved or implicit at PH4-B entry
-    next_action: Remain at the PH4-B entry boundary until more than one declared family can delegate live and the timing-family naming mismatch is explicitly resolved. Authority reset is applied; all new implementation work must now target QE-owned paths.
+    - stop if _TIMING_PRESET_TO_FAMILY is extended to a new family before its surface set and tests are covered
+    next_action: Widen _TIMING_PRESET_TO_FAMILY to cover timing_farm_with_perks and timing_scenario_probe; then add progression family routing.
     machine_enforced: true
-    blockers:
-    - "only `timing_tournament_no_perks` currently has live delegation at the compatibility entrypoint"
-    - all other declared families still fall back through legacy resolution
-    - "`state::cards.wave_accelerator.spawn_rate_acceleration` remains mismatched with `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration` — naming reset rule requires this to be resolved explicitly, not worked around"
-    authority_reset_note: "Phase 4 authority reset is applied. stat_resolution_core.py is legacy/reference-only. state:: and runtime_mechanic_param:: naming patterns are migration-era aliases. New implementation work must target QE-owned paths and canonical QE naming only."
+    blockers: []
+    completed_entry_conditions:
+    - "naming mismatch resolved: runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration corrected to state::cards.wave_accelerator.spawn_rate_acceleration"
+    - "declared routing: heuristic _looks_like_timing_family_rows replaced with contract-backed _TIMING_PRESET_TO_FAMILY map"
     status_claim_requires:
     - delivery_status
     - verification_status

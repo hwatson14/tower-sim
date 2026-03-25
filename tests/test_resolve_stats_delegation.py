@@ -165,7 +165,7 @@ def test_resolve_stats_does_not_imply_full_timing_family_coverage_when_family_is
     )
 
     def _boom(*args, **kwargs):
-        raise AssertionError('ambiguous timing families must not be delegated through resolve_stats yet')
+        raise AssertionError('timing_farm_with_perks is not yet live-delegated in this PH4-B tranche slice')
 
     monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _boom)
 

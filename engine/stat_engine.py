@@ -12,9 +12,14 @@ from engine.stat_resolution_core import (
 from models.stat_input import StatInput
 from models.statbook import StatBook, StatRow
 
-_TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
+# Declared preset → family map.  Contract source: stat-query-scenario-families.yaml.
+# Extend this map (not the heuristic logic) when new timing families reach live delegation.
+_TIMING_PRESET_TO_FAMILY: dict[str, str] = {
+    'Tourney': 'timing_tournament_no_perks',
+}
+
 _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
-    _TIMING_TOURNAMENT_NO_PERKS: (
+    'timing_tournament_no_perks': (
         'mechanic_param::uw.black_hole.cooldown_seconds',
         'mechanic_param::uw.black_hole.duration_seconds',
         'mechanic_param::uw.golden_tower.cooldown_seconds',
@@ -22,7 +27,7 @@ _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
         'state::tower.package_chance_pct',
         'support_surface::timing.gcomp_cooldown_reduction_seconds',
         'support_surface::timing.wave_duration_seconds_effective',
-        'runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration',
+        'state::cards.wave_accelerator.spawn_rate_acceleration',
     ),
 }
 def resolve_stats(stat_inputs: list[StatInput]) -> StatBook:
@@ -43,37 +48,14 @@ def resolve_stats(stat_inputs: list[StatInput]) -> StatBook:
 
 
 def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | None:
-    if not _looks_like_timing_family_rows(stat_inputs):
-        return None
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
-    if preset_names == {'Tourney'}:
-        return _TIMING_TOURNAMENT_NO_PERKS
-    return None
-
-
-def _looks_like_timing_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
-    destination_keys = {
-        (row.destination_object_type, row.destination_id)
-        for row in stat_inputs
-        if row.destination_object_type and row.destination_id
-    }
-    required_timing_keys = {
-        ('mechanic_param', 'uw.black_hole.cooldown_seconds'),
-        ('mechanic_param', 'uw.black_hole.duration_seconds'),
-        ('mechanic_param', 'uw.golden_tower.cooldown_seconds'),
-        ('mechanic_param', 'uw.golden_tower.duration_seconds'),
-        ('support_surface', 'timing.wave_duration_seconds_effective'),
-    }
-    if not required_timing_keys.issubset(destination_keys):
-        return False
-    return any(
-        row.source_family == 'scenario_rules' and row.stage == 'scenario_runtime'
-        for row in stat_inputs
-    )
+    if len(preset_names) != 1:
+        return None
+    return _TIMING_PRESET_TO_FAMILY.get(next(iter(preset_names)))
 
 
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:
-    if family_id != _TIMING_TOURNAMENT_NO_PERKS:
+    if family_id not in _DELEGATED_FAMILY_SURFACE_IDS:
         raise ValueError(f'Unsupported manifest-approved resolve_stats delegation family {family_id!r}.')
     query_kernel = StatQueryKernel()
     baseline = query_kernel.materializer.materialize_from_rows(
