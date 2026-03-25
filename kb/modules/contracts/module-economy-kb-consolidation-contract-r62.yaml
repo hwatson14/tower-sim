@@ -1,0 +1,17 @@
+contract_id: module_economy_kb_consolidation_r62
+status: active
+purpose:
+  - Consolidate newly sourced module economy truths into durable KB artifacts.
+  - Keep source-closed truths, derived QE surfaces, and unresolved items separate and explicit.
+required_tables:
+  - module-drop-economy-wiki-truth.csv
+  - module-mission-economy-wiki-truth.csv
+  - module-draw-policy-wiki-truth.csv
+  - module-reroll-lock-costs-wiki-truth.csv
+  - module-lab-wiki-truth.csv
+  - module-economy-source-closure-ledger-r62.csv
+  - module-economy-qe-surface-ledger-r62.csv
+rules:
+  - any new wiki-backed truth used by a publisher or calculator must exist in a KB table
+  - any unresolved item must be recorded in the source-closure ledger
+  - QE-published surfaces must map back to either a source-closed truth table or an explicit unresolved/derived rule

@@ -1,0 +1,3 @@
+domain,item_id,description,status,source_basis,used_by,notes
+draw_ev,epic_draw_immediate_shard_value,Immediate shard value of an epic draw under package policy,source_closed,user_package_rule,module_shard_income_calculator,Closed by explicit package rule that epics are not shattered
+draw_ev,ten_pull_expected_value_model,Exact EV treatment of 10-pulls under package policy,source_closed,user_package_rule,module_shard_income_calculator,Closed by explicit package rule that 10-pulls equal ten singles

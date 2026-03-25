@@ -1,0 +1,17 @@
+contract_id: module_mission_economy_r60
+status: active_partial
+purpose:
+  - Publish wiki-backed base daily mission shard rewards by highest tier unlocked and combine them with QE-routed Daily Mission Shards lab bonus.
+required_upstream_surfaces:
+  - derived::module.runtime_profile.highest_tier_unlocked
+optional_upstream_surfaces:
+  - derived::module.mission_policy.daily_mission_shards_bonus
+published_surfaces:
+  - derived::module.mission_policy.base_daily_mission_shards
+  - derived::module.mission_policy.total_daily_mission_shards
+rules:
+  - base daily mission shard reward is determined by highest tier unlocked, not farming tier
+  - total daily mission shards = base reward + lab bonus
+unresolved_items:
+  - daily mission frequency policy remains planner-owned/manual
+  - gem_draw_expected_shards_per_draw
