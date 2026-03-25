@@ -113,6 +113,16 @@ def declared_query_bundles() -> Mapping[str, frozenset[str]]:
             if bundle_id in bundles:
                 raise ValueError(f'Duplicate query bundle {bundle_id!r} in initial surface contract.')
             bundles[bundle_id] = frozenset(surface_ids)
+        for bundle in family_data.get('family_bundles') or ():
+            bundle_id = str(bundle.get('bundle_id') or '').strip()
+            if not bundle_id:
+                raise ValueError('Initial surface contract contains a family bundle without bundle_id.')
+            surface_ids = frozenset(
+                str(s) for s in (bundle.get('required_surface_ids') or ()) + (bundle.get('optional_surface_ids') or ())
+            )
+            if bundle_id in bundles:
+                raise ValueError(f'Duplicate family bundle {bundle_id!r} in initial surface contract.')
+            bundles[bundle_id] = surface_ids
     return bundles
 
 

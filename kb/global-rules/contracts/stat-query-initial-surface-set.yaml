@@ -2517,6 +2517,9 @@ families:
       - derived::edamage
       - derived::eecon
       optional_surface_ids:
+      - derived::ehp_ep
+      - derived::edamage_ep
+      - derived::eecon_ep
       - derived::economy.income.coins
       - derived::economy.income.gems
       - derived::economy.income.stones
