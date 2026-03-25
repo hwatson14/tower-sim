@@ -141,6 +141,9 @@ class AccountState:
     guardians: TableSnapshot
     guardian_tracks: Dict[str, List[GuardianTrackSnapshot]]
     player_meta: Dict[str, Optional[str]]
+    tier_progression_waves: Dict[str, int]
+    highest_tier_unlocked_number: Optional[int]
+    highest_tier_unlocked_label: Optional[str]
     theme_song_coin_multiplier: Optional[float]
     cards_inventory: Dict[str, CardSnapshot]
     card_slots_unlocked: Optional[int]
