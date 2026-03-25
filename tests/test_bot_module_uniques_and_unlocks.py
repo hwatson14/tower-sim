@@ -11,7 +11,7 @@ from compilers.stat_input_compiler import compile_stat_inputs
 from engine.stat_engine import resolve_stats
 
 def _book(state_mode="start_of_run"):
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     loadout = json.load(open(ROOT / "input" / "loadout.json"))
     perks = json.load(open(ROOT / "input" / "perks.json"))
     acct = compile_account_state(ids, loadout_config=loadout, perk_config=perks)

@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _build_state():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     return compile_account_state(ids_raw, default_preset='Farming')
 
 

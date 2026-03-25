@@ -15,7 +15,7 @@ from parsers.ids_parser import parse_ids
 
 
 def _ids_raw():
-    return parse_ids(ROOT / 'input' / '_IDS.csv')
+    return parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
 
 
 def test_canonical_perk_flow_uses_only_active_preset_without_merging_requested_preset():

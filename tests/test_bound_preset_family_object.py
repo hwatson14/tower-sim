@@ -59,7 +59,7 @@ def test_bound_preset_family_allows_transient_perk_mismatch():
 
 
 def test_compile_stat_inputs_uses_bound_preset_lanes_not_active_lane_fallbacks():
-    ids = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids)
     mutated = replace(state, active_card_preset='Tourney', active_module_preset='Tourney')
     rows = compile_stat_inputs(mutated, preset_name='Farming', state_mode='start_of_run')

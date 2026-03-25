@@ -14,7 +14,7 @@ from parsers.ids_parser import parse_ids
 
 
 def test_wsplus_tracks_compile_as_typed_preset_aware_state():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     assert state.workshop_enhancement_tracks
     damage = state.workshop_enhancement_tracks["Damage +"]
@@ -23,7 +23,7 @@ def test_wsplus_tracks_compile_as_typed_preset_aware_state():
 
 
 def test_wsplus_stat_inputs_are_selected_by_bound_preset_lane():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     synthetic = WorkshopEnhancementSnapshot(
         name="Synthetic Test +",

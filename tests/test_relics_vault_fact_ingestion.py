@@ -13,7 +13,7 @@ from parsers.ids_parser import parse_ids
 
 
 def _build_state():
-    return compile_account_state(parse_ids(ROOT / 'input' / '_IDS.csv'), default_preset='Farming')
+    return compile_account_state(parse_ids(ROOT / 'input' / 'imports' / 'ids.csv'), default_preset='Farming')
 
 
 def test_relics_and_vault_compilation_keeps_only_fact_rows():

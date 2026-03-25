@@ -12,7 +12,7 @@ from parsers.ids_parser import parse_ids
 
 
 def test_uw_tracks_preserve_explicit_attribute_identity_from_ids():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
 
     assert state.uw_tracks, "Expected explicit UW tracks to be compiled."
@@ -22,7 +22,7 @@ def test_uw_tracks_preserve_explicit_attribute_identity_from_ids():
 
 
 def test_uw_compiled_rows_do_not_depend_on_positional_track_names():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="start_of_run")
     uw_rows = [row for row in rows if row.source_family == "uw" and row.source_name == "Golden Tower"]

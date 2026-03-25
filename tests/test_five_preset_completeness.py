@@ -17,7 +17,7 @@ from run_stats import (
 
 
 def test_five_preset_completeness_gate():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     stat_inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=False)
     family_matrix = _build_family_completeness_matrix(state, stat_inputs)

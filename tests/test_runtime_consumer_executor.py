@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _build_statbook():
-    ids_raw = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids_raw = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids_raw, default_preset="Farming")
     stat_inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="start_of_run")
     return resolve_stats(stat_inputs)

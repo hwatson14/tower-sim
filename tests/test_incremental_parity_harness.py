@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_parity_harness_passes_for_closed_subset():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
     candidate = IncrementalSubsetExecutor().execute(inputs, ['canonical_stat::tower_orb_count'])

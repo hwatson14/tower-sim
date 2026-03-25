@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_overlay_publisher_returns_complete_statbook():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
     reference = resolve_stats(inputs)
@@ -30,7 +30,7 @@ def test_overlay_publisher_returns_complete_statbook():
 
 
 def test_overlay_publisher_structurally_shares_unchanged_rows_and_does_not_mutate_reference_diagnostics():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
     reference = resolve_stats(inputs)
