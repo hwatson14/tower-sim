@@ -52,7 +52,9 @@ Advance the declared-family cutover tranche for Phase 4. The timing-family namin
 - PH4-A is complete as a control-and-ledger tranche.
 - **Timing-family naming mismatch resolved**: `state::cards.wave_accelerator.spawn_rate_acceleration` is now the canonical surface ID used throughout `engine/stat_engine.py`, `_DELEGATED_FAMILY_SURFACE_IDS`, and all KB contracts. The legacy `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration` alias remains valid for input-row routing only (via `naming-contract-pack-v2-remap.csv`), not as a delegation surface ID.
 - **Timing-family live delegation expanded**: `timing_tournament_no_perks` and `timing_farm_with_perks` are now live-delegated through the Query Engine compatibility entrypoint. Both are covered by tests in `tests/test_resolve_stats_delegation.py` and `tests/test_timing_query_migration.py`.
-- **`timing_scenario_probe` is not yet live-delegated**: it has no fixed preset-name convention for detection via the `resolve_stats` compatibility entrypoint and no test infrastructure in the current suite. It is explicitly out of scope for the timing-family pack; its entry requires a separate tranche slice.
+- **`scenario_rules` guard added**: `_infer_manifest_approved_family` now requires `source_family == 'scenario_rules'` rows to prevent non-timing inputs (e.g. progression rows with `preset_name='Farming'`) from being incorrectly delegated as a timing family.
+- **`timing_scenario_probe` surface set declared, not yet live-delegated via compat shim**: it has no fixed preset-name convention distinct from `'Farming'`; it is accessible only via the direct QE path. Its entry into the compat shim requires a separate tranche slice.
+- **`timing_family_context` helper added**: `tests/helpers.py` now exports `timing_family_context()` covering all three declared timing families; `test_r86_completion.py` parametrised test is no longer skipped.
 - PH4-B next focus is progression-family cutover: `progression_start_of_run`, `progression_runtime_no_perks`, `progression_runtime_with_perks`.
 - PH4-B remains limited to declared family cutover only; it must not expand scope into undeclared families or non-family stat-group migration.
 
@@ -69,5 +71,5 @@ They must not:
 ## Immediate stop conditions
 - Stop if PH4-B work expands into non-family stat-group migration or undeclared family scope.
 - Stop if execution would add new canonical stat logic to `engine/stat_engine.py` or `engine/stat_resolution_core.py`.
-- Stop if `timing_scenario_probe` is described as live-delegated without corresponding code and test truth.
+- Stop if `timing_scenario_probe` is described as live-delegated via compat shim without a disambiguating preset name distinct from 'Farming'.
 - Stop if progression-family delegation starts before progression-family test infrastructure is confirmed in place.

@@ -30,9 +30,16 @@ _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::cards.wave_accelerator.spawn_rate_acceleration',
 )
 
+# All declared timing families share an identical surface-set contract.
+# Contract source: stat-query-initial-surface-set.yaml (timing_v1 group).
+_TIMING_SURFACE_IDS: tuple[str, ...] = _TIMING_V1_SURFACE_IDS
+
 _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     _TIMING_TOURNAMENT_NO_PERKS: _TIMING_V1_SURFACE_IDS,
     _TIMING_FARM_WITH_PERKS: _TIMING_V1_SURFACE_IDS,
+    # timing_scenario_probe surface set declared; not in _TIMING_FAMILY_BY_PRESET because it
+    # shares the 'Farming' preset with timing_farm_with_perks (no fixed detection convention).
+    'timing_scenario_probe': _TIMING_V1_SURFACE_IDS,
 }
 
 # Unambiguous preset-name → declared timing family mapping used by _infer_manifest_approved_family.
@@ -65,28 +72,13 @@ def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | N
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
     if len(preset_names) != 1:
         return None
+    # Require scenario_rules rows (added exclusively by compile_timing_family_rows) to prevent
+    # non-timing inputs (e.g. progression rows compiled with preset_name='Farming') from being
+    # incorrectly delegated as a timing family.
+    has_timing_rows = any(row.source_family == 'scenario_rules' for row in stat_inputs)
+    if not has_timing_rows:
+        return None
     return _TIMING_FAMILY_BY_PRESET.get(next(iter(preset_names)))
-
-
-def _looks_like_timing_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
-    destination_keys = {
-        (row.destination_object_type, row.destination_id)
-        for row in stat_inputs
-        if row.destination_object_type and row.destination_id
-    }
-    required_timing_keys = {
-        ('mechanic_param', 'uw.black_hole.cooldown_seconds'),
-        ('mechanic_param', 'uw.black_hole.duration_seconds'),
-        ('mechanic_param', 'uw.golden_tower.cooldown_seconds'),
-        ('mechanic_param', 'uw.golden_tower.duration_seconds'),
-        ('support_surface', 'timing.wave_duration_seconds_effective'),
-    }
-    if not required_timing_keys.issubset(destination_keys):
-        return False
-    return any(
-        row.source_family == 'scenario_rules' and row.stage == 'scenario_runtime'
-        for row in stat_inputs
-    )
 
 
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:

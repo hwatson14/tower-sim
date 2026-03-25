@@ -65,7 +65,18 @@ _TIMING_FAMILY_CANONICAL_PARAMS: dict[str, dict] = {
         'scenario_config': ScenarioConfig(mode_id='farming', tier=14),
         'perks_enabled': True,
     },
+    'timing_scenario_probe': {
+        'preset_name': 'Farming',
+        'scenario_config': ScenarioConfig(mode_id='scenario_probe', tier=14),
+        'perks_enabled': False,
+    },
 }
+
+
+def timing_family_context(family_id: str) -> tuple:
+    """Return (ScenarioConfig, perks_enabled, preset_name) for a timing family."""
+    params = _TIMING_FAMILY_CANONICAL_PARAMS[family_id]
+    return params['scenario_config'], params['perks_enabled'], params['preset_name']
 
 
 def build_family_baseline(family_id: str):

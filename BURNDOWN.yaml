@@ -758,22 +758,27 @@ tranches:
     - stop if family coverage would require changing undeclared consumer semantics
     - stop if a family cannot be routed without inventing new surface classes
     - stop if code changes would touch files outside listed owner surfaces without control-file update
-    - stop if timing_scenario_probe is described as live-delegated without corresponding code and test truth
+    - stop if timing_scenario_probe is described as live-delegated via compat shim without a disambiguating preset name distinct from 'Farming'
     - stop if progression-family delegation starts before progression-family test infrastructure is confirmed in place
     completed_slices:
     - id: timing_family_pack
-      description: "Timing-family naming mismatch resolved and live delegation expanded"
+      description: "Timing-family naming mismatch resolved, live delegation expanded, scenario_rules guard added"
       families_live_delegated:
       - timing_tournament_no_perks
       - timing_farm_with_perks
+      families_surface_set_declared:
+      - timing_scenario_probe
       canonical_naming_choice: "state::cards.wave_accelerator.spawn_rate_acceleration (v2 canonical per naming-contract-pack-v2-remap.csv)"
+      guard_added: "scenario_rules source-family guard in _infer_manifest_approved_family prevents non-timing Farming rows from being incorrectly delegated"
+      helper_added: "timing_family_context() in tests/helpers.py; test_r86_completion.py parametrised test now active for all three timing families"
       verified_by:
-      - tests/test_resolve_stats_delegation.py (5 passed)
+      - tests/test_resolve_stats_delegation.py (7 passed)
       - tests/test_timing_query_migration.py (5 passed)
+      - tests/test_r86_completion.py::test_timing_declared_query_surfaces_match_canonical_stat_engine (3 passed)
     next_action: "Begin progression-family cutover slice: progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks."
     machine_enforced: true
     blockers:
-    - "timing_scenario_probe has no preset-name detection path and no test infrastructure; not yet live-delegated"
+    - "timing_scenario_probe has no fixed preset-name distinct from 'Farming'; not delegated via compat shim; requires separate tranche slice"
     - all three progression families still fall back through legacy resolution
     status_claim_requires:
     - delivery_status

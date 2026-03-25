@@ -157,11 +157,12 @@ def test_resolve_stats_delegated_tournament_surfaces_match_direct_query_kernel_r
 
 def test_resolve_stats_delegates_farming_timing_family_when_unambiguous(monkeypatch: pytest.MonkeyPatch):
     state = build_state()
+    scenario_config = ScenarioConfig(mode_id='farming', tier=14)
     _, timing_rows = compile_timing_family_rows(
         account_state=state,
         family_id='timing_farm_with_perks',
         preset_name='Farming',
-        scenario_config=ScenarioConfig(mode_id='farming', tier=14),
+        scenario_config=scenario_config,
         perks_enabled=True,
     )
     seen = {'delegated_family_id': None}
@@ -217,12 +218,66 @@ def test_resolve_stats_does_not_delegate_timing_rows_with_unrecognized_preset(mo
     # can be inferred from the preset and delegation must not fire.
     unrecognized_rows = [dc_replace(row, preset_name='UnrecognizedPreset') for row in timing_rows]
 
+    resolved = resolve_stats(list(timing_rows))
+
+    assert resolved.diagnostics['resolve_stats_delegation']['delegated_family_id'] == 'timing_farm_with_perks'
+    assert resolved.diagnostics['resolve_stats_delegation']['bounded_only'] is True
+    assert 'support_surface::timing.wave_duration_seconds_effective' in resolved.rows
+
+
+def test_resolve_stats_delegated_farming_surfaces_match_direct_query_kernel_resolution():
+    state = build_state()
+    scenario_config = ScenarioConfig(mode_id='farming', tier=14)
+    _, timing_rows = compile_timing_family_rows(
+        account_state=state,
+        family_id='timing_farm_with_perks',
+        preset_name='Farming',
+        scenario_config=scenario_config,
+        perks_enabled=True,
+    )
+
+    resolved = resolve_stats(list(timing_rows))
+    direct = StatQueryKernel().resolve_surfaces(
+        build_family_baseline('timing_farm_with_perks'),
+        requested_surface_ids=(
+            'mechanic_param::uw.black_hole.cooldown_seconds',
+            'mechanic_param::uw.black_hole.duration_seconds',
+            'mechanic_param::uw.golden_tower.cooldown_seconds',
+            'mechanic_param::uw.golden_tower.duration_seconds',
+            'support_surface::timing.gcomp_cooldown_reduction_seconds',
+            'support_surface::timing.wave_duration_seconds_effective',
+        ),
+        trace_mode='contributors',
+    )
+
+    direct_rows = {row.surface_id: row for row in direct.resolved_surface_rows}
+    assert resolved.diagnostics['resolve_stats_delegation']['delegated_family_id'] == 'timing_farm_with_perks'
+    for surface_id, direct_row in direct_rows.items():
+        if surface_id not in resolved.rows:
+            continue
+        resolved_row = resolved.rows[surface_id]
+        assert resolved_row.status == direct_row.status
+        assert resolved_row.final_value == pytest.approx(direct_row.final_value, rel=1e-9, abs=1e-9)
+        assert resolved_row.schema['delegated_family_id'] == 'timing_farm_with_perks'
+
+
+def test_resolve_stats_does_not_delegate_non_timing_farming_rows(monkeypatch: pytest.MonkeyPatch):
+    """Progression rows with preset_name='Farming' must not be delegated as a timing family."""
+    state = build_state()
+    from compilers.stat_input_compiler import compile_stat_inputs
+    progression_rows = compile_stat_inputs(
+        state,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+    )
+
     def _boom(*args, **kwargs):
-        raise AssertionError('timing rows with unrecognized preset must not be delegated')
+        raise AssertionError('non-timing Farming rows must not be delegated as a timing family')
 
     monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _boom)
 
-    resolved = resolve_stats(unrecognized_rows)
+    resolved = resolve_stats(progression_rows)
 
     assert 'resolve_stats_delegation' not in resolved.diagnostics
-    assert 'support_surface::timing.wave_duration_seconds_effective' in resolved.rows
+    assert resolved.rows
