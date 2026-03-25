@@ -2285,7 +2285,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         perk_materialized_by_preset[state_key] = perks_enabled
         inputs = compile_stat_inputs(state, preset_name=preset_name, state_mode=state_mode, perks_enabled=perks_enabled)
         statbook = resolve_stats(inputs)
-        publish_phase3_query_surfaces(statbook.rows)
+        publish_phase3_query_surfaces(statbook.rows, account_state_labs=state.labs)
         statbook_dict = statbook.to_dict()
         for destination, row in statbook_dict.get('rows', {}).items():
             row['formula_contract'] = _formula_contract(formula_ledger, destination)
@@ -2541,7 +2541,7 @@ def main() -> int:
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
     stat_inputs = compile_stat_inputs(account_state, preset_name=args.preset, state_mode=args.state_mode, perks_enabled=perks_enabled)
     statbook = resolve_stats(stat_inputs)
-    publish_phase3_query_surfaces(statbook.rows)
+    publish_phase3_query_surfaces(statbook.rows, account_state_labs=account_state.labs)
     statbook_dict = statbook.to_dict()
     for destination, row in statbook_dict.get('rows', {}).items():
         row['formula_contract'] = _formula_contract(formula_ledger, destination)
@@ -2553,7 +2553,7 @@ def main() -> int:
     for state_mode in SUPPORTED_STATE_MODES:
         matrix_inputs = compile_stat_inputs(account_state, preset_name=args.preset, state_mode=state_mode, perks_enabled=perks_enabled)
         matrix_statbook_obj = resolve_stats(matrix_inputs)
-        publish_phase3_query_surfaces(matrix_statbook_obj.rows)
+        publish_phase3_query_surfaces(matrix_statbook_obj.rows, account_state_labs=account_state.labs)
         matrix_statbook = matrix_statbook_obj.to_dict()
         state_matrix[state_mode] = {
             'support': state_mode_support(state_mode),
