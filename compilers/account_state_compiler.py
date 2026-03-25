@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import re
 from typing import Dict, List, Optional, Tuple
 
 from models.account_state import (
@@ -42,7 +43,7 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
     bots, bot_upgrades, bot_upgrade_tracks = _parse_bots(raw_sections.get("Bots", []))
     guardians = _parse_table(raw_sections.get("Guardians", []))
     guardian_tracks = _parse_guardians(raw_sections.get("Guardians", []))
-    player_meta = _parse_player_meta(raw_sections.get("Player & Stuff", []))
+    player_meta, tier_progression_waves, highest_tier_unlocked_number, highest_tier_unlocked_label = _parse_player_meta(raw_sections.get("Player & Stuff", []))
     theme_song_coin_multiplier = _parse_theme_song_coin_multiplier(raw_sections.get("Themes & Songs", []))
     cards_inventory, card_slots_unlocked, card_presets = _parse_cards(ids_raw.section_headers.get("Cards", []), raw_sections.get("Cards", []), labs)
     module_system_state, module_presets, modules_inventory = _parse_modules(raw_sections.get("Modules", []))
@@ -67,6 +68,9 @@ def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", l
         guardians=guardians,
         guardian_tracks=guardian_tracks,
         player_meta=player_meta,
+        tier_progression_waves=tier_progression_waves,
+        highest_tier_unlocked_number=highest_tier_unlocked_number,
+        highest_tier_unlocked_label=highest_tier_unlocked_label,
         theme_song_coin_multiplier=theme_song_coin_multiplier,
         cards_inventory=cards_inventory,
         card_slots_unlocked=card_slots_unlocked,
@@ -375,16 +379,35 @@ def _parse_theme_song_coin_multiplier(rows: List[List[str]]) -> Optional[float]:
             continue
     return None
 
-def _parse_player_meta(rows: List[List[str]]) -> Dict[str, Optional[str]]:
-    out = {}
+
+def _extract_tier_number(tier_label: str) -> Optional[int]:
+    match = re.match(r'^Tier\s+(\d+)$', tier_label.strip())
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def _parse_player_meta(rows: List[List[str]]) -> Tuple[Dict[str, Optional[str]], Dict[str, int], Optional[int], Optional[str]]:
+    out: Dict[str, Optional[str]] = {}
+    tier_progression_waves: Dict[str, int] = {}
+    highest_tier_unlocked_number: Optional[int] = None
     for row in rows:
         left_key = _safe_cell(row, 0).strip()
-        if left_key and left_key != 'Tier':
+        if left_key == 'Tier':
+            tier_label = _safe_cell(row, 1).strip()
+            tier_number = _extract_tier_number(tier_label)
+            wave = _parse_optional_int(_safe_cell(row, 2))
+            if tier_number is not None and wave is not None:
+                tier_progression_waves[tier_label] = wave
+                if wave > 0 and (highest_tier_unlocked_number is None or tier_number > highest_tier_unlocked_number):
+                    highest_tier_unlocked_number = tier_number
+        elif left_key:
             out[left_key] = _optional_str(_safe_cell(row, 1))
         right_key = _safe_cell(row, 4).strip()
         if right_key and right_key != 'Stat':
             out[right_key] = _optional_str(_safe_cell(row, 5))
-    return out
+    highest_tier_unlocked_label = f"Tier {highest_tier_unlocked_number}" if highest_tier_unlocked_number is not None else None
+    return out, tier_progression_waves, highest_tier_unlocked_number, highest_tier_unlocked_label
 
 
 def _parse_bots(rows: List[List[str]]) -> Tuple[List[str], Dict[str, Dict[str, int]], Dict[str, List[BotUpgradeSnapshot]]]:
