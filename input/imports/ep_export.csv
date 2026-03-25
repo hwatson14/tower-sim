@@ -4,13 +4,13 @@ EP Base URL,https://docs.google.com/spreadsheets/d/1Q8RYXr9nQPxjuIEXtlTzvR63MRb0
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,337.52 O,337.52 O
-edmg,damage,Damage,779.9 B,779.9 B
-edmg,attack_speed,Attack Speed,41.505253125,41.505253125
+edmg,edmg,eDMG,450.17 O,450.17 O
+edmg,damage,Damage,816.5 B,816.5 B
+edmg,attack_speed,Attack Speed,42.239859375,42.239859375
 edmg,crit_chance,Critical Chance,0.9700000000000001,0.9700000000000001
-edmg,crit_factor,Critical Factor,171.6912,171.6912
+edmg,crit_factor,Critical Factor,170.5248,170.5248
 edmg,range,Range,109.48863512309427,109.48863512309427
-edmg,damage_per_meter,Damage / Meter,0.13030102799999999,0.13030102799999999
+edmg,damage_per_meter,Damage / Meter,0.1355112,0.1355112
 edmg,multishot_chance,Multishot Chance,0.495,0.495
 edmg,multishot_targets,Multishot Targets,13,13
 edmg,rapid_fire_chance,Rapid Fire Chance,0.34,0.34
@@ -18,20 +18,20 @@ edmg,rapid_fire_duration,Rapid Fire Duration,5.55,5.55
 edmg,bounce_shot_chance,Bounce Shot Chance,0.77,0.77
 edmg,bounce_shot_targets,Bounce Shot Targets,8,8
 edmg,super_crit_chance,Super Crit Chance,0.24900000000000003,0.24900000000000003
-edmg,super_crit_multiplier,Super Crit Multiplier,x35.66,x35.66
-edmg,max_rend_mult,Max Rend Mult,9.68,9.68
+edmg,super_crit_multiplier,Super Crit Multiplier,x35.43,x35.43
+edmg,max_rend_mult,Max Rend Mult,9.6,9.6
 edmg,recovery_package_chance,Recovery Package Chance,0.7879999999999999,0.7879999999999999
-ehp,ehp,eHP,175.24 q,175.24 q
-ehp,health,Health,6.95 T,6.95 T
+ehp,ehp,eHP,182.41 q,182.41 q
+ehp,health,Health,7.1 T,7.1 T
 ehp,health_regen,Health Regen,44.64 T,44.64 T
 ehp,defense_absolute,Defense Absolute,318.93 M,318.93 M
 ehp,defense_percent,Defense %,0.98,0.98
-ehp,wall_health,Wall Health,119.3 T,119.3 T
-ehp,wall_fortification,Wall Fortification,1.24 q,1.24 q
+ehp,wall_health,Wall Health,124.18 T,124.18 T
+ehp,wall_fortification,Wall Fortification,1.29 q,1.29 q
 ehp,wall_regen,Wall Regen,234.35 T,234.35 T
 ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,88.6 M,88.6 M
-eecon,coins_per_kill_bonus,Coins / Kill Bonus,42.81480472500001,42.81480472500001
-eecon,free_attack_upgrade,Free Attack Upgrade,1.0773840000000001,1.0773840000000001
-eecon,free_defense_upgrade,Free Defense Upgrade,1.046892,1.046892
-eecon,free_utility_upgrade,Free Utility Upgrade,1.1875136000000002,1.1875136000000002
+eecon,cpk_average,Average CpK,99.34 M,99.34 M
+eecon,coins_per_kill_bonus,Coins / Kill Bonus,43.458636375000005,43.458636375000005
+eecon,free_attack_upgrade,Free Attack Upgrade,1.1062424999999998,1.1062424999999998
+eecon,free_defense_upgrade,Free Defense Upgrade,1.0749337499999998,1.0749337499999998
+eecon,free_utility_upgrade,Free Utility Upgrade,1.2310462500000001,1.2310462500000001
