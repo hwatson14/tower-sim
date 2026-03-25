@@ -200,7 +200,7 @@ def test_planner_populates_fallback_reason_for_invalid_surface_request():
 
 
 def test_planned_progression_bundle_executes_natively_without_full_statbook(monkeypatch):
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     stat_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
     plan = IncrementalRecalcRuntime().plan_consumer_bundle(

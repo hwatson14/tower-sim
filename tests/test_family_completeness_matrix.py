@@ -13,7 +13,7 @@ from run_stats import CANONICAL_PRESET_NAMES, _build_family_completeness_matrix
 
 
 def test_family_completeness_matrix_exposes_five_preset_lane_state():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     stat_inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=False)
     matrix = _build_family_completeness_matrix(state, stat_inputs)
@@ -27,7 +27,7 @@ def test_family_completeness_matrix_exposes_five_preset_lane_state():
 
 
 def test_family_completeness_matrix_has_family_mapping_counts():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     stat_inputs = compile_stat_inputs(state, preset_name="Farming", state_mode="max_progression", perks_enabled=False)
     matrix = _build_family_completeness_matrix(state, stat_inputs)

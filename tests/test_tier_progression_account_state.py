@@ -11,7 +11,7 @@ from parsers.ids_parser import parse_ids
 
 
 def test_account_state_compiles_tier_progression_fields_from_ids() -> None:
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
 
     assert state.tier_progression_waves["Tier 19"] == 52

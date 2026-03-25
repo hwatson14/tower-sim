@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _inputs():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     return compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
 
@@ -103,7 +103,7 @@ def test_subset_executor_module_does_not_import_stat_engine_directly():
     assert 'from engine.stat_resolution_core import' in module_source
 
 def test_subset_executor_resolves_timing_wave_duration_natively_without_full_statbook(monkeypatch):
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     stat_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
 
@@ -125,7 +125,7 @@ def test_subset_executor_resolves_timing_wave_duration_natively_without_full_sta
 
 
 def test_subset_executor_matches_timing_core_cycle_bundle_values():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     stat_inputs = compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True)
     candidate = IncrementalSubsetExecutor().execute(
@@ -149,7 +149,7 @@ def test_subset_executor_matches_timing_core_cycle_bundle_values():
 
 
 def test_subset_executor_matches_timing_wave_duration_bundle_from_timing_family_baseline():
-    ids_raw = parse_ids(ROOT / 'input' / '_IDS.csv')
+    ids_raw = parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
     state = compile_account_state(ids_raw, default_preset='Farming')
     candidate = IncrementalSubsetExecutor().execute(
         compile_stat_inputs(state, preset_name='Farming', state_mode='start_of_run', perks_enabled=True),

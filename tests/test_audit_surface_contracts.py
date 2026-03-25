@@ -12,7 +12,7 @@ from run_stats import _build_audit_surface_manifest
 
 
 def test_audit_surface_manifest_labels_partial_surfaces():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     manifest = _build_audit_surface_manifest(state, "Farming")
     contracts = {entry["surface"]: entry for entry in manifest["surface_contracts"]}
@@ -22,7 +22,7 @@ def test_audit_surface_manifest_labels_partial_surfaces():
 
 
 def test_audit_surface_manifest_includes_full_completeness_and_explicit_empty_flags():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     manifest = _build_audit_surface_manifest(state, "Farming")
     contracts = {entry["surface"]: entry for entry in manifest["surface_contracts"]}

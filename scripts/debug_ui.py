@@ -842,8 +842,8 @@ selected_preset = st.sidebar.selectbox("Preset", options=preset_options, index=0
 selected_state_mode = st.sidebar.selectbox("Query state mode", options=["start_of_run", "max_progression"], index=0)
 selected_perk_state = st.sidebar.selectbox("Perk materialization", options=["auto", "on", "off"], index=0)
 
-uploaded_file = st.sidebar.file_uploader("Upload _IDS.csv", type=["csv"])
-use_repo_default = st.sidebar.checkbox("Use repo default input/_IDS.csv if no upload is provided", value=True)
+uploaded_file = st.sidebar.file_uploader("Upload ids.csv", type=["csv"])
+use_repo_default = st.sidebar.checkbox("Use repo default input/imports/ids.csv if no upload is provided", value=True)
 
 ids_text = None
 source_label = None
@@ -851,7 +851,7 @@ if uploaded_file is not None:
     ids_text = uploaded_file.getvalue().decode("utf-8-sig", errors="replace")
     source_label = uploaded_file.name
 elif use_repo_default:
-    default_ids_path = REPO_ROOT / "input" / "_IDS.csv"
+    default_ids_path = REPO_ROOT / "input" / "imports" / "ids.csv"
     if default_ids_path.exists():
         ids_text = default_ids_path.read_text(encoding="utf-8-sig")
         source_label = str(default_ids_path.relative_to(REPO_ROOT))

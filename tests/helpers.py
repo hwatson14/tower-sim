@@ -36,7 +36,7 @@ _GENERATED_FILES = frozenset({
 @lru_cache(maxsize=None)
 def _json_config(filename: str):
     if filename in _GENERATED_FILES:
-        return json.loads((ROOT / 'generated' / filename).read_text())
+        return json.loads((ROOT / 'input' / 'derived' / filename).read_text())
     return json.loads((ROOT / 'input' / filename).read_text())
 
 

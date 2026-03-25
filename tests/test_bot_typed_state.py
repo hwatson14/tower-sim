@@ -12,7 +12,7 @@ from parsers.ids_parser import parse_ids
 
 
 def test_bot_compiled_state_preserves_level_and_resolved_value_metadata():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
 
     golden_tracks = state.bot_upgrade_tracks.get("Golden Bot", [])
@@ -24,7 +24,7 @@ def test_bot_compiled_state_preserves_level_and_resolved_value_metadata():
 
 
 def test_bot_stat_inputs_expose_level_resolved_value_and_unit():
-    ids = parse_ids(ROOT / "input" / "_IDS.csv")
+    ids = parse_ids(ROOT / "input" / "imports" / "ids.csv")
     state = compile_account_state(ids)
     rows = compile_stat_inputs(state, preset_name="Farming", state_mode="start_of_run")
     bot_rows = [row for row in rows if row.source_family == "bot" and row.source_name == "Golden Bot" and row.stat_name.endswith("::Bonus")]
