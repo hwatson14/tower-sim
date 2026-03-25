@@ -1,0 +1,37 @@
+,,,,,,,,,,,
+,The IDS System,,,,,,,,,,
+,,,,,,,,,,,Update Effective Paths using Addon (desktop only)
+,This Sheet ID is :,1cRKU7cNKhDn2OyyPaGn-U5bM6priDVE8fG-FAfbB-8c,,,,,,,,,Update Effective Paths using Web App
+,,,,,,,,,,,
+,IDS Master's ID       ??,1HOIkxWbbciTIAzVruaahEGADlM8rS0-w86uBXj4PwNQ,https://docs.google.com/spreadsheets/d/1HOIkxWbbciTIAzVruaahEGADlM8rS0-w86uBXj4PwNQ/edit,?,v2,v2.1.2,v2.1.2,,,,
+,1?? Copy Me,Go to my IDS Master Sheet,,,,,,,,,
+,,,,,,,,,,,
+,How to use,,,,,,,,,Issues,
+,"STEP 1:
+Click on the Copy Me link and create your copy of the IDS Master.
+
+STEP 2:
+Copy the ID (you will find it in the IDS tab) of your newly created sheet and paste it in the light gray area.
+
+STEP 3:
+Wait a little bit, the E4 cell will show ""Loading..."", and after few seconds it will display ""#REF!"". Click on the cell, and ""Authorize"" to let this sheet access the other one.",,,CellImage,,,,,,"Mobile Users
+If you are on mobile, you will not be able to do STEP 3. There is a workaround you can do still : You need to edit the viewing permissions to ""anyone with the link"" of all your IDs sheets
+
+
+If you have any other trouble, let us know in the #effective-path Discord's channel.
+I say us, but don't ask Fanta. Fanta hates IDS.",
+,,,,,,,,,,,
+,,,,CellImage,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,CellImage,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,"And that's it! The IDS are setup. You can now fill sub IDS in the IDS Master with sub IDS sheets (Laboratory, Workshop, ...) just like you did in here.
+Every time you will change a value (let's say, a lab level in Laboratory Sheet) the change will be propagated to every other sheet using the IDS Master automatically.",,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,,,,,,,,,,,
+,Is it mandatory ?,,,,,,,,,,
+,"It is, mostly for Cards, Modules, and Workshop. Everything else could technically be filled in the Master Sheet tab. But doing all of them is the recommended way of using that sheet",,,,,,,,,,
