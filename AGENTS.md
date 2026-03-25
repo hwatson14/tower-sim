@@ -50,7 +50,7 @@ pytest
 ## Repo shape
 
 - `kb/`: authoritative mechanics, tables, contracts, notes, ledgers
-- `input/`: runtime inputs and perk policy inputs
+- `input/`: manual assumptions (`assumptions.yaml`), perk config, and import slot (`input/imports/` for IDS/Progress/EP_Export CSVs)
 - `parsers/`: raw IDS parsing
 - `compilers/`: account-state and stat-input compilation
 - `models/`: strongly-typed runtime structures
@@ -76,7 +76,8 @@ Do not place any of the following in `docs/` or `config/`:
 Place artifacts in the owning surface:
 - canonical mechanic truth -> `kb/`
 - canonical governance, ledgers, and contracts -> `kb/ledgers/` or `kb/contracts/` or the owning KB directory
-- runtime inputs and manual assumptions -> `input/`
+- runtime inputs and manual assumptions -> `input/` (manual config in `assumptions.yaml`; imported CSVs in `input/imports/`)
+- runtime-generated artifacts -> `generated/`
 - code-owned runtime assets -> owning code directory
 - test fixtures and verification assets -> `tests/`
 - generated outputs -> `out/`

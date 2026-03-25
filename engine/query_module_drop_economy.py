@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict
+import yaml as _yaml
 
 from models.statbook import StatRow
 
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_advisory_inputs.json'
+_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'assumptions.yaml'
 
 _DROP_ECONOMY_INPUT_MAP = {
     'module.runtime.tier_for_drop_tables': {
@@ -37,8 +38,12 @@ def _load_drop_economy_manual_inputs(manual_input_path: str | Path | None = None
     if not path.exists():
         return {}
     try:
-        payload = json.loads(path.read_text(encoding='utf-8'))
-    except (OSError, json.JSONDecodeError):
+        text = path.read_text(encoding='utf-8')
+        if path.suffix in ('.yaml', '.yml'):
+            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
+        else:
+            payload = json.loads(text)
+    except Exception:
         return {}
     rows = payload.get('inputs', [])
     out: Dict[str, Dict[str, Any]] = {}

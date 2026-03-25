@@ -49,10 +49,10 @@ def test_observed_run_els_contract_and_inputs_load_in_declared_order():
 
 
 def test_observed_run_els_inputs_fail_closed_for_missing_required_field(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    payload = json.loads((ROOT / 'input' / 'observed_run_els_scenarios.json').read_text())
-    del payload['scenarios'][0]['enemy_level_skip_reduction_pp']
-    input_path = tmp_path / 'observed_run_els_scenarios.json'
-    input_path.write_text(json.dumps(payload, indent=2))
+    assumptions = yaml.safe_load((ROOT / 'input' / 'assumptions.yaml').read_text())
+    del assumptions['observed_run_els_scenarios']['scenarios'][0]['enemy_level_skip_reduction_pp']
+    input_path = tmp_path / 'assumptions.yaml'
+    input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
     monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:
@@ -63,10 +63,10 @@ def test_observed_run_els_inputs_fail_closed_for_missing_required_field(tmp_path
 
 
 def test_observed_run_els_inputs_fail_closed_for_missing_required_scenario(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    payload = json.loads((ROOT / 'input' / 'observed_run_els_scenarios.json').read_text())
-    payload['scenarios'] = payload['scenarios'][:1]
-    input_path = tmp_path / 'observed_run_els_scenarios.json'
-    input_path.write_text(json.dumps(payload, indent=2))
+    assumptions = yaml.safe_load((ROOT / 'input' / 'assumptions.yaml').read_text())
+    assumptions['observed_run_els_scenarios']['scenarios'] = assumptions['observed_run_els_scenarios']['scenarios'][:1]
+    input_path = tmp_path / 'assumptions.yaml'
+    input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
     monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:
@@ -92,10 +92,10 @@ def test_enhancement_state_prep_contract_fails_closed_for_missing_value_table(tm
 
 
 def test_observed_run_els_inputs_fail_closed_for_scenario_contract_mismatch(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
-    payload = json.loads((ROOT / 'input' / 'observed_run_els_scenarios.json').read_text())
-    payload['scenarios'][0]['skip_track'] = 'enemy_health_level_skip'
-    input_path = tmp_path / 'observed_run_els_scenarios.json'
-    input_path.write_text(json.dumps(payload, indent=2))
+    assumptions = yaml.safe_load((ROOT / 'input' / 'assumptions.yaml').read_text())
+    assumptions['observed_run_els_scenarios']['scenarios'][0]['skip_track'] = 'enemy_health_level_skip'
+    input_path = tmp_path / 'assumptions.yaml'
+    input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
     monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:

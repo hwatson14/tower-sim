@@ -338,7 +338,7 @@ def test_boss_wave_engine_damage_intake_uses_override_when_supplied():
 
 def test_boss_wave_engine_attack_and_health_wave_use_skip_policy():
     account_state = build_state()
-    init_state = build_progression_init_state(account_state, preset_name='Farming', perk_timeline_path=ROOT / 'input' / 'perks_projected_max.timeline.json')
+    init_state = build_progression_init_state(account_state, preset_name='Farming', perk_timeline_path=ROOT / 'generated' / 'perks_projected_max.timeline.json')
     engine = BossWaveEngine()
     result = engine.run(account_state=account_state, init_state=init_state, config=BossWaveEngineConfig(preset_name='Farming', mode_id='farming', tier_column='Tier 12', start_boss_wave=100, end_boss_wave=100, perks_enabled=True, perk_preset_name='projected_max'))
     row = result.rows[0]

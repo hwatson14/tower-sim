@@ -95,7 +95,7 @@ def test_tourney_compare_for_offense_uses_perks_off_even_when_engine_perks_on(tm
         sys.executable, str(ROOT / 'run_stats.py'),
         '--state-mode', 'max_progression',
         '--perk-state', 'on',
-        '--perks', str(ROOT / 'input' / 'perks_projected_max.json'),
+        '--perks', str(ROOT / 'generated' / 'perks_projected_max.json'),
         '--out', str(out),
     ], cwd=ROOT, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
@@ -160,7 +160,7 @@ def test_max_progression_falls_back_to_projected_perks_when_primary_config_empty
     assert result.returncode == 0, result.stderr
     diagnostics = json.loads((out / 'diagnostics.json').read_text())
     assert diagnostics['perk_config_resolution']['fallback_applied'] is True
-    assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('input/perks_projected_max.json')
+    assert diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('generated/perks_projected_max.json') or diagnostics['perk_config_resolution']['resolved_perks_path'].endswith('generated\\perks_projected_max.json')
 
 
 @pytest.mark.slow

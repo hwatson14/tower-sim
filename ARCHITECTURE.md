@@ -90,7 +90,7 @@ kb/{domain}/
 | `models/ids_raw.py` | 13 | Raw IDS data model |
 | `models/stat_input.py` | 26 | StatInput data model |
 
-**Input data:** `input/` directory (IDS export, loadout config, perk config, EP export)
+**Input data:** `input/assumptions.yaml` (manual assumptions), `input/imports/` (IDS/Progress/EP_Export CSVs), `input/perks.json` (active perk config); `generated/` holds runtime-generated perk artifacts
 
 ---
 

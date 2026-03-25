@@ -12,7 +12,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 _WORKSHOP_PREP_CONTRACT_PATH = ROOT / 'kb' / 'workshop' / 'contracts' / 'enhancement-state-prep.yaml'
 _OBSERVED_RUN_ELS_CONTRACT_PATH = ROOT / 'input' / 'observed_run_els_scenarios.contract.yaml'
-_OBSERVED_RUN_ELS_INPUT_PATH = ROOT / 'input' / 'observed_run_els_scenarios.json'
+_OBSERVED_RUN_ELS_INPUT_PATH = ROOT / 'input' / 'assumptions.yaml'
 
 _ALLOWED_LABEL_STRENGTHS = frozenset({'strong_model', 'accepted_model'})
 _ALLOWED_TRUST_LEVELS = frozenset({'strong_model', 'accepted_model'})
@@ -221,7 +221,11 @@ def load_observed_run_els_contract() -> dict[str, Any]:
 @lru_cache(maxsize=1)
 def load_observed_run_els_scenarios() -> tuple[ObservedRunElsScenario, ...]:
     contract = load_observed_run_els_contract()
-    raw = json.loads(_OBSERVED_RUN_ELS_INPUT_PATH.read_text())
+    _text = _OBSERVED_RUN_ELS_INPUT_PATH.read_text()
+    if _OBSERVED_RUN_ELS_INPUT_PATH.suffix in ('.yaml', '.yml'):
+        raw = (yaml.safe_load(_text) or {}).get('observed_run_els_scenarios') or {}
+    else:
+        raw = json.loads(_text)
     scenarios = raw.get('scenarios')
     if not isinstance(scenarios, list) or not scenarios:
         raise ValueError('Observed-run ELS input must declare a non-empty scenarios list.')
