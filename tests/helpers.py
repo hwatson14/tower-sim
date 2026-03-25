@@ -22,11 +22,21 @@ from parsers.ids_parser import parse_ids
 
 @lru_cache(maxsize=None)
 def _parsed_ids():
-    return parse_ids(ROOT / 'input' / '_IDS.csv')
+    return parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
 
+
+_GENERATED_FILES = frozenset({
+    'perks_projected_max.json',
+    'perks_projected_max.timeline.json',
+    'perks_projected_max.final_state.json',
+    'perks_projected_max.diagnostics.json',
+    'perks_max_progression_policy.runtime.json',
+})
 
 @lru_cache(maxsize=None)
 def _json_config(filename: str):
+    if filename in _GENERATED_FILES:
+        return json.loads((ROOT / 'generated' / filename).read_text())
     return json.loads((ROOT / 'input' / filename).read_text())
 
 

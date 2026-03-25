@@ -231,9 +231,10 @@ from models.stat_input import StatInput
 from models.statbook import StatBook, StatRow
 
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
+ASSUMPTIONS_PATH = ROOT / 'input' / 'assumptions.yaml'
 LOADOUT_CONFIG_PATH = ROOT / 'input' / 'loadout.json'
 PERKS_CONFIG_PATH = ROOT / 'input' / 'perks.json'
-PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'input' / 'perks_projected_max.json'
+PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'generated' / 'perks_projected_max.json'
 
 
 def _load_json_config(path: Path) -> dict:
@@ -257,7 +258,7 @@ def _perk_config_has_active_preset(config: dict) -> bool:
 
 
 
-_PERK_MAX_POLICY_PATH = ROOT / 'input' / 'perks_max_progression_policy.json'
+_PERK_MAX_POLICY_PATH = ROOT / 'input' / 'assumptions.yaml'
 
 
 def _load_perk_entity_registry() -> list[dict]:
@@ -328,7 +329,11 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
     policy_banned_names: list[str] = []
     if default_policy_path.exists():
         try:
-            raw_policy = json.loads(default_policy_path.read_text(encoding='utf-8'))
+            _text = default_policy_path.read_text(encoding='utf-8')
+            if default_policy_path.suffix in ('.yaml', '.yml'):
+                raw_policy = (yaml.safe_load(_text) or {}).get('perk_policy') or {}
+            else:
+                raw_policy = json.loads(_text)
             policy_seed = int(raw_policy.get('seed', policy_seed))
             target_wave = int(raw_policy.get('target_wave', target_wave))
             priority_order = list(raw_policy.get('priority_order', []) or [])
@@ -379,7 +384,8 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         'priority_order': priority_order,
         'first_perk_choice': first_perk_choice,
     }
-    policy_runtime_path = ROOT / 'input' / 'perks_max_progression_policy.runtime.json'
+    (ROOT / 'generated').mkdir(parents=True, exist_ok=True)
+    policy_runtime_path = ROOT / 'generated' / 'perks_max_progression_policy.runtime.json'
     policy_runtime_path.write_text(json.dumps(policy_payload, indent=2), encoding='utf-8')
     timeline, diag = generate_timeline(policy_runtime_path)
     taken_counts = perk_state_at_wave(timeline, policy_payload['target_wave'])
@@ -414,14 +420,14 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
             'banned_perks_effective': banned_names,
             'banned_perk_aliases': list(raw_policy.get('banned_perk_aliases', []) or []),
             'unknown_generated_perk_names': unknown_names,
-            'timeline_file': 'input/perks_projected_max.timeline.json',
-            'final_state_file': 'input/perks_projected_max.final_state.json',
-            'diagnostics_file': 'input/perks_projected_max.diagnostics.json',
+            'timeline_file': 'generated/perks_projected_max.timeline.json',
+            'final_state_file': 'generated/perks_projected_max.final_state.json',
+            'diagnostics_file': 'generated/perks_projected_max.diagnostics.json',
         }
     }
-    (ROOT / 'input' / 'perks_projected_max.timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
-    (ROOT / 'input' / 'perks_projected_max.final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
-    (ROOT / 'input' / 'perks_projected_max.diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
+    (ROOT / 'generated' / 'perks_projected_max.timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
+    (ROOT / 'generated' / 'perks_projected_max.final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
+    (ROOT / 'generated' / 'perks_projected_max.diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
     PROJECTED_MAX_PERKS_CONFIG_PATH.write_text(json.dumps(generated, indent=2), encoding='utf-8')
     metadata = {
         'requested_perks_path': str(PERKS_CONFIG_PATH),
@@ -429,8 +435,8 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         'fallback_applied': True,
         'fallback_reason': 'max_progression_generated_from_timeline_policy',
         'generation_policy_path': str(default_policy_path),
-        'generated_timeline_path': str(ROOT / 'input' / 'perks_projected_max.timeline.json'),
-        'generated_diagnostics_path': str(ROOT / 'input' / 'perks_projected_max.diagnostics.json'),
+        'generated_timeline_path': str(ROOT / 'generated' / 'perks_projected_max.timeline.json'),
+        'generated_diagnostics_path': str(ROOT / 'generated' / 'perks_projected_max.diagnostics.json'),
         'generated_runtime_policy_path': str(policy_runtime_path),
     }
     return generated, metadata
@@ -1203,7 +1209,7 @@ def _build_tower_hp_semantic_gap_report(ep_compare: dict) -> dict:
         add_scenario('ep_standard_perk_semantics_only', {standard_key: ep_standard}, 'EP EPH_HEALTH formula multiplies the full perk result by Standard Perks Bonus. This is an EP workbook scenario, not a calculator truth claim.')
 
     dwhp_level = None
-    ids_lines = Path('input/_IDS.csv').read_text().splitlines()
+    ids_lines = (ROOT / 'input' / 'imports' / 'ids.csv').read_text().splitlines()
     for line in ids_lines:
         if line.startswith('Death Wave Health,'):
             try:
@@ -2511,7 +2517,7 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument('--ids', type=Path, default=ROOT / 'input' / '_IDS.csv')
+    parser.add_argument('--ids', type=Path, default=ROOT / 'input' / 'imports' / 'ids.csv')
     parser.add_argument('--out', '--output-dir', dest='out', type=Path, default=ROOT / 'out')
     parser.add_argument('--preset', type=str, default='Farming')
     parser.add_argument('--state-mode', type=str, default='max_progression')
@@ -2527,7 +2533,7 @@ def main() -> int:
     loadout_config = _load_json_config(Path(args.loadout))
     perk_config, perk_config_resolution = _resolve_perk_config(Path(args.perks), args.state_mode, ids_raw=ids_raw)
     formula_ledger = _load_formula_ledger(FORMULA_LEDGER_PATH)
-    ep_oracle = _load_ep_oracle(ROOT / 'input' / 'EP_Export.csv')
+    ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
     account_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context = _build_compare_rows_by_preset(
         ids_raw=ids_raw,
         loadout_config=loadout_config,

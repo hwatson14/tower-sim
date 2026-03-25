@@ -96,7 +96,7 @@ output_labels:
         - kb/workshop/derived/materialized/wiki-verified-enhancement-enemy-level-skips.csv
       accepted_inputs:
         - input/observed_run_els_scenarios.contract.yaml
-        - input/observed_run_els_scenarios.json
+        - input/assumptions.yaml
       contract_paths:
         - kb/workshop/contracts/enhancement-state-prep.yaml
       notes:

@@ -3,10 +3,11 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Any, Dict
+import yaml as _yaml
 
 from models.statbook import StatRow
 
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_advisory_inputs.json'
+_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'assumptions.yaml'
 
 SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS = {
     'module.farming.hours_per_day': {
@@ -40,8 +41,12 @@ def _load_manual_inputs(manual_input_path: str | Path | None = None) -> Dict[str
     if not path.exists():
         return {}
     try:
-        payload = json.loads(path.read_text(encoding='utf-8'))
-    except (OSError, json.JSONDecodeError):
+        text = path.read_text(encoding='utf-8')
+        if path.suffix in ('.yaml', '.yml'):
+            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
+        else:
+            payload = json.loads(text)
+    except Exception:
         return {}
     rows = payload.get('inputs', [])
     out: Dict[str, Dict[str, Any]] = {}
@@ -101,7 +106,7 @@ def publish_module_runtime_policy_surfaces(rows: Dict[str, StatRow], manual_inpu
             value=value,
             value_type=spec['value_type'],
             unit=spec['unit'],
-            notes='Derived from input/manual_advisory_inputs.json explicit module runtime/policy planning input.',
+            notes='Derived from input/assumptions.yaml manual_advisory_inputs explicit module runtime/policy planning input.',
             contributors=[{
                 'surface_id': spec['surface_id'],
                 'source_class': 'manual_input',
@@ -125,7 +130,7 @@ def publish_module_runtime_policy_surfaces(rows: Dict[str, StatRow], manual_inpu
 def module_runtime_policy_surface_contract_snapshot() -> Dict[str, Any]:
     return {
         'default_manual_input_path': str(_DEFAULT_MANUAL_INPUT_PATH),
-        'supported_manual_input_file': 'input/manual_advisory_inputs.json',
+        'supported_manual_input_file': 'input/assumptions.yaml',
         'supported_manual_input_ids': sorted(supported_module_runtime_policy_input_ids()),
         'published_surface_ids': sorted(published_module_runtime_policy_surface_ids()),
         'supported_inputs': {

@@ -3,11 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Dict, Any
+import yaml as _yaml
 
 from models.statbook import StatRow
 
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_advisory_inputs.json'
-# Users may edit input/manual_advisory_inputs.json directly to provide weekly persistent-income observations for supported externalized resources.
+_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'assumptions.yaml'
+# Users may edit input/assumptions.yaml (manual_advisory_inputs section) to provide weekly persistent-income observations for supported externalized resources.
 
 DETERMINISTIC_CURRENCY_SURFACES = {
     'coins': ('derived::economy.income.coins', 'coins_income_proxy'),
@@ -69,8 +70,12 @@ def _load_manual_inputs(manual_input_path: str | Path | None = None) -> Dict[str
     if not path.exists():
         return {}
     try:
-        payload = json.loads(path.read_text(encoding='utf-8'))
-    except (OSError, json.JSONDecodeError):
+        text = path.read_text(encoding='utf-8')
+        if path.suffix in ('.yaml', '.yml'):
+            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
+        else:
+            payload = json.loads(text)
+    except Exception:
         return {}
     rows = payload.get('inputs', [])
     if not isinstance(rows, list):
@@ -139,7 +144,7 @@ def publish_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path
             surface_id=surface_id,
             value=value,
             unit=unit,
-            notes='Derived from input/manual_advisory_inputs.json user input surface.',
+            notes='Derived from input/assumptions.yaml manual_advisory_inputs user input surface.',
             contributors=[{
                 'surface_id': surface_id,
                 'source_class': 'manual_input',
@@ -159,7 +164,7 @@ def manual_income_input_contract_snapshot() -> Dict[str, Any]:
     """Expose the user-editable manual persistent-income lane for tests and audits."""
     return {
         'default_manual_input_path': str(_DEFAULT_MANUAL_INPUT_PATH),
-        'supported_manual_input_file': 'input/manual_advisory_inputs.json',
+        'supported_manual_input_file': 'input/assumptions.yaml',
         'editable_manual_input_ids': sorted(supported_manual_input_ids()),
         'supported_manual_input_ids': sorted(supported_manual_input_ids()),
         'unsupported_manual_input_ids': sorted(unsupported_manual_input_ids()),

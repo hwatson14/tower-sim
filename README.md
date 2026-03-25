@@ -42,7 +42,7 @@ This pipeline is the current implementation path, not a contradictory architectu
 ## Repo map
 
 - `kb/` — authoritative mechanics, tables, contracts, notes, and ledgers
-- `input/` — IDS export, loadout, perk policy inputs, and committed scenario inputs
+- `input/` — manual assumptions (`assumptions.yaml`), perk config, and import slot (`input/imports/` for IDS/Progress/EP_Export CSVs)
 - `parsers/` — raw IDS parsing
 - `compilers/` — account-state and stat-input compilation
 - `models/` — runtime data structures

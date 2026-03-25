@@ -49,7 +49,7 @@ def test_phase3_optimizer_bundle_required_surfaces_are_published_and_owned():
 def test_currency_income_contract_alignment_with_implementation_boundaries():
     contract = yaml.safe_load((ROOT / 'kb/economy/contracts/currency-income-surfaces-contract.yaml').read_text())
     implementation = (ROOT / 'engine/query_currency_income.py').read_text()
-    manual_inputs = json.loads((ROOT / 'input/manual_advisory_inputs.json').read_text(encoding='utf-8'))
+    manual_inputs = (yaml.safe_load((ROOT / 'input/assumptions.yaml').read_text(encoding='utf-8')) or {}).get('manual_advisory_inputs') or {}
 
     contract_currencies = contract['currencies']
     contract_surface_ids = {row['surface_id'] for row in contract_currencies}

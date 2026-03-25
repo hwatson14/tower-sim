@@ -12,7 +12,13 @@ top_level:
 
   input:
     owner: runtime_inputs
-    description: runtime inputs, manual assumptions, scenario inputs, and committed source inputs
+    description: manual assumptions (assumptions.yaml), perk config, and import slot (input/imports/ for IDS/Progress/EP_Export CSVs)
+    allows:
+      - runtime_input
+
+  generated:
+    owner: runtime_generated
+    description: runtime-generated perk artifacts (projected max perks, timeline, diagnostics, policy runtime)
     allows:
       - runtime_input
 
