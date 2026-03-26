@@ -71,7 +71,7 @@ New Phase 4 work must:
 
 If a legacy naming pattern must be bridged for backward compatibility, that bridge must be declared explicitly in the alias contract, not inlined silently into new implementation work.
 
-The live instance of this rule is the timing-family naming mismatch: `state::cards.wave_accelerator.spawn_rate_acceleration` does not align with `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration`. This is an open blocker for PH4-B, not implied coverage. It must be resolved explicitly, not worked around.
+The canonical instance of this rule — the timing-family naming mismatch (`state::cards.wave_accelerator.spawn_rate_acceleration` vs `runtime_mechanic_param::cards.wave_accelerator.spawn_rate_acceleration`) — was resolved in PH4-A closeout: `state::cards.wave_accelerator.spawn_rate_acceleration` is now the canonical surface ID used throughout `engine/stat_engine.py`, `_DELEGATED_FAMILY_SURFACE_IDS`, and all KB contracts. The legacy `runtime_mechanic_param::` alias remains valid for input-row routing only via the alias contract.
 
 Handoff documents (`PH4A_CANONICAL_MIGRATION_LEDGER.md`, `PH4A_FAMILY_ENTRY_MATRIX.md`) are handoff artifacts, not canonical merged-control truth, unless explicitly promoted into a control file.
 
@@ -997,6 +997,41 @@ Stop conditions:
 - parity exists for migrated scope
 - benchmark evidence exists for migrated workloads
 - control files, tests, and docs no longer imply dual ownership
+
+### Phase 4 closeout ledger (PH4-F)
+
+**Exit gate status: PASSED** (all conditions satisfied or explicitly bounded exception noted)
+
+| Exit gate condition | Status | Evidence |
+|---|---|---|
+| Canonical stat-resolution scope is KB-aligned | ✓ | `kb/global-rules/contracts/stat-query-initial-surface-set.yaml` |
+| Canonical scope resolves through QE-owned paths | ✓ | PH4-C: 15 surfaces migrated across 6 tranches |
+| `stat_engine.py` is thin compatibility only | ✓ | ~13 lines; routes declared families to QE, fallback-delegates residuals |
+| `stat_resolution_core.py` owns no canonical stat logic for migrated surfaces | ✓ | PH4-E demotion statement in ARCHITECTURE.md; bounded residuals explicit |
+| Retained legacy files are non-canonical merge/reference aids only | ✓ | Bounded residual scope documented; 4 explicit residual categories |
+| Parity exists for migrated scope | ✓ | 14 `@pytest.mark.expensive` tests + 1 synthetic unit test, all pass |
+| Benchmark evidence exists for migrated workloads | ✓ | Full 14-test run: 509.34s / 0 failures |
+| Control files, tests, and docs no longer imply dual ownership | ✓ | ARCHITECTURE.md updated PH4-E; stale PH4-B blocker note removed PH4-F |
+
+**Exception noted (not a gate failure):** `stat_resolution_core.py` still provides final-value truth for 4 bounded residual categories. These are explicitly documented in BURNDOWN.yaml PH4-C `residual_list` and ARCHITECTURE.md "Legacy demotion statement". This is the permitted "non-canonical merge/reference aid" role.
+
+**Final migration KPIs:**
+
+| KPI | Value |
+|---|---|
+| Families delegated to QE | 4 (timing_tournament_no_perks, timing_farm_with_perks, progression_start_of_run, progression_runtime_no_perks) |
+| Canonical stat surfaces migrated (frozen denominator) | 15 |
+| Expensive parity tests | 14 |
+| Synthetic unit test (defense_pct cap) | 1 |
+| Non-expensive unit tests (materializer) | 22 |
+| Parity failures | 0 |
+| Blocked residuals (architecture-constrained) | 2 (wall.hp, wall.regen — cross-surface) |
+| Deferred residuals (scenario-scoped/debug) | 1 (black_hole_digestor) |
+| Out-of-scope residuals (not in family surface set) | 3 (recovery surfaces) |
+
+**Phase 4 closeout note:** Phase 4 has reached its deliverable boundary. All enumerable non-blocked surfaces in the frozen PH4-A denominator are migrated and parity-verified. The remaining residuals are either architecture-blocked (requiring cross-surface resolution support), out-of-scope (requiring surface-set extension), or debug-only deferred. No open defects exist in migrated scope. Phase 5 may begin.
+
+**Next-phase promotion note:** Phase 5 (`PH5`) may begin when `PH4-F` is marked `delivery_status: done` in BURNDOWN.yaml. PH5 depends on a stable stat-resolution owner model — which is now in place. PH5 entry blockers: none from Phase 4. PH5 scope: surface verification registry, evaluator contract framework, max-wave evaluator reference corpus (per BURNDOWN.yaml PH5 entries).
 
 ---
 

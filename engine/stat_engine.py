@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 
+from engine.query_routing import to_v2_surface_id
 from engine.state_identity import StateIdentity
 from engine.stat_query_kernel import QueryResponse, StatQueryKernel
 from engine.stat_resolution_core import (
@@ -14,6 +15,8 @@ from models.statbook import StatBook, StatRow
 
 _TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
 _TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
+_PROGRESSION_START_OF_RUN = 'progression_start_of_run'
+_PROGRESSION_RUNTIME_WITH_PERKS = 'progression_runtime_with_perks'
 
 # Canonical timing-v1 surface IDs declared in stat-query-initial-surface-set.yaml (timing_v1 group).
 # All declared timing families share this surface set.
@@ -30,9 +33,32 @@ _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::cards.wave_accelerator.spawn_rate_acceleration',
 )
 
-# All declared timing families share an identical surface-set contract.
-# Contract source: stat-query-initial-surface-set.yaml (timing_v1 group).
+# Declared progression-family surface set. All three declared progression families share the
+# same surface denominator at the flat statbook compatibility boundary; their semantic split
+# only matters once bounded runtime/overlay execution begins inside the QE-owned progression stack.
+_PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
+    'state::tower.hp',
+    'state::wall.hp',
+    'state::wall.regen',
+    'state::wall.fortification_multiplier',
+    'state::tower.defense_pct',
+    'state::tower.thorns_damage_pct',
+    'state::tower.orb_count',
+    'state::tower.orb_speed_rpm',
+    'state::cards.plasma_cannon.effect_pct',
+    'mechanic_param::module.orbital_augment.electron_count',
+    'mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct',
+    'mechanic_param::module.primordial_collapse.bh_damage_reduction_pct',
+    'state::tower.free_attack_upgrade_chance_pct',
+    'state::tower.free_defense_upgrade_chance_pct',
+    'state::tower.free_utility_upgrade_chance_pct',
+    'state::tower.enemy_attack_level_skip_pct',
+    'state::tower.enemy_health_level_skip_pct',
+    'support_surface::free_upgrade_multiplier',
+)
+
 _TIMING_SURFACE_IDS: tuple[str, ...] = _TIMING_V1_SURFACE_IDS
+_PROGRESSION_SURFACE_ID_SET = frozenset(_PROGRESSION_V1_SURFACE_IDS)
 
 _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     _TIMING_TOURNAMENT_NO_PERKS: _TIMING_V1_SURFACE_IDS,
@@ -40,6 +66,11 @@ _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     # timing_scenario_probe surface set declared; not in _TIMING_FAMILY_BY_PRESET because it
     # shares the 'Farming' preset with timing_farm_with_perks (no fixed detection convention).
     'timing_scenario_probe': _TIMING_V1_SURFACE_IDS,
+    # progression_start_of_run is the flat-statbook compatibility contract used by resolve_stats().
+    # progression_runtime_no_perks shares this exact bounded surface set and remains QE-owned
+    # through the direct progression helpers and runtime-consumer bundles.
+    _PROGRESSION_START_OF_RUN: _PROGRESSION_V1_SURFACE_IDS,
+    _PROGRESSION_RUNTIME_WITH_PERKS: _PROGRESSION_V1_SURFACE_IDS,
 }
 
 # Unambiguous preset-name → declared timing family mapping used by _infer_manifest_approved_family.
@@ -72,13 +103,32 @@ def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | N
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
     if len(preset_names) != 1:
         return None
-    # Require scenario_rules rows (added exclusively by compile_timing_family_rows) to prevent
-    # non-timing inputs (e.g. progression rows compiled with preset_name='Farming') from being
-    # incorrectly delegated as a timing family.
+
+    preset_name = next(iter(preset_names))
     has_timing_rows = any(row.source_family == 'scenario_rules' for row in stat_inputs)
-    if not has_timing_rows:
+    if has_timing_rows:
+        return _TIMING_FAMILY_BY_PRESET.get(preset_name)
+
+    if _looks_like_progression_family_rows(stat_inputs):
+        # Flat stat_inputs do not preserve enough metadata to distinguish
+        # progression_start_of_run from progression_runtime_no_perks. The shared bounded
+        # surface contract is still QE-owned, so the compatibility entrypoint delegates
+        # against the start-of-run contract unless explicit perk rows are present.
+        if any(row.source_family == 'perk' for row in stat_inputs):
+            return _PROGRESSION_RUNTIME_WITH_PERKS
+        return _PROGRESSION_START_OF_RUN
+
+    return None
+
+
+def _looks_like_progression_family_rows(stat_inputs: Sequence[StatInput]) -> bool:
+    return any(_normalized_surface_id(row) in _PROGRESSION_SURFACE_ID_SET for row in stat_inputs)
+
+
+def _normalized_surface_id(row: StatInput) -> str | None:
+    if not row.destination_object_type or not row.destination_id:
         return None
-    return _TIMING_FAMILY_BY_PRESET.get(next(iter(preset_names)))
+    return to_v2_surface_id(f'{row.destination_object_type}::{row.destination_id}')
 
 
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:
@@ -145,6 +195,11 @@ def _merge_delegated_family_rows(
         'undelegated_fallback_owner': 'engine.stat_resolution_core.resolve_stats',
         'bounded_only': True,
     }
+    if family_id == _PROGRESSION_START_OF_RUN:
+        diagnostics['resolve_stats_delegation']['compat_equivalent_declared_families'] = [
+            'progression_start_of_run',
+            'progression_runtime_no_perks',
+        ]
     return StatBook(rows=merged_rows, diagnostics=diagnostics)
 
 
