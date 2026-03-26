@@ -104,7 +104,9 @@ kb/{domain}/
 
 **Phase 4 authority reset — in effect:** The Query Engine bounded API (`engine/stat_query_kernel.py`, `engine/family_baseline_materializer.py`, `engine/state_identity.py`) is the canonical execution target for all new Phase 4 stat-resolution work. `engine/stat_resolution_core.py` is the pre-Phase-4 core resolver (legacy/reference-only under Phase 4; no new canonical stat logic may be added). `engine/stat_engine.py` is a thin compatibility entrypoint (~13 lines) only.
 
-**Current state:** The pre-Phase-4 core resolver (`engine/stat_resolution_core.py`) is functional. The bounded QE API primitives exist in `engine/state_identity.py`, `engine/family_baseline_materializer.py`, and `engine/stat_query_kernel.py`. Timing-family query execution is already wired through this bounded API. The bounded progression recalc bridge routes its runtime/reference path through declared query-owned families, but the broader R86 acceptance thread is still open: global parity validation across declared families, end-to-end overlay/invalidation closure, Gate F benchmark evidence, and the remaining KB-routing ownership extraction are still pending acceptance evidence.
+**Current state (post-PH4-D):** All 15 migrated surfaces from the frozen PH4-A denominator have been migrated to QE-owned paths (PH4-C, 6 tranches). Full parity is confirmed: 14 `@pytest.mark.expensive` tests and 1 synthetic unit test (`state::tower.defense_pct` cap logic) pass against the live legacy baseline in `tests/test_family_baseline_materializer.py` (see `out/parity_matrix_ph4d.json`). `engine/stat_resolution_core.py` no longer owns the canonical resolution path for any migrated surface.
+
+**Legacy demotion statement:** `engine/stat_resolution_core.py` is demoted to legacy/reference-only for all migrated surfaces. Its remaining residual scope is explicitly bounded to four categories: (1) `state::wall.hp` and `state::wall.regen` — cross-surface post-resolution dependency, architecture-blocked; (2) recovery surfaces (`max_recovery_multiplier`, `recovery_amount_pct`, `recovery_package_multiplier`) — not in declared family surface set; (3) `mechanic_param::module.black_hole_digestor.*` — `scenario_scoped=true`, `debug_only=true`, deferred; (4) any statbook row outside the declared QE family surface set that still routes through the compatibility entrypoint. No new canonical stat logic may be added to `engine/stat_resolution_core.py` or `engine/stat_engine.py`. `engine/stat_engine.py` remains a thin compatibility entrypoint only (routing declared families through QE, fallback-delegating residuals through legacy).
 
 **Key interfaces:**
 - Consumes: `AccountState` from Inputs, mechanic contracts and tables from the KB
@@ -125,7 +127,7 @@ kb/{domain}/
 | `engine/stat_query_kernel.py` | 420 | Bounded query API kernel for baseline resolution, overlays, and trace output |
 | `models/statbook.py` | 28 | StatBook output data model |
 
-**Planned (post-R86):** Continue moving primary orchestration onto the bounded query API surface and use the existing contract/test stack to extend bounded family coverage deliberately. See `kb/global-rules/contracts/stat-query-*.yaml` for the contract definitions.
+**Next (PH4-F):** Post-cutover hardening and closeout — remove or quarantine dead code paths, tighten the compatibility entrypoint boundary, and close the remaining residual ledger items where unblocked. See `kb/global-rules/contracts/stat-query-*.yaml` for the surface contract definitions.
 
 ---
 

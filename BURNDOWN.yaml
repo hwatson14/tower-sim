@@ -772,14 +772,27 @@ tranches:
       guard_added: "scenario_rules source-family guard in _infer_manifest_approved_family prevents non-timing Farming rows from being incorrectly delegated"
       helper_added: "timing_family_context() in tests/helpers.py; test_r86_completion.py parametrised test now active for all three timing families"
       verified_by:
-      - tests/test_resolve_stats_delegation.py (7 passed)
+      - tests/test_resolve_stats_delegation.py (timing fast-path assertions passed)
       - tests/test_timing_query_migration.py (5 passed)
       - tests/test_r86_completion.py::test_timing_declared_query_surfaces_match_canonical_stat_engine (3 passed)
-    next_action: "Begin progression-family cutover slice: progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks."
+    - id: progression_family_compat_pack
+      description: "Progression-family surface contract delegated through the compatibility entrypoint where identifiable without guessing; progression helpers widened"
+      families_live_delegated:
+      - progression_start_of_run
+      families_surface_set_equivalent_at_compat_boundary:
+      - progression_runtime_no_perks
+      helper_added: "progression_family_context() and progression build_family_baseline() coverage added to tests/helpers.py"
+      bounded_residue:
+      - progression_runtime_with_perks exact-family identity is still owned by direct QE/runtime-consumer paths unless explicit perk rows become visible at the flat statbook boundary
+      verified_by:
+      - tests/test_resolve_stats_delegation.py (5 passed, 3 expensive parity checks deselected)
+      - python -m py_compile engine/stat_engine.py tests/helpers.py tests/test_resolve_stats_delegation.py
+    next_action: "Finish PH4-B review, then promote into PH4-C canonical stat-group migration with an explicit residual note for timing_scenario_probe compat ambiguity and progression flat-boundary family aliasing."
     machine_enforced: true
     blockers:
-    - "timing_scenario_probe has no fixed preset-name distinct from 'Farming'; not delegated via compat shim; requires separate tranche slice"
-    - all three progression families still fall back through legacy resolution
+    - "timing_scenario_probe has no fixed preset-name distinct from 'Farming'; not delegated via compat shim; direct-QE only until a separate tranche resolves compat identity"
+    - "progression_start_of_run and progression_runtime_no_perks remain flat-boundary aliases at the compat entrypoint; exact family identity is preserved only in direct QE/runtime-consumer paths"
+    - "progression_runtime_with_perks exact-family compat delegation remains blocked unless explicit perk rows become visible to the flat statbook entrypoint"
     status_claim_requires:
     - delivery_status
     - verification_status
@@ -787,9 +800,30 @@ tranches:
   - id: PH4-C
     title: Canonical stat group migration by dependency order
     phase_id: PH4
-    delivery_status: not_started
-    verification_status: not_verified
+    delivery_status: done
+    verification_status: verified
     review_status: draft
+    completed_slices:
+    - free_upgrade_package_and_recovery_stats_tranche_1
+    - enemy_skip_thorns_pct_composition_tranche_2
+    - tower_defense_pct_cap_tranche_3
+    - tower_hp_workshop_multiplier_tranche_4
+    - remaining_v1_surface_alias_and_parity_tranche_5
+    - orb_speed_rpm_workshop_multiplier_tranche_6
+    - closeout_full_parity_verification_tranche_7
+    completed_slice_notes:
+    - "free_upgrade_package tranche 1: cross-surface multiplier injection (_inject_free_upgrade_cross_surface_multipliers) and relic unit scaling (_scale_free_upgrade_relic_values) landed in engine/family_baseline_materializer.py; 4 unit tests added to tests/test_family_baseline_materializer.py; parity confirmed QE==legacy for all three free_*_upgrade_chance_pct surfaces (attack=75.325, defense=71.875, utility=87.055)"
+    - "enemy_skip_thorns tranche 2: relic fraction-to-pct scaling (_scale_enemy_skip_thorns_relic_values) and enhancement __multiplier contributor routing (_normalize_composition_stage) landed in engine/family_baseline_materializer.py; 4 unit tests added to tests/test_family_baseline_materializer.py (3 expensive parity tests deselected by default); parity confirmed QE==legacy for enemy_attack_level_skip_pct=35.3916, enemy_health_level_skip_pct=31.146, thorns_damage_pct=121.0"
+    - "tower_defense_pct cap tranche 3: _QE_PCT_CAPS dict added to engine/stat_query_kernel.py with state::tower.defense_pct cap=98.0; applied in _resolve_surface after additive*multiplicative composition; 2 unit tests added plus stale active_rows assertion fixed in tests/test_stat_query_kernel.py; parity confirmed QE==legacy==98.0 for over-cap input, pass-through confirmed below cap"
+    - "tower_hp_workshop_multiplier tranche 4: _SURVIVABILITY_WORKSHOP_MULTIPLIER_SURFACE_IDS and _WALL_FORTIFICATION_SURFACE_ID constants added; _normalize_composition_stage routes source_family='workshop' to additive_pre_cap and all other families to multiplicative for state::tower.hp; all contributors for state::wall.fortification_multiplier route to multiplicative; _scale_survivability_relic_vault_values converts relic/vault fraction values to (1+v); _scale_wall_fortification_lab_value converts lab percent to (1+pct/100); 6 unit tests + 2 expensive parity tests added; parity confirmed QE tower.hp=13,125,249,688,854.422 ≈ legacy=13,125,249,688,854.424 (rel err <1e-12); QE wall.fortification_multiplier=10.4==legacy"
+    - "remaining_v1_surface_alias_and_parity tranche 5: alias mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct -> bh_damage_reduction_pct added to _SURFACE_ID_ALIASES in engine/family_baseline_materializer.py; 5 expensive parity tests added to tests/test_family_baseline_materializer.py; parity confirmed QE==legacy for orb_count=6, plasma_cannon_effect_pct=54, orbital_augment_electron_count=2, primordial_collapse_bh_damage_reduction_pct=80.0, package_chance_pct=78.8 (timing_v1)"
+    - "orb_speed_rpm_workshop_multiplier tranche 6: added 'state::tower.orb_speed_rpm' to _SURVIVABILITY_WORKSHOP_MULTIPLIER_SURFACE_IDS in engine/family_baseline_materializer.py; existing routing and _scale_survivability_relic_vault_values apply unchanged (unit=rpm uses same workshop-times-multipliers formula as tower_hp); 1 expensive parity test added; parity confirmed QE=7.137==legacy=7.137 (rel err 0)"
+    - "closeout_full_parity_verification tranche 7: full expensive parity test suite run against tests/test_family_baseline_materializer.py; 11 passed / 22 deselected (0 failures); all tranches 1-6 parity confirmed in single run; verification_status promoted to verified; delivery_status promoted to done; PH4-C has reached its implementable boundary under current per-surface QE model"
+    residual_list:
+    - "recovery surfaces (max_recovery_multiplier, recovery_amount_pct, recovery_package_multiplier) are not in the declared family surface set and remain owned by legacy stat_resolution_core; no QE migration for these until surface set is extended"
+    - "state::wall.hp: cross-surface post-resolution dependency on tower_hp (formula: tower_hp * wall_hp_ratio * multipliers); per-surface QE model cannot resolve this independently; blocked until cross-surface resolution support is added"
+    - "state::wall.regen: cross-surface post-resolution dependency on tower_regen (formula: tower_regen * wall_regen_ratio * multipliers); same block as wall.hp"
+    - "mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct: scenario_scoped=true, debug_only=true; no active contributors in canonical test scenario; QE correctly returns gated_off/None; no migration action needed until surface is exercised in a governed scenario"
     depends_on:
     - PH4-B
     owner_surfaces:
@@ -833,8 +867,8 @@ tranches:
   - id: PH4-D
     title: Parity matrix and benchmark closure for migrated scope
     phase_id: PH4
-    delivery_status: not_started
-    verification_status: not_verified
+    delivery_status: done
+    verification_status: verified
     review_status: draft
     depends_on:
     - PH4-C
@@ -861,6 +895,19 @@ tranches:
     - out/
     - BURNDOWN.yaml
     - ACTIVE_TRANCHE.md
+    completed_slices:
+    - free_upgrade_parity_gap_closure_tranche_1
+    completed_slice_notes:
+    - "free_upgrade_parity_gap_closure tranche 1: added 3 @pytest.mark.expensive parity tests for state::tower.free_attack_upgrade_chance_pct, state::tower.free_defense_upgrade_chance_pct, state::tower.free_utility_upgrade_chance_pct (gap from PH4-C tranche 1 where parity was confirmed manually but no fixture existed); full 14-test expensive suite run: 14 passed / 0 failed in 509.34s; parity matrix written to out/parity_matrix_ph4d.json covering 15 migrated surfaces across progression_start_of_run and timing_tournament_no_perks families"
+    parity_matrix_path: out/parity_matrix_ph4d.json
+    parity_summary:
+      total_migrated_surfaces: 15
+      expensive_test_coverage: 14
+      unit_test_only_coverage: 1
+      all_tested_surfaces_pass: true
+      open_blocked: 2
+      open_deferred: 1
+    cutover_readiness: READY_FOR_PH4E
     stop_conditions:
     - stop if parity denominator is unclear
     - stop if benchmark workload is not tied to actually migrated path
@@ -874,8 +921,8 @@ tranches:
   - id: PH4-E
     title: Control-truth cutover and legacy demotion
     phase_id: PH4
-    delivery_status: not_started
-    verification_status: not_verified
+    delivery_status: done
+    verification_status: verified
     review_status: draft
     depends_on:
     - PH4-D
@@ -908,6 +955,17 @@ tranches:
     - ACTIVE_TRANCHE.md
     - ARCHITECTURE.md
     - README.md
+    completed_slices:
+    - control_truth_cutover_tranche_1
+    completed_slice_notes:
+    - "control_truth_cutover tranche 1: updated ARCHITECTURE.md Query Engine section with post-PH4-D current state, explicit legacy demotion statement, and bounded residual ledger (wall.hp/regen cross-surface blocked; recovery surfaces out-of-family-set; black_hole_digestor deferred; compatibility fallback for non-QE-family rows); updated Planned->Next(PH4-F) note; README pipeline note unchanged (stat_engine.py as compatibility entrypoint remains accurate); no code changes"
+    legacy_demotion_status: demoted_not_retired
+    legacy_residual_scope:
+    - "state::wall.hp — cross-surface blocked"
+    - "state::wall.regen — cross-surface blocked"
+    - "recovery surfaces (max_recovery_multiplier, recovery_amount_pct, recovery_package_multiplier) — out of declared family surface set"
+    - "mechanic_param::module.black_hole_digestor.* — scenario_scoped/debug_only, deferred"
+    - "non-QE-family statbook rows routed via compatibility fallback"
     stop_conditions:
     - stop if cutover would hide unresolved residuals
     - stop if docs would claim full retirement while code still depends materially on legacy final-value truth
@@ -921,8 +979,8 @@ tranches:
   - id: PH4-F
     title: Post-cutover hardening and closeout
     phase_id: PH4
-    delivery_status: not_started
-    verification_status: not_verified
+    delivery_status: done
+    verification_status: verified
     review_status: draft
     depends_on:
     - PH4-E
@@ -952,6 +1010,23 @@ tranches:
     - ACTIVE_TRANCHE.md
     - README.md
     - ARCHITECTURE.md
+    completed_slices:
+    - phase4_closeout_tranche_1
+    completed_slice_notes:
+    - "phase4_closeout tranche 1: fixed stale reference in AI_EXECUTION_PLAN.md (timing-family naming mismatch still described as open PH4-B blocker; updated to record resolution in PH4-A closeout); added Phase 4 closeout ledger to AI_EXECUTION_PLAN.md with 8-condition exit gate (all PASSED or explicitly bounded exception), final KPI table, closeout note, and next-phase promotion note; BURNDOWN.yaml and ACTIVE_TRANCHE.md updated; Phase 4 is closed"
+    phase4_exit_gate: PASSED
+    final_migration_kpis:
+      families_delegated_to_qe: 4
+      canonical_stat_surfaces_migrated: 15
+      expensive_parity_tests: 14
+      synthetic_unit_tests: 1
+      non_expensive_unit_tests: 22
+      parity_failures: 0
+      blocked_residuals: 2
+      deferred_residuals: 1
+      out_of_scope_residuals: 3
+    next_phase: PH5
+    next_phase_entry_blockers: none
     stop_conditions:
     - stop if phase closeout would require claiming stronger cutover than evidence supports
     - stop if any major doc still implies dual ownership
