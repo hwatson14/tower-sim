@@ -18,13 +18,13 @@ Do not duplicate tranche contract text here. If contract truth changes, update `
 `PH4 — Full stat-resolution migration to Query Engine`
 
 ## Active tranche
-`PH4-B — Declared family cutover to Query Engine` (blocked at entry gate; authority reset applied)
+`PH4-F — Post-cutover hardening and closeout` (tranche 1 complete: stale reference fixed, Phase 4 closeout ledger written, KPIs recorded, Phase 4 CLOSED; delivery_status=done; verification_status=verified)
 
 ## Authoritative plan section
-`AI_EXECUTION_PLAN.md -> Phase 4 — Full stat-resolution migration to Query Engine -> PH4-B — Declared family cutover to Query Engine`
+`AI_EXECUTION_PLAN.md -> Phase 4 — Full stat-resolution migration to Query Engine -> PH4-F — Post-cutover hardening and closeout`
 
 ## Objective
-Advance the declared-family cutover tranche for Phase 4. The timing-family naming mismatch has been resolved and timing-family live delegation has been expanded. PH4-B now continues toward progression-family cutover.
+Close Phase 4 cleanly. PH4-F tranche 1: (1) fixed stale reference in AI_EXECUTION_PLAN.md naming-reset section (timing-family mismatch still described as open PH4-B blocker, was resolved in PH4-A); (2) added Phase 4 closeout ledger with 8-condition exit gate (all PASSED), final KPI table (15 surfaces, 14 expensive tests, 0 failures), closeout note, and next-phase promotion note; no code changes; no new files. Phase 4 exit gate: PASSED. Next active work: PH5.
 
 ## Allowed local residue in this file
 - active-slice clarification that does not modify tranche contract truth
@@ -55,7 +55,9 @@ Advance the declared-family cutover tranche for Phase 4. The timing-family namin
 - **`scenario_rules` guard added**: `_infer_manifest_approved_family` now requires `source_family == 'scenario_rules'` rows to prevent non-timing inputs (e.g. progression rows with `preset_name='Farming'`) from being incorrectly delegated as a timing family.
 - **`timing_scenario_probe` surface set declared, not yet live-delegated via compat shim**: it has no fixed preset-name convention distinct from `'Farming'`; it is accessible only via the direct QE path. Its entry into the compat shim requires a separate tranche slice.
 - **`timing_family_context` helper added**: `tests/helpers.py` now exports `timing_family_context()` covering all three declared timing families; `test_r86_completion.py` parametrised test is no longer skipped.
-- PH4-B next focus is progression-family cutover: `progression_start_of_run`, `progression_runtime_no_perks`, `progression_runtime_with_perks`.
+- **Progression-family compatibility delegation expanded**: the flat progression-family surface contract is now delegated through the Query Engine compatibility entrypoint for identifiable progression statbooks. Because `progression_start_of_run` and `progression_runtime_no_perks` share the same bounded surface set at the flat statbook boundary, the compat shim delegates them through the start-of-run contract and records the bounded equivalence explicitly in diagnostics.
+- **Progression helper coverage widened**: `tests/helpers.py` now exports canonical progression family params and `build_family_baseline()` can materialize declared progression families as well as timing families.
+- `timing_scenario_probe` remains direct-QE only at the compatibility boundary, and `progression_runtime_with_perks` remains exact-family direct-QE/runtime-consumer owned unless explicit perk rows become visible to the flat compatibility entrypoint.
 - PH4-B remains limited to declared family cutover only; it must not expand scope into undeclared families or non-family stat-group migration.
 
 ## Legacy-surface rule after Phase 4

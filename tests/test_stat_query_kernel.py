@@ -128,7 +128,23 @@ def test_worked_example_baseline_contributor_map_rows_match_r86_examples():
             'provenance_ref': 'engine.family_baseline_materializer.placeholder',
         }
     ]
+    # Tranche 1: _inject_free_upgrade_cross_surface_multipliers injects the multiplier row onto
+    # state::tower.free_attack_upgrade_chance_pct (because an active additive row exists there).
+    # The injected row appears before the original additive row in contributor_rows order.
     assert active_rows == [
+        {
+            'surface_id': 'state::tower.free_attack_upgrade_chance_pct',
+            'surface_class': 'surface',
+            'domain': 'progression',
+            'source_class': 'cards',
+            'composition_stage': 'multiplicative',
+            'contributor_id': 'card.free_upgrades.multiplier',
+            'value': 1.20,
+            'value_type': 'scalar',
+            'active': True,
+            'gate_reason': None,
+            'provenance_ref': 'cards.free_upgrades',
+        },
         {
             'surface_id': 'state::tower.free_attack_upgrade_chance_pct',
             'surface_class': 'surface',
@@ -565,3 +581,43 @@ def test_query_kernel_accepts_contract_trace_modes(trace_mode: str):
         assert response.contributor_rows == ()
     else:
         assert len(response.contributor_rows) == 1
+
+
+def _tower_defense_baseline(additive_value: float) -> FamilyBaselineContributorMap:
+    """Build a minimal FamilyBaselineContributorMap with one additive tower_defense_pct contributor."""
+    identity = StateIdentity('acct_def_cap', 'loadout_def_cap', 'scn_def_cap', 'branch_base')
+    return FamilyBaselineMaterializer().materialize_from_rows(
+        identity,
+        'progression_start_of_run',
+        (
+            StatInput(
+                stat_name='Tower Defense Pct Workshop',
+                source_family='workshop',
+                source_name='Defense %',
+                value=additive_value,
+                value_type='pct',
+                stage='account_state',
+                contributor_id='workshop.tower_defense_pct.base',
+                provenance='workshop.track.tower_defense_pct',
+                destination_object_type='canonical_stat',
+                destination_id='tower_defense_pct',
+                kb_mapped=True,
+            ),
+        ),
+    )
+
+
+def test_resolve_surface_caps_tower_defense_pct_at_98():
+    """QE must clamp state::tower.defense_pct to 98.0, matching legacy pct_capped_scalar_stat resolver."""
+    baseline = _tower_defense_baseline(additive_value=105.0)
+    response = StatQueryKernel().resolve_surfaces(baseline, ('state::tower.defense_pct',))
+    result = response.resolved_surface_rows[0].final_value
+    assert result == 98.0, f'Expected cap=98.0, got {result}'
+
+
+def test_resolve_surface_tower_defense_pct_below_cap_passes_through():
+    """QE must not clamp state::tower.defense_pct when value is below the 98.0 cap."""
+    baseline = _tower_defense_baseline(additive_value=75.0)
+    response = StatQueryKernel().resolve_surfaces(baseline, ('state::tower.defense_pct',))
+    result = response.resolved_surface_rows[0].final_value
+    assert result == 75.0, f'Expected uncapped 75.0, got {result}'

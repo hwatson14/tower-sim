@@ -1,0 +1,194 @@
+{
+  "schema": "parity_matrix_ph4d_v1",
+  "generated": "PH4-D tranche: parity_matrix_gap_closure",
+  "denominator_source": "PH4A_CANONICAL_MIGRATION_LEDGER.md (frozen PH4-A denominator)",
+  "families": [
+    {
+      "family_id": "progression_start_of_run",
+      "preset": "Farming",
+      "perks_enabled": false,
+      "scenario_mode_id": "farming",
+      "surfaces": [
+        {
+          "qe_surface_id": "state::tower.free_attack_upgrade_chance_pct",
+          "legacy_key": "canonical_stat::free_attack_upgrade_chance_pct",
+          "tranche": "PH4-C-1",
+          "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
+          "expensive_test": "test_progression_qe_matches_legacy_free_attack_upgrade_chance_pct",
+          "status": "pass",
+          "confirmed_value_approx": 75.325
+        },
+        {
+          "qe_surface_id": "state::tower.free_defense_upgrade_chance_pct",
+          "legacy_key": "canonical_stat::free_defense_upgrade_chance_pct",
+          "tranche": "PH4-C-1",
+          "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
+          "expensive_test": "test_progression_qe_matches_legacy_free_defense_upgrade_chance_pct",
+          "status": "pass",
+          "confirmed_value_approx": 71.875
+        },
+        {
+          "qe_surface_id": "state::tower.free_utility_upgrade_chance_pct",
+          "legacy_key": "canonical_stat::free_utility_upgrade_chance_pct",
+          "tranche": "PH4-C-1",
+          "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
+          "expensive_test": "test_progression_qe_matches_legacy_free_utility_upgrade_chance_pct",
+          "status": "pass",
+          "confirmed_value_approx": 87.055
+        },
+        {
+          "qe_surface_id": "state::tower.enemy_attack_level_skip_pct",
+          "legacy_key": "canonical_stat::enemy_attack_level_skip_pct",
+          "tranche": "PH4-C-2",
+          "formula_notes": "additive_pre_cap; relic fractional values scaled x100",
+          "expensive_test": "test_progression_qe_matches_legacy_enemy_attack_level_skip_pct",
+          "status": "pass",
+          "confirmed_value_approx": 35.3916
+        },
+        {
+          "qe_surface_id": "state::tower.enemy_health_level_skip_pct",
+          "legacy_key": "canonical_stat::enemy_health_level_skip_pct",
+          "tranche": "PH4-C-2",
+          "formula_notes": "additive_pre_cap; relic fractional values scaled x100",
+          "expensive_test": "test_progression_qe_matches_legacy_enemy_health_level_skip_pct",
+          "status": "pass",
+          "confirmed_value_approx": 31.146
+        },
+        {
+          "qe_surface_id": "state::tower.thorns_damage_pct",
+          "legacy_key": "canonical_stat::tower_thorns_damage_pct",
+          "tranche": "PH4-C-2",
+          "formula_notes": "additive_pre_cap; relic fractional values scaled x100; enhancement -> multiplicative routing",
+          "expensive_test": "test_progression_qe_matches_legacy_thorns_damage_pct",
+          "status": "pass",
+          "confirmed_value_approx": 121.0
+        },
+        {
+          "qe_surface_id": "state::tower.defense_pct",
+          "legacy_key": "canonical_stat::tower_defense_pct",
+          "tranche": "PH4-C-3",
+          "formula_notes": "additive_pre_cap; cap enforced at 98.0 in stat_query_kernel._QE_PCT_CAPS",
+          "expensive_test": null,
+          "unit_test": "test_stat_query_kernel.py::test_qe_caps_defense_pct_at_98 (synthetic)",
+          "status": "pass_unit_only",
+          "confirmed_value_approx": 98.0,
+          "note": "cap-at-98 exercised with synthetic over-cap input; full-stack expensive test not added (single formula, deterministic, no source-class scaling)"
+        },
+        {
+          "qe_surface_id": "state::tower.hp",
+          "legacy_key": "canonical_stat::tower_hp",
+          "tranche": "PH4-C-4",
+          "formula_notes": "workshop -> additive_pre_cap; relic/vault -> multiplicative with (1+v) scaling",
+          "expensive_test": "test_progression_qe_matches_legacy_tower_hp",
+          "status": "pass",
+          "confirmed_value_approx": 13125249688854.422
+        },
+        {
+          "qe_surface_id": "state::wall.fortification_multiplier",
+          "legacy_key": "canonical_stat::wall_fortification_multiplier",
+          "tranche": "PH4-C-4",
+          "formula_notes": "all contributors -> multiplicative; labs value scaled 1 + pct/100",
+          "expensive_test": "test_progression_qe_matches_legacy_wall_fortification_multiplier",
+          "status": "pass",
+          "confirmed_value_approx": 10.4
+        },
+        {
+          "qe_surface_id": "state::tower.orb_count",
+          "legacy_key": "canonical_stat::tower_orb_count",
+          "tranche": "PH4-C-5",
+          "formula_notes": "simple additive_pre_cap sum",
+          "expensive_test": "test_progression_qe_matches_legacy_orb_count",
+          "status": "pass",
+          "confirmed_value_approx": 6
+        },
+        {
+          "qe_surface_id": "state::cards.plasma_cannon.effect_pct",
+          "legacy_key": "runtime_mechanic_param::cards.plasma_cannon.effect_pct",
+          "tranche": "PH4-C-5",
+          "formula_notes": "scenario_adjustment stage; no formula fix needed",
+          "expensive_test": "test_progression_qe_matches_legacy_plasma_cannon_effect_pct",
+          "status": "pass",
+          "confirmed_value_approx": 54.0
+        },
+        {
+          "qe_surface_id": "mechanic_param::module.orbital_augment.electron_count",
+          "legacy_key": "mechanic_param::module.orbital_augment.electron_count",
+          "tranche": "PH4-C-5",
+          "formula_notes": "count surface; additive_pre_cap sum",
+          "expensive_test": "test_progression_qe_matches_legacy_orbital_augment_electron_count",
+          "status": "pass",
+          "confirmed_value_approx": 2
+        },
+        {
+          "qe_surface_id": "mechanic_param::module.primordial_collapse.bh_damage_reduction_pct",
+          "legacy_key": "mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct",
+          "tranche": "PH4-C-5",
+          "formula_notes": "alias fix: compiler routes to in_bh_..., QE surface declared as bh_...; _SURFACE_ID_ALIASES maps input",
+          "expensive_test": "test_progression_qe_matches_legacy_primordial_collapse_bh_damage_reduction_pct",
+          "status": "pass",
+          "confirmed_value_approx": 80.0
+        },
+        {
+          "qe_surface_id": "state::tower.orb_speed_rpm",
+          "legacy_key": "canonical_stat::tower_orb_speed_rpm",
+          "tranche": "PH4-C-6",
+          "formula_notes": "workshop -> additive_pre_cap; relic/vault/module_substat -> multiplicative with (1+v) scaling; same path as tower_hp (unit=rpm)",
+          "expensive_test": "test_progression_qe_matches_legacy_orb_speed_rpm",
+          "status": "pass",
+          "confirmed_value_approx": 7.137
+        }
+      ]
+    },
+    {
+      "family_id": "timing_tournament_no_perks",
+      "preset": "Tourney",
+      "perks_enabled": false,
+      "scenario_mode_id": "tournament",
+      "surfaces": [
+        {
+          "qe_surface_id": "state::tower.package_chance_pct",
+          "legacy_key": "canonical_stat::package_chance_pct",
+          "tranche": "PH4-C-5",
+          "formula_notes": "timing_v1 surface; additive_pre_cap sum; no formula fix needed",
+          "expensive_test": "test_timing_qe_matches_legacy_package_chance_pct",
+          "status": "pass",
+          "confirmed_value_approx": 78.8
+        }
+      ]
+    }
+  ],
+  "residuals": [
+    {
+      "qe_surface_id": "state::wall.hp",
+      "status": "open_blocked",
+      "reason": "cross-surface post-resolution dependency on tower_hp; per-surface QE model cannot resolve independently"
+    },
+    {
+      "qe_surface_id": "state::wall.regen",
+      "status": "open_blocked",
+      "reason": "cross-surface post-resolution dependency on tower_regen; same block as wall.hp"
+    },
+    {
+      "qe_surface_id": "mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
+      "status": "open_deferred",
+      "reason": "scenario_scoped=true, debug_only=true; QE correctly returns gated_off; no migration action until surface is exercised in a governed scenario"
+    },
+    {
+      "surfaces": ["max_recovery_multiplier", "recovery_amount_pct", "recovery_package_multiplier"],
+      "status": "out_of_scope",
+      "reason": "not in declared family surface set; legacy-owned until surface set is extended"
+    }
+  ],
+  "summary": {
+    "total_migrated_surfaces": 15,
+    "expensive_test_coverage": 14,
+    "unit_test_only_coverage": 1,
+    "open_blocked": 2,
+    "open_deferred": 1,
+    "out_of_scope": 3,
+    "all_tested_surfaces_pass": true,
+    "test_run_evidence": "tests/test_family_baseline_materializer.py -m expensive: 14 passed / 0 failed (PH4-D run)",
+    "cutover_readiness": "READY_FOR_PH4E",
+    "cutover_note": "All 14 expensive parity fixtures pass. Blocked residuals (wall.hp, wall.regen) require architecture change outside PH4-D scope. defense_pct covered by synthetic unit test with deterministic cap logic. No open defects in migrated scope. PH4-E (control-truth cutover and legacy demotion) may proceed."
+  }
+}

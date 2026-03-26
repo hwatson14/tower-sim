@@ -78,12 +78,43 @@ def timing_family_context(family_id: str) -> tuple:
     params = _TIMING_FAMILY_CANONICAL_PARAMS[family_id]
     return params['scenario_config'], params['perks_enabled'], params['preset_name']
 
+_PROGRESSION_FAMILY_CANONICAL_PARAMS: dict[str, dict] = {
+    'progression_start_of_run': {
+        'preset_name': 'Farming',
+        'state_mode': 'start_of_run',
+        'perks_enabled': False,
+    },
+    'progression_runtime_no_perks': {
+        'preset_name': 'Farming',
+        'state_mode': 'start_of_run',
+        'perks_enabled': False,
+    },
+    'progression_runtime_with_perks': {
+        'preset_name': 'Farming',
+        'state_mode': 'start_of_run',
+        'perks_enabled': True,
+    },
+}
 
+
+def progression_family_context(family_id: str) -> dict:
+    return dict(_PROGRESSION_FAMILY_CANONICAL_PARAMS[family_id])
+
+
+
+@lru_cache(maxsize=None)
 def build_family_baseline(family_id: str):
-    """Return a FamilyBaselineContributorMap for the given declared family_id using canonical test params."""
+    """Return an immutable FamilyBaselineContributorMap for the given declared family_id using canonical test params."""
     if family_id in _TIMING_FAMILY_CANONICAL_PARAMS:
         params = _TIMING_FAMILY_CANONICAL_PARAMS[family_id]
         return materialize_timing_family_baseline(
+            account_state=build_state(),
+            family_id=family_id,
+            **params,
+        )
+    if family_id in _PROGRESSION_FAMILY_CANONICAL_PARAMS:
+        params = _PROGRESSION_FAMILY_CANONICAL_PARAMS[family_id]
+        return materialize_progression_family_baseline(
             account_state=build_state(),
             family_id=family_id,
             **params,

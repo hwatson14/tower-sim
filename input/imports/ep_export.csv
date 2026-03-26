@@ -4,7 +4,7 @@ EP Base URL,https://docs.google.com/spreadsheets/d/1Q8RYXr9nQPxjuIEXtlTzvR63MRb0
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,450.17 O,450.17 O
+edmg,edmg,eDMG,2.06 N,2.06 N
 edmg,damage,Damage,816.5 B,816.5 B
 edmg,attack_speed,Attack Speed,42.239859375,42.239859375
 edmg,crit_chance,Critical Chance,0.9700000000000001,0.9700000000000001
@@ -30,7 +30,7 @@ ehp,wall_health,Wall Health,124.18 T,124.18 T
 ehp,wall_fortification,Wall Fortification,1.29 q,1.29 q
 ehp,wall_regen,Wall Regen,234.35 T,234.35 T
 ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,99.34 M,99.34 M
+eecon,cpk_average,Average CpK,99.86 M,99.86 M
 eecon,coins_per_kill_bonus,Coins / Kill Bonus,43.458636375000005,43.458636375000005
 eecon,free_attack_upgrade,Free Attack Upgrade,1.1062424999999998,1.1062424999999998
 eecon,free_defense_upgrade,Free Defense Upgrade,1.0749337499999998,1.0749337499999998

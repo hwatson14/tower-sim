@@ -26,6 +26,12 @@ _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query
 
 _MUTATING_STAGES = {'additive_pre_cap', 'scenario_adjustment'}
 _ALLOWED_TRACE_MODES = frozenset({'none', 'contributors', 'full_trace'})
+
+# Hard caps applied after additive×multiplicative composition, matching legacy pct_capped_scalar_stat resolver.
+# Keys are the surface IDs as they appear in FamilyBaselineContributorMap (after naming-contract remap).
+_QE_PCT_CAPS: dict[str, float] = {
+    'state::tower.defense_pct': 98.0,
+}
 _ALLOWED_CONTRIBUTOR_OPS = frozenset({'add', 'remove', 'multiply', 'replace'})
 _MUTATION_METADATA_FIELDS = frozenset(
     {
@@ -337,6 +343,8 @@ class StatQueryKernel:
         else:
             raise ValueError(f'Surface {surface_id!r} has active contributors but no supported composition stages.')
         final_value = _normalize_number(final_value)
+        if surface_id in _QE_PCT_CAPS and isinstance(final_value, (int, float)):
+            final_value = max(0.0, min(_QE_PCT_CAPS[surface_id], float(final_value)))
         return ResolvedSurfaceRow(surface_id=surface_id, final_value=final_value, value_type=next(iter(value_types)), status='resolved')
 
     def _dependency_closure(self, requested: Sequence[str], trace_mode: str) -> tuple[str, ...]:
