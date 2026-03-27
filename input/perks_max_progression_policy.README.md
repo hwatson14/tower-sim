@@ -13,10 +13,8 @@ This file is the user-editable default policy for generated max progression perk
 - `TO6` = `Enemies Speed -40%, But Enemies Damage x2.5`
 
 ## Authority
-For `state_mode=max_progression`, if `input/perks.json` has no active preset, the calculator generates the perk timeline from IDS-backed controls plus this policy file.
+For `state_mode=max_progression`, if `perk_config` in `input/manual_inputs.yaml` has no active preset, the calculator generates the perk timeline from IDS-backed controls plus this policy file.
 
-- The generated timeline is written to `input/perks_projected_max.timeline.json`
-- The generated final state is written to `input/perks_projected_max.final_state.json`
-- The generated preset used by the stat engine is written to `input/perks_projected_max.json`
+Generation diagnostics (timeline, final state, diagnostics JSON) are written to `out/diagnostics/perks/` at runtime. They are not written to `input/derived/` (those paths were demoted to `archive/legacy/` in the T3C tranche).
 
 The future wave progression engine should consume the timeline file directly and can derive perk state at any wave. The stat engine max progression path uses the generated final state and does not need the wave engine.
