@@ -5,7 +5,7 @@ from dataclasses import dataclass, replace
 from time import perf_counter
 from typing import Any, Dict, List, Optional
 
-from engine.perk_timeline_state import apply_perk_counts_to_account_state
+from simulators.perk_timeline_state import apply_perk_counts_to_account_state
 
 from compilers.stat_input_compiler import compile_stat_inputs
 from simulators.incremental_cache_fingerprint import IncrementalCacheFingerprintBuilder
@@ -15,8 +15,8 @@ from simulators.incremental_parity_harness import IncrementalParityHarness
 from simulators.incremental_recalc_runtime import IncrementalRecalcRuntime
 from simulators.incremental_subset_executor import IncrementalSubsetExecutor
 from qe.materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer, load_family_surface_ids
-from engine.runtime_consumer_registry import resolve_consumer_bundle
-from engine.runtime_consumer_executor import RuntimeConsumerExecutor
+from qe.consumer_registry import resolve_consumer_bundle
+from simulators.runtime_consumer_executor import RuntimeConsumerExecutor
 from qe.models import compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
 from models.account_state import AccountState

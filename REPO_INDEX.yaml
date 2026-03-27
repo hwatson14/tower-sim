@@ -142,12 +142,8 @@ input:
     status: active_candidate
     layer: input/imports/
 
-  # derived/ — consolidate to one artifact
-  input/derived/perks_max_progression_policy.runtime.json:
-    status: archive_candidate
-    ownership: OLD NAME — authority is input/derived/perks_derived.json
-    target: archive/legacy/ in T8
-    note: run_stats.py and tests/helpers.py now write/read perks_derived.json
+  # derived/ — single canonical artifact (duplicate removed in T11)
+  # input/derived/perks_max_progression_policy.runtime.json: DELETED (T11) — was identical to perks_derived.json
 
   input/derived/perks_projected_max.json:
     status: generated
@@ -202,21 +198,20 @@ engine_qe:
     target: qe/kernel.py or qe/routing.py (composite resolution logic)
 
   engine/stat_resolution_core.py:
-    status: active_candidate
-    target: qe/ (legacy resolution logic; extract proven paths, demote rest)
-    note: 1550 lines; contains legacy + QE-era logic; careful extraction required
+    status: shim
+    target: qe/stat_resolution.py (T11 — authority moved; shim re-exports from qe/)
 
   engine/stat_engine.py:
-    status: active_candidate
+    status: shim
     target: qe/ (compat entrypoint only; do not add new logic here)
 
   engine/runtime_consumer_executor.py:
-    status: active_candidate
-    target: qe/publication.py
+    status: shim
+    target: simulators/runtime_consumer_executor.py (T11 — authority moved)
 
   engine/runtime_consumer_registry.py:
-    status: active_candidate
-    target: qe/dependency_registry.py or qe/routing.py
+    status: shim
+    target: qe/consumer_registry.py (T11 — authority moved)
 
   engine/derived_surface_composer.py:
     status: active_candidate

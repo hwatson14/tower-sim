@@ -7,7 +7,7 @@ from typing import Any, Dict, Iterable, List, Mapping, Set
 
 import yaml
 
-from engine.runtime_consumer_registry import load_consumer_bundle_definitions
+from qe.consumer_registry import load_consumer_bundle_definitions
 from qe.materializer import load_family_contracts, load_family_surface_ids
 
 ROOT = Path(__file__).resolve().parents[1]

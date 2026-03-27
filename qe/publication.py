@@ -4,13 +4,13 @@ import re
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from engine.query_currency_income import publish_currency_income_surfaces
-from engine.query_derived_composites import publish_derived_composites
-from engine.query_module_draw_policy import publish_module_draw_policy_surfaces
-from engine.query_module_drop_economy import publish_module_drop_economy_surfaces
-from engine.query_module_lab_policy import publish_module_lab_policy_surfaces
-from engine.query_module_mission_economy import publish_module_mission_economy_surfaces
-from engine.query_module_runtime_policy import publish_module_runtime_policy_surfaces
+from qe.query_currency_income import publish_currency_income_surfaces
+from qe.query_derived_composites import publish_derived_composites
+from qe.query_module_draw_policy import publish_module_draw_policy_surfaces
+from qe.query_module_drop_economy import publish_module_drop_economy_surfaces
+from qe.query_module_lab_policy import publish_module_lab_policy_surfaces
+from qe.query_module_mission_economy import publish_module_mission_economy_surfaces
+from qe.query_module_runtime_policy import publish_module_runtime_policy_surfaces
 from qe.models import StatRow
 
 

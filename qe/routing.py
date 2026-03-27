@@ -5,7 +5,7 @@ from collections.abc import Sequence
 from qe.contracts import to_v2_surface_id
 from qe.models import StateIdentity
 from qe.kernel import QueryResponse, StatQueryKernel
-from engine.stat_resolution_core import (
+from qe.stat_resolution import (
     _canonical_source_multiplier,
     _multiplier_from_value,
     resolve_stats as _fallback_resolve_stats,
@@ -192,7 +192,7 @@ def _merge_delegated_family_rows(
     diagnostics['resolve_stats_delegation'] = {
         'delegated_family_id': family_id,
         'delegated_surface_ids': list(_DELEGATED_FAMILY_SURFACE_IDS[family_id]),
-        'undelegated_fallback_owner': 'engine.stat_resolution_core.resolve_stats',
+        'undelegated_fallback_owner': 'qe.stat_resolution.resolve_stats',
         'bounded_only': True,
     }
     if family_id == _PROGRESSION_START_OF_RUN:

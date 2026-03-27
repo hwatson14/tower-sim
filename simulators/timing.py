@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
 from qe.materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
-from engine.runtime_consumer_registry import resolve_consumer_bundle
+from qe.consumer_registry import resolve_consumer_bundle
 from simulators.scenario import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
