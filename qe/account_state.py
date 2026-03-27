@@ -4,7 +4,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from models.preset_contract import CANONICAL_PRESET_NAMES
+from qe.contracts import CANONICAL_PRESET_NAMES
 
 PRESET_NAMES = list(CANONICAL_PRESET_NAMES)
 SLOT_TYPES = ["cannon", "armor", "generator", "core"]

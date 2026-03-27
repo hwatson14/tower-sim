@@ -207,7 +207,7 @@ def _ids_player_value(ids_raw, name: str, default: int = 0) -> int:
 
 
 def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict | None = None, *, default_policy_path: Path = _PERK_MAX_POLICY_PATH, diag_output_dir: 'Path | None' = None) -> tuple[dict, dict]:
-    from engine.perk_timeline_generator import generate_timeline, perk_state_at_wave
+    from simulators.perk_timeline_generator import generate_timeline, perk_state_at_wave
 
     primary_config = primary_config or {}
     policy_seed = 42

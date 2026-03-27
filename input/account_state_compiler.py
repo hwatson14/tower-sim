@@ -20,7 +20,7 @@ from dataclasses import replace
 import re
 from typing import Dict, List, Optional, Tuple
 
-from models.account_state import (
+from qe.account_state import (
     AccountState,
     BotUpgradeSnapshot,
     CardSnapshot,
@@ -39,8 +39,8 @@ from models.account_state import (
     WorkshopEnhancementSnapshot,
     WorkshopEntrySnapshot,
 )
-from models.ids_raw import IdsRaw
-from models.preset_contract import (
+from input.ids_raw import IdsRaw
+from qe.contracts import (
     load_section_layout_contract,
     normalize_preset_name,
     require_canonical_preset_name,

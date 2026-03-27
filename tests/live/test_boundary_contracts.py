@@ -6,6 +6,7 @@ Verifies the active-spine import boundaries that define the post-tranche archite
   - app/* does not import engine.*
   - qe/* does not import forbidden legacy engine authority modules
   - simulators/* does not import engine.*
+  - No active layer imports from: compilers, models, optimizer, parsers, registry
 
 Gate: fast (no computation). Fails if any boundary is violated.
 """
@@ -39,6 +40,11 @@ _IMPORT_PIPELINE_HELPERS = re.compile(
 )
 _IMPORT_RUN_STATS_FROM_EVALUATORS = re.compile(
     r"from run_stats import|import run_stats"
+)
+# Consolidated transitional-root boundary (post-T13)
+_IMPORT_TRANSITIONAL_ROOTS = re.compile(
+    r"^\s*(?:from|import)\s+(?:compilers|models|optimizer|parsers|registry)\b",
+    re.MULTILINE,
 )
 
 
@@ -135,3 +141,35 @@ def test_evaluators_files_do_not_import_run_stats():
         assert not violations, (
             f"evaluators/{py.name} imports run_stats: {violations}"
         )
+
+
+# ---------------------------------------------------------------------------
+# T13: consolidated transitional-root boundaries
+# ---------------------------------------------------------------------------
+
+def test_no_active_layer_imports_from_transitional_roots():
+    """No active layer file may import from compilers, models, optimizer, parsers, or registry."""
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists():
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            hits = _IMPORT_TRANSITIONAL_ROOTS.findall(src)
+            assert not hits, (
+                f"{py.relative_to(ROOT)} imports from a transitional root "
+                f"(compilers/models/optimizer/parsers/registry): {hits}"
+            )
+
+
+def test_no_active_layer_imports_from_engine():
+    """No active layer file may import from engine.* (engine is fully shimmed)."""
+    _IMPORT_ENGINE_STMT = re.compile(r"^\s*(?:from|import)\s+engine\b", re.MULTILINE)
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists():
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            hits = _IMPORT_ENGINE_STMT.findall(src)
+            assert not hits, (
+                f"{py.relative_to(ROOT)} imports from engine (transitional root): {hits}"
+            )

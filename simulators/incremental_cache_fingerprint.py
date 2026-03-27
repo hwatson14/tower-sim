@@ -5,7 +5,7 @@ import hashlib
 import json
 from typing import Any, Dict, Iterable, Optional
 
-from models.stat_input import StatInput
+from qe.models import StatInput
 
 FINGERPRINT_VERSION = 'r68_non_workshop_stat_inputs_v1'
 

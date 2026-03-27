@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from typing import Dict
-from models.statbook import StatRow
+from qe.models import StatRow
 
 def _publish(rows: Dict[str, StatRow], surface_id: str, value: float, unit: str, value_type: str, notes: str, contributors: list[dict], schema: dict) -> None:
     if surface_id in rows:

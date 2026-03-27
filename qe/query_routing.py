@@ -358,7 +358,7 @@ DIRECT_WORKSHOP_TABLE_COLUMNS = {
 
 # Source-backed workshop and lab formula callables: loaded from KB table.
 # Source: kb/global-rules/tables/workshop-formula-params-canonical.csv
-from engine.kb_surfaces import WORKSHOP_FORMULA_VALUES, LAB_FORMULA_VALUES  # noqa: E402
+from qe.kb_surfaces import WORKSHOP_FORMULA_VALUES, LAB_FORMULA_VALUES  # noqa: E402
 
 CARD_TARGET_SURFACE_TO_CANONICAL = {
     'tower.damage_multiplier': 'tower_damage',

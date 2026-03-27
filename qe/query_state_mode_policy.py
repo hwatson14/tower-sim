@@ -5,7 +5,7 @@ from pathlib import Path
 
 import yaml
 
-from models.stat_input import StatInput
+from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'

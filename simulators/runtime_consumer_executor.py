@@ -5,7 +5,7 @@ from typing import Dict, Any
 
 from simulators.wave_progression_policy import WaveProgressionPolicy, WaveProgressionState
 from qe.contracts import to_legacy_surface_id
-from models.statbook import StatBook
+from qe.models import StatBook
 
 
 _WAVE_SKIP_SURFACE_IDS = (

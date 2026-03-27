@@ -22,7 +22,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 # Active layer imports
-from compilers.stat_input_compiler import (
+from qe.stat_input_compiler import (
     compile_stat_inputs,
     normalize_state_mode,
     SUPPORTED_STATE_MODES,

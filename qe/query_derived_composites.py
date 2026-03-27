@@ -4,7 +4,7 @@ from __future__ import annotations
 import math
 from typing import Dict, Any, Iterable
 
-from models.statbook import StatRow
+from qe.models import StatRow
 
 
 def _get(rows: Dict[str, StatRow], key: str, default: float = 0.0) -> float:

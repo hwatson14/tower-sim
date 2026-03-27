@@ -736,8 +736,8 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
 }
 
 def _load_lineage_backed_run_perk_destinations() -> set[str]:
-    from compilers.stat_input_compiler import _load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
-    from engine.query_routing import compiler_routing_indexes
+    from qe.stat_input_compiler import _load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
+    from qe.query_routing import compiler_routing_indexes
 
     perk_effects = _load_perk_effects()
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
@@ -2208,7 +2208,7 @@ def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
 
 def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
     from input.runtime_state import build_runtime_state as compile_account_state
-    from compilers.stat_input_compiler import compile_stat_inputs, _load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
+    from qe.stat_input_compiler import compile_stat_inputs, _load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
 
     state = compile_account_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
     perks_enabled = _perks_enabled_for_state(state.active_perk_preset, perk_state)
@@ -2562,9 +2562,9 @@ def _perk_operation_supported(operation: str) -> bool:
 
 
 def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from compilers.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
-    from engine.query_routing import compiler_routing_indexes
-    from models.account_state import PerkSelection
+    from qe.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
+    from qe.query_routing import compiler_routing_indexes
+    from qe.account_state import PerkSelection
     from dataclasses import replace
 
     perk_entities = _load_perk_entities()

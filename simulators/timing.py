@@ -13,7 +13,7 @@ from qe.consumer_registry import resolve_consumer_bundle
 from simulators.scenario import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
-from models.account_state import AccountState
+from qe.account_state import AccountState
 from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]

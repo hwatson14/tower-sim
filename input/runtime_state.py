@@ -25,8 +25,8 @@ from typing import Optional
 # ── Canonical type re-exports ─────────────────────────────────────────────────
 # Transitional: these types will consolidate into qe/models.py in T3.
 
-from models.ids_raw import IdsRaw  # noqa: F401
-from models.account_state import (  # noqa: F401
+from input.ids_raw import IdsRaw  # noqa: F401
+from qe.account_state import (  # noqa: F401
     AccountState,
     BotUpgradeSnapshot,
     CardSnapshot,
@@ -45,7 +45,7 @@ from models.account_state import (  # noqa: F401
     WorkshopEnhancementSnapshot,
     WorkshopEntrySnapshot,
 )
-from engine.scenario_runtime_inputs import ScenarioRuntimeInputs  # noqa: F401
+from input.scenario_runtime_inputs import ScenarioRuntimeInputs  # noqa: F401
 
 __all__ = [
     # types
@@ -87,7 +87,7 @@ def build_runtime_state(
     Assembles an AccountState from a parsed IdsRaw plus optional config overrides.
     Implementation delegates to compilers.account_state_compiler (internal detail).
     """
-    from compilers.account_state_compiler import compile_account_state as _compile
+    from input.account_state_compiler import compile_account_state as _compile
     return _compile(
         ids_raw,
         default_preset=default_preset,

@@ -9,7 +9,7 @@ from typing import Dict, List, Optional, Tuple
 import yaml
 import pandas as pd
 
-from engine.query_perk_compiler import (
+from qe.query_perk_compiler import (
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
     TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES,
     active_perk_selections as _active_perk_selections,
@@ -19,7 +19,7 @@ from engine.query_perk_compiler import (
     perk_value_type_for_operation as _perk_value_type_for_operation,
     scaled_perk_value as _scaled_perk_value,
 )
-from engine.query_routing import (
+from qe.query_routing import (
     CARD_NAME_FALLBACK_DESTINATION,
     CARD_TARGET_SURFACE_TO_DESTINATION,
     ENHANCEMENT_ALIAS_OVERRIDES,
@@ -53,17 +53,17 @@ from engine.query_routing import (
     slug_text,
     uw_contributor_id,
 )
-from engine.query_state_mode_policy import (
+from qe.query_state_mode_policy import (
     SUPPORTED_STATE_MODES,
     normalize_state_mode,
     row_in_state_mode,
     state_mode_support,
     supported_state_modes,
 )
-from models.account_state import AccountState
-from models.bound_preset_family import bind_preset_family
-from models.preset_contract import sanitize_preset_name_for_canonical_output
-from models.stat_input import StatInput
+from qe.account_state import AccountState
+from qe.models import bind_preset_family
+from qe.contracts import sanitize_preset_name_for_canonical_output
+from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'

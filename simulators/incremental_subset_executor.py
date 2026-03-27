@@ -6,8 +6,8 @@ from typing import Dict, Iterable, List, Mapping, Sequence
 from qe.dependency_registry import DependencyRegistry
 from qe.contracts import to_legacy_surface_id, to_v2_surface_id
 from qe.stat_resolution import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
-from models.stat_input import StatInput
-from models.statbook import StatRow
+from qe.models import StatInput
+from qe.models import StatRow
 
 _NODE_TO_BUCKET = {
     'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier',

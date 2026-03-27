@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict
 
-from models.statbook import StatBook, StatRow
+from qe.models import StatBook, StatRow
 
 
 class IncrementalOverlayPublisher:

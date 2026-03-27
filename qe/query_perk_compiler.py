@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict, Optional
 
-from models.account_state import AccountState
+from qe.account_state import AccountState
 
 TRADE_OFF_BENEFIT_EFFECT_INDEXES = {
     'PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH': {'1'},

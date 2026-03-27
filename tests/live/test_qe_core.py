@@ -116,7 +116,7 @@ def test_state_identity_as_tuple():
 def test_resolve_stats_returns_statbook():
     """resolve_stats produces a StatBook with rows for known progression surfaces."""
     account_state = build_state()
-    from compilers.stat_input_compiler import compile_stat_inputs
+    from qe.stat_input_compiler import compile_stat_inputs
     stat_inputs = list(compile_stat_inputs(account_state, preset_name="Farming", state_mode="start_of_run"))
     result = resolve_stats(stat_inputs)
     assert isinstance(result, StatBook)
@@ -133,7 +133,7 @@ def test_resolve_stats_defense_pct_no_type_error():
     Direct kernel resolution of the v2 surface ID is verified separately via the kernel test.
     """
     account_state = build_state()
-    from compilers.stat_input_compiler import compile_stat_inputs
+    from qe.stat_input_compiler import compile_stat_inputs
     stat_inputs = list(compile_stat_inputs(account_state, preset_name="Farming", state_mode="start_of_run"))
     # Must not raise ValueError about mixed value types for defense_pct
     result = resolve_stats(stat_inputs)

@@ -7,7 +7,7 @@ from typing import Any, Dict, List, Optional
 
 from simulators.perk_timeline_state import apply_perk_counts_to_account_state
 
-from compilers.stat_input_compiler import compile_stat_inputs
+from qe.stat_input_compiler import compile_stat_inputs
 from simulators.incremental_cache_fingerprint import IncrementalCacheFingerprintBuilder
 from simulators.incremental_cache_validator import IncrementalCacheValidator
 from simulators.incremental_overlay_publisher import IncrementalOverlayPublisher
@@ -19,7 +19,7 @@ from qe.consumer_registry import resolve_consumer_bundle
 from simulators.runtime_consumer_executor import RuntimeConsumerExecutor
 from qe.models import compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
-from models.account_state import AccountState
+from qe.account_state import AccountState
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
 
