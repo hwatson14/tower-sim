@@ -6,7 +6,7 @@ from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional
 
-from models.account_state import AccountState, PerkSelection
+from qe.account_state import AccountState, PerkSelection
 
 ROOT = Path(__file__).resolve().parents[1]
 PERK_ENTITY_REGISTRY = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'

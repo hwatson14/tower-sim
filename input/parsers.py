@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from models.ids_raw import IdsRaw
+from input.ids_raw import IdsRaw
 
 
 @dataclass(frozen=True)

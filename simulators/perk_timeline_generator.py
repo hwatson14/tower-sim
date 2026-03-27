@@ -7,7 +7,7 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from engine.perk_tables import (
+from qe.perk_tables import (
     PerkDefinition,
     PerkWaveRequirementStep,
     load_perk_definitions,

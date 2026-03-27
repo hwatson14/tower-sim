@@ -23,10 +23,8 @@ dev = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
-# New active spine packages (whitelist rebuild)
-include = ["qe*", "simulators*", "evaluators*", "advisors*", "app*", "input*",
-           # Legacy packages kept until each tranche demotes them
-           "engine*", "compilers*", "models*", "parsers*", "optimizer*"]
+# Active spine packages — post-T13 consolidation (all transitional roots archived)
+include = ["qe*", "simulators*", "evaluators*", "advisors*", "app*", "input*"]
 
 [tool.pytest.ini_options]
 # Default gate: live architecture spine only.

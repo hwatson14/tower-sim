@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Any, Dict
 
-from models.statbook import StatRow
+from qe.models import StatRow
 
 MODULE_LAB_VALUE_MODELS = {
     'Reroll Shards': {

@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import Any, Dict
 import yaml as _yaml
 
-from models.statbook import StatRow
+from qe.models import StatRow
 
 _DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
 

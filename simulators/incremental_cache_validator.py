@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, Optional
 
 from simulators.incremental_cache_fingerprint import CacheFingerprint
-from models.statbook import StatBook
+from qe.models import StatBook
 
 
 @dataclass(frozen=True)

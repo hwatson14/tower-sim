@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Dict
 
-from models.statbook import StatRow
+from qe.models import StatRow
 
 _BASE_DAILY_MISSION_SHARDS_BY_TIER = {
     1: 0.0, 2: 3.0, 3: 5.0, 4: 8.0, 5: 12.0, 6: 15.0, 7: 20.0, 8: 25.0, 9: 30.0,

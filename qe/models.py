@@ -16,7 +16,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
 from input.runtime_state import ScenarioRuntimeInputs
-from models.account_state import AccountState, ModulePresetSelection, PerkSelection
+from qe.account_state import AccountState, ModulePresetSelection, PerkSelection
 from qe.contracts import normalize_preset_name, sanitize_preset_name_for_canonical_output
 
 
@@ -288,7 +288,7 @@ def compile_stat_inputs_with_identity(
         scenario_runtime_inputs=scenario_runtime_inputs,
         scenario_context=scenario_context,
     )
-    from compilers.stat_input_compiler import compile_stat_inputs  # deferred to avoid circular import
+    from qe.stat_input_compiler import compile_stat_inputs  # deferred to avoid circular import
     stat_inputs = compile_stat_inputs(
         account_state,
         preset_name=preset_name,

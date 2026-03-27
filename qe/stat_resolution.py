@@ -7,8 +7,8 @@ from typing import Dict, List, Tuple
 
 import yaml
 
-from models.stat_input import StatInput
-from models.statbook import StatBook, StatRow
+from qe.models import StatInput
+from qe.models import StatBook, StatRow
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATHS = [
@@ -291,7 +291,7 @@ def _resolve_survivability_base_times_multipliers(destination_id: str, contribut
 
 # Source-backed stat caps: loaded from KB table, not defined as literals here.
 # Source: kb/global-rules/tables/game-mechanic-stat-caps.csv
-from engine.kb_surfaces import CANONICAL_PCT_CAPS  # noqa: E402
+from qe.kb_surfaces import CANONICAL_PCT_CAPS  # noqa: E402
 
 BASE_FLAT_MULTIPLIED_STATS = {
     'tower_attack_speed',

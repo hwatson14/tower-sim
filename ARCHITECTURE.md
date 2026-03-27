@@ -36,6 +36,9 @@ The active surface should be small enough that an AI agent can navigate it in on
     loader.py                # loads and validates all inputs
     runtime_state.py         # assembles RuntimeState from inputs
     parsers.py               # raw CSV/JSON parsing helpers
+    ids_raw.py               # IdsRaw dataclass (moved from models/)
+    scenario_runtime_inputs.py  # ScenarioRuntimeInputs (moved from engine/)
+    account_state_compiler.py   # AccountState assembly (moved from compilers/)
     imports/
       ids.csv
       progress.csv
@@ -50,41 +53,48 @@ The active surface should be small enough that an AI agent can navigate it in on
   qe/
     contracts.py               # stat-query value contracts
     models.py                  # typed stat/query model structs
+    account_state.py           # AccountState and snapshot types (moved from models/)
     routing.py                 # query dispatch and routing
+    query_routing.py           # compiler routing indexes (moved from engine/)
     materializer.py            # family baseline materialisation
     kernel.py                  # core deterministic resolution kernel
     publication.py             # sanctioned surface publication
     dependency_registry.py     # dependency graph and invalidation
-    consumer_registry.py       # runtime consumer bundle registry (auth: moved from engine/)
-    stat_resolution.py         # legacy stat resolution core (auth: moved from engine/)
-    query_currency_income.py   # currency income publisher (auth: moved from engine/)
-    query_derived_composites.py  # derived composite publisher (auth: moved from engine/)
-    query_module_draw_policy.py  # module draw policy publisher (auth: moved from engine/)
-    query_module_drop_economy.py # module drop economy publisher (auth: moved from engine/)
-    query_module_lab_policy.py   # module lab policy publisher (auth: moved from engine/)
-    query_module_mission_economy.py # module mission economy publisher (auth: moved from engine/)
-    query_module_runtime_policy.py  # module runtime policy publisher (auth: moved from engine/)
+    consumer_registry.py       # runtime consumer bundle registry
+    stat_resolution.py         # stat resolution core
+    stat_input_compiler.py     # stat input compiler (moved from compilers/)
+    kb_surfaces.py             # KB table loader for gameplay constants (moved from engine/)
+    perk_tables.py             # perk table definitions (moved from engine/)
+    query_perk_compiler.py     # perk compiler logic (moved from engine/)
+    query_state_mode_policy.py # state mode policy (moved from engine/)
+    query_currency_income.py   # currency income publisher
+    query_derived_composites.py  # derived composite publisher
+    query_module_draw_policy.py  # module draw policy publisher
+    query_module_drop_economy.py # module drop economy publisher
+    query_module_lab_policy.py   # module lab policy publisher
+    query_module_mission_economy.py # module mission economy publisher
+    query_module_runtime_policy.py  # module runtime policy publisher
 
   simulators/
     progression.py              # progression projection
     timing.py                   # timing/wave projection
     scenario.py                 # scenario projection
+    perk_timeline_state.py      # perk state application
+    perk_timeline_generator.py  # perk timeline generation (moved from engine/)
+    wave_progression_policy.py  # wave progression rules
+    runtime_consumer_executor.py # runtime consumer execution
     incremental_cache_fingerprint.py
     incremental_cache_validator.py
     incremental_overlay_publisher.py
     incremental_parity_harness.py
     incremental_recalc_runtime.py
     incremental_subset_executor.py
-    perk_timeline_state.py      # perk state application (auth: moved from engine/)
-    wave_progression_policy.py  # wave progression rules (auth: moved from engine/)
-    runtime_consumer_executor.py # runtime consumer execution (auth: moved from engine/)
 
   evaluators/
     scorer.py                # scoring engine
     objectives.py            # objective definitions
     compare.py               # comparison helpers
     ranker.py                # ranking and sorting
-    pipeline_helpers.py      # transitional bridge: run_stats domain helpers for app/
 
   advisors/
     recommendation_policy.py # policy rules for recommendations
@@ -185,18 +195,19 @@ A file survives as active only if ALL are true:
 
 ---
 
-## Acceptance gates (final)
+## Acceptance gates (post-T13 consolidation)
 
 - `input/` is the canonical owner of runtime inputs/state.
 - `kb/` remains the authoritative mechanic truth.
-- `qe/` owns deterministic stat resolution.
-- Simulators consume QE outputs, not legacy engine code.
-- Evaluators consume QE/simulator outputs.
+- `qe/` owns deterministic stat resolution and the stat input compiler.
+- Simulators consume QE outputs only. No engine.* imports.
+- Evaluators consume QE/simulator outputs. No engine.* or compilers.* imports.
 - Advisors consume evaluator outputs.
 - `app/` is thin orchestration only.
 - Main CLI path passes.
-- Core live tests pass.
-- No active imports from `archive/`.
+- Core live tests pass (32 tests).
+- No active imports from `archive/`, `engine`, `compilers`, `models`, `optimizer`, `parsers`, `registry`.
 - One manual inputs file only (`input/manual_inputs.yaml`).
 - One derived perk file only (`input/derived/perks_derived.json`).
 - No duplicate active input locations.
+- Boundary tests enforce all the above rules automatically.

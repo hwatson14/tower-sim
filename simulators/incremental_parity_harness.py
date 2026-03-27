@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Dict
 
 from qe.contracts import to_legacy_surface_id
-from models.statbook import StatBook, StatRow
+from qe.models import StatBook, StatRow
 
 
 @dataclass(frozen=True)
