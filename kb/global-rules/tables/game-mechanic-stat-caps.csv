@@ -1,0 +1,3 @@
+stat_id,cap_type,cap_value,unit,source_page,notes
+tower_defense_pct,max,98.0,pct,Workshop,Wiki states defense is capped at 98%. Engine enforces this ceiling.
+wall_rebuild_seconds,min,150.0,seconds,Workshop,Wiki floor: wall rebuild cannot be reduced below 150 seconds. Engine enforces this floor.

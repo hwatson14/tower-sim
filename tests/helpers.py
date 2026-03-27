@@ -13,6 +13,8 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+import yaml
+
 from input.runtime_state import build_runtime_state as compile_account_state
 from engine.progression_recalc_bridge import materialize_progression_family_baseline
 from engine.scenario_engine import ScenarioConfig
@@ -25,33 +27,46 @@ def _parsed_ids():
     return parse_ids(ROOT / 'input' / 'imports' / 'ids.csv')
 
 
-_GENERATED_FILES = frozenset({
-    'perks_projected_max.json',
-    'perks_projected_max.timeline.json',
-    'perks_projected_max.final_state.json',
-    'perks_projected_max.diagnostics.json',
+@lru_cache(maxsize=None)
+def _manual_inputs():
+    return yaml.safe_load((ROOT / 'input' / 'manual_inputs.yaml').read_text()) or {}
+
+
+_DERIVED_FILES = frozenset({
     'perks_derived.json',
 })
 
+
 @lru_cache(maxsize=None)
-def _json_config(filename: str):
-    if filename in _GENERATED_FILES:
-        return json.loads((ROOT / 'input' / 'derived' / filename).read_text())
-    return json.loads((ROOT / 'input' / filename).read_text())
+def _derived_perk_config(filename: str) -> dict:
+    """Load a named perk config from input/derived/ (for testing projected-max states)."""
+    return json.loads((ROOT / 'input' / 'derived' / filename).read_text())
 
 
 @lru_cache(maxsize=None)
-def _compiled_state(loadout_filename: str, perks_filename: str):
+def _compiled_state(perk_config_key: str):
+    """Compile account state. perk_config_key is 'default' or a derived filename."""
+    if perk_config_key == 'default':
+        perk_cfg = _manual_inputs().get('perk_config') or {}
+    else:
+        perk_cfg = _derived_perk_config(perk_config_key)
+    loadout_cfg = _manual_inputs().get('loadout') or {}
     return compile_account_state(
         _parsed_ids(),
         default_preset='Farming',
-        loadout_config=_json_config(loadout_filename),
-        perk_config=_json_config(perks_filename),
+        loadout_config=loadout_cfg,
+        perk_config=perk_cfg,
     )
 
 
-def build_state(*, loadout_filename: str = 'loadout.json', perks_filename: str = 'perks.json'):
-    return copy.deepcopy(_compiled_state(loadout_filename, perks_filename))
+def build_state(*, perks_filename: str = 'default'):
+    """
+    Build an AccountState for tests.
+
+    perks_filename: 'default' uses manual_inputs.yaml perk_config (empty, no active preset).
+    Pass a derived filename like 'perks_derived.json' to test with specific perk states.
+    """
+    return copy.deepcopy(_compiled_state(perks_filename))
 
 
 _TIMING_FAMILY_CANONICAL_PARAMS: dict[str, dict] = {

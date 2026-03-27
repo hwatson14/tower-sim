@@ -15,7 +15,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
-from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
+from input.runtime_state import ScenarioRuntimeInputs
 from models.account_state import AccountState, ModulePresetSelection, PerkSelection
 from qe.contracts import normalize_preset_name, sanitize_preset_name_for_canonical_output
 

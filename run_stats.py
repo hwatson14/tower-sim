@@ -232,9 +232,6 @@ from qe.models import StatBook, StatRow
 
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 ASSUMPTIONS_PATH = ROOT / 'input' / 'manual_inputs.yaml'
-LOADOUT_CONFIG_PATH = ROOT / 'input' / 'loadout.json'
-PERKS_CONFIG_PATH = ROOT / 'input' / 'perks.json'
-PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'input' / 'derived' / 'perks_projected_max.json'
 
 
 def _load_json_config(path: Path) -> dict:
@@ -316,7 +313,7 @@ def _ids_player_value(ids_raw, name: str, default: int = 0) -> int:
     return default
 
 
-def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict | None = None, *, default_policy_path: Path = _PERK_MAX_POLICY_PATH) -> tuple[dict, dict]:
+def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict | None = None, *, default_policy_path: Path = _PERK_MAX_POLICY_PATH, diag_output_dir: 'Path | None' = None) -> tuple[dict, dict]:
     from engine.perk_timeline_generator import generate_timeline, perk_state_at_wave
 
     primary_config = primary_config or {}
@@ -344,14 +341,7 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         except Exception as exc:
             policy_notes.append(f'Failed to parse policy file {_relpath_str(default_policy_path)}: {exc}')
 
-    fallback_banned_ids = []
-    if PROJECTED_MAX_PERKS_CONFIG_PATH.exists():
-        try:
-            fallback_cfg = _load_json_config(PROJECTED_MAX_PERKS_CONFIG_PATH)
-            fallback_banned_ids = list(fallback_cfg.get('banned_perk_ids') or [])
-        except Exception:
-            fallback_banned_ids = []
-    banned_ids = list(primary_config.get('banned_perk_ids') or fallback_banned_ids)
+    banned_ids = list(primary_config.get('banned_perk_ids') or [])
 
     entities = _load_perk_entity_registry()
     by_id = {row.get('perk_id'): row for row in entities if row.get('perk_id')}
@@ -420,49 +410,49 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
             'banned_perks_effective': banned_names,
             'banned_perk_aliases': list(raw_policy.get('banned_perk_aliases', []) or []),
             'unknown_generated_perk_names': unknown_names,
-            'timeline_file': 'input/derived/perks_projected_max.timeline.json',
-            'final_state_file': 'input/derived/perks_projected_max.final_state.json',
-            'diagnostics_file': 'input/derived/perks_projected_max.diagnostics.json',
         }
     }
-    (ROOT / 'input' / 'derived' / 'perks_projected_max.timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
-    (ROOT / 'input' / 'derived' / 'perks_projected_max.final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
-    (ROOT / 'input' / 'derived' / 'perks_projected_max.diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
-    PROJECTED_MAX_PERKS_CONFIG_PATH.write_text(json.dumps(generated, indent=2), encoding='utf-8')
+    if diag_output_dir is not None:
+        diag_output_dir.mkdir(parents=True, exist_ok=True)
+        (diag_output_dir / 'perk_timeline.json').write_text(json.dumps(timeline, indent=2), encoding='utf-8')
+        (diag_output_dir / 'perk_final_state.json').write_text(json.dumps({'target_wave': policy_payload['target_wave'], 'taken_counts': taken_counts}, indent=2), encoding='utf-8')
+        (diag_output_dir / 'perk_generation_diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
     metadata = {
-        'requested_perks_path': str(PERKS_CONFIG_PATH),
-        'resolved_perks_path': str(PROJECTED_MAX_PERKS_CONFIG_PATH),
+        'requested_perks_path': 'manual_inputs.yaml:perk_config',
+        'resolved_perks_path': str(policy_runtime_path),
         'fallback_applied': True,
         'fallback_reason': 'max_progression_generated_from_timeline_policy',
         'generation_policy_path': str(default_policy_path),
-        'generated_timeline_path': str(ROOT / 'input' / 'derived' / 'perks_projected_max.timeline.json'),
-        'generated_diagnostics_path': str(ROOT / 'input' / 'derived' / 'perks_projected_max.diagnostics.json'),
         'generated_runtime_policy_path': str(policy_runtime_path),
     }
+    if diag_output_dir is not None:
+        metadata['generated_timeline_path'] = str(diag_output_dir / 'perk_timeline.json')
+        metadata['generated_diagnostics_path'] = str(diag_output_dir / 'perk_generation_diagnostics.json')
     return generated, metadata
 
-def _resolve_perk_config(path: Path, state_mode: str, ids_raw=None) -> tuple[dict, dict]:
-    primary = _load_json_config(path)
+def _resolve_perk_config(path_or_cfg, state_mode: str, ids_raw=None, diag_output_dir=None) -> tuple[dict, dict]:
+    # Accepts a dict (from input/loader.py perk_config) or a Path (legacy callers).
+    if isinstance(path_or_cfg, dict):
+        primary = path_or_cfg
+        _src = 'manual_inputs.yaml:perk_config'
+    else:
+        primary = _load_json_config(path_or_cfg)
+        _src = str(path_or_cfg)
     metadata = {
-        'requested_perks_path': str(path),
-        'resolved_perks_path': str(path),
+        'requested_perks_path': _src,
+        'resolved_perks_path': _src,
         'fallback_applied': False,
         'fallback_reason': None,
     }
     if state_mode == 'max_progression' and not _perk_config_has_active_preset(primary):
         try:
-            generated, gen_meta = _build_generated_max_progression_perk_config(ids_raw, primary)
+            generated, gen_meta = _build_generated_max_progression_perk_config(
+                ids_raw, primary, diag_output_dir=diag_output_dir,
+            )
             return generated, gen_meta
         except Exception as exc:
             metadata['generation_error'] = str(exc)
-            fallback = _load_json_config(PROJECTED_MAX_PERKS_CONFIG_PATH)
-            if _perk_config_has_active_preset(fallback):
-                metadata.update({
-                    'resolved_perks_path': str(PROJECTED_MAX_PERKS_CONFIG_PATH),
-                    'fallback_applied': True,
-                    'fallback_reason': 'max_progression_requested_but_timeline_generation_failed_and_static_projected_max_used',
-                })
-                return fallback, metadata
+            metadata['fallback_reason'] = 'max_progression_generation_failed_returning_empty_perk_config'
     return primary, metadata
 
 def _load_formula_ledger(path: Path) -> dict:
@@ -2516,22 +2506,30 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
     }
 
 def main() -> int:
+    # Transitional domain entrypoint. Active CLI path is app/run_stats.py → app/pipeline.py.
+    # Single manual input surface: all loadout and perk config come from manual_inputs.yaml.
+    from input.loader import load_inputs as _load_inputs
     parser = argparse.ArgumentParser()
     parser.add_argument('--ids', type=Path, default=ROOT / 'input' / 'imports' / 'ids.csv')
     parser.add_argument('--out', '--output-dir', dest='out', type=Path, default=ROOT / 'out')
     parser.add_argument('--preset', type=str, default='Farming')
     parser.add_argument('--state-mode', type=str, default='max_progression')
-    parser.add_argument('--loadout', type=str, default=str(LOADOUT_CONFIG_PATH))
-    parser.add_argument('--perks', type=str, default=str(PERKS_CONFIG_PATH))
+    parser.add_argument('--manual-inputs', type=Path, default=None,
+                        help='Optional path to manual_inputs.yaml override')
     parser.add_argument('--perk-state', type=str, default='auto', choices=['auto', 'on', 'off'])
     args = parser.parse_args()
 
     args.state_mode = normalize_state_mode(args.state_mode)
     args.perk_state = _normalize_perk_state(args.perk_state)
     args.out.mkdir(parents=True, exist_ok=True)
-    ids_raw = parse_ids(args.ids)
-    loadout_config = _load_json_config(Path(args.loadout))
-    perk_config, perk_config_resolution = _resolve_perk_config(Path(args.perks), args.state_mode, ids_raw=ids_raw)
+    _manual_inputs_path = getattr(args, 'manual_inputs', None)
+    _input_bundle = _load_inputs(ids_path=args.ids, manual_inputs_path=_manual_inputs_path)
+    ids_raw = _input_bundle.ids_raw
+    loadout_config = _input_bundle.loadout_config
+    perk_config, perk_config_resolution = _resolve_perk_config(
+        _input_bundle.perk_config, args.state_mode, ids_raw=ids_raw,
+        diag_output_dir=args.out / 'diagnostics' / 'perks',
+    )
     formula_ledger = _load_formula_ledger(FORMULA_LEDGER_PATH)
     ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
     account_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context = _build_compare_rows_by_preset(

@@ -11,6 +11,12 @@
 
 loadout: {}
 
+# Perk selections: named presets of perk picks. Active preset drives perk materialization.
+# Replaces input/perks.json (demoted to archive/legacy/).
+perk_config:
+  perk_presets: {}
+  active_perk_preset: null
+
 perk_policy:
   seed: 42
   target_wave: 50000
@@ -20,7 +26,7 @@ perk_policy:
     Projected max progression perk availability is generated from IDS-backed
     Waves Required / Standard Perk Bonus / Perk Option Quantity / Ban Perks
     plus this policy file. Edit banned_perk_aliases and/or banned_perks here
-    to set the default manual bans used by the generator when primary perks.json
+    to set the default manual bans used by the generator when perk_config above
     has no active preset. Default bans currently: TO3 and TO6.
   banned_perk_aliases:
     - TO3

@@ -6,8 +6,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from parsers.ids_parser import parse_ids
-from compilers.account_state_compiler import compile_account_state
+from input.parsers import parse_ids
+from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
 from run_stats import (
     CANONICAL_PRESET_NAMES,

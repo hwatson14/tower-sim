@@ -6,8 +6,8 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
-from parsers.ids_parser import parse_ids
+from input.runtime_state import compile_account_state
+from input.parsers import parse_ids
 from run_stats import _build_audit_surface_manifest
 
 

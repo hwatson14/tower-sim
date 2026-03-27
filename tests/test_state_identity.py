@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
+from input.runtime_state import ScenarioRuntimeInputs
 from engine.state_identity import bind_state_identity, compile_stat_inputs_with_identity
 from tests.helpers import build_state
 
@@ -79,8 +79,8 @@ def test_compile_stat_inputs_with_identity_preserves_existing_compiler_behavior(
 
 
 def test_state_identity_distinguishes_missing_and_explicit_empty_perk_state():
-    missing_state = build_state(perks_filename='perks.json')
-    base_empty_state = build_state(perks_filename='perks.json')
+    missing_state = build_state()
+    base_empty_state = build_state()
     empty_perk_presets = dict(base_empty_state.perk_presets)
     empty_perk_presets['Farming'] = []
     empty_state = replace(
