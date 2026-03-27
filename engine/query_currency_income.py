@@ -7,7 +7,7 @@ import yaml as _yaml
 
 from models.statbook import StatRow
 
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'assumptions.yaml'
+_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
 # Users may edit input/assumptions.yaml (manual_advisory_inputs section) to provide weekly persistent-income observations for supported externalized resources.
 
 DETERMINISTIC_CURRENCY_SURFACES = {

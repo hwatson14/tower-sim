@@ -2,90 +2,58 @@
 
 KB-aligned deterministic simulator and calculator stack for The Tower.
 
-This repo is the cleaned working core intended for Codex-driven development. It contains active code, the full knowledge base, runtime inputs, validation surfaces, and committed generated outputs still consumed by tests.
-
 ## Quick start
 
 ```bash
 pip install -e .[dev]
-python run_stats.py
-pytest
+python run_stats.py   # or: python -m app.run_stats
+pytest                # runs the live architecture gate (23 tests, ~3 min)
 ```
 
-## Canonical layer model
+## Active architecture
 
-The canonical program stack is:
-
-1. Knowledge Base
-2. Inputs
-3. Query Engine
-4. Simulators
-5. Optimisers
-6. Advisors
-
-`AI_EXECUTION_PLAN.md` is the canonical whole-program plan. `ACTIVE_TRANCHE.md` defines the only tranche Codex should execute now, and `BURNDOWN.yaml` records delivery and verification state.
-
-## Current execution pipeline
-
-```text
-parsers/ids_parser.py
-→ compilers/account_state_compiler.py
-→ compilers/stat_input_compiler.py
-→ engine/stat_engine.py
-→ optimizer/scorer.py
+```
+input/          -- IDS parsing, runtime-state assembly, manual inputs
+qe/             -- deterministic stat/query resolution (AUTHORITY)
+simulators/     -- progression and timing projection
+evaluators/     -- scoring, comparison, objective definitions
+advisors/       -- lab advisory, upgrade advice
+app/            -- thin CLI entrypoint + pipeline wiring
+kb/             -- authoritative mechanics, tables, contracts
 ```
 
-This pipeline is the current implementation path, not a contradictory architecture model. In canonical terminology, the runtime and event-model code in `engine/` is the current Simulator layer while `optimizer/` remains the current optimiser owner.
+Dependency direction:
+```
+app/ → advisors/ → evaluators/ → simulators/ → qe/ → input/
+                                                     → kb/
+```
 
-`run_stats.py` is the orchestration entrypoint. It compiles runtime state, emits output artifacts into `out/`, runs comparison and diagnostic routines, and formats current generated surfaces.
+## Default test gate
 
-## Repo map
+```bash
+pytest                                                          # live gate: 23 tests, ~3 min
+pytest tests/ -m 'not slow and not expensive and not quarantine'  # legacy non-slow suite: ~416 tests
+pytest tests/ -m slow                                           # slow integration tests
+pytest tests/ -m expensive                                      # expensive parity tests
+```
 
-- `kb/` — authoritative mechanics, tables, contracts, notes, and ledgers
-- `input/` — manual assumptions (`assumptions.yaml`), perk config, and import slot (`input/imports/` for IDS/Progress/EP_Export CSVs)
-- `parsers/` — raw IDS parsing
-- `compilers/` — account-state and stat-input compilation
-- `models/` — runtime data structures
-- `engine/` — stat engine plus scoped subsystems
-- `optimizer/` — scorer and path ranking
-- `scripts/` — workflow helpers
-- `templates/` — static assets required by geometry workflows/tests
-- `tests/` — regression and contract suite
-- `out/` — committed generated outputs used by active tests/workflows
+## Key files
 
-## Scoped subsystems in `engine/`
+- `app/run_stats.py` — CLI entrypoint (argparse)
+- `app/pipeline.py` — orchestration: input → qe → evaluators → out
+- `app/display.py` — output display formatting
+- `run_stats.py` — legacy domain helper library (bounded transitional; used by pipeline for domain builders)
+- `qe/` — Query Engine authority
+- `input/manual_inputs.yaml` — manual advisory assumptions
+- `input/imports/` — IDS/Progress/EP_Export CSVs
+- `out/` — committed generated outputs consumed by some tests
+- `ACTIVE_TRANCHE.md` — tranche execution history
+- `ARCHITECTURE.md` — target layer model
+- `REPO_INDEX.yaml` — file-status ledger
 
-- Geometry wall-contact fit pipeline
-- Incremental recalc and progression runtime
-- Boss wave engine
-- Scenario and timing engine
-- Perk timeline generator
+## Transitional state
 
-## Notes on current shape
-
-- The KB is the authoritative mechanics/data layer.
-- `run_stats.py` remains a large orchestration surface by design in this phase.
-- `compilers/stat_input_compiler.py` is the major routing hub for KB-backed stat composition.
-- `out/` ships populated because some tests read committed artifacts directly.
-
-## Expected workflow
-
-1. update or inspect inputs and KB-backed code
-2. run `python run_stats.py`
-3. run targeted tests for touched surfaces
-4. run `pytest` for release-level confidence
-
-## Editing guidance
-
-- Prefer editing existing owners over adding new layers.
-- Keep mechanics aligned to KB sources.
-- Remove stale references when retiring paths.
-- Rebuild outputs when a change affects committed generated artifacts.
-
-## Planning note
-
-`AI_EXECUTION_PLAN.md` is the sole long-lived planning authority. Product principles, scope cuts, optimiser-family distinctions, trust labels, and representative user questions must live there instead of in a parallel roadmap file.
-
-## Current handover goal
-
-Codex should be able to open this repo and immediately see a coherent operating core rather than merged historical scaffolding.
+- `run_stats.py` domain builders (~34 functions) are imported by `app/pipeline.py` as a bounded transitional dependency. These are domain-layer functions (audit builders, compare matrices, gap analysis) pending extraction in a future pass.
+- `engine/` shims re-export from active layers for legacy test backward-compat.
+- `models/` shims re-export from `qe.models`.
+- `optimizer/scorer.py`, `optimizer/path_ranker.py` are shims → `evaluators/`.

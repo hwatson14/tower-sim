@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import engine.family_baseline_materializer as family_surface_registry
+import qe.materializer as family_surface_registry
 from engine.family_baseline_materializer import FamilyBaselineMaterializer
 from engine.runtime_consumer_registry import list_runtime_consumer_rules
 from engine.state_identity import StateIdentity

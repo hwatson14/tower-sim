@@ -9,7 +9,7 @@ from typing import Dict, Optional, Tuple
 
 import yaml
 
-from models.stat_input import StatInput
+from qe.models import StatInput  # T3B: authority transferred to qe.models
 
 ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'

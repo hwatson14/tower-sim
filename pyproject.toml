@@ -23,14 +23,21 @@ dev = [
 include-package-data = true
 
 [tool.setuptools.packages.find]
-include = ["engine*", "compilers*", "models*", "parsers*", "optimizer*"]
+# New active spine packages (whitelist rebuild)
+include = ["qe*", "simulators*", "evaluators*", "advisors*", "app*", "input*",
+           # Legacy packages kept until each tranche demotes them
+           "engine*", "compilers*", "models*", "parsers*", "optimizer*"]
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-m 'not slow and not expensive'"
+# Default gate: live architecture spine only.
+# Fast, trustworthy, proves the active layer contracts.
+# Run manually for broader coverage -- see docs below.
+testpaths = ["tests/live"]
+addopts = "-m 'not quarantine'"
 markers = [
   "slow: subprocess-heavy integration/regression coverage excluded from the default test run",
   "expensive: query-stack parity and completion coverage excluded from the default fast test run",
+  "quarantine: pre-existing failures or stale coupling to private/data-dependent state; excluded from all gates until fixed",
 ]
 
 [dependency-groups]

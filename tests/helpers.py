@@ -13,11 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
+from input.runtime_state import build_runtime_state as compile_account_state
 from engine.progression_recalc_bridge import materialize_progression_family_baseline
 from engine.scenario_engine import ScenarioConfig
 from engine.timing_engine import materialize_timing_family_baseline
-from parsers.ids_parser import parse_ids
+from input.parsers import parse_ids
 
 
 @lru_cache(maxsize=None)
@@ -30,7 +30,7 @@ _GENERATED_FILES = frozenset({
     'perks_projected_max.timeline.json',
     'perks_projected_max.final_state.json',
     'perks_projected_max.diagnostics.json',
-    'perks_max_progression_policy.runtime.json',
+    'perks_derived.json',
 })
 
 @lru_cache(maxsize=None)

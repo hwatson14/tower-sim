@@ -93,8 +93,8 @@ def test_resolve_stats_delegates_only_unambiguous_manifest_approved_tournament_t
         assert family_id == 'timing_tournament_no_perks'
         return _Response()
 
-    monkeypatch.setattr('engine.stat_engine._fallback_resolve_stats', _fake_fallback)
-    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _fake_delegate)
+    monkeypatch.setattr('qe.routing._fallback_resolve_stats', _fake_fallback)
+    monkeypatch.setattr('qe.routing._resolve_manifest_approved_family', _fake_delegate)
 
     resolved = resolve_stats(list(timing_rows))
 
@@ -168,8 +168,8 @@ def test_resolve_stats_delegates_progression_surface_contract_when_identifiable(
 
         return _Response()
 
-    monkeypatch.setattr('engine.stat_engine._fallback_resolve_stats', _fake_fallback)
-    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _fake_delegate)
+    monkeypatch.setattr('qe.routing._fallback_resolve_stats', _fake_fallback)
+    monkeypatch.setattr('qe.routing._resolve_manifest_approved_family', _fake_delegate)
 
     resolved = resolve_stats(progression_rows)
 
@@ -197,7 +197,7 @@ def test_resolve_stats_preserves_explicit_fallback_for_mixed_preset_rows(monkeyp
     def _boom(*args, **kwargs):
         raise AssertionError('mixed-preset rows must stay on the explicit fallback path')
 
-    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _boom)
+    monkeypatch.setattr('qe.routing._resolve_manifest_approved_family', _boom)
 
     resolved = resolve_stats(mixed_rows)
 
@@ -311,7 +311,7 @@ def test_resolve_stats_delegates_farming_timing_family_when_unambiguous(monkeypa
 
         return _Response()
 
-    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _fake_delegate)
+    monkeypatch.setattr('qe.routing._resolve_manifest_approved_family', _fake_delegate)
 
     resolve_stats(list(timing_rows))
 
@@ -332,7 +332,7 @@ def test_resolve_stats_does_not_delegate_timing_rows_with_unrecognized_preset(mo
     def _boom(*args, **kwargs):
         raise AssertionError('timing rows with an unrecognized preset must stay on the fallback path')
 
-    monkeypatch.setattr('engine.stat_engine._resolve_manifest_approved_family', _boom)
+    monkeypatch.setattr('qe.routing._resolve_manifest_approved_family', _boom)
 
     resolved = resolve_stats(unrecognized_rows)
 
