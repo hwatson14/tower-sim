@@ -7,7 +7,7 @@ import yaml as _yaml
 
 from models.statbook import StatRow
 
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'assumptions.yaml'
+_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
 
 SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS = {
     'module.farming.hours_per_day': {

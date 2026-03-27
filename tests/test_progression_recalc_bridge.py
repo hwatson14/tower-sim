@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import engine.progression_recalc_bridge as progression_recalc_bridge
+import simulators.progression as progression_recalc_bridge
 from engine.incremental_recalc_runtime import IncrementalPlan
 from engine.progression_recalc_bridge import ProgressionRecalcBridge, ProgressionRecalcRequest
 from helpers import build_state

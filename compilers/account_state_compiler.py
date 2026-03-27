@@ -1,3 +1,19 @@
+"""
+compilers/account_state_compiler.py — TRANSITIONAL INTERNAL DETAIL.
+Sanctioned entry point: input.runtime_state.build_runtime_state().
+
+This module is an internal implementation detail of the input/ layer.
+It is NOT the canonical owner of runtime-state assembly.
+Do NOT add new entry points here. Do NOT import compile_account_state from
+this module in new active code — use input.runtime_state.build_runtime_state instead.
+
+Private functions (_normalize_preset_name, _parse_optional_int, _parse_player_meta)
+are still imported by transitional test files (tests/test_preset_contract_registry.py,
+tests/test_state_semantics.py, tests/test_tier_progression_account_state.py).
+Those tests will be updated or removed in T7. Do not remove private functions until T7.
+
+Will be demoted to archive/legacy/ in T8.
+"""
 from __future__ import annotations
 
 from dataclasses import replace

@@ -12,9 +12,9 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import engine.runtime_consumer_registry as runtime_consumer_registry
-import engine.dependency_registry as dependency_registry
+import qe.dependency_registry as dependency_registry
 import engine.incremental_subset_executor as incremental_subset_executor
-import engine.family_baseline_materializer as family_surface_registry
+import qe.materializer as family_surface_registry
 from engine.incremental_recalc_runtime import IncrementalRecalcRuntime
 from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.runtime_consumer_registry import resolve_consumer_bundle

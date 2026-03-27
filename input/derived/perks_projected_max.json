@@ -139,8 +139,8 @@
   ],
   "notes": "Generated from perk timeline policy + IDS-backed perk controls; this preset is authoritative for max_progression when primary perk config has no active preset.",
   "generator": {
-    "policy_file": "input\\assumptions.yaml",
-    "runtime_policy_file": "input\\derived\\perks_max_progression_policy.runtime.json",
+    "policy_file": "input\\manual_inputs.yaml",
+    "runtime_policy_file": "input\\derived\\perks_derived.json",
     "waves_required_lab": 13,
     "standard_perk_bonus_level": 25,
     "perk_option_quantity": 0,

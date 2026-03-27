@@ -201,10 +201,10 @@ def _json_sanitize(obj):
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from parsers.ids_parser import parse_ids
-from compilers.account_state_compiler import compile_account_state
+from input.parsers import parse_ids
+from input.runtime_state import build_runtime_state as compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs, SUPPORTED_STATE_MODES, normalize_state_mode, state_mode_support
-from models.preset_contract import (
+from qe.contracts import (
     CANONICAL_PRESET_NAMES,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
@@ -214,8 +214,8 @@ from engine.display import (
     annotate_compare_display_fields as _annotate_compare_display_fields,
     annotate_display_fields as _annotate_display_fields,
 )
-from engine.stat_engine import resolve_stats
-from engine.query_surface_publication import publish_phase3_query_surfaces
+from qe.routing import resolve_stats
+from qe.publication import publish_phase3_query_surfaces
 from engine.verification import (
     build_compare_status_summary as _build_compare_status_summary,
     build_ep_compare as _build_ep_compare,
@@ -227,11 +227,11 @@ from engine.verification import (
 )
 from optimizer.scorer import compute_optimizer_scores
 
-from models.stat_input import StatInput
-from models.statbook import StatBook, StatRow
+from qe.models import StatInput
+from qe.models import StatBook, StatRow
 
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
-ASSUMPTIONS_PATH = ROOT / 'input' / 'assumptions.yaml'
+ASSUMPTIONS_PATH = ROOT / 'input' / 'manual_inputs.yaml'
 LOADOUT_CONFIG_PATH = ROOT / 'input' / 'loadout.json'
 PERKS_CONFIG_PATH = ROOT / 'input' / 'perks.json'
 PROJECTED_MAX_PERKS_CONFIG_PATH = ROOT / 'input' / 'derived' / 'perks_projected_max.json'
@@ -258,7 +258,7 @@ def _perk_config_has_active_preset(config: dict) -> bool:
 
 
 
-_PERK_MAX_POLICY_PATH = ROOT / 'input' / 'assumptions.yaml'
+_PERK_MAX_POLICY_PATH = ROOT / 'input' / 'manual_inputs.yaml'
 
 
 def _load_perk_entity_registry() -> list[dict]:
@@ -385,7 +385,7 @@ def _build_generated_max_progression_perk_config(ids_raw, primary_config: dict |
         'first_perk_choice': first_perk_choice,
     }
     (ROOT / 'input' / 'derived').mkdir(parents=True, exist_ok=True)
-    policy_runtime_path = ROOT / 'input' / 'derived' / 'perks_max_progression_policy.runtime.json'
+    policy_runtime_path = ROOT / 'input' / 'derived' / 'perks_derived.json'
     policy_runtime_path.write_text(json.dumps(policy_payload, indent=2), encoding='utf-8')
     timeline, diag = generate_timeline(policy_runtime_path)
     taken_counts = perk_state_at_wave(timeline, policy_payload['target_wave'])
@@ -2024,7 +2024,7 @@ def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
     return out
 
 def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
-    from compilers.account_state_compiler import compile_account_state
+    from input.runtime_state import build_runtime_state as compile_account_state
     from compilers.stat_input_compiler import compile_stat_inputs, _load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
 
     state = compile_account_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
@@ -2825,4 +2825,7 @@ def main() -> int:
 
 
 if __name__ == '__main__':
-    raise SystemExit(main())
+    # T6: CLI entrypoint transferred to app/run_stats.py.
+    # Delegate to app layer so `python run_stats.py` still works during transition.
+    from app.run_stats import main as _app_main
+    raise SystemExit(_app_main())

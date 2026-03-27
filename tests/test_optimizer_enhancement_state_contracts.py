@@ -13,6 +13,7 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 import optimizer.enhancement_state_contracts as enhancement_state_contracts
+import evaluators.objectives as _objectives_authority
 from optimizer.enhancement_state_contracts import (
     load_enhancement_state_prep_contract,
     load_observed_run_els_contract,
@@ -53,7 +54,7 @@ def test_observed_run_els_inputs_fail_closed_for_missing_required_field(tmp_path
     del assumptions['observed_run_els_scenarios']['scenarios'][0]['enemy_level_skip_reduction_pp']
     input_path = tmp_path / 'assumptions.yaml'
     input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
+    monkeypatch.setattr(_objectives_authority, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:
         with pytest.raises(ValueError, match='missing required fields'):
@@ -67,7 +68,7 @@ def test_observed_run_els_inputs_fail_closed_for_missing_required_scenario(tmp_p
     assumptions['observed_run_els_scenarios']['scenarios'] = assumptions['observed_run_els_scenarios']['scenarios'][:1]
     input_path = tmp_path / 'assumptions.yaml'
     input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
+    monkeypatch.setattr(_objectives_authority, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:
         with pytest.raises(ValueError, match='missing required scenarios'):
@@ -81,7 +82,7 @@ def test_enhancement_state_prep_contract_fails_closed_for_missing_value_table(tm
     contract['enhancement_surfaces']['coin_bonus']['value_table'] = 'kb/workshop/derived/materialized/does-not-exist.csv'
     contract_path = tmp_path / 'enhancement-state-prep.yaml'
     contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
+    monkeypatch.setattr(_objectives_authority, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
     enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
     try:
         with pytest.raises(ValueError, match='references missing value_table'):
@@ -96,7 +97,7 @@ def test_observed_run_els_inputs_fail_closed_for_scenario_contract_mismatch(tmp_
     assumptions['observed_run_els_scenarios']['scenarios'][0]['skip_track'] = 'enemy_health_level_skip'
     input_path = tmp_path / 'assumptions.yaml'
     input_path.write_text(yaml.safe_dump(assumptions, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
+    monkeypatch.setattr(_objectives_authority, '_OBSERVED_RUN_ELS_INPUT_PATH', input_path)
     enhancement_state_contracts.load_observed_run_els_scenarios.cache_clear()
     try:
         with pytest.raises(ValueError, match='mismatches skip_track contract'):
@@ -110,7 +111,7 @@ def test_enhancement_state_prep_contract_fails_closed_for_missing_trust_payload_
     del contract['output_labels']['strong_model_coin_bonus']['trust_payload']['formula_owner']
     contract_path = tmp_path / 'enhancement-state-prep.yaml'
     contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
+    monkeypatch.setattr(_objectives_authority, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
     enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
     try:
         with pytest.raises(ValueError, match='trust_payload missing keys'):
@@ -124,7 +125,7 @@ def test_enhancement_state_prep_contract_fails_closed_for_missing_query_bundle_r
     del contract['future_query_bundle']['requirements']['failure_mode']
     contract_path = tmp_path / 'enhancement-state-prep.yaml'
     contract_path.write_text(yaml.safe_dump(contract, sort_keys=False))
-    monkeypatch.setattr(enhancement_state_contracts, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
+    monkeypatch.setattr(_objectives_authority, '_WORKSHOP_PREP_CONTRACT_PATH', contract_path)
     enhancement_state_contracts.load_enhancement_state_prep_contract.cache_clear()
     try:
         with pytest.raises(ValueError, match='requirements missing keys'):
