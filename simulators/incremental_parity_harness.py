@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Dict
 
-from engine.query_routing import to_legacy_surface_id
+from qe.contracts import to_legacy_surface_id
 from models.statbook import StatBook, StatRow
 
 

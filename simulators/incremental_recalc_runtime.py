@@ -3,8 +3,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Dict, Iterable, List, Mapping, Sequence
 
-from engine.dependency_registry import DependencyRegistry
-from engine.runtime_consumer_registry import resolve_consumer_bundle
+from qe.dependency_registry import DependencyRegistry
+from qe.consumer_registry import resolve_consumer_bundle
 
 
 @dataclass(frozen=True)

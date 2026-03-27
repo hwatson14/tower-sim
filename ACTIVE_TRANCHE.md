@@ -586,3 +586,62 @@ python3 -m pytest tests/
 ### Final validation
 - `23 passed in 2:53` -- default gate (tests/live/) passes
 - `8 passed in 0.40s` -- test_optimizer_enhancement_state_contracts.py passes with new monkeypatches
+
+---
+
+## T11 -- COMPLETE (Active-path boundary closure)
+
+### Blockers closed
+
+| Blocker | Action |
+|---------|--------|
+| A: `app/pipeline.py` imported `run_stats` as `_h` directly | Created `evaluators/pipeline_helpers.py` shim; `app/pipeline.py` now imports `evaluators.pipeline_helpers as _h` |
+| B1: `qe/routing.py` imported `engine.stat_resolution_core` | `engine/stat_resolution_core.py` content moved to `qe/stat_resolution.py`; engine file is now a shim |
+| B2: `qe/dependency_registry.py` imported `engine.runtime_consumer_registry` | Content moved to `qe/consumer_registry.py`; `from engine.query_routing` replaced with `from qe.contracts`; engine file is now a shim |
+| B3: `qe/publication.py` imported 7 `engine.query_*` publishers | All 7 publisher files copied to `qe/`; engine files are now shims; qe/publication.py imports from `qe.*` |
+| C: `simulators/*` imported `engine.dependency_registry`, `engine.query_routing`, `engine.stat_resolution_core`, `engine.runtime_consumer_registry`, `engine.timing_engine`, `engine.perk_timeline_state`, `engine.runtime_consumer_executor` | All fixed: dependency_registry → qe.dependency_registry; query_routing → qe.contracts; stat_resolution_core → qe.stat_resolution; runtime_consumer_registry → qe.consumer_registry; timing_engine → simulators.timing; perk_timeline_state, wave_progression_policy, runtime_consumer_executor moved to simulators/ (engine files are shims) |
+| D: live gate didn't prove boundaries explicitly | Added `tests/live/test_boundary_contracts.py` with 5 boundary enforcement tests; created `tests/expensive/` directory |
+| E: `input/derived/perks_max_progression_policy.runtime.json` duplicate | Removed; `perks_derived.json` is the sole canonical artifact |
+| F: docs ahead of implementation | ARCHITECTURE.md updated with new qe/, simulators/, evaluators/ files; ACTIVE_TRANCHE.md and REPO_INDEX.yaml updated |
+
+### New files (authority)
+- `qe/stat_resolution.py` -- stat resolution authority (was engine/stat_resolution_core.py)
+- `qe/consumer_registry.py` -- consumer bundle registry authority (was engine/runtime_consumer_registry.py)
+- `qe/query_currency_income.py` -- currency income publisher (was engine/query_currency_income.py)
+- `qe/query_derived_composites.py` -- derived composite publisher (was engine/query_derived_composites.py)
+- `qe/query_module_draw_policy.py` -- module draw policy publisher (was engine/query_module_draw_policy.py)
+- `qe/query_module_drop_economy.py` -- module drop economy publisher (was engine/query_module_drop_economy.py)
+- `qe/query_module_lab_policy.py` -- module lab policy publisher (was engine/query_module_lab_policy.py)
+- `qe/query_module_mission_economy.py` -- module mission economy publisher (was engine/query_module_mission_economy.py)
+- `qe/query_module_runtime_policy.py` -- module runtime policy publisher (was engine/query_module_runtime_policy.py)
+- `simulators/perk_timeline_state.py` -- perk state application (was engine/perk_timeline_state.py)
+- `simulators/wave_progression_policy.py` -- wave progression rules (was engine/wave_progression_policy.py)
+- `simulators/runtime_consumer_executor.py` -- consumer execution (was engine/runtime_consumer_executor.py)
+- `evaluators/pipeline_helpers.py` -- transitional bridge for app/pipeline.py _h.* domain calls
+- `tests/live/test_boundary_contracts.py` -- 5 architecture boundary enforcement tests
+- `tests/expensive/` -- directory created for slow tests
+
+### Removed
+- `input/derived/perks_max_progression_policy.runtime.json` -- duplicate of perks_derived.json; deleted
+
+### Engine shims updated/created
+- `engine/stat_resolution_core.py` → shim → qe.stat_resolution
+- `engine/runtime_consumer_registry.py` → shim → qe.consumer_registry
+- `engine/perk_timeline_state.py` → shim → simulators.perk_timeline_state
+- `engine/wave_progression_policy.py` → shim → simulators.wave_progression_policy
+- `engine/runtime_consumer_executor.py` → shim → simulators.runtime_consumer_executor
+- `engine/query_currency_income.py` → shim → qe.query_currency_income
+- `engine/query_derived_composites.py` → shim → qe.query_derived_composites
+- `engine/query_module_draw_policy.py` → shim → qe.query_module_draw_policy
+- `engine/query_module_drop_economy.py` → shim → qe.query_module_drop_economy
+- `engine/query_module_lab_policy.py` → shim → qe.query_module_lab_policy
+- `engine/query_module_mission_economy.py` → shim → qe.query_module_mission_economy
+- `engine/query_module_runtime_policy.py` → shim → qe.query_module_runtime_policy
+
+### What remains transitional
+- `run_stats.py` -- domain library; `evaluators/pipeline_helpers.py` bridges it for app/; future tranches should distribute functions to proper layers
+- `engine/` shims -- backward-compat for legacy test suite
+- `models/` shims, `optimizer/scorer.py`, `optimizer/path_ranker.py` shims -- unchanged
+- T5B `optimizer/enhancement_state_contracts.py` authority -- deferred
+
+### Live gate: `28 passed` (23 existing + 5 new boundary tests)

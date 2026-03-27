@@ -48,24 +48,43 @@ The active surface should be small enough that an AI agent can navigate it in on
     ... unchanged ...
 
   qe/
-    contracts.py             # stat-query value contracts
-    models.py                # typed stat/query model structs
-    routing.py               # query dispatch and routing
-    materializer.py          # family baseline materialisation
-    kernel.py                # core deterministic resolution kernel
-    publication.py           # sanctioned surface publication
-    dependency_registry.py   # dependency graph and invalidation
+    contracts.py               # stat-query value contracts
+    models.py                  # typed stat/query model structs
+    routing.py                 # query dispatch and routing
+    materializer.py            # family baseline materialisation
+    kernel.py                  # core deterministic resolution kernel
+    publication.py             # sanctioned surface publication
+    dependency_registry.py     # dependency graph and invalidation
+    consumer_registry.py       # runtime consumer bundle registry (auth: moved from engine/)
+    stat_resolution.py         # legacy stat resolution core (auth: moved from engine/)
+    query_currency_income.py   # currency income publisher (auth: moved from engine/)
+    query_derived_composites.py  # derived composite publisher (auth: moved from engine/)
+    query_module_draw_policy.py  # module draw policy publisher (auth: moved from engine/)
+    query_module_drop_economy.py # module drop economy publisher (auth: moved from engine/)
+    query_module_lab_policy.py   # module lab policy publisher (auth: moved from engine/)
+    query_module_mission_economy.py # module mission economy publisher (auth: moved from engine/)
+    query_module_runtime_policy.py  # module runtime policy publisher (auth: moved from engine/)
 
   simulators/
-    progression.py           # progression projection
-    timing.py                # timing/wave projection
-    scenario.py              # scenario projection
+    progression.py              # progression projection
+    timing.py                   # timing/wave projection
+    scenario.py                 # scenario projection
+    incremental_cache_fingerprint.py
+    incremental_cache_validator.py
+    incremental_overlay_publisher.py
+    incremental_parity_harness.py
+    incremental_recalc_runtime.py
+    incremental_subset_executor.py
+    perk_timeline_state.py      # perk state application (auth: moved from engine/)
+    wave_progression_policy.py  # wave progression rules (auth: moved from engine/)
+    runtime_consumer_executor.py # runtime consumer execution (auth: moved from engine/)
 
   evaluators/
     scorer.py                # scoring engine
     objectives.py            # objective definitions
     compare.py               # comparison helpers
     ranker.py                # ranking and sorting
+    pipeline_helpers.py      # transitional bridge: run_stats domain helpers for app/
 
   advisors/
     recommendation_policy.py # policy rules for recommendations
@@ -83,6 +102,7 @@ The active surface should be small enough that an AI agent can navigate it in on
       test_qe_core.py
       test_simulators_core.py
       test_evaluators_core.py
+      test_boundary_contracts.py  # architecture boundary enforcement
     expensive/               # slow tests, not in default gate
     quarantine/              # broken tests pending fix
 

@@ -3,9 +3,9 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import Dict, Iterable, List, Mapping, Sequence
 
-from engine.dependency_registry import DependencyRegistry
-from engine.query_routing import to_legacy_surface_id, to_v2_surface_id
-from engine.stat_resolution_core import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
+from qe.dependency_registry import DependencyRegistry
+from qe.contracts import to_legacy_surface_id, to_v2_surface_id
+from qe.stat_resolution import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
 from models.stat_input import StatInput
 from models.statbook import StatRow
 
@@ -194,7 +194,7 @@ class IncrementalSubsetExecutor:
         family_id: str | None,
         scenario_mode_id: str | None,
     ) -> StatInput:
-        from engine.timing_engine import _load_wave_timing_baselines
+        from simulators.timing import _load_wave_timing_baselines
 
         inferred_mode_id = scenario_mode_id
         if inferred_mode_id is None:
