@@ -9,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
+from input.runtime_state import ScenarioRuntimeInputs
 
 
 def test_scenario_runtime_inputs_from_mapping_accepts_namespaced_keys():

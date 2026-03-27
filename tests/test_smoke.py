@@ -136,8 +136,8 @@ def test_ep_compare_artifacts_emit_authoritative_verdict_fields():
 def test_account_state_and_stat_input_are_frozen():
     import pytest
     from dataclasses import FrozenInstanceError
-    from compilers.account_state_compiler import compile_account_state
-    from parsers.ids_parser import parse_ids
+    from input.runtime_state import compile_account_state
+    from input.parsers import parse_ids
     from models.stat_input import StatInput
 
     ids_raw = parse_ids(Path(__file__).resolve().parents[1] / 'input' / 'imports' / 'ids.csv')
@@ -419,7 +419,9 @@ def test_critical_chance_card_is_kb_routed_into_tower_crit_chance():
     spec.loader.exec_module(mod)
 
     raw = mod.parse_ids(Path(__file__).resolve().parents[1] / "input" / "imports" / "ids.csv")
-    acc = mod.compile_account_state(raw, loadout_config=mod._load_json_config(Path(__file__).resolve().parents[1] / "input" / "loadout.json"), perk_config=mod._load_json_config(Path(__file__).resolve().parents[1] / "input" / "perks.json"))
+    import yaml as _yaml
+    _manual = _yaml.safe_load((Path(__file__).resolve().parents[1] / "input" / "manual_inputs.yaml").read_text()) or {}
+    acc = mod.compile_account_state(raw, loadout_config=_manual.get("loadout") or {}, perk_config=_manual.get("perk_config") or {})
     statbook = mod.resolve_stats(mod.compile_stat_inputs(acc, preset_name="Tourney", card_preset_name="Tourney", state_mode="start_of_run"))
     row = statbook.rows["canonical_stat::tower_crit_chance_pct"]
 

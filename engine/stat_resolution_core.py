@@ -289,10 +289,9 @@ def _resolve_survivability_base_times_multipliers(destination_id: str, contribut
         final *= _tower_regen_compare_module_multiplier(module_rows)
     return final, 'resolved', f'{note_label}: workshop x survivability multipliers.', schema
 
-CANONICAL_PCT_CAPS = {
-    'tower_defense_pct': 98.0,
-    'wall_rebuild_seconds': 150.0,
-}
+# Source-backed stat caps: loaded from KB table, not defined as literals here.
+# Source: kb/global-rules/tables/game-mechanic-stat-caps.csv
+from engine.kb_surfaces import CANONICAL_PCT_CAPS  # noqa: E402
 
 BASE_FLAT_MULTIPLIED_STATS = {
     'tower_attack_speed',

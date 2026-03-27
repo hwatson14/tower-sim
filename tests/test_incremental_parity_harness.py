@@ -7,12 +7,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
+from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
 from engine.incremental_parity_harness import IncrementalParityHarness
 from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.stat_engine import resolve_stats
-from parsers.ids_parser import parse_ids
+from input.parsers import parse_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 

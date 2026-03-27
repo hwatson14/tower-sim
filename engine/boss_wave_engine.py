@@ -16,7 +16,7 @@ from engine.progression_recalc_bridge import (
     resolve_progression_family_query,
 )
 from engine.scenario_engine import ScenarioConfig, ScenarioSurfaces, config_from_statbook, compute_scenario_surfaces
-from engine.scenario_runtime_inputs import ScenarioRuntimeInputs
+from input.runtime_state import ScenarioRuntimeInputs
 from engine.timing_engine import TimingSurfaces, compute_average_damage_reduction_fraction_over_interval, compute_timing_surfaces, resolve_combat_runtime_surfaces
 from engine.progression_state import ProgressionInitState, WorkshopTrackState
 from engine.workshop_progression_policy import AppliedWorkshopUpgrade, WorkshopProgressionPolicy, WorkshopUpgradeEvent
@@ -26,11 +26,16 @@ from models.account_state import AccountState
 ROOT = Path(__file__).resolve().parents[1]
 ENEMY_DAMAGE_TABLE = ROOT / 'kb' / 'enemies' / 'tables' / 'enemy-damage-table.csv'
 ENEMY_HEALTH_TABLE = ROOT / 'kb' / 'enemies' / 'tables' / 'enemy-health-table.csv'
-BOSS_HP_MULTIPLIER = 20.0
-ELECTRON_BOSS_REMAINING_HP_PCT = 0.15 * 0.25
-THORNS_BOSS_EFFECTIVENESS = 0.5
-KILL_HP_THRESHOLD = 1.0
-BOSS_HEAT_UP_DAMAGE_PER_HIT_PCT = 0.04
+
+# Source-backed gameplay constants: loaded from KB table, not defined as literals here.
+from engine.kb_surfaces import (  # noqa: E402
+    BOSS_HP_MULTIPLIER,
+    ELECTRON_BOSS_REMAINING_HP_PCT,
+    THORNS_BOSS_EFFECTIVENESS,
+    BOSS_HEAT_UP_DAMAGE_PER_HIT_PCT,
+)
+# QE resolver policy constant: internal HP floor, not wiki-sourced.
+from qe.policy import BOSS_KILL_HP_THRESHOLD as KILL_HP_THRESHOLD  # noqa: E402
 
 
 @dataclass(frozen=True)

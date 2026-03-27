@@ -356,65 +356,9 @@ DIRECT_WORKSHOP_TABLE_COLUMNS = {
     'Lifesteal': 'Lifesteal',
 }
 
-WORKSHOP_FORMULA_VALUES = {
-    'Attack Speed': lambda level: 1.0 + 0.05 * level,
-    'Defense %': lambda level: 0.7 * level,
-    'Critical Chance': lambda level: 1.0 + float(level),
-    'Critical Factor': lambda level: 1.2 + 0.1 * level,
-    'Cash Bonus': lambda level: 1.0 + 0.01 * level,
-    'Coin / Kill Bonus': lambda level: 1.0 + 0.01 * level,
-    'Enemy Attack Level Skip': lambda level: 0.05 + 0.05 * level,
-    'Enemy Health Level Skip': lambda level: 0.05 + 0.05 * level,
-    'Package Chance': lambda level: 6.0 + 0.4 * level,
-    'Range': lambda level: 26.5 + 0.5 * level,
-    'Thorn Damage': lambda level: float(level),
-    'Wall Health': lambda level: 0.2 + 0.001 * level,
-    'Wall Rebuild': lambda level: max(0.0, 600.0 - 2.0 * level),
-    'Free Attack Upgrade': lambda level: 0.5 * level,
-    'Free Defense Upgrade': lambda level: 0.5 * level,
-    'Free Utility Upgrade': lambda level: 0.5 * level,
-    'Recovery Amount': lambda level: 14.0 + 0.4 * level,
-    'Max Amount': lambda level: 1.0 + 0.031 * level,
-    'Max Recovery': lambda level: 1.0 + 0.031 * level,
-    'Interest / Wave': lambda level: 0.25 * level,
-    'Wall Fortification': lambda level: 1.0 + ((20.0 * level) / 100.0),
-    'Multishot Chance': lambda level: 0.5 * level,
-    'Multishot Targets': lambda level: 2.0 + level,
-    'Rapid Fire Chance': lambda level: 0.4 * level,
-    'Rapid Fire Duration': lambda level: 0.6 + 0.05 * level,
-    'Bounce Shot Chance': lambda level: 0.8 * level,
-    'Bounce Shot Targets': lambda level: 1.0 + level,
-    'Bounce Shot Range': lambda level: 2.0 + 0.1 * level,
-    'Super Critical Chance': lambda level: 0.2 * level,
-    'Super Critical Mult': lambda level: 1.2 + 0.1 * level,
-    'Rend Armor Chance': lambda level: 0.375 * level,
-    'Rend Armor Mult': lambda level: 0.0035 * (level + 1),
-    'Knockback Chance': lambda level: 1.0 * level,
-    'Knockback Force': lambda level: 0.4 + 0.142 * level,
-    'Orb Speed': lambda level: 0.4 + 0.15 * level,
-    'Orbs': lambda level: max(0.0, float(level) - 1.0),
-    'Shockwave Size': lambda level: 0.6 + 0.05 * level,
-    'Shockwave Frequency': lambda level: max(7.0, 20.0 - 0.15 * level),
-    'Land Mine Chance': lambda level: 0.6 * level,
-    'Land Mine Damage': lambda level: 1.0 + 0.1 * level,
-    'Land Mine Radius': lambda level: 0.03 * level,
-    'Death Defy': lambda level: 0.4 * level,
-    'Cash / Wave': lambda level: 4.0 * level,
-    'Coin / Wave': lambda level: 4.0 * level,
-}
-
-
-
-
-LAB_FORMULA_VALUES = {
-    'Critical Factor': lambda level: 1.0 + 0.03 * level,
-    'Coins / Kill Bonus': lambda level: 1.0 + 0.02 * level,
-    'Cash Bonus': lambda level: 1.0 + 0.02 * level,
-    'Defense Absolute': lambda level: 1.0 + 0.03 * level,
-    'Damage / Meter': lambda level: 1.0 + 0.02 * level,
-    'Wall Rebuild': lambda level: -10.0 * level,
-    'Max Rend Armor Multiplier': lambda level: 0.25 * level,
-}
+# Source-backed workshop and lab formula callables: loaded from KB table.
+# Source: kb/global-rules/tables/workshop-formula-params-canonical.csv
+from engine.kb_surfaces import WORKSHOP_FORMULA_VALUES, LAB_FORMULA_VALUES  # noqa: E402
 
 CARD_TARGET_SURFACE_TO_CANONICAL = {
     'tower.damage_multiplier': 'tower_damage',

@@ -9,9 +9,9 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
+from input.runtime_state import compile_account_state
 from engine.query_perk_compiler import active_perk_selections
-from parsers.ids_parser import parse_ids
+from input.parsers import parse_ids
 
 
 def _ids_raw():

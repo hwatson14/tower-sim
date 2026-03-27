@@ -28,7 +28,6 @@ _HERE = Path(__file__).resolve().parent
 _ROOT = _HERE.parent
 
 MANUAL_INPUTS_PATH = _HERE / "manual_inputs.yaml"
-PERKS_CONFIG_PATH = _HERE / "perks.json"
 PERKS_DERIVED_PATH = _HERE / "derived" / "perks_derived.json"
 IDS_CSV_PATH = _HERE / "imports" / "ids.csv"
 EP_EXPORT_CSV_PATH = _HERE / "imports" / "ep_export.csv"
@@ -86,7 +85,6 @@ def load_inputs(
     *,
     ids_path: Optional[Path] = None,
     manual_inputs_path: Optional[Path] = None,
-    perks_config_path: Optional[Path] = None,
     perks_derived_path: Optional[Path] = None,
 ) -> InputBundle:
     """
@@ -94,10 +92,10 @@ def load_inputs(
 
     Uses default paths from input/ unless overrides are provided.
     Raises ValueError or FileNotFoundError on critical missing inputs.
+    Perk config is loaded from manual_inputs.yaml['perk_config'] (single manual input surface).
     """
     ids_path = ids_path or IDS_CSV_PATH
     manual_inputs_path = manual_inputs_path or MANUAL_INPUTS_PATH
-    perks_config_path = perks_config_path or PERKS_CONFIG_PATH
     perks_derived_path = perks_derived_path or PERKS_DERIVED_PATH
 
     if not ids_path.exists():
@@ -107,7 +105,7 @@ def load_inputs(
 
     manual_inputs = _load_yaml_optional(manual_inputs_path)
     loadout_config = manual_inputs.get("loadout") or {}
-    perk_config = _load_json_optional(perks_config_path)
+    perk_config = manual_inputs.get("perk_config") or {}
     perks_derived = _load_json_optional(perks_derived_path)
     manifest = _load_json_optional(MANIFEST_PATH)
 

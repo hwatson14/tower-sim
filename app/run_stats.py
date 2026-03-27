@@ -21,8 +21,10 @@ def main() -> int:
     parser.add_argument('--out', '--output-dir', dest='out', type=Path, default=ROOT / 'out')
     parser.add_argument('--preset', type=str, default='Farming')
     parser.add_argument('--state-mode', type=str, default='max_progression')
-    parser.add_argument('--loadout', type=str, default=str(ROOT / 'input' / 'loadout.json'))
-    parser.add_argument('--perks', type=str, default=str(ROOT / 'input' / 'perks.json'))
+    # Single manual input surface: all loadout and perk config come from manual_inputs.yaml.
+    # --manual-inputs allows pointing at a different yaml file (e.g., for testing).
+    parser.add_argument('--manual-inputs', type=Path, default=None,
+                        help='Optional path to manual_inputs.yaml override (default: input/manual_inputs.yaml)')
     parser.add_argument('--perk-state', type=str, default='auto', choices=['auto', 'on', 'off'])
     args = parser.parse_args()
     from app.pipeline import run_pipeline

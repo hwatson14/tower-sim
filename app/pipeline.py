@@ -43,6 +43,7 @@ from evaluators.compare import (
     ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
 )
 from evaluators.scorer import compute_optimizer_scores
+from input.loader import load_inputs
 from input.parsers import parse_ids
 from qe.publication import publish_phase3_query_surfaces
 from qe.routing import resolve_stats
@@ -124,9 +125,12 @@ def run_pipeline(args) -> int:
     args.out.mkdir(parents=True, exist_ok=True)
 
     ids_raw = parse_ids(args.ids)
-    loadout_config = _load_json_config(Path(args.loadout))
+    _manual_inputs_path = getattr(args, 'manual_inputs', None)
+    _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=_manual_inputs_path)
+    loadout_config = _input_bundle.loadout_config
     perk_config, perk_config_resolution = _h._resolve_perk_config(
-        Path(args.perks), args.state_mode, ids_raw=ids_raw
+        _input_bundle.perk_config, args.state_mode, ids_raw=ids_raw,
+        diag_output_dir=args.out / 'diagnostics' / 'perks',
     )
     formula_ledger = _h._load_formula_ledger(FORMULA_LEDGER_PATH)
     ep_oracle = _h._load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
@@ -308,7 +312,7 @@ def run_pipeline(args) -> int:
             'notes': [
                 'EP export compare uses run-situation policy: offense surfaces use Tourney loadout with perks off; non-offense surfaces use Farming by default and follow the selected engine perk state.',
                 'EP export max progression implies max workshop and farming-side perk application beyond the current IDS/loadout-present package state.',
-                f"The current package can store externally selected perk presets from {_relpath_str(Path(args.perks))}, compile perk stat inputs, and resolve supported perk contributors into final stats.",
+                f"The current package can store externally selected perk presets from manual_inputs.yaml, compile perk stat inputs, and resolve supported perk contributors into final stats.",
                 'Perk selections are not parsed from IDS itself; they must be supplied explicitly when a run state needs them.',
                 'Perk application is controlled at engine scope via --perk-state auto|on|off; perks are either materialized for the run or fully disabled.',
                 'When values do not match and EP uses unsupported stage facets, compare status is stage_scope_mismatch rather than a hard formula mismatch.',
@@ -345,7 +349,7 @@ def run_pipeline(args) -> int:
         'configured_perk_presets': _h._sanitized_configured_perk_presets(account_state, args.preset),
         'active_card_preset': account_state.active_card_preset,
         'active_module_preset': account_state.active_module_preset,
-        'perk_input_file': _relpath_str(Path(args.perks)),
+        'perk_input_file': 'manual_inputs.yaml',
         'compare_package_value_provenance': {
             'statbook_default_output_preset': args.preset,
             'ep_compare_uses_rows_by_preset': True,
@@ -407,7 +411,7 @@ def run_pipeline(args) -> int:
             account_state, stat_inputs, statbook_publishable_dict['rows']
         ),
         'perk_coverage_audit': _h._build_perk_coverage_audit(
-            ids_raw, account_state, statbook.diagnostics.get('destination_type_schema', {}), Path(args.perks)
+            ids_raw, account_state, statbook.diagnostics.get('destination_type_schema', {}), None,
         ),
         'tower_damage_residue_analysis': _h._build_tower_damage_residue_analysis(
             projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable

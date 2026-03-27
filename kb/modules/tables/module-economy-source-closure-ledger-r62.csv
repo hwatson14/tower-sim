@@ -22,3 +22,10 @@ draw_ev,epic_draw_shard_equivalent_value,Shard-equivalent value of an epic draw,
 draw_ev,ten_pull_expected_value_model,Exact EV model including ten-pull rare guarantee,source_closed,user_package_rule,module_shard_income_calculator,Closed by explicit package rule that 10-pulls equal ten singles
 missions,daily_mission_frequency_policy,Missions per week planner policy,manual_qe_routed,input/QE,planner resource state;module_shard_income_calculator,Manual source but routed through QE
 reroll_cost,auto_roll_time_or_iteration_model,Auto-roll timing/iterations beyond shard spend,unresolved,,not currently consumed,Out of current shard-spend calculator scope
+
+reroll_rarity,common_submodule_reroll_rate_pct,Common submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table
+reroll_rarity,rare_submodule_reroll_rate_pct,Rare submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table
+reroll_rarity,epic_submodule_reroll_rate_pct,Epic submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table
+reroll_rarity,legendary_submodule_reroll_rate_pct,Legendary submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table
+reroll_rarity,mythic_submodule_reroll_rate_pct,Mythic submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table
+reroll_rarity,ancestral_submodule_reroll_rate_pct,Ancestral submodule reroll rarity rate,source_closed,wiki,module_submodule_reroll_policy,Closed from Modules wiki reroll rarity table

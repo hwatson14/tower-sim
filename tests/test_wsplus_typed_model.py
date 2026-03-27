@@ -7,10 +7,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.append(str(ROOT))
 
-from compilers.account_state_compiler import compile_account_state
+from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
 from models.account_state import WorkshopEnhancementSnapshot
-from parsers.ids_parser import parse_ids
+from input.parsers import parse_ids
 
 
 def test_wsplus_tracks_compile_as_typed_preset_aware_state():
