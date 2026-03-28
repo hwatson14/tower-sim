@@ -1,26 +1,22 @@
 """
-compilers/account_state_compiler.py — TRANSITIONAL INTERNAL DETAIL.
-Sanctioned entry point: input.runtime_state.build_runtime_state().
+input/state_builder.py — Runtime-state assembly logic.
 
-This module is an internal implementation detail of the input/ layer.
-It is NOT the canonical owner of runtime-state assembly.
-Do NOT add new entry points here. Do NOT import compile_account_state from
-this module in new active code — use input.runtime_state.build_runtime_state instead.
+Owns: build_runtime_state() and private parsing/build helpers that assemble
+AccountState from IdsRaw and manual overrides.
 
-Private functions (_normalize_preset_name, _parse_optional_int, _parse_player_meta)
-are still imported by transitional test files (tests/test_preset_contract_registry.py,
-tests/test_state_semantics.py, tests/test_tier_progression_account_state.py).
-Those tests will be updated or removed in T7. Do not remove private functions until T7.
-
-Will be demoted to archive/legacy/ in T8.
+This module is the canonical builder implementation for input/runtime_state.py.
 """
 from __future__ import annotations
 
 from dataclasses import replace
+from functools import lru_cache
 import re
-from typing import Dict, List, Optional, Tuple
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Tuple
 
-from qe.account_state import (
+import yaml
+
+from input.state_types import (
     AccountState,
     BotUpgradeSnapshot,
     CardSnapshot,
@@ -30,8 +26,6 @@ from qe.account_state import (
     ModuleSubstat,
     ModuleSystemState,
     PerkSelection,
-    PRESET_NAMES,
-    SLOT_TYPES,
     TableSnapshot,
     UltimateWeaponSnapshot,
     UwTrackSnapshot,
@@ -39,15 +33,66 @@ from qe.account_state import (
     WorkshopEnhancementSnapshot,
     WorkshopEntrySnapshot,
 )
-from input.ids_raw import IdsRaw
-from qe.contracts import (
-    load_section_layout_contract,
-    normalize_preset_name,
-    require_canonical_preset_name,
-)
+from input.ids_parser import IdsRaw
+ROOT = Path(__file__).resolve().parents[1]
+_PRESET_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'preset_contract.yaml'
+_SECTION_LAYOUT_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'section_layout_contract.yaml'
 
 
-def compile_account_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loadout_config: Optional[dict] = None, perk_config: Optional[dict] = None) -> AccountState:
+@lru_cache(maxsize=1)
+def _load_preset_contract() -> dict[str, Any]:
+    with _PRESET_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
+        raw = yaml.safe_load(handle) or {}
+    canonical_presets = tuple(str(name) for name in raw.get('canonical_presets') or ())
+    aliases = {str(key): str(value) for key, value in (raw.get('aliases') or {}).items()}
+    if not canonical_presets:
+        raise ValueError('Preset contract missing canonical_presets.')
+    for alias_target in aliases.values():
+        if alias_target not in canonical_presets:
+            raise ValueError(f'Preset contract alias targets unknown canonical preset {alias_target!r}.')
+    return {
+        'canonical_presets': canonical_presets,
+        'aliases': aliases,
+    }
+
+
+@lru_cache(maxsize=1)
+def load_section_layout_contract() -> dict[str, Any]:
+    with _SECTION_LAYOUT_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
+        raw = yaml.safe_load(handle) or {}
+    sections = raw.get('sections') or {}
+    if not sections:
+        raise ValueError('Section layout contract missing sections.')
+    return sections
+
+
+CANONICAL_PRESET_NAMES: tuple[str, ...] = _load_preset_contract()['canonical_presets']
+PRESET_ALIASES: dict[str, str] = _load_preset_contract()['aliases']
+PRESET_NAMES = list(CANONICAL_PRESET_NAMES)
+SLOT_TYPES = ["cannon", "armor", "generator", "core"]
+
+
+def normalize_preset_name(value: str | None, *, allow_aliases: bool) -> str | None:
+    if value is None:
+        return None
+    raw = value.strip()
+    if not raw:
+        return None
+    if raw in CANONICAL_PRESET_NAMES:
+        return raw
+    if allow_aliases:
+        return PRESET_ALIASES.get(raw)
+    return None
+
+
+def require_canonical_preset_name(value: str | None, *, field_name: str) -> str:
+    normalized = normalize_preset_name(value, allow_aliases=False)
+    if normalized is None:
+        raise ValueError(f'{field_name} must use a canonical preset name, got {value!r}.')
+    return normalized
+
+
+def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loadout_config: Optional[dict] = None, perk_config: Optional[dict] = None) -> AccountState:
     raw_sections = ids_raw.raw_sections
     labs = _parse_labs(raw_sections.get("Labs", []))
     workshop = _parse_workshop(raw_sections.get("WS", []))

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from input.runtime_state import ScenarioRuntimeInputs
+from input.state_types import ScenarioRuntimeInputs
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:

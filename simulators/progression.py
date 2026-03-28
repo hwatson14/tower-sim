@@ -19,7 +19,7 @@ from qe.consumer_registry import resolve_consumer_bundle
 from simulators.runtime_consumer_executor import RuntimeConsumerExecutor
 from qe.models import compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
-from qe.account_state import AccountState
+from input.state_types import AccountState
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
 

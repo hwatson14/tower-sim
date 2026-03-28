@@ -18,6 +18,11 @@ from typing import Callable
 import pandas as pd
 import yaml
 
+from input.runtime_state import build_runtime_state
+from qe.publication import publish_phase3_query_surfaces
+from qe.routing import resolve_stats
+from qe.stat_input_compiler import compile_stat_inputs
+
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
     sanitize_perk_presets_for_canonical_output,
@@ -65,6 +70,11 @@ def _format_display_value(value, value_type: str | None) -> str | None:
     return _format_display_number(value) or str(value)
 
 
+def _annotate_display_fields(statbook_dict: dict) -> None:
+    for row in statbook_dict.get('rows', {}).values():
+        row['display_value'] = _format_display_value(row.get('final_value'), row.get('value_type'))
+        for contributor in row.get('contributors', []):
+            contributor['display_value'] = _format_display_value(contributor.get('value'), contributor.get('value_type'))
 
 
 def kb_alignment_status_from_compare_status(compare_status: str | None) -> str:
@@ -444,9 +454,12 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
 # path helper (evaluators-local; ROOT = repo root from evaluators/ sub-dir)
 # ---------------------------------------------------------------------------
 _EV_ROOT = Path(__file__).resolve().parents[1]
+ROOT = _EV_ROOT
 
 
-def _relpath_str(path_like) -> str:
+def _relpath_str(path_like) -> str | None:
+    if path_like is None:
+        return None
     p = Path(path_like)
     try:
         return str(p.resolve().relative_to(_EV_ROOT))
@@ -2207,10 +2220,9 @@ def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
     return out
 
 def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
-    from input.runtime_state import build_runtime_state as compile_account_state
     from qe.stat_input_compiler import compile_stat_inputs, _load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
 
-    state = compile_account_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
+    state = build_runtime_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
     perks_enabled = _perks_enabled_for_state(state.active_perk_preset, perk_state)
     rows = compile_stat_inputs(state, preset_name=preset, state_mode=state_mode, perks_enabled=perks_enabled)
     perk_entities = _load_perk_entities()
@@ -2357,7 +2369,7 @@ def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mo
     }
     audit: dict[str, dict] = {}
     for preset_name in ("Farming", "Tourney"):
-        account_state = compile_account_state(
+        account_state = build_runtime_state(
             ids_raw,
             default_preset=default_preset,
             loadout_config=loadout_config,
@@ -2452,7 +2464,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
     perk_materialized_by_preset = {}
 
     def _materialize(preset_name: str, forced_perk_state: str | None = None):
-        state = compile_account_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
+        state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
         preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else _compare_perk_state_for_preset(preset_name, perk_state, forced_preset_perk_states)
         perks_enabled = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
         state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
@@ -2521,7 +2533,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         base_preset_name = preset_name.split('__perks_', 1)[0]
         if preset_name == default_preset:
             continue
-        state = compile_account_state(ids_raw, default_preset=base_preset_name, loadout_config=loadout_config, perk_config=perk_config)
+        state = build_runtime_state(ids_raw, default_preset=base_preset_name, loadout_config=loadout_config, perk_config=perk_config)
         package_stage_context['active_cards_by_preset'][base_preset_name] = list(state.card_presets.get(base_preset_name, []))
         package_stage_context['active_modules_by_preset'][base_preset_name] = {
             slot: {
@@ -2564,7 +2576,7 @@ def _perk_operation_supported(operation: str) -> bool:
 def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
     from qe.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
     from qe.query_routing import compiler_routing_indexes
-    from qe.account_state import PerkSelection
+    from input.state_types import PerkSelection
     from dataclasses import replace
 
     perk_entities = _load_perk_entities()

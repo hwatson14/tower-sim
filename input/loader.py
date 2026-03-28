@@ -20,7 +20,7 @@ from typing import Optional
 import yaml
 
 from input.ids_parser import parse_ids
-from input.runtime_state import IdsRaw
+from input.ids_parser import IdsRaw
 
 # ── Default paths (relative to repo root) ─────────────────────────────────────
 
