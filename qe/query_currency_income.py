@@ -1,14 +1,8 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Dict, Any
-import yaml as _yaml
 
 from qe.models import StatRow
-
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
-# Users may edit input/assumptions.yaml (manual_advisory_inputs section) to provide weekly persistent-income observations for supported externalized resources.
 
 DETERMINISTIC_CURRENCY_SURFACES = {
     'coins': ('derived::economy.income.coins', 'coins_income_proxy'),
@@ -65,28 +59,6 @@ def forbidden_income_surface_ids() -> set[str]:
     return {f"derived::economy.income.{name}" for name in UNSUPPORTED_CURRENCY_RESOURCES}
 
 
-def _load_manual_inputs(manual_input_path: str | Path | None = None) -> Dict[str, Dict[str, Any]]:
-    path = Path(manual_input_path) if manual_input_path is not None else _DEFAULT_MANUAL_INPUT_PATH
-    if not path.exists():
-        return {}
-    try:
-        text = path.read_text(encoding='utf-8')
-        if path.suffix in ('.yaml', '.yml'):
-            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
-        else:
-            payload = json.loads(text)
-    except Exception:
-        return {}
-    rows = payload.get('inputs', [])
-    if not isinstance(rows, list):
-        return {}
-    out: Dict[str, Dict[str, Any]] = {}
-    for row in rows:
-        if isinstance(row, dict) and isinstance(row.get('input_id'), str):
-            out[row['input_id']] = row
-    return out
-
-
 def _manual_input_is_set(entry: Dict[str, Any]) -> bool:
     if bool(entry.get('is_set', False)):
         return True
@@ -109,7 +81,10 @@ def _publish_surface(rows: Dict[str, StatRow], *, surface_id: str, value: float,
     )
 
 
-def publish_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path: str | Path | None = None) -> None:
+def publish_currency_income_surfaces(
+    rows: Dict[str, StatRow],
+    manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
+) -> None:
     eecon_base = rows.get('derived::eecon.base_coin_income')
     if eecon_base is not None:
         _publish_surface(
@@ -130,7 +105,7 @@ def publish_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path
             schema={'source_alignment': 'EP', 'externalized': False, 'publisher': 'query_surface_publication'},
         )
 
-    manual_inputs = _load_manual_inputs(manual_input_path)
+    manual_inputs = manual_advisory_inputs or {}
     for input_id, (surface_id, unit) in SUPPORTED_EXTERNALIZED_CURRENCY_INPUTS.items():
         entry = manual_inputs.get(input_id)
         if entry is None or not _manual_input_is_set(entry):
@@ -144,7 +119,7 @@ def publish_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path
             surface_id=surface_id,
             value=value,
             unit=unit,
-            notes='Derived from input/assumptions.yaml manual_advisory_inputs user input surface.',
+            notes='Derived from the input-owned manual_advisory_inputs surface.',
             contributors=[{
                 'surface_id': surface_id,
                 'source_class': 'manual_input',
@@ -163,8 +138,6 @@ def publish_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path
 def manual_income_input_contract_snapshot() -> Dict[str, Any]:
     """Expose the user-editable manual persistent-income lane for tests and audits."""
     return {
-        'default_manual_input_path': str(_DEFAULT_MANUAL_INPUT_PATH),
-        'supported_manual_input_file': 'input/assumptions.yaml',
         'editable_manual_input_ids': sorted(supported_manual_input_ids()),
         'supported_manual_input_ids': sorted(supported_manual_input_ids()),
         'unsupported_manual_input_ids': sorted(unsupported_manual_input_ids()),
@@ -215,7 +188,10 @@ def phase3_income_resolution_audit_snapshot() -> Dict[str, Any]:
         'complete_partition': sorted(supported_resources | set(UNSUPPORTED_CURRENCY_RESOURCES)),
     }
 
-def resolve_currency_income_surfaces(rows: Dict[str, StatRow], manual_input_path: str | Path | None = None) -> Dict[str, StatRow]:
+def resolve_currency_income_surfaces(
+    rows: Dict[str, StatRow],
+    manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
+) -> Dict[str, StatRow]:
     tmp = dict(rows)
-    publish_currency_income_surfaces(tmp, manual_input_path=manual_input_path)
+    publish_currency_income_surfaces(tmp, manual_advisory_inputs=manual_advisory_inputs)
     return {k: v for k, v in tmp.items() if k.startswith('derived::economy.income.')}

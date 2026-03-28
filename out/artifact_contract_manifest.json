@@ -10,7 +10,7 @@
   ],
   "canonical_preset_count": 5,
   "synthetic_preset_names_present": [
-    "ProjectedMax_AllAllowedExceptBanned"
+    "ProjectedMaxPolicy_AllExceptManualBans"
   ],
   "artifacts": [
     {

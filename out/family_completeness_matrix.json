@@ -9,7 +9,7 @@
     "Preset 5"
   ],
   "synthetic_preset_names_present": [
-    "ProjectedMax_AllAllowedExceptBanned"
+    "ProjectedMaxPolicy_AllExceptManualBans"
   ],
   "preset_lane_completeness": {
     "Tourney": {
@@ -66,8 +66,8 @@
     },
     "card": {
       "total_rows": 20,
-      "mapped_rows": 19,
-      "unmapped_rows": 1
+      "mapped_rows": 20,
+      "unmapped_rows": 0
     },
     "enhancement": {
       "total_rows": 21,
@@ -80,9 +80,9 @@
       "unmapped_rows": 0
     },
     "lab": {
-      "total_rows": 212,
-      "mapped_rows": 129,
-      "unmapped_rows": 83
+      "total_rows": 211,
+      "mapped_rows": 203,
+      "unmapped_rows": 8
     },
     "module": {
       "total_rows": 17,
@@ -90,8 +90,8 @@
       "unmapped_rows": 0
     },
     "module_substat": {
-      "total_rows": 34,
-      "mapped_rows": 34,
+      "total_rows": 35,
+      "mapped_rows": 35,
       "unmapped_rows": 0
     },
     "perk": {
@@ -106,8 +106,8 @@
     },
     "relic": {
       "total_rows": 35,
-      "mapped_rows": 31,
-      "unmapped_rows": 4
+      "mapped_rows": 35,
+      "unmapped_rows": 0
     },
     "theme_song": {
       "total_rows": 1,
@@ -131,8 +131,8 @@
     },
     "vault": {
       "total_rows": 65,
-      "mapped_rows": 64,
-      "unmapped_rows": 1
+      "mapped_rows": 65,
+      "unmapped_rows": 0
     },
     "workshop": {
       "total_rows": 48,

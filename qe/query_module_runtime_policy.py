@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Any, Dict
-import yaml as _yaml
 
 from qe.models import StatRow
-
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
 
 SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS = {
     'module.farming.hours_per_day': {
@@ -34,40 +29,6 @@ def supported_module_runtime_policy_input_ids() -> set[str]:
 
 def published_module_runtime_policy_surface_ids() -> set[str]:
     return {row['surface_id'] for row in SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS.values()}
-
-
-def _load_manual_inputs(manual_input_path: str | Path | None = None) -> Dict[str, Dict[str, Any]]:
-    path = Path(manual_input_path) if manual_input_path is not None else _DEFAULT_MANUAL_INPUT_PATH
-    if not path.exists():
-        return {}
-    try:
-        text = path.read_text(encoding='utf-8')
-        if path.suffix in ('.yaml', '.yml'):
-            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
-        else:
-            payload = json.loads(text)
-    except Exception:
-        return {}
-    rows = payload.get('inputs', [])
-    out: Dict[str, Dict[str, Any]] = {}
-    if isinstance(rows, list):
-        for row in rows:
-            if isinstance(row, dict) and isinstance(row.get('input_id'), str):
-                out[row['input_id']] = row
-
-    module_missions = payload.get('module', {}).get('missions', {}).get('per_week')
-    if 'module.missions.per_week' not in out and isinstance(module_missions, (int, float)):
-        out['module.missions.per_week'] = {
-            'input_id': 'module.missions.per_week',
-            'value': float(module_missions),
-            'is_set': True,
-            'trust_label': 'policy_heuristic',
-            'consumer_scope': ['optimizer', 'advisor'],
-            'input_kind': 'accepted_model_override',
-        }
-    return out
-
-
 def _manual_input_is_set(entry: Dict[str, Any]) -> bool:
     if bool(entry.get('is_set', False)):
         return True
@@ -90,8 +51,11 @@ def _publish_surface(rows: Dict[str, StatRow], *, surface_id: str, value: float,
     )
 
 
-def publish_module_runtime_policy_surfaces(rows: Dict[str, StatRow], manual_input_path: str | Path | None = None) -> None:
-    manual_inputs = _load_manual_inputs(manual_input_path)
+def publish_module_runtime_policy_surfaces(
+    rows: Dict[str, StatRow],
+    manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
+) -> None:
+    manual_inputs = manual_advisory_inputs or {}
     for input_id, spec in SUPPORTED_MODULE_RUNTIME_POLICY_INPUTS.items():
         entry = manual_inputs.get(input_id)
         if entry is None or not _manual_input_is_set(entry):
@@ -106,7 +70,7 @@ def publish_module_runtime_policy_surfaces(rows: Dict[str, StatRow], manual_inpu
             value=value,
             value_type=spec['value_type'],
             unit=spec['unit'],
-            notes='Derived from input/assumptions.yaml manual_advisory_inputs explicit module runtime/policy planning input.',
+            notes='Derived from the input-owned manual_advisory_inputs surface.',
             contributors=[{
                 'surface_id': spec['surface_id'],
                 'source_class': 'manual_input',
@@ -129,8 +93,6 @@ def publish_module_runtime_policy_surfaces(rows: Dict[str, StatRow], manual_inpu
 
 def module_runtime_policy_surface_contract_snapshot() -> Dict[str, Any]:
     return {
-        'default_manual_input_path': str(_DEFAULT_MANUAL_INPUT_PATH),
-        'supported_manual_input_file': 'input/assumptions.yaml',
         'supported_manual_input_ids': sorted(supported_module_runtime_policy_input_ids()),
         'published_surface_ids': sorted(published_module_runtime_policy_surface_ids()),
         'supported_inputs': {

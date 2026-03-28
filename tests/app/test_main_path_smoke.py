@@ -33,3 +33,14 @@ def test_pipeline_module_imports_active_layers__contains_expected_imports():
     assert "from qe.publication import publish_phase3_query_surfaces" in src
     assert "from evaluators.scorer import compute_optimizer_scores" in src
     assert "from input.ids_parser import parse_ids" in src
+
+
+def test_cli_exposes_explicit_perk_mode_argument():
+    src = Path((ROOT / "app" / "run_stats.py")).read_text(encoding="utf-8")
+    assert "--perk-mode" in src
+    assert "max_progression_policy" in src
+
+
+def test_cli_exposes_slow_audits_flag():
+    src = Path((ROOT / "app" / "run_stats.py")).read_text(encoding="utf-8")
+    assert "--include-slow-audits" in src

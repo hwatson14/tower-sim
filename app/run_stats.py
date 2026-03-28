@@ -25,6 +25,18 @@ def main() -> int:
     # --manual-inputs allows pointing at a different yaml file (e.g., for testing).
     parser.add_argument('--manual-inputs', type=Path, default=None,
                         help='Optional path to manual_inputs.yaml override (default: input/manual_inputs.yaml)')
+    parser.add_argument(
+        '--perk-mode',
+        type=str,
+        default='max_progression_policy',
+        choices=['none', 'max_progression_policy', 'runtime_timeline'],
+        help='Explicit perk materialization mode for the run.',
+    )
+    parser.add_argument(
+        '--include-slow-audits',
+        action='store_true',
+        help='Run expensive compare-situation diagnostics that are skipped by default.',
+    )
     parser.add_argument('--perk-state', type=str, default='auto', choices=['auto', 'on', 'off'])
     args = parser.parse_args()
     from app.pipeline import run_pipeline

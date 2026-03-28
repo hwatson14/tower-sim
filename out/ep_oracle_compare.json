@@ -94,8 +94,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -476,8 +476,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -849,8 +849,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -1178,8 +1178,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -1535,8 +1535,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -1828,8 +1828,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -2169,8 +2169,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -2466,8 +2466,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -2759,8 +2759,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -3056,8 +3056,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -3333,8 +3333,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -3646,8 +3646,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -3923,8 +3923,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -4252,8 +4252,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -4609,8 +4609,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -4954,8 +4954,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -5165,14 +5165,6 @@
       },
       {
         "source_family": "perk",
-        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-        "preset_name": "Farming",
-        "value": 0.4,
-        "value_type": "multiplier",
-        "notes": "kb_perk_effect_routed:tower_hp"
-      },
-      {
-        "source_family": "perk",
         "source_name": "x1.20 Max Health",
         "preset_name": "Farming",
         "value": 2.4999999999999996,
@@ -5184,6 +5176,14 @@
         "source_name": "x1.80 coins, but Tower Max Health -70%",
         "preset_name": "Farming",
         "value": 0.3,
+        "value_type": "multiplier",
+        "notes": "kb_perk_effect_routed:tower_hp"
+      },
+      {
+        "source_family": "perk",
+        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "preset_name": "Farming",
+        "value": 0.4,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_hp"
       },
@@ -5263,14 +5263,6 @@
       },
       {
         "source_family": "perk",
-        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-        "preset_name": "Farming",
-        "value": 0.4,
-        "value_type": "multiplier",
-        "notes": "kb_perk_effect_routed:tower_hp"
-      },
-      {
-        "source_family": "perk",
         "source_name": "x1.20 Max Health",
         "preset_name": "Farming",
         "value": 2.4999999999999996,
@@ -5282,6 +5274,14 @@
         "source_name": "x1.80 coins, but Tower Max Health -70%",
         "preset_name": "Farming",
         "value": 0.3,
+        "value_type": "multiplier",
+        "notes": "kb_perk_effect_routed:tower_hp"
+      },
+      {
+        "source_family": "perk",
+        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "preset_name": "Farming",
+        "value": 0.4,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_hp"
       },
@@ -5407,8 +5407,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -5610,17 +5610,17 @@
       },
       {
         "source_family": "perk",
-        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "source_name": "x1.75 Health Regen",
         "preset_name": "Farming",
-        "value": 8.8,
+        "value": 5.9375,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_regen"
       },
       {
         "source_family": "perk",
-        "source_name": "x1.75 Health Regen",
+        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
         "preset_name": "Farming",
-        "value": 5.9375,
+        "value": 8.8,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_regen"
       },
@@ -5692,17 +5692,17 @@
       },
       {
         "source_family": "perk",
-        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "source_name": "x1.75 Health Regen",
         "preset_name": "Farming",
-        "value": 8.8,
+        "value": 5.9375,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_regen"
       },
       {
         "source_family": "perk",
-        "source_name": "x1.75 Health Regen",
+        "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
         "preset_name": "Farming",
-        "value": 5.9375,
+        "value": 8.8,
         "value_type": "multiplier",
         "notes": "kb_perk_effect_routed:tower_regen"
       },
@@ -5828,8 +5828,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -6185,8 +6185,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -6578,8 +6578,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -6935,8 +6935,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -7216,8 +7216,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -7509,8 +7509,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -7898,8 +7898,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -8243,8 +8243,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",
@@ -8588,8 +8588,8 @@
             "assist": null
           },
           "armor": {
-            "primary": "Sharp Fortitude",
-            "assist": "Anti-Cube Portal"
+            "primary": "Anti-Cube Portal",
+            "assist": "Orbital Augment"
           },
           "generator": {
             "primary": "Project Funding",

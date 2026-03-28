@@ -2482,8 +2482,8 @@
         "assist": null
       },
       "armor": {
-        "primary": "Sharp Fortitude",
-        "assist": "Anti-Cube Portal"
+        "primary": "Anti-Cube Portal",
+        "assist": "Orbital Augment"
       },
       "generator": {
         "primary": "Project Funding",
@@ -2681,6 +2681,11 @@
           "name": "Super Crit Multi",
           "value": "+5x",
           "raw_token": "5"
+        },
+        {
+          "name": "Super Crit Chance",
+          "value": null,
+          "raw_token": null
         }
       ]
     },
@@ -2708,9 +2713,9 @@
       "stat": "8.19",
       "substats": [
         {
-          "name": "Orb Speed",
-          "value": "+1.5",
-          "raw_token": "1.5"
+          "name": "Shockwave Frequency",
+          "value": "-3s",
+          "raw_token": "-3"
         },
         {
           "name": "Shockwave Size",
@@ -3068,39 +3073,34 @@
       "stat": "11.8",
       "substats": [
         {
+          "name": "Spotlight - Angle",
+          "value": "+15?",
+          "raw_token": "15"
+        },
+        {
+          "name": "Spotlight - Bonus",
+          "value": "+20x",
+          "raw_token": "20"
+        },
+        {
+          "name": "Chain Lightning - Damage",
+          "value": "+15x",
+          "raw_token": "15"
+        },
+        {
+          "name": "Chrono Field - Speed Reduction",
+          "value": "+15%",
+          "raw_token": "0.15"
+        },
+        {
           "name": "Chain Lightning - Chance",
           "value": "+12%",
           "raw_token": "0.12"
         },
         {
-          "name": "Spotlight - Angle",
-          "value": "+11?",
-          "raw_token": "11"
-        },
-        {
-          "name": "Spotlight - Bonus",
-          "value": "+15x",
-          "raw_token": "15"
-        },
-        {
           "name": "Chain Lightning - Quantity",
-          "value": "+3",
-          "raw_token": "3"
-        },
-        {
-          "name": "Chain Lightning - Damage",
-          "value": "+50x",
-          "raw_token": "50"
-        },
-        {
-          "name": "Chrono Field - Cooldown",
-          "value": null,
-          "raw_token": null
-        },
-        {
-          "name": "Chrono Field - Speed Reduction",
-          "value": null,
-          "raw_token": null
+          "value": "+4",
+          "raw_token": "4"
         }
       ]
     },
@@ -3182,56 +3182,28 @@
   "perk_presets": {
     "Farming": [
       {
-        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_4_MORE_SMART_MISSILES",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_BOUNCE_SHOT_2",
-        "picks": 3
-      },
-      {
-        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+        "perk_id": "PERK_X1_20_MAX_HEALTH",
         "picks": 5
       },
       {
-        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+        "perk_id": "PERK_X1_15_DAMAGE",
         "picks": 5
       },
       {
-        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
-        "picks": 1
+        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
+        "picks": 5
       },
       {
-        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
-        "picks": 1
+        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_CASH_BONUS",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_75_HEALTH_REGEN",
+        "picks": 5
       },
       {
         "perk_id": "PERK_INTEREST_X1_50",
@@ -3242,23 +3214,35 @@
         "picks": 5
       },
       {
-        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
-        "picks": 1
+        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+        "picks": 5
       },
       {
-        "perk_id": "PERK_ORBS_1",
-        "picks": 2
+        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_BOUNCE_SHOT_2",
+        "picks": 3
       },
       {
         "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
         "picks": 3
       },
       {
-        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "perk_id": "PERK_ORBS_1",
+        "picks": 2
+      },
+      {
+        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
         "picks": 1
       },
       {
-        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_4_MORE_SMART_MISSILES",
         "picks": 1
       },
       {
@@ -3266,47 +3250,63 @@
         "picks": 1
       },
       {
-        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
         "picks": 1
       },
       {
-        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
         "picks": 1
       },
       {
-        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
-        "picks": 5
+        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
+        "picks": 1
       },
       {
-        "perk_id": "PERK_X1_15_CASH_BONUS",
-        "picks": 5
+        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+        "picks": 1
       },
       {
-        "perk_id": "PERK_X1_15_DAMAGE",
-        "picks": 5
+        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
+        "picks": 1
       },
       {
-        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
-        "picks": 5
+        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
+        "picks": 1
       },
       {
-        "perk_id": "PERK_X1_20_MAX_HEALTH",
-        "picks": 5
+        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+        "picks": 1
       },
       {
         "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
         "picks": 1
       },
       {
-        "perk_id": "PERK_X1_75_HEALTH_REGEN",
-        "picks": 5
-      },
-      {
         "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
         "picks": 1
       },
       {
+        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "picks": 1
+      },
+      {
         "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
         "picks": 1
       }
     ]
@@ -6835,7 +6835,7 @@
         "",
         "",
         "Primary Slot",
-        "Sharp Fortitude",
+        "Anti-Cube Portal",
         "",
         "",
         "",
@@ -6856,7 +6856,7 @@
         "",
         "",
         "Assist Slot",
-        "Anti-Cube Portal",
+        "Orbital Augment",
         "",
         "",
         "",
@@ -7044,10 +7044,10 @@
         "",
         "",
         "",
-        "Orb Speed",
-        "Legendary",
-        "+1.5",
-        "1.5",
+        "Shockwave Frequency",
+        "Mythic",
+        "-3s",
+        "-3",
         "",
         "Coins / Kill Bonus",
         "Legendary",
@@ -7285,10 +7285,10 @@
         "+8%",
         "0.08",
         "",
-        "Chain Lightning - Chance",
-        "Mythic",
-        "+12%",
-        "0.12"
+        "Spotlight - Angle",
+        "Ancestral",
+        "+15?",
+        "15"
       ],
       [
         "Multishot Targets",
@@ -7306,10 +7306,10 @@
         "+4%",
         "0.04",
         "",
-        "Spotlight - Angle",
-        "Mythic",
-        "+11?",
-        "11"
+        "Spotlight - Bonus",
+        "Ancestral",
+        "+20x",
+        "20"
       ],
       [
         "Critical Factor",
@@ -7327,8 +7327,8 @@
         "+8%",
         "0.08",
         "",
-        "Spotlight - Bonus",
-        "Mythic",
+        "Chain Lightning - Damage",
+        "Rare",
         "+15x",
         "15"
       ],
@@ -7348,73 +7348,52 @@
         "",
         "",
         "",
-        "Chain Lightning - Quantity",
-        "Mythic",
-        "+3",
-        "3"
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Chain Lightning - Damage",
-        "Legendary",
-        "+50x",
-        "50"
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Chrono Field - Cooldown",
-        "",
-        "",
-        ""
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
         "Chrono Field - Speed Reduction",
+        "Ancestral",
+        "+15%",
+        "0.15"
+      ],
+      [
         "",
         "",
-        ""
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Chain Lightning - Chance",
+        "Mythic",
+        "+12%",
+        "0.12"
+      ],
+      [
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "Chain Lightning - Quantity",
+        "Ancestral",
+        "+4",
+        "4"
       ],
       [
         "Death Penalty",
@@ -8093,6 +8072,27 @@
         "Mythic",
         "+5x",
         "5",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ],
+      [
+        "Super Crit Chance",
+        "",
+        "",
+        "",
         "",
         "",
         "",

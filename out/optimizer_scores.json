@@ -7,8 +7,8 @@
       "formula": "consumes derived::ehp"
     },
     "edamage": {
-      "score": 5.9575636040432635e+22,
-      "display": "59575.64 Q",
+      "score": 6.236583949396398e+22,
+      "display": "62365.84 Q",
       "accuracy": "query_owned_surface",
       "formula": "consumes derived::edamage"
     },

@@ -22,6 +22,7 @@ from input.runtime_state import build_runtime_state
 from qe.publication import publish_phase3_query_surfaces
 from qe.routing import resolve_stats
 from qe.stat_input_compiler import compile_stat_inputs
+from qe.stat_resolution import classify_input_routing
 
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
@@ -613,7 +614,7 @@ def _build_artifact_contract_manifest(account_state, canonical_output_preset: st
 def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
     from collections import Counter
     family_totals = Counter(row.source_family for row in stat_inputs)
-    mapped_totals = Counter(row.source_family for row in stat_inputs if row.kb_mapped)
+    mapped_totals = Counter(row.source_family for row in stat_inputs if row.destination_id)
     card_presets = getattr(account_state, 'card_presets', {}) or {}
     module_presets = getattr(account_state, 'module_presets', {}) or {}
     perk_presets = getattr(account_state, 'perk_presets', {}) or {}
@@ -1467,7 +1468,7 @@ def _build_kb_only_health_family_audit(stat_inputs, statbook_rows: dict) -> dict
             'value_type': row.value_type,
             'notes': row.notes,
         }
-        for row in relevant_rows if not row.kb_mapped
+        for row in relevant_rows if not row.destination_id
     ]
     grouped = {}
     for destination in sorted(relevant_destinations):
@@ -1809,7 +1810,8 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
 
     active_unmapped_inputs = []
     for row in stat_inputs:
-        if row.kb_mapped:
+        routing_class = classify_input_routing(row)
+        if routing_class != 'truly_unrouted_unknown':
             continue
         if row.source_family == 'raw':
             continue
@@ -1818,6 +1820,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
             'stat_name': row.stat_name,
             'value_type': row.value_type,
             'contributor_id': row.contributor_id,
+            'routing_class': routing_class,
         })
     active_unmapped_inputs.sort(key=lambda item: (item['source_family'], item['stat_name']))
     active_unmapped_by_family = {}
@@ -1867,7 +1870,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
         'resolved_unknown_schema_units': resolved_unknown_schema_units,
         'ambiguous_relic_semantic_hints': ambiguous_relic_semantics,
         'notes': [
-            'Active unmapped inputs are live calculator inputs without a KB destination contract in the current package.',
+            'Active unmapped inputs are true unknown/unrouted calculator inputs without a destination contract in the current package.',
             'Resolved rows with schema.unit=unknown are publishable bridges, but not convergence-grade clean contracts.',
             'ambiguous_relic_semantic_hints lists KB registry rows that still admit multiple semantic interpretations and may need future wiki-backed tightening.',
         ],
@@ -1942,7 +1945,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
             'gap_id': f"formula_contract::{item['destination_id']}",
             'bucket': 'KB missing executable contract',
             'surface': item['destination_id'],
-            'files': ['kb/ledgers/formula_surface_policy.yaml', 'engine/stat_engine.py'],
+            'files': ['kb/ledgers/formula_surface_policy.yaml', 'qe/stat_resolution.py'],
             'evidence': f"publish_policy=block for {item['destination_id']}",
             'why_it_matters': 'Surface remains intentionally fail-closed until formula contract is fully closed.',
             'what_would_close_it': 'Tighten the KB/contract rationale and verify the implemented destination-specific formula is correct enough to publish.',
@@ -1956,7 +1959,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
             'bucket': _classify_unmapped_input_gap(item),
             'surface': item['stat_name'],
             'files': [
-                'compilers/stat_input_compiler.py',
+                'qe/stat_input_compiler.py',
                 'kb/global-rules/contracts/contributor-mappings-full.yaml',
                 'kb/labs/tables/lab-application-registry.csv',
                 'kb/cards/tables/card-effect-registry.csv',
@@ -1987,7 +1990,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
             'gap_id': f"unknown_unit::{item['destination_id']}",
             'bucket': 'Intentional non-goal / runtime-only surface' if str(item['destination_id']).startswith(('runtime_mechanic_param::', 'mechanic_param::', 'account_flag::', 'capability::', 'raw::')) else 'KB missing executable contract',
             'surface': item['destination_id'],
-            'files': ['engine/stat_engine.py', 'run_stats.py'],
+            'files': ['qe/stat_resolution.py', 'app/pipeline.py'],
             'evidence': f"Resolved publishable row still has schema.unit=unknown for {item['destination_id']}",
             'why_it_matters': 'The surface publishes, but its schema is not convergence-grade clean.',
             'what_would_close_it': 'Assign a precise schema unit or explicitly classify the surface as runtime-only/administrative.',
@@ -2003,7 +2006,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
             'gap_id': f"compare::{issue.get('destination')}",
             'bucket': 'Calculator wiring / implementation gap',
             'surface': issue.get('destination'),
-            'files': ['run_stats.py', 'engine/stat_engine.py', 'compilers/stat_input_compiler.py'],
+            'files': ['app/pipeline.py', 'qe/stat_resolution.py', 'qe/stat_input_compiler.py'],
             'evidence': f"Compare layer still reports {issue.get('status')} for {issue.get('destination')}",
             'why_it_matters': 'This is a live survivor surface after current state binding and compare normalization.',
             'what_would_close_it': 'Close the remaining contributor/formula gap or explicitly reclassify the surface as blocked/non-comparable.',
@@ -2424,11 +2427,11 @@ def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, fo
             perk_state,
             forced_preset_perk_states,
         )
-        compare = _build_ep_compare(ep_oracle, rows_by_preset, formula_ledger, stage_context, ep_stage_context_for_destination=_ep_stage_context_for_destination, compare_state_key_for_destination=_compare_state_key_for_destination, contributor_snapshot=_contributor_snapshot, apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions, formula_contract=_formula_contract, normalize_compare_values=_normalize_compare_values)
+        compare = build_ep_compare(ep_oracle, rows_by_preset, formula_ledger, stage_context, ep_stage_context_for_destination=_ep_stage_context_for_destination, compare_state_key_for_destination=_compare_state_key_for_destination, contributor_snapshot=_contributor_snapshot, apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions, formula_contract=_formula_contract, normalize_compare_values=_normalize_compare_values)
         views[state_key] = {
             'preset': preset,
             'perk_state': perk_state,
-            **_build_compare_status_summary(compare),
+            **build_compare_status_summary(compare),
         }
         for destination, row in compare.items():
             rel = row.get('relative_delta_pct')
@@ -2689,7 +2692,7 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
         'entity_count': len(perk_entities),
         'effect_count': sum(len(v) for v in perk_effects.values()),
         'input_file': _relpath_str(perks_input_path),
-        'active_perk_state_source': 'external_json_config',
+        'active_perk_state_source': 'input_owned_perk_surface',
         'summary_by_coverage': dict(sorted(summary.items())),
         'summary_by_destination_object_type': dict(sorted(destination_summary.items())),
         'all_perks_compile_audit_row_count': len(audit_rows),

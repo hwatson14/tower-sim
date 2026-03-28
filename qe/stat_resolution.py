@@ -1474,13 +1474,46 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
         )
 
 
+def classify_input_routing(row: StatInput) -> str:
+    note = str(row.notes or '')
+    if note.startswith('parser_drop'):
+        return 'parser_drop_junk'
+    if note.startswith('account_metadata_'):
+        return 'account_metadata'
+    if note.startswith('capability_policy_'):
+        return 'capability_policy'
+    if note.startswith('governed_numeric_pending_'):
+        return 'governed_numeric_pending_value'
+    if row.destination_object_type in {'runtime_mechanic_param', 'mechanic_param', 'account_flag'} and row.destination_id:
+        return 'intentionally_non_publish_runtime_only'
+    if row.destination_id:
+        return 'resolved'
+    return 'truly_unrouted_unknown'
+
+
+def summarize_input_routing(stat_inputs: List[StatInput]) -> dict[str, Any]:
+    class_counts = Counter(classify_input_routing(row) for row in stat_inputs)
+    family_routed_counts = Counter(row.source_family for row in stat_inputs if row.destination_id)
+    family_unrouted_counts = Counter(
+        row.source_family for row in stat_inputs if classify_input_routing(row) == 'truly_unrouted_unknown'
+    )
+    return {
+        'class_counts': dict(sorted(class_counts.items())),
+        'routed_input_count': sum(1 for row in stat_inputs if row.destination_id),
+        'truly_unrouted_input_count': class_counts.get('truly_unrouted_unknown', 0),
+        'routed_count_by_family': dict(sorted(family_routed_counts.items())),
+        'truly_unrouted_count_by_family': dict(sorted(family_unrouted_counts.items())),
+    }
+
+
 def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
     canonical_stats = _load_canonical_stats()
     mapped_buckets: Dict[str, List[StatInput]] = defaultdict(list)
     unmapped_buckets: Dict[str, List[StatInput]] = defaultdict(list)
+    routing_summary = summarize_input_routing(stat_inputs)
 
     for row in stat_inputs:
-        if row.kb_mapped and row.destination_id:
+        if row.destination_id:
             mapped_buckets[f"{row.destination_object_type}::{row.destination_id}"].append(row)
         else:
             unmapped_buckets[row.stat_name].append(row)
@@ -1530,18 +1563,21 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
     _apply_phase3_postprocessing(rows)
 
     family_counts = Counter(row.source_family for row in stat_inputs)
-    mapped_family_counts = Counter(row.source_family for row in stat_inputs if row.kb_mapped)
+    mapped_family_counts = Counter(row.source_family for row in stat_inputs if row.destination_id)
     diagnostics = {
         'resolver_status': 'publish_gate_enforced_resolution',
         'destination_type_schema': {k: _destination_type_schema(k, v) for k, v in sorted(canonical_stats.items())},
-        'mapped_input_count': sum(1 for row in stat_inputs if row.kb_mapped),
-        'unmapped_input_count': sum(1 for row in stat_inputs if not row.kb_mapped),
+        'mapped_input_count': routing_summary['routed_input_count'],
+        'unmapped_input_count': routing_summary['truly_unrouted_input_count'],
         'input_count_by_family': dict(sorted(family_counts.items())),
         'mapped_count_by_family': dict(sorted(mapped_family_counts.items())),
+        'input_routing_class_counts': routing_summary['class_counts'],
+        'truly_unrouted_count_by_family': routing_summary['truly_unrouted_count_by_family'],
         'resolved_stat_count': resolved_count,
         'partially_resolved_stat_count': partial_count,
         'mapped_unresolved_stat_count': unresolved_count,
         'notes': [
+            'Input routing counts distinguish true unknown/unrouted rows from parser-drop, metadata, capability, governed-pending, and runtime-only classes.',
             'This iteration resolves canonical stats with cautious unit-aware rules and also preserves direct numeric values for single-source mapped runtime/meta/capability surfaces.',
             'Multi-source mechanic params remain fail-closed unless a simple suffix-based generic rule is explicitly safe to apply.',
         ],

@@ -115,6 +115,17 @@ Place new content only in its owning surface:
 Avoid creating new files when an existing owner file can be edited safely.
 Do not create new top-level `docs/` or `config/` buckets for implementation artifacts.
 
+## Anti-sprawl rules
+
+- Prefer editing an existing file when the current owner surface is already clear.
+- New files require a short justification in the change description.
+- New folders require explicit approval before creation.
+- Avoid placing files directly at repo root unless they are established root control files.
+- Avoid placing files directly at domain-folder roots unless that folder already follows the pattern.
+- KB content belongs in typed subfolders such as `tables/`, `contracts/`, `ledgers/`, or equivalent owner buckets, not as loose domain-root files.
+- Tests belong in matching domain test folders, not directly under `tests/` root.
+- Do not add scratch, temp, note, backup, or ad hoc artifacts into active source folders.
+
 ## Validation
 
 Minimum validation is proportional to risk:

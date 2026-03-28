@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
 from typing import Any, Dict, Optional
 
 from qe.query_currency_income import publish_currency_income_surfaces
@@ -64,7 +63,7 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
 
 def publish_phase3_query_surfaces(
     rows: Dict[str, StatRow],
-    manual_input_path: str | Path | None = None,
+    manual_advisory_inputs: Optional[Dict[str, Dict[str, Any]]] = None,
     account_state_labs: Optional[Dict[str, Any]] = None,
 ) -> None:
     """Publish Phase 3 query-owned/public surfaces from already-resolved rows.
@@ -77,14 +76,14 @@ def publish_phase3_query_surfaces(
     lab policy publisher which feeds into drop economy.
     """
     publish_derived_composites(rows)
-    publish_currency_income_surfaces(rows, manual_input_path=manual_input_path)
-    publish_module_runtime_policy_surfaces(rows, manual_input_path=manual_input_path)
+    publish_currency_income_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
+    publish_module_runtime_policy_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
     publish_module_draw_policy_surfaces(rows)
     _publish_module_account_tier_surfaces(rows)
     if account_state_labs is not None:
         publish_module_lab_policy_surfaces(rows, account_state_labs)
     if 'derived::module.runtime_profile.farming_tier' in rows:
-        publish_module_drop_economy_surfaces(rows, manual_input_path)
+        publish_module_drop_economy_surfaces(rows, manual_advisory_inputs)
     if 'derived::module.runtime_profile.highest_tier_unlocked' in rows:
         publish_module_mission_economy_surfaces(rows)
 

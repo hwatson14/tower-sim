@@ -61,19 +61,19 @@
     },
     {
       "source_family": "perk",
-      "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
-      "preset_name": "Farming",
-      "raw_value": 8.8,
-      "value_type": "multiplier",
-      "applied_factor": 8.8
-    },
-    {
-      "source_family": "perk",
       "source_name": "x1.75 Health Regen",
       "preset_name": "Farming",
       "raw_value": 5.9375,
       "value_type": "multiplier",
       "applied_factor": 5.9375
+    },
+    {
+      "source_family": "perk",
+      "source_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+      "preset_name": "Farming",
+      "raw_value": 8.8,
+      "value_type": "multiplier",
+      "applied_factor": 8.8
     },
     {
       "source_family": "module_substat",

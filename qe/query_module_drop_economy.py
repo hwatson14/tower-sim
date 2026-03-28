@@ -1,13 +1,8 @@
 from __future__ import annotations
 
-import json
-from pathlib import Path
 from typing import Any, Dict
-import yaml as _yaml
 
 from qe.models import StatRow
-
-_DEFAULT_MANUAL_INPUT_PATH = Path(__file__).resolve().parents[1] / 'input' / 'manual_inputs.yaml'  # T10: canonical path (assumptions.yaml archived)
 
 _DROP_ECONOMY_INPUT_MAP = {
     'module.runtime.tier_for_drop_tables': {
@@ -31,31 +26,11 @@ _DROP_ECONOMY_INPUT_MAP = {
         'unit': 'shards_per_mission',
     },
 }
-
-
-def _load_drop_economy_manual_inputs(manual_input_path: str | Path | None = None) -> Dict[str, Dict[str, Any]]:
-    path = Path(manual_input_path) if manual_input_path is not None else _DEFAULT_MANUAL_INPUT_PATH
-    if not path.exists():
-        return {}
-    try:
-        text = path.read_text(encoding='utf-8')
-        if path.suffix in ('.yaml', '.yml'):
-            payload = (_yaml.safe_load(text) or {}).get('manual_advisory_inputs') or {}
-        else:
-            payload = json.loads(text)
-    except Exception:
-        return {}
-    rows = payload.get('inputs', [])
-    out: Dict[str, Dict[str, Any]] = {}
-    if isinstance(rows, list):
-        for row in rows:
-            if isinstance(row, dict) and isinstance(row.get('input_id'), str):
-                out[row['input_id']] = row
-    return out
-
-
-def _prepopulate_upstream_surfaces(rows: Dict[str, StatRow], manual_input_path: str | Path | None = None) -> None:
-    manual_inputs = _load_drop_economy_manual_inputs(manual_input_path)
+def _prepopulate_upstream_surfaces(
+    rows: Dict[str, StatRow],
+    manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
+) -> None:
+    manual_inputs = manual_advisory_inputs or {}
     for input_id, spec in _DROP_ECONOMY_INPUT_MAP.items():
         surface_id = spec['surface_id']
         if surface_id in rows:
@@ -73,7 +48,7 @@ def _prepopulate_upstream_surfaces(rows: Dict[str, StatRow], manual_input_path: 
             value_type='scalar',
             source_count=1,
             status='resolved',
-            notes=f'Pre-populated from manual_advisory_inputs.json input {input_id}.',
+            notes=f'Pre-populated from the input-owned manual_advisory_inputs surface for {input_id}.',
             contributors=[{'source_class': 'manual_input', 'input_id': input_id, 'value': value, 'unit': spec['unit']}],
             schema={'source_alignment': 'Inputs', 'unit': spec['unit'], 'publisher': 'query_module_drop_economy'},
         )
@@ -103,8 +78,11 @@ def _require(rows: Dict[str, StatRow], surface_id: str) -> float:
         raise ValueError(f'missing required upstream surface: {surface_id}')
     return float(row.final_value)
 
-def publish_module_drop_economy_surfaces(rows: Dict[str, StatRow], manual_input_path: str | Path | None = None) -> None:
-    _prepopulate_upstream_surfaces(rows, manual_input_path)
+def publish_module_drop_economy_surfaces(
+    rows: Dict[str, StatRow],
+    manual_advisory_inputs: Dict[str, Dict[str, Any]] | None = None,
+) -> None:
+    _prepopulate_upstream_surfaces(rows, manual_advisory_inputs)
     farming_tier = int(_require(rows, 'derived::module.runtime_profile.farming_tier'))
     if farming_tier not in _REROLL_SHARDS_BY_TIER:
         raise ValueError(f'unsupported farming tier for module drop tables: {farming_tier}')
