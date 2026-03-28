@@ -320,7 +320,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Support cooldown reduction surface consumed by timing mechanics.
-  - node_id: mechanic_param::uw.black_hole.cooldown_seconds
+  - node_id: state::uw.black_hole.cooldown_seconds
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: true
@@ -328,7 +328,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted BH cooldown.
-  - node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+  - node_id: state::uw.golden_tower.cooldown_seconds
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: true
@@ -336,7 +336,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted GT cooldown.
-  - node_id: mechanic_param::uw.black_hole.duration_seconds
+  - node_id: state::uw.black_hole.duration_seconds
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: true
@@ -344,7 +344,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted BH duration.
-  - node_id: mechanic_param::uw.golden_tower.duration_seconds
+  - node_id: state::uw.golden_tower.duration_seconds
     node_kind: surface
     family_ids: [timing_tournament_no_perks, timing_farm_with_perks, timing_scenario_probe]
     is_publishable: true
@@ -668,14 +668,14 @@ edges:
     verification_status: verified
     notes: Assist-slot/module assertions govern Galaxy Compressor support surface.
   - upstream_node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
-    downstream_node_id: mechanic_param::uw.black_hole.cooldown_seconds
+    downstream_node_id: state::uw.black_hole.cooldown_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Galaxy Compressor support reduces BH cooldown.
   - upstream_node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
-    downstream_node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+    downstream_node_id: state::uw.golden_tower.cooldown_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
     publication_relevance: publishable_path
@@ -683,28 +683,28 @@ edges:
     notes: Galaxy Compressor support reduces GT cooldown.
 
   - upstream_node_id: source_input::scenario:Black Hole Timing
-    downstream_node_id: mechanic_param::uw.black_hole.duration_seconds
+    downstream_node_id: state::uw.black_hole.duration_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [runtime_target_display_wave, package_event_model]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Scenario timing inputs publish BH duration.
   - upstream_node_id: source_input::scenario:Black Hole Timing
-    downstream_node_id: mechanic_param::uw.black_hole.cooldown_seconds
+    downstream_node_id: state::uw.black_hole.cooldown_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [runtime_target_display_wave, package_event_model]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Scenario timing inputs publish BH cooldown.
   - upstream_node_id: source_input::scenario:Golden Tower Timing
-    downstream_node_id: mechanic_param::uw.golden_tower.duration_seconds
+    downstream_node_id: state::uw.golden_tower.duration_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [runtime_target_display_wave, package_event_model]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Scenario timing inputs publish GT duration.
   - upstream_node_id: source_input::scenario:Golden Tower Timing
-    downstream_node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+    downstream_node_id: state::uw.golden_tower.cooldown_seconds
     invalidation_semantics: recompute_downstream
     mutation_classes: [runtime_target_display_wave, package_event_model]
     publication_relevance: publishable_path

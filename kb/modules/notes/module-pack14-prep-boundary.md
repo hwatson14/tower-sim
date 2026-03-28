@@ -33,10 +33,10 @@ The future Pack14 optimizer-facing module bundle is drafted in `kb/modules/contr
 - `consumer_id: optimizer_analysis`
 - `bundle_id: optimizer_module_effects`
 - Family scope: progression families only
-- Required surface: `mechanic_param::module.primordial_collapse.bh_damage_reduction_pct`
+- Required surface: `state::module.primordial_collapse.bh_damage_reduction_pct`
 - Optional surfaces:
-  - `mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct`
-  - `mechanic_param::module.orbital_augment.electron_count`
+  - `state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct`
+  - `state::module.orbital_augment.electron_count`
 
 This keeps the draft bounded to already-governed progression-family module surfaces and explicitly avoids crossing into the timing-family `support_surface::timing.gcomp_cooldown_reduction_seconds` seam during Pack14 prep.
 

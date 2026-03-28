@@ -15,11 +15,11 @@ if str(ROOT) not in sys.path:
 pytestmark = pytest.mark.live
 
 
-def test_mapping_with_namespaced_keys__values_are_loaded():
+def test_mapping_with_canonical_namespaced_keys__values_are_loaded():
     inputs = ScenarioRuntimeInputs.from_mapping(
         {
-            "runtime_mechanic_param::combat.orb_boss_hit_pct": 2.5,
-            "runtime_mechanic_param::combat.effective_damage_reduction_pct": 98.0,
+            "state::combat.orb_boss_hit_pct": 2.5,
+            "state::combat.effective_damage_reduction_pct": 98.0,
         }
     )
     assert inputs.orb_boss_hit_pct == 2.5

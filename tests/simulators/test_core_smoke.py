@@ -125,7 +125,7 @@ def test_timing_family_statbook_is_native_family_backed():
         stat_inputs=rows,
         family_id="timing_farm_with_perks",
         requested_surface_ids=(
-            "mechanic_param::uw.black_hole.cooldown_seconds",
+            "state::uw.black_hole.cooldown_seconds",
             "support_surface::timing.wave_duration_seconds_effective",
         ),
         notes="simulator timing native family smoke",
@@ -203,7 +203,7 @@ def test_timing_native_family_statbook_does_not_touch_report_fallback(monkeypatc
         stat_inputs=rows,
         family_id="timing_farm_with_perks",
         requested_surface_ids=(
-            "mechanic_param::uw.black_hole.cooldown_seconds",
+            "state::uw.black_hole.cooldown_seconds",
             "support_surface::timing.wave_duration_seconds_effective",
         ),
         notes="simulator timing native fallback guard",
@@ -334,10 +334,10 @@ def test_timing_consumer_bundle_stays_native_without_report_fallback(monkeypatch
     )
 
     resolved = {row.surface_id: row for row in response.resolved_surface_rows}
-    assert resolved["mechanic_param::uw.black_hole.cooldown_seconds"].status == "resolved"
-    assert resolved["mechanic_param::uw.black_hole.duration_seconds"].status == "resolved"
-    assert resolved["mechanic_param::uw.golden_tower.cooldown_seconds"].status == "resolved"
-    assert resolved["mechanic_param::uw.golden_tower.duration_seconds"].status == "resolved"
+    assert resolved["state::uw.black_hole.cooldown_seconds"].status == "resolved"
+    assert resolved["state::uw.black_hole.duration_seconds"].status == "resolved"
+    assert resolved["state::uw.golden_tower.cooldown_seconds"].status == "resolved"
+    assert resolved["state::uw.golden_tower.duration_seconds"].status == "resolved"
 
 
 def test_incremental_subset_executor_resolves_progression_wave_skip_bundle_natively():
@@ -412,7 +412,7 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
     plan = IncrementalRecalcRuntime().plan_surface_request(
         family_id="timing_farm_with_perks",
         surface_ids=(
-            "mechanic_param::uw.black_hole.cooldown_seconds",
+            "state::uw.black_hole.cooldown_seconds",
             "support_surface::timing.wave_duration_seconds_effective",
         ),
     )
@@ -424,8 +424,8 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
         scenario_mode_id="farming",
     )
 
-    assert resolved["mechanic_param::uw.black_hole.cooldown_seconds"].status == "resolved"
-    assert resolved["mechanic_param::uw.black_hole.cooldown_seconds"].final_value == 0.0
+    assert resolved["state::uw.black_hole.cooldown_seconds"].status == "resolved"
+    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == 0.0
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].final_value is not None
 

@@ -7,7 +7,17 @@ from functools import lru_cache
 from pathlib import Path
 import yaml
 
-from qe.contracts import normalize_surface_id_to_contract, to_v2_surface_id
+from qe.contracts import (
+    compat_surface_from_legacy_capability,
+    compat_surface_from_legacy_canonical,
+    compat_surface_from_legacy_context,
+    compat_surface_from_legacy_cosmetic,
+    compat_surface_from_legacy_flag,
+    compat_surface_from_legacy_mechanic,
+    compat_surface_from_legacy_runtime,
+    normalize_surface_id_to_contract,
+    to_v2_surface_id,
+)
 from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
 from qe.stat_resolution import (
@@ -30,36 +40,36 @@ _CONTRACT_PATHS = (
 )
 
 
-def _mech(destination_id: str) -> str:
-    return f'mechanic_param::{destination_id}'
+def _compat_mech(destination_id: str) -> str:
+    return compat_surface_from_legacy_mechanic(destination_id)
 
 
 def _state(destination_id: str) -> str:
     return normalize_surface_id_to_contract(f'state::{destination_id}')
 
 
-def _canon(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
+def _state_from_legacy_canonical(destination_id: str) -> str:
+    return compat_surface_from_legacy_canonical(destination_id)
 
 
-def _runtime(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')
+def _compat_runtime(destination_id: str) -> str:
+    return compat_surface_from_legacy_runtime(destination_id)
 
 
-def _flag(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'account_flag::{destination_id}')
+def _compat_flag(destination_id: str) -> str:
+    return compat_surface_from_legacy_flag(destination_id)
 
 
-def _context(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'account_context::{destination_id}')
+def _compat_context(destination_id: str) -> str:
+    return compat_surface_from_legacy_context(destination_id)
 
 
-def _cosmetic(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')
+def _compat_cosmetic(destination_id: str) -> str:
+    return compat_surface_from_legacy_cosmetic(destination_id)
 
 
-def _cap(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'capability::{destination_id}')
+def _compat_cap(destination_id: str) -> str:
+    return compat_surface_from_legacy_capability(destination_id)
 
 
 def _as_float(value) -> float | None:
@@ -453,7 +463,7 @@ def _resolve_bucket(
     if destination_object_type == 'mechanic_param' and destination_id.startswith('uw.'):
         resolved_rows = meta.get('_resolved_rows', {})
         uw_prefix = '.'.join(destination_id.split('.')[:2])
-        unlock_row = resolved_rows.get(_cap(f'{uw_prefix}.owned'))
+        unlock_row = resolved_rows.get(_compat_cap(f'{uw_prefix}.owned'))
         if unlock_row is not None and bool(unlock_row.final_value) is False:
             return 0.0, 'resolved', f'UW unlock-gated to zero because {uw_prefix} is not owned.', schema
 
@@ -573,10 +583,10 @@ def _resolve_bucket(
             return None, 'mapped_not_resolved', 'Missing Orbital Augment unique-effect count contributor.', schema
         return int(max(values)), 'resolved', 'Destination-specific Orbital Augment electron-count formula: rarity-derived integer unique-effect count.', schema
     if destination_id == 'coin_kill_multiplier':
-        mirror_row = resolved_rows.get(_canon('coins_per_kill_bonus'))
+        mirror_row = resolved_rows.get(_state_from_legacy_canonical('coins_per_kill_bonus'))
         if mirror_row and mirror_row.final_value is not None:
-            return _as_float(mirror_row.final_value), 'resolved', f"Deprecated transition mirror of {_canon('coins_per_kill_bonus')}.", schema
-        return None, 'mapped_not_resolved', f"Deprecated transition mirror requires {_canon('coins_per_kill_bonus')}.", schema
+            return _as_float(mirror_row.final_value), 'resolved', f"Deprecated transition mirror of {_state_from_legacy_canonical('coins_per_kill_bonus')}.", schema
+        return None, 'mapped_not_resolved', f"Deprecated transition mirror requires {_state_from_legacy_canonical('coins_per_kill_bonus')}.", schema
     if destination_id == 'wall_thorns_damage_pct':
         wall_ratio = next((_as_float(row.value) for row in contributors if row.source_family == 'lab'), None)
         tower_thorns = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
@@ -679,7 +689,7 @@ def _resolve_bucket(
 
 
 def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: dict[str, StatRow]) -> None:
-    support_row = rows.get(_canon('free_upgrade_multiplier'))
+    support_row = rows.get(_state_from_legacy_canonical('free_upgrade_multiplier'))
     support_multiplier = 1.0
     support_contributors: list[dict[str, object]] = []
     if support_row is not None:
@@ -693,9 +703,9 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: dict[str, 
                 support_contributors.append(dict(contributor))
 
     ordered_targets = [
-        _canon('free_attack_upgrade_chance_pct'),
-        _canon('free_defense_upgrade_chance_pct'),
-        _canon('free_utility_upgrade_chance_pct'),
+        _state_from_legacy_canonical('free_attack_upgrade_chance_pct'),
+        _state_from_legacy_canonical('free_defense_upgrade_chance_pct'),
+        _state_from_legacy_canonical('free_utility_upgrade_chance_pct'),
     ]
     shared_additive = None
     shared_additive_contributors: list[dict[str, object]] = []
@@ -725,8 +735,8 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: dict[str, 
         if shared_additive is None:
             shared_additive = shared_total
             shared_additive_contributors = shared_contributors_for_row
-            rows[_canon('free_upgrade_shared_add_pct')] = StatRow(
-                stat_name=_canon('free_upgrade_shared_add_pct'),
+            rows[_state_from_legacy_canonical('free_upgrade_shared_add_pct')] = StatRow(
+                stat_name=_state_from_legacy_canonical('free_upgrade_shared_add_pct'),
                 final_value=shared_total,
                 value_type='pct',
                 source_count=len(shared_contributors_for_row),
@@ -743,7 +753,7 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: dict[str, 
 
 
 def _apply_exact_max_rend_formula(rows: dict[str, StatRow]) -> None:
-    max_rend_row = rows.get(_canon('max_rend_mult'))
+    max_rend_row = rows.get(_state_from_legacy_canonical('max_rend_mult'))
     if not max_rend_row:
         return
     enhancement_multiplier = 1.0
@@ -819,24 +829,24 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
     _apply_free_upgrade_chance_formula_from_routed_contributors(rows)
     _apply_exact_max_rend_formula(rows)
 
-    coins_per_kill_row = rows.get(_canon('coins_per_kill_bonus'))
+    coins_per_kill_row = rows.get(_state_from_legacy_canonical('coins_per_kill_bonus'))
     if coins_per_kill_row is not None:
-        rows[_canon('coin_kill_multiplier')] = StatRow(
-            stat_name=_canon('coin_kill_multiplier'),
+        rows[_state_from_legacy_canonical('coin_kill_multiplier')] = StatRow(
+            stat_name=_state_from_legacy_canonical('coin_kill_multiplier'),
             final_value=coins_per_kill_row.final_value,
             value_type=coins_per_kill_row.value_type,
             source_count=coins_per_kill_row.source_count,
             status=coins_per_kill_row.status,
-            notes=f"Deprecated transition mirror of {_canon('coins_per_kill_bonus')}.",
+            notes=f"Deprecated transition mirror of {_state_from_legacy_canonical('coins_per_kill_bonus')}.",
             contributors=list(coins_per_kill_row.contributors),
             schema=coins_per_kill_row.schema,
         )
 
-    disable_ads_row = rows.get(_flag('account_flag.disable_ads'))
-    starter_pack_row = rows.get(_flag('account_flag.starter_pack'))
-    epic_pack_row = rows.get(_flag('account_flag.epic_pack'))
-    farming_tier_row = rows.get(_context('account_context.farming_tier'))
-    legacy_coin_display_row = rows.get(_context('account_context.coin_multiplier_display'))
+    disable_ads_row = rows.get(_compat_flag('account_flag.disable_ads'))
+    starter_pack_row = rows.get(_compat_flag('account_flag.starter_pack'))
+    epic_pack_row = rows.get(_compat_flag('account_flag.epic_pack'))
+    farming_tier_row = rows.get(_compat_context('account_context.farming_tier'))
+    legacy_coin_display_row = rows.get(_compat_context('account_context.coin_multiplier_display'))
     helper_contributors: list[dict[str, object]] = []
 
     def _helper_value(row_key: str, label: str) -> float | None:
@@ -857,9 +867,9 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
         })
         return _as_float(row.final_value)
 
-    coin_bonus_val = _helper_value(_canon('coin_bonus_multiplier'), _canon('coin_bonus_multiplier'))
-    coins_mult_val = _helper_value(_canon('coins_multiplier'), _canon('coins_multiplier'))
-    theme_val = _helper_value(_cosmetic('cosmetic_bonus.theme_song_coin_multiplier'), 'cosmetic_bonus.theme_song_coin_multiplier')
+    coin_bonus_val = _helper_value(_state_from_legacy_canonical('coin_bonus_multiplier'), _state_from_legacy_canonical('coin_bonus_multiplier'))
+    coins_mult_val = _helper_value(_state_from_legacy_canonical('coins_multiplier'), _state_from_legacy_canonical('coins_multiplier'))
+    theme_val = _helper_value(_compat_cosmetic('cosmetic_bonus.theme_song_coin_multiplier'), 'cosmetic_bonus.theme_song_coin_multiplier')
     pack_multiplier_map = _load_pack_multiplier_map()
 
     def _flag_pack_multiplier(row: StatRow | None, label: str) -> float:
@@ -938,8 +948,8 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
         all_coin_status = 'resolved'
     else:
         all_coin_notes += ' One or more required numeric helper surfaces were unavailable.'
-    rows[_canon('all_coin_bonus_multiplier')] = StatRow(
-        stat_name=_canon('all_coin_bonus_multiplier'),
+    rows[_state_from_legacy_canonical('all_coin_bonus_multiplier')] = StatRow(
+        stat_name=_state_from_legacy_canonical('all_coin_bonus_multiplier'),
         final_value=all_coin_value,
         value_type='multiplier',
         source_count=len(helper_contributors),
@@ -949,8 +959,8 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
         schema={'unit': 'multiplier', 'resolver': 'standard_scalar_stat'},
     )
 
-    tower_regen_row = rows.get(_canon('tower_regen'))
-    wall_regen_row = rows.get(_canon('wall_regen'))
+    tower_regen_row = rows.get(_state_from_legacy_canonical('tower_regen'))
+    wall_regen_row = rows.get(_state_from_legacy_canonical('wall_regen'))
     if tower_regen_row and wall_regen_row and tower_regen_row.final_value is not None:
         tower_regen = _as_float(tower_regen_row.final_value)
         if tower_regen is not None:
@@ -972,7 +982,7 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
                 wall_regen_row.status = 'resolved'
                 wall_regen_row.notes = 'Phase 3 exact wall regen formula from KB: tower_regen x wall-regen ratio x wall-regen multipliers.'
 
-    package_row = rows.get(_canon('package_chance_pct'))
+    package_row = rows.get(_state_from_legacy_canonical('package_chance_pct'))
     if package_row:
         final, status, note, _ = _resolve_additive_base_plus_bonuses_pct(
             'package_chance_pct',
@@ -988,9 +998,9 @@ def _apply_phase3_postprocessing(rows: dict[str, StatRow]) -> None:
             package_row.notes = note
 
     runtime_mirror_map = {
-        _mech('uw.chain_lightning.chance_pct'): _runtime('uw.chain_lightning.chance_pct'),
-        _mech('uw.chain_lightning.damage_multiplier'): _runtime('uw.chain_lightning.damage_multiplier'),
-        _mech('uw.spotlight.bonus_multiplier'): _runtime('uw.spotlight.bonus_multiplier'),
+        _compat_mech('uw.chain_lightning.chance_pct'): _compat_runtime('uw.chain_lightning.chance_pct'),
+        _compat_mech('uw.chain_lightning.damage_multiplier'): _compat_runtime('uw.chain_lightning.damage_multiplier'),
+        _compat_mech('uw.spotlight.bonus_multiplier'): _compat_runtime('uw.spotlight.bonus_multiplier'),
     }
     for source_key, runtime_key in runtime_mirror_map.items():
         source_row = rows.get(source_key)
@@ -1025,12 +1035,12 @@ def _load_bounded_resolution_metadata_cached() -> dict[str, dict[str, str]]:
 # Canonical timing-v1 surface IDs declared in stat-query-initial-surface-set.yaml (timing_v1 group).
 # All declared timing families share this surface set.
 # wave_accelerator uses state:: (canonical per naming-contract-pack-v2-remap.csv and KB contracts),
-# not the legacy runtime_mechanic_param:: prefix.
+# not the legacy runtime bucket prefix.
 _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
-    _mech('uw.black_hole.cooldown_seconds'),
-    _mech('uw.black_hole.duration_seconds'),
-    _mech('uw.golden_tower.cooldown_seconds'),
-    _mech('uw.golden_tower.duration_seconds'),
+        _compat_mech('uw.black_hole.cooldown_seconds'),
+        _compat_mech('uw.black_hole.duration_seconds'),
+        _compat_mech('uw.golden_tower.cooldown_seconds'),
+        _compat_mech('uw.golden_tower.duration_seconds'),
     'state::tower.package_chance_pct',
     'support_surface::timing.gcomp_cooldown_reduction_seconds',
     'support_surface::timing.wave_duration_seconds_effective',

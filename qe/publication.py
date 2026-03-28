@@ -30,7 +30,7 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
     Both are published as the same numeric tier; guards against collision with
     surfaces already pre-populated from manual advisory inputs.
     """
-    tier_row = rows.get(_sid('account_context::account_context.farming_tier'))
+    tier_row = rows.get('state::meta.account_context.farming_tier')
     if tier_row is None:
         return
     raw = (tier_row.contributors[0].get('value') if tier_row.contributors else None)
@@ -58,7 +58,7 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
                 'value': tier,
                 'unit': 'tier',
                 'source_raw': raw,
-                'source_surface': _sid('account_context::account_context.farming_tier'),
+                'source_surface': 'state::meta.account_context.farming_tier',
             }],
             schema={
                 'source_alignment': 'AccountContext',
