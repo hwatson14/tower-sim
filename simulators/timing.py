@@ -12,7 +12,7 @@ from qe.materializer import FamilyBaselineContributorMap, FamilyBaselineMaterial
 from qe.consumer_registry import resolve_consumer_bundle
 from simulators.scenario import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
-from qe.kernel import QueryResponse, StatQueryKernel
+from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
 from input.state_types import AccountState
 from qe.models import StatInput
 
@@ -539,7 +539,7 @@ def resolve_timing_family_query(
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
 ) -> QueryResponse:
-    query_kernel = kernel or StatQueryKernel()
+    query_kernel = kernel or get_default_query_kernel()
     baseline = materialize_timing_family_baseline(
         account_state=account_state,
         family_id=family_id,

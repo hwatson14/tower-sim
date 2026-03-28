@@ -2459,14 +2459,16 @@ def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, fo
         'best_fit_status_counts': dict(sorted(best_fit_status_counts.items())),
     }
 
-def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None):
+def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, return_default_materialization: bool = False):
     compare_rows_by_preset = {}
     compare_publishable_rows_by_preset = {}
+    default_materialization = None
 
     perk_state_by_preset = {}
     perk_materialized_by_preset = {}
 
     def _materialize(preset_name: str, forced_perk_state: str | None = None):
+        nonlocal default_materialization
         state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
         preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else _compare_perk_state_for_preset(preset_name, perk_state, forced_preset_perk_states)
         perks_enabled = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
@@ -2475,6 +2477,12 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         perk_materialized_by_preset[state_key] = perks_enabled
         inputs = compile_stat_inputs(state, preset_name=preset_name, state_mode=state_mode, perks_enabled=perks_enabled)
         statbook = resolve_stats(inputs)
+        if return_default_materialization and forced_perk_state is None and preset_name == default_preset and default_materialization is None:
+            default_materialization = {
+                'account_state': state,
+                'stat_inputs': list(inputs),
+                'statbook': copy.deepcopy(statbook),
+            }
         publish_phase3_query_surfaces(statbook.rows, account_state_labs=state.labs)
         statbook_dict = statbook.to_dict()
         for destination, row in statbook_dict.get('rows', {}).items():
@@ -2545,6 +2553,8 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
             }
             for slot, selection in state.module_presets.get(base_preset_name, {}).items()
         }
+    if return_default_materialization:
+        return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context, default_materialization
     return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context
 
 
