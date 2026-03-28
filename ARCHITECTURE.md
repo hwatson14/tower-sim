@@ -39,6 +39,8 @@ The active surface should be small enough that an AI agent can navigate it in on
     ids_raw.py               # IdsRaw dataclass (moved from models/)
     scenario_runtime_inputs.py  # ScenarioRuntimeInputs (moved from engine/)
     account_state_compiler.py   # AccountState assembly (moved from compilers/)
+    manual_advisory_inputs.contract.yaml  # schema contract for manual_advisory_inputs entries
+    observed_run_els_scenarios.contract.yaml  # schema contract for observed-run ELS scenario inputs
     imports/
       ids.csv
       progress.csv
@@ -103,6 +105,7 @@ The active surface should be small enough that an AI agent can navigate it in on
   app/
     run_stats.py             # thin CLI entrypoint
     pipeline.py              # layer wiring only
+    display.py               # output number formatting and display annotation
 
   tests/
     conftest.py
