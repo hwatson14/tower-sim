@@ -80,9 +80,12 @@ from evaluators.compare import (
 )
 from evaluators.scorer import compute_optimizer_scores
 from input.loader import load_inputs
+from input.ids_parser import parse_ids
+from input.runtime_state import build_runtime_state
 from qe.publication import publish_phase3_query_surfaces
 from qe.routing import QEResolutionPlanner
 from qe.contracts import normalize_contract_payload
+from qe.routing import resolve_stats, resolve_stats_delta
 from simulators.perk_timeline_generator import (
     PerkTimelinePolicy,
     generate_timeline_from_policy,
@@ -191,6 +194,90 @@ def _write_core_outputs(
     (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
     verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
     pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
+
+
+def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_state_labs: dict) -> dict:
+    publish_phase3_query_surfaces(
+        statbook.rows,
+        manual_advisory_inputs=manual_advisory_inputs,
+        account_state_labs=account_state_labs,
+    )
+    statbook_dict = statbook.to_dict()
+    _annotate_display_fields(statbook_dict)
+    return statbook_dict
+
+
+def _perk_selection_payload(account_state, perk_preset_name: str | None) -> dict:
+    selections = account_state.perk_presets.get(perk_preset_name or '', []) if perk_preset_name else []
+    return {
+        'perk_preset_name': perk_preset_name,
+        'selections': [
+            {'perk_id': selection.perk_id, 'picks': selection.picks}
+            for selection in selections
+        ],
+    }
+
+
+def _preset_loadout_summary(account_state, *, preset_name: str, perk_preset_name: str | None) -> dict:
+    module_preset = account_state.module_presets.get(preset_name, {})
+    return {
+        'preset_name': preset_name,
+        'cards': list(account_state.card_presets.get(preset_name, [])),
+        'modules': {
+            slot_type: {
+                'primary': selection.primary,
+                'assist': selection.assist,
+            }
+            for slot_type, selection in module_preset.items()
+        },
+        'perks': _perk_selection_payload(account_state, perk_preset_name),
+    }
+
+
+def _build_dual_state_stats_view(start_statbook_dict: dict, max_statbook_dict: dict) -> dict:
+    start_rows = start_statbook_dict.get('rows', {})
+    max_rows = max_statbook_dict.get('rows', {})
+    all_keys = sorted(set(start_rows) | set(max_rows))
+    rows = {}
+    changed_count = 0
+    for key in all_keys:
+        if key.startswith('raw::'):
+            continue
+        start_row = start_rows.get(key)
+        max_row = max_rows.get(key)
+        start_value = None if start_row is None else start_row.get('final_value')
+        max_value = None if max_row is None else max_row.get('final_value')
+        changed = (
+            start_row is None
+            or max_row is None
+            or start_value != max_value
+            or (start_row.get('status') if start_row else None) != (max_row.get('status') if max_row else None)
+        )
+        if changed:
+            changed_count += 1
+        rows[key] = {
+            'stat_name': key,
+            'changed_in_max_progression': changed,
+            'start_of_run': None if start_row is None else {
+                'final_value': start_value,
+                'display_value': start_row.get('display_value'),
+                'value_type': start_row.get('value_type'),
+                'status': start_row.get('status'),
+            },
+            'max_progression': None if max_row is None else {
+                'final_value': max_value,
+                'display_value': max_row.get('display_value'),
+                'value_type': max_row.get('value_type'),
+                'status': max_row.get('status'),
+            },
+        }
+    return {
+        'rows': rows,
+        'diagnostics': {
+            'row_count': len(rows),
+            'changed_in_max_progression_count': changed_count,
+        },
+    }
 
 
 def _perk_config_has_active_preset(config: dict) -> bool:
@@ -437,8 +524,170 @@ def _resolve_perk_config(
     return _build_runtime_timeline_perk_config(ids_raw, perk_policy, diag_output_dir=diag_output_dir)
 
 
+def _build_account_state(
+    *,
+    ids_path: Path,
+    manual_inputs_path: Path | None,
+    preset: str,
+    perk_mode: str,
+    diag_output_dir: Path | None = None,
+):
+    input_bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
+    perk_config, perk_config_resolution = _resolve_perk_config(
+        perk_mode=perk_mode,
+        primary_config=input_bundle.perk_config,
+        perk_policy=input_bundle.perk_policy,
+        ids_raw=input_bundle.ids_raw,
+        diag_output_dir=diag_output_dir,
+    )
+    account_state = build_runtime_state(
+        input_bundle.ids_raw,
+        default_preset=preset,
+        loadout_config=input_bundle.loadout_config,
+        perk_config=perk_config,
+    )
+    return input_bundle, account_state, perk_config_resolution
 
-def run_pipeline(args) -> int:
+
+def run_stats_pipeline(args) -> int:
+    """
+    Execute the fast stats pipeline.
+
+    Wires: input -> qe -> out.
+    Produces side-by-side start_of_run and max_progression composite stat views.
+    Max progression is resolved as a delta from the start_of_run baseline.
+    """
+    args.perk_state = _normalize_perk_state(args.perk_state)
+    args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
+    args.out.mkdir(parents=True, exist_ok=True)
+
+    input_bundle, account_state, perk_config_resolution = _build_account_state(
+        ids_path=args.ids,
+        manual_inputs_path=getattr(args, 'manual_inputs', None),
+        preset='Farming',
+        perk_mode=args.perk_mode,
+        diag_output_dir=args.out / 'diagnostics' / 'perks',
+    )
+    preset_names = ['Farming', 'Tourney']
+    run_stats_payload = {'presets': {}, 'diagnostics': {}}
+    preset_diagnostics = {}
+    start_inputs_by_preset = {}
+    max_inputs_by_preset = {}
+    start_books_by_preset = {}
+    max_books_by_preset = {}
+
+    for preset_name in preset_names:
+        current_perk_preset_name = preset_name if preset_name in account_state.perk_presets else None
+        current_perks_enabled = _perks_enabled_for_state(current_perk_preset_name, args.perk_state)
+        start_stat_inputs = compile_stat_inputs(
+            account_state,
+            preset_name=preset_name,
+            state_mode='start_of_run',
+            perk_preset_name=current_perk_preset_name,
+            perks_enabled=current_perks_enabled,
+        )
+        start_statbook = resolve_stats(start_stat_inputs)
+
+        max_perk_preset_name = current_perk_preset_name
+        max_perks_enabled = current_perks_enabled
+        if args.perk_mode != 'none' and account_state.active_perk_preset is not None:
+            max_perk_preset_name = account_state.active_perk_preset
+            max_perks_enabled = _perks_enabled_for_state(max_perk_preset_name, args.perk_state)
+
+        max_stat_inputs = compile_stat_inputs(
+            account_state,
+            preset_name=preset_name,
+            state_mode='max_progression',
+            perk_preset_name=max_perk_preset_name,
+            perks_enabled=max_perks_enabled,
+        )
+        max_statbook = resolve_stats_delta(
+            base_statbook=start_statbook,
+            base_stat_inputs=start_stat_inputs,
+            target_stat_inputs=max_stat_inputs,
+        )
+        start_statbook_dict = _published_statbook_dict(
+            start_statbook,
+            manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+            account_state_labs=account_state.labs,
+        )
+        max_statbook_dict = _published_statbook_dict(
+            max_statbook,
+            manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+            account_state_labs=account_state.labs,
+        )
+        dual_state_stats = _build_dual_state_stats_view(start_statbook_dict, max_statbook_dict)
+        run_stats_payload['presets'][preset_name] = {
+            'loadout': {
+                'start_of_run': _preset_loadout_summary(
+                    account_state,
+                    preset_name=preset_name,
+                    perk_preset_name=current_perk_preset_name,
+                ),
+                'max_progression': _preset_loadout_summary(
+                    account_state,
+                    preset_name=preset_name,
+                    perk_preset_name=max_perk_preset_name,
+                ),
+            },
+            'stats': dual_state_stats,
+        }
+        preset_diagnostics[preset_name] = {
+            'start_of_run': {
+                'stat_input_count': len(start_stat_inputs),
+                'statbook_row_count': len(start_statbook.rows),
+                'resolver_status': start_statbook.diagnostics.get('resolver_status'),
+                'mapped_input_count': start_statbook.diagnostics.get('mapped_input_count'),
+                'unmapped_input_count': start_statbook.diagnostics.get('unmapped_input_count'),
+                'resolved_stat_count': start_statbook.diagnostics.get('resolved_stat_count'),
+                'partially_resolved_stat_count': start_statbook.diagnostics.get('partially_resolved_stat_count'),
+            },
+            'max_progression': {
+                'stat_input_count': len(max_stat_inputs),
+                'statbook_row_count': len(max_statbook.rows),
+                'resolver_status': max_statbook.diagnostics.get('resolver_status'),
+                'mapped_input_count': max_statbook.diagnostics.get('mapped_input_count'),
+                'unmapped_input_count': max_statbook.diagnostics.get('unmapped_input_count'),
+                'resolved_stat_count': max_statbook.diagnostics.get('resolved_stat_count'),
+                'partially_resolved_stat_count': max_statbook.diagnostics.get('partially_resolved_stat_count'),
+                'delta_resolution': max_statbook.diagnostics.get('delta_resolution', {}),
+            },
+            'dual_state_stats': dual_state_stats.get('diagnostics', {}),
+        }
+        start_inputs_by_preset[preset_name] = start_stat_inputs
+        max_inputs_by_preset[preset_name] = max_stat_inputs
+        start_books_by_preset[preset_name] = start_statbook_dict
+        max_books_by_preset[preset_name] = max_statbook_dict
+
+    diagnostics = {
+        'pipeline_kind': 'stats',
+        'preset_names': preset_names,
+        'state_modes': ['start_of_run', 'max_progression'],
+        'perk_state': args.perk_state,
+        'perk_mode': args.perk_mode,
+        'perk_config_resolution': perk_config_resolution,
+        'presets': preset_diagnostics,
+    }
+    run_stats_payload['diagnostics'] = diagnostics
+
+    js = _json_sanitize
+    (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
+    (args.out / 'account_state.json').write_text(
+        json.dumps(js(_sanitized_account_state_for_output(account_state, 'Farming')), indent=2, default=str)
+    )
+    (args.out / 'stat_inputs_start_of_run.json').write_text(
+        json.dumps(js({preset: [row.to_dict() for row in rows] for preset, rows in start_inputs_by_preset.items()}), indent=2, default=str)
+    )
+    (args.out / 'stat_inputs_max_progression.json').write_text(
+        json.dumps(js({preset: [row.to_dict() for row in rows] for preset, rows in max_inputs_by_preset.items()}), indent=2, default=str)
+    )
+    (args.out / 'statbook_start_of_run.json').write_text(json.dumps(js(start_books_by_preset), indent=2, default=str))
+    (args.out / 'statbook_max_progression.json').write_text(json.dumps(js(max_books_by_preset), indent=2, default=str))
+    (args.out / 'run_stats.json').write_text(json.dumps(js(run_stats_payload), indent=2, default=str))
+    return 0
+
+
+def run_analysis_pipeline(args) -> int:
     """
     Execute the full stat pipeline.
 
@@ -888,3 +1137,8 @@ def run_pipeline(args) -> int:
     )
 
     return 0
+
+
+def run_pipeline(args) -> int:
+    """Compatibility alias for the heavy analysis pipeline."""
+    return run_analysis_pipeline(args)

@@ -563,3 +563,35 @@ def resolve_progression_consumer_bundle(
         perk_preset_name=perk_preset_name,
         kernel=kernel,
     )
+
+
+def resolve_run_stats_progression_bundle(
+    *,
+    account_state: AccountState,
+    family_id: str,
+    preset_name: str,
+    perks_enabled: bool,
+    state_mode: str = 'start_of_run',
+    runtime_branch_id: str = 'branch_base',
+    trace_mode: str | None = None,
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    """Resolve the sanctioned bounded progression bundle for the run_stats consumer."""
+    return resolve_progression_consumer_bundle(
+        account_state=account_state,
+        consumer_id='run_stats',
+        bundle_id='progression_core_stats',
+        family_id=family_id,
+        preset_name=preset_name,
+        perks_enabled=perks_enabled,
+        state_mode=state_mode,
+        runtime_branch_id=runtime_branch_id,
+        trace_mode=trace_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        kernel=kernel,
+    )

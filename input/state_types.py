@@ -126,6 +126,22 @@ class ModuleSystemState:
 
 
 @dataclass(frozen=True)
+class ScenarioProjectionState:
+    max_workshop: bool = False
+    projected_perks: bool = False
+    death_wave_health: bool = False
+    berserker_damage_bonus: bool = False
+
+    def to_debug_dict(self) -> Dict[str, bool]:
+        return {
+            'max_workshop': bool(self.max_workshop),
+            'projected_perks': bool(self.projected_perks),
+            'death_wave_health': bool(self.death_wave_health),
+            'berserker_damage_bonus': bool(self.berserker_damage_bonus),
+        }
+
+
+@dataclass(frozen=True)
 class AccountState:
     ids_path: Path
     labs: Dict[str, Optional[int]]
@@ -215,6 +231,18 @@ class ScenarioRuntimeInputs:
             if value is not None:
                 out[key] = float(value)
         return out
+
+
+def projection_state_for_mode(state_mode: str) -> ScenarioProjectionState:
+    normalized = str(state_mode or 'start_of_run').strip()
+    if normalized == 'max_progression':
+        return ScenarioProjectionState(
+            max_workshop=True,
+            projected_perks=True,
+            death_wave_health=True,
+            berserker_damage_bonus=True,
+        )
+    return ScenarioProjectionState()
 
 
 def _first_from_aliases(*, raw: Mapping[str, Any], field_name: str, aliases: tuple[str, ...], spec: Mapping[str, Any]) -> Optional[float]:

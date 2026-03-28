@@ -11,7 +11,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Any, Dict, List, Tuple
 
 import yaml
 
@@ -25,6 +25,22 @@ CONTRACT_PATHS = [
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml',
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'environment-params.yaml',
 ]
+
+_DELTA_SUCCESSORS_BY_BUCKET_KEY: dict[str, tuple[str, ...]] = {
+    'canonical_stat::tower_hp': ('canonical_stat::wall_hp',),
+    'canonical_stat::tower_regen': ('canonical_stat::wall_regen',),
+    'canonical_stat::tower_damage': ('canonical_stat::tower_land_mine_damage',),
+    'canonical_stat::tower_crit_chance_pct': ('canonical_stat::tower_land_mine_damage',),
+    'canonical_stat::tower_crit_multiplier': ('canonical_stat::tower_land_mine_damage',),
+    'canonical_stat::tower_supercrit_chance_pct': ('canonical_stat::tower_land_mine_damage',),
+    'canonical_stat::tower_supercrit_multiplier': ('canonical_stat::tower_land_mine_damage',),
+    'canonical_stat::coins_per_kill_bonus': ('canonical_stat::coin_kill_multiplier',),
+    'canonical_stat::free_upgrade_multiplier': (
+        'canonical_stat::free_attack_upgrade_chance_pct',
+        'canonical_stat::free_defense_upgrade_chance_pct',
+        'canonical_stat::free_utility_upgrade_chance_pct',
+    ),
+}
 
 
 def _canon(destination_id: str) -> str:
@@ -1548,22 +1564,110 @@ def summarize_input_routing(stat_inputs: List[StatInput]) -> dict[str, Any]:
     }
 
 
-def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
-    canonical_stats = _load_canonical_stats()
+def _bucket_stat_inputs(stat_inputs: List[StatInput]) -> tuple[Dict[str, List[StatInput]], Dict[str, List[StatInput]]]:
     mapped_buckets: Dict[str, List[StatInput]] = defaultdict(list)
     unmapped_buckets: Dict[str, List[StatInput]] = defaultdict(list)
-    routing_summary = summarize_input_routing(stat_inputs)
-
     for row in stat_inputs:
         if row.destination_id:
             mapped_buckets[f"{row.destination_object_type}::{row.destination_id}"].append(row)
         else:
             unmapped_buckets[row.stat_name].append(row)
+    return mapped_buckets, unmapped_buckets
+
+
+def _bucket_signature(rows: List[StatInput]) -> tuple[tuple[Any, ...], ...]:
+    return tuple(
+        (
+            row.stat_name,
+            row.source_family,
+            row.source_name,
+            row.value,
+            row.value_type,
+            row.stage,
+            row.active,
+            row.preset_name,
+            row.provenance,
+            row.notes,
+            row.contributor_id,
+            row.destination_object_type,
+            row.destination_id,
+            row.resolver_id,
+            row.kb_mapped,
+            row.raw_level,
+            row.resolved_value,
+            row.resolved_unit,
+        )
+        for row in rows
+    )
+
+
+def _expand_delta_bucket_keys(changed_bucket_keys: set[str]) -> set[str]:
+    expanded = set(changed_bucket_keys)
+    queue = list(changed_bucket_keys)
+    while queue:
+        bucket_key = queue.pop()
+        for successor in _DELTA_SUCCESSORS_BY_BUCKET_KEY.get(bucket_key, ()):
+            if successor in expanded:
+                continue
+            expanded.add(successor)
+            queue.append(successor)
+    return expanded
+
+
+def _clone_stat_row(row: StatRow) -> StatRow:
+    return StatRow(
+        stat_name=row.stat_name,
+        final_value=row.final_value,
+        value_type=row.value_type,
+        source_count=row.source_count,
+        status=row.status,
+        notes=row.notes,
+        contributors=[dict(contributor) for contributor in row.contributors],
+        schema=None if row.schema is None else dict(row.schema),
+    )
+
+
+def _build_statbook_diagnostics(
+    *,
+    stat_inputs: List[StatInput],
+    rows: Dict[str, StatRow],
+    canonical_stats: Dict[str, Dict[str, str]],
+    routing_summary: dict[str, Any],
+) -> dict[str, Any]:
+    family_counts = Counter(row.source_family for row in stat_inputs)
+    mapped_family_counts = Counter(row.source_family for row in stat_inputs if row.destination_id)
+    resolved_count = sum(1 for row in rows.values() if row.status == 'resolved')
+    partial_count = sum(1 for row in rows.values() if row.status == 'partially_resolved')
+    unresolved_count = sum(
+        1 for key, row in rows.items()
+        if not key.startswith('raw::') and row.status not in {'resolved', 'partially_resolved'}
+    )
+    return {
+        'resolver_status': 'publish_gate_enforced_resolution',
+        'destination_type_schema': {k: _destination_type_schema(k, v) for k, v in sorted(canonical_stats.items())},
+        'mapped_input_count': routing_summary['routed_input_count'],
+        'unmapped_input_count': routing_summary['truly_unrouted_input_count'],
+        'input_count_by_family': dict(sorted(family_counts.items())),
+        'mapped_count_by_family': dict(sorted(mapped_family_counts.items())),
+        'input_routing_class_counts': routing_summary['class_counts'],
+        'truly_unrouted_count_by_family': routing_summary['truly_unrouted_count_by_family'],
+        'resolved_stat_count': resolved_count,
+        'partially_resolved_stat_count': partial_count,
+        'mapped_unresolved_stat_count': unresolved_count,
+        'notes': [
+            'Input routing counts distinguish true unknown/unrouted rows from parser-drop, metadata, capability, governed-pending, and runtime-only classes.',
+            'This iteration resolves canonical stats with cautious unit-aware rules and also preserves direct numeric values for single-source mapped runtime/meta/capability surfaces.',
+            'Multi-source mechanic params remain fail-closed unless a simple suffix-based generic rule is explicitly safe to apply.',
+        ],
+    }
+
+
+def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
+    canonical_stats = _load_canonical_stats()
+    mapped_buckets, unmapped_buckets = _bucket_stat_inputs(stat_inputs)
+    routing_summary = summarize_input_routing(stat_inputs)
 
     rows: Dict[str, StatRow] = {}
-    resolved_count = 0
-    partial_count = 0
-    unresolved_count = 0
 
     for bucket_key, contributors in mapped_buckets.items():
         destination_object_type, destination_id = bucket_key.split('::', 1)
@@ -1573,12 +1677,6 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
         meta = dict(meta)
         meta['_resolved_rows'] = rows
         final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
-        if status == 'resolved':
-            resolved_count += 1
-        elif status == 'partially_resolved':
-            partial_count += 1
-        else:
-            unresolved_count += 1
         rows[bucket_key] = StatRow(
             stat_name=bucket_key,
             final_value=final_value,
@@ -1603,25 +1701,94 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
         )
 
     _apply_phase3_postprocessing(rows)
+    diagnostics = _build_statbook_diagnostics(
+        stat_inputs=stat_inputs,
+        rows=rows,
+        canonical_stats=canonical_stats,
+        routing_summary=routing_summary,
+    )
+    return StatBook(rows=rows, diagnostics=diagnostics)
 
-    family_counts = Counter(row.source_family for row in stat_inputs)
-    mapped_family_counts = Counter(row.source_family for row in stat_inputs if row.destination_id)
-    diagnostics = {
-        'resolver_status': 'publish_gate_enforced_resolution',
-        'destination_type_schema': {k: _destination_type_schema(k, v) for k, v in sorted(canonical_stats.items())},
-        'mapped_input_count': routing_summary['routed_input_count'],
-        'unmapped_input_count': routing_summary['truly_unrouted_input_count'],
-        'input_count_by_family': dict(sorted(family_counts.items())),
-        'mapped_count_by_family': dict(sorted(mapped_family_counts.items())),
-        'input_routing_class_counts': routing_summary['class_counts'],
-        'truly_unrouted_count_by_family': routing_summary['truly_unrouted_count_by_family'],
-        'resolved_stat_count': resolved_count,
-        'partially_resolved_stat_count': partial_count,
-        'mapped_unresolved_stat_count': unresolved_count,
-        'notes': [
-            'Input routing counts distinguish true unknown/unrouted rows from parser-drop, metadata, capability, governed-pending, and runtime-only classes.',
-            'This iteration resolves canonical stats with cautious unit-aware rules and also preserves direct numeric values for single-source mapped runtime/meta/capability surfaces.',
-            'Multi-source mechanic params remain fail-closed unless a simple suffix-based generic rule is explicitly safe to apply.',
-        ],
+
+def resolve_stats_delta(
+    base_statbook: StatBook,
+    *,
+    base_stat_inputs: List[StatInput],
+    target_stat_inputs: List[StatInput],
+) -> StatBook:
+    canonical_stats = _load_canonical_stats()
+    base_mapped_buckets, base_unmapped_buckets = _bucket_stat_inputs(base_stat_inputs)
+    target_mapped_buckets, target_unmapped_buckets = _bucket_stat_inputs(target_stat_inputs)
+    target_routing_summary = summarize_input_routing(target_stat_inputs)
+
+    changed_bucket_keys = {
+        bucket_key
+        for bucket_key in set(base_mapped_buckets) | set(target_mapped_buckets)
+        if _bucket_signature(base_mapped_buckets.get(bucket_key, [])) != _bucket_signature(target_mapped_buckets.get(bucket_key, []))
+    }
+    impacted_bucket_keys = _expand_delta_bucket_keys(changed_bucket_keys)
+    changed_unmapped_keys = {
+        stat_name
+        for stat_name in set(base_unmapped_buckets) | set(target_unmapped_buckets)
+        if _bucket_signature(base_unmapped_buckets.get(stat_name, [])) != _bucket_signature(target_unmapped_buckets.get(stat_name, []))
+    }
+
+    rows: Dict[str, StatRow] = {key: _clone_stat_row(row) for key, row in base_statbook.rows.items()}
+
+    for bucket_key in impacted_bucket_keys:
+        if bucket_key not in target_mapped_buckets:
+            rows.pop(bucket_key, None)
+
+    for bucket_key, contributors in target_mapped_buckets.items():
+        if bucket_key not in impacted_bucket_keys:
+            continue
+        destination_object_type, destination_id = bucket_key.split('::', 1)
+        meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+        if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+            meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+        meta = dict(meta)
+        meta['_resolved_rows'] = rows
+        final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
+        rows[bucket_key] = StatRow(
+            stat_name=bucket_key,
+            final_value=final_value,
+            value_type=meta['unit'],
+            source_count=len(contributors),
+            status=status,
+            notes=notes,
+            contributors=[c.to_dict() for c in contributors],
+            schema=schema,
+        )
+
+    for stat_name in changed_unmapped_keys:
+        raw_key = f'raw::{stat_name}'
+        contributors = target_unmapped_buckets.get(stat_name)
+        if not contributors:
+            rows.pop(raw_key, None)
+            continue
+        rows[raw_key] = StatRow(
+            stat_name=stat_name,
+            final_value=None,
+            value_type='raw_unmapped_input',
+            source_count=len(contributors),
+            status='unmapped',
+            notes='Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.',
+            contributors=[c.to_dict() for c in contributors],
+            schema=None,
+        )
+
+    _apply_phase3_postprocessing(rows)
+    diagnostics = _build_statbook_diagnostics(
+        stat_inputs=target_stat_inputs,
+        rows=rows,
+        canonical_stats=canonical_stats,
+        routing_summary=target_routing_summary,
+    )
+    diagnostics['delta_resolution'] = {
+        'changed_bucket_count': len(changed_bucket_keys),
+        'impacted_bucket_count': len(impacted_bucket_keys),
+        'changed_unmapped_count': len(changed_unmapped_keys),
+        'changed_bucket_keys': sorted(changed_bucket_keys),
+        'impacted_bucket_keys': sorted(impacted_bucket_keys),
     }
     return StatBook(rows=rows, diagnostics=diagnostics)

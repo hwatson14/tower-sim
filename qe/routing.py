@@ -12,6 +12,7 @@ from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, comp
 from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
 from qe.stat_resolution import (
     resolve_stats as _fallback_resolve_stats,
+    resolve_stats_delta as _fallback_resolve_stats_delta,
 )
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
@@ -1589,6 +1590,19 @@ def _snapshot_cache_key(bound_inputs: BoundStatInputs) -> tuple[str, str, str, s
     )
 
 
+def resolve_stats_delta(
+    *,
+    base_statbook: StatBook,
+    base_stat_inputs: list[StatInput],
+    target_stat_inputs: list[StatInput],
+) -> StatBook:
+    return _fallback_resolve_stats_delta(
+        base_statbook,
+        base_stat_inputs=base_stat_inputs,
+        target_stat_inputs=target_stat_inputs,
+    )
+
+
 def _infer_manifest_approved_family(stat_inputs: Sequence[StatInput]) -> str | None:
     preset_names = {str(row.preset_name).strip() for row in stat_inputs if row.preset_name}
     if len(preset_names) != 1:
@@ -1696,4 +1710,7 @@ __all__ = [
     'QEResolvedSnapshot',
     'query_response_to_statbook',
     'resolve_stats',
+    'resolve_stats_delta',
+    '_multiplier_from_value',
+    '_canonical_source_multiplier',
 ]

@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 
-from input.state_types import ScenarioRuntimeInputs
+from input.state_types import ScenarioRuntimeInputs, projection_state_for_mode
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -53,3 +53,11 @@ def test_contract_field_set__matches_expected_dataclass_fields():
 def test_non_positive_rate_field__raises_value_error():
     with pytest.raises(ValueError, match="> 0.0"):
         ScenarioRuntimeInputs.from_mapping({"electron_hits_per_second": 0.0})
+
+
+def test_projection_state_for_mode__max_progression_sets_expected_facets():
+    projection = projection_state_for_mode("max_progression")
+    assert projection.max_workshop is True
+    assert projection.projected_perks is True
+    assert projection.death_wave_health is True
+    assert projection.berserker_damage_bonus is True

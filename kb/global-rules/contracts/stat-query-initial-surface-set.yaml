@@ -462,6 +462,26 @@ families:
     - runtime_consumer::wave_progression.attack_wave
     - runtime_consumer::wave_progression.health_wave
     query_bundles:
+    - bundle_id: progression_core_stats
+      surface_ids:
+      - state::tower.hp
+      - state::wall.hp
+      - state::wall.regen
+      - state::wall.fortification_multiplier
+      - state::tower.defense_pct
+      - state::tower.thorns_damage_pct
+      - state::tower.orb_count
+      - state::tower.orb_speed_rpm
+      - state::cards.plasma_cannon.effect_pct
+      - state::module.orbital_augment.electron_count
+      - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+      - state::module.primordial_collapse.bh_damage_reduction_pct
+      - state::tower.free_attack_upgrade_chance_pct
+      - state::tower.free_defense_upgrade_chance_pct
+      - state::tower.free_utility_upgrade_chance_pct
+      - state::tower.enemy_attack_level_skip_pct
+      - state::tower.enemy_health_level_skip_pct
+      - support_surface::free_upgrade_multiplier
     - bundle_id: progression_free_upgrades
       surface_ids:
       - state::tower.free_attack_upgrade_chance_pct

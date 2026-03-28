@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import pytest
 
+from input.state_types import ScenarioProjectionState
+from qe.consumer_registry import resolve_consumer_bundle
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
     normalize_contract_payload,
@@ -199,3 +201,31 @@ def test_qe_resolution_planner__report_snapshot_uses_hybrid_backend_when_native_
     assert snapshot.statbook.diagnostics["qe_resolution_interface"] == "report_snapshot_planner"
     assert snapshot.statbook.diagnostics["qe_resolution_backend"] == "report_snapshot_hybrid"
     assert snapshot.statbook.diagnostics["qe_native_family_available"] is True
+
+
+def test_scenario_projection_state__debug_payload_is_explicit():
+    projection = ScenarioProjectionState(
+        max_workshop=True,
+        projected_perks=True,
+        death_wave_health=True,
+        berserker_damage_bonus=False,
+    )
+    assert projection.to_debug_dict() == {
+        "max_workshop": True,
+        "projected_perks": True,
+        "death_wave_health": True,
+        "berserker_damage_bonus": False,
+    }
+
+
+def test_run_stats_progression_core_bundle__resolves_for_progression_family():
+    bundle = resolve_consumer_bundle(
+        "run_stats",
+        "progression_core_stats",
+        family_id="progression_start_of_run",
+        trace_mode="contributors",
+    )
+    assert bundle.family_id == "progression_start_of_run"
+    assert "state::tower.hp" in bundle.surface_ids
+    assert "state::tower.free_attack_upgrade_chance_pct" in bundle.surface_ids
+    assert "state::module.orbital_augment.electron_count" in bundle.surface_ids
