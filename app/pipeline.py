@@ -136,6 +136,60 @@ def _json_sanitize(obj):
     return obj
 
 
+def _write_core_outputs(
+    *,
+    out_dir: Path,
+    diagnostics: dict,
+    account_state,
+    canonical_output_preset: str,
+    stat_inputs,
+    statbook_dict: dict,
+    statbook_publishable_dict: dict,
+    ep_compare_publishable: dict,
+    line_verification: dict,
+    survivor_closure_report: dict,
+    state_matrix: dict,
+    optimizer_scores: dict,
+    audit_surface_manifest: dict,
+    artifact_contract_manifest: dict,
+    family_completeness_matrix: dict,
+) -> None:
+    js = _json_sanitize
+    (out_dir / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
+    (out_dir / 'account_state.json').write_text(
+        json.dumps(js(_sanitized_account_state_for_output(account_state, canonical_output_preset)), indent=2, default=str)
+    )
+    (out_dir / 'stat_inputs.json').write_text(
+        json.dumps(js([row.to_dict() for row in stat_inputs]), indent=2, default=str)
+    )
+    (out_dir / 'statbook.json').write_text(json.dumps(js(statbook_dict), indent=2, default=str))
+    (out_dir / 'statbook_publishable.json').write_text(
+        json.dumps(js(statbook_publishable_dict), indent=2, default=str)
+    )
+    (out_dir / 'ep_oracle_compare.json').write_text(
+        json.dumps(js(ep_compare_publishable), indent=2, default=str)
+    )
+    (out_dir / 'line_by_line_verification.json').write_text(
+        json.dumps(js(line_verification), indent=2, default=str)
+    )
+    (out_dir / 'survivor_closure_report.json').write_text(
+        json.dumps(js(survivor_closure_report), indent=2, default=str)
+    )
+    (out_dir / 'state_matrix.json').write_text(json.dumps(js(state_matrix), indent=2, default=str))
+    (out_dir / 'audit_surface_manifest.json').write_text(
+        json.dumps(js(audit_surface_manifest), indent=2, default=str)
+    )
+    (out_dir / 'artifact_contract_manifest.json').write_text(
+        json.dumps(js(artifact_contract_manifest), indent=2, default=str)
+    )
+    (out_dir / 'family_completeness_matrix.json').write_text(
+        json.dumps(js(family_completeness_matrix), indent=2, default=str)
+    )
+    (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
+    verification_rows = [{'destination': k, **v} for k, v in line_verification.items()]
+    pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
+
+
 def _perk_config_has_active_preset(config: dict) -> bool:
     if not isinstance(config, dict):
         return False
@@ -757,6 +811,29 @@ def run_pipeline(args) -> int:
     }
     diagnostics['perk_support'] = diagnostics['ep_compare_stage_rules']['package_compare_capability']
 
+    audit_surface_manifest = _build_audit_surface_manifest(account_state, args.preset)
+    artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
+    family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
+    optimizer_scores = compute_optimizer_scores(statbook_dict)
+
+    _write_core_outputs(
+        out_dir=args.out,
+        diagnostics=diagnostics,
+        account_state=account_state,
+        canonical_output_preset=args.preset,
+        stat_inputs=stat_inputs,
+        statbook_dict=statbook_dict,
+        statbook_publishable_dict=statbook_publishable_dict,
+        ep_compare_publishable=ep_compare_publishable,
+        line_verification=line_verification,
+        survivor_closure_report=survivor_closure_report,
+        state_matrix=state_matrix,
+        optimizer_scores=optimizer_scores,
+        audit_surface_manifest=audit_surface_manifest,
+        artifact_contract_manifest=artifact_contract_manifest,
+        family_completeness_matrix=family_completeness_matrix,
+    )
+
     # Remove stale output files
     stale_outputs = [
         'ep_oracle_compare_backfilled.json',
@@ -769,61 +846,23 @@ def run_pipeline(args) -> int:
         if stale_path.exists():
             stale_path.unlink()
 
-    # Write outputs
-    _js = _json_sanitize
-    (args.out / 'diagnostics.json').write_text(json.dumps(_js(diagnostics), indent=2, default=str))
-    (args.out / 'account_state.json').write_text(
-        json.dumps(_js(_sanitized_account_state_for_output(account_state, args.preset)), indent=2, default=str)
-    )
-    (args.out / 'stat_inputs.json').write_text(
-        json.dumps(_js([row.to_dict() for row in stat_inputs]), indent=2, default=str)
-    )
-    (args.out / 'statbook.json').write_text(json.dumps(_js(statbook_dict), indent=2, default=str))
-    (args.out / 'statbook_publishable.json').write_text(
-        json.dumps(_js(statbook_publishable_dict), indent=2, default=str)
-    )
-    (args.out / 'ep_oracle_compare.json').write_text(
-        json.dumps(_js(ep_compare_publishable), indent=2, default=str)
-    )
-    (args.out / 'line_by_line_verification.json').write_text(
-        json.dumps(_js(line_verification), indent=2, default=str)
-    )
-    (args.out / 'survivor_closure_report.json').write_text(
-        json.dumps(_js(survivor_closure_report), indent=2, default=str)
-    )
     (args.out / 'tower_regen_closure_report.json').write_text(
-        json.dumps(_js(diagnostics['tower_regen_closure_report']), indent=2, default=str)
+        json.dumps(_json_sanitize(diagnostics['tower_regen_closure_report']), indent=2, default=str)
     )
     (args.out / 'tower_hp_semantic_gap_report.json').write_text(
-        json.dumps(_js(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_json_sanitize(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_regen_ep_semantic_gap_report.json').write_text(
-        json.dumps(_js(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_json_sanitize(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(
-        json.dumps(_js(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_json_sanitize(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_damage_runtime_gap_report.json').write_text(
-        json.dumps(_js(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
+        json.dumps(_json_sanitize(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
     )
-    (args.out / 'state_matrix.json').write_text(json.dumps(_js(state_matrix), indent=2, default=str))
-    (args.out / 'audit_surface_manifest.json').write_text(
-        json.dumps(_js(_build_audit_surface_manifest(account_state, args.preset)), indent=2, default=str)
+    (args.out / 'diagnostics.json').write_text(
+        json.dumps(_json_sanitize(diagnostics), indent=2, default=str)
     )
-    (args.out / 'artifact_contract_manifest.json').write_text(
-        json.dumps(
-            _js(_build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)),
-            indent=2,
-            default=str,
-        )
-    )
-    (args.out / 'family_completeness_matrix.json').write_text(
-        json.dumps(_js(_build_family_completeness_matrix(account_state, stat_inputs)), indent=2, default=str)
-    )
-    optimizer_scores = compute_optimizer_scores(statbook_dict)
-    (args.out / 'optimizer_scores.json').write_text(json.dumps(_js(optimizer_scores), indent=2, default=str))
-    verification_rows = [{'destination': k, **v} for k, v in line_verification.items()]
-    verification_df = pd.DataFrame(verification_rows)
-    verification_df.to_csv(args.out / 'line_by_line_verification.csv', index=False)
 
     return 0

@@ -12383,6 +12383,10 @@
     "publishable": 441,
     "trace_only": 9
   },
+  "slow_audits": {
+    "include_slow_audits": false,
+    "compare_situation_fit_matrix": "skipped_by_default"
+  },
   "presentation": {
     "scope": "display_fields_only",
     "raw_value_policy": "preserve_full_precision_raw_numeric_values",
@@ -14917,356 +14921,13 @@
     }
   },
   "compare_situation_fit_matrix": {
-    "states": {
-      "farming__perks_off": {
-        "preset": "Farming",
-        "perk_state": "off",
-        "ep_compare_count": 26,
-        "ep_compare_status_counts": {
-          "matched_close": 1,
-          "matched_exact": 10,
-          "mismatch": 5,
-          "non_comparable": 3,
-          "non_numeric_compare": 1,
-          "stage_scope_mismatch": 6
-        },
-        "ep_mismatch_count": 15,
-        "ep_true_formula_mismatch_count": 5,
-        "ep_formula_blocked_count": 0,
-        "ep_stage_scope_mismatch_count": 6,
-        "ep_non_comparable_count": 3,
-        "ep_missing_from_package_count": 0
-      },
-      "farming__perks_on": {
-        "preset": "Farming",
-        "perk_state": "on",
-        "ep_compare_count": 26,
-        "ep_compare_status_counts": {
-          "matched_close": 1,
-          "matched_exact": 10,
-          "mismatch": 11,
-          "non_comparable": 3,
-          "non_numeric_compare": 1
-        },
-        "ep_mismatch_count": 15,
-        "ep_true_formula_mismatch_count": 11,
-        "ep_formula_blocked_count": 0,
-        "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 3,
-        "ep_missing_from_package_count": 0
-      },
-      "tourney__perks_off": {
-        "preset": "Tourney",
-        "perk_state": "off",
-        "ep_compare_count": 26,
-        "ep_compare_status_counts": {
-          "matched_close": 1,
-          "matched_exact": 9,
-          "mismatch": 6,
-          "non_comparable": 3,
-          "non_numeric_compare": 1,
-          "stage_scope_mismatch": 6
-        },
-        "ep_mismatch_count": 16,
-        "ep_true_formula_mismatch_count": 6,
-        "ep_formula_blocked_count": 0,
-        "ep_stage_scope_mismatch_count": 6,
-        "ep_non_comparable_count": 3,
-        "ep_missing_from_package_count": 0
-      },
-      "tourney__perks_on": {
-        "preset": "Tourney",
-        "perk_state": "on",
-        "ep_compare_count": 26,
-        "ep_compare_status_counts": {
-          "matched_close": 1,
-          "matched_exact": 9,
-          "mismatch": 12,
-          "non_comparable": 3,
-          "non_numeric_compare": 1
-        },
-        "ep_mismatch_count": 16,
-        "ep_true_formula_mismatch_count": 12,
-        "ep_formula_blocked_count": 0,
-        "ep_stage_scope_mismatch_count": 0,
-        "ep_non_comparable_count": 3,
-        "ep_missing_from_package_count": 0
-      }
-    },
-    "best_fit_by_destination": {
-      "canonical_stat::coins_per_kill_bonus": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 96.57474749999999,
-        "ep_value": 43.458636375000005,
-        "relative_delta_pct": 122.22222222222216,
-        "abs_relative_delta_pct": 122.22222222222216
-      },
-      "canonical_stat::free_attack_upgrade_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "non_comparable",
-        "package_value": 131.0,
-        "ep_value": 1.1062424999999998,
-        "relative_delta_pct": null,
-        "abs_relative_delta_pct": null
-      },
-      "canonical_stat::free_defense_upgrade_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "non_comparable",
-        "package_value": 125.0,
-        "ep_value": 1.0749337499999998,
-        "relative_delta_pct": null,
-        "abs_relative_delta_pct": null
-      },
-      "canonical_stat::free_utility_upgrade_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "non_comparable",
-        "package_value": 151.4,
-        "ep_value": 1.2310462500000001,
-        "relative_delta_pct": null,
-        "abs_relative_delta_pct": null
-      },
-      "canonical_stat::package_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 78.8,
-        "ep_value": 0.7879999999999999,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_attack_speed": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "mismatch",
-        "package_value": 64.27804687500002,
-        "ep_value": 42.239859375,
-        "relative_delta_pct": 52.17391304347829,
-        "abs_relative_delta_pct": 52.17391304347829
-      },
-      "canonical_stat::tower_bounce_shot_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 77.0,
-        "ep_value": 0.77,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_bounce_shot_targets": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 8,
-        "ep_value": 8.0,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_crit_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 97.0,
-        "ep_value": 0.9700000000000001,
-        "relative_delta_pct": -1.465036568577526e-14,
-        "abs_relative_delta_pct": 1.465036568577526e-14
-      },
-      "canonical_stat::tower_crit_multiplier": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "mismatch",
-        "package_value": 532.89,
-        "ep_value": 170.5248,
-        "relative_delta_pct": 212.49999999999997,
-        "abs_relative_delta_pct": 212.49999999999997
-      },
-      "canonical_stat::tower_damage": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "mismatch",
-        "package_value": 2616998806163.3306,
-        "ep_value": 816500000000.0,
-        "relative_delta_pct": 220.5142444780564,
-        "abs_relative_delta_pct": 220.5142444780564
-      },
-      "canonical_stat::tower_damage_per_meter_multiplier": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "mismatch",
-        "package_value": 0.56463,
-        "ep_value": 0.1355112,
-        "relative_delta_pct": 316.66666666666663,
-        "abs_relative_delta_pct": 316.66666666666663
-      },
-      "canonical_stat::tower_defense_absolute": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 1594662034.4768927,
-        "ep_value": 318930000.0,
-        "relative_delta_pct": 400.00377339130614,
-        "abs_relative_delta_pct": 400.00377339130614
-      },
-      "canonical_stat::tower_defense_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 98.0,
-        "ep_value": 0.98,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_hp": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 21906477802177.465,
-        "ep_value": 7100000000000.0,
-        "relative_delta_pct": 208.54194087573893,
-        "abs_relative_delta_pct": 208.54194087573893
-      },
-      "canonical_stat::tower_multishot_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 49.5,
-        "ep_value": 0.495,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_multishot_targets": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 13,
-        "ep_value": 13.0,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_range_m": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_close",
-        "package_value": 109.55999999999999,
-        "ep_value": 109.48863512309427,
-        "relative_delta_pct": 0.06518016854031072,
-        "abs_relative_delta_pct": 0.06518016854031072
-      },
-      "canonical_stat::tower_rapid_fire_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 34.0,
-        "ep_value": 0.34,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_rapid_fire_duration_seconds": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 5.55,
-        "ep_value": 5.55,
-        "relative_delta_pct": 0.0,
-        "abs_relative_delta_pct": 0.0
-      },
-      "canonical_stat::tower_regen": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 139495301805622.95,
-        "ep_value": 44640000000000.0,
-        "relative_delta_pct": 212.48947537101918,
-        "abs_relative_delta_pct": 212.48947537101918
-      },
-      "canonical_stat::tower_supercrit_chance_pct": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "matched_exact",
-        "package_value": 24.9,
-        "ep_value": 0.24900000000000003,
-        "relative_delta_pct": -1.4267926420885543e-14,
-        "abs_relative_delta_pct": 1.4267926420885543e-14
-      },
-      "canonical_stat::tower_supercrit_multiplier": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "mismatch",
-        "package_value": 113.56799999999998,
-        "ep_value": 35.43,
-        "relative_delta_pct": 220.54191363251473,
-        "abs_relative_delta_pct": 220.54191363251473
-      },
-      "canonical_stat::wall_fortification_multiplier": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "non_numeric_compare",
-        "package_value": 10.4,
-        "ep_value": 1290000000000000.0,
-        "relative_delta_pct": -99.99999999999918,
-        "abs_relative_delta_pct": 99.99999999999918
-      },
-      "canonical_stat::wall_hp": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 1182949801317583.0,
-        "ep_value": 124180000000000.0,
-        "relative_delta_pct": 852.6089558041416,
-        "abs_relative_delta_pct": 852.6089558041416
-      },
-      "canonical_stat::wall_regen": {
-        "state_key": "farming__perks_off",
-        "preset": "Farming",
-        "perk_state": "off",
-        "status": "stage_scope_mismatch",
-        "package_value": 732350334479520.5,
-        "ep_value": 234350000000000.0,
-        "relative_delta_pct": 212.50280967762768,
-        "abs_relative_delta_pct": 212.50280967762768
-      }
-    },
-    "destination_count": 26,
-    "best_fit_state_counts": {
-      "farming__perks_off": 26
-    },
-    "best_fit_status_counts": {
-      "matched_close": 1,
-      "matched_exact": 10,
-      "mismatch": 5,
-      "non_comparable": 3,
-      "non_numeric_compare": 1,
-      "stage_scope_mismatch": 6
-    }
+    "status": "skipped",
+    "reason": "disabled_by_default_use_include_slow_audits",
+    "destination_count": 0,
+    "best_fit_by_destination": {},
+    "best_fit_state_counts": {},
+    "best_fit_status_counts": {},
+    "states": {}
   },
   "survivability_residue_analysis": {
     "canonical_stat::tower_hp": {
@@ -15275,9 +14936,9 @@
       "ep_value": 7100000000000.0,
       "relative_delta_pct": 208.54194087573893,
       "package_to_ep_ratio": 3.0854194087573896,
-      "best_fit_state_key": "farming__perks_off",
-      "best_fit_preset": "Farming",
-      "best_fit_perk_state": "off",
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
       "compare_state_key": "Farming__perks_on",
       "compare_preset": "Farming",
       "compare_perk_state": "on",
@@ -15374,9 +15035,9 @@
       "ep_value": 44640000000000.0,
       "relative_delta_pct": 212.48947537101918,
       "package_to_ep_ratio": 3.1248947537101914,
-      "best_fit_state_key": "farming__perks_off",
-      "best_fit_preset": "Farming",
-      "best_fit_perk_state": "off",
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
       "compare_state_key": "Farming__perks_on",
       "compare_preset": "Farming",
       "compare_perk_state": "on",
@@ -15459,9 +15120,9 @@
       "ep_value": 318930000.0,
       "relative_delta_pct": 400.00377339130614,
       "package_to_ep_ratio": 5.000037733913062,
-      "best_fit_state_key": "farming__perks_off",
-      "best_fit_preset": "Farming",
-      "best_fit_perk_state": "off",
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
       "compare_state_key": "Farming__perks_on",
       "compare_preset": "Farming",
       "compare_perk_state": "on",
@@ -15516,9 +15177,9 @@
       "ep_value": 124180000000000.0,
       "relative_delta_pct": 852.6089558041416,
       "package_to_ep_ratio": 9.526089558041416,
-      "best_fit_state_key": "farming__perks_off",
-      "best_fit_preset": "Farming",
-      "best_fit_perk_state": "off",
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
       "compare_state_key": "Farming__perks_on",
       "compare_preset": "Farming",
       "compare_perk_state": "on",
@@ -15573,9 +15234,9 @@
       "ep_value": 234350000000000.0,
       "relative_delta_pct": 212.50280967762768,
       "package_to_ep_ratio": 3.125028096776277,
-      "best_fit_state_key": "farming__perks_off",
-      "best_fit_preset": "Farming",
-      "best_fit_perk_state": "off",
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
       "compare_state_key": "Farming__perks_on",
       "compare_preset": "Farming",
       "compare_perk_state": "on",
