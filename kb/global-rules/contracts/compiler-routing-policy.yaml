@@ -1,4 +1,31 @@
-non_calculator_scope_labs:
+parser_drop_rows:
+  - END OF ARRAY
+account_metadata_rows:
+  - Buy Multiplier
+  - Card Presets
+  - More Round Stats
+  - Workshop Respec
+  - Reroll Daily Mission
+  - Event Relics
+  - Guild Relics
+  - Other Relics
+  - Total Relics
+  - Keys spent
+capability_policy_rows:
+  - Unlock Perks
+  - Auto Pick Perks
+  - Perk Option Quantity
+  - First Perk Choice
+  - Ban Perks
+  - Auto Pick Ranking
+  - Target Priority
+  - Extra Orb Adjuster
+  - Unmerge Module
+  - Armor Effect Bans
+  - Cannon Effect Bans
+  - Core Effect Bans
+  - Generator Effect Bans
+governed_numeric_rows:
   - Area of Effect Mastery
   - Attack Speed Mastery
   - Berserker Mastery
@@ -40,36 +67,10 @@ non_calculator_scope_labs:
   - Assist Module Substats - Generator
   - Module Coin Cost
   - Module Shards Cost
-  - Unmerge Module
-  - Armor Effect Bans
-  - Cannon Effect Bans
-  - Core Effect Bans
-  - Generator Effect Bans
-  - Auto Pick Perks
-  - Auto Pick Ranking
-  - Ban Perks
-  - First Perk Choice
   - Improve Trade-off Perks
-  - Perk Option Quantity
   - Standard Perks Bonus
-  - Unlock Perks
-  - Buy Multiplier
-  - Card Presets
-  - More Round Stats
-  - Target Priority
-  - Extra Orb Adjuster
-  - Workshop Respec
-  - Workshop Enhancements
-  - Enhancement Attack - Coin Discount
-  - Enhancement Defense - Coin Discount
-  - Enhancement Utility - Coin Discount
-  - Workshop Attack Discount
-  - Workshop Defense Discount
-  - Workshop Utility Discount
-  - Labs Coin Discount
   - Shatter Shards
   - Reroll Shards
-  - Reroll Daily Mission
   - Daily Mission Shards
   - Starting Cash
   - Max Interest
@@ -81,7 +82,6 @@ non_calculator_scope_labs:
   - Protector's Ultimate
   - Ranged Ultimate
   - Tank's Ultimate
-  - END OF ARRAY
 uw_mechanic_destination_overrides:
   Golden Tower:
     Multiplier: [mechanic_param, uw.golden_tower.bonus_multiplier]

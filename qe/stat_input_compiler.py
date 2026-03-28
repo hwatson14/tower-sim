@@ -20,16 +20,19 @@ from qe.query_perk_compiler import (
     scaled_perk_value as _scaled_perk_value,
 )
 from qe.query_routing import (
+    ACCOUNT_METADATA_ROWS,
+    CAPABILITY_POLICY_ROWS,
     CARD_NAME_FALLBACK_DESTINATION,
     CARD_TARGET_SURFACE_TO_DESTINATION,
     ENHANCEMENT_ALIAS_OVERRIDES,
     ENHANCEMENT_CONTRIBUTOR_OVERRIDES,
+    GOVERNED_NUMERIC_ROWS,
     GUARDIAN_DESTINATION_OVERRIDES,
     LAB_APPLICATION_TARGET_TO_DESTINATION,
     LAB_FORMULA_VALUES,
     LAB_IDS_TO_CONTRIBUTOR,
     MODULE_SUBSTAT_NAME_TO_DESTINATION,
-    NON_CALCULATOR_SCOPE_LABS,
+    PARSER_DROP_ROWS,
     PERK_TARGET_DESTINATION_OVERRIDES,
     RELIC_ALIAS_OVERRIDES,
     RELIC_CONTRIBUTOR_OVERRIDES,
@@ -45,7 +48,6 @@ from qe.query_routing import (
     bind_kb_fields,
     bind_perk_effect_destination,
     compiler_routing_indexes,
-    compiler_routing_policy,
     load_card_effect_targets,
     load_lab_application_registry,
     load_theme_song_registry,
@@ -77,6 +79,7 @@ LAB_VALUES_PATH = KB / 'labs' / 'tables' / 'lab-values.csv'
 WORKSHOP_VALUES_PATH = KB / 'workshop' / 'tables' / 'workshop-values.csv'
 WORKSHOP_VALUES_DERIVED_PATH = KB / 'workshop' / 'derived' / 'materialized' / 'workshop-values.csv'
 CARD_LADDERS_PATH = KB / 'cards' / 'tables' / 'card-base-ladders.csv'
+CARD_MASTERIES_PATH = KB / 'cards' / 'tables' / 'card-masteries.csv'
 CARD_EFFECT_REGISTRY_PATH = KB / 'cards' / 'tables' / 'card-effect-registry.csv'
 MODULE_SUBSTATS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-substats.csv'
 MODULE_UNIQUE_EFFECTS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-unique-effects.csv'
@@ -587,6 +590,281 @@ def _load_assist_efficiency_lookup() -> Dict[int, float]:
     return out
 
 
+ACCOUNT_METADATA_DESTINATIONS: Dict[str, Tuple[str, str]] = {
+    'Buy Multiplier': ('meta_progression_param', 'account_meta.buy_multiplier'),
+    'Card Presets': ('account_flag', 'account_meta.card_presets'),
+    'More Round Stats': ('account_flag', 'account_meta.more_round_stats'),
+    'Workshop Respec': ('account_flag', 'account_meta.workshop_respec'),
+    'Reroll Daily Mission': ('account_flag', 'account_meta.reroll_daily_mission'),
+    'Event Relics': ('meta_progression_param', 'account_meta.event_relic_count'),
+    'Guild Relics': ('meta_progression_param', 'account_meta.guild_relic_count'),
+    'Other Relics': ('meta_progression_param', 'account_meta.other_relic_count'),
+    'Total Relics': ('meta_progression_param', 'account_meta.total_relic_count'),
+    'Keys spent': ('meta_progression_param', 'account_meta.keys_spent'),
+}
+
+CAPABILITY_POLICY_DESTINATIONS: Dict[str, Tuple[str, str]] = {
+    'Unlock Perks': ('capability', 'capability.perks.unlock'),
+    'Auto Pick Perks': ('capability', 'capability.perks.auto_pick'),
+    'Perk Option Quantity': ('capability', 'capability.perks.option_quantity'),
+    'First Perk Choice': ('capability', 'capability.perks.first_choice'),
+    'Ban Perks': ('capability', 'capability.perks.ban_count'),
+    'Auto Pick Ranking': ('capability', 'capability.perks.auto_pick_ranking'),
+    'Target Priority': ('capability', 'capability.target_priority'),
+    'Extra Orb Adjuster': ('capability', 'capability.extra_orb_adjuster'),
+    'Unmerge Module': ('capability', 'capability.modules.unmerge'),
+    'Armor Effect Bans': ('capability', 'capability.modules.effect_bans.armor'),
+    'Cannon Effect Bans': ('capability', 'capability.modules.effect_bans.cannon'),
+    'Core Effect Bans': ('capability', 'capability.modules.effect_bans.core'),
+    'Generator Effect Bans': ('capability', 'capability.modules.effect_bans.generator'),
+}
+
+_BOOLEAN_ACCOUNT_METADATA_ROWS = {
+    'Card Presets',
+    'More Round Stats',
+    'Workshop Respec',
+    'Reroll Daily Mission',
+}
+
+_BOOLEAN_CAPABILITY_POLICY_ROWS = {
+    'Unlock Perks',
+    'Auto Pick Perks',
+    'Unmerge Module',
+}
+
+_TEXT_CAPABILITY_POLICY_ROWS = {
+    'Auto Pick Ranking',
+    'Target Priority',
+    'First Perk Choice',
+}
+
+_ASSIST_BONUS_DESTINATIONS = {
+    'Armor': ('mechanic_param', 'module.armor.assist_lab_bonus_pct'),
+    'Cannon': ('mechanic_param', 'module.cannon.assist_lab_bonus_pct'),
+    'Core': ('mechanic_param', 'module.core.assist_lab_bonus_pct'),
+    'Generator': ('mechanic_param', 'module.generator.assist_lab_bonus_pct'),
+}
+
+_ASSIST_SUBSTAT_DESTINATIONS = {
+    'Armor': ('mechanic_param', 'module.armor.assist_substat_lab_bonus_pct'),
+    'Cannon': ('mechanic_param', 'module.cannon.assist_substat_lab_bonus_pct'),
+    'Core': ('mechanic_param', 'module.core.assist_substat_lab_bonus_pct'),
+    'Generator': ('mechanic_param', 'module.generator.assist_substat_lab_bonus_pct'),
+}
+
+_ULTIMATE_DESTINATIONS = {
+    "Basic's Ultimate": ('environment_param', 'enemy.basic.ultimate_enabled'),
+    "Boss's Ultimate": ('environment_param', 'enemy.boss.ultimate_enabled'),
+    "Fast's Ultimate": ('environment_param', 'enemy.fast.ultimate_enabled'),
+    "Protector's Ultimate": ('environment_param', 'enemy.protector.ultimate_enabled'),
+    'Ranged Ultimate': ('environment_param', 'enemy.ranged.ultimate_enabled'),
+    "Tank's Ultimate": ('environment_param', 'enemy.tank.ultimate_enabled'),
+}
+
+_GOVERNED_NUMERIC_DESTINATIONS: Dict[str, Tuple[str, str]] = {
+    'Standard Perks Bonus': ('mechanic_param', 'perk.standard_perks_bonus_pct'),
+    'Improve Trade-off Perks': ('mechanic_param', 'perk.tradeoff_bonus_pct'),
+    'Common Drop Chance': ('meta_progression_param', 'module.lab.common_drop_chance_bonus_pct'),
+    'Rare Drop Chance': ('meta_progression_param', 'module.lab.rare_drop_chance_bonus_pct'),
+    'Reroll Shards': ('meta_progression_param', 'module.lab.reroll_shards_bonus'),
+    'Daily Mission Shards': ('meta_progression_param', 'module.lab.daily_mission_shards_bonus'),
+    'Shatter Shards': ('meta_progression_param', 'module.lab.shatter_shards_bonus_pct'),
+    'Module Coin Cost': ('meta_progression_param', 'module.lab.coin_cost_reduction_pct'),
+    'Module Shards Cost': ('meta_progression_param', 'module.lab.shard_cost_reduction_pct'),
+    'Starting Cash': ('meta_progression_param', 'economy.starting_cash_bonus'),
+    'Max Interest': ('meta_progression_param', 'economy.max_interest_bonus'),
+}
+_GOVERNED_NUMERIC_DESTINATIONS.update(_ULTIMATE_DESTINATIONS)
+
+_GOVERNED_NUMERIC_FORMULAS = {
+    'Standard Perks Bonus': lambda level: float(level),
+    'Improve Trade-off Perks': lambda level: float(level),
+    'Reroll Shards': lambda level: float(level),
+    'Common Drop Chance': lambda level: float(level) * 0.1,
+    'Rare Drop Chance': lambda level: float(level) * 0.1,
+    'Daily Mission Shards': lambda level: float(level),
+    'Shatter Shards': lambda level: float(level) * 20.0,
+}
+
+_CARD_MASTERY_NAME_ALIASES = {
+    'Package Chance Mastery': 'Recovery Package Chance Mastery',
+}
+
+
+def _coerce_level_bool(level: object) -> bool:
+    try:
+        return bool(level is not None and float(level) > 0)
+    except (TypeError, ValueError):
+        return bool(level)
+
+
+def _coerce_level_number(level: object) -> float | None:
+    try:
+        return float(level)
+    except (TypeError, ValueError):
+        return None
+
+
+def _parse_mastery_value_token(raw: str) -> Tuple[float | None, str]:
+    token = str(raw or '').strip()
+    if not token:
+        return None, 'raw_text'
+    cleaned = token.replace('+', '').replace(',', '').strip()
+    if cleaned.startswith('x'):
+        try:
+            return float(cleaned[1:]), 'multiplier'
+        except ValueError:
+            return None, 'raw_text'
+    if cleaned.endswith('%'):
+        try:
+            return float(cleaned[:-1]), 'resolved_value'
+        except ValueError:
+            return None, 'raw_text'
+    if cleaned.endswith('s'):
+        try:
+            return float(cleaned[:-1]), 'resolved_value'
+        except ValueError:
+            return None, 'raw_text'
+    try:
+        return float(cleaned), 'resolved_value'
+    except ValueError:
+        return None, 'raw_text'
+
+
+def _card_mastery_baseline(first_token: str) -> Tuple[float, str]:
+    token = str(first_token or '').strip()
+    if token.startswith('x'):
+        return 1.0, 'multiplier'
+    return 0.0, 'resolved_value'
+
+
+@lru_cache(maxsize=1)
+def _load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
+    out: Dict[Tuple[str, int], Tuple[float, str]] = {}
+    if not CARD_MASTERIES_PATH.exists():
+        return out
+    with CARD_MASTERIES_PATH.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            mastery_name = str(row.get('card_mastery') or '').strip()
+            if not mastery_name:
+                continue
+            mastery_keys = [f'{mastery_name} Mastery']
+            alias = _CARD_MASTERY_NAME_ALIASES.get(f'{mastery_name} Mastery')
+            if alias is not None:
+                mastery_keys.append(alias)
+            baseline = _card_mastery_baseline(row.get('level_0', ''))
+            for mastery_key in mastery_keys:
+                out[(mastery_key, 0)] = baseline
+            for level in range(10):
+                value, value_type = _parse_mastery_value_token(row.get(f'level_{level}', ''))
+                if value is not None:
+                    for mastery_key in mastery_keys:
+                        out[(mastery_key, level + 1)] = (value, value_type)
+    return out
+
+
+def _bind_account_metadata_row(row: StatInput, canonical_stats: Dict[str, Dict[str, str]], name: str, level: object) -> bool:
+    destination = ACCOUNT_METADATA_DESTINATIONS.get(name)
+    if destination is None:
+        return False
+    bind_destination(row, destination, canonical_stats, note=f'account_metadata_routed:{name}')
+    if name in _BOOLEAN_ACCOUNT_METADATA_ROWS:
+        _set_row_field(row, 'value', _coerce_level_bool(level))
+        _set_row_field(row, 'value_type', 'bool')
+    else:
+        numeric = _coerce_level_number(level)
+        if numeric is not None:
+            _set_row_field(row, 'value', numeric)
+            _set_row_field(row, 'value_type', 'resolved_value')
+    return True
+
+
+def _bind_capability_policy_row(row: StatInput, canonical_stats: Dict[str, Dict[str, str]], name: str, level: object) -> bool:
+    destination = CAPABILITY_POLICY_DESTINATIONS.get(name)
+    if destination is None:
+        return False
+    bind_destination(row, destination, canonical_stats, note=f'capability_policy_routed:{name}')
+    if name in _BOOLEAN_CAPABILITY_POLICY_ROWS:
+        _set_row_field(row, 'value', _coerce_level_bool(level))
+        _set_row_field(row, 'value_type', 'bool')
+    elif name in _TEXT_CAPABILITY_POLICY_ROWS:
+        _set_row_field(row, 'value', '' if level is None else str(level))
+        _set_row_field(row, 'value_type', 'raw_text')
+    else:
+        numeric = _coerce_level_number(level)
+        if numeric is not None:
+            _set_row_field(row, 'value', numeric)
+            _set_row_field(row, 'value_type', 'resolved_value')
+    return True
+
+
+def _governed_numeric_destination(name: str) -> Tuple[str, str] | None:
+    if name in _GOVERNED_NUMERIC_DESTINATIONS:
+        return _GOVERNED_NUMERIC_DESTINATIONS[name]
+    match = re.match(r'^Assist Module Bonus - (Armor|Cannon|Core|Generator)$', name)
+    if match is not None:
+        return _ASSIST_BONUS_DESTINATIONS[match.group(1)]
+    match = re.match(r'^Assist Module Substats - (Armor|Cannon|Core|Generator)$', name)
+    if match is not None:
+        return _ASSIST_SUBSTAT_DESTINATIONS[match.group(1)]
+    if name.endswith(' Mastery'):
+        card_slug = slug_text(name[:-8]).replace(' ', '_')
+        return 'runtime_mechanic_param', f'cards.{card_slug}.mastery_effect'
+    return None
+
+
+def _bind_governed_numeric_row(
+    row: StatInput,
+    canonical_stats: Dict[str, Dict[str, str]],
+    name: str,
+    level: object,
+    lab_values: Dict[Tuple[str, int], float],
+    lab_summary: Dict[str, Dict[str, float | str]],
+    card_mastery_values: Dict[Tuple[str, int], Tuple[float, str]],
+) -> bool:
+    destination = _governed_numeric_destination(name)
+    if destination is None:
+        return False
+    bind_destination(row, destination, canonical_stats, note=f'governed_numeric_routed:{name}')
+    if name in _ULTIMATE_DESTINATIONS:
+        _set_row_field(row, 'value', _coerce_level_bool(level))
+        _set_row_field(row, 'value_type', 'bool')
+        return True
+    if name.endswith(' Mastery'):
+        mastery_level = int(level) if isinstance(level, int) else 0 if level in {None, ''} else None
+        mastery_key = (name, mastery_level) if mastery_level is not None else None
+        mastery_value = card_mastery_values.get(mastery_key) if mastery_key is not None else None
+        if mastery_value is not None:
+            _set_row_field(row, 'value', mastery_value[0])
+            _set_row_field(row, 'value_type', mastery_value[1])
+            _set_row_field(row, 'notes', f'kb_card_mastery_resolved:{name}')
+        elif level is not None:
+            numeric = _coerce_level_number(level)
+            if numeric is not None:
+                _set_row_field(row, 'value', numeric)
+                _set_row_field(row, 'value_type', 'level')
+                _set_row_field(row, 'notes', f'governed_numeric_pending_value:{name}')
+        return True
+    formula = _GOVERNED_NUMERIC_FORMULAS.get(name)
+    if formula is not None and level is not None:
+        numeric = _coerce_level_number(level)
+        if numeric is not None:
+            _set_row_field(row, 'value', formula(numeric))
+            _set_row_field(row, 'value_type', 'resolved_value')
+            return True
+    lab_value = _lab_value_with_fallback(name, level if isinstance(level, int) else None, lab_values, lab_summary)
+    if lab_value is not None:
+        _set_row_field(row, 'value', lab_value)
+        _set_row_field(row, 'value_type', 'resolved_value')
+    elif level is not None:
+        numeric = _coerce_level_number(level)
+        if numeric is not None:
+            _set_row_field(row, 'value', numeric)
+            _set_row_field(row, 'value_type', 'level')
+            _set_row_field(row, 'notes', f'governed_numeric_pending_value:{name}')
+    return True
+
+
 @lru_cache(maxsize=1)
 def _load_perk_entities() -> Dict[str, Dict[str, object]]:
     out: Dict[str, Dict[str, object]] = {}
@@ -693,6 +971,7 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     module_substat_values = _load_module_substat_values()
     module_unique_effect_values = _load_module_unique_effect_values()
     assist_efficiency_lookup = _load_assist_efficiency_lookup()
+    card_mastery_values = _load_card_mastery_values()
     lab_application_registry = load_lab_application_registry()
     uw_lab_wiki_values = _load_uw_lab_wiki_values()
     bot_track_values = _load_bot_track_values()
@@ -833,8 +1112,25 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                                 _set_row_field(row, 'value', float(level))
                                 _set_row_field(row, 'value_type', 'level')
                                 _set_row_field(row, 'notes', f'kb_lab_routed_level_pending_value:{name}')
-                    elif name in NON_CALCULATOR_SCOPE_LABS:
-                        _set_row_field(row, 'notes', f'non_calculator_scope:{name}')
+                    elif name in PARSER_DROP_ROWS:
+                        continue
+                    elif name in ACCOUNT_METADATA_ROWS:
+                        if not _bind_account_metadata_row(row, canonical_stats, name, level):
+                            _set_row_field(row, 'notes', f'account_metadata_pending_mapping:{name}')
+                    elif name in CAPABILITY_POLICY_ROWS:
+                        if not _bind_capability_policy_row(row, canonical_stats, name, level):
+                            _set_row_field(row, 'notes', f'capability_policy_pending_mapping:{name}')
+                    elif name in GOVERNED_NUMERIC_ROWS:
+                        if not _bind_governed_numeric_row(
+                            row,
+                            canonical_stats,
+                            name,
+                            level,
+                            lab_values,
+                            lab_summary,
+                            card_mastery_values,
+                        ):
+                            _set_row_field(row, 'notes', f'governed_numeric_pending_mapping:{name}')
                     else:
                         _set_row_field(row, 'notes', 'kb_routing_pending_for_lab_label')
         _append(out, row)
@@ -961,6 +1257,9 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                 _append(out, row)
             continue
         row = StatInput(stat_name=name, source_family='relic', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::Relics')
+        if name in ACCOUNT_METADATA_ROWS and _bind_account_metadata_row(row, canonical_stats, name, value):
+            _append(out, row)
+            continue
         contributor_id = relic_index.get(slug_text(name)) or RELIC_CONTRIBUTOR_OVERRIDES.get(slug_text(name))
         if contributor_id:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -982,6 +1281,9 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
             continue
         value_type = 'bool' if isinstance(value, bool) else ('resolved_value' if isinstance(value, (int, float)) else 'raw_text')
         row = StatInput(stat_name=name, source_family='vault', source_name=name, value=value, value_type=value_type, stage='account_state', provenance='IDS::Vault')
+        if name in ACCOUNT_METADATA_ROWS and _bind_account_metadata_row(row, canonical_stats, name, value):
+            _append(out, row)
+            continue
         contributor_id = mapping_lookup_for_family_name(family_slug_index, 'vault', name)
         if contributor_id:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)

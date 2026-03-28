@@ -130,7 +130,10 @@ def _load_compiler_routing_policy() -> dict:
         return out
 
     return {
-        'non_calculator_scope_labs': set(raw.get('non_calculator_scope_labs') or []),
+        'parser_drop_rows': set(raw.get('parser_drop_rows') or []),
+        'account_metadata_rows': set(raw.get('account_metadata_rows') or []),
+        'capability_policy_rows': set(raw.get('capability_policy_rows') or []),
+        'governed_numeric_rows': set(raw.get('governed_numeric_rows') or []),
         'uw_mechanic_destination_overrides': _nested_tuple_map('uw_mechanic_destination_overrides'),
         'uw_contributor_overrides': {
             (outer_key, inner_key): value
@@ -146,6 +149,19 @@ def _load_compiler_routing_policy() -> dict:
 
 def compiler_routing_policy() -> dict:
     return _load_compiler_routing_policy()
+
+
+def routing_class_for_lab_name(name: str) -> str | None:
+    policy = compiler_routing_policy()
+    if name in policy['parser_drop_rows']:
+        return 'parser_drop'
+    if name in policy['account_metadata_rows']:
+        return 'account_metadata'
+    if name in policy['capability_policy_rows']:
+        return 'capability_policy'
+    if name in policy['governed_numeric_rows']:
+        return 'governed_numeric'
+    return None
 
 
 @lru_cache(maxsize=1)
@@ -269,8 +285,13 @@ _UW_LAB_DIRECT_DESTINATION: Dict[str, Tuple[str, str]] = {
     'Thunder Bot - Linger Time': ('mechanic_param', 'bot.thunder.linger_duration_seconds'),
 }
 
-# Labs that are NOT calculator scope are loaded from governed routing policy.
-NON_CALCULATOR_SCOPE_LABS = compiler_routing_policy()['non_calculator_scope_labs']
+PARSER_DROP_ROWS = compiler_routing_policy()['parser_drop_rows']
+
+ACCOUNT_METADATA_ROWS = compiler_routing_policy()['account_metadata_rows']
+
+CAPABILITY_POLICY_ROWS = compiler_routing_policy()['capability_policy_rows']
+
+GOVERNED_NUMERIC_ROWS = compiler_routing_policy()['governed_numeric_rows']
 
 UW_MECHANIC_DESTINATION_OVERRIDES = compiler_routing_policy()['uw_mechanic_destination_overrides']
 
@@ -382,6 +403,7 @@ CARD_TARGET_SURFACE_TO_DESTINATION = {
     'economy.cash_multiplier': ('canonical_stat', 'cash_kill_multiplier'),
     'orbs.count_bonus': ('canonical_stat', 'tower_orb_count'),
     'waves.skip_chance': ('runtime_mechanic_param', 'cards.wave_skip.chance_pct'),
+    'waves.intro_sprint_runtime': ('runtime_mechanic_param', 'cards.intro_sprint.waves'),
     'plasma_cannon.runtime_effect': ('runtime_mechanic_param', 'cards.plasma_cannon.effect_pct'),
     'economy.critical_coin_bonus': ('runtime_mechanic_param', 'cards.critical_coin.bonus_multiplier'),
 }
@@ -741,7 +763,11 @@ __all__ = [
     'bind_destination',
     'bind_perk_effect_destination',
     'uw_contributor_id',
-    'NON_CALCULATOR_SCOPE_LABS',
+    'routing_class_for_lab_name',
+    'PARSER_DROP_ROWS',
+    'ACCOUNT_METADATA_ROWS',
+    'CAPABILITY_POLICY_ROWS',
+    'GOVERNED_NUMERIC_ROWS',
     'UW_MECHANIC_DESTINATION_OVERRIDES',
     'UW_CONTRIBUTOR_OVERRIDES',
     'GUARDIAN_DESTINATION_OVERRIDES',
