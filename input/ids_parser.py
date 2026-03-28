@@ -1,5 +1,5 @@
 """
-input/parsers.py — IDS CSV parsing. AUTHORITY for all IDS parsing logic.
+input/ids_parser.py — IDS CSV parsing. AUTHORITY for all IDS parsing logic.
 
 Owns: IDS section-spec layout, CSV read, section slicing, header validation,
 parse_ids() public entry point returning IdsRaw.

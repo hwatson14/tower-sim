@@ -12,7 +12,7 @@ from compilers.stat_input_compiler import compile_stat_inputs
 from engine.incremental_overlay_publisher import IncrementalOverlayPublisher
 from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.stat_engine import resolve_stats
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 

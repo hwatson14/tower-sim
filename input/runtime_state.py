@@ -8,7 +8,7 @@ an AccountState from parsed inputs.
 Transitional notes:
   - IdsRaw: defined in models/ids_raw.py until T3 moves it to qe/models.py.
   - AccountState snapshots: defined in models/account_state.py until T3.
-  - ScenarioRuntimeInputs: defined in engine/scenario_runtime_inputs.py until T4.
+  - ScenarioRuntimeInputs: defined in input/scenario_inputs.py.
   - compile_account_state(): transitional alias for build_runtime_state() so that
     test files importing from compilers.account_state_compiler (via that module's
     own shim path) still work. Remove alias in T8.
@@ -45,7 +45,7 @@ from qe.account_state import (  # noqa: F401
     WorkshopEnhancementSnapshot,
     WorkshopEntrySnapshot,
 )
-from input.scenario_runtime_inputs import ScenarioRuntimeInputs  # noqa: F401
+from input.scenario_inputs import ScenarioRuntimeInputs  # noqa: F401
 
 __all__ = [
     # types

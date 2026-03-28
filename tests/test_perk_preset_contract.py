@@ -11,7 +11,7 @@ if str(ROOT) not in sys.path:
 
 from input.runtime_state import compile_account_state
 from engine.query_perk_compiler import active_perk_selections
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 
 def _ids_raw():

@@ -21,7 +21,7 @@ from engine.runtime_consumer_registry import resolve_consumer_bundle
 from engine.dependency_registry import DependencyRegistry
 from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 
 def test_consumer_bundle_registry_resolves_declared_bundle_with_optional_surfaces():

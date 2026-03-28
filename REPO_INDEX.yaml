@@ -112,18 +112,10 @@ input:
     target: archive/legacy/
     reason: old doc for a superseded derived artifact pattern
 
-  input/manual_advisory_inputs.contract.yaml:
-    status: archive_candidate
-    target: archive/legacy/
-    reason: old contract format
-
   input/manual_advisory_inputs.example.json:
     status: archive_candidate
     target: archive/legacy/
 
-  input/observed_run_els_scenarios.contract.yaml:
-    status: archive_candidate
-    target: archive/legacy/
 
   # imports/ — survive as-is
   input/imports/ids.csv:
@@ -411,7 +403,7 @@ models:
 parsers:
   parsers/ids_parser.py:
     status: archive_candidate
-    ownership: SHIM — re-exports from input.parsers (authority)
+    ownership: SHIM — re-exports from input.ids_parser (authority)
     target: archive/legacy/parsers/ in T8
 
 # ─── compilers/ ──────────────────────────────────────────────────────────────

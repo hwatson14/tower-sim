@@ -81,7 +81,7 @@ from evaluators.compare import (
 from input.loader import _resolve_perk_config
 from evaluators.scorer import compute_optimizer_scores
 from input.loader import load_inputs
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 from qe.publication import publish_phase3_query_surfaces
 from qe.routing import resolve_stats
 

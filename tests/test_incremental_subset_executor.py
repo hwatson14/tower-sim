@@ -16,7 +16,7 @@ from engine.incremental_subset_executor import IncrementalSubsetExecutor
 from engine.scenario_engine import ScenarioConfig
 from engine.stat_engine import resolve_stats
 from engine.timing_engine import resolve_timing_family_query
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 
