@@ -24,6 +24,38 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned wall health surface.
+  - node_id: source_input::lab:Wall Regen
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wall Regen lab source for the bounded run_stats progression surface set.
+  - node_id: state::wall.regen
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned wall regen surface.
+  - node_id: source_input::lab:Wall Fortification
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Wall Fortification lab source for the bounded run_stats progression surface set.
+  - node_id: state::wall.fortification_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned wall fortification multiplier surface.
   - node_id: source_input::workshop:Orbs
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -88,6 +120,22 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned orb speed surface.
+  - node_id: source_input::card:Plasma Cannon
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Plasma Cannon card assertion source for the bounded run_stats progression surface set.
+  - node_id: state::cards.plasma_cannon.effect_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Plasma Cannon effect percent surface.
   - node_id: source_input::module:Black Hole Digestor
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -472,6 +520,20 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall HP depends on tower HP.
+  - upstream_node_id: source_input::lab:Wall Regen
+    downstream_node_id: state::wall.regen
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Wall Regen lab contributes to wall regen.
+  - upstream_node_id: source_input::lab:Wall Fortification
+    downstream_node_id: state::wall.fortification_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Wall Fortification lab contributes to wall fortification multiplier.
   - upstream_node_id: source_input::workshop:Orbs
     downstream_node_id: state::tower.orb_count
     invalidation_semantics: recompute_downstream
@@ -655,6 +717,13 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Wave Accelerator card affects spawn acceleration.
+  - upstream_node_id: source_input::card:Plasma Cannon
+    downstream_node_id: state::cards.plasma_cannon.effect_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Plasma Cannon card affects the bounded Plasma Cannon effect surface.
   - upstream_node_id: state::cards.wave_accelerator.spawn_rate_acceleration
     downstream_node_id: support_surface::timing.wave_duration_seconds_effective
     invalidation_semantics: recompute_downstream
@@ -834,6 +903,13 @@ mutation_triggers:
   - mutation_class: card_assertions
     trigger_key: Wave Accelerator
     source_node_id: source_input::card:Wave Accelerator
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    notes: Card assertion trigger.
+  - mutation_class: card_assertions
+    trigger_key: Plasma Cannon
+    source_node_id: source_input::card:Plasma Cannon
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified

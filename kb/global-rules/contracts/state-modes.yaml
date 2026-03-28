@@ -15,7 +15,13 @@ state_modes:
       - Current IDS preset with active loadout applied.
   max_progression:
     excluded_source_families: []
-    projection_facets_applied: [max_workshop]
+    projection_facets_applied:
+      - max_workshop
+      - projected_perks
+      - death_wave_health
+      - berserker_damage_bonus
     notes:
-      - Max progression projects workshop rows to max_level while preserving current permanent state and loadout.
-      - Perks can be materialized in this state when supplied via input/perks.json or --perks.
+      - Max progression projects workshop rows to max_level while preserving current permanent state and preset loadout.
+      - Projected perk materialization is a first-class max-progression facet and must not be inferred solely from active_perk_preset presence.
+      - Death Wave health behavior that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit side effect of workshop projection.
+      - Berserker damage bonus state that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit runtime-only assumption.

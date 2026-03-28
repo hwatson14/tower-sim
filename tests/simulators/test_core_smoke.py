@@ -2,9 +2,13 @@
 from __future__ import annotations
 
 import sys
+from functools import lru_cache
 from pathlib import Path
 
 import pytest
+
+from input.loader import load_inputs
+from input.runtime_state import build_runtime_state
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -13,11 +17,27 @@ if str(ROOT) not in sys.path:
 pytestmark = pytest.mark.live
 
 
+@lru_cache(maxsize=1)
+def _base_account_state():
+    bundle = load_inputs()
+    return build_runtime_state(
+        bundle.ids_raw,
+        default_preset='Farming',
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+
 def test_progression_public_api_is_importable__query_callables_exposed():
-    from simulators.progression import resolve_progression_consumer_bundle, resolve_progression_family_query
+    from simulators.progression import (
+        resolve_progression_consumer_bundle,
+        resolve_progression_family_query,
+        resolve_run_stats_progression_bundle,
+    )
 
     assert callable(resolve_progression_family_query)
     assert callable(resolve_progression_consumer_bundle)
+    assert callable(resolve_run_stats_progression_bundle)
 
 
 def test_timing_public_api_is_importable__query_callables_exposed():
@@ -408,3 +428,23 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
     assert resolved["mechanic_param::uw.black_hole.cooldown_seconds"].final_value == 0.0
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].final_value is not None
+
+
+def test_run_stats_progression_bundle__resolves_declared_surfaces():
+    from simulators.progression import resolve_run_stats_progression_bundle
+
+    state = _base_account_state()
+    response = resolve_run_stats_progression_bundle(
+        account_state=state,
+        family_id='progression_start_of_run',
+        preset_name=state.default_preset,
+        perks_enabled=False,
+        state_mode='start_of_run',
+        trace_mode='contributors',
+    )
+
+    surface_ids = {row.surface_id for row in response.resolved_surface_rows}
+    assert response.family_id == 'progression_start_of_run'
+    assert 'state::tower.hp' in surface_ids
+    assert 'state::tower.defense_pct' in surface_ids
+    assert 'state::tower.free_attack_upgrade_chance_pct' in surface_ids
