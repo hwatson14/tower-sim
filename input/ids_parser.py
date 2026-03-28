@@ -7,7 +7,6 @@ parse_ids() public entry point returning IdsRaw.
 Legacy path (parsers/ids_parser.py) is a backward-compat shim that re-exports
 from here. It will be demoted to archive/legacy/ in T8.
 
-IdsRaw type lives in models/ids_raw.py until T3 moves it to qe/models.py.
 """
 from __future__ import annotations
 
@@ -16,7 +15,12 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
 
-from input.ids_raw import IdsRaw
+@dataclass(frozen=True)
+class IdsRaw:
+    ids_path: Path
+    header: List[str]
+    raw_sections: Dict[str, List[List[str]]]
+    section_headers: Dict[str, List[str]]
 
 
 @dataclass(frozen=True)
@@ -113,4 +117,4 @@ def parse_ids(path: Path) -> IdsRaw:
     return IdsRaw(ids_path=path, header=rows[0], raw_sections=raw_sections, section_headers=section_headers)
 
 
-__all__ = ["parse_ids", "SectionSpec", "SECTION_SPECS"]
+__all__ = ["IdsRaw", "parse_ids", "SectionSpec", "SECTION_SPECS"]
