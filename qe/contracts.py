@@ -137,6 +137,9 @@ _KB_CONTRACTS = ROOT / 'kb' / 'global-rules' / 'contracts'
 NAMING_CONTRACT_PACK_V2_REMAP_PATH = _KB_CONTRACTS / 'naming-contract-pack-v2-remap.csv'
 
 _PLACEHOLDER_RE = re.compile(r'<[^>]+>')
+_SURFACE_ID_TOKEN_RE = re.compile(
+    r'(?P<surface>(?:canonical_stat|mechanic_param|runtime_mechanic_param|environment_param|account_flag|account_context|meta_progression_param|cosmetic_bonus|capability|raw)::[A-Za-z0-9_.*<>-]+(?:\.[A-Za-z0-9_.*<>-]+)*)'
+)
 
 
 def _surface_id(object_type: str, destination_id: str) -> str:
@@ -219,3 +222,72 @@ def to_legacy_destination(destination_object_type: str, destination_id: str) -> 
     if '::' not in legacy:
         return destination_object_type, destination_id
     return tuple(legacy.split('::', 1))  # type: ignore[return-value]
+
+
+_LEGACY_SURFACE_FALLBACKS: dict[str, str] = {
+    'canonical_stat::free_upgrade_shared_add_pct': 'state::tower.free_upgrade_shared_add_pct',
+}
+
+
+def normalize_surface_id_to_contract(surface_id: str) -> str:
+    """Normalize a possibly-legacy surface id to the active naming contract."""
+    normalized = to_v2_surface_id(surface_id)
+    if normalized != surface_id:
+        return normalized
+    if '::' not in surface_id:
+        return surface_id
+
+    bucket, destination_id = surface_id.split('::', 1)
+    explicit = _LEGACY_SURFACE_FALLBACKS.get(surface_id)
+    if explicit is not None:
+        return explicit
+
+    if bucket == 'environment_param':
+        return f'context::{destination_id}'
+    if bucket == 'account_flag':
+        return f'state::{destination_id}'
+    if bucket == 'account_context':
+        return f'state::meta.{destination_id}'
+    if bucket == 'cosmetic_bonus':
+        return f'state::meta.{destination_id}'
+    if bucket == 'meta_progression_param':
+        return f'state::{destination_id}'
+    if bucket == 'capability':
+        if destination_id.startswith('capability.'):
+            return f'state::{destination_id}'
+        return f'state::capability.{destination_id}'
+    if bucket in {'mechanic_param', 'runtime_mechanic_param'}:
+        if destination_id.startswith(('enemy.', 'boss.', 'bc.', 'tier.', 'heat.', 'tournament.')):
+            return f'context::{destination_id}'
+        return f'state::{destination_id}'
+    if bucket == 'canonical_stat':
+        if destination_id.startswith(('tower_', 'wall_', 'economy.', 'meta.', 'uw.', 'bot.', 'guardian.', 'module.', 'cards.', 'perk.')):
+            return f'state::{destination_id.replace("_", ".")}'
+        return f'state::{destination_id}'
+    return surface_id
+
+
+def normalize_surface_token_text(value: str) -> str:
+    """Rewrite embedded legacy surface-id tokens to the active naming contract."""
+
+    def _replace(match: re.Match[str]) -> str:
+        return normalize_surface_id_to_contract(match.group('surface'))
+
+    return _SURFACE_ID_TOKEN_RE.sub(_replace, value)
+
+
+def normalize_contract_payload(value: Any) -> Any:
+    """Recursively normalize generated payloads to the active naming contract."""
+    if isinstance(value, dict):
+        normalized: dict[Any, Any] = {}
+        for key, item in value.items():
+            normalized_key = normalize_surface_token_text(key) if isinstance(key, str) else key
+            normalized[normalized_key] = normalize_contract_payload(item)
+        return normalized
+    if isinstance(value, list):
+        return [normalize_contract_payload(item) for item in value]
+    if isinstance(value, tuple):
+        return [normalize_contract_payload(item) for item in value]
+    if isinstance(value, str):
+        return normalize_surface_token_text(value)
+    return value

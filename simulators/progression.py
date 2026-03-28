@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-from collections import defaultdict
 from dataclasses import dataclass, replace
 from time import perf_counter
 from typing import Any, Dict, List, Optional
@@ -19,9 +18,10 @@ from qe.consumer_registry import resolve_consumer_bundle
 from simulators.runtime_consumer_executor import RuntimeConsumerExecutor
 from qe.models import compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
+from qe.routing import QEResolutionPlanner
 from input.state_types import AccountState
 from qe.models import StatInput
-from qe.models import StatBook, StatRow
+from qe.models import StatBook
 
 
 def _elapsed_ms(start: float) -> float:
@@ -111,69 +111,31 @@ class ProgressionRecalcBridge:
         request: ProgressionRecalcRequest,
     ) -> StatBook:
         family_id = self._progression_family_id(request)
-        response = resolve_progression_consumer_bundle(
-            account_state=patched,
-            consumer_id='progression_runtime',
-            bundle_id='progression_wave_skips',
+        planner = QEResolutionPlanner()
+        bundle = resolve_consumer_bundle(
+            'progression_runtime',
+            'progression_wave_skips',
             family_id=family_id,
+            trace_mode='contributors',
+        )
+        return planner.resolve_declared_family_statbook(
+            patched,
+            family_id=family_id,
+            requested_surface_ids=bundle.surface_ids,
+            notes='Bounded progression consumer bundle surface used for runtime publication.',
+            diagnostics={'family_id': family_id},
             preset_name=request.preset_name,
             state_mode=request.state_mode,
+            card_preset_name=request.card_preset_name or request.preset_name,
+            module_preset_name=request.module_preset_name or request.preset_name,
+            perk_preset_name=request.perk_preset_name or request.preset_name,
             perks_enabled=request.perks_enabled,
             trace_mode='contributors',
-            card_preset_name=request.card_preset_name,
-            module_preset_name=request.module_preset_name,
-            perk_preset_name=request.perk_preset_name,
-        )
-        return self._query_response_to_statbook(
-            response,
-            notes='Bounded progression consumer bundle surface used for runtime publication.',
-            diagnostics={'family_id': response.family_id},
         )
 
     @staticmethod
     def _progression_family_id(request: ProgressionRecalcRequest) -> str:
         return 'progression_runtime_with_perks' if request.perks_enabled else 'progression_runtime_no_perks'
-
-    @staticmethod
-    def _query_response_to_statbook(
-        response: QueryResponse,
-        *,
-        notes: str,
-        diagnostics: Dict[str, Any],
-    ) -> StatBook:
-        contributors_by_surface: dict[str, list[dict[str, object]]] = defaultdict(list)
-        for contributor in response.contributor_rows:
-            contributors_by_surface[contributor.surface_id].append(
-                {
-                    'surface_id': contributor.surface_id,
-                    'surface_class': contributor.surface_class,
-                    'domain': contributor.domain,
-                    'source_class': contributor.source_class,
-                    'composition_stage': contributor.composition_stage,
-                    'contributor_id': contributor.contributor_id,
-                    'value': contributor.value,
-                    'value_type': contributor.value_type,
-                    'active': contributor.active,
-                    'gate_reason': contributor.gate_reason,
-                    'provenance_ref': contributor.provenance_ref,
-                }
-            )
-        rows = {
-            row.surface_id: StatRow(
-                stat_name=row.surface_id,
-                final_value=row.final_value,
-                value_type=row.value_type,
-                source_count=len(contributors_by_surface.get(row.surface_id, ())),
-                status=row.status,
-                notes=notes,
-                contributors=contributors_by_surface.get(row.surface_id, []),
-            )
-            for row in response.resolved_surface_rows
-        }
-        return StatBook(
-            rows=rows,
-            diagnostics=dict(diagnostics),
-        )
 
     def _bounded_reference_statbook(
         self,
@@ -182,23 +144,20 @@ class ProgressionRecalcBridge:
         request: ProgressionRecalcRequest,
     ) -> StatBook:
         family_id = self._progression_family_id(request)
-        response = resolve_progression_family_query(
-            account_state=patched,
+        planner = QEResolutionPlanner()
+        return planner.resolve_declared_family_statbook(
+            patched,
             family_id=family_id,
-            preset_name=request.preset_name,
             requested_surface_ids=tuple(sorted(load_family_surface_ids()[family_id])),
-            state_mode=request.state_mode,
-            perks_enabled=request.perks_enabled,
-            runtime_branch_id='branch_base',
-            trace_mode='contributors',
-            card_preset_name=request.card_preset_name,
-            module_preset_name=request.module_preset_name,
-            perk_preset_name=request.perk_preset_name,
-        )
-        return self._query_response_to_statbook(
-            response,
             notes='Bounded progression family surface used for recalc reference publication.',
-            diagnostics={'family_id': response.family_id, 'source': 'bounded_progression_family_reference'},
+            diagnostics={'family_id': family_id, 'source': 'bounded_progression_family_reference'},
+            preset_name=request.preset_name,
+            state_mode=request.state_mode,
+            card_preset_name=request.card_preset_name or request.preset_name,
+            module_preset_name=request.module_preset_name or request.preset_name,
+            perk_preset_name=request.perk_preset_name or request.preset_name,
+            perks_enabled=request.perks_enabled,
+            trace_mode='contributors',
         )
 
     def recompute(self, request: ProgressionRecalcRequest) -> ProgressionRecalcResult:
@@ -533,19 +492,36 @@ def resolve_progression_family_query(
     kernel: StatQueryKernel | None = None,
 ) -> QueryResponse:
     query_kernel = kernel or get_default_query_kernel()
-    baseline = materialize_progression_family_baseline(
-        account_state=account_state,
+    if kernel is not None:
+        query_kernel = kernel
+        baseline = materialize_progression_family_baseline(
+            account_state=account_state,
+            family_id=family_id,
+            preset_name=preset_name,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
+            runtime_branch_id=runtime_branch_id,
+            card_preset_name=card_preset_name,
+            module_preset_name=module_preset_name,
+            perk_preset_name=perk_preset_name,
+            materializer=query_kernel.materializer,
+        )
+        return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+
+    planner = QEResolutionPlanner()
+    result = planner.resolve_declared_family_query(
+        account_state,
         family_id=family_id,
+        requested_surface_ids=requested_surface_ids,
         preset_name=preset_name,
         state_mode=state_mode,
+        card_preset_name=card_preset_name or preset_name,
+        module_preset_name=module_preset_name or preset_name,
+        perk_preset_name=perk_preset_name or preset_name,
         perks_enabled=perks_enabled,
-        runtime_branch_id=runtime_branch_id,
-        card_preset_name=card_preset_name,
-        module_preset_name=module_preset_name,
-        perk_preset_name=perk_preset_name,
-        materializer=query_kernel.materializer,
+        trace_mode=trace_mode,
     )
-    return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+    return result.response
 
 
 def resolve_progression_consumer_bundle(

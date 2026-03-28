@@ -9,7 +9,7 @@ from typing import Any, Iterable, Mapping
 
 import yaml
 
-from qe.contracts import to_legacy_surface_id, to_v2_surface_id
+from qe.contracts import normalize_surface_id_to_contract, to_legacy_surface_id, to_v2_surface_id
 from qe.models import BoundStatInputs, StateIdentity
 from qe.models import StatInput
 
@@ -21,13 +21,13 @@ _CANONICAL_STATS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-
 _MECHANIC_PARAMS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml'
 
 _SURFACE_ID_ALIASES = {
-    'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
-    'mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds': 'support_surface::timing.gcomp_cooldown_reduction_seconds',
+    normalize_surface_id_to_contract('canonical_stat::free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
+    normalize_surface_id_to_contract('mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',
     # PH4-C tranche 5: the compiler routes this module's contribution under the legacy
     # destination_id 'module.primordial_collapse.in_bh_enemy_damage_reduction_pct'; the QE
     # surface set declares it as 'module.primordial_collapse.bh_damage_reduction_pct'.
     # The alias bridges the two so the materializer can include the contributor.
-    'mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct': 'mechanic_param::module.primordial_collapse.bh_damage_reduction_pct',
+    normalize_surface_id_to_contract('mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct'): normalize_surface_id_to_contract('mechanic_param::module.primordial_collapse.bh_damage_reduction_pct'),
 }
 
 # PH4-C tranche 1: free_upgrade_package stats.

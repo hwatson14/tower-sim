@@ -20,12 +20,12 @@ import yaml
 
 from input.runtime_state import build_runtime_state
 from qe.publication import publish_phase3_query_surfaces
-from qe.routing import resolve_stats
+from qe.routing import QEResolutionPlanner, classify_input_routing
 from qe.stat_input_compiler import compile_stat_inputs
-from qe.stat_resolution import classify_input_routing
 
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
+    normalize_surface_id_to_contract,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
@@ -35,6 +35,30 @@ DISPLAY_SUFFIXES = [
     (1e24, 'S'), (1e21, 's'), (1e18, 'Q'), (1e15, 'q'),
     (1e12, 'T'), (1e9, 'B'), (1e6, 'M'), (1e3, 'k'),
 ]
+
+
+def _sid(surface_id: str) -> str:
+    return normalize_surface_id_to_contract(surface_id)
+
+
+def _canon(destination_id: str) -> str:
+    return _sid(f'canonical_stat::{destination_id}')
+
+
+def _mech(destination_id: str) -> str:
+    return _sid(f'mechanic_param::{destination_id}')
+
+
+def _runtime(destination_id: str) -> str:
+    return _sid(f'runtime_mechanic_param::{destination_id}')
+
+
+def _cap(destination_id: str) -> str:
+    return _sid(f'capability::{destination_id}')
+
+
+def _account_flag(destination_id: str) -> str:
+    return _sid(f'account_flag::{destination_id}')
 
 def _trim_decimal_string(text: str) -> str:
     return text.rstrip('0').rstrip('.') if '.' in text else text
@@ -263,12 +287,12 @@ def ensure_line_verification_authoritative_verdict_fields(verification: dict) ->
 
 def build_survivor_closure_report(ep_compare: dict, line_verification: dict) -> dict:
     tracked = [
-        'canonical_stat::tower_regen',
-        'canonical_stat::tower_hp',
-        'canonical_stat::tower_defense_absolute',
-        'canonical_stat::tower_damage',
-        'canonical_stat::wall_hp',
-        'canonical_stat::wall_regen',
+        _canon('tower_regen'),
+        _canon('tower_hp'),
+        _canon('tower_defense_absolute'),
+        _canon('tower_damage'),
+        _canon('wall_hp'),
+        _canon('wall_regen'),
     ]
     rows = []
     for destination in tracked:
@@ -289,7 +313,7 @@ def build_survivor_closure_report(ep_compare: dict, line_verification: dict) -> 
             'ep_stage_context': compare.get('ep_stage_context'),
             'note': (
                 'downstream_reflection_of_tower_residue'
-                if destination in {'canonical_stat::wall_hp', 'canonical_stat::wall_regen'}
+        if destination in {_canon('wall_hp'), _canon('wall_regen')}
                 else 'primary_upstream_survivor'
             ),
         })
@@ -301,11 +325,11 @@ def build_survivor_closure_report(ep_compare: dict, line_verification: dict) -> 
 
 def build_survivability_residue_analysis(ep_compare: dict, compare_situation_fit_matrix: dict, statbook_dict: dict) -> dict:
     destinations = [
-        'canonical_stat::tower_hp',
-        'canonical_stat::tower_regen',
-        'canonical_stat::tower_defense_absolute',
-        'canonical_stat::wall_hp',
-        'canonical_stat::wall_regen',
+        _canon('tower_hp'),
+        _canon('tower_regen'),
+        _canon('tower_defense_absolute'),
+        _canon('wall_hp'),
+        _canon('wall_regen'),
     ]
     best_fit = compare_situation_fit_matrix.get('best_fit_by_destination', {}) if isinstance(compare_situation_fit_matrix, dict) else {}
     analysis = {}
@@ -340,10 +364,10 @@ def build_survivability_residue_analysis(ep_compare: dict, compare_situation_fit
             'compare_perk_state': compare_row.get('compare_perk_state'),
             'contributors': contributor_summary,
         }
-    tower_hp_ratio = analysis.get('canonical_stat::tower_hp', {}).get('package_to_ep_ratio')
-    wall_hp_ratio = analysis.get('canonical_stat::wall_hp', {}).get('package_to_ep_ratio')
-    tower_regen_ratio = analysis.get('canonical_stat::tower_regen', {}).get('package_to_ep_ratio')
-    wall_regen_ratio = analysis.get('canonical_stat::wall_regen', {}).get('package_to_ep_ratio')
+    tower_hp_ratio = analysis.get(_canon('tower_hp'), {}).get('package_to_ep_ratio')
+    wall_hp_ratio = analysis.get(_canon('wall_hp'), {}).get('package_to_ep_ratio')
+    tower_regen_ratio = analysis.get(_canon('tower_regen'), {}).get('package_to_ep_ratio')
+    wall_regen_ratio = analysis.get(_canon('wall_regen'), {}).get('package_to_ep_ratio')
     analysis['_shared_residue_summary'] = {
         'tower_hp_ratio': tower_hp_ratio,
         'wall_hp_ratio': wall_hp_ratio,
@@ -714,37 +738,37 @@ def _safe_pct(n: int, d: int) -> float:
 
 # --- compare routing constants and helpers ---
 COMPARE_PRESET_OVERRIDES = {
-    'canonical_stat::tower_attack_speed': 'Tourney',
-    'canonical_stat::tower_crit_chance_pct': 'Tourney',
-    'canonical_stat::tower_crit_multiplier': 'Tourney',
-    'canonical_stat::tower_range_m': 'Tourney',
-    'canonical_stat::tower_damage_per_meter_multiplier': 'Tourney',
-    'canonical_stat::tower_multishot_chance_pct': 'Tourney',
-    'canonical_stat::tower_multishot_targets': 'Tourney',
-    'canonical_stat::tower_rapid_fire_chance_pct': 'Tourney',
-    'canonical_stat::tower_rapid_fire_duration_seconds': 'Tourney',
-    'canonical_stat::tower_bounce_shot_chance_pct': 'Tourney',
-    'canonical_stat::tower_bounce_shot_targets': 'Tourney',
-    'canonical_stat::tower_supercrit_chance_pct': 'Tourney',
-    'canonical_stat::tower_supercrit_multiplier': 'Tourney',
-    'canonical_stat::tower_damage': 'Tourney',
-    'canonical_stat::package_chance_pct': 'Tourney',
+    _canon('tower_attack_speed'): 'Tourney',
+    _canon('tower_crit_chance_pct'): 'Tourney',
+    _canon('tower_crit_multiplier'): 'Tourney',
+    _canon('tower_range_m'): 'Tourney',
+    _canon('tower_damage_per_meter_multiplier'): 'Tourney',
+    _canon('tower_multishot_chance_pct'): 'Tourney',
+    _canon('tower_multishot_targets'): 'Tourney',
+    _canon('tower_rapid_fire_chance_pct'): 'Tourney',
+    _canon('tower_rapid_fire_duration_seconds'): 'Tourney',
+    _canon('tower_bounce_shot_chance_pct'): 'Tourney',
+    _canon('tower_bounce_shot_targets'): 'Tourney',
+    _canon('tower_supercrit_chance_pct'): 'Tourney',
+    _canon('tower_supercrit_multiplier'): 'Tourney',
+    _canon('tower_damage'): 'Tourney',
+    _canon('package_chance_pct'): 'Tourney',
 }
 
 COMPARE_SITUATION_OVERRIDES = {
-    'canonical_stat::tower_damage': {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
-    'canonical_stat::package_chance_pct': {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
-    'canonical_stat::tower_hp': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::tower_regen': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::tower_defense_absolute': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::wall_hp': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::wall_regen': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::coin_kill_multiplier': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
-    'canonical_stat::coins_per_kill_bonus': {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('tower_damage'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
+    _canon('package_chance_pct'): {'preset': 'Tourney', 'perk_state': 'off', 'ep_run_state': 'tournament_perks_off'},
+    _canon('tower_hp'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('tower_regen'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('tower_defense_absolute'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('wall_hp'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('wall_regen'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('coin_kill_multiplier'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
+    _canon('coins_per_kill_bonus'): {'preset': 'Farming', 'perk_state': 'on', 'ep_run_state': 'farming_perks_on'},
 }
 
 COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
-    'canonical_stat::tower_damage': {
+    _canon('tower_damage'): {
         'Berserker': 'conditional_runtime_card__berserker_damage',
     },
 }
@@ -775,7 +799,7 @@ def _load_lineage_backed_run_perk_destinations() -> set[str]:
                 if alias_match is not None:
                     destination_object_type, destination_id = alias_match
             if destination_object_type == 'canonical_stat' and destination_id:
-                destinations.add(f'canonical_stat::{destination_id}')
+                destinations.add(_canon(destination_id))
     return destinations
 
 
@@ -785,19 +809,19 @@ COMPARE_DESTINATION_RUN_PERK_FACETS = {
 }
 
 COMPARE_DESTINATION_TRANSITIVE_DEPENDENCIES = {
-    'canonical_stat::wall_hp': ['canonical_stat::tower_hp'],
-    'canonical_stat::wall_regen': ['canonical_stat::tower_regen'],
+    _canon('wall_hp'): [_canon('tower_hp')],
+    _canon('wall_regen'): [_canon('tower_regen')],
 }
 
 PROJECTED_RUNTIME_COMPARE_ASSUMPTIONS = {
-    ('canonical_stat::tower_damage', 'Berserker'): {
+    (_canon('tower_damage'), 'Berserker'): {
         'multiplier': 8.0,
         'note': 'assumed_maxed_berserker_x8_under_max_progression',
     },
 }
 
 PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS = {
-    ('canonical_stat::tower_damage', 'Project Funding'): {
+    (_canon('tower_damage'), 'Project Funding'): {
         'cash': 50_000_000_000.0,
         'note': 'assumed_project_funding_at_cash_50b_under_max_progression',
     },
@@ -924,7 +948,7 @@ def _ep_stage_context_for_destination(destination: str, package_stage_context: d
 
 # --- tower regen reports ---
 def _build_tower_regen_closure_report(ep_compare: dict) -> dict:
-    dest = 'canonical_stat::tower_regen'
+    dest = _canon('tower_regen')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
     multiplier_product = 1.0
@@ -986,7 +1010,7 @@ def _build_tower_regen_closure_report(ep_compare: dict) -> dict:
 
 
 def _build_tower_regen_ep_semantic_gap_report(ep_compare: dict) -> dict:
-    dest = 'canonical_stat::tower_regen'
+    dest = _canon('tower_regen')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
 
@@ -1145,14 +1169,14 @@ def _build_tower_regen_ep_semantic_gap_report(ep_compare: dict) -> dict:
 # --- tower damage / defense / hp reports ---
 def _project_funding_cash_evidence() -> dict:
     return {
-        'assumed_cash': PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[('canonical_stat::tower_damage', 'Project Funding')]['cash'],
+        'assumed_cash': PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[(_canon('tower_damage'), 'Project Funding')]['cash'],
         'evidence_strength': 'user_provided_for_current_ep_compare_basis',
         'note': 'User clarified that EP uses 50b cash for Project Funding compare. This is treated as an explicit compare-policy input rather than a calculator truth claim.',
     }
 
 
 def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
-    dest = 'canonical_stat::tower_damage'
+    dest = _canon('tower_damage')
     row = (ep_compare or {}).get(dest) or {}
     base_value = row.get('package_value_before_runtime_assumptions')
     package_value = row.get('package_value')
@@ -1165,7 +1189,7 @@ def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
     if isinstance(base_value, (int, float)) and base_value not in (None, 0) and isinstance(ep_value, (int, float)):
         required_total_runtime_multiplier = ep_value / base_value
 
-    pf_cash = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[('canonical_stat::tower_damage', 'Project Funding')]['cash']
+    pf_cash = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[(_canon('tower_damage'), 'Project Funding')]['cash']
     pf_coeff = PROJECT_FUNDING_RARITY_COEFFICIENTS['Mythic']
     pf_multiplier = 1.0 + math.log10(float(pf_cash)) * float(pf_coeff)
     required_berserker_if_pf_fixed = None
@@ -1223,7 +1247,7 @@ def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
 
 
 def _build_tower_defense_absolute_semantic_gap_report(ep_compare: dict) -> dict:
-    dest = 'canonical_stat::tower_defense_absolute'
+    dest = _canon('tower_defense_absolute')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
 
@@ -1318,7 +1342,7 @@ def _build_tower_defense_absolute_semantic_gap_report(ep_compare: dict) -> dict:
 
 
 def _build_tower_hp_semantic_gap_report(ep_compare: dict) -> dict:
-    dest = 'canonical_stat::tower_hp'
+    dest = _canon('tower_hp')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
 
@@ -1472,7 +1496,7 @@ def _build_kb_only_health_family_audit(stat_inputs, statbook_rows: dict) -> dict
     ]
     grouped = {}
     for destination in sorted(relevant_destinations):
-        row = statbook_rows.get(f'canonical_stat::{destination}')
+        row = statbook_rows.get(_canon(destination))
         if not row:
             continue
         grouped[destination] = {
@@ -1547,11 +1571,11 @@ def _build_kb_only_health_family_audit(stat_inputs, statbook_rows: dict) -> dict
 def _build_damage_defabs_scope_audit(account_state, stat_inputs, statbook_rows: dict) -> dict:
     surfaces = {
         'tower_damage': {
-            'destination_key': 'canonical_stat::tower_damage',
+            'destination_key': _canon('tower_damage'),
             'admissible_families': ['workshop', 'lab', 'card', 'module', 'enhancement', 'relic', 'vault'],
         },
         'tower_defense_absolute': {
-            'destination_key': 'canonical_stat::tower_defense_absolute',
+            'destination_key': _canon('tower_defense_absolute'),
             'admissible_families': ['workshop', 'lab', 'module_substat', 'enhancement', 'relic', 'vault'],
         },
     }
@@ -1713,39 +1737,39 @@ MODULE_SCOPE_EXCLUDED = set()
 
 
 EP_NONCOMPARABLE_DESTINATIONS = {
-    'canonical_stat::free_attack_upgrade_chance_pct',
-    'canonical_stat::free_defense_upgrade_chance_pct',
-    'canonical_stat::free_utility_upgrade_chance_pct',
+        _canon('free_attack_upgrade_chance_pct'),
+        _canon('free_defense_upgrade_chance_pct'),
+        _canon('free_utility_upgrade_chance_pct'),
 }
 
 EP_LABEL_TO_DESTINATION = {
-    'Attack Speed': 'canonical_stat::tower_attack_speed',
-    'Critical Chance': 'canonical_stat::tower_crit_chance_pct',
-    'Critical Factor': 'canonical_stat::tower_crit_multiplier',
-    'Range': 'canonical_stat::tower_range_m',
-    'Damage / Meter': 'canonical_stat::tower_damage_per_meter_multiplier',
-    'Multishot Chance': 'canonical_stat::tower_multishot_chance_pct',
-    'Multishot Targets': 'canonical_stat::tower_multishot_targets',
-    'Rapid Fire Chance': 'canonical_stat::tower_rapid_fire_chance_pct',
-    'Rapid Fire Duration': 'canonical_stat::tower_rapid_fire_duration_seconds',
-    'Bounce Shot Chance': 'canonical_stat::tower_bounce_shot_chance_pct',
-    'Bounce Shot Targets': 'canonical_stat::tower_bounce_shot_targets',
-    'Super Crit Chance': 'canonical_stat::tower_supercrit_chance_pct',
-    'Super Crit Multiplier': 'canonical_stat::tower_supercrit_multiplier',
-    'Recovery Package Chance': 'canonical_stat::package_chance_pct',
-    'Health': 'canonical_stat::tower_hp',
-    'Health Regen': 'canonical_stat::tower_regen',
-    'Defense Absolute': 'canonical_stat::tower_defense_absolute',
-    'Defense %': 'canonical_stat::tower_defense_pct',
-    'Wall Health': 'canonical_stat::wall_hp',
-    'Wall Fortification': 'canonical_stat::wall_fortification_multiplier',
-    'Wall Regen': 'canonical_stat::wall_regen',
-    'Max Recovery': 'canonical_stat::max_recovery_multiplier',
-    'Coins / Kill Bonus': 'canonical_stat::coins_per_kill_bonus',
-    'Free Attack Upgrade': 'canonical_stat::free_attack_upgrade_chance_pct',
-    'Free Defense Upgrade': 'canonical_stat::free_defense_upgrade_chance_pct',
-    'Free Utility Upgrade': 'canonical_stat::free_utility_upgrade_chance_pct',
-    'Damage': 'canonical_stat::tower_damage',
+        'Attack Speed': _canon('tower_attack_speed'),
+        'Critical Chance': _canon('tower_crit_chance_pct'),
+        'Critical Factor': _canon('tower_crit_multiplier'),
+        'Range': _canon('tower_range_m'),
+        'Damage / Meter': _canon('tower_damage_per_meter_multiplier'),
+        'Multishot Chance': _canon('tower_multishot_chance_pct'),
+        'Multishot Targets': _canon('tower_multishot_targets'),
+        'Rapid Fire Chance': _canon('tower_rapid_fire_chance_pct'),
+        'Rapid Fire Duration': _canon('tower_rapid_fire_duration_seconds'),
+        'Bounce Shot Chance': _canon('tower_bounce_shot_chance_pct'),
+        'Bounce Shot Targets': _canon('tower_bounce_shot_targets'),
+        'Super Crit Chance': _canon('tower_supercrit_chance_pct'),
+        'Super Crit Multiplier': _canon('tower_supercrit_multiplier'),
+        'Recovery Package Chance': _canon('package_chance_pct'),
+        'Health': _canon('tower_hp'),
+        'Health Regen': _canon('tower_regen'),
+        'Defense Absolute': _canon('tower_defense_absolute'),
+        'Defense %': _canon('tower_defense_pct'),
+        'Wall Health': _canon('wall_hp'),
+        'Wall Fortification': _canon('wall_fortification_multiplier'),
+        'Wall Regen': _canon('wall_regen'),
+        'Max Recovery': _canon('max_recovery_multiplier'),
+        'Coins / Kill Bonus': _canon('coins_per_kill_bonus'),
+        'Free Attack Upgrade': _canon('free_attack_upgrade_chance_pct'),
+        'Free Defense Upgrade': _canon('free_defense_upgrade_chance_pct'),
+        'Free Utility Upgrade': _canon('free_utility_upgrade_chance_pct'),
+        'Damage': _canon('tower_damage'),
 }
 
 def _parse_ep_value(raw):
@@ -1988,7 +2012,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
     for item in kb_incomplete_areas.get('resolved_unknown_schema_units', []):
         register.append({
             'gap_id': f"unknown_unit::{item['destination_id']}",
-            'bucket': 'Intentional non-goal / runtime-only surface' if str(item['destination_id']).startswith(('runtime_mechanic_param::', 'mechanic_param::', 'account_flag::', 'capability::', 'raw::')) else 'KB missing executable contract',
+        'bucket': 'Intentional non-goal / runtime-only surface' if str(item['destination_id']).startswith((_runtime(''), _mech(''), _account_flag(''), _cap(''), 'raw::')) else 'KB missing executable contract',
             'surface': item['destination_id'],
             'files': ['qe/stat_resolution.py', 'app/pipeline.py'],
             'evidence': f"Resolved publishable row still has schema.unit=unknown for {item['destination_id']}",
@@ -2058,7 +2082,7 @@ def _build_publish_gate_audits(stat_inputs, statbook_dict, ep_compare, formula_l
                 'destination': key,
                 'unresolved_contributors': unresolved,
             })
-        if key.startswith('capability::') and key.endswith('.enabled') and status == 'resolved' and not isinstance(row.get('final_value'), bool):
+        if key.startswith(_cap('')) and key.endswith('.enabled') and status == 'resolved' and not isinstance(row.get('final_value'), bool):
             capability_non_boolean.append({
                 'destination': key,
                 'final_value': row.get('final_value'),
@@ -2129,7 +2153,7 @@ def _apply_projected_runtime_compare_assumptions(destination: str, package_row: 
             notes.append(assumption['note'])
         except Exception:
             continue
-    if destination == 'canonical_stat::tower_damage':
+    if destination == _canon('tower_damage'):
         try:
             pf_multiplier, pf_note = _project_funding_compare_multiplier(stage_context)
             if pf_multiplier is not None:
@@ -2157,7 +2181,7 @@ def _project_funding_compare_multiplier(stage_context: dict) -> tuple[float | No
     primary_name = generator.get('primary')
     if primary_name != 'Project Funding':
         return None, None
-    assumption = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS.get(('canonical_stat::tower_damage', 'Project Funding'))
+    assumption = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS.get((_canon('tower_damage'), 'Project Funding'))
     if not assumption:
         return None, None
     modules_inventory = stage_context.get('modules_inventory') or {}
@@ -2307,7 +2331,7 @@ def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, prese
     }
 
 def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
-    row = ep_compare.get('canonical_stat::tower_damage') or {}
+    row = ep_compare.get(_canon('tower_damage')) or {}
     pre_runtime = row.get('package_value_before_runtime_assumptions')
     post_runtime = row.get('package_value')
     ep_value = row.get('ep_value')
@@ -2344,7 +2368,7 @@ def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
             residue_relative_pct = 100.0 * residue / ep_value_f
 
     return {
-        'destination': 'canonical_stat::tower_damage',
+        'destination': _canon('tower_damage'),
         'package_value_before_runtime_assumptions': pre_runtime_f,
         'package_value_after_runtime_assumptions': post_runtime_f,
         'ep_value': ep_value_f,
@@ -2362,13 +2386,13 @@ def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
 # --- perk contributor audit, compare situation fit, compare rows builder ---
 def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mode: str, default_preset: str) -> dict:
     destinations_of_interest = {
-        "canonical_stat::tower_damage",
-        "canonical_stat::tower_hp",
-        "canonical_stat::tower_regen",
-        "canonical_stat::tower_defense_absolute",
-        "canonical_stat::tower_bounce_shot_targets",
-        "canonical_stat::wall_hp",
-        "canonical_stat::wall_regen",
+        _canon('tower_damage'),
+        _canon('tower_hp'),
+        _canon('tower_regen'),
+        _canon('tower_defense_absolute'),
+        _canon('tower_bounce_shot_targets'),
+        _canon('wall_hp'),
+        _canon('wall_regen'),
     }
     audit: dict[str, dict] = {}
     for preset_name in ("Farming", "Tourney"):
@@ -2459,39 +2483,53 @@ def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, fo
         'best_fit_status_counts': dict(sorted(best_fit_status_counts.items())),
     }
 
-def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, return_default_materialization: bool = False):
+def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, snapshot_planner: QEResolutionPlanner | None = None):
     compare_rows_by_preset = {}
     compare_publishable_rows_by_preset = {}
-    default_materialization = None
 
     perk_state_by_preset = {}
     perk_materialized_by_preset = {}
+    planner = snapshot_planner or QEResolutionPlanner()
+    state_cache = {}
+    resolved_cache = {}
+
+    def _state_for_preset(preset_name: str):
+        state = state_cache.get(preset_name)
+        if state is None:
+            state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
+            state_cache[preset_name] = state
+        return state
 
     def _materialize(preset_name: str, forced_perk_state: str | None = None):
-        nonlocal default_materialization
-        state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
+        state = _state_for_preset(preset_name)
         preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else _compare_perk_state_for_preset(preset_name, perk_state, forced_preset_perk_states)
         perks_enabled = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
         state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
         perk_state_by_preset[state_key] = preset_perk_state
         perk_materialized_by_preset[state_key] = perks_enabled
-        inputs = compile_stat_inputs(state, preset_name=preset_name, state_mode=state_mode, perks_enabled=perks_enabled)
-        statbook = resolve_stats(inputs)
-        if return_default_materialization and forced_perk_state is None and preset_name == default_preset and default_materialization is None:
-            default_materialization = {
-                'account_state': state,
-                'stat_inputs': list(inputs),
-                'statbook': copy.deepcopy(statbook),
-            }
-        publish_phase3_query_surfaces(statbook.rows, account_state_labs=state.labs)
-        statbook_dict = statbook.to_dict()
-        for destination, row in statbook_dict.get('rows', {}).items():
-            row['formula_contract'] = _formula_contract(formula_ledger, destination)
-        _annotate_display_fields(statbook_dict)
-        publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
-        _annotate_display_fields(publishable)
-        compare_rows_by_preset[state_key] = statbook_dict['rows']
-        compare_publishable_rows_by_preset[state_key] = publishable['rows']
+        request_key = (preset_name, state_mode, bool(perks_enabled))
+        resolved = resolved_cache.get(request_key)
+        if resolved is None:
+            snapshot = planner.resolve_report_snapshot(
+                state,
+                preset_name=preset_name,
+                state_mode=state_mode,
+                perks_enabled=perks_enabled,
+            )
+            statbook = snapshot.statbook
+            publish_phase3_query_surfaces(statbook.rows, account_state_labs=state.labs)
+            statbook_dict = statbook.to_dict()
+            for destination, row in statbook_dict.get('rows', {}).items():
+                row['formula_contract'] = _formula_contract(formula_ledger, destination)
+            _annotate_display_fields(statbook_dict)
+            publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
+            _annotate_display_fields(publishable)
+            resolved = (state, statbook_dict['rows'], publishable['rows'])
+            resolved_cache[request_key] = resolved
+        cached_state, cached_rows, cached_publishable_rows = resolved
+        state = cached_state
+        compare_rows_by_preset[state_key] = cached_rows
+        compare_publishable_rows_by_preset[state_key] = cached_publishable_rows
         return state
 
     default_state = _materialize(default_preset)
@@ -2544,7 +2582,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
         base_preset_name = preset_name.split('__perks_', 1)[0]
         if preset_name == default_preset:
             continue
-        state = build_runtime_state(ids_raw, default_preset=base_preset_name, loadout_config=loadout_config, perk_config=perk_config)
+        state = _state_for_preset(base_preset_name)
         package_stage_context['active_cards_by_preset'][base_preset_name] = list(state.card_presets.get(base_preset_name, []))
         package_stage_context['active_modules_by_preset'][base_preset_name] = {
             slot: {
@@ -2553,8 +2591,6 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
             }
             for slot, selection in state.module_presets.get(base_preset_name, {}).items()
         }
-    if return_default_materialization:
-        return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context, default_materialization
     return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context
 
 

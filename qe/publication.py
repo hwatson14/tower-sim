@@ -3,14 +3,21 @@ from __future__ import annotations
 import re
 from typing import Any, Dict, Optional
 
+from qe.contracts import normalize_surface_id_to_contract
 from qe.query_currency_income import publish_currency_income_surfaces
 from qe.query_derived_composites import publish_derived_composites
-from qe.query_module_draw_policy import publish_module_draw_policy_surfaces
-from qe.query_module_drop_economy import publish_module_drop_economy_surfaces
-from qe.query_module_lab_policy import publish_module_lab_policy_surfaces
-from qe.query_module_mission_economy import publish_module_mission_economy_surfaces
-from qe.query_module_runtime_policy import publish_module_runtime_policy_surfaces
+from qe.query_module_policy import (
+    publish_module_draw_policy_surfaces,
+    publish_module_drop_economy_surfaces,
+    publish_module_lab_policy_surfaces,
+    publish_module_mission_economy_surfaces,
+    publish_module_runtime_policy_surfaces,
+)
 from qe.models import StatRow
+
+
+def _sid(surface_id: str) -> str:
+    return normalize_surface_id_to_contract(surface_id)
 
 
 def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
@@ -23,7 +30,7 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
     Both are published as the same numeric tier; guards against collision with
     surfaces already pre-populated from manual advisory inputs.
     """
-    tier_row = rows.get('account_context::account_context.farming_tier')
+    tier_row = rows.get(_sid('account_context::account_context.farming_tier'))
     if tier_row is None:
         return
     raw = (tier_row.contributors[0].get('value') if tier_row.contributors else None)
@@ -51,7 +58,7 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
                 'value': tier,
                 'unit': 'tier',
                 'source_raw': raw,
-                'source_surface': 'account_context::account_context.farming_tier',
+                'source_surface': _sid('account_context::account_context.farming_tier'),
             }],
             schema={
                 'source_alignment': 'AccountContext',

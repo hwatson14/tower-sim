@@ -1,3 +1,11 @@
+"""Explicit report/compat statbook resolver.
+
+This module is not part of the native QE foundation surface for downstream runtime
+consumers. Native simulator-facing paths must go through qe.routing's declared-family
+query/statbook APIs instead. The only sanctioned active-layer dependency on this module
+is the explicit report/compat fallback imported by qe.routing.
+"""
+
 from __future__ import annotations
 
 from collections import Counter, defaultdict
@@ -7,6 +15,7 @@ from typing import Dict, List, Tuple
 
 import yaml
 
+from qe.contracts import normalize_surface_id_to_contract
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
 
@@ -16,6 +25,34 @@ CONTRACT_PATHS = [
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml',
     ROOT / 'kb' / 'global-rules' / 'contracts' / 'environment-params.yaml',
 ]
+
+
+def _canon(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
+
+
+def _mech(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')
+
+
+def _runtime(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')
+
+
+def _flag(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'account_flag::{destination_id}')
+
+
+def _context(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'account_context::{destination_id}')
+
+
+def _cap(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'capability::{destination_id}')
+
+
+def _cosmetic(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')
 
 
 @lru_cache(maxsize=1)
@@ -37,6 +74,11 @@ def _destination_type_schema(destination_id: str, meta: Dict[str, str]) -> Dict[
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
     allowed = {'resolved_value', 'flat', 'pct', 'multiplier', 'percent_display', 'multiplier_display', 'bool', 'count'}
+    # Native bounded timing/runtime rows already carry concrete unit value_types such as
+    # "seconds"; allow those exact unit tokens through the publish gate instead of forcing
+    # them to masquerade as generic resolved_value rows.
+    if unit and unit != 'unknown':
+        allowed.add(unit)
     expected_semantics = []
     if unit == 'pct':
         expected_semantics = ['percentage_points', 'percentage_multiplier', 'resolved_percent']
@@ -422,7 +464,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
     if destination_object_type == 'mechanic_param' and destination_id.startswith('uw.'):
         resolved_rows = meta.get('_resolved_rows', {})
         uw_prefix = '.'.join(destination_id.split('.')[:2])
-        unlock_row = resolved_rows.get(f'capability::{uw_prefix}.owned')
+        unlock_row = resolved_rows.get(_cap(f'{uw_prefix}.owned'))
         if unlock_row is not None and bool(unlock_row.final_value) is False:
             unit = meta.get('unit', 'unknown')
             if unit == 'count':
@@ -701,10 +743,10 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
         return final, 'resolved', 'KB helper coins_multiplier formula: product of card and relic broad-coin multipliers only.', schema
 
     if destination_id == 'coin_kill_multiplier':
-        mirror_row = resolved_rows.get('canonical_stat::coins_per_kill_bonus')
+        mirror_row = resolved_rows.get(_canon('coins_per_kill_bonus'))
         if mirror_row and mirror_row.final_value is not None:
-            return _as_float(mirror_row.final_value), 'resolved', 'Deprecated transition mirror of canonical_stat::coins_per_kill_bonus.', schema
-        return None, 'mapped_not_resolved', 'Deprecated transition mirror requires canonical_stat::coins_per_kill_bonus.', schema
+            return _as_float(mirror_row.final_value), 'resolved', f"Deprecated transition mirror of {_canon('coins_per_kill_bonus')}.", schema
+        return None, 'mapped_not_resolved', f"Deprecated transition mirror requires {_canon('coins_per_kill_bonus')}.", schema
 
     if destination_id == 'tower_defense_absolute':
         return _resolve_base_times_post_multipliers(destination_id, contributors, schema, note_label='Promoted shared base-times-post-multipliers family')
@@ -735,7 +777,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 return None, 'mapped_not_resolved', 'Missing global bot range contributors.', schema
             return total, 'resolved', 'Bot global range bonus formula: additive relic, vault, and module unique contributions.', schema
         if bot_name != 'global':
-            unlock_row = resolved_rows.get(f'capability::bot.{bot_name}.owned')
+            unlock_row = resolved_rows.get(_cap(f'bot.{bot_name}.owned'))
             if unlock_row is not None and bool(unlock_row.final_value) is False:
                 return 0.0, 'resolved', 'Bot mechanic row gated to zero because the bot is not owned.', schema
         if destination_id.endswith('.range_m'):
@@ -748,7 +790,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 if r.source_family == 'bot':
                     base += v
                     seen = True
-            global_bonus_row = resolved_rows.get('mechanic_param::bot.global.range_bonus_m')
+            global_bonus_row = resolved_rows.get(_mech('bot.global.range_bonus_m'))
             global_bonus = _as_float(global_bonus_row.final_value) if global_bonus_row and global_bonus_row.final_value is not None else 0.0
             if not seen and global_bonus == 0.0:
                 return None, 'mapped_not_resolved', 'Missing base bot range contributor.', schema
@@ -893,11 +935,11 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 else:
                     mult = _canonical_source_multiplier(destination_id, r, v)
                 land_mine_mult = (1.0 if land_mine_mult is None else land_mine_mult) * mult
-        tower_damage = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == 'canonical_stat::tower_damage'), None)
-        crit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == 'canonical_stat::tower_crit_chance_pct'), None)
-        crit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == 'canonical_stat::tower_crit_multiplier'), None)
-        supercrit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == 'canonical_stat::tower_supercrit_chance_pct'), None)
-        supercrit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == 'canonical_stat::tower_supercrit_multiplier'), None)
+        tower_damage = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _canon('tower_damage')), None)
+        crit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _canon('tower_crit_chance_pct')), None)
+        crit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _canon('tower_crit_multiplier')), None)
+        supercrit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _canon('tower_supercrit_chance_pct')), None)
+        supercrit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _canon('tower_supercrit_multiplier')), None)
         pieces = [land_mine_mult, tower_damage, crit_chance, crit_factor, supercrit_chance, supercrit_factor]
         if any(v is None for v in pieces):
             return None, 'mapped_not_resolved', 'Runtime-damage family requires land-mine multiplier assembly plus tower_damage, crit, and super-crit surfaces.', schema
@@ -960,7 +1002,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
         return final, 'resolved', 'Destination-specific recovery amount formula: workshop base plus additive package amount bonuses, then enhancement multipliers.', schema
 
     if destination_id == 'wall_hp':
-        tower_hp_row = resolved_rows.get('canonical_stat::tower_hp')
+        tower_hp_row = resolved_rows.get(_canon('tower_hp'))
         tower_hp_value = _as_float(getattr(tower_hp_row, 'final_value', None)) if tower_hp_row is not None else None
         workshop_ratio = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
         if workshop_ratio is None:
@@ -1219,7 +1261,7 @@ def _apply_shared_support_multiplier_family(rows: Dict[str, StatRow], *, support
 
 
 def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: Dict[str, StatRow]) -> None:
-    support_row = rows.get('canonical_stat::free_upgrade_multiplier')
+    support_row = rows.get(_canon('free_upgrade_multiplier'))
     support_multiplier = 1.0
     support_contributors: List[Dict[str, Any]] = []
     if support_row is not None:
@@ -1233,9 +1275,9 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: Dict[str, 
                 support_contributors.append(dict(contributor))
 
     ordered_targets = [
-        'canonical_stat::free_attack_upgrade_chance_pct',
-        'canonical_stat::free_defense_upgrade_chance_pct',
-        'canonical_stat::free_utility_upgrade_chance_pct',
+        _canon('free_attack_upgrade_chance_pct'),
+        _canon('free_defense_upgrade_chance_pct'),
+        _canon('free_utility_upgrade_chance_pct'),
     ]
     shared_additive = None
     shared_additive_contributors: List[Dict[str, Any]] = []
@@ -1265,8 +1307,8 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: Dict[str, 
         if shared_additive is None:
             shared_additive = shared_total
             shared_additive_contributors = shared_contributors_for_row
-            rows['canonical_stat::free_upgrade_shared_add_pct'] = StatRow(
-                stat_name='canonical_stat::free_upgrade_shared_add_pct',
+            rows[_canon('free_upgrade_shared_add_pct')] = StatRow(
+                stat_name=_canon('free_upgrade_shared_add_pct'),
                 final_value=shared_total,
                 value_type='pct',
                 source_count=len(shared_contributors_for_row),
@@ -1283,7 +1325,7 @@ def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: Dict[str, 
 
 
 def _apply_exact_max_rend_formula(rows: Dict[str, StatRow]) -> None:
-    max_rend_row = rows.get('canonical_stat::max_rend_mult')
+    max_rend_row = rows.get(_canon('max_rend_mult'))
     if not max_rend_row:
         return
     enhancement_multiplier = 1.0
@@ -1318,24 +1360,24 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
     _apply_free_upgrade_chance_formula_from_routed_contributors(rows)
     _apply_exact_max_rend_formula(rows)
 
-    coins_per_kill_row = rows.get('canonical_stat::coins_per_kill_bonus')
+    coins_per_kill_row = rows.get(_canon('coins_per_kill_bonus'))
     if coins_per_kill_row is not None:
-        rows['canonical_stat::coin_kill_multiplier'] = StatRow(
-            stat_name='canonical_stat::coin_kill_multiplier',
+        rows[_canon('coin_kill_multiplier')] = StatRow(
+            stat_name=_canon('coin_kill_multiplier'),
             final_value=coins_per_kill_row.final_value,
             value_type=coins_per_kill_row.value_type,
             source_count=coins_per_kill_row.source_count,
             status=coins_per_kill_row.status,
-            notes='Deprecated transition mirror of canonical_stat::coins_per_kill_bonus.',
+        notes=f"Deprecated transition mirror of {_canon('coins_per_kill_bonus')}.",
             contributors=list(coins_per_kill_row.contributors),
             schema=coins_per_kill_row.schema,
         )
 
-    disable_ads_row = rows.get('account_flag::account_flag.disable_ads')
-    starter_pack_row = rows.get('account_flag::account_flag.starter_pack')
-    epic_pack_row = rows.get('account_flag::account_flag.epic_pack')
-    farming_tier_row = rows.get('account_context::account_context.farming_tier')
-    legacy_coin_display_row = rows.get('account_context::account_context.coin_multiplier_display')
+    disable_ads_row = rows.get(_flag('account_flag.disable_ads'))
+    starter_pack_row = rows.get(_flag('account_flag.starter_pack'))
+    epic_pack_row = rows.get(_flag('account_flag.epic_pack'))
+    farming_tier_row = rows.get(_context('account_context.farming_tier'))
+    legacy_coin_display_row = rows.get(_context('account_context.coin_multiplier_display'))
     helper_contributors = []
 
     def _helper_value(row_key, label):
@@ -1345,9 +1387,9 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
         helper_contributors.append({'stat_name': label, 'source_family': 'helper_surface', 'source_name': label, 'value': row.final_value, 'value_type': row.value_type, 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True})
         return _as_float(row.final_value)
 
-    coin_bonus_val = _helper_value('canonical_stat::coin_bonus_multiplier', 'canonical_stat::coin_bonus_multiplier')
-    coins_mult_val = _helper_value('canonical_stat::coins_multiplier', 'canonical_stat::coins_multiplier')
-    theme_val = _helper_value('cosmetic_bonus::cosmetic_bonus.theme_song_coin_multiplier', 'cosmetic_bonus.theme_song_coin_multiplier')
+    coin_bonus_val = _helper_value(_canon('coin_bonus_multiplier'), _canon('coin_bonus_multiplier'))
+    coins_mult_val = _helper_value(_canon('coins_multiplier'), _canon('coins_multiplier'))
+    theme_val = _helper_value(_cosmetic('cosmetic_bonus.theme_song_coin_multiplier'), 'cosmetic_bonus.theme_song_coin_multiplier')
 
     def _load_pack_multiplier_map():
         import csv
@@ -1411,8 +1453,8 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
         all_coin_status = 'resolved'
     else:
         all_coin_notes += ' One or more required numeric helper surfaces were unavailable.'
-    rows['canonical_stat::all_coin_bonus_multiplier'] = StatRow(
-        stat_name='canonical_stat::all_coin_bonus_multiplier',
+    rows[_canon('all_coin_bonus_multiplier')] = StatRow(
+        stat_name=_canon('all_coin_bonus_multiplier'),
         final_value=all_coin_value,
         value_type='multiplier',
         source_count=len(helper_contributors),
@@ -1422,8 +1464,8 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
         schema={'unit': 'multiplier', 'resolver': 'standard_scalar_stat'},
     )
 
-    tower_regen_row = rows.get('canonical_stat::tower_regen')
-    wall_regen_row = rows.get('canonical_stat::wall_regen')
+    tower_regen_row = rows.get(_canon('tower_regen'))
+    wall_regen_row = rows.get(_canon('wall_regen'))
     if tower_regen_row and wall_regen_row and tower_regen_row.final_value is not None:
         tower_regen = _as_float(tower_regen_row.final_value)
         if tower_regen is not None:
@@ -1445,7 +1487,7 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
                 wall_regen_row.status = 'resolved'
                 wall_regen_row.notes = 'Phase 3 exact wall regen formula from KB: tower_regen x wall-regen ratio x wall-regen multipliers.'
 
-    package_row = rows.get('canonical_stat::package_chance_pct')
+    package_row = rows.get(_canon('package_chance_pct'))
     if package_row:
         final, status, note, _ = _resolve_additive_base_plus_bonuses_pct('package_chance_pct', [_phase3_statinput_from_dict(c) for c in package_row.contributors], {'unit': 'pct'})
         if final is not None:
@@ -1454,9 +1496,9 @@ def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
             package_row.notes = note
 
     runtime_mirror_map = {
-        'mechanic_param::uw.chain_lightning.chance_pct': 'runtime_mechanic_param::uw.chain_lightning.chance_pct',
-        'mechanic_param::uw.chain_lightning.damage_multiplier': 'runtime_mechanic_param::uw.chain_lightning.damage_multiplier',
-        'mechanic_param::uw.spotlight.bonus_multiplier': 'runtime_mechanic_param::uw.spotlight.bonus_multiplier',
+        _mech('uw.chain_lightning.chance_pct'): _runtime('uw.chain_lightning.chance_pct'),
+        _mech('uw.chain_lightning.damage_multiplier'): _runtime('uw.chain_lightning.damage_multiplier'),
+        _mech('uw.spotlight.bonus_multiplier'): _runtime('uw.spotlight.bonus_multiplier'),
     }
     for source_key, runtime_key in runtime_mirror_map.items():
         source_row = rows.get(source_key)

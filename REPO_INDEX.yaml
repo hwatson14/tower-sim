@@ -191,7 +191,7 @@ engine_qe:
 
   engine/stat_resolution_core.py:
     status: shim
-    target: qe/stat_resolution.py (T11 — authority moved; shim re-exports from qe/)
+    target: qe/stat_resolution.py (explicit report/compat resolver; not native foundation)
 
   engine/stat_engine.py:
     status: shim
@@ -214,24 +214,29 @@ engine_qe:
     target: qe/ (currency income surface)
 
   engine/query_module_draw_policy.py:
-    status: active_candidate
-    target: qe/ (module draw policy surface)
+    status: archive_candidate
+    target: qe/query_module_policy.py
+    reason: consolidated into bounded module policy/publisher owner
 
   engine/query_module_drop_economy.py:
-    status: active_candidate
-    target: qe/ (module drop economy surface)
+    status: archive_candidate
+    target: qe/query_module_policy.py
+    reason: consolidated into bounded module policy/publisher owner
 
   engine/query_module_lab_policy.py:
-    status: active_candidate
-    target: qe/ (module lab policy surface)
+    status: archive_candidate
+    target: qe/query_module_policy.py
+    reason: consolidated into bounded module policy/publisher owner
 
   engine/query_module_mission_economy.py:
-    status: active_candidate
-    target: qe/ (module mission economy surface)
+    status: archive_candidate
+    target: qe/query_module_policy.py
+    reason: consolidated into bounded module policy/publisher owner
 
   engine/query_module_runtime_policy.py:
-    status: active_candidate
-    target: qe/ (module runtime policy surface)
+    status: archive_candidate
+    target: qe/query_module_policy.py
+    reason: consolidated into bounded module policy/publisher owner
 
   engine/query_perk_compiler.py:
     status: active_candidate

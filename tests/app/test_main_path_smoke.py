@@ -29,10 +29,16 @@ def test_pipeline_module_imports_active_layers__contains_expected_imports():
     import app.pipeline as pipeline_mod
 
     src = Path(pipeline_mod.__file__).read_text(encoding="utf-8")
-    assert "from qe.routing import resolve_stats" in src
+    assert "from qe.routing import QEResolutionPlanner" in src
     assert "from qe.publication import publish_phase3_query_surfaces" in src
     assert "from evaluators.scorer import compute_optimizer_scores" in src
-    assert "from input.ids_parser import parse_ids" in src
+    assert "from input.loader import load_inputs" in src
+
+
+def test_pipeline_uses_explicit_report_snapshot_path():
+    src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
+    assert "resolve_report_snapshot(" in src
+    assert "resolve_snapshot(" not in src
 
 
 def test_cli_exposes_explicit_perk_mode_argument():

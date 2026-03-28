@@ -4,11 +4,15 @@ import pytest
 
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
+    normalize_contract_payload,
     normalize_preset_name,
     to_legacy_surface_id,
     to_v2_surface_id,
 )
 from qe.models import BoundPresetFamily, StateIdentity, StatBook, StatInput, StatRow, bind_preset_family
+from qe.routing import QEFamilyQueryResult, QEResolutionPlanner
+from input.loader import load_inputs
+from input.runtime_state import build_runtime_state
 
 pytestmark = pytest.mark.live
 
@@ -29,6 +33,33 @@ def test_surface_id_roundtrip__legacy_and_v2_are_reversible():
     v2 = to_v2_surface_id("canonical_stat::tower_defense_pct")
     assert v2 == "state::tower.defense_pct"
     assert to_legacy_surface_id(v2) == "canonical_stat::tower_defense_pct"
+
+
+def test_normalize_contract_payload__rewrites_legacy_surface_tokens_recursively():
+    payload = {
+        "rows": {
+            "canonical_stat::tower_damage": {
+                "stat_name": "canonical_stat::tower_damage",
+                "contributors": [
+                    {"source_surface": "runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier"},
+                ],
+            }
+        },
+        "requested_surface_ids": [
+            "mechanic_param::uw.black_hole.cooldown_seconds",
+        ],
+        "note": "legacy canonical_stat::tower_damage and runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier",
+    }
+
+    normalized = normalize_contract_payload(payload)
+
+    assert "state::tower.damage" in normalized["rows"]
+    assert normalized["rows"]["state::tower.damage"]["stat_name"] == "state::tower.damage"
+    assert normalized["rows"]["state::tower.damage"]["contributors"][0]["source_surface"] == (
+        "state::uw.black_hole.coin_bonus_multiplier"
+    )
+    assert normalized["requested_surface_ids"] == ["state::uw.black_hole.cooldown_seconds"]
+    assert "canonical_stat::tower_damage" not in normalized["note"]
 
 
 def test_model_construction__creates_valid_instances():
@@ -73,3 +104,98 @@ def test_state_identity_and_bound_preset_family__binds_successfully():
     )
     assert isinstance(bound, BoundPresetFamily)
     assert bound.preset_name == "Farming"
+
+
+def test_qe_resolution_planner__is_importable():
+    planner = QEResolutionPlanner()
+    assert planner is not None
+
+
+def test_qe_resolution_planner_snapshot__carries_native_interface_label():
+    from qe.routing import QEResolvedSnapshot
+
+    snapshot = QEResolvedSnapshot(binding=None, stat_inputs=tuple(), statbook=StatBook(rows={}, diagnostics={}), resolution_path="report_snapshot_hybrid")
+    assert snapshot.resolution_path == "report_snapshot_hybrid"
+
+
+def test_qe_family_query_result__supports_native_family_path_shape():
+    result = QEFamilyQueryResult(
+        binding=None,
+        stat_inputs=tuple(),
+        family_id="progression_runtime_with_perks",
+        requested_surface_ids=("state::tower.hp",),
+        response=None,
+        resolution_path="native_family_query",
+    )
+    assert result.family_id == "progression_runtime_with_perks"
+    assert result.resolution_path == "native_family_query"
+
+
+def test_qe_resolution_planner__can_run_native_family_query_for_progression_surface():
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    planner = QEResolutionPlanner()
+    result = planner.resolve_family_query(
+        state,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=True,
+        requested_surface_ids=("state::tower.hp",),
+    )
+
+    assert result.resolution_path == "native_family_query"
+    assert result.family_id == "progression_start_of_run"
+    assert result.response.resolved_surface_rows[0].surface_id == "state::tower.hp"
+
+
+def test_qe_resolution_planner__can_build_native_family_statbook_for_progression_surface():
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    planner = QEResolutionPlanner()
+    statbook = planner.resolve_declared_family_statbook(
+        state,
+        family_id="progression_start_of_run",
+        requested_surface_ids=("state::tower.hp",),
+        notes="test native progression statbook",
+        diagnostics={"source": "test"},
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+    )
+
+    assert "state::tower.hp" in statbook.rows
+    assert statbook.diagnostics["qe_resolution_interface"] == "native_family_query"
+    assert statbook.diagnostics["qe_resolution_backend"] == "native_family_query"
+    assert statbook.diagnostics["qe_native_family_id"] == "progression_start_of_run"
+
+
+def test_qe_resolution_planner__report_snapshot_uses_hybrid_backend_when_native_family_exists():
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    planner = QEResolutionPlanner()
+    snapshot = planner.resolve_report_snapshot(
+        state,
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perks_enabled=False,
+    )
+
+    assert snapshot.resolution_path == "report_snapshot_hybrid"
+    assert snapshot.statbook.diagnostics["qe_resolution_interface"] == "report_snapshot_planner"
+    assert snapshot.statbook.diagnostics["qe_resolution_backend"] == "report_snapshot_hybrid"
+    assert snapshot.statbook.diagnostics["qe_native_family_available"] is True

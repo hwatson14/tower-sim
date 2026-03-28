@@ -112,7 +112,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Module assertion source for Primordial Collapse optimizer-prep surface.
-  - node_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+  - node_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: false
@@ -120,7 +120,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Draft optimizer-prep Black Hole Digestor surface.
-  - node_id: mechanic_param::module.orbital_augment.electron_count
+  - node_id: state::module.orbital_augment.electron_count
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: true
@@ -128,7 +128,7 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned Orbital Augment electron count surface.
-  - node_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+  - node_id: state::module.primordial_collapse.bh_damage_reduction_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
     is_publishable: false
@@ -501,21 +501,21 @@ edges:
     verification_status: verified
     notes: Workshop Orb Speed routes to orb speed.
   - upstream_node_id: source_input::module:Black Hole Digestor
-    downstream_node_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    downstream_node_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
     publication_relevance: support_only
     verification_status: verified
     notes: Module assertions govern the draft Black Hole Digestor optimizer surface.
   - upstream_node_id: source_input::module:Orbital Augment
-    downstream_node_id: mechanic_param::module.orbital_augment.electron_count
+    downstream_node_id: state::module.orbital_augment.electron_count
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
     publication_relevance: publishable_path
     verification_status: verified
     notes: Module assertions govern Orbital Augment electron-count publication.
   - upstream_node_id: source_input::module:Primordial Collapse
-    downstream_node_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    downstream_node_id: state::module.primordial_collapse.bh_damage_reduction_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
     publication_relevance: support_only

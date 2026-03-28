@@ -31,7 +31,8 @@ File-status ledger lives in `REPO_INDEX.yaml`.
 | 7A | Live spine + quarantine markers | ✅ COMPLETE |
 | 7B | Default gate hardening | ✅ COMPLETE |
 | 8 | Archive demotion | complete |
-| 9 | Final consolidation and hardening | pending |
+| 9 | Final consolidation and hardening | ✅ COMPLETE |
+| 9A | Input + QE foundation lock | ✅ COMPLETE |
 
 ---
 
@@ -258,6 +259,62 @@ File-status ledger lives in `REPO_INDEX.yaml`.
 - `simulators/scenario.py` — **AUTHORITY**. Full content from `engine/scenario_engine.py`. No engine dependencies (clean extraction).
 - `simulators/timing.py` — **AUTHORITY**. Full content from `engine/timing_engine.py`. Updated: `engine.scenario_engine` → `simulators.scenario`. One transitional engine import: `engine.runtime_consumer_registry`.
 - `simulators/progression.py` — **AUTHORITY**. Full content from `engine/progression_recalc_bridge.py`. Already imported from `qe.*` (T3B). Transitional engine imports: `engine.perk_timeline_state`, `engine.runtime_consumer_registry`, `engine.runtime_consumer_executor`, `engine.incremental_*`.
+
+---
+
+## T9A — COMPLETE (Input + QE foundation lock)
+
+**Goal:** Freeze `input/` and `qe/` as foundation-grade layers before major simulator expansion.
+
+**Why now:**
+- `kb/` is effectively the locked mechanic-truth layer already.
+- `input/` defines runtime/account/request state.
+- `qe/` defines authoritative resolved state.
+- `simulators/` should project from those locked layers, not co-evolve their semantics.
+
+**In scope:**
+- make the `input/` direct-file inventory explicit and enforce it
+- make the `qe/` direct-file inventory explicit and enforce it
+- separate native QE foundation paths from report-only paths
+- eliminate hidden fallback/compat semantics from supported runtime paths
+- keep contract naming enforced throughout the active foundation spine
+- identify and explicitly mark any remaining bounded consolidation candidates in `qe/`
+- treat `qe/stat_resolution.py` as explicit report/compat boundary only, not native foundation
+
+**Out of scope:**
+- new simulator feature work
+- evaluator/advisor redesign
+- broad KB changes unless contract truth is actually wrong
+
+**Exit criteria:**
+- `input/` and `qe/` inventories match `ARCHITECTURE.md` and are test-enforced
+- `input/` is the sole active owner of manual input parsing and runtime-state assembly
+- `qe/` has an explicit native foundation API and an explicit report-only API, if both remain
+- no simulator-facing active path depends on compat/fallback resolution
+- any remaining `qe/routing.py -> qe/stat_resolution.py` dependency is explicit, minimal, and boundary-tested
+- `qe/stat_resolution.py` is documented and enforced as report/compat only
+- full runtime/output/test verification passes
+
+**Completion notes:**
+- `input/` inventory and ownership are explicit, enforced, and no longer leak upward.
+- `qe/` inventory is explicit, module policy shards are consolidated, and the native/runtime vs report split is codified.
+- `qe/stat_resolution.py` is fenced as explicit report/compat only; only `qe/routing.py` may import it, and only for the explicit report fallback.
+- Native simulator-facing QE paths are proven at planner, consumer-bundle, and incremental subset execution levels without touching report fallback.
+- App/report consumers are explicitly limited to `resolve_report_snapshot(...)`.
+- Full verification passes on the locked foundation spine.
+
+**Verification (final hardening):**
+- `python -m pytest -q tests\\shared\\test_import_boundaries.py tests\\simulators\\test_core_smoke.py tests\\qe\\test_contracts_models_smoke.py`
+- `python -m app.run_stats`
+- `python -m pytest -q`
+
+**Next tranche:**
+- Major simulator buildout may proceed on top of the locked `kb -> input -> qe` foundation.
+
+**Verification:**
+- targeted boundary/foundation tests
+- `python -m app.run_stats`
+- full `pytest`
 
 **Shims created:**
 | Legacy file | Now a shim for |

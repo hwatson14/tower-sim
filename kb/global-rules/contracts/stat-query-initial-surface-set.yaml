@@ -304,7 +304,7 @@ families:
       scenario_scoped: false
       semantics: resolved Plasma Cannon effect percent available to progression-driven
         boss-wave queries.
-    - surface_id: mechanic_param::module.orbital_augment.electron_count
+    - surface_id: state::module.orbital_augment.electron_count
       surface_kind: runtime_mechanic_surface
       surface_class: surface
       domain: modules
@@ -321,7 +321,7 @@ families:
       scenario_scoped: false
       semantics: resolved Orbital Augment electron count available to progression-driven
         boss-wave queries.
-    - surface_id: mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    - surface_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
       domain: modules
@@ -338,7 +338,7 @@ families:
       scenario_scoped: true
       semantics: resolved Black Hole Digestor per-free-upgrade temporary coin/kill
         bonus percent reserved for future optimizer analysis.
-    - surface_id: mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    - surface_id: state::module.primordial_collapse.bh_damage_reduction_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
       domain: modules
@@ -474,9 +474,9 @@ families:
       - state::tower.enemy_health_level_skip_pct
     - bundle_id: optimizer_module_effects
       surface_ids:
-      - mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
-      - mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
-      - mechanic_param::module.orbital_augment.electron_count
+      - state::module.primordial_collapse.bh_damage_reduction_pct
+      - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+      - state::module.orbital_augment.electron_count
   derived_v1:
     surfaces:
     - surface_id: derived::economy.income.bits

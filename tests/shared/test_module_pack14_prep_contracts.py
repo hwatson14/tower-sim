@@ -91,10 +91,10 @@ def test_module_pack14_nonruntime_draft_keeps_future_bundle_and_overlay_expectat
     bundle = draft['future_consumer_bundle']
     assert bundle['consumer_id'] == 'optimizer_analysis'
     assert bundle['bundle_id'] == 'optimizer_module_effects'
-    assert bundle['required_surface_ids'] == ['mechanic_param::module.primordial_collapse.bh_damage_reduction_pct']
+    assert bundle['required_surface_ids'] == ['state::module.primordial_collapse.bh_damage_reduction_pct']
     assert set(bundle['optional_surface_ids']) == {
-        'mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct',
-        'mechanic_param::module.orbital_augment.electron_count',
+        'state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct',
+        'state::module.orbital_augment.electron_count',
     }
     assert bundle['overlay_delta_expectations']['required'] == ['module_assertions']
     assert bundle['overlay_delta_expectations']['optional'] == ['assist_slot_choice']

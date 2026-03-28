@@ -7,7 +7,7 @@ from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from evaluators.compare import _build_kb_incomplete_areas
 from qe.stat_input_compiler import compile_stat_inputs
-from qe.stat_resolution import resolve_stats
+from qe.routing import QEResolutionPlanner
 
 
 @lru_cache(maxsize=1)
@@ -26,6 +26,16 @@ def _compiled_rows(state):
         state,
         preset_name=state.default_preset,
         state_mode='start_of_run',
+    )
+
+
+def _resolved_snapshot(state):
+    planner = QEResolutionPlanner()
+    return planner.resolve_report_snapshot(
+        state,
+        preset_name=state.default_preset,
+        state_mode='start_of_run',
+        perks_enabled=bool(state.active_perk_preset),
     )
 
 
@@ -104,19 +114,23 @@ def test_intro_sprint_is_mapped() -> None:
 
 
 def test_routing_diagnostics_distinguish_classes_without_false_unmapped_inflation() -> None:
-    stat_inputs = _compiled_rows(_base_account_state())
-    statbook = resolve_stats(stat_inputs)
+    state = _base_account_state()
+    snapshot = _resolved_snapshot(state)
+    statbook = snapshot.statbook
     class_counts = statbook.diagnostics.get('input_routing_class_counts') or {}
 
     assert class_counts.get('account_metadata', 0) >= 1
     assert class_counts.get('capability_policy', 0) >= 1
     assert class_counts.get('resolved', 0) >= 1
     assert statbook.diagnostics.get('unmapped_input_count', 0) == class_counts.get('truly_unrouted_unknown', 0)
+    assert statbook.diagnostics.get('qe_resolution_interface') == 'report_snapshot_planner'
 
 
 def test_compare_kb_incomplete_areas_only_count_true_unrouted_inputs() -> None:
-    stat_inputs = _compiled_rows(_base_account_state())
-    statbook = resolve_stats(stat_inputs)
+    state = _base_account_state()
+    snapshot = _resolved_snapshot(state)
+    stat_inputs = list(snapshot.stat_inputs)
+    statbook = snapshot.statbook
     kb_incomplete = _build_kb_incomplete_areas(stat_inputs, statbook.to_dict(), {})
     active_unmapped = {item['stat_name'] for item in kb_incomplete.get('active_unmapped_inputs', [])}
 

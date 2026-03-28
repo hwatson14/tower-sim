@@ -1,24 +1,22 @@
 {
   "survivor_order": [
-    "canonical_stat::tower_regen",
-    "canonical_stat::tower_hp",
-    "canonical_stat::tower_defense_absolute",
-    "canonical_stat::tower_damage",
-    "canonical_stat::wall_hp",
-    "canonical_stat::wall_regen"
+    "state::tower.regen",
+    "state::tower.hp",
+    "state::tower.defense_absolute",
+    "state::tower.damage",
+    "state::wall.hp",
+    "state::wall.regen"
   ],
   "rows": [
     {
-      "destination": "canonical_stat::tower_regen",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 139495301805622.95,
-      "ep_compare_value": 139495301805622.95,
-      "ep_reference_value": 44640000000000.0,
-      "delta": 94855301805622.95,
-      "relative_delta_pct": 212.48947537101918,
+      "destination": "state::tower.regen",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -249,16 +247,14 @@
       "note": "primary_upstream_survivor"
     },
     {
-      "destination": "canonical_stat::tower_hp",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 21906477802177.465,
-      "ep_compare_value": 21906477802177.465,
-      "ep_reference_value": 7100000000000.0,
-      "delta": 14806477802177.465,
-      "relative_delta_pct": 208.54194087573893,
+      "destination": "state::tower.hp",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -489,16 +485,14 @@
       "note": "primary_upstream_survivor"
     },
     {
-      "destination": "canonical_stat::tower_defense_absolute",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 1594662034.4768927,
-      "ep_compare_value": 1594662034.4768927,
-      "ep_reference_value": 318930000.0,
-      "delta": 1275732034.4768927,
-      "relative_delta_pct": 400.00377339130614,
+      "destination": "state::tower.defense_absolute",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -729,16 +723,14 @@
       "note": "primary_upstream_survivor"
     },
     {
-      "destination": "canonical_stat::tower_damage",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 23244331190.764286,
-      "ep_compare_value": 2616998806163.3306,
-      "ep_reference_value": 816500000000.0,
-      "delta": 1800498806163.3306,
-      "relative_delta_pct": 220.5142444780564,
+      "destination": "state::tower.damage",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Tourney",
       "compare_perk_state": "off",
       "package_value_source_state_mode": "max_progression",
@@ -971,16 +963,14 @@
       "note": "primary_upstream_survivor"
     },
     {
-      "destination": "canonical_stat::wall_hp",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 1182949801317583.0,
-      "ep_compare_value": 1182949801317583.0,
-      "ep_reference_value": 124180000000000.0,
-      "delta": 1058769801317583.0,
-      "relative_delta_pct": 852.6089558041416,
+      "destination": "state::wall.hp",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",
@@ -1211,16 +1201,14 @@
       "note": "downstream_reflection_of_tower_residue"
     },
     {
-      "destination": "canonical_stat::wall_regen",
-      "verification_status": "blocked",
-      "issues": [
-        "ep_reference_mismatch"
-      ],
-      "final_value": 732350334479520.5,
-      "ep_compare_value": 732350334479520.5,
-      "ep_reference_value": 234350000000000.0,
-      "delta": 498000334479520.5,
-      "relative_delta_pct": 212.50280967762768,
+      "destination": "state::wall.regen",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
       "compare_preset": "Farming",
       "compare_perk_state": "on",
       "package_value_source_state_mode": "max_progression",

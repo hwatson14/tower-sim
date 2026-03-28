@@ -33,12 +33,12 @@ The active surface should be small enough that an AI agent can navigate it in on
 
   input/
     manual_inputs.yaml       # single manual input file
+    manual_inputs.contract.yaml  # schema contracts for manual advisory/runtime-policy inputs
     loader.py                # loads and validates all inputs
     ids_parser.py            # IDS CSV parsing + IdsRaw type
     state_types.py           # source/account/scenario state dataclasses
     state_builder.py         # AccountState runtime assembly logic
     runtime_state.py         # thin sanctioned runtime-state entrypoint
-    manual_inputs.contract.yaml  # schema contracts for manual_advisory_inputs and observed_run_els_scenarios
     imports/
       ids.csv
       progress.csv
@@ -53,26 +53,22 @@ The active surface should be small enough that an AI agent can navigate it in on
   qe/
     contracts.py               # stat-query value contracts
     models.py                  # typed stat/query model structs
-    routing.py                 # query dispatch and routing
-    query_routing.py           # compiler routing indexes (moved from engine/)
+    query_routing.py           # compiler routing indexes and KB binding rules
+    stat_input_compiler.py     # stat input compiler
     materializer.py            # family baseline materialisation
     kernel.py                  # core deterministic resolution kernel
-    publication.py             # sanctioned surface publication
+    routing.py                 # planner, report snapshots, native family query entrypoints
+    stat_resolution.py         # bounded compat/report resolver; not simulator-facing foundation
+    publication.py             # sanctioned surface publication coordinator
     dependency_registry.py     # dependency graph and invalidation
     consumer_registry.py       # runtime consumer bundle registry
-    stat_resolution.py         # stat resolution core
-    stat_input_compiler.py     # stat input compiler (moved from compilers/)
-    kb_surfaces.py             # KB table loader for gameplay constants (moved from engine/)
-    perk_tables.py             # perk table definitions (moved from engine/)
-    query_perk_compiler.py     # perk compiler logic (moved from engine/)
-    query_state_mode_policy.py # state mode policy (moved from engine/)
-    query_currency_income.py   # currency income publisher
-    query_derived_composites.py  # derived composite publisher
-    query_module_draw_policy.py  # module draw policy publisher
-    query_module_drop_economy.py # module drop economy publisher
-    query_module_lab_policy.py   # module lab policy publisher
-    query_module_mission_economy.py # module mission economy publisher
-    query_module_runtime_policy.py  # module runtime policy publisher
+    kb_surfaces.py             # KB table loader for gameplay constants
+    perk_tables.py             # perk lookup table loader
+    query_perk_compiler.py     # perk-query compilation helper
+    query_state_mode_policy.py # state-mode policy helper
+    query_currency_income.py   # bounded publisher: currency income
+    query_derived_composites.py  # bounded publisher: derived composites
+    query_module_policy.py       # bounded publisher: module runtime/draw/drop/lab/mission policy
 
   simulators/
     progression.py              # progression projection
@@ -126,6 +122,57 @@ The active surface should be small enough that an AI agent can navigate it in on
 
 Small `__init__.py` package plumbing files are allowed only where mechanically required.
 
+### Input inventory control
+
+`input/` is a locked foundation layer and its direct-file inventory must remain explicit.
+Allowed direct files are:
+
+- `ids_parser.py`
+- `loader.py`
+- `manual_inputs.contract.yaml`
+- `manual_inputs.yaml`
+- `runtime_state.py`
+- `state_builder.py`
+- `state_types.py`
+
+No new direct files may be added under `input/` without updating this inventory and
+the matching enforcement test.
+
+### QE inventory control
+
+`qe/` is allowed to be broader than most layers, but its direct-file inventory must remain explicit.
+It is split into three categories:
+
+1. Foundation core
+   - `contracts.py`
+   - `models.py`
+   - `query_routing.py`
+   - `stat_input_compiler.py`
+   - `materializer.py`
+   - `kernel.py`
+   - `routing.py`
+   - `publication.py`
+
+Explicit report/compat boundary:
+- `stat_resolution.py`
+
+2. Support registries/loaders
+   - `dependency_registry.py`
+   - `consumer_registry.py`
+   - `kb_surfaces.py`
+   - `perk_tables.py`
+   - `query_perk_compiler.py`
+   - `query_state_mode_policy.py`
+
+3. Bounded publisher modules
+   - `query_currency_income.py`
+   - `query_derived_composites.py`
+   - `query_module_policy.py`
+
+The bounded publisher modules are allowed as active files today, but they are the first
+consolidation candidates if `qe/` needs to shrink further. No new direct files may be added
+under `qe/` without updating this inventory and the matching enforcement test.
+
 ---
 
 ## Layer contracts
@@ -133,6 +180,12 @@ Small `__init__.py` package plumbing files are allowed only where mechanically r
 ### `input/`
 **Owns:** imports, manual inputs, parsing, runtime-state assembly, one derived perk artifact.
 **Must not own:** mechanic truth, QE logic, simulation, scoring, recommendations.
+
+Locked-foundation rules:
+- `input/` is the only active owner of manual input parsing.
+- `input/` must not depend upward on `qe/`, `simulators/`, `evaluators/`, `advisors/`, or `app/`.
+- `input/loader.py` must not hide simulator behavior or QE fallback logic.
+- Derived artifacts under `input/derived/` must be deterministic and input-owned only.
 
 ### `kb/`
 **Owns:** canonical mechanic truth, formulas, tables, notes/source trace.
@@ -142,6 +195,16 @@ Small `__init__.py` package plumbing files are allowed only where mechanically r
 **Owns:** deterministic stat/query resolution, value contracts, routing, materialisation,
 dependency registry, publication of sanctioned surfaces.
 **Must not own:** simulation, evaluation, recommendation, orchestration.
+
+Locked-foundation rules:
+- Native family query/statbook APIs are the foundation surface for downstream runtime consumers.
+- Any broad report snapshot path must be explicit and must not masquerade as the native foundation path.
+- Compatibility/report resolution must not be on simulator-facing active paths.
+- Contract naming is mandatory internally and in published artifacts, except at explicit normalization boundaries.
+- The remaining `qe/routing.py -> qe/stat_resolution.py` seam is allowed only for:
+  - `resolve_stats` as the explicit report/compat fallback entrypoint
+- `qe/stat_resolution.py` is a report/compat module, not part of the locked native QE foundation core.
+- No additional `qe.stat_resolution` symbols may be imported into active QE/runtime consumers without updating this document and the matching boundary test.
 
 ### `simulators/`
 **Owns:** progression projection, timing projection, scenario projection.
@@ -211,3 +274,15 @@ A file survives as active only if ALL are true:
 - One derived perk file only (`input/derived/perks_derived.json`).
 - No duplicate active input locations.
 - Boundary tests enforce all the above rules automatically.
+
+## Foundation lock review criteria
+
+Before major simulator expansion, `input/` and `qe/` must be treated as locked foundation layers.
+That lock is only considered complete when all are true:
+
+- their direct-file inventories are explicit and test-enforced
+- ownership boundaries are explicit and test-enforced
+- native QE runtime APIs are separated from any report-only path
+- no supported runtime path relies on hidden compatibility or fallback semantics
+- any remaining `qe/routing.py -> qe/stat_resolution.py` dependency is explicit, minimal, and test-enforced
+- active naming matches the KB naming contract throughout the foundation spine

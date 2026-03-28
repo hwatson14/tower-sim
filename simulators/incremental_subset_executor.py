@@ -4,25 +4,37 @@ from collections import defaultdict
 from typing import Dict, Iterable, List, Mapping, Sequence
 
 from qe.dependency_registry import DependencyRegistry
-from qe.contracts import to_legacy_surface_id, to_v2_surface_id
-from qe.stat_resolution import _apply_phase3_postprocessing, _load_canonical_stats, _resolve_bucket
+from qe.contracts import normalize_surface_id_to_contract, to_legacy_surface_id, to_v2_surface_id
 from qe.models import StatInput
 from qe.models import StatRow
+from qe.routing import (
+    apply_bounded_phase3_postprocessing,
+    load_bounded_resolution_metadata,
+    resolve_bounded_bucket,
+)
+
+
+def _canon(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
+
+
+def _mech(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')
 
 _NODE_TO_BUCKET = {
-    'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier',
-    'support_surface::timing.gcomp_cooldown_reduction_seconds': 'mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds',
+    'support_surface::free_upgrade_multiplier': _canon('free_upgrade_multiplier'),
+    'support_surface::timing.gcomp_cooldown_reduction_seconds': _mech('module.galaxy_compressor.uw_cooldown_reduction_seconds'),
 }
 
 _ALIAS_OUTPUTS = {
-    'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier',
+    'support_surface::free_upgrade_multiplier': _canon('free_upgrade_multiplier'),
 }
 
 
 class IncrementalSubsetExecutor:
     def __init__(self, registry: DependencyRegistry | None = None) -> None:
         self._registry = DependencyRegistry.load_default() if registry is None else registry
-        self._canonical_stats = _load_canonical_stats()
+        self._canonical_stats = load_bounded_resolution_metadata()
 
     def execute(
         self,
@@ -134,7 +146,7 @@ class IncrementalSubsetExecutor:
                 meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
             meta = dict(meta)
             meta['_resolved_rows'] = rows
-            final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
+            final_value, status, notes, schema = resolve_bounded_bucket(destination_object_type, destination_id, contributors, meta)
             rows[bucket_key] = StatRow(
                 stat_name=bucket_key,
                 final_value=final_value,
@@ -146,7 +158,7 @@ class IncrementalSubsetExecutor:
                 schema=schema,
             )
 
-        _apply_phase3_postprocessing(rows)
+        apply_bounded_phase3_postprocessing(rows)
 
         missing = sorted(
             node

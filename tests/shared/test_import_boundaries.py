@@ -12,6 +12,7 @@ Gate: fast (no computation). Fails if any boundary is violated.
 """
 from __future__ import annotations
 
+import ast
 import pytest
 
 
@@ -59,6 +60,14 @@ _IMPORT_FORBIDDEN_INPUT_FROM_QE = re.compile(
     r"^\s*(?:from|import)\s+input\.(?:runtime_state|loader|state_builder)\b",
     re.MULTILINE,
 )
+_IMPORT_FORBIDDEN_QE_COMPAT_FROM_SIMULATORS = re.compile(
+    r"^\s*(?:from|import)\s+qe\.stat_resolution\b",
+    re.MULTILINE,
+)
+_IMPORT_QE_STAT_RESOLUTION = re.compile(
+    r"^\s*(?:from|import)\s+qe\.stat_resolution\b",
+    re.MULTILINE,
+)
 _QE_DIRECT_MANUAL_INPUT_READ = re.compile(
     r"manual_inputs\.yaml|manual_input_path|manual_advisory_inputs.*safe_load|safe_load.*manual_advisory_inputs",
     re.MULTILINE,
@@ -69,6 +78,13 @@ _IMPORT_DELETED_LEGACY_STATE_OWNERS = re.compile(
 )
 _ARCHIVED_MANUAL_INPUT_PATH = re.compile(r"input/assumptions\.yaml")
 _LOADER_RUNTIME_TIMELINE = re.compile(r"perk_timeline|generate_timeline|runtime_timeline")
+_DIRECT_QE_RESOLVE_CALL = re.compile(r"\bresolve_stats\(")
+_ACTIVE_OUTPUT_LEGACY_SURFACE_PREFIX = re.compile(
+    r"\b(?:canonical_stat|runtime_mechanic_param|environment_param|account_flag|account_context|meta_progression_param|cosmetic_bonus)::"
+)
+_LEGACY_PREFIX_IN_ACTIVE_CODE = re.compile(
+    r"(canonical_stat::|mechanic_param::|runtime_mechanic_param::|environment_param::|account_flag::|account_context::|meta_progression_param::|capability::|cosmetic_bonus::)"
+)
 
 _ROOT_FILE_ALLOWLIST = {
     ".gitignore",
@@ -82,6 +98,36 @@ _ROOT_FILE_ALLOWLIST = {
     "requirements.txt",
 }
 _TESTS_ROOT_FILE_ALLOWLIST = {"conftest.py"}
+_INPUT_FILE_ALLOWLIST = {
+    "ids_parser.py",
+    "loader.py",
+    "manual_inputs.contract.yaml",
+    "manual_inputs.yaml",
+    "runtime_state.py",
+    "state_builder.py",
+    "state_types.py",
+}
+_QE_FILE_ALLOWLIST = {
+    "__init__.py",
+    "consumer_registry.py",
+    "contracts.py",
+    "dependency_registry.py",
+    "kb_surfaces.py",
+    "kernel.py",
+    "materializer.py",
+    "models.py",
+    "perk_tables.py",
+    "publication.py",
+    "query_currency_income.py",
+    "query_derived_composites.py",
+    "query_module_policy.py",
+    "query_perk_compiler.py",
+    "query_routing.py",
+    "query_state_mode_policy.py",
+    "routing.py",
+    "stat_input_compiler.py",
+    "stat_resolution.py",
+}
 
 pytestmark = pytest.mark.live
 
@@ -152,6 +198,87 @@ def test_simulators_files_do_not_import_engine():
         assert not violations, (
             f"simulators/{py.name} imports engine: {violations}"
         )
+
+
+def test_simulators_do_not_import_qe_stat_resolution_directly():
+    """Simulator code must not depend directly on the compat/report resolver module."""
+    for py in _py_sources(SIMULATORS_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_FORBIDDEN_QE_COMPAT_FROM_SIMULATORS)
+        assert not violations, (
+            f"simulators/{py.name} imports qe.stat_resolution directly: {violations}"
+        )
+
+
+def test_only_qe_routing_may_import_qe_stat_resolution():
+    """qe.stat_resolution is an internal QE boundary; active non-QE files must not import it directly."""
+    allowed = {ROOT / "qe" / "routing.py"}
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists():
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            violations = _violation_lines(src, _IMPORT_QE_STAT_RESOLUTION)
+            if not violations:
+                continue
+            assert py in allowed, (
+                f"{py.relative_to(ROOT)} imports qe.stat_resolution directly: {violations}"
+            )
+
+
+def test_qe_routing_only_imports_allowed_stat_resolution_symbols():
+    """routing.py may touch qe.stat_resolution only for the explicit report fallback."""
+    path = ROOT / "qe" / "routing.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    allowed_names = {
+        "resolve_stats",
+    }
+    imported_names: set[str] = set()
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ImportFrom):
+            continue
+        if node.module != "qe.stat_resolution":
+            continue
+        imported_names.update(alias.name for alias in node.names)
+    assert imported_names == allowed_names, (
+        "qe/routing.py should import only the explicit report fallback from "
+        f"qe.stat_resolution, found {sorted(imported_names)!r}"
+    )
+
+
+def test_qe_routing_calls_report_fallback_only_in_hybrid_report_builders():
+    """The qe.stat_resolution fallback may only be invoked from explicit hybrid/report builders."""
+    path = ROOT / "qe" / "routing.py"
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+
+    parent_stack: list[ast.AST] = []
+    fallback_call_parents: list[str] = []
+
+    class _Visitor(ast.NodeVisitor):
+        def generic_visit(self, node):
+            parent_stack.append(node)
+            super().generic_visit(node)
+            parent_stack.pop()
+
+        def visit_Call(self, node: ast.Call):
+            func = node.func
+            if isinstance(func, ast.Name) and func.id == "_fallback_resolve_stats":
+                for parent in reversed(parent_stack):
+                    if isinstance(parent, ast.FunctionDef):
+                        fallback_call_parents.append(parent.name)
+                        break
+                else:
+                    fallback_call_parents.append("<module>")
+            self.generic_visit(node)
+
+    _Visitor().visit(tree)
+    assert sorted(fallback_call_parents) == [
+        "_resolve_hybrid_statbook_from_bound_inputs",
+        "_resolve_hybrid_statbook_from_rows",
+    ], (
+        "The report fallback should only be called from the explicit hybrid/report builders, "
+        f"found {sorted(fallback_call_parents)!r}"
+    )
 
 # ---------------------------------------------------------------------------
 # T12: no-bridge rules
@@ -286,3 +413,206 @@ def test_repo_layout_allowlists_remain_explicit():
     assert tests_root_files <= _TESTS_ROOT_FILE_ALLOWLIST, (
         f"Unexpected tests/ root files: {sorted(tests_root_files - _TESTS_ROOT_FILE_ALLOWLIST)}"
     )
+
+
+def test_input_direct_file_inventory_remains_explicit():
+    """Keep input/ root-file sprawl under an explicit architecture-approved allowlist."""
+    input_dir = ROOT / "input"
+    input_files = {p.name for p in input_dir.iterdir() if p.is_file()}
+    assert input_files <= _INPUT_FILE_ALLOWLIST, (
+        f"Unexpected input/ files: {sorted(input_files - _INPUT_FILE_ALLOWLIST)}"
+    )
+
+
+def test_qe_direct_file_inventory_remains_explicit():
+    """Keep qe/ root-file sprawl under an explicit architecture-approved allowlist."""
+    qe_files = {p.name for p in QE_DIR.iterdir() if p.is_file()}
+    assert qe_files <= _QE_FILE_ALLOWLIST, (
+        f"Unexpected qe/ files: {sorted(qe_files - _QE_FILE_ALLOWLIST)}"
+    )
+
+
+def test_app_and_compare_use_qe_planner_not_direct_resolve_calls():
+    """App pipeline and compare builder should consume the QE planner's explicit report path, not raw resolve_stats or the ambiguous snapshot alias."""
+    targets = [
+        ROOT / "app" / "pipeline.py",
+        ROOT / "evaluators" / "compare.py",
+    ]
+    for path in targets:
+        src = path.read_text(encoding="utf-8")
+        assert "QEResolutionPlanner" in src, f"{path.relative_to(ROOT)} is missing the native QE planner interface."
+        assert "resolve_report_snapshot(" in src, (
+            f"{path.relative_to(ROOT)} should use the planner's explicit report snapshot path."
+        )
+        assert "resolve_snapshot(" not in src, (
+            f"{path.relative_to(ROOT)} should not use the ambiguous resolve_snapshot alias on the active path."
+        )
+        violations = _violation_lines(src, _DIRECT_QE_RESOLVE_CALL)
+        assert not violations, f"{path.relative_to(ROOT)} still calls resolve_stats directly: {violations}"
+
+
+def test_only_app_pipeline_and_compare_use_report_snapshot():
+    """The explicit report snapshot path belongs only to report/orchestration consumers."""
+    allowed = {
+        ROOT / "app" / "pipeline.py",
+        ROOT / "evaluators" / "compare.py",
+        ROOT / "qe" / "routing.py",
+    }
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists():
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            if "resolve_report_snapshot(" not in src:
+                continue
+            assert py in allowed, (
+                f"{py.relative_to(ROOT)} uses resolve_report_snapshot outside the report/orchestration boundary."
+            )
+
+
+def test_simulator_family_queries_default_to_qe_planner():
+    """Default bounded simulator family-query paths should lean on the shared QE planner interface."""
+    progression_src = (ROOT / "simulators" / "progression.py").read_text(encoding="utf-8")
+    timing_src = (ROOT / "simulators" / "timing.py").read_text(encoding="utf-8")
+
+    assert "QEResolutionPlanner" in progression_src, "simulators/progression.py is missing the shared QE planner interface."
+    assert "resolve_declared_family_query" in progression_src, (
+        "simulators/progression.py should use planner-backed declared-family queries on its default path."
+    )
+    assert "resolve_report_snapshot(" not in progression_src, (
+        "simulators/progression.py must not use the report snapshot path on simulator-facing execution."
+    )
+    assert "resolve_snapshot(" not in progression_src, (
+        "simulators/progression.py must not use the ambiguous snapshot alias on simulator-facing execution."
+    )
+    assert "QEResolutionPlanner" in timing_src, "simulators/timing.py is missing the shared QE planner interface."
+    assert "resolve_rows_declared_family_query" in timing_src, (
+        "simulators/timing.py should use planner-backed rows-family queries on its default path."
+    )
+    assert "resolve_report_snapshot(" not in timing_src, (
+        "simulators/timing.py must not use the report snapshot path on simulator-facing execution."
+    )
+    assert "resolve_snapshot(" not in timing_src, (
+        "simulators/timing.py must not use the ambiguous snapshot alias on simulator-facing execution."
+    )
+
+
+def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
+    """Committed active JSON artifacts under out/ must publish contract names, not legacy prefixes."""
+    output_dir = ROOT / "out"
+    for path in sorted(output_dir.glob("*.json")):
+        text = path.read_text(encoding="utf-8")
+        violations = _ACTIVE_OUTPUT_LEGACY_SURFACE_PREFIX.findall(text)
+        assert not violations, f"{path.relative_to(ROOT)} still publishes legacy surface prefixes: {sorted(set(violations))}"
+
+
+def test_compare_and_qe_derived_only_use_legacy_prefixes_in_normalization_helpers():
+    """Legacy surface prefixes may only appear inside the dedicated normalization helper shims."""
+    allowed_lines = {
+        "return _sid(f'canonical_stat::{destination_id}')",
+        "return _sid(f'mechanic_param::{destination_id}')",
+        "return _sid(f'runtime_mechanic_param::{destination_id}')",
+        "return _sid(f'capability::{destination_id}')",
+        "return _sid(f'account_flag::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
+    }
+    targets = [
+        ROOT / "evaluators" / "compare.py",
+        ROOT / "qe" / "query_derived_composites.py",
+    ]
+    for path in targets:
+        src = path.read_text(encoding="utf-8")
+        violations = [
+            line.strip()
+            for line in src.splitlines()
+            if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line) and line.strip() not in allowed_lines
+        ]
+        assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
+
+
+def test_qe_internal_naming_files_only_use_legacy_prefixes_in_normalization_helpers():
+    """QE internal naming-heavy modules may only mention legacy prefixes inside normalization helper lines."""
+    allowed_lines = {
+        "return _sid(f'mechanic_param::{destination_id}')",
+        "return normalize_surface_id_to_contract('canonical_stat::free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',",
+        "return normalize_surface_id_to_contract('mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',",
+    }
+    targets = [
+        ROOT / "qe" / "routing.py",
+        ROOT / "qe" / "materializer.py",
+        ROOT / "qe" / "publication.py",
+    ]
+    for path in targets:
+        violations = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
+                if path.name == "routing.py" and stripped == "return f'mechanic_param::{destination_id}'":
+                    continue
+                if path.name == "routing.py" and stripped in {
+                    "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'account_flag::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'account_context::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'capability::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')",
+                }:
+                    continue
+                if path.name == "materializer.py" and stripped.startswith("normalize_surface_id_to_contract("):
+                    continue
+                if path.name == "publication.py" and "_sid('account_context::account_context.farming_tier')" in stripped:
+                    continue
+                if path.name == "routing.py" and "legacy runtime_mechanic_param:: prefix" in stripped:
+                    continue
+                violations.append(stripped)
+        assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
+
+
+def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helpers():
+    """Simulator naming-heavy modules may only mention legacy prefixes inside normalization helper lines."""
+    targets = [
+        ROOT / "simulators" / "scenario.py",
+        ROOT / "simulators" / "timing.py",
+        ROOT / "simulators" / "incremental_subset_executor.py",
+    ]
+    for path in targets:
+        violations = []
+        for line in path.read_text(encoding="utf-8").splitlines():
+            stripped = line.strip()
+            if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
+                if path.name == "scenario.py" and stripped == "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')":
+                    continue
+                if path.name == "timing.py" and stripped in {
+                    "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
+                }:
+                    continue
+                if path.name == "incremental_subset_executor.py" and stripped in {
+                    "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
+                    "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
+                }:
+                    continue
+                violations.append(stripped)
+        assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
+
+
+def test_qe_stat_resolution_only_uses_legacy_prefixes_in_normalization_helpers():
+    """Fallback stat-resolution shim may only mention legacy prefixes in its normalization helper definitions."""
+    path = ROOT / "qe" / "stat_resolution.py"
+    allowed = {
+        "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'account_flag::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'account_context::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'capability::{destination_id}')",
+        "return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')",
+    }
+    violations = [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line) and line.strip() not in allowed
+    ]
+    assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"

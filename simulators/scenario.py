@@ -30,7 +30,25 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
+from qe.contracts import normalize_surface_id_to_contract
+
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _canon(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_canon('{destination_id}'))
+
+
+def _mech(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_mech('{destination_id}'))
+
+
+def _runtime(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_runtime('{destination_id}'))
+
+
+def _env(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_env('{destination_id}'))
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -332,13 +350,16 @@ def config_from_statbook(
     surfaces needed by the scenario engine.
 
     CF damage reduction is auto-read from the stat engine surface
-    ``mechanic_param::uw.chrono_field.damage_reduction_pct`` when resolved.
+    ``state::uw.chrono_field.damage_reduction_pct`` when resolved.
     The ``cf_damage_reduction_pct`` parameter overrides this if supplied
     (non-None), providing a fallback for stat engine versions that do not
     yet emit the surface.
     """
+    def _sid(surface_id: str) -> str:
+        return normalize_surface_id_to_contract(surface_id)
+
     def _val(key: str, default: float = 0.0) -> float:
-        row = statbook_rows.get(key, {})
+        row = statbook_rows.get(_sid(key), {})
         v = row.get("final_value")
         if v is None:
             return default
@@ -351,7 +372,7 @@ def config_from_statbook(
     if cf_damage_reduction_pct is not None:
         resolved_cf_dr = cf_damage_reduction_pct
     else:
-        resolved_cf_dr = _val("mechanic_param::uw.chrono_field.damage_reduction_pct")
+        resolved_cf_dr = _val(_mech('uw.chrono_field.damage_reduction_pct'))
 
     return ScenarioConfig(
         mode_id=mode_id,
@@ -363,35 +384,35 @@ def config_from_statbook(
         bc_reduction_group3_pct=bc_reduction_group3_pct,
         bc_reduction_group4_pct=bc_reduction_group4_pct,
 
-        bh_base_duration_s=_val("mechanic_param::uw.black_hole.duration_seconds"),
-        bh_base_cooldown_s=_val("mechanic_param::uw.black_hole.cooldown_seconds"),
-        cf_base_duration_s=_val("mechanic_param::uw.chrono_field.duration_seconds"),
-        cf_base_cooldown_s=_val("mechanic_param::uw.chrono_field.cooldown_seconds"),
-        cf_slow_pct=_val("mechanic_param::uw.chrono_field.slow_pct"),
+        bh_base_duration_s=_val(_mech('uw.black_hole.duration_seconds')),
+        bh_base_cooldown_s=_val(_mech('uw.black_hole.cooldown_seconds')),
+        cf_base_duration_s=_val(_mech('uw.chrono_field.duration_seconds')),
+        cf_base_cooldown_s=_val(_mech('uw.chrono_field.cooldown_seconds')),
+        cf_slow_pct=_val(_mech('uw.chrono_field.slow_pct')),
         cf_damage_reduction_pct=resolved_cf_dr,
-        gt_base_duration_s=_val("mechanic_param::uw.golden_tower.duration_seconds"),
-        gt_base_cooldown_s=_val("mechanic_param::uw.golden_tower.cooldown_seconds"),
+        gt_base_duration_s=_val(_mech('uw.golden_tower.duration_seconds')),
+        gt_base_cooldown_s=_val(_mech('uw.golden_tower.cooldown_seconds')),
 
-        bh_perk_duration_add_s=_val("runtime_mechanic_param::uw.black_hole.duration_seconds"),
-        bh_perk_cooldown_add_s=_val("runtime_mechanic_param::uw.black_hole.cooldown_seconds"),
-        cf_perk_duration_add_s=_val("runtime_mechanic_param::uw.chrono_field.duration_seconds"),
+        bh_perk_duration_add_s=_val(_runtime('uw.black_hole.duration_seconds')),
+        bh_perk_cooldown_add_s=_val(_runtime('uw.black_hole.cooldown_seconds')),
+        cf_perk_duration_add_s=_val(_runtime('uw.chrono_field.duration_seconds')),
 
-        env_enemy_damage_multiplier=_val("environment_param::enemy.damage_multiplier", 1.0),
-        env_boss_health_multiplier=_val("environment_param::enemy.boss.health_multiplier", 1.0),
-        env_boss_speed_multiplier=_val("environment_param::enemy.boss.speed_multiplier", 1.0),
+        env_enemy_damage_multiplier=_val(_env('enemy.damage_multiplier'), 1.0),
+        env_boss_health_multiplier=_val(_env('enemy.boss.health_multiplier'), 1.0),
+        env_boss_speed_multiplier=_val(_env('enemy.boss.speed_multiplier'), 1.0),
 
-        bot_amplify_duration_s=_val("mechanic_param::bot.amplify.duration_seconds"),
-        bot_amplify_cooldown_s=_val("mechanic_param::bot.amplify.cooldown_seconds"),
-        bot_golden_duration_s=_val("mechanic_param::bot.golden.duration_seconds"),
-        bot_golden_cooldown_s=_val("mechanic_param::bot.golden.cooldown_seconds"),
-        bot_thunder_duration_s=_val("mechanic_param::bot.thunder.duration_seconds"),
-        bot_thunder_cooldown_s=_val("mechanic_param::bot.thunder.cooldown_seconds"),
-        bot_flame_cooldown_s=_val("mechanic_param::bot.flame.cooldown_seconds"),
-        bot_flame_damage_reduction_pct=_val("mechanic_param::bot.flame.damage_reduction_pct"),
+        bot_amplify_duration_s=_val(_mech('bot.amplify.duration_seconds')),
+        bot_amplify_cooldown_s=_val(_mech('bot.amplify.cooldown_seconds')),
+        bot_golden_duration_s=_val(_mech('bot.golden.duration_seconds')),
+        bot_golden_cooldown_s=_val(_mech('bot.golden.cooldown_seconds')),
+        bot_thunder_duration_s=_val(_mech('bot.thunder.duration_seconds')),
+        bot_thunder_cooldown_s=_val(_mech('bot.thunder.cooldown_seconds')),
+        bot_flame_cooldown_s=_val(_mech('bot.flame.cooldown_seconds')),
+        bot_flame_damage_reduction_pct=_val(_mech('bot.flame.damage_reduction_pct')),
 
-        tower_orb_count=int(_val("canonical_stat::tower_orb_count")),
-        tower_orb_speed_rpm=_val("canonical_stat::tower_orb_speed_rpm"),
-        electron_count=int(_val("mechanic_param::module.orbital_augment.electron_count")),
+        tower_orb_count=int(_val(_canon('tower_orb_count'))),
+        tower_orb_speed_rpm=_val(_canon('tower_orb_speed_rpm')),
+        electron_count=int(_val(_mech('module.orbital_augment.electron_count'))),
     )
 
 

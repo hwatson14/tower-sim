@@ -1,15 +1,12 @@
 {
-  "destination": "canonical_stat::tower_damage",
+  "destination": "state::tower.damage",
   "compare_state_key": "Tourney__perks_off",
   "compare_preset": "Tourney",
   "compare_perk_state": "off",
-  "package_value_before_runtime_assumptions": 51519902899.010025,
-  "package_value_after_runtime_assumptions": 2616998806163.3306,
+  "package_value_before_runtime_assumptions": null,
+  "package_value_after_runtime_assumptions": null,
   "ep_value": 816500000000.0,
-  "runtime_compare_assumptions": [
-    "assumed_maxed_berserker_x8_under_max_progression",
-    "assumed_project_funding_at_cash_50b_under_max_progression__rarity_family_mythic__multiplier_6.349485"
-  ],
+  "runtime_compare_assumptions": [],
   "ep_evidence": {
     "assumed_cash": 50000000000.0,
     "evidence_strength": "user_provided_for_current_ep_compare_basis",
@@ -22,9 +19,9 @@
     "berserker_assumption_multiplier": 8.0
   },
   "derived_fit": {
-    "applied_runtime_multiplier": 50.795880017344075,
-    "required_total_runtime_multiplier_to_match_ep": 15.848244155283323,
-    "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": 2.4959889108915125
+    "applied_runtime_multiplier": null,
+    "required_total_runtime_multiplier_to_match_ep": null,
+    "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": null
   },
   "assessment": {
     "calculator_change_recommended": false,
@@ -34,27 +31,19 @@
   "scenarios": [
     {
       "scenario": "current_package_runtime_assumptions",
-      "runtime_multiplier": 50.795880017344075,
-      "package_value": 2616998806163.3306,
-      "relative_delta_pct": 220.51424447805638,
-      "required_residual_multiplier_to_match_ep": 0.31199861386143907,
+      "runtime_multiplier": null,
+      "package_value": null,
+      "relative_delta_pct": null,
+      "required_residual_multiplier_to_match_ep": null,
       "note": "Current compare-only runtime assumptions as emitted by the package."
     },
     {
       "scenario": "ep_cash_50b_with_berserker_x8",
       "runtime_multiplier": 50.795880017344075,
-      "package_value": 2616998806163.3306,
-      "relative_delta_pct": 220.51424447805638,
-      "required_residual_multiplier_to_match_ep": 0.31199861386143907,
+      "package_value": null,
+      "relative_delta_pct": null,
+      "required_residual_multiplier_to_match_ep": null,
       "note": "EP compare uses Project Funding cash assumption of 50b; this scenario keeps Berserker at x8 and swaps only the PF cash assumption."
-    },
-    {
-      "scenario": "ep_cash_50b_with_fitted_berserker",
-      "runtime_multiplier": 15.848244155283323,
-      "package_value": 816500000000.0,
-      "relative_delta_pct": 0.0,
-      "required_residual_multiplier_to_match_ep": 1.0,
-      "note": "Diagnostic only: if 50b cash is fixed, this is the Berserker multiplier that would exactly close the EP row."
     }
   ]
 }

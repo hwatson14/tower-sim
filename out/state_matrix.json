@@ -11,7 +11,7 @@
     },
     "input_count": 407,
     "mapped_input_count": 399,
-    "resolved_stat_count": 251,
+    "resolved_stat_count": 247,
     "partially_resolved_stat_count": 0
   },
   "gem_respec": {
@@ -26,7 +26,7 @@
     },
     "input_count": 471,
     "mapped_input_count": 463,
-    "resolved_stat_count": 284,
+    "resolved_stat_count": 283,
     "partially_resolved_stat_count": 0
   },
   "start_of_run": {
@@ -41,7 +41,7 @@
     },
     "input_count": 586,
     "mapped_input_count": 577,
-    "resolved_stat_count": 310,
+    "resolved_stat_count": 309,
     "partially_resolved_stat_count": 0
   },
   "max_progression": {
@@ -59,7 +59,7 @@
     },
     "input_count": 586,
     "mapped_input_count": 577,
-    "resolved_stat_count": 310,
+    "resolved_stat_count": 309,
     "partially_resolved_stat_count": 0
   }
 }

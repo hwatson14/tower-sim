@@ -24,7 +24,6 @@ if str(ROOT) not in sys.path:
 
 # Active layer imports
 from qe.stat_input_compiler import (
-    compile_stat_inputs,
     normalize_state_mode,
     SUPPORTED_STATE_MODES,
     state_mode_support,
@@ -81,9 +80,9 @@ from evaluators.compare import (
 )
 from evaluators.scorer import compute_optimizer_scores
 from input.loader import load_inputs
-from input.ids_parser import parse_ids
 from qe.publication import publish_phase3_query_surfaces
-from qe.routing import resolve_stats
+from qe.routing import QEResolutionPlanner
+from qe.contracts import normalize_contract_payload
 from simulators.perk_timeline_generator import (
     PerkTimelinePolicy,
     generate_timeline_from_policy,
@@ -136,6 +135,10 @@ def _json_sanitize(obj):
     return obj
 
 
+def _contract_json_payload(obj):
+    return normalize_contract_payload(_json_sanitize(obj))
+
+
 def _write_core_outputs(
     *,
     out_dir: Path,
@@ -154,7 +157,7 @@ def _write_core_outputs(
     artifact_contract_manifest: dict,
     family_completeness_matrix: dict,
 ) -> None:
-    js = _json_sanitize
+    js = _contract_json_payload
     (out_dir / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
     (out_dir / 'account_state.json').write_text(
         json.dumps(js(_sanitized_account_state_for_output(account_state, canonical_output_preset)), indent=2, default=str)
@@ -186,7 +189,7 @@ def _write_core_outputs(
         json.dumps(js(family_completeness_matrix), indent=2, default=str)
     )
     (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
-    verification_rows = [{'destination': k, **v} for k, v in line_verification.items()]
+    verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
     pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
 
 
@@ -381,7 +384,10 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
     }
     if diag_output_dir is not None:
         diag_output_dir.mkdir(parents=True, exist_ok=True)
-        (diag_output_dir / 'perk_generation_diagnostics.json').write_text(json.dumps(diag, indent=2), encoding='utf-8')
+        (diag_output_dir / 'perk_generation_diagnostics.json').write_text(
+            json.dumps(_contract_json_payload(diag), indent=2),
+            encoding='utf-8',
+        )
 
     metadata = {
         'requested_perks_path': 'manual_inputs.yaml:perk_policy',
@@ -444,9 +450,9 @@ def run_pipeline(args) -> int:
     args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
     args.out.mkdir(parents=True, exist_ok=True)
 
-    ids_raw = parse_ids(args.ids)
     _manual_inputs_path = getattr(args, 'manual_inputs', None)
     _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=_manual_inputs_path)
+    ids_raw = _input_bundle.ids_raw
     loadout_config = _input_bundle.loadout_config
     perk_config, perk_config_resolution = _resolve_perk_config(
         perk_mode=args.perk_mode,
@@ -457,13 +463,13 @@ def run_pipeline(args) -> int:
     )
     formula_ledger = _load_formula_ledger(FORMULA_LEDGER_PATH)
     ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
+    qe_planner = QEResolutionPlanner()
 
     (
         account_state,
         compare_rows_by_preset,
         compare_publishable_rows_by_preset,
         package_stage_context,
-        default_materialization,
     ) = _build_compare_rows_by_preset(
         ids_raw=ids_raw,
         loadout_config=loadout_config,
@@ -473,21 +479,18 @@ def run_pipeline(args) -> int:
         default_preset=args.preset,
         ep_oracle=ep_oracle,
         perk_state=args.perk_state,
-        return_default_materialization=True,
+        snapshot_planner=qe_planner,
     )
 
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
-    if default_materialization is None:
-        stat_inputs = compile_stat_inputs(
-            account_state,
-            preset_name=args.preset,
-            state_mode=args.state_mode,
-            perks_enabled=perks_enabled,
-        )
-        statbook = resolve_stats(stat_inputs)
-    else:
-        stat_inputs = default_materialization['stat_inputs']
-        statbook = default_materialization['statbook']
+    main_snapshot = qe_planner.resolve_report_snapshot(
+        account_state,
+        preset_name=args.preset,
+        state_mode=args.state_mode,
+        perks_enabled=perks_enabled,
+    )
+    stat_inputs = list(main_snapshot.stat_inputs)
+    statbook = main_snapshot.statbook
     publish_phase3_query_surfaces(
         statbook.rows,
         manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
@@ -502,13 +505,14 @@ def run_pipeline(args) -> int:
 
     state_matrix = {}
     for state_mode in SUPPORTED_STATE_MODES:
-        matrix_inputs = compile_stat_inputs(
+        matrix_snapshot = qe_planner.resolve_report_snapshot(
             account_state,
             preset_name=args.preset,
             state_mode=state_mode,
             perks_enabled=perks_enabled,
         )
-        matrix_statbook_obj = resolve_stats(matrix_inputs)
+        matrix_inputs = list(matrix_snapshot.stat_inputs)
+        matrix_statbook_obj = matrix_snapshot.statbook
         publish_phase3_query_surfaces(
             matrix_statbook_obj.rows,
             manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
@@ -541,21 +545,28 @@ def run_pipeline(args) -> int:
     _annotate_compare_display_fields(ep_compare_publishable)
     current_compare_summary = _build_compare_status_summary(ep_compare_publishable)
 
-    (
-        projected_account_state,
-        projected_compare_rows_by_preset,
-        projected_compare_publishable_rows_by_preset,
-        projected_stage_context,
-    ) = _build_compare_rows_by_preset(
-        ids_raw=ids_raw,
-        loadout_config=loadout_config,
-        perk_config=perk_config,
-        formula_ledger=formula_ledger,
-        state_mode='max_progression',
-        default_preset=args.preset,
-        ep_oracle=ep_oracle,
-        perk_state=args.perk_state,
-    )
+    if args.state_mode == 'max_progression':
+        projected_account_state = account_state
+        projected_compare_rows_by_preset = compare_rows_by_preset
+        projected_compare_publishable_rows_by_preset = compare_publishable_rows_by_preset
+        projected_stage_context = package_stage_context
+    else:
+        (
+            projected_account_state,
+            projected_compare_rows_by_preset,
+            projected_compare_publishable_rows_by_preset,
+            projected_stage_context,
+        ) = _build_compare_rows_by_preset(
+            ids_raw=ids_raw,
+            loadout_config=loadout_config,
+            perk_config=perk_config,
+            formula_ledger=formula_ledger,
+            state_mode='max_progression',
+            default_preset=args.preset,
+            ep_oracle=ep_oracle,
+            perk_state=args.perk_state,
+            snapshot_planner=qe_planner,
+        )
     projected_ep_compare_publishable = _build_ep_compare(
         ep_oracle, projected_compare_publishable_rows_by_preset, formula_ledger,
         projected_stage_context, **_ep_kwargs
@@ -626,6 +637,11 @@ def run_pipeline(args) -> int:
         'stat_input_count': len(stat_inputs),
         'statbook_row_count': len(statbook.rows),
         'engine_status': statbook.diagnostics.get('resolver_status'),
+        'qe_resolution_interface': statbook.diagnostics.get('qe_resolution_interface'),
+        'qe_resolution_backend': statbook.diagnostics.get('qe_resolution_backend'),
+        'qe_native_family_available': statbook.diagnostics.get('qe_native_family_available'),
+        'qe_native_family_id': statbook.diagnostics.get('qe_native_family_id'),
+        'qe_native_family_merge': statbook.diagnostics.get('qe_native_family_merge'),
         'publish_status': statbook_publishable_dict.get('diagnostics', {}).get('oracle_policy'),
         'formula_ledger_version': formula_ledger.get('version'),
         'ep_compare_stage_rules': {
@@ -853,22 +869,22 @@ def run_pipeline(args) -> int:
             stale_path.unlink()
 
     (args.out / 'tower_regen_closure_report.json').write_text(
-        json.dumps(_json_sanitize(diagnostics['tower_regen_closure_report']), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics['tower_regen_closure_report']), indent=2, default=str)
     )
     (args.out / 'tower_hp_semantic_gap_report.json').write_text(
-        json.dumps(_json_sanitize(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_regen_ep_semantic_gap_report.json').write_text(
-        json.dumps(_json_sanitize(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(
-        json.dumps(_json_sanitize(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_damage_runtime_gap_report.json').write_text(
-        json.dumps(_json_sanitize(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
     )
     (args.out / 'diagnostics.json').write_text(
-        json.dumps(_json_sanitize(diagnostics), indent=2, default=str)
+        json.dumps(_contract_json_payload(diagnostics), indent=2, default=str)
     )
 
     return 0

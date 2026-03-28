@@ -49,3 +49,64 @@ def test_scorer_contract_snapshot_is_loaded__required_surfaces_present():
     assert "derived::ehp" in required
     assert "derived::edamage" in required
     assert "derived::eecon" in required
+
+
+def test_compare_builder_reuses_equivalent_qe_requests():
+    from types import SimpleNamespace
+
+    import evaluators.compare as compare
+    from qe.models import StatBook, StatRow
+
+    class FakePlanner:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def resolve_report_snapshot(self, account_state, **kwargs):
+            self.calls += 1
+            statbook = StatBook(
+                rows={
+                    "state::tower.hp": StatRow(
+                        stat_name="state::tower.hp",
+                        final_value=123.0,
+                        value_type="scalar",
+                        source_count=1,
+                        contributors=[],
+                    )
+                },
+                diagnostics={},
+            )
+            return SimpleNamespace(statbook=statbook, stat_inputs=tuple())
+
+    fake_state = SimpleNamespace(
+        active_perk_preset="Farming",
+        card_presets={"Farming": []},
+        module_presets={"Farming": {}},
+        modules_inventory={},
+        labs={},
+    )
+
+    monkeypatch = pytest.MonkeyPatch()
+    try:
+        monkeypatch.setattr(compare, "build_runtime_state", lambda *args, **kwargs: fake_state)
+        monkeypatch.setattr(compare, "publish_phase3_query_surfaces", lambda *args, **kwargs: None)
+        monkeypatch.setattr(compare, "_annotate_display_fields", lambda *args, **kwargs: None)
+        monkeypatch.setattr(compare, "_build_publishable_statbook", lambda statbook_dict, formula_ledger: {"rows": dict(statbook_dict["rows"])})
+        monkeypatch.setattr(compare, "_formula_contract", lambda *args, **kwargs: {})
+
+        planner = FakePlanner()
+        _, rows_by_preset, _, _ = compare._build_compare_rows_by_preset(
+            ids_raw=None,
+            loadout_config={},
+            perk_config={},
+            formula_ledger={},
+            state_mode="max_progression",
+            default_preset="Farming",
+            ep_oracle={"state::tower.hp": {}},
+            perk_state="on",
+            snapshot_planner=planner,
+        )
+    finally:
+        monkeypatch.undo()
+
+    assert set(rows_by_preset) == {"Farming", "Farming__perks_on"}
+    assert planner.calls == 1
