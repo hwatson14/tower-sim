@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from functools import lru_cache
 from math import prod
 from pathlib import Path
 from types import MappingProxyType
@@ -49,6 +50,21 @@ _MUTATION_METADATA_FIELDS = frozenset(
 _REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', 'factor'})
 
 
+@lru_cache(maxsize=1)
+def _load_overlay_contract() -> Mapping[str, Any]:
+    return MappingProxyType(yaml.safe_load(_OVERLAY_CONTRACT_PATH.read_text()) or {})
+
+
+@lru_cache(maxsize=1)
+def _load_query_contract() -> Mapping[str, Any]:
+    return MappingProxyType(yaml.safe_load(_QUERY_CONTRACT_PATH.read_text()) or {})
+
+
+@lru_cache(maxsize=1)
+def _load_family_contract() -> Mapping[str, Any]:
+    return MappingProxyType(yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {})
+
+
 @dataclass(frozen=True)
 class OverlayAppliedContributorMap:
     account_snapshot_id: str
@@ -86,8 +102,8 @@ class QueryResponse:
 
 class OverlayApplicator:
     def __init__(self) -> None:
-        overlay_contract = yaml.safe_load(_OVERLAY_CONTRACT_PATH.read_text()) or {}
-        family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
+        overlay_contract = _load_overlay_contract()
+        family_contract = _load_family_contract()
         self._required_fields = tuple(overlay_contract.get('required_fields') or ())
         self._allowed_delta_types = frozenset(overlay_contract.get('allowed_delta_types') or ())
         self._target_scope_allowed_keys = frozenset(((overlay_contract.get('target_scope_schema') or {}).get('allowed_keys') or ()))
@@ -243,7 +259,7 @@ class OverlayApplicator:
 
 class StatQueryKernel:
     def __init__(self, *, registry: DependencyRegistry | None = None) -> None:
-        query_contract = yaml.safe_load(_QUERY_CONTRACT_PATH.read_text()) or {}
+        query_contract = _load_query_contract()
         self.materializer = FamilyBaselineMaterializer()
         self.overlay_applicator = OverlayApplicator()
         self.registry = DependencyRegistry.load_default() if registry is None else registry
@@ -353,6 +369,11 @@ class StatQueryKernel:
         closure = self.registry.closure_upstream(requested)
         closure.update(requested)
         return tuple(sorted(closure))
+
+
+@lru_cache(maxsize=1)
+def get_default_query_kernel() -> StatQueryKernel:
+    return StatQueryKernel()
 
 
 def _required(mapping: Mapping[str, Any], field: str) -> Any:

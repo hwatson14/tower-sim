@@ -4,7 +4,7 @@ from collections.abc import Sequence
 
 from qe.contracts import to_v2_surface_id
 from qe.models import StateIdentity
-from qe.kernel import QueryResponse, StatQueryKernel
+from qe.kernel import QueryResponse, get_default_query_kernel
 from qe.stat_resolution import (
     _canonical_source_multiplier,
     _multiplier_from_value,
@@ -134,7 +134,7 @@ def _normalized_surface_id(row: StatInput) -> str | None:
 def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[StatInput]) -> QueryResponse:
     if family_id not in _DELEGATED_FAMILY_SURFACE_IDS:
         raise ValueError(f'Unsupported manifest-approved resolve_stats delegation family {family_id!r}.')
-    query_kernel = StatQueryKernel()
+    query_kernel = get_default_query_kernel()
     baseline = query_kernel.materializer.materialize_from_rows(
         StateIdentity(
             account_snapshot_id='resolve_stats_compatibility_entrypoint',

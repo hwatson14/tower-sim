@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+from functools import lru_cache
 from pathlib import Path
 import json
 from types import MappingProxyType
@@ -445,14 +446,17 @@ class FamilyBaselineMaterializer:
         return tuple(materialized)
 
 
+@lru_cache(maxsize=1)
 def load_surface_registry_contract() -> dict[str, Any]:
     return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
 
 
+@lru_cache(maxsize=1)
 def load_surface_ownership_ledger() -> dict[str, Any]:
     return yaml.safe_load(_OWNERSHIP_LEDGER_PATH.read_text()) or {}
 
 
+@lru_cache(maxsize=1)
 def load_family_surface_ids() -> dict[str, frozenset[str]]:
     initial_surface_contract = load_surface_registry_contract()
     declared_families = set(load_family_contracts())
@@ -526,6 +530,7 @@ def load_family_surface_ids() -> dict[str, frozenset[str]]:
     return {family_id: frozenset(surface_ids) for family_id, surface_ids in bounded.items()}
 
 
+@lru_cache(maxsize=1)
 def load_surface_metadata_by_id() -> dict[str, Mapping[str, Any]]:
     metadata: dict[str, Mapping[str, Any]] = {}
     contract = load_surface_registry_contract()
@@ -549,6 +554,7 @@ def load_surface_metadata_by_id() -> dict[str, Mapping[str, Any]]:
     return metadata
 
 
+@lru_cache(maxsize=1)
 def load_family_contracts() -> dict[str, Mapping[str, Any]]:
     family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
     family_contracts: dict[str, Mapping[str, Any]] = {}
@@ -674,6 +680,7 @@ def _resolver_to_query_value_type(resolver: str) -> str:
     return 'count' if 'count' in str(resolver) else 'scalar'
 
 
+@lru_cache(maxsize=1)
 def _contract_registry_value_types() -> dict[tuple[str, str], str]:
     canonical_stats = yaml.safe_load(_CANONICAL_STATS_PATH.read_text()) or {}
     mechanic_params = yaml.safe_load(_MECHANIC_PARAMS_PATH.read_text()) or {}

@@ -463,6 +463,7 @@ def run_pipeline(args) -> int:
         compare_rows_by_preset,
         compare_publishable_rows_by_preset,
         package_stage_context,
+        default_materialization,
     ) = _build_compare_rows_by_preset(
         ids_raw=ids_raw,
         loadout_config=loadout_config,
@@ -472,16 +473,21 @@ def run_pipeline(args) -> int:
         default_preset=args.preset,
         ep_oracle=ep_oracle,
         perk_state=args.perk_state,
+        return_default_materialization=True,
     )
 
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
-    stat_inputs = compile_stat_inputs(
-        account_state,
-        preset_name=args.preset,
-        state_mode=args.state_mode,
-        perks_enabled=perks_enabled,
-    )
-    statbook = resolve_stats(stat_inputs)
+    if default_materialization is None:
+        stat_inputs = compile_stat_inputs(
+            account_state,
+            preset_name=args.preset,
+            state_mode=args.state_mode,
+            perks_enabled=perks_enabled,
+        )
+        statbook = resolve_stats(stat_inputs)
+    else:
+        stat_inputs = default_materialization['stat_inputs']
+        statbook = default_materialization['statbook']
     publish_phase3_query_surfaces(
         statbook.rows,
         manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
