@@ -34,11 +34,10 @@ The active surface should be small enough that an AI agent can navigate it in on
   input/
     manual_inputs.yaml       # single manual input file
     loader.py                # loads and validates all inputs
-    runtime_state.py         # assembles RuntimeState from inputs
-    ids_parser.py            # IDS CSV parsing (parse_ids entry point)
-    ids_raw.py               # IdsRaw dataclass (moved from models/)
-    scenario_inputs.py       # ScenarioRuntimeInputs (moved from engine/)
-    account_state_compiler.py   # AccountState assembly (moved from compilers/)
+    ids_parser.py            # IDS CSV parsing + IdsRaw type
+    state_types.py           # source/account/scenario state dataclasses
+    state_builder.py         # AccountState runtime assembly logic
+    runtime_state.py         # thin sanctioned runtime-state entrypoint
     manual_inputs.contract.yaml  # schema contracts for manual_advisory_inputs and observed_run_els_scenarios
     imports/
       ids.csv
@@ -54,7 +53,6 @@ The active surface should be small enough that an AI agent can navigate it in on
   qe/
     contracts.py               # stat-query value contracts
     models.py                  # typed stat/query model structs
-    account_state.py           # AccountState and snapshot types (moved from models/)
     routing.py                 # query dispatch and routing
     query_routing.py           # compiler routing indexes (moved from engine/)
     materializer.py            # family baseline materialisation

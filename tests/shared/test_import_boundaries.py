@@ -50,6 +50,15 @@ _IMPORT_TRANSITIONAL_ROOTS = re.compile(
     re.MULTILINE,
 )
 
+_IMPORT_QE_FROM_INPUT = re.compile(r"^\s*(?:from|import)\s+qe\b", re.MULTILINE)
+_IMPORT_FORBIDDEN_INPUT_FROM_QE = re.compile(
+    r"^\s*(?:from|import)\s+input\.(?:runtime_state|loader|state_builder)\b",
+    re.MULTILINE,
+)
+_IMPORT_DELETED_LEGACY_STATE_OWNERS = re.compile(
+    r"^\s*(?:from|import)\s+(?:input\.(?:ids_raw|scenario_inputs|account_state_compiler)|qe\.account_state)\b",
+    re.MULTILINE,
+)
 
 pytestmark = pytest.mark.live
 
@@ -177,4 +186,33 @@ def test_no_active_layer_imports_from_engine():
             hits = _IMPORT_ENGINE_STMT.findall(src)
             assert not hits, (
                 f"{py.relative_to(ROOT)} imports from engine (transitional root): {hits}"
+            )
+
+def test_input_files_do_not_import_qe():
+    """No file under input/ may import qe.*."""
+    input_dir = ROOT / "input"
+    for py in _py_sources(input_dir):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_QE_FROM_INPUT)
+        assert not violations, f"input/{py.name} imports qe: {violations}"
+
+
+def test_qe_files_do_not_import_forbidden_input_modules():
+    """qe/* may not import input.runtime_state, input.loader, or input.state_builder."""
+    for py in _py_sources(QE_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_FORBIDDEN_INPUT_FROM_QE)
+        assert not violations, f"qe/{py.name} imports forbidden input module: {violations}"
+
+
+def test_no_active_layer_imports_deleted_legacy_state_modules():
+    """Active code may not import deleted state-owner modules."""
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists():
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            violations = _violation_lines(src, _IMPORT_DELETED_LEGACY_STATE_OWNERS)
+            assert not violations, (
+                f"{py.relative_to(ROOT)} imports deleted legacy state module: {violations}"
             )

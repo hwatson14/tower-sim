@@ -266,7 +266,7 @@ engine_simulators:
 
   engine/scenario_runtime_inputs.py:
     status: active_candidate
-    target: input/runtime_state.py or simulators/scenario.py
+    target: input/state_types.py or simulators/scenario.py
 
   engine/boss_wave_engine.py:
     status: active_candidate
@@ -376,7 +376,7 @@ engine_archive:
 models:
   models/account_state.py:
     status: active_candidate
-    target: qe/models.py or input/runtime_state.py
+    target: input/state_types.py
 
   models/bound_preset_family.py:
     status: active_candidate
@@ -384,7 +384,7 @@ models:
 
   models/ids_raw.py:
     status: active_candidate
-    target: input/runtime_state.py
+    target: input/ids_parser.py
 
   models/preset_contract.py:
     status: active_candidate
@@ -392,7 +392,7 @@ models:
 
   models/stat_input.py:
     status: active_candidate
-    target: qe/models.py or input/runtime_state.py
+    target: qe/models.py
 
   models/statbook.py:
     status: active_candidate
@@ -412,10 +412,9 @@ compilers:
   compilers/account_state_compiler.py:
     status: archive_candidate
     ownership: >
-      TRANSITIONAL INTERNAL DETAIL of input/runtime_state.py.
-      Deprecation header added. Private fns still needed by 3 test files (T7).
-      Sanctioned entry: input.runtime_state.build_runtime_state().
-    target: archive/legacy/compilers/ in T8
+      Removed from active ownership; runtime-state assembly now lives in
+      input/state_builder.py and is exposed via input/runtime_state.py.
+    target: input/state_builder.py
 
   compilers/stat_input_compiler.py:
     status: active_candidate
