@@ -5,12 +5,11 @@ from functools import lru_cache
 
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
-from qe.account_state import AccountState
 from qe.stat_input_compiler import compile_stat_inputs
 
 
 @lru_cache(maxsize=1)
-def _base_account_state() -> AccountState:
+def _base_account_state():
     bundle = load_inputs()
     return build_runtime_state(
         bundle.ids_raw,
@@ -20,7 +19,7 @@ def _base_account_state() -> AccountState:
     )
 
 
-def _compiled_rows(state: AccountState):
+def _compiled_rows(state):
     return compile_stat_inputs(
         state,
         preset_name=state.default_preset,
@@ -66,6 +65,7 @@ def test_governed_numeric_rows_route_without_old_bucket() -> None:
     common_drop = _single_row(rows, 'Common Drop Chance')
     basic_ultimate = _single_row(rows, "Basic's Ultimate")
     assist_bonus = _single_row(rows, 'Assist Module Bonus - Armor')
+    starting_cash = _single_row(rows, 'Starting Cash')
 
     assert common_drop.destination_object_type == 'meta_progression_param'
     assert common_drop.destination_id == 'module.lab.common_drop_chance_bonus_pct'
@@ -78,6 +78,12 @@ def test_governed_numeric_rows_route_without_old_bucket() -> None:
     assert assist_bonus.destination_object_type == 'mechanic_param'
     assert assist_bonus.destination_id == 'module.armor.assist_lab_bonus_pct'
     assert 'non_calculator_scope' not in (assist_bonus.notes or '')
+    assert assist_bonus.value_type == 'resolved_value'
+
+    assert starting_cash.destination_object_type == 'meta_progression_param'
+    assert starting_cash.destination_id == 'economy.starting_cash_bonus'
+    assert starting_cash.value_type == 'resolved_value'
+    assert 'pending' not in (starting_cash.notes or '')
 
 
 def test_intro_sprint_is_mapped() -> None:

@@ -82,6 +82,11 @@ CARD_LADDERS_PATH = KB / 'cards' / 'tables' / 'card-base-ladders.csv'
 CARD_MASTERIES_PATH = KB / 'cards' / 'tables' / 'card-masteries.csv'
 CARD_EFFECT_REGISTRY_PATH = KB / 'cards' / 'tables' / 'card-effect-registry.csv'
 MODULE_SUBSTATS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-substats.csv'
+ASSIST_MODULE_BONUS_VALUES_PATH = KB / 'modules' / 'tables' / 'assist-module-bonus-efficiency-wiki-truth.csv'
+ASSIST_MODULE_SUBSTAT_VALUES_PATH = KB / 'modules' / 'tables' / 'assist-module-substats-efficiency-wiki-truth.csv'
+MODULE_COIN_COST_VALUES_PATH = KB / 'modules' / 'tables' / 'module-coin-cost-wiki-truth.csv'
+MODULE_SHARD_COST_VALUES_PATH = KB / 'modules' / 'tables' / 'module-shard-cost-wiki-truth.csv'
+STARTING_CASH_VALUES_PATH = KB / 'labs' / 'tables' / 'starting-cash-wiki-truth.csv'
 MODULE_UNIQUE_EFFECTS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-unique-effects.csv'
 MODULE_MAIN_EFFECT_BASES_PATH = KB / 'modules' / 'tables' / 'module-main-effect-bases.csv'
 MODULE_MAIN_EFFECT_STEPS_PATH = KB / 'modules' / 'sources' / 'raw' / 'effective-paths' / 'sheet-exports' / 'module-base-stat-values.csv'
@@ -590,6 +595,44 @@ def _load_assist_efficiency_lookup() -> Dict[int, float]:
     return out
 
 
+def _load_level_value_table(path: Path, value_column: str) -> Dict[int, float]:
+    out: Dict[int, float] = {}
+    if not path.exists():
+        return out
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            try:
+                out[int(row['level'])] = float(row[value_column])
+            except (KeyError, TypeError, ValueError):
+                continue
+    return out
+
+
+@lru_cache(maxsize=1)
+def _load_assist_module_bonus_values() -> Dict[int, float]:
+    return _load_level_value_table(ASSIST_MODULE_BONUS_VALUES_PATH, 'value_pct')
+
+
+@lru_cache(maxsize=1)
+def _load_assist_module_substat_values() -> Dict[int, float]:
+    return _load_level_value_table(ASSIST_MODULE_SUBSTAT_VALUES_PATH, 'value_pct')
+
+
+@lru_cache(maxsize=1)
+def _load_module_coin_cost_values() -> Dict[int, float]:
+    return _load_level_value_table(MODULE_COIN_COST_VALUES_PATH, 'value_pct')
+
+
+@lru_cache(maxsize=1)
+def _load_module_shard_cost_values() -> Dict[int, float]:
+    return _load_level_value_table(MODULE_SHARD_COST_VALUES_PATH, 'value_pct')
+
+
+@lru_cache(maxsize=1)
+def _load_starting_cash_values() -> Dict[int, float]:
+    return _load_level_value_table(STARTING_CASH_VALUES_PATH, 'value_cash')
+
+
 ACCOUNT_METADATA_DESTINATIONS: Dict[str, Tuple[str, str]] = {
     'Buy Multiplier': ('meta_progression_param', 'account_meta.buy_multiplier'),
     'Card Presets': ('account_flag', 'account_meta.card_presets'),
@@ -852,6 +895,28 @@ def _bind_governed_numeric_row(
             _set_row_field(row, 'value', formula(numeric))
             _set_row_field(row, 'value_type', 'resolved_value')
             return True
+    exact_values: Dict[int, float] | None = None
+    if name == 'Module Coin Cost':
+        exact_values = _load_module_coin_cost_values()
+    elif name == 'Module Shards Cost':
+        exact_values = _load_module_shard_cost_values()
+    elif name == 'Starting Cash':
+        exact_values = _load_starting_cash_values()
+    else:
+        match = re.match(r'^Assist Module Bonus - (Armor|Cannon|Core|Generator)$', name)
+        if match is not None:
+            exact_values = _load_assist_module_bonus_values()
+        match = re.match(r'^Assist Module Substats - (Armor|Cannon|Core|Generator)$', name)
+        if match is not None:
+            exact_values = _load_assist_module_substat_values()
+    if exact_values is not None and isinstance(level, int) and level in exact_values:
+        _set_row_field(row, 'value', exact_values[level])
+        _set_row_field(row, 'value_type', 'resolved_value')
+        return True
+    if exact_values is not None and level == 0:
+        _set_row_field(row, 'value', 0.0)
+        _set_row_field(row, 'value_type', 'resolved_value')
+        return True
     lab_value = _lab_value_with_fallback(name, level if isinstance(level, int) else None, lab_values, lab_summary)
     if lab_value is not None:
         _set_row_field(row, 'value', lab_value)
