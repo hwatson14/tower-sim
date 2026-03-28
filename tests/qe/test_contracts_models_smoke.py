@@ -1,0 +1,75 @@
+from __future__ import annotations
+
+import pytest
+
+from qe.contracts import (
+    CANONICAL_PRESET_NAMES,
+    normalize_preset_name,
+    to_legacy_surface_id,
+    to_v2_surface_id,
+)
+from qe.models import BoundPresetFamily, StateIdentity, StatBook, StatInput, StatRow, bind_preset_family
+
+pytestmark = pytest.mark.live
+
+
+def test_canonical_preset_names__include_primary_defaults():
+    assert len(CANONICAL_PRESET_NAMES) >= 2
+    assert "Farming" in CANONICAL_PRESET_NAMES
+    assert "Tourney" in CANONICAL_PRESET_NAMES
+
+
+def test_normalize_preset_name__returns_canonical_or_none():
+    assert normalize_preset_name("Farming", allow_aliases=False) == "Farming"
+    assert normalize_preset_name(None, allow_aliases=False) is None
+    assert normalize_preset_name("", allow_aliases=False) is None
+
+
+def test_surface_id_roundtrip__legacy_and_v2_are_reversible():
+    v2 = to_v2_surface_id("canonical_stat::tower_defense_pct")
+    assert v2 == "state::tower.defense_pct"
+    assert to_legacy_surface_id(v2) == "canonical_stat::tower_defense_pct"
+
+
+def test_model_construction__creates_valid_instances():
+    stat_input = StatInput(
+        stat_name="tower.hp",
+        source_family="lab",
+        source_name="health",
+        value=1000.0,
+        value_type="scalar",
+        stage="additive_pre_cap",
+    )
+    stat_row = StatRow(
+        stat_name="tower.hp",
+        final_value=1000.0,
+        value_type="scalar",
+        source_count=1,
+        contributors=[],
+    )
+    stat_book = StatBook(rows={"tower.hp": stat_row}, diagnostics={})
+    assert stat_input.active is True
+    assert stat_book.rows["tower.hp"].final_value == 1000.0
+
+
+def test_state_identity_and_bound_preset_family__binds_successfully():
+    identity = StateIdentity(
+        account_snapshot_id="acct_abc",
+        loadout_id="loadout_xyz",
+        scenario_id="scen_123",
+        runtime_branch_id="branch_base",
+    )
+    assert identity.as_tuple() == ("acct_abc", "loadout_xyz", "scen_123", "branch_base")
+
+    bound = bind_preset_family(
+        preset_name="Farming",
+        state_mode="start_of_run",
+        perk_namespace_class="canonical",
+        explicit_card_preset_name=None,
+        explicit_module_preset_name=None,
+        explicit_perk_preset_name=None,
+        active_perk_preset_name=None,
+        perks_enabled=False,
+    )
+    assert isinstance(bound, BoundPresetFamily)
+    assert bound.preset_name == "Farming"
