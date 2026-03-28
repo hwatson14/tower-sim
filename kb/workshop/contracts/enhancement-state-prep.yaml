@@ -66,7 +66,7 @@ output_labels:
       materialized_table_paths:
         - kb/workshop/derived/materialized/wiki-verified-enhancement-coin-bonus.csv
       accepted_inputs:
-        - input/observed_run_els_scenarios.contract.yaml
+        - input/manual_inputs.contract.yaml
       contract_paths:
         - kb/workshop/contracts/enhancement-state-prep.yaml
       notes:
@@ -95,7 +95,7 @@ output_labels:
       materialized_table_paths:
         - kb/workshop/derived/materialized/wiki-verified-enhancement-enemy-level-skips.csv
       accepted_inputs:
-        - input/observed_run_els_scenarios.contract.yaml
+        - input/manual_inputs.contract.yaml
         - input/assumptions.yaml
       contract_paths:
         - kb/workshop/contracts/enhancement-state-prep.yaml

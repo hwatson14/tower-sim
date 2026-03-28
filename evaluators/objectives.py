@@ -21,7 +21,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 _WORKSHOP_PREP_CONTRACT_PATH = ROOT / 'kb' / 'workshop' / 'contracts' / 'enhancement-state-prep.yaml'
-_OBSERVED_RUN_ELS_CONTRACT_PATH = ROOT / 'input' / 'observed_run_els_scenarios.contract.yaml'
+_OBSERVED_RUN_ELS_CONTRACT_PATH = ROOT / 'input' / 'manual_inputs.contract.yaml'
 _OBSERVED_RUN_ELS_INPUT_PATH = ROOT / 'input' / 'manual_inputs.yaml'  # T10: canonical path
 
 _ALLOWED_LABEL_STRENGTHS = frozenset({'strong_model', 'accepted_model'})
@@ -190,7 +190,7 @@ def load_enhancement_state_prep_contract() -> dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def load_observed_run_els_contract() -> dict[str, Any]:
-    raw = yaml.safe_load(_OBSERVED_RUN_ELS_CONTRACT_PATH.read_text()) or {}
+    raw = (yaml.safe_load(_OBSERVED_RUN_ELS_CONTRACT_PATH.read_text()) or {}).get('observed_run_els_scenarios') or {}
     missing = sorted(_REQUIRED_OBSERVED_RUN_CONTRACT_KEYS - set(raw))
     if missing:
         raise ValueError(f'Observed-run ELS contract missing required keys: {missing}.')

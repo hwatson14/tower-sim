@@ -137,7 +137,7 @@ def test_account_state_and_stat_input_are_frozen():
     import pytest
     from dataclasses import FrozenInstanceError
     from input.runtime_state import compile_account_state
-    from input.parsers import parse_ids
+    from input.ids_parser import parse_ids
     from models.stat_input import StatInput
 
     ids_raw = parse_ids(Path(__file__).resolve().parents[1] / 'input' / 'imports' / 'ids.csv')

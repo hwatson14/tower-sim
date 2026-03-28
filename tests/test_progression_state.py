@@ -12,7 +12,7 @@ from pathlib import Path
 
 from input.runtime_state import compile_account_state
 from engine.progression_state import build_progression_init_state, infer_mode_id_from_preset
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 ROOT = Path(__file__).resolve().parents[1]
 

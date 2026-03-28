@@ -9,7 +9,7 @@ if str(ROOT) not in sys.path:
 
 from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 
 def _build_state():

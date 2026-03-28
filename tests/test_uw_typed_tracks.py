@@ -8,7 +8,7 @@ sys.path.append(str(ROOT))
 
 from input.runtime_state import compile_account_state
 from compilers.stat_input_compiler import compile_stat_inputs
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 
 def test_uw_tracks_preserve_explicit_attribute_identity_from_ids():

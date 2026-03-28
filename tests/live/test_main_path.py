@@ -33,4 +33,4 @@ def test_app_pipeline_wires_active_layer_imports():
     assert "from qe.routing import resolve_stats" in src
     assert "from qe.publication import publish_phase3_query_surfaces" in src
     assert "from evaluators.scorer import compute_optimizer_scores" in src
-    assert "from input.parsers import parse_ids" in src
+    assert "from input.ids_parser import parse_ids" in src

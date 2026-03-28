@@ -1,0 +1,75 @@
+manual_advisory_inputs:
+  contract_id: manual_advisory_inputs_v1
+  purpose: >-
+    User-supplied manual inputs required by current calculators, simulators, optimisers,
+    or advisors when the value is either not yet query-resolvable or is intentionally
+    sourced from an external observation/personal estimate.
+  required_top_level_fields:
+    - inputs
+  allowed_input_kinds:
+    - simplification_assumption
+    - external_observation
+    - user_rate_estimate
+    - accepted_model_override
+  required_input_fields:
+    - input_id
+    - input_kind
+    - value_type
+    - value
+    - unit
+    - consumer_scope
+    - trust_label
+    - rationale
+    - replacement_target
+  allowed_value_types:
+    - scalar
+    - integer
+    - pct
+    - duration_seconds
+    - per_week
+    - per_day
+    - boolean
+  trust_labels:
+    - user_asserted
+    - externally_observed
+    - accepted_model
+    - policy_heuristic
+  rules:
+    - Manual inputs are Inputs-layer artifacts, not KB mechanic truth.
+    - Every manual input must declare which downstream consumer scope may use it.
+    - Every manual input must declare a replacement_target describing which future evaluator should obsolete it.
+    - Manual inputs must remain explicit and user-editable; do not silently hardcode them into runtime logic.
+    - If a consumer requires a manual input and it is absent, the consumer should fail closed or emit a clear missing-input status.
+
+observed_run_els_scenarios:
+  contract_id: observed_run_els_scenarios_v2
+  required_fields:
+    - scenario_id
+    - scenario_kind
+    - skip_track
+    - observed_run_label
+    - enemy_level_skip_reduction_pp
+    - notes
+  required_scenarios:
+    - observed_run_enemy_attack_skip
+    - observed_run_enemy_health_skip
+  allowed_scenario_kinds:
+    - observed_run
+  allowed_skip_tracks:
+    - enemy_attack_level_skip
+    - enemy_health_level_skip
+  scenario_contracts:
+    observed_run_enemy_attack_skip:
+      scenario_kind: observed_run
+      skip_track: enemy_attack_level_skip
+      observed_run_label: observed_run_attack_skip_reduction_probe
+      notes_must_include: accepted-model ELS helper evaluation
+    observed_run_enemy_health_skip:
+      scenario_kind: observed_run
+      skip_track: enemy_health_level_skip
+      observed_run_label: observed_run_health_skip_reduction_probe
+      notes_must_include: accepted-model ELS helper evaluation
+  notes:
+    - Observed-run ELS scenarios are bounded prep inputs for optimizer-side helper evaluation only.
+    - enemy_level_skip_reduction_pp is an observed external reduction applied to the relevant skip track.
+    - Contracts pin exact scenario_kind, skip_track, observed_run_label, and notes intent so prep outputs fail closed before runtime integration.

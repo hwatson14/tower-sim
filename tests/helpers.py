@@ -19,7 +19,7 @@ from input.runtime_state import build_runtime_state as compile_account_state
 from simulators.progression import materialize_progression_family_baseline
 from simulators.scenario import ScenarioConfig
 from simulators.timing import materialize_timing_family_baseline
-from input.parsers import parse_ids
+from input.ids_parser import parse_ids
 
 
 @lru_cache(maxsize=None)
