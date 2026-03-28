@@ -13,21 +13,13 @@ from qe.routing import (
     resolve_bounded_bucket,
 )
 
-
-def _canon(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
-
-
-def _mech(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')
-
 _NODE_TO_BUCKET = {
-    'support_surface::free_upgrade_multiplier': _canon('free_upgrade_multiplier'),
-    'support_surface::timing.gcomp_cooldown_reduction_seconds': _mech('module.galaxy_compressor.uw_cooldown_reduction_seconds'),
+    'support_surface::free_upgrade_multiplier': 'state::tower.free_upgrade_multiplier',
+    'support_surface::timing.gcomp_cooldown_reduction_seconds': 'state::module.galaxy_compressor.uw_cooldown_reduction_seconds',
 }
 
 _ALIAS_OUTPUTS = {
-    'support_surface::free_upgrade_multiplier': _canon('free_upgrade_multiplier'),
+    'support_surface::free_upgrade_multiplier': 'state::tower.free_upgrade_multiplier',
 }
 
 

@@ -25,10 +25,10 @@ consumers:
     - timing_farm_with_perks
     - timing_scenario_probe
     required_surface_ids:
-    - mechanic_param::uw.black_hole.cooldown_seconds
-    - mechanic_param::uw.black_hole.duration_seconds
-    - mechanic_param::uw.golden_tower.cooldown_seconds
-    - mechanic_param::uw.golden_tower.duration_seconds
+    - state::uw.black_hole.cooldown_seconds
+    - state::uw.black_hole.duration_seconds
+    - state::uw.golden_tower.cooldown_seconds
+    - state::uw.golden_tower.duration_seconds
     optional_surface_ids:
     - support_surface::timing.gcomp_cooldown_reduction_seconds
     minimum_trace_mode: contributors

@@ -304,7 +304,7 @@ def resolve_consumer_bundle(
         if matched is None:
             unknown_optional.append(surface_id)
             continue
-        resolved_optional.append(surface_id)
+        resolved_optional.append(matched)
     optional_requested = tuple(resolved_optional)
     if unknown_optional:
         raise ValueError(f'Consumer bundle {key!r} cannot request undeclared optional surfaces {unknown_optional}.')

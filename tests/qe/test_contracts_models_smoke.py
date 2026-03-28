@@ -62,6 +62,12 @@ def test_normalize_contract_payload__rewrites_legacy_surface_tokens_recursively(
     assert "canonical_stat::tower_damage" not in normalized["note"]
 
 
+def test_surface_id_roundtrip__legacy_timing_uws_publish_under_v2_state_ids():
+    v2 = to_v2_surface_id("mechanic_param::uw.black_hole.cooldown_seconds")
+    assert v2 == "state::uw.black_hole.cooldown_seconds"
+    assert to_legacy_surface_id(v2) == "mechanic_param::uw.black_hole.cooldown_seconds"
+
+
 def test_model_construction__creates_valid_instances():
     stat_input = StatInput(
         stat_name="tower.hp",

@@ -509,14 +509,7 @@ def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
 def test_compare_and_qe_derived_only_use_legacy_prefixes_in_normalization_helpers():
     """Legacy surface prefixes may only appear inside the dedicated normalization helper shims."""
     allowed_lines = {
-        "return _sid(f'canonical_stat::{destination_id}')",
-        "return _sid(f'mechanic_param::{destination_id}')",
-        "return _sid(f'runtime_mechanic_param::{destination_id}')",
-        "return _sid(f'capability::{destination_id}')",
-        "return _sid(f'account_flag::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
+        "COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES,",
     }
     targets = [
         ROOT / "evaluators" / "compare.py",
@@ -535,9 +528,10 @@ def test_compare_and_qe_derived_only_use_legacy_prefixes_in_normalization_helper
 def test_qe_internal_naming_files_only_use_legacy_prefixes_in_normalization_helpers():
     """QE internal naming-heavy modules may only mention legacy prefixes inside normalization helper lines."""
     allowed_lines = {
-        "return _sid(f'mechanic_param::{destination_id}')",
-        "return normalize_surface_id_to_contract('canonical_stat::free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',",
-        "return normalize_surface_id_to_contract('mechanic_param::module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',",
+        "compat_surface_from_legacy_canonical('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',",
+        "compat_surface_from_legacy_mechanic('module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',",
+        "'support_surface::free_upgrade_multiplier': 'state::tower.free_upgrade_multiplier',",
+        "'support_surface::timing.gcomp_cooldown_reduction_seconds': 'state::module.galaxy_compressor.uw_cooldown_reduction_seconds',",
     }
     targets = [
         ROOT / "qe" / "routing.py",
@@ -549,20 +543,7 @@ def test_qe_internal_naming_files_only_use_legacy_prefixes_in_normalization_help
         for line in path.read_text(encoding="utf-8").splitlines():
             stripped = line.strip()
             if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
-                if path.name == "routing.py" and stripped == "return f'mechanic_param::{destination_id}'":
-                    continue
-                if path.name == "routing.py" and stripped in {
-                    "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'account_flag::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'account_context::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'capability::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')",
-                }:
-                    continue
-                if path.name == "materializer.py" and stripped.startswith("normalize_surface_id_to_contract("):
-                    continue
-                if path.name == "publication.py" and "_sid('account_context::account_context.farming_tier')" in stripped:
+                if path.name == "materializer.py" and stripped in allowed_lines:
                     continue
                 if path.name == "routing.py" and "legacy runtime_mechanic_param:: prefix" in stripped:
                     continue
@@ -589,11 +570,6 @@ def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helper
                     "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
                 }:
                     continue
-                if path.name == "incremental_subset_executor.py" and stripped in {
-                    "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
-                    "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
-                }:
-                    continue
                 violations.append(stripped)
         assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
 
@@ -601,18 +577,9 @@ def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helper
 def test_qe_stat_resolution_only_uses_legacy_prefixes_in_normalization_helpers():
     """Fallback stat-resolution shim may only mention legacy prefixes in its normalization helper definitions."""
     path = ROOT / "qe" / "stat_resolution.py"
-    allowed = {
-        "return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'account_flag::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'account_context::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'capability::{destination_id}')",
-        "return normalize_surface_id_to_contract(f'cosmetic_bonus::{destination_id}')",
-    }
     violations = [
         line.strip()
         for line in path.read_text(encoding="utf-8").splitlines()
-        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line) and line.strip() not in allowed
+        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line)
     ]
     assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"

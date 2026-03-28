@@ -5,22 +5,22 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
-- node_id: mechanic_param::uw.black_hole.cooldown_seconds
+- node_id: state::uw.black_hole.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
-- node_id: mechanic_param::uw.black_hole.duration_seconds
+- node_id: state::uw.black_hole.duration_seconds
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
-- node_id: mechanic_param::uw.golden_tower.cooldown_seconds
+- node_id: state::uw.golden_tower.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
-- node_id: mechanic_param::uw.golden_tower.duration_seconds
+- node_id: state::uw.golden_tower.duration_seconds
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

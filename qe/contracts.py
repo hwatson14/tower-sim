@@ -146,6 +146,41 @@ def _surface_id(object_type: str, destination_id: str) -> str:
     return f'{object_type}::{destination_id}'
 
 
+def compat_surface_from_legacy_canonical(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy canonical_stat ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('canonical_stat', destination_id))
+
+
+def compat_surface_from_legacy_mechanic(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy mechanic_param ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('mechanic_param', destination_id))
+
+
+def compat_surface_from_legacy_runtime(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy runtime_mechanic_param ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('runtime_mechanic_param', destination_id))
+
+
+def compat_surface_from_legacy_flag(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy account_flag ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('account_flag', destination_id))
+
+
+def compat_surface_from_legacy_context(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy account_context ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('account_context', destination_id))
+
+
+def compat_surface_from_legacy_capability(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy capability ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('capability', destination_id))
+
+
+def compat_surface_from_legacy_cosmetic(destination_id: str) -> str:
+    """Compatibility-only bridge from legacy cosmetic_bonus ids into the active contract."""
+    return normalize_surface_id_to_contract(_surface_id('cosmetic_bonus', destination_id))
+
+
 def _pattern_to_regex(surface_id_pattern: str) -> re.Pattern[str]:
     escaped = re.escape(surface_id_pattern)
     return re.compile('^' + _PLACEHOLDER_RE.sub(r'([^:]+)', escaped) + '$')
@@ -224,9 +259,17 @@ def to_legacy_destination(destination_object_type: str, destination_id: str) -> 
     return tuple(legacy.split('::', 1))  # type: ignore[return-value]
 
 
-_LEGACY_SURFACE_FALLBACKS: dict[str, str] = {
+_COMPATIBILITY_LEGACY_SURFACE_FALLBACKS: dict[str, str] = {
     'canonical_stat::free_upgrade_shared_add_pct': 'state::tower.free_upgrade_shared_add_pct',
 }
+
+COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES: tuple[str, ...] = (
+    'mechanic_param::',
+    'runtime_mechanic_param::',
+    'account_flag::',
+    'capability::',
+    'raw::',
+)
 
 
 def normalize_surface_id_to_contract(surface_id: str) -> str:
@@ -238,7 +281,7 @@ def normalize_surface_id_to_contract(surface_id: str) -> str:
         return surface_id
 
     bucket, destination_id = surface_id.split('::', 1)
-    explicit = _LEGACY_SURFACE_FALLBACKS.get(surface_id)
+    explicit = _COMPATIBILITY_LEGACY_SURFACE_FALLBACKS.get(surface_id)
     if explicit is not None:
         return explicit
 
