@@ -3,7 +3,8 @@ from __future__ import annotations
 from collections.abc import Sequence
 
 from qe.contracts import to_v2_surface_id
-from qe.models import StateIdentity
+from input.state_types import AccountState, ScenarioRuntimeInputs
+from qe.models import StateIdentity, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel
 from qe.stat_resolution import (
     _canonical_source_multiplier,
@@ -16,6 +17,7 @@ from qe.models import StatBook, StatRow
 _TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
 _TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
 _PROGRESSION_START_OF_RUN = 'progression_start_of_run'
+_PROGRESSION_RUNTIME_NO_PERKS = 'progression_runtime_no_perks'
 _PROGRESSION_RUNTIME_WITH_PERKS = 'progression_runtime_with_perks'
 
 # Canonical timing-v1 surface IDs declared in stat-query-initial-surface-set.yaml (timing_v1 group).
@@ -70,6 +72,7 @@ _DELEGATED_FAMILY_SURFACE_IDS: dict[str, tuple[str, ...]] = {
     # progression_runtime_no_perks shares this exact bounded surface set and remains QE-owned
     # through the direct progression helpers and runtime-consumer bundles.
     _PROGRESSION_START_OF_RUN: _PROGRESSION_V1_SURFACE_IDS,
+    _PROGRESSION_RUNTIME_NO_PERKS: _PROGRESSION_V1_SURFACE_IDS,
     _PROGRESSION_RUNTIME_WITH_PERKS: _PROGRESSION_V1_SURFACE_IDS,
 }
 
@@ -152,6 +155,58 @@ def _resolve_manifest_approved_family(*, family_id: str, stat_inputs: Sequence[S
     )
 
 
+def resolve_checkpoint_surfaces(
+    account_state: AccountState,
+    *,
+    requested_surface_ids: Sequence[str],
+    preset_name: str,
+    family_id: str | None = None,
+    state_mode: str = 'start_of_run',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    perks_enabled: bool | None = None,
+    runtime_branch_id: str = 'branch_checkpoint',
+    scenario_runtime_inputs: ScenarioRuntimeInputs | None = None,
+    trace_mode: str = 'contributors',
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    """
+    Resolve an explicit checkpoint surface set for simulator/runtime consumers.
+
+    This is the lightweight QE seam for row/checkpoint execution. It binds
+    checkpoint-local stat inputs with identity, materializes only the selected
+    checkpoint family, and resolves only the requested surfaces.
+    """
+    resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
+    resolved_family_id = family_id or (
+        _PROGRESSION_RUNTIME_WITH_PERKS if resolved_perks_enabled else _PROGRESSION_RUNTIME_NO_PERKS
+    )
+    bound_inputs = compile_stat_inputs_with_identity(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=resolved_perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_context={'mode_id': 'checkpoint'},
+    )
+    query_kernel = kernel or StatQueryKernel()
+    baseline = query_kernel.materializer.materialize_from_rows(
+        bound_inputs.binding.identity,
+        resolved_family_id,
+        bound_inputs.stat_inputs,
+    )
+    return query_kernel.resolve_surfaces(
+        baseline,
+        requested_surface_ids=tuple(str(surface_id) for surface_id in requested_surface_ids),
+        trace_mode=trace_mode,
+    )
+
+
 def _merge_delegated_family_rows(
     *,
     fallback_statbook: StatBook,
@@ -204,6 +259,7 @@ def _merge_delegated_family_rows(
 
 
 __all__ = [
+    'resolve_checkpoint_surfaces',
     'resolve_stats',
     '_multiplier_from_value',
     '_canonical_source_multiplier',

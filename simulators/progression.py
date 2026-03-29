@@ -2,8 +2,9 @@ from __future__ import annotations
 
 from collections import defaultdict
 from dataclasses import dataclass, replace
+from math import floor
 from time import perf_counter
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Mapping, Optional
 
 from simulators.perk_timeline_state import apply_perk_counts_to_account_state
 
@@ -22,10 +23,236 @@ from qe.kernel import QueryResponse, StatQueryKernel
 from input.state_types import AccountState
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
+from simulators.contracts import DirtyLedger, ProjectedRunState, WaveCheckpoint
+from simulators.wave_progression_policy import WaveProgressionPolicy, WaveProgressionState
 
 
 def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
+
+
+_FREE_UPGRADE_CATEGORIES: tuple[str, ...] = ('attack', 'defense', 'utility')
+
+
+def advance_projected_wave_state(
+    state: ProjectedRunState,
+    *,
+    target_display_wave: int,
+    attack_skip_pct: float,
+    health_skip_pct: float,
+    policy: WaveProgressionPolicy | None = None,
+) -> ProjectedRunState:
+    """Advance only the deterministic wave-progression portion of projected run state.
+
+    This helper is intentionally narrow:
+    - it treats workshop/perk state as unchanged carry-forward inputs
+    - it advances only the attack/health wave plus skip counters
+    - it keeps the caller in control of whether downstream QE/timing work is required
+    """
+
+    wave_policy = policy or WaveProgressionPolicy()
+    prior_wave_state = WaveProgressionState(
+        display_wave=int(state.wave_progression_state.get('display_wave', state.checkpoint.display_wave)),
+        attack_wave=int(state.wave_progression_state.get('attack_wave', 0)),
+        health_wave=int(state.wave_progression_state.get('health_wave', 0)),
+        attack_skip_counter=float(state.wave_progression_state.get('attack_skip_counter', 0.0)),
+        health_skip_counter=float(state.wave_progression_state.get('health_skip_counter', 0.0)),
+    )
+    next_wave_state = wave_policy.advance_to_wave(
+        state=prior_wave_state,
+        target_display_wave=int(target_display_wave),
+        attack_skip_pct=float(attack_skip_pct),
+        health_skip_pct=float(health_skip_pct),
+    )
+    return ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=int(target_display_wave)),
+        workshop_levels_current=dict(state.workshop_levels_current),
+        perk_state=state.perk_state,
+        wave_progression_state={
+            'display_wave': next_wave_state.display_wave,
+            'attack_wave': next_wave_state.attack_wave,
+            'health_wave': next_wave_state.health_wave,
+            'attack_skip_counter': next_wave_state.attack_skip_counter,
+            'health_skip_counter': next_wave_state.health_skip_counter,
+        },
+        free_upgrade_state=dict(state.free_upgrade_state),
+        counters=dict(state.counters),
+        dirty_ledger=DirtyLedger(
+            progression_dirty=False,
+            qe_dirty=False,
+            timing_dirty=False,
+            geometry_dirty=state.dirty_ledger.geometry_dirty,
+        ),
+        notes=tuple(state.notes),
+    )
+
+
+def advance_projected_free_upgrade_state(
+    state: ProjectedRunState,
+    *,
+    target_display_wave: int,
+    free_attack_upgrade_chance_pct: float,
+    free_defense_upgrade_chance_pct: float,
+    free_utility_upgrade_chance_pct: float,
+) -> ProjectedRunState:
+    """Advance deterministic free-upgrade carry and counters without mutating workshop levels yet.
+
+    This is the first progression-owned free-upgrade slice:
+    - carry is accumulated wave-by-wave from the prior row
+    - guaranteed upgrades are counted deterministically
+    - workshop level allocation remains a later slice once the track-assignment contract is locked
+    """
+
+    start_wave = int(state.checkpoint.display_wave)
+    end_wave = int(target_display_wave)
+    if end_wave < start_wave:
+        raise ValueError(f'target_display_wave {end_wave} cannot move backwards from {start_wave}')
+
+    carry_by_category = {
+        category: float((state.free_upgrade_state.get('carry_by_category') or {}).get(category, 0.0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    generated_by_category = {
+        category: int((state.counters.get('generated_free_upgrades_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    chance_by_category = {
+        'attack': max(0.0, float(free_attack_upgrade_chance_pct)) / 100.0,
+        'defense': max(0.0, float(free_defense_upgrade_chance_pct)) / 100.0,
+        'utility': max(0.0, float(free_utility_upgrade_chance_pct)) / 100.0,
+    }
+
+    generated_this_step = 0
+    for _display_wave in range(start_wave + 1, end_wave + 1):
+        for category in _FREE_UPGRADE_CATEGORIES:
+            carry_by_category[category] += chance_by_category[category]
+            guaranteed = int(floor(carry_by_category[category] + 1e-12))
+            if guaranteed <= 0:
+                continue
+            carry_by_category[category] -= guaranteed
+            generated_by_category[category] += guaranteed
+            generated_this_step += guaranteed
+
+    next_counters = dict(state.counters)
+    next_counters['generated_free_upgrades_by_category'] = generated_by_category
+    next_counters['generated_free_upgrades_last_step_by_category'] = {
+        category: generated_by_category[category] - int((state.counters.get('generated_free_upgrades_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    next_counters['generated_free_upgrades_total'] = int(next_counters.get('generated_free_upgrades_total', 0)) + generated_this_step
+    next_free_upgrade_state = dict(state.free_upgrade_state)
+    next_free_upgrade_state['carry_by_category'] = carry_by_category
+    next_free_upgrade_state['next_index_by_category'] = {
+        category: int((state.free_upgrade_state.get('next_index_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+
+    return ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=end_wave),
+        workshop_levels_current=dict(state.workshop_levels_current),
+        perk_state=state.perk_state,
+        wave_progression_state=dict(state.wave_progression_state),
+        free_upgrade_state=next_free_upgrade_state,
+        counters=next_counters,
+        dirty_ledger=DirtyLedger(
+            progression_dirty=False,
+            qe_dirty=False,
+            timing_dirty=False,
+            geometry_dirty=state.dirty_ledger.geometry_dirty,
+        ),
+        notes=tuple(state.notes),
+    )
+
+
+def allocate_generated_free_upgrades_to_workshop(
+    state: ProjectedRunState,
+    *,
+    category_track_order: Mapping[str, list[str] | tuple[str, ...]],
+    track_max_levels: Mapping[str, int],
+    excluded_tracks: tuple[str, ...] = (),
+) -> ProjectedRunState:
+    """Apply last-step generated free upgrades to workshop levels in stable track order.
+
+    The caller owns the category->track ordering contract. This helper only performs
+    deterministic allocation and cursor advancement from the prior projected row state.
+    """
+
+    last_step_counts = {
+        category: int((state.counters.get('generated_free_upgrades_last_step_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    next_index_by_category = {
+        category: int((state.free_upgrade_state.get('next_index_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    allocated_by_category = {
+        category: int((state.counters.get('allocated_free_upgrades_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    unallocated_by_category = {
+        category: int((state.counters.get('unallocated_free_upgrades_by_category') or {}).get(category, 0))
+        for category in _FREE_UPGRADE_CATEGORIES
+    }
+    workshop_levels_current = dict(state.workshop_levels_current)
+    excluded = set(excluded_tracks)
+    applied_any = False
+    changed_tracks_last_step: list[str] = []
+
+    for category in _FREE_UPGRADE_CATEGORIES:
+        requested = last_step_counts[category]
+        if requested <= 0:
+            continue
+        ordered_tracks = [
+            track_name
+            for track_name in category_track_order.get(category, ())
+            if track_name not in excluded and track_name in workshop_levels_current and track_name in track_max_levels
+        ]
+        idx = next_index_by_category[category]
+        for _ in range(requested):
+            candidates = [
+                track_name
+                for track_name in ordered_tracks
+                if int(workshop_levels_current[track_name]) < int(track_max_levels[track_name])
+            ]
+            if not candidates:
+                unallocated_by_category[category] += 1
+                continue
+            chosen_index = idx % len(candidates)
+            chosen_track = candidates[chosen_index]
+            workshop_levels_current[chosen_track] = min(
+                int(track_max_levels[chosen_track]),
+                int(workshop_levels_current[chosen_track]) + 1,
+            )
+            allocated_by_category[category] += 1
+            changed_tracks_last_step.append(chosen_track)
+            idx = chosen_index + 1
+            applied_any = True
+        next_index_by_category[category] = idx
+
+    next_counters = dict(state.counters)
+    next_counters['allocated_free_upgrades_by_category'] = allocated_by_category
+    next_counters['allocated_free_upgrades_total'] = sum(allocated_by_category.values())
+    next_counters['unallocated_free_upgrades_by_category'] = unallocated_by_category
+    next_counters['unallocated_free_upgrades_total'] = sum(unallocated_by_category.values())
+    next_counters['changed_workshop_tracks_last_step'] = tuple(changed_tracks_last_step)
+    next_free_upgrade_state = dict(state.free_upgrade_state)
+    next_free_upgrade_state['next_index_by_category'] = next_index_by_category
+
+    return ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=int(state.checkpoint.display_wave)),
+        workshop_levels_current=workshop_levels_current,
+        perk_state=state.perk_state,
+        wave_progression_state=dict(state.wave_progression_state),
+        free_upgrade_state=next_free_upgrade_state,
+        counters=next_counters,
+        dirty_ledger=DirtyLedger(
+            progression_dirty=applied_any,
+            qe_dirty=applied_any,
+            timing_dirty=applied_any,
+            geometry_dirty=state.dirty_ledger.geometry_dirty,
+        ),
+        notes=tuple(state.notes),
+    )
 
 
 @dataclass(frozen=True)

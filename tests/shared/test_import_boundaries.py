@@ -280,7 +280,8 @@ def test_input_loader_does_not_regress_to_runtime_timeline_generation():
 
 def test_repo_layout_allowlists_remain_explicit():
     """Keep root and tests/ root direct-file sprawl under an explicit allowlist."""
-    root_files = {p.name for p in ROOT.iterdir() if p.is_file()}
+    # On some worktree setups, `.git` is a file-like indirection entry at repo root.
+    root_files = {p.name for p in ROOT.iterdir() if p.is_file() and p.name != ".git"}
     tests_root_files = {p.name for p in (ROOT / "tests").iterdir() if p.is_file()}
     assert root_files <= _ROOT_FILE_ALLOWLIST, f"Unexpected repo-root files: {sorted(root_files - _ROOT_FILE_ALLOWLIST)}"
     assert tests_root_files <= _TESTS_ROOT_FILE_ALLOWLIST, (
