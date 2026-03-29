@@ -72,6 +72,10 @@ The active surface should be small enough that an AI agent can navigate it in on
     query_module_policy.py       # bounded publisher: module runtime/draw/drop/lab/mission policy
 
   simulators/
+    contracts.py                # simulator-facing checkpoint/row contracts
+    perks.py                    # checkpoint-local perk application helpers
+    snapshot_resolver.py        # lightweight QE-backed checkpoint resolver
+    performance.py              # narrow simulator performance probes/benchmarks
     progression.py              # progression projection
     timing.py                   # timing/wave projection
     scenario.py                 # scenario projection
@@ -212,6 +216,22 @@ Locked-foundation rules:
 **Owns:** progression projection, timing projection, scenario projection.
 **Must not own:** stat resolution truth, recommendation policy.
 **Consumes:** QE outputs only (not legacy engine internals directly).
+
+Locked-foundation rules:
+- Simulator hot paths must use explicit requested-surface QE seams.
+- Ordinary row/checkpoint execution must not call `ProgressionRecalcBridge.recompute()`.
+- Simulator hot paths must not import `qe.stat_resolution` or broad report/compat resolver paths.
+- Simulator hot paths must not depend on `app.pipeline` orchestration helpers.
+- Broad family/reference materialisation is allowed only for explicit parity, migration, or report workflows, never as the default row/checkpoint path.
+
+### Hot-path consumers
+**Includes:** simulator row/checkpoint loops, optimizer candidate evaluation loops, advisor recommendation candidate sweeps.
+
+Locked-foundation rules:
+- Hot-path consumers must request explicit surfaces and keep QE cost proportional to the requested surfaces.
+- Hot-path consumers must not call report/compat resolution in ordinary loops.
+- Sanctioned hot-path seams must remain obvious in owner files and enforced by boundary tests.
+- If a hot-path consumer needs a new seam, add the sanctioned seam first; do not route through an existing broad fallback path.
 
 ### `evaluators/`
 **Owns:** scoring, objectives, comparisons, ranking.
