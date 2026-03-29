@@ -23,6 +23,7 @@ from qe.contracts import (
     compat_surface_from_legacy_flag,
     compat_surface_from_legacy_mechanic,
     compat_surface_from_legacy_runtime,
+    to_legacy_surface_id,
 )
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
@@ -77,6 +78,48 @@ def _compat_cap(destination_id: str) -> str:
 
 def _compat_cosmetic(destination_id: str) -> str:
     return compat_surface_from_legacy_cosmetic(destination_id)
+
+
+def _canonical_bucket_key(destination_id: str) -> str:
+    return f'canonical_stat::{destination_id}'
+
+
+_RESOLVED_ROW_ALIAS_KEYS = {
+    _state('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
+}
+
+
+def _resolved_row_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> StatRow | None:
+    row = resolved_rows.get(row_key)
+    if row is not None:
+        return row
+    alias_key = _RESOLVED_ROW_ALIAS_KEYS.get(str(row_key))
+    if alias_key is not None:
+        row = resolved_rows.get(alias_key)
+        if row is not None:
+            return row
+    legacy_key = to_legacy_surface_id(str(row_key))
+    if legacy_key != row_key:
+        row = resolved_rows.get(legacy_key)
+        if row is not None:
+            return row
+    return None
+
+
+def _resolved_float_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> float | None:
+    row = _resolved_row_lookup(resolved_rows, row_key)
+    if row is None or row.final_value is None:
+        return None
+    return _as_float(row.final_value)
+
+
+def _resolved_bool_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> bool | None:
+    row = _resolved_row_lookup(resolved_rows, row_key)
+    if row is None:
+        return None
+    if row.final_value is None:
+        return None
+    return bool(row.final_value)
 
 
 @lru_cache(maxsize=1)
@@ -332,6 +375,32 @@ def _resolve_additive_base_plus_bonuses_pct(destination_id: str, contributors: L
     return final, 'resolved', f'{note_label}: workshop base plus additive percent-point bonuses, uncapped.', schema
 
 
+def _resolve_exact_max_rend_value(contributors: List[StatInput]) -> float | None:
+    enhancement_multiplier = 1.0
+    has_enhancement = False
+    lab_bonus = 0.0
+    module_pct_bonus = 0.0
+    for row in contributors:
+        v = _as_float(row.value)
+        if v is None:
+            continue
+        if row.source_family == 'enhancement':
+            enhancement_multiplier *= v
+            has_enhancement = True
+        elif row.source_family == 'lab':
+            if row.value_type == 'resolved_value':
+                lab_bonus += v
+        elif row.source_family == 'module_substat':
+            if row.value_type == 'percent_display':
+                module_pct_bonus += v / 100.0
+            else:
+                module_pct_bonus += v
+    if not has_enhancement:
+        return None
+    pre_enhancement_cap = 8.0 + lab_bonus + (8.0 * module_pct_bonus)
+    return pre_enhancement_cap * enhancement_multiplier
+
+
 def _resolve_survivability_base_times_multipliers(destination_id: str, contributors: List[StatInput], schema: Dict[str, object], *, module_substat_family: str = 'generic', note_label: str = 'Promoted survivability base-times-multipliers family') -> Tuple[float | None, str, str, Dict[str, object]]:
     workshop = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
     if workshop is None:
@@ -488,8 +557,8 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
     if destination_object_type == 'mechanic_param' and destination_id.startswith('uw.'):
         resolved_rows = meta.get('_resolved_rows', {})
         uw_prefix = '.'.join(destination_id.split('.')[:2])
-        unlock_row = resolved_rows.get(_compat_cap(f'{uw_prefix}.owned'))
-        if unlock_row is not None and bool(unlock_row.final_value) is False:
+        unlock_owned = _resolved_bool_lookup(resolved_rows, _compat_cap(f'{uw_prefix}.owned'))
+        if unlock_owned is False:
             unit = meta.get('unit', 'unknown')
             if unit == 'count':
                 locked_value = 0.0
@@ -767,9 +836,9 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
         return final, 'resolved', 'KB helper coins_multiplier formula: product of card and relic broad-coin multipliers only.', schema
 
     if destination_id == 'coin_kill_multiplier':
-        mirror_row = resolved_rows.get(_state('coins_per_kill_bonus'))
-        if mirror_row and mirror_row.final_value is not None:
-            return _as_float(mirror_row.final_value), 'resolved', f"Deprecated transition mirror of {_state('coins_per_kill_bonus')}.", schema
+        mirror_value = _resolved_float_lookup(resolved_rows, _state('coins_per_kill_bonus'))
+        if mirror_value is not None:
+            return mirror_value, 'resolved', f"Deprecated transition mirror of {_state('coins_per_kill_bonus')}.", schema
         return None, 'mapped_not_resolved', f"Deprecated transition mirror requires {_state('coins_per_kill_bonus')}.", schema
 
     if destination_id == 'tower_defense_absolute':
@@ -777,6 +846,121 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
 
     if destination_id == 'tower_damage_per_meter_multiplier':
         return _resolve_decimal_base_times_post_multipliers(destination_id, contributors, schema)
+
+    if destination_id == 'free_upgrade_multiplier':
+        final = 1.0
+        seen = False
+        for row in contributors:
+            value = _as_float(row.value)
+            if value is None:
+                continue
+            if row.source_family == 'enhancement':
+                final *= value
+                seen = True
+        if not seen:
+            return None, 'mapped_not_resolved', 'Missing free-upgrade support multiplier contributors.', schema
+        return final, 'resolved', 'Direct QE free-upgrade support multiplier: product of routed enhancement contributors.', schema
+
+    if destination_id in {
+        'free_attack_upgrade_chance_pct',
+        'free_defense_upgrade_chance_pct',
+        'free_utility_upgrade_chance_pct',
+    }:
+        support_multiplier = _resolved_float_lookup(resolved_rows, _state('free_upgrade_multiplier'))
+        if support_multiplier is None:
+            return None, 'mapped_not_resolved', f"Free-upgrade lane requires {_state('free_upgrade_multiplier')}.", schema
+        shared_total = 0.0
+        local_total = 0.0
+        consumed = 0
+        for row in contributors:
+            value = _as_float(row.value)
+            if value is None:
+                continue
+            if row.source_family in {'card', 'perk'}:
+                shared_total += value
+                consumed += 1
+                continue
+            if row.source_family in {'relic', 'vault'} and 0.0 <= value <= 1.0:
+                value *= 100.0
+            local_total += value
+            consumed += 1
+        if consumed == 0:
+            return None, 'mapped_not_resolved', 'Missing lane-local free-upgrade contributors.', schema
+        final = (local_total + shared_total) * support_multiplier
+        return final, 'resolved', 'Direct QE free-upgrade formula: (lane-local additive contributors + shared card/perk additive support) x free-upgrade enhancement multiplier.', schema
+
+    if destination_id == 'max_rend_mult':
+        exact_value = _resolve_exact_max_rend_value(contributors)
+        if exact_value is not None:
+            return exact_value, 'resolved', 'Direct QE exact Max Rend formula from EP/KB: (8 + lab max-rend bonus + 8 x module-substat max-rend pct bonus) x Rend Armor enhancement multiplier.', schema
+
+    if destination_id == 'all_coin_bonus_multiplier':
+        coin_bonus_val = _resolved_float_lookup(resolved_rows, _state('coin_bonus_multiplier'))
+        coins_mult_val = _resolved_float_lookup(resolved_rows, _state('coins_multiplier'))
+        theme_val = _resolved_float_lookup(resolved_rows, _compat_cosmetic('cosmetic_bonus.theme_song_coin_multiplier'))
+        tier_row = _resolved_row_lookup(resolved_rows, _compat_context('account_context.farming_tier'))
+        tier_display_raw = None if tier_row is None else (
+            tier_row.contributors[0].get('value') if tier_row.contributors else tier_row.final_value
+        )
+        tier_multiplier_val = None
+        if tier_display_raw is not None:
+            try:
+                tier_num = int(float(tier_display_raw))
+                import csv
+                tier_table = ROOT / 'kb' / 'tournaments' / 'tables' / 'tier-battle-condition-levels.csv'
+                with tier_table.open(newline='', encoding='utf-8') as f:
+                    reader = csv.DictReader(f)
+                    for rec in reader:
+                        if int(rec['tier']) == tier_num:
+                            tier_multiplier_val = float(rec['coin_bonus'])
+                            break
+            except Exception:
+                tier_multiplier_val = None
+        if coin_bonus_val is None or coins_mult_val is None or theme_val is None or tier_multiplier_val is None:
+            return None, 'mapped_not_resolved', 'All-coin bonus multiplier requires coin bonus, broad coins multiplier, theme-song multiplier, and farming-tier coin bonus.', schema
+        import csv
+        pack_multiplier_map: dict[str, float] = {}
+        table = ROOT / 'kb' / 'global-rules' / 'tables' / 'player-pack-coin-multipliers.csv'
+        with table.open(newline='', encoding='utf-8') as f:
+            reader = csv.DictReader(f)
+            for rec in reader:
+                label = str(rec.get('flag_label', '')).strip()
+                multiplier = _as_float(rec.get('multiplier'))
+                if label and multiplier is not None:
+                    pack_multiplier_map[label] = multiplier
+        disable_ads_mult = pack_multiplier_map.get('account_flag.disable_ads', 1.0) if _resolved_bool_lookup(resolved_rows, _compat_flag('account_flag.disable_ads')) else 1.0
+        starter_pack_mult = pack_multiplier_map.get('account_flag.starter_pack', 1.0) if _resolved_bool_lookup(resolved_rows, _compat_flag('account_flag.starter_pack')) else 1.0
+        epic_pack_mult = pack_multiplier_map.get('account_flag.epic_pack', 1.0) if _resolved_bool_lookup(resolved_rows, _compat_flag('account_flag.epic_pack')) else 1.0
+        final = coin_bonus_val * coins_mult_val * theme_val * tier_multiplier_val * disable_ads_mult * starter_pack_mult * epic_pack_mult
+        return final, 'resolved', 'Direct QE all-coin multiplier: coin bonus x broad coins x theme song x farming tier x enabled premium-pack multipliers.', schema
+
+    if destination_id == 'wall_regen':
+        tower_regen = _resolved_float_lookup(resolved_rows, _state('tower_regen'))
+        if tower_regen is None:
+            return None, 'mapped_not_resolved', f"Wall regen requires {_state('tower_regen')}.", schema
+        wall_regen_ratio = None
+        multiplier = 1.0
+        consumed = 0
+        for row in contributors:
+            value = _as_float(row.value)
+            if value is None:
+                continue
+            if row.source_family == 'lab':
+                wall_regen_ratio = value / 100.0
+                consumed += 1
+            elif row.source_family == 'module' and row.value_type == 'multiplier_display':
+                multiplier *= value
+                consumed += 1
+            elif row.source_family == 'module_substat':
+                multiplier *= 1.0 + (value / 100.0)
+                consumed += 1
+        if wall_regen_ratio is None:
+            return None, 'mapped_not_resolved', 'Missing wall-regen ratio contributor.', schema
+        final = tower_regen * wall_regen_ratio * multiplier
+        return final, 'resolved', 'Direct QE wall regen formula from KB: tower_regen x wall-regen ratio x wall-regen multipliers.', schema
+
+    if destination_id == 'package_chance_pct':
+        return _resolve_additive_base_plus_bonuses_pct('package_chance_pct', contributors, schema)
 
     if destination_id == 'wall_fortification_multiplier':
         lab_pct = next((_as_float(r.value) for r in _rows('lab')), None)
@@ -801,8 +985,8 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 return None, 'mapped_not_resolved', 'Missing global bot range contributors.', schema
             return total, 'resolved', 'Bot global range bonus formula: additive relic, vault, and module unique contributions.', schema
         if bot_name != 'global':
-            unlock_row = resolved_rows.get(_compat_cap(f'bot.{bot_name}.owned'))
-            if unlock_row is not None and bool(unlock_row.final_value) is False:
+            unlock_owned = _resolved_bool_lookup(resolved_rows, _compat_cap(f'bot.{bot_name}.owned'))
+            if unlock_owned is False:
                 return 0.0, 'resolved', 'Bot mechanic row gated to zero because the bot is not owned.', schema
         if destination_id.endswith('.range_m'):
             base = 0.0
@@ -814,8 +998,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 if r.source_family == 'bot':
                     base += v
                     seen = True
-            global_bonus_row = resolved_rows.get(_compat_mech('bot.global.range_bonus_m'))
-            global_bonus = _as_float(global_bonus_row.final_value) if global_bonus_row and global_bonus_row.final_value is not None else 0.0
+            global_bonus = _resolved_float_lookup(resolved_rows, _compat_mech('bot.global.range_bonus_m')) or 0.0
             if not seen and global_bonus == 0.0:
                 return None, 'mapped_not_resolved', 'Missing base bot range contributor.', schema
             return base + global_bonus, 'resolved', 'Bot canonical range formula: base bot range plus global bot range bonus.', schema
@@ -959,11 +1142,11 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
                 else:
                     mult = _canonical_source_multiplier(destination_id, r, v)
                 land_mine_mult = (1.0 if land_mine_mult is None else land_mine_mult) * mult
-        tower_damage = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _state('tower_damage')), None)
-        crit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _state('tower_crit_chance_pct')), None)
-        crit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _state('tower_crit_multiplier')), None)
-        supercrit_chance = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _state('tower_supercrit_chance_pct')), None)
-        supercrit_factor = next((_as_float(r.final_value) for k, r in resolved_rows.items() if k == _state('tower_supercrit_multiplier')), None)
+        tower_damage = _resolved_float_lookup(resolved_rows, _state('tower_damage'))
+        crit_chance = _resolved_float_lookup(resolved_rows, _state('tower_crit_chance_pct'))
+        crit_factor = _resolved_float_lookup(resolved_rows, _state('tower_crit_multiplier'))
+        supercrit_chance = _resolved_float_lookup(resolved_rows, _state('tower_supercrit_chance_pct'))
+        supercrit_factor = _resolved_float_lookup(resolved_rows, _state('tower_supercrit_multiplier'))
         pieces = [land_mine_mult, tower_damage, crit_chance, crit_factor, supercrit_chance, supercrit_factor]
         if any(v is None for v in pieces):
             return None, 'mapped_not_resolved', 'Runtime-damage family requires land-mine multiplier assembly plus tower_damage, crit, and super-crit surfaces.', schema
@@ -1026,8 +1209,7 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
         return final, 'resolved', 'Destination-specific recovery amount formula: workshop base plus additive package amount bonuses, then enhancement multipliers.', schema
 
     if destination_id == 'wall_hp':
-        tower_hp_row = resolved_rows.get(_state('tower_hp'))
-        tower_hp_value = _as_float(getattr(tower_hp_row, 'final_value', None)) if tower_hp_row is not None else None
+        tower_hp_value = _resolved_float_lookup(resolved_rows, _state('tower_hp'))
         workshop_ratio = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
         if workshop_ratio is None:
             return None, 'mapped_not_resolved', 'Missing workshop wall-health ratio base.', schema
@@ -1256,288 +1438,82 @@ def _resolve_bucket(destination_object_type: str, destination_id: str, contribut
 
 
 
-def _phase3_statinput_from_dict(d: Dict[str, object]) -> StatInput:
-    return StatInput(**{k: d.get(k) for k in StatInput.__dataclass_fields__.keys()})
-
-
-def _apply_shared_support_multiplier_family(rows: Dict[str, StatRow], *, support_key: str, targets: List[str], note: str) -> None:
-    support_row = rows.get(support_key)
-    if not support_row:
-        return
-    multiplier = 1.0
-    for contributor in support_row.contributors:
-        row = _phase3_statinput_from_dict(contributor)
-        v = _as_float(contributor.get('value'))
-        if v is None:
-            continue
-        if row.source_family == 'enhancement':
-            multiplier *= v
-    if multiplier == 1.0:
-        return
-    for key in targets:
-        stat_row = rows.get(key)
-        if stat_row and stat_row.final_value is not None:
-            base = _as_float(stat_row.final_value)
-            if base is not None:
-                stat_row.final_value = base * multiplier
-                stat_row.status = 'resolved'
-                stat_row.notes = note
-
-
-def _apply_free_upgrade_chance_formula_from_routed_contributors(rows: Dict[str, StatRow]) -> None:
-    support_row = rows.get(_state('free_upgrade_multiplier'))
-    support_multiplier = 1.0
-    support_contributors: List[Dict[str, Any]] = []
-    if support_row is not None:
-        for contributor in support_row.contributors:
-            row = _phase3_statinput_from_dict(contributor)
-            v = _as_float(contributor.get('value'))
-            if v is None:
-                continue
-            if row.source_family == 'enhancement':
-                support_multiplier *= v
-                support_contributors.append(dict(contributor))
-
-    ordered_targets = [
-        _state('free_attack_upgrade_chance_pct'),
-        _state('free_defense_upgrade_chance_pct'),
-        _state('free_utility_upgrade_chance_pct'),
-    ]
-    shared_additive = None
-    shared_additive_contributors: List[Dict[str, Any]] = []
-
-    for key in ordered_targets:
-        stat_row = rows.get(key)
-        if stat_row is None:
-            continue
-        shared_total = 0.0
-        local_total = 0.0
-        local_contributors: List[Dict[str, Any]] = []
-        shared_contributors_for_row: List[Dict[str, Any]] = []
-        for contributor in stat_row.contributors:
-            row = _phase3_statinput_from_dict(contributor)
-            v = _as_float(contributor.get('value'))
-            if v is None:
-                continue
-            if row.source_family in {'card', 'perk'}:
-                shared_total += v
-                shared_contributors_for_row.append(dict(contributor))
-                continue
-            if row.source_family in {'relic', 'vault'} and 0.0 <= v <= 1.0:
-                v *= 100.0
-            local_total += v
-            local_contributors.append(dict(contributor))
-
-        if shared_additive is None:
-            shared_additive = shared_total
-            shared_additive_contributors = shared_contributors_for_row
-            rows[_state('free_upgrade_shared_add_pct')] = StatRow(
-                stat_name=_state('free_upgrade_shared_add_pct'),
-                final_value=shared_total,
-                value_type='pct',
-                source_count=len(shared_contributors_for_row),
-                status='resolved',
-                notes='Shared free-upgrade additive support from cards and perks.',
-                contributors=shared_contributors_for_row,
-                schema={'unit': 'pct'},
-            )
-
-        stat_row.final_value = (local_total + (shared_additive or 0.0)) * support_multiplier
-        stat_row.status = 'resolved'
-        stat_row.notes = 'Free-upgrade formula from routed contributors: (lane workshop + lane relic/vault + lane module-substat + shared card/perk additive support) x shared free-upgrade enhancement multiplier. Promoted shared support-multiplier family.'
-        stat_row.source_count = len(local_contributors) + len(shared_additive_contributors) + len(support_contributors)
-
-
-def _apply_exact_max_rend_formula(rows: Dict[str, StatRow]) -> None:
-    max_rend_row = rows.get(_state('max_rend_mult'))
-    if not max_rend_row:
-        return
-    enhancement_multiplier = 1.0
-    has_enhancement = False
-    lab_bonus = 0.0
-    module_pct_bonus = 0.0
-    for contributor in max_rend_row.contributors:
-        row = _phase3_statinput_from_dict(contributor)
-        v = _as_float(contributor.get('value'))
-        if v is None:
-            continue
-        if row.source_family == 'enhancement':
-            enhancement_multiplier *= v
-            has_enhancement = True
-        elif row.source_family == 'lab':
-            if row.value_type == 'resolved_value':
-                lab_bonus += v
-        elif row.source_family == 'module_substat':
-            if row.value_type == 'percent_display':
-                module_pct_bonus += v / 100.0
-            else:
-                module_pct_bonus += v
-    if not has_enhancement:
-        return
-    pre_enhancement_cap = 8.0 + lab_bonus + (8.0 * module_pct_bonus)
-    max_rend_row.final_value = pre_enhancement_cap * enhancement_multiplier
-    max_rend_row.status = 'resolved'
-    max_rend_row.notes = 'Phase 3 exact Max Rend formula from EP/KB: (8 + lab max-rend bonus + 8 x module-substat max-rend pct bonus) x Rend Armor enhancement multiplier.'
-
-
-def _apply_phase3_postprocessing(rows: Dict[str, StatRow]) -> None:
-    _apply_free_upgrade_chance_formula_from_routed_contributors(rows)
-    _apply_exact_max_rend_formula(rows)
-
-    coins_per_kill_row = rows.get(_state('coins_per_kill_bonus'))
-    if coins_per_kill_row is not None:
-        rows[_state('coin_kill_multiplier')] = StatRow(
-            stat_name=_state('coin_kill_multiplier'),
-            final_value=coins_per_kill_row.final_value,
-            value_type=coins_per_kill_row.value_type,
-            source_count=coins_per_kill_row.source_count,
-            status=coins_per_kill_row.status,
-        notes=f"Deprecated transition mirror of {_state('coins_per_kill_bonus')}.",
-            contributors=list(coins_per_kill_row.contributors),
-            schema=coins_per_kill_row.schema,
-        )
-
-    disable_ads_row = rows.get(_compat_flag('account_flag.disable_ads'))
-    starter_pack_row = rows.get(_compat_flag('account_flag.starter_pack'))
-    epic_pack_row = rows.get(_compat_flag('account_flag.epic_pack'))
-    farming_tier_row = rows.get(_compat_context('account_context.farming_tier'))
-    legacy_coin_display_row = rows.get(_compat_context('account_context.coin_multiplier_display'))
-    helper_contributors = []
-
-    def _helper_value(row_key, label):
-        row = rows.get(row_key)
-        if not row:
-            return None
-        helper_contributors.append({'stat_name': label, 'source_family': 'helper_surface', 'source_name': label, 'value': row.final_value, 'value_type': row.value_type, 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True})
-        return _as_float(row.final_value)
-
-    coin_bonus_val = _helper_value(_state('coin_bonus_multiplier'), _state('coin_bonus_multiplier'))
-    coins_mult_val = _helper_value(_state('coins_multiplier'), _state('coins_multiplier'))
-    theme_val = _helper_value(_compat_cosmetic('cosmetic_bonus.theme_song_coin_multiplier'), 'cosmetic_bonus.theme_song_coin_multiplier')
-
-    def _load_pack_multiplier_map():
-        import csv
-        from pathlib import Path
-        table = Path(__file__).resolve().parents[1] / 'kb' / 'global-rules' / 'tables' / 'player-pack-coin-multipliers.csv'
-        out = {}
-        try:
-            with table.open(newline='', encoding='utf-8') as f:
-                reader = csv.DictReader(f)
-                for rec in reader:
-                    out[rec['flag_destination']] = float(rec['multiplier'])
-        except Exception:
-            out = {
-                'account_flag.disable_ads': 1.5,
-                'account_flag.starter_pack': 2.0,
-                'account_flag.epic_pack': 3.0,
-            }
-        return out
-
-    pack_multiplier_map = _load_pack_multiplier_map()
-
-    def _flag_pack_multiplier(row, label):
-        multiplier = float(pack_multiplier_map.get(label, 1.0))
-        enabled = bool(getattr(row, 'final_value', False)) if row is not None else False
-        helper_contributors.append({'stat_name': label, 'source_family': 'helper_surface', 'source_name': label, 'value': multiplier if enabled else 1.0, 'value_type': 'multiplier', 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True, 'notes': 'kb_pack_flag_multiplier_if_true' if enabled else 'kb_pack_flag_multiplier_if_false'})
-        return multiplier if enabled else 1.0
-
-    disable_ads_mult = _flag_pack_multiplier(disable_ads_row, 'account_flag.disable_ads')
-    starter_pack_mult = _flag_pack_multiplier(starter_pack_row, 'account_flag.starter_pack')
-    epic_pack_mult = _flag_pack_multiplier(epic_pack_row, 'account_flag.epic_pack')
-
-    tier_display_raw = None if farming_tier_row is None else (farming_tier_row.contributors[0].get('value') if farming_tier_row.contributors else farming_tier_row.final_value)
-    helper_contributors.append({'stat_name': 'account_context.farming_tier', 'source_family': 'helper_surface', 'source_name': 'account_context.farming_tier', 'value': tier_display_raw, 'value_type': 'raw_text', 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True})
-    helper_contributors.append({'stat_name': 'account_context.coin_multiplier_display', 'source_family': 'helper_surface', 'source_name': 'account_context.coin_multiplier_display', 'value': None if legacy_coin_display_row is None else (legacy_coin_display_row.contributors[0].get('value') if legacy_coin_display_row.contributors else legacy_coin_display_row.final_value), 'value_type': 'raw_text', 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True, 'notes': 'legacy_trace_only_not_used_numerically'})
-
-    tier_multiplier_val = None
-    if isinstance(tier_display_raw, str):
-        import re
-        m = re.search(r'(\d+)', tier_display_raw)
-        if m:
-            tier_num = int(m.group(1))
-            try:
-                import csv
-                from pathlib import Path
-                tier_table = Path(__file__).resolve().parents[1] / 'kb' / 'tournaments' / 'tables' / 'tier-battle-condition-levels.csv'
-                with tier_table.open(newline='', encoding='utf-8') as f:
-                    reader = csv.DictReader(f)
-                    for rec in reader:
-                        if int(rec['tier']) == tier_num:
-                            tier_multiplier_val = float(rec['coin_bonus'])
-                            break
-            except Exception:
-                tier_multiplier_val = None
-    helper_contributors.append({'stat_name': 'account_context.farming_tier_coin_multiplier', 'source_family': 'helper_surface', 'source_name': 'account_context.farming_tier_coin_multiplier', 'value': tier_multiplier_val, 'value_type': 'multiplier' if tier_multiplier_val is not None else 'unresolved', 'stage': 'phase3_composition', 'destination_object_type': 'canonical_stat', 'destination_id': 'all_coin_bonus_multiplier', 'resolver_id': 'standard_scalar_stat', 'kb_mapped': True, 'notes': 'kb_tier_coin_bonus_lookup'})
-
-    all_coin_value = None
-    all_coin_status = 'mapped_not_resolved'
-    all_coin_notes = 'Derived all-coin display surface: coin_bonus_multiplier x coins_multiplier x theme song coin multiplier x farming-tier coin bonus x numeric premium-pack multipliers (Disable Ads 1.5x, Starter Pack 2x, Epic Pack 3x when unlocked). Legacy account coin multiplier display remains trace-only.'
-    if coin_bonus_val is not None and coins_mult_val is not None and theme_val is not None and tier_multiplier_val is not None:
-        all_coin_value = coin_bonus_val * coins_mult_val * theme_val * tier_multiplier_val * disable_ads_mult * starter_pack_mult * epic_pack_mult
-        all_coin_status = 'resolved'
-    else:
-        all_coin_notes += ' One or more required numeric helper surfaces were unavailable.'
-    rows[_state('all_coin_bonus_multiplier')] = StatRow(
-        stat_name=_state('all_coin_bonus_multiplier'),
-        final_value=all_coin_value,
-        value_type='multiplier',
-        source_count=len(helper_contributors),
-        status=all_coin_status,
-        notes=all_coin_notes,
-        contributors=helper_contributors,
-        schema={'unit': 'multiplier', 'resolver': 'standard_scalar_stat'},
+def _build_stat_row(
+    *,
+    bucket_key: str,
+    contributors: List[StatInput],
+    meta: Dict[str, str],
+    final_value: float | None,
+    status: str,
+    notes: str,
+    schema: Dict[str, object],
+) -> StatRow:
+    return StatRow(
+        stat_name=bucket_key,
+        final_value=final_value,
+        value_type=meta['unit'],
+        source_count=len(contributors),
+        status=status,
+        notes=notes,
+        contributors=[c.to_dict() for c in contributors],
+        schema=schema,
     )
 
-    tower_regen_row = rows.get(_state('tower_regen'))
-    wall_regen_row = rows.get(_state('wall_regen'))
-    if tower_regen_row and wall_regen_row and tower_regen_row.final_value is not None:
-        tower_regen = _as_float(tower_regen_row.final_value)
-        if tower_regen is not None:
-            wall_regen_ratio = None
-            multiplier = 1.0
-            for contributor in wall_regen_row.contributors:
-                row = _phase3_statinput_from_dict(contributor)
-                v = _as_float(contributor.get('value'))
-                if v is None:
-                    continue
-                if row.source_family == 'lab':
-                    wall_regen_ratio = v / 100.0
-                elif row.source_family == 'module' and row.value_type == 'multiplier_display':
-                    multiplier *= v
-                elif row.source_family == 'module_substat':
-                    multiplier *= 1.0 + (v / 100.0)
-            if wall_regen_ratio is not None:
-                wall_regen_row.final_value = tower_regen * wall_regen_ratio * multiplier
-                wall_regen_row.status = 'resolved'
-                wall_regen_row.notes = 'Phase 3 exact wall regen formula from KB: tower_regen x wall-regen ratio x wall-regen multipliers.'
 
-    package_row = rows.get(_state('package_chance_pct'))
-    if package_row:
-        final, status, note, _ = _resolve_additive_base_plus_bonuses_pct('package_chance_pct', [_phase3_statinput_from_dict(c) for c in package_row.contributors], {'unit': 'pct'})
-        if final is not None:
-            package_row.final_value = final
-            package_row.status = status
-            package_row.notes = note
+def _resolve_mapped_rows(
+    *,
+    mapped_buckets: Dict[str, List[StatInput]],
+    canonical_stats: Dict[str, Dict[str, str]],
+    existing_rows: Dict[str, StatRow] | None = None,
+) -> Dict[str, StatRow]:
+    rows: Dict[str, StatRow] = {} if existing_rows is None else existing_rows
+    pending: Dict[str, List[StatInput]] = dict(mapped_buckets)
 
-    runtime_mirror_map = {
-        _compat_mech('uw.chain_lightning.chance_pct'): _compat_runtime('uw.chain_lightning.chance_pct'),
-        _compat_mech('uw.chain_lightning.damage_multiplier'): _compat_runtime('uw.chain_lightning.damage_multiplier'),
-        _compat_mech('uw.spotlight.bonus_multiplier'): _compat_runtime('uw.spotlight.bonus_multiplier'),
-    }
-    for source_key, runtime_key in runtime_mirror_map.items():
-        source_row = rows.get(source_key)
-        if source_row is None:
+    while pending:
+        progress = False
+        for bucket_key in list(pending):
+            contributors = pending[bucket_key]
+            destination_object_type, destination_id = bucket_key.split('::', 1)
+            meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+            if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+                meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+            meta = dict(meta)
+            meta['_resolved_rows'] = rows
+            final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
+            if status == 'mapped_not_resolved':
+                continue
+            rows[bucket_key] = _build_stat_row(
+                bucket_key=bucket_key,
+                contributors=contributors,
+                meta=meta,
+                final_value=final_value,
+                status=status,
+                notes=notes,
+                schema=schema,
+            )
+            pending.pop(bucket_key, None)
+            progress = True
+        if progress:
             continue
-        rows[runtime_key] = StatRow(
-            stat_name=runtime_key,
-            final_value=source_row.final_value,
-            value_type=source_row.value_type,
-            source_count=source_row.source_count,
-            status=source_row.status,
-            notes='Phase 3 runtime mirror of resolved mechanic_param surface for runtime consumers and shipped outputs.',
-            contributors=list(source_row.contributors),
-            schema=dict(source_row.schema or {}),
-        )
+        for bucket_key, contributors in pending.items():
+            destination_object_type, destination_id = bucket_key.split('::', 1)
+            meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+            if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+                meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+            meta = dict(meta)
+            meta['_resolved_rows'] = rows
+            final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
+            rows[bucket_key] = _build_stat_row(
+                bucket_key=bucket_key,
+                contributors=contributors,
+                meta=meta,
+                final_value=final_value,
+                status=status,
+                notes=notes,
+                schema=schema,
+            )
+        pending.clear()
+    return rows
 
 
 def classify_input_routing(row: StatInput) -> str:
@@ -1675,26 +1651,10 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
     mapped_buckets, unmapped_buckets = _bucket_stat_inputs(stat_inputs)
     routing_summary = summarize_input_routing(stat_inputs)
 
-    rows: Dict[str, StatRow] = {}
-
-    for bucket_key, contributors in mapped_buckets.items():
-        destination_object_type, destination_id = bucket_key.split('::', 1)
-        meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
-        if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
-            meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
-        meta = dict(meta)
-        meta['_resolved_rows'] = rows
-        final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
-        rows[bucket_key] = StatRow(
-            stat_name=bucket_key,
-            final_value=final_value,
-            value_type=meta['unit'],
-            source_count=len(contributors),
-            status=status,
-            notes=notes,
-            contributors=[c.to_dict() for c in contributors],
-            schema=schema,
-        )
+    rows: Dict[str, StatRow] = _resolve_mapped_rows(
+        mapped_buckets=mapped_buckets,
+        canonical_stats=canonical_stats,
+    )
 
     for stat_name, contributors in unmapped_buckets.items():
         rows[f'raw::{stat_name}'] = StatRow(
@@ -1705,10 +1665,9 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
             status='unmapped',
             notes='Preserved for traceability. No validated canonical-stat routing or no canonical-stat destination attached yet.',
             contributors=[c.to_dict() for c in contributors],
-            schema=schema,
+            schema=None,
         )
 
-    _apply_phase3_postprocessing(rows)
     diagnostics = _build_statbook_diagnostics(
         stat_inputs=stat_inputs,
         rows=rows,
@@ -1716,6 +1675,23 @@ def resolve_stats(stat_inputs: List[StatInput]) -> StatBook:
         routing_summary=routing_summary,
     )
     return StatBook(rows=rows, diagnostics=diagnostics)
+
+
+def resolve_bucket_value(
+    destination_object_type: str,
+    destination_id: str,
+    contributors: List[StatInput],
+    *,
+    resolved_rows: Dict[str, StatRow] | None = None,
+) -> tuple[float | None, str, str, Dict[str, object], Dict[str, str]]:
+    canonical_stats = _load_canonical_stats()
+    meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+    if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+        meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+    meta = dict(meta)
+    meta['_resolved_rows'] = dict(resolved_rows or {})
+    final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
+    return final_value, status, notes, schema, meta
 
 
 def resolve_stats_delta(
@@ -1747,26 +1723,16 @@ def resolve_stats_delta(
         if bucket_key not in target_mapped_buckets:
             rows.pop(bucket_key, None)
 
-    for bucket_key, contributors in target_mapped_buckets.items():
-        if bucket_key not in impacted_bucket_keys:
-            continue
-        destination_object_type, destination_id = bucket_key.split('::', 1)
-        meta = canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
-        if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
-            meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
-        meta = dict(meta)
-        meta['_resolved_rows'] = rows
-        final_value, status, notes, schema = _resolve_bucket(destination_object_type, destination_id, contributors, meta)
-        rows[bucket_key] = StatRow(
-            stat_name=bucket_key,
-            final_value=final_value,
-            value_type=meta['unit'],
-            source_count=len(contributors),
-            status=status,
-            notes=notes,
-            contributors=[c.to_dict() for c in contributors],
-            schema=schema,
-        )
+    impacted_target_buckets = {
+        bucket_key: contributors
+        for bucket_key, contributors in target_mapped_buckets.items()
+        if bucket_key in impacted_bucket_keys
+    }
+    _resolve_mapped_rows(
+        mapped_buckets=impacted_target_buckets,
+        canonical_stats=canonical_stats,
+        existing_rows=rows,
+    )
 
     for stat_name in changed_unmapped_keys:
         raw_key = f'raw::{stat_name}'
@@ -1785,7 +1751,6 @@ def resolve_stats_delta(
             schema=None,
         )
 
-    _apply_phase3_postprocessing(rows)
     diagnostics = _build_statbook_diagnostics(
         stat_inputs=target_stat_inputs,
         rows=rows,

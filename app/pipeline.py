@@ -41,7 +41,7 @@ from qe.contracts import (
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
-from qe.publication import publish_phase3_query_surfaces
+from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
 from simulators.progression import resolve_run_stats_progression_bundle
@@ -251,9 +251,9 @@ def _write_core_outputs(
 
 
 def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_state_labs: dict) -> dict:
-    from qe.publication import publish_phase3_query_surfaces
+    from qe.publication import publish_query_surfaces
 
-    publish_phase3_query_surfaces(
+    publish_query_surfaces(
         statbook.rows,
         manual_advisory_inputs=manual_advisory_inputs,
         account_state_labs=account_state_labs,
@@ -312,7 +312,7 @@ def _merge_scenario_publication_rows(
             'support_surface::timing.wave_duration_seconds_effective',
         ),
         notes='run_stats scenario publication timing prerequisite merge',
-        diagnostics={'source': 'app.pipeline.publish_phase3_query_surfaces'},
+        diagnostics={'source': 'app.pipeline.publish_query_surfaces'},
     )
     for surface_id, row in timing_statbook.rows.items():
         statbook.rows[surface_id] = row
@@ -447,6 +447,28 @@ def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: st
     }
     _annotate_display_fields(statbook_dict)
     return statbook_dict
+
+
+_RUN_STATS_QUERY_OUTPUTS = {
+    'start_of_run_rows': 'run_stats_query_rows_start_of_run.json',
+    'max_progression_rows': 'run_stats_query_rows_max_progression.json',
+    'start_of_run_plan': 'run_stats_query_plan_start_of_run.json',
+    'max_progression_plan': 'run_stats_query_plan_max_progression.json',
+}
+
+_RUN_STATS_LEGACY_OUTPUTS = (
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+)
+
+
+def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
+    for name in _RUN_STATS_LEGACY_OUTPUTS:
+        path = out_dir / name
+        if path.exists():
+            path.unlink()
 
 
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
@@ -1138,28 +1160,46 @@ class RunStatsSession:
         diagnostics = artifacts['diagnostics']
         js = _json_sanitize
         write_start = perf_counter()
+        _remove_run_stats_legacy_outputs(args.out)
         (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         (args.out / 'account_state.json').write_text(
             json.dumps(js(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
         )
-        (args.out / 'stat_inputs_start_of_run.json').write_text(
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan']).write_text(
             json.dumps(js({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'start_of_run',
                 'presets': artifacts['state_query_plans']['start_of_run'],
             }), indent=2, default=str)
         )
-        (args.out / 'stat_inputs_max_progression.json').write_text(
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']).write_text(
             json.dumps(js({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'max_progression',
                 'presets': artifacts['state_query_plans']['max_progression'],
             }), indent=2, default=str)
         )
-        (args.out / 'statbook_start_of_run.json').write_text(json.dumps(js(artifacts['start_books_by_preset']), indent=2, default=str))
-        (args.out / 'statbook_max_progression.json').write_text(json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str))
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows']).write_text(
+            json.dumps(js(artifacts['start_books_by_preset']), indent=2, default=str)
+        )
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(
+            json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str)
+        )
         (args.out / 'run_stats.json').write_text(json.dumps(js(artifacts['run_stats_payload']), indent=2, default=str))
+        diagnostics['output_contract'] = {
+            'product_artifact': 'run_stats.json',
+            'query_row_artifacts': [
+                _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'],
+                _RUN_STATS_QUERY_OUTPUTS['max_progression_rows'],
+            ],
+            'query_plan_artifacts': [
+                _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'],
+                _RUN_STATS_QUERY_OUTPUTS['max_progression_plan'],
+            ],
+            'removed_legacy_fast_path_artifacts': list(_RUN_STATS_LEGACY_OUTPUTS),
+        }
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
+        (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         return 0
 
 
@@ -1468,7 +1508,7 @@ def run_analysis_pipeline(args) -> int:
         perks_enabled=perks_enabled,
         manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
     )
-    publish_phase3_query_surfaces(
+    publish_query_surfaces(
         statbook.rows,
         manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
         account_state_labs=account_state.labs,
@@ -1499,7 +1539,7 @@ def run_analysis_pipeline(args) -> int:
             perks_enabled=perks_enabled,
             manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
         )
-        publish_phase3_query_surfaces(
+        publish_query_surfaces(
             matrix_statbook_obj.rows,
             manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
             account_state_labs=account_state.labs,

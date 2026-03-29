@@ -88,6 +88,534 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned tower defense surface.
+  - node_id: state::tower.damage
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower damage surface.
+  - node_id: state::tower.attack_speed
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower attack speed surface.
+  - node_id: state::tower.regen
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower regen surface.
+  - node_id: state::tower.crit_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower critical chance surface.
+  - node_id: state::tower.crit_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower critical multiplier surface.
+  - node_id: state::tower.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower range surface.
+  - node_id: state::tower.multishot_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower multishot chance surface.
+  - node_id: state::tower.multishot_targets
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower multishot target-count surface.
+  - node_id: state::tower.rapid_fire_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower rapid-fire chance surface.
+  - node_id: state::tower.rapid_fire_duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower rapid-fire duration surface.
+  - node_id: state::tower.bounce_shot_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower bounce-shot chance surface.
+  - node_id: state::tower.bounce_shot_targets
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower bounce-shot target-count surface.
+  - node_id: state::tower.bounce_shot_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower bounce-shot range surface.
+  - node_id: state::tower.damage_per_meter_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower damage-per-meter surface.
+  - node_id: state::tower.death_defy_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower death-defy chance surface.
+  - node_id: state::tower.knockback_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower knockback chance surface.
+  - node_id: state::tower.knockback_force
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower knockback force surface.
+  - node_id: state::tower.land_mine_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower land-mine chance surface.
+  - node_id: state::tower.land_mine_damage
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower land-mine damage surface.
+  - node_id: state::tower.land_mine_radius_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower land-mine radius surface.
+  - node_id: state::tower.lifesteal_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower lifesteal surface.
+  - node_id: state::tower.max_recovery_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower max-recovery multiplier surface.
+  - node_id: state::tower.recovery_amount_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower recovery amount surface.
+  - node_id: state::tower.recovery_package_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower recovery-package multiplier surface.
+  - node_id: state::tower.rend_armor_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower rend-armor chance surface.
+  - node_id: state::tower.rend_armor_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower rend-armor multiplier surface.
+  - node_id: state::tower.shockwave_interval_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower shockwave interval surface.
+  - node_id: state::tower.shockwave_size_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower shockwave size surface.
+  - node_id: state::tower.supercrit_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower supercrit chance surface.
+  - node_id: state::tower.supercrit_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower supercrit multiplier surface.
+  - node_id: state::tower.max_rend_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower max-rend multiplier surface.
+  - node_id: state::tower.orb_size_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower orb-size multiplier surface.
+  - node_id: state::tower.ultimate_damage_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned tower ultimate-damage multiplier surface.
+  - node_id: source_input::workshop:Damage
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop damage track.
+  - node_id: source_input::workshop:Attack Speed
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop attack speed track.
+  - node_id: source_input::workshop:Health Regen
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop health regen track.
+  - node_id: source_input::workshop:Critical Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop critical chance track.
+  - node_id: source_input::workshop:Critical Factor
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop critical factor track.
+  - node_id: source_input::workshop:Range
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop range track.
+  - node_id: source_input::workshop:Multishot Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop multishot chance track.
+  - node_id: source_input::workshop:Multishot Targets
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop multishot targets track.
+  - node_id: source_input::workshop:Rapid Fire Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop rapid-fire chance track.
+  - node_id: source_input::workshop:Rapid Fire Duration
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop rapid-fire duration track.
+  - node_id: source_input::workshop:Bounce Shot Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop bounce-shot chance track.
+  - node_id: source_input::workshop:Bounce Shot Targets
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop bounce-shot targets track.
+  - node_id: source_input::workshop:Bounce Shot Range
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop bounce-shot range track.
+  - node_id: source_input::workshop:Damage / Meter
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop damage-per-meter track.
+  - node_id: source_input::workshop:Death Defy
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop death-defy track.
+  - node_id: source_input::workshop:Knockback Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop knockback chance track.
+  - node_id: source_input::workshop:Knockback Force
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop knockback force track.
+  - node_id: source_input::workshop:Land Mine Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop land-mine chance track.
+  - node_id: source_input::workshop:Land Mine Damage
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop land-mine damage track.
+  - node_id: source_input::workshop:Land Mine Radius
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop land-mine radius track.
+  - node_id: source_input::workshop:Lifesteal
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop lifesteal track.
+  - node_id: source_input::workshop:Max Amount
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop max-amount track contributing to recovery package max.
+  - node_id: source_input::workshop:Recovery Amount
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop recovery amount track.
+  - node_id: source_input::workshop:Rend Armor Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop rend-armor chance track.
+  - node_id: source_input::workshop:Rend Armor Mult
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop rend-armor multiplier track.
+  - node_id: source_input::workshop:Shockwave Frequency
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop shockwave frequency track.
+  - node_id: source_input::workshop:Shockwave Size
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop shockwave size track.
+  - node_id: source_input::workshop:Super Critical Chance
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop super critical chance track.
+  - node_id: source_input::workshop:Super Critical Mult
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop super critical multiplier track.
+  - node_id: source_input::enhancement:Recovery Package +
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Enhancement recovery-package bonus source.
+  - node_id: source_input::lab:Max Rend Armor Multiplier
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Lab max rend multiplier source.
+  - node_id: source_input::enhancement:Orb Size +
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Enhancement orb-size bonus source.
+  - node_id: source_input::vault:Ultimate Weapon Damage
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Vault ultimate weapon damage source.
   - node_id: source_input::workshop:Thorn Damage
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -272,6 +800,294 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned health skip surface.
+  - node_id: state::economy.cash_kill_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned cash kill multiplier surface.
+  - node_id: state::economy.cash_per_wave
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned cash per wave surface.
+  - node_id: state::economy.coins_per_kill_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned coins per kill bonus surface.
+  - node_id: state::economy.coins_per_wave
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned coins per wave surface.
+  - node_id: state::economy.starting_cash_bonus
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned starting cash bonus surface.
+  - node_id: state::bot.amplify.bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot bonus multiplier surface.
+  - node_id: state::bot.amplify.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot cooldown surface.
+  - node_id: state::bot.amplify.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot duration surface.
+  - node_id: state::bot.amplify.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot range surface.
+  - node_id: state::bot.flame.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot cooldown surface.
+  - node_id: state::bot.flame.damage_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot damage multiplier surface.
+  - node_id: state::bot.flame.damage_reduction_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot damage reduction surface.
+  - node_id: state::bot.flame.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot range surface.
+  - node_id: state::bot.flame_bot.lab_burn_stack
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot burn-stack lab surface.
+  - node_id: state::bot.global.range_bonus_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned global bot range bonus surface.
+  - node_id: state::bot.golden.bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Golden Bot bonus multiplier surface.
+  - node_id: state::bot.golden.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Golden Bot cooldown surface.
+  - node_id: state::bot.golden.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Golden Bot duration surface.
+  - node_id: state::bot.golden.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Golden Bot range surface.
+  - node_id: state::bot.thunder.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot cooldown surface.
+  - node_id: state::bot.thunder.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot duration surface.
+  - node_id: state::bot.thunder.linger_duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot linger-duration surface.
+  - node_id: state::bot.thunder.linger_slow_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot linger-slow surface.
+  - node_id: state::bot.thunder.range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot range surface.
+  - node_id: source_input::workshop:Cash Bonus
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop cash bonus track.
+  - node_id: source_input::workshop:Cash / Wave
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop cash per wave track.
+  - node_id: source_input::workshop:Coin / Kill Bonus
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop coin kill bonus track.
+  - node_id: source_input::workshop:Coin / Wave
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop coin per wave track.
+  - node_id: source_input::lab:Starting Cash
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Lab starting cash source.
+  - node_id: source_input::bot:Amplify Bot
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Amplify Bot base source.
+  - node_id: source_input::bot:Flame Bot
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Flame Bot base source.
+  - node_id: source_input::bot:Golden Bot
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Golden Bot base source.
+  - node_id: source_input::bot:Thunder Bot
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Thunder Bot base source.
+  - node_id: source_input::lab:Flame Bot - Burn Stack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Flame Bot burn-stack lab source.
+  - node_id: source_input::lab:Thunder Bot - Linger Time
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Thunder Bot linger-time lab source.
+  - node_id: source_input::vault:Bot Range
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Shared Bot Range vault source.
   - node_id: runtime_consumer::wave_progression.attack_wave
     node_kind: runtime_consumer
     family_ids: [progression_runtime_no_perks, progression_runtime_with_perks]
@@ -612,6 +1428,237 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop Defense routes to tower defense.
+  - upstream_node_id: source_input::workshop:Damage
+    downstream_node_id: state::tower.damage
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Damage routes to tower damage.
+  - upstream_node_id: source_input::workshop:Attack Speed
+    downstream_node_id: state::tower.attack_speed
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Attack Speed routes to tower attack speed.
+  - upstream_node_id: source_input::workshop:Health Regen
+    downstream_node_id: state::tower.regen
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Health Regen routes to tower regen.
+  - upstream_node_id: source_input::workshop:Critical Chance
+    downstream_node_id: state::tower.crit_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Critical Chance routes to tower critical chance.
+  - upstream_node_id: source_input::workshop:Critical Factor
+    downstream_node_id: state::tower.crit_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Critical Factor routes to tower critical multiplier.
+  - upstream_node_id: source_input::workshop:Range
+    downstream_node_id: state::tower.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Range routes to tower range.
+  - upstream_node_id: source_input::workshop:Multishot Chance
+    downstream_node_id: state::tower.multishot_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Multishot Chance routes to tower multishot chance.
+  - upstream_node_id: source_input::workshop:Multishot Targets
+    downstream_node_id: state::tower.multishot_targets
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Multishot Targets routes to tower multishot targets.
+  - upstream_node_id: source_input::workshop:Rapid Fire Chance
+    downstream_node_id: state::tower.rapid_fire_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Rapid Fire Chance routes to tower rapid-fire chance.
+  - upstream_node_id: source_input::workshop:Rapid Fire Duration
+    downstream_node_id: state::tower.rapid_fire_duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Rapid Fire Duration routes to tower rapid-fire duration.
+  - upstream_node_id: source_input::workshop:Bounce Shot Chance
+    downstream_node_id: state::tower.bounce_shot_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Bounce Shot Chance routes to tower bounce-shot chance.
+  - upstream_node_id: source_input::workshop:Bounce Shot Targets
+    downstream_node_id: state::tower.bounce_shot_targets
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Bounce Shot Targets routes to tower bounce-shot targets.
+  - upstream_node_id: source_input::workshop:Bounce Shot Range
+    downstream_node_id: state::tower.bounce_shot_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Bounce Shot Range routes to tower bounce-shot range.
+  - upstream_node_id: source_input::workshop:Damage / Meter
+    downstream_node_id: state::tower.damage_per_meter_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Damage / Meter routes to tower damage-per-meter multiplier.
+  - upstream_node_id: source_input::workshop:Death Defy
+    downstream_node_id: state::tower.death_defy_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Death Defy routes to tower death-defy chance.
+  - upstream_node_id: source_input::workshop:Knockback Chance
+    downstream_node_id: state::tower.knockback_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Knockback Chance routes to tower knockback chance.
+  - upstream_node_id: source_input::workshop:Knockback Force
+    downstream_node_id: state::tower.knockback_force
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Knockback Force routes to tower knockback force.
+  - upstream_node_id: source_input::workshop:Land Mine Chance
+    downstream_node_id: state::tower.land_mine_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Land Mine Chance routes to tower land-mine chance.
+  - upstream_node_id: source_input::workshop:Land Mine Damage
+    downstream_node_id: state::tower.land_mine_damage
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Land Mine Damage routes to tower land-mine damage.
+  - upstream_node_id: source_input::workshop:Land Mine Radius
+    downstream_node_id: state::tower.land_mine_radius_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Land Mine Radius routes to tower land-mine radius.
+  - upstream_node_id: source_input::workshop:Lifesteal
+    downstream_node_id: state::tower.lifesteal_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Lifesteal routes to tower lifesteal.
+  - upstream_node_id: source_input::workshop:Max Amount
+    downstream_node_id: state::tower.max_recovery_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Max Amount contributes to tower max-recovery multiplier.
+  - upstream_node_id: source_input::workshop:Recovery Amount
+    downstream_node_id: state::tower.recovery_amount_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Recovery Amount routes to tower recovery amount.
+  - upstream_node_id: source_input::workshop:Rend Armor Chance
+    downstream_node_id: state::tower.rend_armor_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Rend Armor Chance routes to tower rend-armor chance.
+  - upstream_node_id: source_input::workshop:Rend Armor Mult
+    downstream_node_id: state::tower.rend_armor_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Rend Armor Mult routes to tower rend-armor multiplier.
+  - upstream_node_id: source_input::workshop:Shockwave Frequency
+    downstream_node_id: state::tower.shockwave_interval_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Shockwave Frequency routes to tower shockwave interval.
+  - upstream_node_id: source_input::workshop:Shockwave Size
+    downstream_node_id: state::tower.shockwave_size_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Shockwave Size routes to tower shockwave size.
+  - upstream_node_id: source_input::workshop:Super Critical Chance
+    downstream_node_id: state::tower.supercrit_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Super Critical Chance routes to tower supercrit chance.
+  - upstream_node_id: source_input::workshop:Super Critical Mult
+    downstream_node_id: state::tower.supercrit_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Super Critical Mult routes to tower supercrit multiplier.
+  - upstream_node_id: source_input::enhancement:Recovery Package +
+    downstream_node_id: state::tower.recovery_package_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [enhancement_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Enhancement Recovery Package plus routes to tower recovery-package multiplier.
+  - upstream_node_id: source_input::lab:Max Rend Armor Multiplier
+    downstream_node_id: state::tower.max_rend_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Lab Max Rend Armor Multiplier routes to tower max-rend multiplier.
+  - upstream_node_id: source_input::enhancement:Orb Size +
+    downstream_node_id: state::tower.orb_size_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [enhancement_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Enhancement Orb Size plus routes to tower orb-size multiplier.
+  - upstream_node_id: source_input::vault:Ultimate Weapon Damage
+    downstream_node_id: state::tower.ultimate_damage_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [vault_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Vault Ultimate Weapon Damage routes to tower ultimate-damage multiplier.
   - upstream_node_id: source_input::workshop:Thorn Damage
     downstream_node_id: state::tower.thorns_damage_pct
     invalidation_semantics: recompute_downstream
@@ -703,6 +1750,174 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Workshop health skip routes directly.
+  - upstream_node_id: source_input::workshop:Cash Bonus
+    downstream_node_id: state::economy.cash_kill_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Cash Bonus routes to cash kill multiplier.
+  - upstream_node_id: source_input::workshop:Cash / Wave
+    downstream_node_id: state::economy.cash_per_wave
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Cash / Wave routes to cash per wave.
+  - upstream_node_id: source_input::workshop:Coin / Kill Bonus
+    downstream_node_id: state::economy.coins_per_kill_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Coin / Kill Bonus routes to coins per kill bonus.
+  - upstream_node_id: source_input::workshop:Coin / Wave
+    downstream_node_id: state::economy.coins_per_wave
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Coin / Wave routes to coins per wave.
+  - upstream_node_id: source_input::lab:Starting Cash
+    downstream_node_id: state::economy.starting_cash_bonus
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Starting Cash lab routes to starting cash bonus.
+  - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Amplify Bot base source routes to bonus multiplier.
+  - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Amplify Bot base source routes to cooldown.
+  - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Amplify Bot base source routes to duration.
+  - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Amplify Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot base source routes to cooldown.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.damage_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot base source routes to damage multiplier.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.damage_reduction_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot base source routes to damage reduction.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot base source routes to range.
+  - upstream_node_id: source_input::lab:Flame Bot - Burn Stack
+    downstream_node_id: state::bot.flame_bot.lab_burn_stack
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot burn-stack lab source routes to burn stack surface.
+  - upstream_node_id: source_input::vault:Bot Range
+    downstream_node_id: state::bot.global.range_bonus_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [vault_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Bot Range vault source routes to global bot range bonus.
+  - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Golden Bot base source routes to bonus multiplier.
+  - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Golden Bot base source routes to cooldown.
+  - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Golden Bot base source routes to duration.
+  - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Golden Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot base source routes to cooldown.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot base source routes to duration.
+  - upstream_node_id: source_input::lab:Thunder Bot - Linger Time
+    downstream_node_id: state::bot.thunder.linger_duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: []
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot linger-time lab source routes to Thunder Bot linger duration.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.linger_slow_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot base source routes to linger slow.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot base source routes to range.
   - upstream_node_id: state::tower.enemy_attack_level_skip_pct
     downstream_node_id: runtime_consumer::wave_progression.attack_wave
     invalidation_semantics: impact_runtime_consumer

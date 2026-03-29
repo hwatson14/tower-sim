@@ -28,6 +28,7 @@ _MECHANIC_PARAMS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-p
 
 _COMPATIBILITY_SURFACE_ID_ALIASES = {
     compat_surface_from_legacy_canonical('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
+    'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',
     compat_surface_from_legacy_mechanic('module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',
     # PH4-C tranche 5: the compiler routes this module's contribution under the legacy
     # destination_id 'module.primordial_collapse.in_bh_enemy_damage_reduction_pct'; the QE
@@ -266,10 +267,15 @@ class BaselineContributorRow:
     surface_class: str
     domain: str
     source_class: str
+    source_family: str | None
+    source_name: str | None
     composition_stage: str
     contributor_id: str
     value: Any
     value_type: str
+    input_value: Any
+    input_value_type: str | None
+    input_notes: str | None
     active: bool
     gate_reason: str | None
     provenance_ref: str
@@ -416,10 +422,15 @@ class FamilyBaselineMaterializer:
             surface_class=str(surface_metadata['surface_class']),
             domain=str(surface_metadata['domain']),
             source_class=source_class,
+            source_family=row.source_family,
+            source_name=row.source_name,
             composition_stage=composition_stage,
             contributor_id=contributor_id,
             value=row.value,
             value_type=_normalize_value_type(row.value_type),
+            input_value=row.value,
+            input_value_type=row.value_type,
+            input_notes=row.notes,
             active=bool(row.active),
             gate_reason=gate_reason,
             provenance_ref=provenance_ref,
@@ -440,10 +451,15 @@ class FamilyBaselineMaterializer:
                     surface_class=str(surface_metadata['surface_class']),
                     domain=str(surface_metadata['domain']),
                     source_class='base',
+                    source_family=None,
+                    source_name=None,
                     composition_stage='gate_enable_disable',
                     contributor_id=f'query_placeholder::{surface_id}',
                     value=False,
                     value_type=str(surface_metadata['default_value_type']),
+                    input_value=False,
+                    input_value_type=str(surface_metadata['default_value_type']),
+                    input_notes='surface_absent_from_bound_inputs',
                     active=False,
                     gate_reason='surface_absent_from_bound_inputs',
                     provenance_ref='engine.family_baseline_materializer.placeholder',

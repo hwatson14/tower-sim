@@ -5,6 +5,7 @@ from functools import lru_cache
 from math import prod
 from pathlib import Path
 from types import MappingProxyType
+from types import SimpleNamespace
 from typing import Any, Iterable, Mapping, Sequence
 
 import yaml
@@ -18,7 +19,8 @@ from qe.materializer import (
     load_surface_metadata_by_id,
 )
 from qe.contracts import to_legacy_surface_id, to_v2_surface_id
-from qe.models import BoundStatInputs
+from qe.models import BoundStatInputs, StatInput
+from qe.stat_resolution import resolve_bucket_value
 
 ROOT = Path(__file__).resolve().parents[1]
 _OVERLAY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'overlay-delta-schema.yaml'
@@ -161,10 +163,15 @@ class OverlayApplicator:
                 surface_class=target_row.surface_class,
                 domain=target_row.domain,
                 source_class=target_row.source_class,
+                source_family=target_row.source_family,
+                source_name=target_row.source_name,
                 composition_stage=target_row.composition_stage,
                 contributor_id=target_row.contributor_id,
                 value=new_value,
                 value_type=target_row.value_type,
+                input_value=target_row.input_value,
+                input_value_type=target_row.input_value_type,
+                input_notes=target_row.input_notes,
                 active=target_row.active,
                 gate_reason=target_row.gate_reason,
                 provenance_ref=target_row.provenance_ref,
@@ -289,9 +296,14 @@ class StatQueryKernel:
         available = overlay_applied_contributor_map.contributor_rows_by_surface
 
         def _resolve_available_surface_id(surface_id: str) -> str | None:
-            candidates = (surface_id, to_v2_surface_id(surface_id), to_legacy_surface_id(surface_id))
+            candidates = (
+                surface_id,
+                to_v2_surface_id(surface_id),
+                to_legacy_surface_id(surface_id),
+                'canonical_stat::free_upgrade_multiplier' if str(surface_id) == 'support_surface::free_upgrade_multiplier' else None,
+            )
             for candidate in candidates:
-                if candidate in available:
+                if candidate is not None and candidate in available:
                     return candidate
             return None
 
@@ -306,8 +318,61 @@ class StatQueryKernel:
             for requested_surface_id, available_surface_id in zip(requested, available_requested)
             if available_surface_id is not None
         }
+        dependency_seeds = tuple(available_surface_id for available_surface_id in available_requested if available_surface_id is not None)
+        resolution_closure = self.registry.closure_upstream(dependency_seeds)
+        resolution_closure.update(dependency_seeds)
+        ordered_resolution_candidates = list(self.registry.topo_publishable_subset(resolution_closure))
+        for surface_id in sorted(resolution_closure):
+            if surface_id not in ordered_resolution_candidates:
+                ordered_resolution_candidates.append(surface_id)
+        resolution_surface_ids: list[str] = []
+        for surface_id in ordered_resolution_candidates:
+            available_surface_id = _resolve_available_surface_id(surface_id)
+            if available_surface_id is None or available_surface_id in resolution_surface_ids:
+                continue
+            resolution_surface_ids.append(available_surface_id)
+        resolved_rows_by_surface: dict[str, object] = {}
+        resolved_by_available_surface: dict[str, ResolvedSurfaceRow] = {}
+        pending = {surface_id for surface_id in resolution_surface_ids if surface_id in available}
+        ordered_resolution = [surface_id for surface_id in resolution_surface_ids if surface_id in pending]
+        while pending:
+            progress = False
+            for available_surface_id in ordered_resolution:
+                if available_surface_id not in pending:
+                    continue
+                resolved = self._resolve_surface(
+                    available_surface_id,
+                    available[available_surface_id],
+                    resolved_rows=resolved_rows_by_surface,
+                )
+                if resolved.status == 'mapped_not_resolved':
+                    continue
+                resolved_by_available_surface[available_surface_id] = resolved
+                resolved_rows_by_surface[available_surface_id] = SimpleNamespace(
+                    final_value=resolved.final_value,
+                    status=resolved.status,
+                )
+                pending.remove(available_surface_id)
+                progress = True
+            if progress:
+                continue
+            for available_surface_id in list(pending):
+                resolved = self._resolve_surface(
+                    available_surface_id,
+                    available[available_surface_id],
+                    resolved_rows=resolved_rows_by_surface,
+                )
+                resolved_by_available_surface[available_surface_id] = resolved
+                resolved_rows_by_surface[available_surface_id] = SimpleNamespace(
+                    final_value=resolved.final_value,
+                    status=resolved.status,
+                )
+                pending.remove(available_surface_id)
         resolved_rows = tuple(
-            replace(self._resolve_surface(available_surface_id, available[available_surface_id]), surface_id=publish_lookup[available_surface_id])
+            replace(
+                resolved_by_available_surface[available_surface_id],
+                surface_id=publish_lookup[available_surface_id],
+            )
             for available_surface_id in available_requested
             if available_surface_id is not None
         )
@@ -317,7 +382,6 @@ class StatQueryKernel:
             if available_surface_id is not None
             for row in available[available_surface_id]
         )
-        dependency_seeds = tuple(available_surface_id for available_surface_id in available_requested if available_surface_id is not None)
         dependency_closure = self._dependency_closure(dependency_seeds, trace_mode)
         dependency_trace = {
             'requested_surface_ids': published_requested,
@@ -330,7 +394,63 @@ class StatQueryKernel:
             dependency_trace=dependency_trace,
         )
 
-    def _resolve_surface(self, surface_id: str, rows: Sequence[BaselineContributorRow]) -> ResolvedSurfaceRow:
+    def _resolve_surface(
+        self,
+        surface_id: str,
+        rows: Sequence[BaselineContributorRow],
+        *,
+        resolved_rows: Mapping[str, object] | None = None,
+    ) -> ResolvedSurfaceRow:
+        legacy_surface_id = to_legacy_surface_id(surface_id)
+        destination_object_type, separator, destination_id = legacy_surface_id.partition('::')
+        if (
+            separator
+            and destination_object_type in {
+                'canonical_stat',
+                'mechanic_param',
+                'runtime_mechanic_param',
+                'environment_param',
+                'account_flag',
+                'account_context',
+                'meta_progression_param',
+                'cosmetic_bonus',
+                'capability',
+            }
+            and all(row.source_family is not None for row in rows)
+        ):
+            stat_inputs = [
+                StatInput(
+                    stat_name=legacy_surface_id,
+                    source_family=str(row.source_family),
+                    source_name=str(row.source_name or row.contributor_id),
+                    value=row.input_value,
+                    value_type=str(row.input_value_type or row.value_type),
+                    stage='qe_native_family_query',
+                    active=row.active,
+                    provenance=row.provenance_ref,
+                    notes=row.input_notes,
+                    contributor_id=row.contributor_id,
+                    destination_object_type=destination_object_type,
+                    destination_id=destination_id,
+                )
+                for row in rows
+            ]
+            final_value, status, _notes, _schema, meta = resolve_bucket_value(
+                destination_object_type,
+                destination_id,
+                stat_inputs,
+                resolved_rows={
+                    str(key): value
+                    for key, value in (resolved_rows or {}).items()
+                },
+            )
+            return ResolvedSurfaceRow(
+                surface_id=surface_id,
+                final_value=final_value,
+                value_type=str(meta.get('unit') or next(iter({row.value_type for row in rows}))),
+                status=status,
+            )
+
         value_types = {row.value_type for row in rows}
         if len(value_types) != 1:
             raise ValueError(f'Surface {surface_id!r} mixes multiple contributor value types: {sorted(value_types)}.')
@@ -411,10 +531,15 @@ def _row_from_overlay_add(
         surface_class=str(change['surface_class']),
         domain=str(change['domain']),
         source_class=str(change['source_class']),
+        source_family=str(change.get('source_family') or '') or None,
+        source_name=str(change.get('source_name') or '') or None,
         composition_stage=str(change['composition_stage']),
         contributor_id=str(change['contributor_id']),
         value=change['new_value'],
         value_type=str(change['value_type']),
+        input_value=change.get('new_value'),
+        input_value_type=str(change.get('value_type') or ''),
+        input_notes=str(change.get('input_notes') or '') or None,
         active=bool(change.get('active', True)),
         gate_reason=change.get('gate_reason'),
         provenance_ref=str(change['provenance_ref']),

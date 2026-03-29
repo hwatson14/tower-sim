@@ -636,7 +636,7 @@ def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[s
 def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str, contributors: list[Dict[str, Any]], notes: str) -> None:
     existing = rows.get(name)
     if existing is not None:
-        raise ValueError(f'Phase 3 publication collision for {name}')
+        raise ValueError(f'Query publication collision for {name}')
     rows[name] = StatRow(
         stat_name=name,
         final_value=value,
@@ -1408,7 +1408,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_coverage', spotlight_coin_coverage, 'ratio', [_contributor(rows, 'support_surface::eecon.sl_quantity', 'eecon_ep_helper.dg_spotlight_coin_coverage'), _contributor(rows, 'support_surface::eecon.sl_angle', 'eecon_ep_helper.dg_spotlight_coin_coverage')], 'EP eEcon DG workbook coverage alias [EP helper surface]')
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, _compat_runtime('uw.spotlight.coin_bonus_multiplier'), 'eecon_ep_helper.dg_spotlight_coin_factor')], 'EP eEcon DG workbook factor alias [EP helper surface]')
     _publish(rows, 'derived::eecon.wave_factor', wave_factor, 'multiplier', [], 'EP eEcon DH term [EP helper support surface]')
-    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [Phase 3 support surface]')
+    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [query support surface]')
     _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon')], 'Native eEcon objective line; currently equal to EP line')
     _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon_ep')], 'Exact Effective Paths eEcon objective line')
 

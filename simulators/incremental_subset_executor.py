@@ -8,13 +8,12 @@ from qe.contracts import normalize_surface_id_to_contract, to_legacy_surface_id,
 from qe.models import StatInput
 from qe.models import StatRow
 from qe.routing import (
-    apply_bounded_phase3_postprocessing,
     load_bounded_resolution_metadata,
     resolve_bounded_bucket,
 )
 
 _NODE_TO_BUCKET = {
-    'support_surface::free_upgrade_multiplier': 'state::tower.free_upgrade_multiplier',
+    'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier',
     'support_surface::timing.gcomp_cooldown_reduction_seconds': 'state::module.galaxy_compressor.uw_cooldown_reduction_seconds',
 }
 
@@ -115,42 +114,85 @@ class IncrementalSubsetExecutor:
                 mapped_buckets[bucket_key].append(row)
 
         rows: Dict[str, StatRow] = {}
-        for bucket_key in self._bucket_resolution_order(closure_nodes):
-            contributors = mapped_buckets.get(bucket_key)
-            if not contributors:
-                continue
-            if bucket_key == 'support_surface::timing.wave_duration_seconds_effective':
-                contributor = contributors[0]
+        pending = {
+            bucket_key: mapped_buckets[bucket_key]
+            for bucket_key in self._bucket_resolution_order(closure_nodes)
+            if bucket_key in mapped_buckets
+        }
+        while pending:
+            progress = False
+            for bucket_key in list(pending):
+                contributors = pending[bucket_key]
+                if bucket_key == 'support_surface::timing.wave_duration_seconds_effective':
+                    contributor = contributors[0]
+                    rows[bucket_key] = StatRow(
+                        stat_name=bucket_key,
+                        final_value=float(contributor.value),
+                        value_type='seconds',
+                        source_count=len(contributors),
+                        status='resolved',
+                        notes='Derived timing wave-duration support surface from family-governed baseline and bounded wave-acceleration input.',
+                        contributors=[c.to_dict() for c in contributors],
+                        schema={'unit': 'seconds', 'resolver': 'bounded_timing_wave_duration_support'},
+                    )
+                    pending.pop(bucket_key, None)
+                    progress = True
+                    continue
+                destination_object_type, destination_id = bucket_key.split('::', 1)
+                meta = self._canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+                if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+                    meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+                meta = dict(meta)
+                meta['_resolved_rows'] = rows
+                final_value, status, notes, schema = resolve_bounded_bucket(destination_object_type, destination_id, contributors, meta)
+                if status == 'mapped_not_resolved':
+                    continue
                 rows[bucket_key] = StatRow(
                     stat_name=bucket_key,
-                    final_value=float(contributor.value),
-                    value_type='seconds',
+                    final_value=final_value,
+                    value_type=meta['unit'],
                     source_count=len(contributors),
-                    status='resolved',
-                    notes='Derived timing wave-duration support surface from family-governed baseline and bounded wave-acceleration input.',
+                    status=status,
+                    notes=notes,
                     contributors=[c.to_dict() for c in contributors],
-                    schema={'unit': 'seconds', 'resolver': 'bounded_timing_wave_duration_support'},
+                    schema=schema,
                 )
+                pending.pop(bucket_key, None)
+                progress = True
+            if progress:
                 continue
-            destination_object_type, destination_id = bucket_key.split('::', 1)
-            meta = self._canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
-            if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
-                meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
-            meta = dict(meta)
-            meta['_resolved_rows'] = rows
-            final_value, status, notes, schema = resolve_bounded_bucket(destination_object_type, destination_id, contributors, meta)
-            rows[bucket_key] = StatRow(
-                stat_name=bucket_key,
-                final_value=final_value,
-                value_type=meta['unit'],
-                source_count=len(contributors),
-                status=status,
-                notes=notes,
-                contributors=[c.to_dict() for c in contributors],
-                schema=schema,
-            )
-
-        apply_bounded_phase3_postprocessing(rows)
+            for bucket_key, contributors in pending.items():
+                if bucket_key == 'support_surface::timing.wave_duration_seconds_effective':
+                    contributor = contributors[0]
+                    rows[bucket_key] = StatRow(
+                        stat_name=bucket_key,
+                        final_value=float(contributor.value),
+                        value_type='seconds',
+                        source_count=len(contributors),
+                        status='resolved',
+                        notes='Derived timing wave-duration support surface from family-governed baseline and bounded wave-acceleration input.',
+                        contributors=[c.to_dict() for c in contributors],
+                        schema={'unit': 'seconds', 'resolver': 'bounded_timing_wave_duration_support'},
+                    )
+                    continue
+                destination_object_type, destination_id = bucket_key.split('::', 1)
+                meta = self._canonical_stats.get(destination_id, {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'})
+                if destination_object_type != 'canonical_stat' and meta.get('unit') == 'unknown':
+                    meta = {'unit': 'unknown', 'resolver': contributors[0].resolver_id or 'unknown'}
+                meta = dict(meta)
+                meta['_resolved_rows'] = rows
+                final_value, status, notes, schema = resolve_bounded_bucket(destination_object_type, destination_id, contributors, meta)
+                rows[bucket_key] = StatRow(
+                    stat_name=bucket_key,
+                    final_value=final_value,
+                    value_type=meta['unit'],
+                    source_count=len(contributors),
+                    status=status,
+                    notes=notes,
+                    contributors=[c.to_dict() for c in contributors],
+                    schema=schema,
+                )
+            pending.clear()
 
         missing = sorted(
             node
