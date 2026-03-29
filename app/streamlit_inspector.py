@@ -26,6 +26,9 @@ from app.pipeline import (
     execute_pipeline,
     resolve_fast_checkpoint,
 )
+from input.loader import load_inputs
+from input.runtime_state import build_runtime_state
+from input.state_types import ScenarioRuntimeInputs
 from qe.contracts import normalize_surface_id_to_contract
 from qe.stat_input_compiler import (
     _load_assist_efficiency_lookup,
@@ -36,6 +39,12 @@ from qe.stat_input_compiler import (
     _module_main_effect_multiplier,
     _normalize_module_unique_rarity,
     _scaled_perk_value,
+)
+from simulators.contracts import PerkState
+from simulators.run_executor import (
+    RunToMaxConfig,
+    build_boss_wave_table,
+    build_start_of_run_state,
 )
 
 
@@ -1496,6 +1505,100 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
     )
 
 
+def _render_boss_waves(request: PipelineRunRequest) -> None:
+    st.subheader('Boss Waves')
+    control_cols = st.columns(4)
+    preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
+    tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
+    end_wave = control_cols[2].number_input('End wave', min_value=10, max_value=100000, value=500, step=10)
+    boss_wave_step = control_cols[3].number_input('Boss wave step', min_value=1, max_value=1000, value=10, step=1)
+    stop_on_failure = st.toggle('Stop on first failed boss', value=False)
+
+    with st.expander('Runtime assumptions', expanded=False):
+        runtime_cols = st.columns(3)
+        orb_boss_hit_pct = runtime_cols[0].number_input('Orb boss hit %', min_value=0.0, max_value=100.0, value=2.5, step=0.1)
+        orb_boss_hits_per_second = runtime_cols[1].number_input('Orb boss hits / sec', min_value=0.1, max_value=100.0, value=5.0, step=0.1)
+        electron_hits_per_second = runtime_cols[2].number_input('Electron hits / sec', min_value=0.1, max_value=100.0, value=5.0, step=0.1)
+        runtime_cols_2 = st.columns(3)
+        boss_contact_time_seconds = runtime_cols_2[0].number_input('Boss contact time (s)', min_value=0.0, max_value=120.0, value=1.0, step=0.1)
+        effective_damage_reduction_pct = runtime_cols_2[1].number_input('Effective DR %', min_value=0.0, max_value=100.0, value=90.0, step=0.1)
+        incoming_damage_multiplier = runtime_cols_2[2].number_input('Incoming damage multiplier', min_value=0.0, max_value=100.0, value=1.0, step=0.1)
+
+    bundle = load_inputs(
+        ids_path=request.ids,
+        manual_inputs_path=request.manual_inputs,
+    )
+    account_state = build_runtime_state(
+        bundle.ids_raw,
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    initial_state = build_start_of_run_state(
+        account_state,
+        preset_name=preset_name,
+        perk_state=PerkState(wave=0, counts={}, dirty=False),
+    )
+    config = RunToMaxConfig(
+        execution_mode='table_sweep',
+        preset_name=preset_name,
+        tier_column=f'Tier {int(tier_number)}',
+        start_wave=max(1, int(boss_wave_step)),
+        end_wave=int(end_wave),
+        boss_wave_step=int(boss_wave_step),
+        state_mode='start_of_run',
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(
+            {
+                'orb_boss_hit_pct': orb_boss_hit_pct,
+                'orb_boss_hits_per_second': orb_boss_hits_per_second,
+                'electron_hits_per_second': electron_hits_per_second,
+                'boss_contact_time_seconds': boss_contact_time_seconds,
+                'effective_damage_reduction_pct': effective_damage_reduction_pct,
+                'incoming_damage_multiplier': incoming_damage_multiplier,
+            }
+        ),
+    )
+    frame = pd.DataFrame(
+        build_boss_wave_table(
+            account_state=account_state,
+            initial_projected_state=initial_state,
+            config=config,
+            stop_on_failure=bool(stop_on_failure),
+        )
+    )
+    if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:
+        frame['changed_workshop_tracks_last_step'] = frame['changed_workshop_tracks_last_step'].fillna('')
+    surviving_rows = frame[frame['survives_boss'] == True] if not frame.empty else frame
+    diagnostics = {
+        'preset_name': preset_name,
+        'tier_column': config.tier_column,
+        'boss_wave_step': config.boss_wave_step,
+        'row_count': int(len(frame)),
+        'max_surviving_wave': int(surviving_rows['display_wave'].max()) if not surviving_rows.empty else 0,
+        'state_mode': config.state_mode,
+        'checkpoint_mode': 'boss_wave_only',
+    }
+
+    summary_cols = st.columns(4)
+    summary_cols[0].metric('Rows', diagnostics['row_count'])
+    summary_cols[1].metric('Max surviving wave', diagnostics['max_surviving_wave'])
+    summary_cols[2].metric('Tier', diagnostics['tier_column'])
+    summary_cols[3].metric('Preset', diagnostics['preset_name'])
+    st.caption(
+        'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
+        'the intervening waves using the interval-start resolved values.'
+    )
+    st.dataframe(frame, use_container_width=True, hide_index=True)
+    st.download_button(
+        'Download boss-wave CSV',
+        data=frame.to_csv(index=False).encode('utf-8'),
+        file_name=f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
+        mime='text/csv',
+        use_container_width=True,
+    )
+    with st.expander('Boss-wave diagnostics'):
+        st.json(diagnostics)
+
+
 def main() -> None:
     st.set_page_config(page_title='TowerSim Incremental Inspector', layout='wide')
     st.title('TowerSim Incremental Inspector')
@@ -1510,11 +1613,13 @@ def main() -> None:
         if Path(path) != active_out_dir
     ]
 
-    pipeline_tab, stats_tab, checks_tab, inputs_tab = st.tabs(['Pipeline', 'Stats', 'Checks', 'Inputs'])
+    pipeline_tab, stats_tab, boss_waves_tab, checks_tab, inputs_tab = st.tabs(['Pipeline', 'Stats', 'Boss Waves', 'Checks', 'Inputs'])
     with pipeline_tab:
         _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}))
     with stats_tab:
         _render_stats(active_artifacts, comparison_artifacts, request)
+    with boss_waves_tab:
+        _render_boss_waves(request)
     with checks_tab:
         _render_checks(active_artifacts)
     with inputs_tab:
