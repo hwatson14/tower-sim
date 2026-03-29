@@ -37,19 +37,19 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def _canon(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_canon('{destination_id}'))
+    return normalize_surface_id_to_contract(f'canonical_stat::{destination_id}')
 
 
 def _mech(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_mech('{destination_id}'))
+    return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')
 
 
 def _runtime(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_runtime('{destination_id}'))
+    return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')
 
 
 def _env(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_env('{destination_id}'))
+    return normalize_surface_id_to_contract(f'environment_param::{destination_id}')
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -422,7 +422,7 @@ def config_from_statbook(
 
         tower_orb_count=int(_val(_canon('tower_orb_count'))),
         tower_orb_speed_rpm=_val(_canon('tower_orb_speed_rpm')),
-        electron_count=int(_val(_mech('module.orbital_augment.electron_count'))),
+        electron_count=int(_val(_mech('module.orbital_augment.electron_count'), 0.0)),
     )
 
 

@@ -133,7 +133,6 @@ _CHECKPOINT_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.orb_count',
     'state::tower.orb_speed_rpm',
     'state::cards.plasma_cannon.effect_pct',
-    'mechanic_param::module.orbital_augment.electron_count',
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',

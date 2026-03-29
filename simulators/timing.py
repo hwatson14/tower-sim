@@ -28,11 +28,11 @@ def _sid(surface_id: str) -> str:
 
 
 def _mech(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_mech('{destination_id}'))
+    return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')
 
 
 def _runtime(destination_id: str) -> str:
-    return normalize_surface_id_to_contract(f_runtime('{destination_id}'))
+    return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')
 
 
 def _uptime(duration: float, cooldown: float) -> float:
