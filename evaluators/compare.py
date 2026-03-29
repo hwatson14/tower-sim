@@ -47,6 +47,12 @@ def _state(destination_id: str) -> str:
     return compat_surface_from_legacy_canonical(destination_id)
 
 
+def _normalize_row_keyed_payload(rows: dict) -> dict:
+    normalized: dict = {}
+    for surface_id, row in (rows or {}).items():
+        normalized[_sid(str(surface_id))] = row
+    return normalized
+
 _CAPABILITY_PREFIX = 'state::capability.'
 
 def _trim_decimal_string(text: str) -> str:
@@ -2513,7 +2519,11 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
             _annotate_display_fields(statbook_dict)
             publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
             _annotate_display_fields(publishable)
-            resolved = (state, statbook_dict['rows'], publishable['rows'])
+            resolved = (
+                state,
+                _normalize_row_keyed_payload(statbook_dict['rows']),
+                _normalize_row_keyed_payload(publishable['rows']),
+            )
             resolved_cache[request_key] = resolved
         cached_state, cached_rows, cached_publishable_rows = resolved
         state = cached_state

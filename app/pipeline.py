@@ -11,8 +11,11 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 from __future__ import annotations
 
 import csv
+import dataclasses
 import json
 import sys
+from collections import Counter
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
@@ -38,13 +41,17 @@ from qe.contracts import (
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
+from qe.publication import publish_phase3_query_surfaces
+from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
 from simulators.progression import resolve_run_stats_progression_bundle
+from simulators.contracts import SimulatorCheckpointState
 from simulators.perk_timeline_generator import (
     PerkTimelinePolicy,
     generate_timeline_from_policy,
     perk_state_at_wave,
 )
+from simulators.snapshot_resolver import SimulatorSnapshotResolver
 from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
 from simulators.scenario import publish_farming_throughput_support_surfaces
 
@@ -55,6 +62,95 @@ from simulators.scenario import publish_farming_throughput_support_surfaces
 # builders legitimately in run_stats pending T-post-9 extraction.
 # ---------------------------------------------------------------------------
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
+
+
+@dataclass(frozen=True)
+class PipelineRunRequest:
+    ids: Path
+    out: Path
+    preset: str = 'Farming'
+    state_mode: str = 'max_progression'
+    manual_inputs: Path | None = None
+    perk_mode: str = 'max_progression_policy'
+    include_slow_audits: bool = False
+    perk_state: str = 'auto'
+
+
+@dataclass(frozen=True)
+class PipelineStageRecord:
+    stage_id: str
+    title: str
+    owner_module: str
+    entry_function: str
+    status: str
+    elapsed_ms: float
+    outputs_summary: dict[str, object] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, object]:
+        return dataclasses.asdict(self)
+
+
+@dataclass(frozen=True)
+class PipelineTrace:
+    request: dict[str, object]
+    execution_path: dict[str, object]
+    stages: list[PipelineStageRecord]
+    artifacts_written: list[str]
+
+    def to_dict(self) -> dict[str, object]:
+        payload = dataclasses.asdict(self)
+        payload['stages'] = [stage.to_dict() for stage in self.stages]
+        return payload
+
+
+@dataclass(frozen=True)
+class PipelineRunResult:
+    exit_code: int
+    request: PipelineRunRequest
+    out_dir: Path
+    diagnostics: dict[str, object]
+    generated_files: tuple[Path, ...]
+    pipeline_trace: PipelineTrace
+
+
+@dataclass(frozen=True)
+class VerificationSnapshotSpec:
+    preset: str
+    state_mode: str
+    perk_state: str = 'auto'
+    out_subdir: str | None = None
+
+
+@dataclass(frozen=True)
+class FastCheckpointRequest:
+    ids: Path
+    preset: str = 'Farming'
+    state_mode: str = 'start_of_run'
+    manual_inputs: Path | None = None
+    perk_mode: str = 'max_progression_policy'
+    perk_state: str = 'auto'
+    requested_surface_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class FastCheckpointResult:
+    request: FastCheckpointRequest
+    statbook: dict[str, object]
+    diagnostics: dict[str, object]
+
+
+def request_from_args(args) -> PipelineRunRequest:
+    return PipelineRunRequest(
+        ids=Path(args.ids),
+        out=Path(args.out),
+        preset=str(getattr(args, 'preset', 'Farming')),
+        state_mode=str(getattr(args, 'state_mode', 'max_progression')),
+        manual_inputs=None if getattr(args, 'manual_inputs', None) is None else Path(args.manual_inputs),
+        perk_mode=str(getattr(args, 'perk_mode', 'max_progression_policy')),
+        include_slow_audits=bool(getattr(args, 'include_slow_audits', False)),
+        perk_state=str(getattr(args, 'perk_state', 'auto')),
+    )
 
 
 def _load_json_config(path: Path) -> dict:
@@ -166,7 +262,6 @@ def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_
     _annotate_display_fields(statbook_dict)
     return statbook_dict
 
-
 def _manual_input_numeric_value(
     manual_advisory_inputs: dict,
     input_id: str,
@@ -228,8 +323,6 @@ def _merge_scenario_publication_rows(
         stat_inputs=stat_inputs,
         farming_hours_per_day=farming_hours_per_day,
     )
-
-
 def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
 
@@ -1290,21 +1383,21 @@ def run_analysis_pipeline(args) -> int:
         _build_audit_surface_manifest,
         _build_compare_rows_by_preset,
         _build_compare_situation_fit_matrix,
-        _build_compare_status_summary,
+        build_compare_status_summary as _build_compare_status_summary,
         _build_damage_defabs_scope_audit,
-        _build_ep_compare,
+        build_ep_compare as _build_ep_compare,
         _build_family_completeness_matrix,
         _build_kb_gap_register,
         _build_kb_incomplete_areas,
         _build_kb_only_health_family_audit,
-        _build_line_by_line_verification,
+        build_line_by_line_verification as _build_line_by_line_verification,
         _build_perk_contributor_audit,
         _build_perk_coverage_audit,
         _build_publish_gate_audits,
         _build_publishable_statbook,
         _build_run_perk_residue_analysis,
-        _build_survivability_residue_analysis,
-        _build_survivor_closure_report,
+        build_survivability_residue_analysis as _build_survivability_residue_analysis,
+        build_survivor_closure_report as _build_survivor_closure_report,
         _build_tower_damage_residue_analysis,
         _build_tower_damage_runtime_gap_report,
         _build_tower_defense_absolute_semantic_gap_report,
@@ -1786,3 +1879,254 @@ def run_analysis_pipeline(args) -> int:
 def run_pipeline(args) -> int:
     """Compatibility alias for the heavy analysis pipeline."""
     return run_analysis_pipeline(args)
+
+
+def _load_json_artifact(path: Path) -> dict[str, object]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+
+def _generated_output_paths(out_dir: Path) -> list[Path]:
+    return sorted(path for path in out_dir.glob('*.json')) + sorted(path for path in out_dir.glob('*.csv'))
+
+
+def _build_pipeline_trace_from_artifacts(
+    *,
+    request: PipelineRunRequest,
+    total_elapsed_ms: float,
+    diagnostics: dict[str, object],
+) -> PipelineTrace:
+    execution_path = {
+        'recompute_mode': diagnostics.get('qe_resolution_backend') or diagnostics.get('query_backend') or 'analysis_pipeline',
+        'execution_branch': diagnostics.get('qe_resolution_interface') or diagnostics.get('pipeline_kind') or 'analysis_pipeline',
+        'cache_status': 'warm' if ((diagnostics.get('session') or {}).get('account_state_cache_hit')) else 'cold',
+        'fallback_required': False,
+        'fallback_reason': None,
+        'bundle_used': None,
+        'consumer_id': None,
+        'family_id': diagnostics.get('qe_native_family_id'),
+        'runtime_consumers': [],
+        'cache_fingerprint': None,
+        'cache_validation': None,
+        'incremental_plan': None,
+        'parity': None,
+        'runtime_publication': None,
+        'total_elapsed_ms': total_elapsed_ms,
+    }
+    timings = diagnostics.get('timings_ms') or {}
+    stages = [
+        PipelineStageRecord(
+            stage_id='input_load',
+            title='Input load',
+            owner_module='input.loader',
+            entry_function='load_inputs',
+            status='ok',
+            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
+            outputs_summary={'section_names': diagnostics.get('section_names', []), 'section_row_counts': diagnostics.get('section_row_counts', {})},
+        ),
+        PipelineStageRecord(
+            stage_id='runtime_account_assembly',
+            title='Runtime/account assembly',
+            owner_module='input.runtime_state',
+            entry_function='build_runtime_state',
+            status='ok',
+            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
+            outputs_summary={'perk_config_resolution': diagnostics.get('perk_config_resolution', {}), 'perk_support': diagnostics.get('perk_support', {})},
+        ),
+        PipelineStageRecord(
+            stage_id='compare_materialization',
+            title='Compare materialization',
+            owner_module='evaluators.compare',
+            entry_function='_build_compare_rows_by_preset',
+            status='ok',
+            elapsed_ms=0.0,
+            outputs_summary={
+                'default_preset': diagnostics.get('default_preset'),
+                'state_mode': diagnostics.get('state_mode'),
+                'perk_state': diagnostics.get('perk_support', {}).get('perk_state'),
+            },
+        ),
+        PipelineStageRecord(
+            stage_id='stat_resolution',
+            title='Stat-input compilation and resolution',
+            owner_module='qe.routing',
+            entry_function='QEResolutionPlanner.resolve_report_snapshot',
+            status='ok',
+            elapsed_ms=float((((timings.get('presets') or {}).get(request.preset, {}) or {}).get(request.state_mode, {}) or {}).get('total_state_ms', 0.0)),
+            outputs_summary={
+                'stat_input_count': diagnostics.get('stat_input_count'),
+                'statbook_row_count': diagnostics.get('statbook_row_count'),
+                'engine_status': diagnostics.get('engine_status'),
+                'qe_resolution_backend': diagnostics.get('qe_resolution_backend'),
+            },
+        ),
+        PipelineStageRecord(
+            stage_id='checks_generation',
+            title='Compare/verification generation',
+            owner_module='evaluators.compare',
+            entry_function='build_line_by_line_verification',
+            status='ok',
+            elapsed_ms=0.0,
+            outputs_summary={
+                'ep_compare_summary': diagnostics.get('ep_compare_summary', {}),
+                'line_verification_summary': diagnostics.get('line_verification_summary', {}),
+                'state_matrix_modes': list((diagnostics.get('state_matrix') or {}).keys()),
+            },
+        ),
+        PipelineStageRecord(
+            stage_id='artifact_write',
+            title='Artifact write',
+            owner_module='app.pipeline',
+            entry_function='_write_core_outputs',
+            status='ok',
+            elapsed_ms=float(timings.get('write_outputs_ms') or 0.0),
+            outputs_summary={'out_dir': _relpath_str(request.out)},
+        ),
+    ]
+    return PipelineTrace(
+        request={
+            'ids': _relpath_str(request.ids),
+            'out': _relpath_str(request.out),
+            'preset': request.preset,
+            'state_mode': request.state_mode,
+            'manual_inputs': None if request.manual_inputs is None else _relpath_str(request.manual_inputs),
+            'perk_mode': request.perk_mode,
+            'include_slow_audits': request.include_slow_audits,
+            'perk_state': request.perk_state,
+        },
+        execution_path=execution_path,
+        stages=stages,
+        artifacts_written=[],
+    )
+
+
+def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
+    started_at = perf_counter()
+    args = type('PipelineArgs', (), {})()
+    args.ids = request.ids
+    args.out = request.out
+    args.preset = request.preset
+    args.state_mode = request.state_mode
+    args.manual_inputs = request.manual_inputs
+    args.perk_mode = request.perk_mode
+    args.include_slow_audits = request.include_slow_audits
+    args.perk_state = request.perk_state
+    exit_code = run_analysis_pipeline(args)
+    diagnostics = _load_json_artifact(request.out / 'diagnostics.json')
+    total_elapsed_ms = round((perf_counter() - started_at) * 1000.0, 3)
+    pipeline_trace = _build_pipeline_trace_from_artifacts(
+        request=request,
+        total_elapsed_ms=total_elapsed_ms,
+        diagnostics=diagnostics,
+    )
+    generated_files = _generated_output_paths(request.out)
+    pipeline_trace = PipelineTrace(
+        request=pipeline_trace.request,
+        execution_path=pipeline_trace.execution_path,
+        stages=pipeline_trace.stages,
+        artifacts_written=[_relpath_str(path) for path in generated_files],
+    )
+    (request.out / 'pipeline_trace.json').write_text(
+        json.dumps(_json_sanitize(pipeline_trace.to_dict()), indent=2, default=str),
+        encoding='utf-8',
+    )
+    generated_files = _generated_output_paths(request.out)
+    return PipelineRunResult(
+        exit_code=int(exit_code),
+        request=request,
+        out_dir=request.out,
+        diagnostics=diagnostics,
+        generated_files=tuple(generated_files),
+        pipeline_trace=pipeline_trace,
+    )
+
+
+def build_verification_snapshot_set(
+    base_request: PipelineRunRequest,
+    specs: tuple[VerificationSnapshotSpec, ...] | list[VerificationSnapshotSpec] | None = None,
+) -> list[PipelineRunResult]:
+    if specs is None:
+        specs = (
+            VerificationSnapshotSpec('Farming', 'start_of_run'),
+            VerificationSnapshotSpec('Farming', 'max_progression'),
+            VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
+            VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
+        )
+    results: list[PipelineRunResult] = []
+    for spec in specs:
+        out_dir = base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}')
+        results.append(
+            execute_pipeline(
+                PipelineRunRequest(
+                    ids=base_request.ids,
+                    out=out_dir,
+                    preset=spec.preset,
+                    state_mode=spec.state_mode,
+                    manual_inputs=base_request.manual_inputs,
+                    perk_mode=base_request.perk_mode,
+                    include_slow_audits=base_request.include_slow_audits,
+                    perk_state=spec.perk_state,
+                )
+            )
+        )
+    return results
+
+
+def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
+    if not request.requested_surface_ids:
+        raise ValueError('Fast checkpoint resolution requires at least one requested surface id.')
+
+    input_bundle, account_state, _perk_config_resolution = _build_account_state(
+        ids_path=request.ids,
+        manual_inputs_path=request.manual_inputs,
+        preset=request.preset,
+        perk_mode=request.perk_mode,
+        diag_output_dir=None,
+    )
+    perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
+    checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
+        account_state=account_state,
+        checkpoint_state=SimulatorCheckpointState(),
+        preset_name=request.preset,
+        requested_surface_ids=request.requested_surface_ids,
+        state_mode=request.state_mode,
+        card_preset_name=account_state.active_card_preset,
+        module_preset_name=account_state.active_module_preset,
+        perk_preset_name=account_state.active_perk_preset,
+        perks_enabled=perks_enabled,
+    )
+    response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=request.requested_surface_ids,
+        preset_name=request.preset,
+        state_mode=request.state_mode,
+        card_preset_name=account_state.active_card_preset,
+        module_preset_name=account_state.active_module_preset,
+        perk_preset_name=account_state.active_perk_preset,
+        perks_enabled=perks_enabled,
+        trace_mode='contributors',
+    )
+    statbook = query_response_to_statbook(
+        response,
+        notes='Lightweight QE checkpoint resolution for interactive stat verification.',
+        diagnostics={
+            'resolver_kind': checkpoint_resolution.diagnostics.get('resolver_kind'),
+            'phase_timing_ms': checkpoint_resolution.diagnostics.get('phase_timing_ms'),
+            'requested_surface_ids': list(request.requested_surface_ids),
+            'state_mode': request.state_mode,
+            'preset': request.preset,
+            'perk_state': request.perk_state,
+        },
+    )
+    statbook_dict = statbook.to_dict()
+    _annotate_display_fields(statbook_dict)
+    return FastCheckpointResult(
+        request=request,
+        statbook=statbook_dict,
+        diagnostics=dict(checkpoint_resolution.diagnostics),
+    )
