@@ -51,6 +51,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     ... unchanged ...
 
   qe/
+    shared_runtime_context.py  # shared immutable QE/compiler runtime context
     contracts.py               # stat-query value contracts
     models.py                  # typed stat/query model structs
     query_routing.py           # compiler routing indexes and KB binding rules
@@ -144,6 +145,7 @@ the matching enforcement test.
 It is split into three categories:
 
 1. Foundation core
+   - `shared_runtime_context.py`
    - `contracts.py`
    - `models.py`
    - `query_routing.py`

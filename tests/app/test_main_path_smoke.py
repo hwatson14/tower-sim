@@ -26,20 +26,37 @@ def test_analysis_entrypoint_is_importable__callable():
 
 
 def test_pipeline_entrypoints_are_importable__callable():
-    from app.pipeline import run_analysis_pipeline, run_pipeline, run_stats_pipeline
+    from app.pipeline import (
+        RunStatsSession,
+        get_default_run_stats_session,
+        run_analysis_pipeline,
+        run_stats_client,
+        run_stats_local_server_is_healthy,
+        run_pipeline,
+        run_stats_pipeline,
+        run_stats_server,
+        run_stats_watch_loop,
+    )
 
     assert callable(run_stats_pipeline)
+    assert callable(run_stats_server)
+    assert callable(run_stats_client)
+    assert callable(run_stats_local_server_is_healthy)
+    assert callable(run_stats_watch_loop)
     assert callable(run_analysis_pipeline)
     assert callable(run_pipeline)
+    assert callable(RunStatsSession)
+    assert get_default_run_stats_session() is get_default_run_stats_session()
 
 
 def test_pipeline_module_imports_active_layers__contains_expected_imports():
     import app.pipeline as pipeline_mod
 
     src = Path(pipeline_mod.__file__).read_text(encoding="utf-8")
-    assert "from qe.routing import QEResolutionPlanner" in src
-    assert "resolve_stats_delta" in src
-    assert "from qe.publication import publish_phase3_query_surfaces" in src
+    assert "resolve_run_stats_progression_bundle" in src
+    assert "resolve_timing_consumer_bundle" in src
+    assert "QEResolutionPlanner" in src
+    assert "publish_phase3_query_surfaces" in src
     assert "from evaluators.scorer import compute_optimizer_scores" in src
     assert "from input.loader import load_inputs" in src
     assert "from input.runtime_state import build_runtime_state" in src
@@ -54,6 +71,9 @@ def test_pipeline_uses_explicit_report_snapshot_path():
 def test_run_stats_cli_defaults_to_current_stats_mode():
     src = Path((ROOT / "app" / "run_stats.py")).read_text(encoding="utf-8")
     assert "--perk-mode" in src
+    assert "--watch" in src
+    assert "--server" in src
+    assert "--use-server" in src
     assert "--state-mode" not in src
     assert "--preset" not in src
     assert "default='none'" in src
@@ -68,3 +88,57 @@ def test_run_analysis_cli_preserves_analysis_flags():
 def test_run_stats_pipeline_targets_farming_and_tourney():
     src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
     assert "preset_names = ['Farming', 'Tourney']" in src
+
+
+def test_run_stats_main_prefers_local_server_when_healthy(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    called = {"healthy": 0, "client": 0, "pipeline": 0}
+
+    def _healthy(args):
+        called["healthy"] += 1
+        return True
+
+    def _client(args):
+        called["client"] += 1
+        return 0
+
+    def _pipeline(args):
+        called["pipeline"] += 1
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", _healthy)
+    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+
+    assert run_stats_mod.main() == 0
+    assert called == {"healthy": 1, "client": 1, "pipeline": 0}
+
+
+def test_run_stats_main_falls_back_to_pipeline_when_server_unavailable(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    called = {"healthy": 0, "client": 0, "pipeline": 0}
+
+    def _healthy(args):
+        called["healthy"] += 1
+        return False
+
+    def _client(args):
+        called["client"] += 1
+        return 0
+
+    def _pipeline(args):
+        called["pipeline"] += 1
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", _healthy)
+    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+
+    assert run_stats_mod.main() == 0
+    assert called == {"healthy": 1, "client": 0, "pipeline": 1}

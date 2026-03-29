@@ -13,6 +13,7 @@ from qe.contracts import (
 )
 from qe.models import BoundPresetFamily, StateIdentity, StatBook, StatInput, StatRow, bind_preset_family
 from qe.routing import QEFamilyQueryResult, QEResolutionPlanner
+from qe.shared_runtime_context import QESharedRuntimeContext, get_default_qe_shared_runtime_context
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 
@@ -117,6 +118,16 @@ def test_state_identity_and_bound_preset_family__binds_successfully():
 def test_qe_resolution_planner__is_importable():
     planner = QEResolutionPlanner()
     assert planner is not None
+
+
+def test_qe_shared_runtime_context__is_importable_and_cached():
+    context = get_default_qe_shared_runtime_context()
+    assert isinstance(context, QESharedRuntimeContext)
+    assert context is get_default_qe_shared_runtime_context()
+    payload = context.to_dict()
+    assert payload["context_kind"] == "qe_shared_runtime_context"
+    assert payload["consumer_bundle_count"] > 0
+    assert payload["compiler_mapping_count"] > 0
 
 
 def test_qe_resolution_planner_snapshot__carries_native_interface_label():

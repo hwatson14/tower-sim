@@ -109,6 +109,7 @@ _INPUT_FILE_ALLOWLIST = {
 }
 _QE_FILE_ALLOWLIST = {
     "__init__.py",
+    "shared_runtime_context.py",
     "consumer_registry.py",
     "contracts.py",
     "dependency_registry.py",
