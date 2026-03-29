@@ -1294,6 +1294,9 @@ def compile_stat_inputs(
             _append(out, row)
             _append(out, extra)
             continue
+        if alias_slug == 'free upgrades':
+            _append(out, row)
+            continue
         if alias_slug == 'rend armor mult':
             extra = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement:max_rend_surface')
             bind_destination(extra, ('canonical_stat', 'max_rend_mult'), canonical_stats, note='kb_dual_routed_enhancement:max_rend_surface')

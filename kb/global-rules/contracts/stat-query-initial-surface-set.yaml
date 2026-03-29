@@ -237,6 +237,474 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved tower defense percent available to progression queries.
+    - surface_id: state::tower.damage
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower damage available to progression queries.
+    - surface_id: state::tower.attack_speed
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower attack speed available to progression queries.
+    - surface_id: state::tower.regen
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower health regen available to progression queries.
+    - surface_id: state::tower.crit_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower critical chance percent available to progression queries.
+    - surface_id: state::tower.crit_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower critical multiplier available to progression queries.
+    - surface_id: state::tower.range_m
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower range in meters available to progression queries.
+    - surface_id: state::tower.multishot_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower multishot chance percent available to progression queries.
+    - surface_id: state::tower.multishot_targets
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower multishot target count available to progression queries.
+    - surface_id: state::tower.rapid_fire_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower rapid-fire chance percent available to progression queries.
+    - surface_id: state::tower.rapid_fire_duration_seconds
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower rapid-fire duration in seconds available to progression queries.
+    - surface_id: state::tower.bounce_shot_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower bounce-shot chance percent available to progression queries.
+    - surface_id: state::tower.bounce_shot_targets
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower bounce-shot target count available to progression queries.
+    - surface_id: state::tower.bounce_shot_range_m
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower bounce-shot range in meters available to progression queries.
+    - surface_id: state::tower.damage_per_meter_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower damage-per-meter multiplier available to progression queries.
+    - surface_id: state::tower.death_defy_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower death-defy chance percent available to progression queries.
+    - surface_id: state::tower.knockback_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower knockback chance percent available to progression queries.
+    - surface_id: state::tower.knockback_force
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower knockback force available to progression queries.
+    - surface_id: state::tower.land_mine_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower land-mine chance percent available to progression queries.
+    - surface_id: state::tower.land_mine_damage
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower land-mine damage available to progression queries.
+    - surface_id: state::tower.land_mine_radius_m
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower land-mine radius in meters available to progression queries.
+    - surface_id: state::tower.lifesteal_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower lifesteal percent available to progression queries.
+    - surface_id: state::tower.max_recovery_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower max-recovery multiplier available to progression queries.
+    - surface_id: state::tower.recovery_amount_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower recovery amount percent available to progression queries.
+    - surface_id: state::tower.recovery_package_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower recovery-package multiplier available to progression queries.
+    - surface_id: state::tower.rend_armor_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower rend-armor chance percent available to progression queries.
+    - surface_id: state::tower.rend_armor_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower rend-armor multiplier available to progression queries.
+    - surface_id: state::tower.shockwave_interval_seconds
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower shockwave interval in seconds available to progression queries.
+    - surface_id: state::tower.shockwave_size_m
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower shockwave size in meters available to progression queries.
+    - surface_id: state::tower.supercrit_chance_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower supercrit chance percent available to progression queries.
+    - surface_id: state::tower.supercrit_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower supercrit multiplier available to progression queries.
+    - surface_id: state::tower.max_rend_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower maximum rend multiplier available to progression queries.
+    - surface_id: state::tower.orb_size_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower orb-size multiplier available to progression queries.
+    - surface_id: state::tower.ultimate_damage_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved tower ultimate-damage multiplier available to progression queries.
     - surface_id: state::tower.thorns_damage_pct
       surface_kind: canonical_surface
       surface_class: surface
@@ -440,6 +908,333 @@ families:
       scenario_scoped: true
       semantics: resolved enemy health level skip percent consumed by wave progression
         runtime consumers.
+    - surface_id: state::economy.cash_kill_multiplier
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved cash kill multiplier available to progression queries.
+    - surface_id: state::economy.cash_per_wave
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved cash per wave available to progression queries.
+    - surface_id: state::economy.coins_per_kill_bonus
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved coins per kill bonus available to progression queries.
+    - surface_id: state::economy.coins_per_wave
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved coins per wave available to progression queries.
+    - surface_id: state::economy.starting_cash_bonus
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved starting cash bonus available to progression queries.
+    - surface_id: state::bot.amplify.bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Amplify Bot bonus multiplier available to progression queries.
+    - surface_id: state::bot.amplify.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Amplify Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.amplify.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Amplify Bot duration in seconds available to progression queries.
+    - surface_id: state::bot.amplify.range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Amplify Bot range in meters available to progression queries.
+    - surface_id: state::bot.flame.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Flame Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.flame.damage_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Flame Bot damage multiplier available to progression queries.
+    - surface_id: state::bot.flame.damage_reduction_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Flame Bot damage reduction percent available to progression queries.
+    - surface_id: state::bot.flame.range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Flame Bot range in meters available to progression queries.
+    - surface_id: state::bot.flame_bot.lab_burn_stack
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Flame Bot burn stack lab bonus available to progression queries.
+    - surface_id: state::bot.global.range_bonus_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved global bot range bonus in meters available to progression queries.
+    - surface_id: state::bot.golden.bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Golden Bot bonus multiplier available to progression queries.
+    - surface_id: state::bot.golden.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Golden Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.golden.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Golden Bot duration in seconds available to progression queries.
+    - surface_id: state::bot.golden.range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Golden Bot range in meters available to progression queries.
+    - surface_id: state::bot.thunder.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Thunder Bot cooldown in seconds available to progression queries.
+    - surface_id: state::bot.thunder.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Thunder Bot duration in seconds available to progression queries.
+    - surface_id: state::bot.thunder.linger_duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Thunder Bot linger duration in seconds available to progression queries.
+    - surface_id: state::bot.thunder.linger_slow_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Thunder Bot linger slow percent available to progression queries.
+    - surface_id: state::bot.thunder.range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Thunder Bot range in meters available to progression queries.
     - surface_id: support_surface::free_upgrade_multiplier
       surface_kind: support_surface
       surface_class: surface
@@ -464,7 +1259,40 @@ families:
     query_bundles:
     - bundle_id: progression_core_stats
       surface_ids:
+      - state::tower.damage
+      - state::tower.attack_speed
       - state::tower.hp
+      - state::tower.regen
+      - state::tower.crit_chance_pct
+      - state::tower.crit_multiplier
+      - state::tower.range_m
+      - state::tower.multishot_chance_pct
+      - state::tower.multishot_targets
+      - state::tower.rapid_fire_chance_pct
+      - state::tower.rapid_fire_duration_seconds
+      - state::tower.bounce_shot_chance_pct
+      - state::tower.bounce_shot_targets
+      - state::tower.bounce_shot_range_m
+      - state::tower.damage_per_meter_multiplier
+      - state::tower.death_defy_chance_pct
+      - state::tower.knockback_chance_pct
+      - state::tower.knockback_force
+      - state::tower.land_mine_chance_pct
+      - state::tower.land_mine_damage
+      - state::tower.land_mine_radius_m
+      - state::tower.lifesteal_pct
+      - state::tower.max_recovery_multiplier
+      - state::tower.recovery_amount_pct
+      - state::tower.recovery_package_multiplier
+      - state::tower.rend_armor_chance_pct
+      - state::tower.rend_armor_multiplier
+      - state::tower.shockwave_interval_seconds
+      - state::tower.shockwave_size_m
+      - state::tower.supercrit_chance_pct
+      - state::tower.supercrit_multiplier
+      - state::tower.max_rend_multiplier
+      - state::tower.orb_size_multiplier
+      - state::tower.ultimate_damage_multiplier
       - state::wall.hp
       - state::wall.regen
       - state::wall.fortification_multiplier
@@ -472,6 +1300,30 @@ families:
       - state::tower.thorns_damage_pct
       - state::tower.orb_count
       - state::tower.orb_speed_rpm
+      - state::economy.cash_kill_multiplier
+      - state::economy.cash_per_wave
+      - state::economy.coins_per_kill_bonus
+      - state::economy.coins_per_wave
+      - state::economy.starting_cash_bonus
+      - state::bot.amplify.bonus_multiplier
+      - state::bot.amplify.cooldown_seconds
+      - state::bot.amplify.duration_seconds
+      - state::bot.amplify.range_m
+      - state::bot.flame.cooldown_seconds
+      - state::bot.flame.damage_multiplier
+      - state::bot.flame.damage_reduction_pct
+      - state::bot.flame.range_m
+      - state::bot.flame_bot.lab_burn_stack
+      - state::bot.global.range_bonus_m
+      - state::bot.golden.bonus_multiplier
+      - state::bot.golden.cooldown_seconds
+      - state::bot.golden.duration_seconds
+      - state::bot.golden.range_m
+      - state::bot.thunder.cooldown_seconds
+      - state::bot.thunder.duration_seconds
+      - state::bot.thunder.linger_duration_seconds
+      - state::bot.thunder.linger_slow_pct
+      - state::bot.thunder.range_m
       - state::cards.plasma_cannon.effect_pct
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct

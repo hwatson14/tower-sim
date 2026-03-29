@@ -489,6 +489,24 @@ def test_run_stats_progression_bundle__resolves_declared_surfaces():
     assert 'state::tower.free_attack_upgrade_chance_pct' in surface_ids
 
 
+def test_run_stats_progression_bundle__applies_exact_max_rend_formula():
+    from simulators.progression import resolve_run_stats_progression_bundle
+
+    state = _base_account_state()
+    response = resolve_run_stats_progression_bundle(
+        account_state=state,
+        family_id='progression_start_of_run',
+        preset_name=state.default_preset,
+        perks_enabled=False,
+        state_mode='start_of_run',
+        trace_mode='contributors',
+    )
+
+    resolved = {row.surface_id: row for row in response.resolved_surface_rows}
+    assert resolved['state::tower.max_rend_multiplier'].status == 'resolved'
+    assert resolved['state::tower.max_rend_multiplier'].final_value == pytest.approx(9.6)
+
+
 def test_qe_checkpoint_surface_resolution__resolves_only_requested_progression_surfaces():
     from qe.routing import resolve_checkpoint_surfaces
 

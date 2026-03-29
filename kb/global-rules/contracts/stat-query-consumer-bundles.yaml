@@ -9,7 +9,40 @@ consumers:
     - progression_runtime_no_perks
     - progression_runtime_with_perks
     required_surface_ids:
+    - state::tower.damage
+    - state::tower.attack_speed
     - state::tower.hp
+    - state::tower.regen
+    - state::tower.crit_chance_pct
+    - state::tower.crit_multiplier
+    - state::tower.range_m
+    - state::tower.multishot_chance_pct
+    - state::tower.multishot_targets
+    - state::tower.rapid_fire_chance_pct
+    - state::tower.rapid_fire_duration_seconds
+    - state::tower.bounce_shot_chance_pct
+    - state::tower.bounce_shot_targets
+    - state::tower.bounce_shot_range_m
+    - state::tower.damage_per_meter_multiplier
+    - state::tower.death_defy_chance_pct
+    - state::tower.knockback_chance_pct
+    - state::tower.knockback_force
+    - state::tower.land_mine_chance_pct
+    - state::tower.land_mine_damage
+    - state::tower.land_mine_radius_m
+    - state::tower.lifesteal_pct
+    - state::tower.max_recovery_multiplier
+    - state::tower.recovery_amount_pct
+    - state::tower.recovery_package_multiplier
+    - state::tower.rend_armor_chance_pct
+    - state::tower.rend_armor_multiplier
+    - state::tower.shockwave_interval_seconds
+    - state::tower.shockwave_size_m
+    - state::tower.supercrit_chance_pct
+    - state::tower.supercrit_multiplier
+    - state::tower.max_rend_multiplier
+    - state::tower.orb_size_multiplier
+    - state::tower.ultimate_damage_multiplier
     - state::wall.hp
     - state::wall.regen
     - state::wall.fortification_multiplier
@@ -17,6 +50,30 @@ consumers:
     - state::tower.thorns_damage_pct
     - state::tower.orb_count
     - state::tower.orb_speed_rpm
+    - state::economy.cash_kill_multiplier
+    - state::economy.cash_per_wave
+    - state::economy.coins_per_kill_bonus
+    - state::economy.coins_per_wave
+    - state::economy.starting_cash_bonus
+    - state::bot.amplify.bonus_multiplier
+    - state::bot.amplify.cooldown_seconds
+    - state::bot.amplify.duration_seconds
+    - state::bot.amplify.range_m
+    - state::bot.flame.cooldown_seconds
+    - state::bot.flame.damage_multiplier
+    - state::bot.flame.damage_reduction_pct
+    - state::bot.flame.range_m
+    - state::bot.flame_bot.lab_burn_stack
+    - state::bot.global.range_bonus_m
+    - state::bot.golden.bonus_multiplier
+    - state::bot.golden.cooldown_seconds
+    - state::bot.golden.duration_seconds
+    - state::bot.golden.range_m
+    - state::bot.thunder.cooldown_seconds
+    - state::bot.thunder.duration_seconds
+    - state::bot.thunder.linger_duration_seconds
+    - state::bot.thunder.linger_slow_pct
+    - state::bot.thunder.range_m
     - state::cards.plasma_cannon.effect_pct
     - state::module.orbital_augment.electron_count
     - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct

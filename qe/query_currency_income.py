@@ -19,7 +19,7 @@ SUPPORTED_EXTERNALIZED_CURRENCY_INPUTS = {
 
 UNSUPPORTED_CURRENCY_RESOURCES = {
     'cash': 'run_local_not_persistent',
-    'cells': 'no_governed_phase3_income_model',
+    'cells': 'no_governed_query_income_model',
 }
 
 SUPPORTED_RESOURCE_RESOLUTION_MODES = {
@@ -75,7 +75,7 @@ def _publish_surface(
 ) -> None:
     existing = rows.get(surface_id)
     if existing is not None:
-        raise ValueError(f'Phase 3 publication collision for {surface_id}')
+        raise ValueError(f'Query publication collision for {surface_id}')
     rows[surface_id] = StatRow(
         stat_name=surface_id,
         final_value=value,
@@ -277,7 +277,7 @@ def manual_income_input_contract_snapshot() -> Dict[str, Any]:
 
 
 def currency_income_surface_contract_snapshot() -> Dict[str, Any]:
-    """Expose the Phase 3 implementation-side support boundary for tests and audits."""
+    """Expose the implementation-side support boundary for tests and audits."""
     return {
         'deterministic': {k: {'surface_id': v[0], 'unit': v[1], 'resolution_mode': SUPPORTED_RESOURCE_RESOLUTION_MODES[k]} for k, v in DETERMINISTIC_CURRENCY_SURFACES.items()},
         'externalized_manual': {
@@ -299,8 +299,8 @@ def currency_income_surface_contract_snapshot() -> Dict[str, Any]:
     }
 
 
-def phase3_income_resolution_audit_snapshot() -> Dict[str, Any]:
-    """Expose the complete current Phase 3 income-resolution boundary for audits."""
+def income_resolution_audit_snapshot() -> Dict[str, Any]:
+    """Expose the complete current income-resolution boundary for audits."""
     supported_resources = set(DETERMINISTIC_CURRENCY_SURFACES) | {
         input_id.split('.')[1] for input_id in SUPPORTED_EXTERNALIZED_CURRENCY_INPUTS
     }

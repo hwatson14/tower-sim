@@ -68,12 +68,12 @@ def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
         )
 
 
-def publish_phase3_query_surfaces(
+def publish_query_surfaces(
     rows: Dict[str, StatRow],
     manual_advisory_inputs: Optional[Dict[str, Dict[str, Any]]] = None,
     account_state_labs: Optional[Dict[str, Any]] = None,
 ) -> None:
-    """Publish Phase 3 query-owned/public surfaces from already-resolved rows.
+    """Publish query-owned/public surfaces from already-resolved rows.
 
     This is intentionally separate from legacy derived-surface composition. The
     compatibility entrypoint may call it today, but later query entrypoints can
@@ -95,8 +95,8 @@ def publish_phase3_query_surfaces(
     publish_currency_income_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
 
 
-def phase3_publication_contract_snapshot() -> dict:
-    """Expose the intended Phase 3 publication contract for tests and audits."""
+def publication_contract_snapshot() -> dict:
+    """Expose the intended publication contract for tests and audits."""
     return {
         'required_objective_surfaces': [
             'derived::ehp',

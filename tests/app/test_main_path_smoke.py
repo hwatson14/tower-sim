@@ -57,13 +57,13 @@ def test_pipeline_module_imports_active_layers__contains_expected_imports():
     import app.pipeline as pipeline_mod
 
     src = Path(pipeline_mod.__file__).read_text(encoding="utf-8")
-    assert "from qe.publication import publish_phase3_query_surfaces" in src
+    assert "from qe.publication import publish_query_surfaces" in src
     assert "from qe.shared_runtime_context import get_default_qe_shared_runtime_context" in src
     assert "from simulators.progression import resolve_run_stats_progression_bundle" in src
     assert "resolve_run_stats_progression_bundle" in src
     assert "resolve_timing_consumer_bundle" in src
     assert "QEResolutionPlanner" in src
-    assert "publish_phase3_query_surfaces" in src
+    assert "publish_query_surfaces" in src
     assert "from evaluators.scorer import compute_optimizer_scores" in src
     assert "from input.loader import load_inputs" in src
     assert "from input.runtime_state import build_runtime_state" in src
@@ -140,6 +140,15 @@ def test_module_substat_unlock_count_matches_expected_thresholds():
 def test_run_stats_pipeline_targets_farming_and_tourney():
     src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
     assert "preset_names = ['Farming', 'Tourney']" in src
+
+
+def test_run_stats_pipeline_writes_query_artifacts_not_fake_statbooks():
+    src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
+    assert "run_stats_query_rows_start_of_run.json" in src
+    assert "run_stats_query_rows_max_progression.json" in src
+    assert "run_stats_query_plan_start_of_run.json" in src
+    assert "run_stats_query_plan_max_progression.json" in src
+    assert "_remove_run_stats_legacy_outputs" in src
 
 
 def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
