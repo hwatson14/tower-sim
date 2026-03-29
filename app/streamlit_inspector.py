@@ -4,10 +4,15 @@ import csv
 import json
 from functools import lru_cache
 from pathlib import Path
+import sys
 
 import pandas as pd
 import streamlit as st
 import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 from app.inspector_data import (
     compare_rows_frame,
@@ -47,8 +52,6 @@ from simulators.run_executor import (
     build_start_of_run_state,
 )
 
-
-ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_OUT = ROOT / 'out'
 DEFAULT_IDS = ROOT / 'input' / 'imports' / 'ids.csv'
 PERK_ENTITY_REGISTRY = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
