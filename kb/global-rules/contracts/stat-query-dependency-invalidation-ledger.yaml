@@ -393,6 +393,46 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted effective wave duration surface.
+  - node_id: support_surface::scenario.target_farming_wave
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Scenario-owned target farming wave surface for farming throughput.
+  - node_id: support_surface::scenario.waves_per_run_effective
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Scenario-owned effective waves-per-run throughput surface.
+  - node_id: support_surface::scenario.runs_per_day_effective
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Scenario-owned effective runs-per-day throughput surface.
+  - node_id: support_surface::scenario.waves_per_day_effective
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Scenario-owned effective waves-per-day throughput surface.
+  - node_id: support_surface::scenario.bosses_per_day_effective
+    node_kind: support_surface
+    family_ids: [derived_v1]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Scenario-owned effective bosses-per-day throughput surface.
   - node_id: source_input::derived_composite_analysis
     node_kind: source_input
     family_ids: [derived_v1]
@@ -465,7 +505,7 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Published derived economy income gems surface.
-  - node_id: derived::economy.income.stones
+  - node_id: derived::economy.income.power_stones
     node_kind: surface
     family_ids: [derived_v1]
     is_publishable: false
@@ -497,6 +537,30 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Published derived economy income shards surface.
+  - node_id: derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: verified
+    blocker_reason: ''
+    notes: Published module boss-drop EV shard surface.
+  - node_id: planner.manual_policy.module.missions_per_week
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: verified
+    blocker_reason: ''
+    notes: Published weekly module missions planning surface.
+  - node_id: derived::module.mission_policy.total_daily_mission_shards
+    node_kind: surface
+    family_ids: [derived_v1]
+    is_publishable: false
+    publication_relevance: publish_on_request
+    verification_status: verified
+    blocker_reason: ''
+    notes: Published module mission shard reward surface.
   - node_id: derived::economy.income.bits
     node_kind: surface
     family_ids: [derived_v1]
@@ -788,7 +852,7 @@ edges:
     verification_status: analysis_provisional
     notes: Derived analysis produces economy income gems output.
   - upstream_node_id: source_input::derived_composite_analysis
-    downstream_node_id: derived::economy.income.stones
+    downstream_node_id: derived::economy.income.power_stones
     invalidation_semantics: recompute_downstream
     mutation_classes: []
     publication_relevance: analysis_output
@@ -808,13 +872,76 @@ edges:
     publication_relevance: analysis_output
     verification_status: analysis_provisional
     notes: Derived analysis produces economy income keys output.
-  - upstream_node_id: source_input::derived_composite_analysis
+  - upstream_node_id: support_surface::scenario.bosses_per_day_effective
     downstream_node_id: derived::economy.income.shards
     invalidation_semantics: recompute_downstream
-    mutation_classes: []
-    publication_relevance: analysis_output
-    verification_status: analysis_provisional
-    notes: Derived analysis produces economy income shards output.
+    mutation_classes: [runtime_target_display_wave, card_assertions, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Farming throughput cadence directly changes weekly shard income.
+  - upstream_node_id: support_surface::scenario.target_farming_wave
+    downstream_node_id: support_surface::scenario.waves_per_run_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Target farming wave feeds effective waves per run.
+  - upstream_node_id: support_surface::scenario.target_farming_wave
+    downstream_node_id: support_surface::scenario.runs_per_day_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Target farming wave feeds effective runs per day.
+  - upstream_node_id: support_surface::timing.wave_duration_seconds_effective
+    downstream_node_id: support_surface::scenario.runs_per_day_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions, package_event_model, runtime_target_display_wave]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective wave duration feeds effective runs per day.
+  - upstream_node_id: support_surface::scenario.waves_per_run_effective
+    downstream_node_id: support_surface::scenario.waves_per_day_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, card_assertions]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective waves per run feeds effective waves per day.
+  - upstream_node_id: support_surface::scenario.runs_per_day_effective
+    downstream_node_id: support_surface::scenario.waves_per_day_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, card_assertions, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective runs per day feeds effective waves per day.
+  - upstream_node_id: support_surface::scenario.waves_per_day_effective
+    downstream_node_id: support_surface::scenario.bosses_per_day_effective
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, card_assertions, package_event_model]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Effective waves per day feeds effective bosses per day.
+  - upstream_node_id: derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss
+    downstream_node_id: derived::economy.income.shards
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_state_change, tier_progression]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Boss drop shard EV directly changes weekly shard income.
+  - upstream_node_id: planner.manual_policy.module.missions_per_week
+    downstream_node_id: derived::economy.income.shards
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [manual_policy]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Weekly mission count contributes to the module shard mission lane.
+  - upstream_node_id: derived::module.mission_policy.total_daily_mission_shards
+    downstream_node_id: derived::economy.income.shards
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [lab_state_change, tier_progression]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Mission shard reward changes the module shard mission lane.
   - upstream_node_id: source_input::derived_composite_analysis
     downstream_node_id: derived::economy.income.bits
     invalidation_semantics: recompute_downstream

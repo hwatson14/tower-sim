@@ -97,6 +97,8 @@ MODULE_DRAW_POLICY_ROWS = (
     ('derived::module.draw_policy.epic_pity_draws', 150.0, 'draws', 'scalar', 'Wiki-backed epic pity threshold for module draws.'),
     ('derived::module.draw_policy.ten_pull_minimum_rare', 1.0, 'rare_per_ten_pull', 'scalar', 'Wiki-backed minimum of one rare in every 10-pull.'),
     ('derived::module.draw_policy.gem_cost_per_draw', 20.0, 'gems', 'scalar', 'Wiki-backed module gem cost per single draw.'),
+    ('derived::module.draw_policy.epic_draw_immediate_shard_value', 0.0, 'shards', 'scalar', 'KB package-rule epic draw immediate shard value: retained epics contribute zero immediate shards.'),
+    ('derived::module.draw_policy.ten_pull_ev_multiplier', 1.0, 'multiplier', 'scalar', 'KB package-rule ten-pull EV multiplier: a 10-pull is modeled as ten independent singles for EV.'),
 )
 
 

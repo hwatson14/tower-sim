@@ -135,6 +135,7 @@ def test_timing_family_statbook_is_native_family_backed():
     assert statbook.diagnostics["qe_resolution_interface"] == "native_family_query"
     assert statbook.diagnostics["qe_resolution_backend"] == "native_family_query"
     assert statbook.diagnostics["qe_native_family_id"] == "timing_farm_with_perks"
+    assert statbook.rows["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
 
 
 def test_progression_native_family_statbook_does_not_touch_report_fallback(monkeypatch):
@@ -212,6 +213,44 @@ def test_timing_native_family_statbook_does_not_touch_report_fallback(monkeypatc
 
     assert statbook.diagnostics["qe_resolution_backend"] == "native_family_query"
     assert statbook.rows["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
+
+
+def test_scenario_farming_throughput_publication_is_importable_and_emits_scenario_owned_surface():
+    from simulators.scenario import ScenarioConfig, publish_farming_throughput_support_surfaces
+    from simulators.timing import compile_timing_family_rows
+    from qe.routing import QEResolutionPlanner
+
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset="Farming",
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+    bound, rows = compile_timing_family_rows(
+        account_state=state,
+        family_id="timing_farm_with_perks",
+        preset_name="Farming",
+        scenario_config=ScenarioConfig(mode_id="farming", tier=14),
+        perks_enabled=True,
+    )
+    timing_statbook = QEResolutionPlanner().resolve_rows_declared_family_statbook(
+        identity=bound.binding.identity,
+        stat_inputs=rows,
+        family_id="timing_farm_with_perks",
+        requested_surface_ids=("support_surface::timing.wave_duration_seconds_effective",),
+        notes="scenario throughput prerequisite",
+        diagnostics={"source": "test"},
+    )
+    publish_farming_throughput_support_surfaces(
+        timing_statbook.rows,
+        account_state=state,
+        config=ScenarioConfig(mode_id="farming", tier=14),
+        stat_inputs=bound.stat_inputs,
+        farming_hours_per_day=23.5,
+    )
+
+    assert timing_statbook.rows["support_surface::scenario.bosses_per_day_effective"].status == "resolved"
 
 
 def test_runtime_consumer_bundles_stay_within_declared_native_family_surfaces():

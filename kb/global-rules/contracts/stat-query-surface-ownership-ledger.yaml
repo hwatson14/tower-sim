@@ -40,6 +40,31 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::scenario.target_farming_wave
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::scenario.waves_per_run_effective
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::scenario.runs_per_day_effective
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::scenario.waves_per_day_effective
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::scenario.bosses_per_day_effective
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::tower.hp
   ownership_class: surface
   ownership_status: query_owned
@@ -160,7 +185,22 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
-- node_id: derived::economy.income.stones
+- node_id: derived::module.drop_policy.expected_shatter_equivalent_shards_per_boss
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: planner.manual_policy.module.missions_per_week
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: derived::module.mission_policy.total_daily_mission_shards
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: derived::economy.income.power_stones
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -894,12 +934,7 @@ surface_nodes:
   ownership_status: inputs_owned
   governed_by: inputs_layer
   downstream_policy: consume_only_no_rederivation
-- node_id: input_surface::income.shards.per_week
-  ownership_class: input_surface
-  ownership_status: inputs_owned
-  governed_by: inputs_layer
-  downstream_policy: consume_only_no_rederivation
-- node_id: input_surface::income.stones.per_week
+- node_id: input_surface::income.power_stones.per_week
   ownership_class: input_surface
   ownership_status: inputs_owned
   governed_by: inputs_layer

@@ -151,7 +151,7 @@ consumers:
     optional_surface_ids:
     - derived::economy.income.coins
     - derived::economy.income.gems
-    - derived::economy.income.stones
+    - derived::economy.income.power_stones
     - derived::economy.income.medals
     - derived::economy.income.keys
     - derived::economy.income.shards
