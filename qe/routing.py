@@ -7,6 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 import yaml
 
+from input.state_types import AccountState, ScenarioProjectionState, ScenarioRuntimeInputs
 from qe.contracts import (
     compat_surface_from_legacy_capability,
     compat_surface_from_legacy_canonical,
@@ -31,6 +32,7 @@ from qe.kb_surfaces import CANONICAL_PCT_CAPS
 _TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
 _TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
 _PROGRESSION_START_OF_RUN = 'progression_start_of_run'
+_PROGRESSION_RUNTIME_NO_PERKS = 'progression_runtime_no_perks'
 _PROGRESSION_RUNTIME_WITH_PERKS = 'progression_runtime_with_perks'
 _ROOT = Path(__file__).resolve().parents[1]
 _CONTRACT_PATHS = (
@@ -1590,6 +1592,60 @@ def query_response_to_statbook(
     return StatBook(rows=rows, diagnostics=merged_diagnostics)
 
 
+def resolve_checkpoint_surfaces(
+    account_state: AccountState,
+    *,
+    requested_surface_ids: Sequence[str],
+    preset_name: str,
+    family_id: str | None = None,
+    state_mode: str = 'start_of_run',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    perks_enabled: bool | None = None,
+    runtime_branch_id: str = 'branch_checkpoint',
+    scenario_runtime_inputs: ScenarioRuntimeInputs | None = None,
+    scenario_projection_state: ScenarioProjectionState | None = None,
+    trace_mode: str = 'contributors',
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    """
+    Resolve an explicit checkpoint surface set for simulator/runtime consumers.
+
+    This is the sanctioned lightweight QE seam for row/checkpoint execution.
+    It compiles checkpoint-local stat inputs with identity, materializes only the
+    requested checkpoint family, and resolves only the requested surfaces.
+    """
+    resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
+    resolved_family_id = family_id or (
+        _PROGRESSION_RUNTIME_WITH_PERKS if resolved_perks_enabled else _PROGRESSION_RUNTIME_NO_PERKS
+    )
+    bound_inputs = compile_stat_inputs_with_identity(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=resolved_perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=scenario_projection_state,
+        scenario_context={'mode_id': 'checkpoint'},
+    )
+    query_kernel = kernel or get_default_query_kernel()
+    baseline = query_kernel.materializer.materialize_from_rows(
+        bound_inputs.binding.identity,
+        resolved_family_id,
+        bound_inputs.stat_inputs,
+    )
+    return query_kernel.resolve_surfaces(
+        baseline,
+        requested_surface_ids=tuple(str(surface_id) for surface_id in requested_surface_ids),
+        trace_mode=trace_mode,
+    )
+
+
 def _snapshot_cache_key(bound_inputs: BoundStatInputs) -> tuple[str, str, str, str]:
     identity = bound_inputs.binding.identity
     return (
@@ -1719,6 +1775,7 @@ __all__ = [
     'QEResolutionPlanner',
     'QEResolvedSnapshot',
     'query_response_to_statbook',
+    'resolve_checkpoint_surfaces',
     'resolve_stats',
     'resolve_stats_delta',
     '_multiplier_from_value',
