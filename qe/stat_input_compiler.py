@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import yaml
-import pandas as pd
 
 from qe.query_perk_compiler import (
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
@@ -140,22 +139,22 @@ def _load_lab_summary_lookup() -> Dict[str, Dict[str, float | str]]:
     path = KB / 'labs' / 'tables' / 'lab-track-summary.csv'
     if not path.exists():
         return {}
-    df = pd.read_csv(path)
     out: Dict[str, Dict[str, float | str]] = {}
-    for _, row in df.iterrows():
-        name = str(row.get('lab_primary_name', '')).strip()
-        try:
-            payload = {
-                'level_min': float(row.get('level_min', 0)),
-                'level_max': float(row.get('level_max', 0)),
-                'value_min': float(row.get('value_min', 0)),
-                'linear_step': float(row.get('linear_step', 0)),
-                'formula_family': str(row.get('formula_family', '')).strip().lower(),
-            }
-        except (TypeError, ValueError):
-            continue
-        out[name] = payload
-        out[slug_text(name)] = payload
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            name = str(row.get('lab_primary_name', '')).strip()
+            try:
+                payload = {
+                    'level_min': float(row.get('level_min', 0)),
+                    'level_max': float(row.get('level_max', 0)),
+                    'value_min': float(row.get('value_min', 0)),
+                    'linear_step': float(row.get('linear_step', 0)),
+                    'formula_family': str(row.get('formula_family', '')).strip().lower(),
+                }
+            except (TypeError, ValueError):
+                continue
+            out[name] = payload
+            out[slug_text(name)] = payload
     return out
 
 
@@ -212,7 +211,6 @@ def _load_workshop_value_lookup() -> Dict[Tuple[str, int], float]:
                 out[(ids_name, level)] = value
     # Keep the old direct table as a fallback only.
     if WORKSHOP_VALUES_PATH.exists():
-        df = pd.read_csv(WORKSHOP_VALUES_PATH)
         pairs = [
             ('Level', 'Damage', 'Damage'),
             ('Level.1', 'Health', 'Health'),
@@ -221,17 +219,21 @@ def _load_workshop_value_lookup() -> Dict[Tuple[str, int], float]:
             ('Level.4', 'Damage / Meter', 'Damage / Meter'),
             ('Level.5', 'Lifesteal', 'Lifesteal'),
         ]
-        for level_col, value_col, ids_name in pairs:
-            if level_col not in df.columns or value_col not in df.columns:
-                continue
-            for _, r in df[[level_col, value_col]].dropna().iterrows():
-                try:
-                    level = int(float(r[level_col]))
-                    value = float(r[value_col])
-                except (ValueError, TypeError):
-                    continue
-                if (ids_name, level) not in out:
-                    out[(ids_name, level)] = value
+        with WORKSHOP_VALUES_PATH.open(newline='') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                for level_col, value_col, ids_name in pairs:
+                    raw_level = row.get(level_col)
+                    raw_value = row.get(value_col)
+                    if raw_level in (None, '') or raw_value in (None, ''):
+                        continue
+                    try:
+                        level = int(float(raw_level))
+                        value = float(raw_value)
+                    except (ValueError, TypeError):
+                        continue
+                    if (ids_name, level) not in out:
+                        out[(ids_name, level)] = value
     return out
 
 
@@ -442,18 +444,19 @@ def _load_guardian_scout_values() -> Dict[Tuple[str, int], float]:
 
 @lru_cache(maxsize=1)
 def _load_module_substat_values() -> Dict[Tuple[str, str, str], Tuple[float, str]]:
-    df = pd.read_csv(KB / 'modules' / 'tables' / 'module-substats.csv')
     out: Dict[Tuple[str, str, str], Tuple[float, str]] = {}
-    for _, row in df.iterrows():
-        slot = str(row.get('slot', '')).strip().lower()
-        substat = str(row.get('substat', '')).strip()
-        rarity = str(row.get('rarity', '')).strip()
-        try:
-            value = float(row.get('value'))
-        except (TypeError, ValueError):
-            continue
-        unit = str(row.get('unit', '')).strip().lower()
-        out[(slot, substat, rarity)] = (value, unit)
+    path = KB / 'modules' / 'tables' / 'module-substats.csv'
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            slot = str(row.get('slot', '')).strip().lower()
+            substat = str(row.get('substat', '')).strip()
+            rarity = str(row.get('rarity', '')).strip()
+            try:
+                value = float(row.get('value'))
+            except (TypeError, ValueError):
+                continue
+            unit = str(row.get('unit', '')).strip().lower()
+            out[(slot, substat, rarity)] = (value, unit)
     return out
 
 
@@ -479,18 +482,18 @@ def _load_module_main_effect_bases() -> Dict[str, Dict[str, float]]:
     out: Dict[str, Dict[str, float]] = {}
     if not MODULE_MAIN_EFFECT_BASES_PATH.exists():
         return out
-    df = pd.read_csv(MODULE_MAIN_EFFECT_BASES_PATH)
-    for _, row in df.iterrows():
-        rarity = str(row.get('rarity', '')).strip()
-        if not rarity:
-            continue
-        vals = {}
-        for slot in ('cannon', 'armor', 'generator', 'core'):
-            try:
-                vals[slot] = float(row.get(f'{slot}_base'))
-            except (TypeError, ValueError):
+    with MODULE_MAIN_EFFECT_BASES_PATH.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            rarity = str(row.get('rarity', '')).strip()
+            if not rarity:
                 continue
-        out[rarity] = vals
+            vals = {}
+            for slot in ('cannon', 'armor', 'generator', 'core'):
+                try:
+                    vals[slot] = float(row.get(f'{slot}_base'))
+                except (TypeError, ValueError):
+                    continue
+            out[rarity] = vals
     return out
 
 
@@ -562,19 +565,19 @@ def _load_module_unique_effect_values() -> Dict[Tuple[str, str], Tuple[float, st
     out: Dict[Tuple[str, str], Tuple[float, str]] = {}
     if not MODULE_UNIQUE_EFFECTS_TABLE_PATH.exists():
         return out
-    df = pd.read_csv(MODULE_UNIQUE_EFFECTS_TABLE_PATH)
     rarity_columns = ('epic', 'legendary', 'mythic', 'ancestral')
-    for _, row in df.iterrows():
-        module_slug = slug_text(str(row.get('module', '')).strip())
-        measure = str(row.get('measure', '')).strip().lower()
-        if not module_slug:
-            continue
-        for rarity in rarity_columns:
-            try:
-                value = float(row.get(rarity))
-            except (TypeError, ValueError):
+    with MODULE_UNIQUE_EFFECTS_TABLE_PATH.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            module_slug = slug_text(str(row.get('module', '')).strip())
+            measure = str(row.get('measure', '')).strip().lower()
+            if not module_slug:
                 continue
-            out[(module_slug, rarity)] = (value, measure)
+            for rarity in rarity_columns:
+                try:
+                    value = float(row.get(rarity))
+                except (TypeError, ValueError):
+                    continue
+                out[(module_slug, rarity)] = (value, measure)
     return out
 
 
@@ -584,14 +587,14 @@ def _load_assist_efficiency_lookup() -> Dict[int, float]:
     path = KB / 'modules' / 'tables' / 'assist-stone-levels.csv'
     if not path.exists():
         return out
-    df = pd.read_csv(path)
-    for _, row in df.iterrows():
-        try:
-            level = int(row.get('stone_level'))
-            frac = float(row.get('assist_efficiency_frac'))
-        except (TypeError, ValueError):
-            continue
-        out[level] = frac
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            try:
+                level = int(row.get('stone_level'))
+                frac = float(row.get('assist_efficiency_frac'))
+            except (TypeError, ValueError):
+                continue
+            out[level] = frac
     return out
 
 
