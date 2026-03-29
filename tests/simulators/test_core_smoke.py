@@ -448,3 +448,77 @@ def test_run_stats_progression_bundle__resolves_declared_surfaces():
     assert 'state::tower.hp' in surface_ids
     assert 'state::tower.defense_pct' in surface_ids
     assert 'state::tower.free_attack_upgrade_chance_pct' in surface_ids
+
+
+def test_qe_checkpoint_surface_resolution__resolves_only_requested_progression_surfaces():
+    from qe.routing import resolve_checkpoint_surfaces
+
+    state = _base_account_state()
+    response = resolve_checkpoint_surfaces(
+        state,
+        requested_surface_ids=(
+            'state::tower.hp',
+            'state::wall.hp',
+        ),
+        preset_name='Farming',
+        family_id='progression_runtime_with_perks',
+        perks_enabled=True,
+    )
+
+    surface_ids = tuple(row.surface_id for row in response.resolved_surface_rows)
+    assert surface_ids == ('state::tower.hp', 'state::wall.hp')
+
+
+def test_simulator_snapshot_resolver__avoids_progression_recalc_bridge(monkeypatch):
+    import simulators.progression as progression_module
+    from simulators.contracts import SimulatorCheckpointState
+    from simulators.snapshot_resolver import SimulatorSnapshotResolver
+
+    def _no_bridge(*args, **kwargs):
+        raise AssertionError('snapshot resolver must not call ProgressionRecalcBridge.recompute')
+
+    monkeypatch.setattr(progression_module.ProgressionRecalcBridge, 'recompute', _no_bridge)
+
+    state = _base_account_state()
+    resolution = SimulatorSnapshotResolver().resolve_checkpoint(
+        account_state=state,
+        checkpoint_state=SimulatorCheckpointState(workshop_levels_current={'Health': 1}),
+        preset_name='Farming',
+        requested_surface_ids=(
+            'state::tower.hp',
+            'state::wall.hp',
+        ),
+        family_id='progression_runtime_with_perks',
+        perks_enabled=True,
+    )
+
+    assert resolution.diagnostics['resolver_kind'] == 'simulator_checkpoint_qe_light'
+    assert set(resolution.resolved_values) == {'state::tower.hp', 'state::wall.hp'}
+
+
+def test_simulator_snapshot_resolver__warm_checkpoint_resolution_is_subsecond():
+    from simulators.contracts import SimulatorCheckpointState
+    from simulators.snapshot_resolver import SimulatorSnapshotResolver
+
+    state = _base_account_state()
+    resolver = SimulatorSnapshotResolver()
+    checkpoint = SimulatorCheckpointState(workshop_levels_current={'Health': 1})
+    first = resolver.resolve_checkpoint(
+        account_state=state,
+        checkpoint_state=checkpoint,
+        preset_name='Farming',
+        requested_surface_ids=('state::tower.hp', 'state::wall.hp'),
+        family_id='progression_runtime_with_perks',
+        perks_enabled=True,
+    )
+    second = resolver.resolve_checkpoint(
+        account_state=state,
+        checkpoint_state=checkpoint,
+        preset_name='Farming',
+        requested_surface_ids=('state::tower.hp', 'state::wall.hp'),
+        family_id='progression_runtime_with_perks',
+        perks_enabled=True,
+    )
+
+    assert first.diagnostics['phase_timing_ms']['resolve_checkpoint_surfaces'] >= 0.0
+    assert second.diagnostics['phase_timing_ms']['total_measured_ms'] < 1000.0
