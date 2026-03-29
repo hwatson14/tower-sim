@@ -1162,6 +1162,50 @@ def run_stats_local_server_is_healthy(args, *, timeout_seconds: float = 0.25) ->
     return bool(payload.get('ok'))
 
 
+def run_stats_ensure_local_server(args, *, startup_timeout_seconds: float = 3.0, poll_interval_seconds: float = 0.1) -> bool:
+    """
+    Ensure a local warm run_stats server is available.
+
+    Returns True when an existing server is healthy or when a new local server
+    was spawned and became healthy within the startup timeout.
+    """
+    import subprocess
+    import sys
+    import time
+
+    if run_stats_local_server_is_healthy(args):
+        return True
+
+    command = [
+        sys.executable,
+        '-m',
+        'app.run_stats',
+        '--server',
+        '--host',
+        str(getattr(args, 'host', '127.0.0.1')),
+        '--port',
+        str(int(getattr(args, 'port', 8765))),
+    ]
+    creationflags = 0
+    popen_kwargs: dict[str, object] = {
+        'stdout': subprocess.DEVNULL,
+        'stderr': subprocess.DEVNULL,
+        'stdin': subprocess.DEVNULL,
+    }
+    if sys.platform == 'win32':
+        creationflags = getattr(subprocess, 'DETACHED_PROCESS', 0) | getattr(subprocess, 'CREATE_NEW_PROCESS_GROUP', 0)
+    else:
+        popen_kwargs['start_new_session'] = True
+    subprocess.Popen(command, creationflags=creationflags, **popen_kwargs)
+
+    deadline = time.time() + startup_timeout_seconds
+    while time.time() < deadline:
+        if run_stats_local_server_is_healthy(args):
+            return True
+        time.sleep(poll_interval_seconds)
+    return False
+
+
 def run_analysis_pipeline(args) -> int:
     """
     Execute the full stat pipeline.
