@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import yaml
-import pandas as pd
 
 from qe.query_perk_compiler import (
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
@@ -62,7 +61,7 @@ from qe.query_state_mode_policy import (
     state_mode_support,
     supported_state_modes,
 )
-from input.state_types import AccountState
+from input.state_types import AccountState, ScenarioProjectionState, projection_state_for_mode
 from qe.models import bind_preset_family
 from qe.contracts import sanitize_preset_name_for_canonical_output
 from qe.models import StatInput
@@ -140,22 +139,22 @@ def _load_lab_summary_lookup() -> Dict[str, Dict[str, float | str]]:
     path = KB / 'labs' / 'tables' / 'lab-track-summary.csv'
     if not path.exists():
         return {}
-    df = pd.read_csv(path)
     out: Dict[str, Dict[str, float | str]] = {}
-    for _, row in df.iterrows():
-        name = str(row.get('lab_primary_name', '')).strip()
-        try:
-            payload = {
-                'level_min': float(row.get('level_min', 0)),
-                'level_max': float(row.get('level_max', 0)),
-                'value_min': float(row.get('value_min', 0)),
-                'linear_step': float(row.get('linear_step', 0)),
-                'formula_family': str(row.get('formula_family', '')).strip().lower(),
-            }
-        except (TypeError, ValueError):
-            continue
-        out[name] = payload
-        out[slug_text(name)] = payload
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            name = str(row.get('lab_primary_name', '')).strip()
+            try:
+                payload = {
+                    'level_min': float(row.get('level_min', 0)),
+                    'level_max': float(row.get('level_max', 0)),
+                    'value_min': float(row.get('value_min', 0)),
+                    'linear_step': float(row.get('linear_step', 0)),
+                    'formula_family': str(row.get('formula_family', '')).strip().lower(),
+                }
+            except (TypeError, ValueError):
+                continue
+            out[name] = payload
+            out[slug_text(name)] = payload
     return out
 
 
@@ -212,7 +211,6 @@ def _load_workshop_value_lookup() -> Dict[Tuple[str, int], float]:
                 out[(ids_name, level)] = value
     # Keep the old direct table as a fallback only.
     if WORKSHOP_VALUES_PATH.exists():
-        df = pd.read_csv(WORKSHOP_VALUES_PATH)
         pairs = [
             ('Level', 'Damage', 'Damage'),
             ('Level.1', 'Health', 'Health'),
@@ -221,17 +219,21 @@ def _load_workshop_value_lookup() -> Dict[Tuple[str, int], float]:
             ('Level.4', 'Damage / Meter', 'Damage / Meter'),
             ('Level.5', 'Lifesteal', 'Lifesteal'),
         ]
-        for level_col, value_col, ids_name in pairs:
-            if level_col not in df.columns or value_col not in df.columns:
-                continue
-            for _, r in df[[level_col, value_col]].dropna().iterrows():
-                try:
-                    level = int(float(r[level_col]))
-                    value = float(r[value_col])
-                except (ValueError, TypeError):
-                    continue
-                if (ids_name, level) not in out:
-                    out[(ids_name, level)] = value
+        with WORKSHOP_VALUES_PATH.open(newline='') as f:
+            reader = csv.DictReader(f)
+            for row in reader:
+                for level_col, value_col, ids_name in pairs:
+                    raw_level = row.get(level_col)
+                    raw_value = row.get(value_col)
+                    if raw_level in (None, '') or raw_value in (None, ''):
+                        continue
+                    try:
+                        level = int(float(raw_level))
+                        value = float(raw_value)
+                    except (ValueError, TypeError):
+                        continue
+                    if (ids_name, level) not in out:
+                        out[(ids_name, level)] = value
     return out
 
 
@@ -442,18 +444,19 @@ def _load_guardian_scout_values() -> Dict[Tuple[str, int], float]:
 
 @lru_cache(maxsize=1)
 def _load_module_substat_values() -> Dict[Tuple[str, str, str], Tuple[float, str]]:
-    df = pd.read_csv(KB / 'modules' / 'tables' / 'module-substats.csv')
     out: Dict[Tuple[str, str, str], Tuple[float, str]] = {}
-    for _, row in df.iterrows():
-        slot = str(row.get('slot', '')).strip().lower()
-        substat = str(row.get('substat', '')).strip()
-        rarity = str(row.get('rarity', '')).strip()
-        try:
-            value = float(row.get('value'))
-        except (TypeError, ValueError):
-            continue
-        unit = str(row.get('unit', '')).strip().lower()
-        out[(slot, substat, rarity)] = (value, unit)
+    path = KB / 'modules' / 'tables' / 'module-substats.csv'
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            slot = str(row.get('slot', '')).strip().lower()
+            substat = str(row.get('substat', '')).strip()
+            rarity = str(row.get('rarity', '')).strip()
+            try:
+                value = float(row.get('value'))
+            except (TypeError, ValueError):
+                continue
+            unit = str(row.get('unit', '')).strip().lower()
+            out[(slot, substat, rarity)] = (value, unit)
     return out
 
 
@@ -479,18 +482,18 @@ def _load_module_main_effect_bases() -> Dict[str, Dict[str, float]]:
     out: Dict[str, Dict[str, float]] = {}
     if not MODULE_MAIN_EFFECT_BASES_PATH.exists():
         return out
-    df = pd.read_csv(MODULE_MAIN_EFFECT_BASES_PATH)
-    for _, row in df.iterrows():
-        rarity = str(row.get('rarity', '')).strip()
-        if not rarity:
-            continue
-        vals = {}
-        for slot in ('cannon', 'armor', 'generator', 'core'):
-            try:
-                vals[slot] = float(row.get(f'{slot}_base'))
-            except (TypeError, ValueError):
+    with MODULE_MAIN_EFFECT_BASES_PATH.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            rarity = str(row.get('rarity', '')).strip()
+            if not rarity:
                 continue
-        out[rarity] = vals
+            vals = {}
+            for slot in ('cannon', 'armor', 'generator', 'core'):
+                try:
+                    vals[slot] = float(row.get(f'{slot}_base'))
+                except (TypeError, ValueError):
+                    continue
+            out[rarity] = vals
     return out
 
 
@@ -562,19 +565,19 @@ def _load_module_unique_effect_values() -> Dict[Tuple[str, str], Tuple[float, st
     out: Dict[Tuple[str, str], Tuple[float, str]] = {}
     if not MODULE_UNIQUE_EFFECTS_TABLE_PATH.exists():
         return out
-    df = pd.read_csv(MODULE_UNIQUE_EFFECTS_TABLE_PATH)
     rarity_columns = ('epic', 'legendary', 'mythic', 'ancestral')
-    for _, row in df.iterrows():
-        module_slug = slug_text(str(row.get('module', '')).strip())
-        measure = str(row.get('measure', '')).strip().lower()
-        if not module_slug:
-            continue
-        for rarity in rarity_columns:
-            try:
-                value = float(row.get(rarity))
-            except (TypeError, ValueError):
+    with MODULE_UNIQUE_EFFECTS_TABLE_PATH.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            module_slug = slug_text(str(row.get('module', '')).strip())
+            measure = str(row.get('measure', '')).strip().lower()
+            if not module_slug:
                 continue
-            out[(module_slug, rarity)] = (value, measure)
+            for rarity in rarity_columns:
+                try:
+                    value = float(row.get(rarity))
+                except (TypeError, ValueError):
+                    continue
+                out[(module_slug, rarity)] = (value, measure)
     return out
 
 
@@ -584,14 +587,14 @@ def _load_assist_efficiency_lookup() -> Dict[int, float]:
     path = KB / 'modules' / 'tables' / 'assist-stone-levels.csv'
     if not path.exists():
         return out
-    df = pd.read_csv(path)
-    for _, row in df.iterrows():
-        try:
-            level = int(row.get('stone_level'))
-            frac = float(row.get('assist_efficiency_frac'))
-        except (TypeError, ValueError):
-            continue
-        out[level] = frac
+    with path.open(newline='', encoding='utf-8') as f:
+        for row in csv.DictReader(f):
+            try:
+                level = int(row.get('stone_level'))
+                frac = float(row.get('assist_efficiency_frac'))
+            except (TypeError, ValueError):
+                continue
+            out[level] = frac
     return out
 
 
@@ -999,7 +1002,17 @@ def _append(out: List[StatInput], row: StatInput) -> None:
 
 
 
-def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None = None, state_mode: str = 'start_of_run', card_preset_name: str | None = None, module_preset_name: str | None = None, perk_preset_name: str | None = None, perks_enabled: bool | None = None) -> List[StatInput]:
+def compile_stat_inputs(
+    account_state: AccountState,
+    *,
+    preset_name: str | None = None,
+    state_mode: str = 'start_of_run',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    perks_enabled: bool | None = None,
+    scenario_projection_state: ScenarioProjectionState | None = None,
+) -> List[StatInput]:
     preset = preset_name or account_state.default_preset
     active_perk_preset = getattr(account_state, 'active_perk_preset', None)
     perk_preset_namespace_class = getattr(account_state, 'perk_preset_namespace_class', 'canonical')
@@ -1024,6 +1037,7 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     )
     perks_enabled = bound.perks_enabled
     state_mode = normalize_state_mode(state_mode)
+    resolved_projection_state = scenario_projection_state or projection_state_for_mode(state_mode)
     mapping_index, canonical_stats, alias_index, relic_index, family_slug_index = compiler_routing_indexes()
     lab_values = _load_lab_values()
     lab_summary = _load_lab_summary_lookup()
@@ -1139,6 +1153,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
                         _set_row_field(row, 'value_type', 'resolved_value')
                 elif name == 'Death Wave Health':
                     dw_state = account_state.ultimate_weapons.get('Death Wave')
+                    if not resolved_projection_state.death_wave_health:
+                        continue
                     if str(getattr(dw_state, 'unlocked', '')).strip().lower() == 'true' and level is not None:
                         bind_destination(row, ('canonical_stat', 'tower_hp'), canonical_stats, note='kb_manual_death_wave_health_lab_routed')
                         _set_row_field(row, 'value', 5.0 + 0.25 * float(level))
@@ -1202,10 +1218,10 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
 
     # Workshop: exact contributor routing + value lookup where the KB contains ladders.
     for name, entry in account_state.workshop.items():
-        level = entry.max_level if state_mode == 'max_progression' and entry.max_level is not None else entry.preset_levels.get(preset)
+        level = entry.max_level if resolved_projection_state.max_workshop and entry.max_level is not None else entry.preset_levels.get(preset)
         row = StatInput(stat_name=name, source_family='workshop', source_name=name, value=level, value_type='level', stage='loadout_resolved', preset_name=preset, provenance='IDS::WS')
-        if state_mode == 'max_progression' and entry.max_level is not None:
-            _set_row_field(row, 'notes', 'state_mode=max_progression:using_workshop_max_level')
+        if resolved_projection_state.max_workshop and entry.max_level is not None:
+            _set_row_field(row, 'notes', 'projection_state=max_workshop:using_workshop_max_level')
         contributor_id = WORKSHOP_IDS_TO_CONTRIBUTOR.get(name)
         if contributor_id is not None:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -1227,7 +1243,7 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     if enhancement_tracks:
         typed_enhancement_rows = []
         for track in enhancement_tracks.values():
-            level = track.max_level if state_mode == 'max_progression' and track.max_level is not None else track.preset_levels.get(preset)
+            level = track.max_level if resolved_projection_state.max_workshop and track.max_level is not None else track.preset_levels.get(preset)
             value = (1.0 + float(level) / 100.0) if level is not None else track.current_multiplier
             typed_enhancement_rows.append((track.name, level, value, track.max_level))
     else:
@@ -1253,8 +1269,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
         _set_row_field(row, 'raw_level', level)
         _set_row_field(row, 'resolved_value', float(value))
         _set_row_field(row, 'resolved_unit', 'x')
-        if state_mode == 'max_progression' and max_level is not None:
-            _set_row_field(row, 'notes', 'state_mode=max_progression:using_ws_plus_max_level')
+        if resolved_projection_state.max_workshop and max_level is not None:
+            _set_row_field(row, 'notes', 'projection_state=max_workshop:using_ws_plus_max_level')
         contributor_id = ENHANCEMENT_CONTRIBUTOR_OVERRIDES.get(slug_text(alias_name))
         if contributor_id:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
@@ -1570,6 +1586,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
     # Cards: only active preset cards contribute. Use exact base ladder rows and alias routing.
     active_cards = account_state.card_presets.get(card_preset, [])
     for card_name in active_cards:
+        if card_name == 'Berserker' and not resolved_projection_state.berserker_damage_bonus:
+            continue
         snap = account_state.cards_inventory.get(card_name)
         if snap is None or snap.level is None:
             continue
@@ -1609,7 +1627,8 @@ def compile_stat_inputs(account_state: AccountState, *, preset_name: str | None 
 
     # Perks: run-scoped selected modifiers owned by KB perk registries.
     perk_lab_state = _perk_lab_state(account_state)
-    selected_perks = _active_perk_selections(account_state, perk_preset) if perks_enabled else []
+    projected_perks_enabled = resolved_projection_state.projected_perks or perk_preset_namespace_class != 'transient'
+    selected_perks = _active_perk_selections(account_state, perk_preset) if perks_enabled and projected_perks_enabled else []
     for perk_id, requested_picks in selected_perks:
         perk_meta = perk_entities.get(perk_id, {})
         perk_name = str(perk_meta.get('perk_name') or perk_id)

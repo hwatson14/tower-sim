@@ -53,7 +53,6 @@ def _normalize_row_keyed_payload(rows: dict) -> dict:
         normalized[_sid(str(surface_id))] = row
     return normalized
 
-
 _CAPABILITY_PREFIX = 'state::capability.'
 
 def _trim_decimal_string(text: str) -> str:

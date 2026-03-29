@@ -2,6 +2,36 @@ contract_id: stat_query_consumer_bundles_v2
 consumers:
 - consumer_id: run_stats
   bundles:
+  - bundle_id: progression_core_stats
+    family_bundle_id: progression_core_stats
+    allowed_family_ids:
+    - progression_start_of_run
+    - progression_runtime_no_perks
+    - progression_runtime_with_perks
+    required_surface_ids:
+    - state::tower.hp
+    - state::wall.hp
+    - state::wall.regen
+    - state::wall.fortification_multiplier
+    - state::tower.defense_pct
+    - state::tower.thorns_damage_pct
+    - state::tower.orb_count
+    - state::tower.orb_speed_rpm
+    - state::cards.plasma_cannon.effect_pct
+    - state::module.orbital_augment.electron_count
+    - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    - state::module.primordial_collapse.bh_damage_reduction_pct
+    - state::tower.free_attack_upgrade_chance_pct
+    - state::tower.free_defense_upgrade_chance_pct
+    - state::tower.free_utility_upgrade_chance_pct
+    - state::tower.enemy_attack_level_skip_pct
+    - state::tower.enemy_health_level_skip_pct
+    - support_surface::free_upgrade_multiplier
+    optional_surface_ids: []
+    minimum_trace_mode: contributors
+    overlays_allowed: true
+    publish_default: true
+    debug_only: false
   - bundle_id: progression_free_upgrades
     family_bundle_id: progression_free_upgrades
     allowed_family_ids:
@@ -25,10 +55,10 @@ consumers:
     - timing_farm_with_perks
     - timing_scenario_probe
     required_surface_ids:
-    - mechanic_param::uw.black_hole.cooldown_seconds
-    - mechanic_param::uw.black_hole.duration_seconds
-    - mechanic_param::uw.golden_tower.cooldown_seconds
-    - mechanic_param::uw.golden_tower.duration_seconds
+    - state::uw.black_hole.cooldown_seconds
+    - state::uw.black_hole.duration_seconds
+    - state::uw.golden_tower.cooldown_seconds
+    - state::uw.golden_tower.duration_seconds
     optional_surface_ids:
     - support_surface::timing.gcomp_cooldown_reduction_seconds
     minimum_trace_mode: contributors
@@ -121,7 +151,7 @@ consumers:
     optional_surface_ids:
     - derived::economy.income.coins
     - derived::economy.income.gems
-    - derived::economy.income.stones
+    - derived::economy.income.power_stones
     - derived::economy.income.medals
     - derived::economy.income.keys
     - derived::economy.income.shards
@@ -156,10 +186,10 @@ consumers:
     - progression_runtime_no_perks
     - progression_runtime_with_perks
     required_surface_ids:
-    - mechanic_param::module.primordial_collapse.bh_damage_reduction_pct
+    - state::module.primordial_collapse.bh_damage_reduction_pct
     optional_surface_ids:
-    - mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
-    - mechanic_param::module.orbital_augment.electron_count
+    - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+    - state::module.orbital_augment.electron_count
     minimum_trace_mode: contributors
     overlays_allowed: false
     publish_default: false

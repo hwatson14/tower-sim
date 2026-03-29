@@ -28,9 +28,28 @@ import math
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Sequence
+
+from qe.contracts import normalize_surface_id_to_contract
+from qe.models import StatInput, StatRow
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def _canon(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_canon('{destination_id}'))
+
+
+def _mech(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_mech('{destination_id}'))
+
+
+def _runtime(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_runtime('{destination_id}'))
+
+
+def _env(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_env('{destination_id}'))
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -176,6 +195,15 @@ class ScenarioSurfaces:
 
     def to_dict(self) -> Dict[str, Any]:
         return {k: v for k, v in self.__dict__.items()}
+
+
+@dataclass(frozen=True)
+class FarmingThroughputSurfaces:
+    target_farming_wave: float = 0.0
+    waves_per_run_effective: float = 0.0
+    runs_per_day_effective: float = 0.0
+    waves_per_day_effective: float = 0.0
+    bosses_per_day_effective: float = 0.0
 
 
 # ═══════════════════════════════════════════════════════════════════════
@@ -332,13 +360,16 @@ def config_from_statbook(
     surfaces needed by the scenario engine.
 
     CF damage reduction is auto-read from the stat engine surface
-    ``mechanic_param::uw.chrono_field.damage_reduction_pct`` when resolved.
+    ``state::uw.chrono_field.damage_reduction_pct`` when resolved.
     The ``cf_damage_reduction_pct`` parameter overrides this if supplied
     (non-None), providing a fallback for stat engine versions that do not
     yet emit the surface.
     """
+    def _sid(surface_id: str) -> str:
+        return normalize_surface_id_to_contract(surface_id)
+
     def _val(key: str, default: float = 0.0) -> float:
-        row = statbook_rows.get(key, {})
+        row = statbook_rows.get(_sid(key), {})
         v = row.get("final_value")
         if v is None:
             return default
@@ -351,7 +382,7 @@ def config_from_statbook(
     if cf_damage_reduction_pct is not None:
         resolved_cf_dr = cf_damage_reduction_pct
     else:
-        resolved_cf_dr = _val("mechanic_param::uw.chrono_field.damage_reduction_pct")
+        resolved_cf_dr = _val(_mech('uw.chrono_field.damage_reduction_pct'))
 
     return ScenarioConfig(
         mode_id=mode_id,
@@ -363,35 +394,35 @@ def config_from_statbook(
         bc_reduction_group3_pct=bc_reduction_group3_pct,
         bc_reduction_group4_pct=bc_reduction_group4_pct,
 
-        bh_base_duration_s=_val("mechanic_param::uw.black_hole.duration_seconds"),
-        bh_base_cooldown_s=_val("mechanic_param::uw.black_hole.cooldown_seconds"),
-        cf_base_duration_s=_val("mechanic_param::uw.chrono_field.duration_seconds"),
-        cf_base_cooldown_s=_val("mechanic_param::uw.chrono_field.cooldown_seconds"),
-        cf_slow_pct=_val("mechanic_param::uw.chrono_field.slow_pct"),
+        bh_base_duration_s=_val(_mech('uw.black_hole.duration_seconds')),
+        bh_base_cooldown_s=_val(_mech('uw.black_hole.cooldown_seconds')),
+        cf_base_duration_s=_val(_mech('uw.chrono_field.duration_seconds')),
+        cf_base_cooldown_s=_val(_mech('uw.chrono_field.cooldown_seconds')),
+        cf_slow_pct=_val(_mech('uw.chrono_field.slow_pct')),
         cf_damage_reduction_pct=resolved_cf_dr,
-        gt_base_duration_s=_val("mechanic_param::uw.golden_tower.duration_seconds"),
-        gt_base_cooldown_s=_val("mechanic_param::uw.golden_tower.cooldown_seconds"),
+        gt_base_duration_s=_val(_mech('uw.golden_tower.duration_seconds')),
+        gt_base_cooldown_s=_val(_mech('uw.golden_tower.cooldown_seconds')),
 
-        bh_perk_duration_add_s=_val("runtime_mechanic_param::uw.black_hole.duration_seconds"),
-        bh_perk_cooldown_add_s=_val("runtime_mechanic_param::uw.black_hole.cooldown_seconds"),
-        cf_perk_duration_add_s=_val("runtime_mechanic_param::uw.chrono_field.duration_seconds"),
+        bh_perk_duration_add_s=_val(_runtime('uw.black_hole.duration_seconds')),
+        bh_perk_cooldown_add_s=_val(_runtime('uw.black_hole.cooldown_seconds')),
+        cf_perk_duration_add_s=_val(_runtime('uw.chrono_field.duration_seconds')),
 
-        env_enemy_damage_multiplier=_val("environment_param::enemy.damage_multiplier", 1.0),
-        env_boss_health_multiplier=_val("environment_param::enemy.boss.health_multiplier", 1.0),
-        env_boss_speed_multiplier=_val("environment_param::enemy.boss.speed_multiplier", 1.0),
+        env_enemy_damage_multiplier=_val(_env('enemy.damage_multiplier'), 1.0),
+        env_boss_health_multiplier=_val(_env('enemy.boss.health_multiplier'), 1.0),
+        env_boss_speed_multiplier=_val(_env('enemy.boss.speed_multiplier'), 1.0),
 
-        bot_amplify_duration_s=_val("mechanic_param::bot.amplify.duration_seconds"),
-        bot_amplify_cooldown_s=_val("mechanic_param::bot.amplify.cooldown_seconds"),
-        bot_golden_duration_s=_val("mechanic_param::bot.golden.duration_seconds"),
-        bot_golden_cooldown_s=_val("mechanic_param::bot.golden.cooldown_seconds"),
-        bot_thunder_duration_s=_val("mechanic_param::bot.thunder.duration_seconds"),
-        bot_thunder_cooldown_s=_val("mechanic_param::bot.thunder.cooldown_seconds"),
-        bot_flame_cooldown_s=_val("mechanic_param::bot.flame.cooldown_seconds"),
-        bot_flame_damage_reduction_pct=_val("mechanic_param::bot.flame.damage_reduction_pct"),
+        bot_amplify_duration_s=_val(_mech('bot.amplify.duration_seconds')),
+        bot_amplify_cooldown_s=_val(_mech('bot.amplify.cooldown_seconds')),
+        bot_golden_duration_s=_val(_mech('bot.golden.duration_seconds')),
+        bot_golden_cooldown_s=_val(_mech('bot.golden.cooldown_seconds')),
+        bot_thunder_duration_s=_val(_mech('bot.thunder.duration_seconds')),
+        bot_thunder_cooldown_s=_val(_mech('bot.thunder.cooldown_seconds')),
+        bot_flame_cooldown_s=_val(_mech('bot.flame.cooldown_seconds')),
+        bot_flame_damage_reduction_pct=_val(_mech('bot.flame.damage_reduction_pct')),
 
-        tower_orb_count=int(_val("canonical_stat::tower_orb_count")),
-        tower_orb_speed_rpm=_val("canonical_stat::tower_orb_speed_rpm"),
-        electron_count=int(_val("mechanic_param::module.orbital_augment.electron_count")),
+        tower_orb_count=int(_val(_canon('tower_orb_count'))),
+        tower_orb_speed_rpm=_val(_canon('tower_orb_speed_rpm')),
+        electron_count=int(_val(_mech('module.orbital_augment.electron_count'))),
     )
 
 
@@ -536,3 +567,110 @@ def compute_scenario_surfaces(config: ScenarioConfig) -> ScenarioSurfaces:
 
     s.surfaces_status = "complete"
     return s
+
+
+def compute_farming_throughput_surfaces(
+    *,
+    account_state,
+    config: ScenarioConfig,
+    stat_inputs: Sequence[StatInput],
+    effective_wave_duration_seconds: float,
+    farming_hours_per_day: float = 23.5,
+) -> FarmingThroughputSurfaces:
+    scenario = compute_scenario_surfaces(config)
+    target_farming_wave = _target_farming_wave_from_state(account_state, config)
+    wave_skip_pct = _lookup_runtime_row_value(stat_inputs, 'cards.wave_skip.chance_pct')
+    intro_sprint_waves = _lookup_runtime_row_value(stat_inputs, 'cards.intro_sprint.waves')
+    wave_skip_multiplier = 1.0 + (max(0.0, wave_skip_pct) / 100.0)
+    waves_per_run_effective = max(
+        0.0,
+        target_farming_wave * wave_skip_multiplier + min(max(0.0, intro_sprint_waves), target_farming_wave),
+    )
+    run_duration_seconds = max(0.0, target_farming_wave * max(0.0, effective_wave_duration_seconds))
+    runs_per_day_effective = (
+        (max(0.0, farming_hours_per_day) * 3600.0) / run_duration_seconds
+        if run_duration_seconds > 0.0 else 0.0
+    )
+    waves_per_day_effective = runs_per_day_effective * waves_per_run_effective
+    bosses_per_day_effective = (
+        waves_per_day_effective / float(max(1, scenario.boss_wave_interval))
+        if waves_per_day_effective > 0.0 else 0.0
+    )
+    return FarmingThroughputSurfaces(
+        target_farming_wave=target_farming_wave,
+        waves_per_run_effective=waves_per_run_effective,
+        runs_per_day_effective=runs_per_day_effective,
+        waves_per_day_effective=waves_per_day_effective,
+        bosses_per_day_effective=bosses_per_day_effective,
+    )
+
+
+def publish_farming_throughput_support_surfaces(
+    rows: Dict[str, StatRow],
+    *,
+    account_state,
+    config: ScenarioConfig,
+    stat_inputs: Sequence[StatInput],
+    farming_hours_per_day: float = 23.5,
+) -> None:
+    wave_duration_row = rows.get('support_surface::timing.wave_duration_seconds_effective')
+    if wave_duration_row is None:
+        return
+    try:
+        effective_wave_duration_seconds = float(wave_duration_row.final_value)
+    except (TypeError, ValueError):
+        return
+
+    throughput = compute_farming_throughput_surfaces(
+        account_state=account_state,
+        config=config,
+        stat_inputs=stat_inputs,
+        effective_wave_duration_seconds=effective_wave_duration_seconds,
+        farming_hours_per_day=farming_hours_per_day,
+    )
+    surface_specs = (
+        ('support_surface::scenario.target_farming_wave', throughput.target_farming_wave, 'waves', 'Target farming wave resolved from tier progression state.'),
+        ('support_surface::scenario.waves_per_run_effective', throughput.waves_per_run_effective, 'waves_per_run', 'Effective waves progressed per run after Wave Skip and Intro Sprint.'),
+        ('support_surface::scenario.runs_per_day_effective', throughput.runs_per_day_effective, 'runs_per_day', 'Effective farming runs per day from farming-hours cadence and wave timing.'),
+        ('support_surface::scenario.waves_per_day_effective', throughput.waves_per_day_effective, 'waves_per_day', 'Effective waves progressed per day from scenario-owned farming throughput.'),
+        ('support_surface::scenario.bosses_per_day_effective', throughput.bosses_per_day_effective, 'bosses_per_day', 'Effective bosses per day from scenario-owned farming throughput and boss cadence.'),
+    )
+    for surface_id, value, unit, notes in surface_specs:
+        rows[surface_id] = StatRow(
+            stat_name=surface_id,
+            final_value=value,
+            value_type='scalar',
+            source_count=1,
+            status='resolved',
+            notes=notes,
+            contributors=[{
+                'source_class': 'scenario_owned_throughput',
+                'value': value,
+                'unit': unit,
+                'source_alignment': 'Scenario+Inputs',
+            }],
+            schema={'source_alignment': 'Scenario+Inputs', 'publisher': 'scenario_support_publication', 'unit': unit},
+        )
+
+
+def _lookup_runtime_row_value(rows: Sequence[StatInput], destination_id: str) -> float:
+    for row in rows:
+        if (
+            row.destination_object_type == 'runtime_mechanic_param'
+            and row.destination_id == destination_id
+            and row.active
+        ):
+            try:
+                return float(row.value)
+            except (TypeError, ValueError):
+                return 0.0
+    return 0.0
+
+
+def _target_farming_wave_from_state(account_state, config: ScenarioConfig) -> float:
+    tier_label = f'Tier {int(config.tier)}'
+    raw_value = (getattr(account_state, 'tier_progression_waves', {}) or {}).get(tier_label)
+    try:
+        return max(0.0, float(raw_value))
+    except (TypeError, ValueError):
+        return 0.0

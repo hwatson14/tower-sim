@@ -18,13 +18,13 @@ currencies:
     resolution_mode: externalized_manual_input
     manual_input_id: income.gems.per_week
     evidence_basis: kb/economy/tables/currency-summary.csv
-  - resource_id: stones
-    source_resource_id: stones
-    surface_id: derived::economy.income.stones
+  - resource_id: power-stones
+    source_resource_id: power-stones
+    surface_id: derived::economy.income.power_stones
     persistence: persistent
-    preferred_unit: stones_per_week
+    preferred_unit: power_stones_per_week
     resolution_mode: externalized_manual_input
-    manual_input_id: income.stones.per_week
+    manual_input_id: income.power_stones.per_week
     evidence_basis: kb/economy/tables/currency-summary.csv
   - resource_id: medals
     surface_id: derived::economy.income.medals
@@ -44,8 +44,7 @@ currencies:
     surface_id: derived::economy.income.shards
     persistence: persistent
     preferred_unit: shards_per_week
-    resolution_mode: externalized_manual_input
-    manual_input_id: income.shards.per_week
+    resolution_mode: query_derived_deterministic
     evidence_basis: kb/economy/tables/currency-summary.csv
   - resource_id: bits
     surface_id: derived::economy.income.bits
@@ -65,8 +64,5 @@ unsupported_resources:
     reason: run_local_not_persistent
     fail_closed: true
   - resource_id: cells
-    reason: no_governed_phase3_income_model
-    fail_closed: true
-  - resource_id: modules
     reason: no_governed_phase3_income_model
     fail_closed: true

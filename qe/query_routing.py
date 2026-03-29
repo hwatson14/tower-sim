@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import csv
-import io
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -9,13 +8,18 @@ from typing import Dict, Optional, Tuple
 
 import yaml
 
+from qe.contracts import (
+    to_legacy_destination,
+    to_legacy_surface_id,
+    to_v2_destination,
+    to_v2_surface_id,
+)
 from qe.models import StatInput  # T3B: authority transferred to qe.models
 
 ROOT = Path(__file__).resolve().parents[1]
 KB = ROOT / 'kb'
 KB_CONTRACTS = KB / 'global-rules' / 'contracts'
 KB_TABLES = KB / 'global-rules' / 'tables'
-NAMING_CONTRACT_PACK_V2_REMAP_PATH = KB_CONTRACTS / 'naming-contract-pack-v2-remap.csv'
 KB_MAPPINGS_PATH = KB_CONTRACTS / 'contributor-mappings-full.yaml'
 KB_CANONICAL_STATS_PATH = KB_CONTRACTS / 'canonical-stats.yaml'
 KB_ALIASES_PATH = KB_CONTRACTS / 'name-aliases.yaml'
@@ -26,95 +30,6 @@ THEME_SONG_REGISTRY_PATH = KB_TABLES / 'theme-song-input-registry.csv'
 LAB_APPLICATION_REGISTRY_PATH = KB / 'labs' / 'tables' / 'lab-application-registry.csv'
 
 COMPILER_ROUTING_POLICY_PATH = KB_CONTRACTS / 'compiler-routing-policy.yaml'
-
-
-
-
-_PLACEHOLDER_RE = re.compile(r'<[^>]+>')
-
-
-def _surface_id(object_type: str, destination_id: str) -> str:
-    return f'{object_type}::{destination_id}'
-
-
-def _pattern_to_regex(surface_id_pattern: str) -> re.Pattern[str]:
-    escaped = re.escape(surface_id_pattern)
-    return re.compile('^' + _PLACEHOLDER_RE.sub(r'([^:]+)', escaped) + '$')
-
-
-def _pattern_to_template(surface_id_pattern: str) -> str:
-    return _PLACEHOLDER_RE.sub('{}', surface_id_pattern)
-
-
-@lru_cache(maxsize=1)
-def pack_v2_naming_remap_rows() -> tuple[dict[str, str], ...]:
-    payload = NAMING_CONTRACT_PACK_V2_REMAP_PATH.read_text(encoding='utf-8')
-    return tuple(csv.DictReader(io.StringIO(payload)))
-
-
-@lru_cache(maxsize=1)
-def pack_v2_naming_remap_surface_maps() -> tuple[dict[str, str], dict[str, str], tuple[tuple[re.Pattern[str], str], ...], tuple[tuple[re.Pattern[str], str], ...]]:
-    legacy_to_v2: dict[str, str] = {}
-    v2_to_legacy: dict[str, str] = {}
-    legacy_patterns: list[tuple[re.Pattern[str], str]] = []
-    v2_patterns: list[tuple[re.Pattern[str], str]] = []
-
-    for row in pack_v2_naming_remap_rows():
-        row_type = str(row.get('row_type') or '').strip()
-        new_bucket = str(row.get('new_bucket') or '').strip()
-        new_id = str(row.get('new_id') or '').strip()
-        if not new_id or new_bucket in {'hold', 'state/context', 'state/context/derived'}:
-            continue
-        old_surface_id = _surface_id(str(row['old_bucket']).strip(), str(row['old_id']).strip())
-        new_surface_id = new_id
-        if row_type in {'concrete', 'gap'}:
-            legacy_to_v2[old_surface_id] = new_surface_id
-            if row_type == 'concrete':
-                v2_to_legacy.setdefault(new_surface_id, old_surface_id)
-            continue
-        if row_type == 'pattern':
-            legacy_patterns.append((_pattern_to_regex(old_surface_id), _pattern_to_template(new_surface_id)))
-            v2_patterns.append((_pattern_to_regex(new_surface_id), _pattern_to_template(old_surface_id)))
-
-    return legacy_to_v2, v2_to_legacy, tuple(legacy_patterns), tuple(v2_patterns)
-
-
-def to_v2_surface_id(surface_id: str) -> str:
-    legacy_to_v2, _, legacy_patterns, _ = pack_v2_naming_remap_surface_maps()
-    exact = legacy_to_v2.get(surface_id)
-    if exact is not None:
-        return exact
-    for pattern, template in legacy_patterns:
-        match = pattern.match(surface_id)
-        if match is not None:
-            return template.format(*match.groups())
-    return surface_id
-
-
-def to_legacy_surface_id(surface_id: str) -> str:
-    _, v2_to_legacy, _, v2_patterns = pack_v2_naming_remap_surface_maps()
-    exact = v2_to_legacy.get(surface_id)
-    if exact is not None:
-        return exact
-    for pattern, template in v2_patterns:
-        match = pattern.match(surface_id)
-        if match is not None:
-            return template.format(*match.groups())
-    return surface_id
-
-
-def to_v2_destination(destination_object_type: str, destination_id: str) -> tuple[str, str]:
-    published = to_v2_surface_id(_surface_id(destination_object_type, destination_id))
-    if '::' not in published:
-        return destination_object_type, destination_id
-    return tuple(published.split('::', 1))  # type: ignore[return-value]
-
-
-def to_legacy_destination(destination_object_type: str, destination_id: str) -> tuple[str, str]:
-    legacy = to_legacy_surface_id(_surface_id(destination_object_type, destination_id))
-    if '::' not in legacy:
-        return destination_object_type, destination_id
-    return tuple(legacy.split('::', 1))  # type: ignore[return-value]
 
 
 @lru_cache(maxsize=1)
@@ -785,8 +700,6 @@ __all__ = [
     'RELIC_CONTRIBUTOR_OVERRIDES',
     'ENHANCEMENT_CONTRIBUTOR_OVERRIDES',
     'PERK_TARGET_DESTINATION_OVERRIDES',
-    'pack_v2_naming_remap_rows',
-    'pack_v2_naming_remap_surface_maps',
     'to_v2_surface_id',
     'to_legacy_surface_id',
     'to_v2_destination',

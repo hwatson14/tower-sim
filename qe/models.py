@@ -15,7 +15,7 @@ from hashlib import sha256
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional
 
-from input.state_types import ScenarioRuntimeInputs
+from input.state_types import ScenarioProjectionState, ScenarioRuntimeInputs, projection_state_for_mode
 from input.state_types import AccountState, ModulePresetSelection, PerkSelection
 from qe.contracts import normalize_preset_name, sanitize_preset_name_for_canonical_output
 
@@ -177,6 +177,7 @@ class StateIdentityBinding:
     identity: StateIdentity
     account_state: AccountState
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None
+    scenario_projection_state: Optional[ScenarioProjectionState] = None
 
 
 @dataclass(frozen=True)
@@ -196,6 +197,7 @@ def bind_state_identity(
     perks_enabled: bool | None = None,
     runtime_branch_id: str = 'branch_base',
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None,
+    scenario_projection_state: Optional[ScenarioProjectionState] = None,
     scenario_context: Optional[Mapping[str, Any]] = None,
 ) -> StateIdentityBinding:
     resolved_preset = preset_name or account_state.default_preset
@@ -241,12 +243,14 @@ def bind_state_identity(
             'equipped_perks': _serialize_perk_preset(account_state, resolved_perk_preset, canonical_preset_name=resolved_preset),
         },
     )
+    resolved_projection_state = scenario_projection_state or projection_state_for_mode(state_mode)
     scenario_id = _fingerprint_id(
         'scenario',
         {
             'state_mode': state_mode,
             'perks_enabled': resolved_perks_enabled,
             'scenario_runtime_inputs': None if scenario_runtime_inputs is None else scenario_runtime_inputs.to_debug_dict(),
+            'scenario_projection_state': resolved_projection_state.to_debug_dict(),
             'scenario_context': dict(scenario_context or {}),
         },
     )
@@ -259,6 +263,7 @@ def bind_state_identity(
         ),
         account_state=account_state,
         scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=resolved_projection_state,
     )
 
 
@@ -273,6 +278,7 @@ def compile_stat_inputs_with_identity(
     perks_enabled: bool | None = None,
     runtime_branch_id: str = 'branch_base',
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None,
+    scenario_projection_state: Optional[ScenarioProjectionState] = None,
     scenario_context: Optional[Mapping[str, Any]] = None,
 ) -> BoundStatInputs:
     resolved_perks_enabled = bool(account_state.active_perk_preset) if perks_enabled is None else bool(perks_enabled)
@@ -286,6 +292,7 @@ def compile_stat_inputs_with_identity(
         perks_enabled=resolved_perks_enabled,
         runtime_branch_id=runtime_branch_id,
         scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=scenario_projection_state,
         scenario_context=scenario_context,
     )
     from qe.stat_input_compiler import compile_stat_inputs  # deferred to avoid circular import
@@ -297,6 +304,7 @@ def compile_stat_inputs_with_identity(
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
         perks_enabled=resolved_perks_enabled,
+        scenario_projection_state=binding.scenario_projection_state,
     )
     return BoundStatInputs(binding=binding, stat_inputs=tuple(stat_inputs))
 

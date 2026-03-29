@@ -11,7 +11,7 @@
       "surfaces": [
         {
           "qe_surface_id": "state::tower.free_attack_upgrade_chance_pct",
-          "legacy_key": "canonical_stat::free_attack_upgrade_chance_pct",
+          "legacy_key": "state::tower.free_attack_upgrade_chance_pct",
           "tranche": "PH4-C-1",
           "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
           "expensive_test": "test_progression_qe_matches_legacy_free_attack_upgrade_chance_pct",
@@ -20,7 +20,7 @@
         },
         {
           "qe_surface_id": "state::tower.free_defense_upgrade_chance_pct",
-          "legacy_key": "canonical_stat::free_defense_upgrade_chance_pct",
+          "legacy_key": "state::tower.free_defense_upgrade_chance_pct",
           "tranche": "PH4-C-1",
           "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
           "expensive_test": "test_progression_qe_matches_legacy_free_defense_upgrade_chance_pct",
@@ -29,7 +29,7 @@
         },
         {
           "qe_surface_id": "state::tower.free_utility_upgrade_chance_pct",
-          "legacy_key": "canonical_stat::free_utility_upgrade_chance_pct",
+          "legacy_key": "state::tower.free_utility_upgrade_chance_pct",
           "tranche": "PH4-C-1",
           "formula_notes": "additive_pre_cap sum * free_upgrade_multiplier (cross-surface injection)",
           "expensive_test": "test_progression_qe_matches_legacy_free_utility_upgrade_chance_pct",
@@ -38,7 +38,7 @@
         },
         {
           "qe_surface_id": "state::tower.enemy_attack_level_skip_pct",
-          "legacy_key": "canonical_stat::enemy_attack_level_skip_pct",
+          "legacy_key": "state::tower.enemy_attack_level_skip_pct",
           "tranche": "PH4-C-2",
           "formula_notes": "additive_pre_cap; relic fractional values scaled x100",
           "expensive_test": "test_progression_qe_matches_legacy_enemy_attack_level_skip_pct",
@@ -47,7 +47,7 @@
         },
         {
           "qe_surface_id": "state::tower.enemy_health_level_skip_pct",
-          "legacy_key": "canonical_stat::enemy_health_level_skip_pct",
+          "legacy_key": "state::tower.enemy_health_level_skip_pct",
           "tranche": "PH4-C-2",
           "formula_notes": "additive_pre_cap; relic fractional values scaled x100",
           "expensive_test": "test_progression_qe_matches_legacy_enemy_health_level_skip_pct",
@@ -56,7 +56,7 @@
         },
         {
           "qe_surface_id": "state::tower.thorns_damage_pct",
-          "legacy_key": "canonical_stat::tower_thorns_damage_pct",
+          "legacy_key": "state::tower.thorns_damage_pct",
           "tranche": "PH4-C-2",
           "formula_notes": "additive_pre_cap; relic fractional values scaled x100; enhancement -> multiplicative routing",
           "expensive_test": "test_progression_qe_matches_legacy_thorns_damage_pct",
@@ -65,7 +65,7 @@
         },
         {
           "qe_surface_id": "state::tower.defense_pct",
-          "legacy_key": "canonical_stat::tower_defense_pct",
+          "legacy_key": "state::tower.defense_pct",
           "tranche": "PH4-C-3",
           "formula_notes": "additive_pre_cap; cap enforced at 98.0 in stat_query_kernel._QE_PCT_CAPS",
           "expensive_test": null,
@@ -76,7 +76,7 @@
         },
         {
           "qe_surface_id": "state::tower.hp",
-          "legacy_key": "canonical_stat::tower_hp",
+          "legacy_key": "state::tower.hp",
           "tranche": "PH4-C-4",
           "formula_notes": "workshop -> additive_pre_cap; relic/vault -> multiplicative with (1+v) scaling",
           "expensive_test": "test_progression_qe_matches_legacy_tower_hp",
@@ -85,7 +85,7 @@
         },
         {
           "qe_surface_id": "state::wall.fortification_multiplier",
-          "legacy_key": "canonical_stat::wall_fortification_multiplier",
+          "legacy_key": "state::wall.fortification_multiplier",
           "tranche": "PH4-C-4",
           "formula_notes": "all contributors -> multiplicative; labs value scaled 1 + pct/100",
           "expensive_test": "test_progression_qe_matches_legacy_wall_fortification_multiplier",
@@ -94,7 +94,7 @@
         },
         {
           "qe_surface_id": "state::tower.orb_count",
-          "legacy_key": "canonical_stat::tower_orb_count",
+          "legacy_key": "state::tower.orb_count",
           "tranche": "PH4-C-5",
           "formula_notes": "simple additive_pre_cap sum",
           "expensive_test": "test_progression_qe_matches_legacy_orb_count",
@@ -103,7 +103,7 @@
         },
         {
           "qe_surface_id": "state::cards.plasma_cannon.effect_pct",
-          "legacy_key": "runtime_mechanic_param::cards.plasma_cannon.effect_pct",
+          "legacy_key": "state::cards.plasma_cannon.effect_pct",
           "tranche": "PH4-C-5",
           "formula_notes": "scenario_adjustment stage; no formula fix needed",
           "expensive_test": "test_progression_qe_matches_legacy_plasma_cannon_effect_pct",
@@ -111,8 +111,8 @@
           "confirmed_value_approx": 54.0
         },
         {
-          "qe_surface_id": "mechanic_param::module.orbital_augment.electron_count",
-          "legacy_key": "mechanic_param::module.orbital_augment.electron_count",
+          "qe_surface_id": "state::module.orbital_augment.electron_count",
+          "legacy_key": "state::module.orbital_augment.electron_count",
           "tranche": "PH4-C-5",
           "formula_notes": "count surface; additive_pre_cap sum",
           "expensive_test": "test_progression_qe_matches_legacy_orbital_augment_electron_count",
@@ -120,8 +120,8 @@
           "confirmed_value_approx": 2
         },
         {
-          "qe_surface_id": "mechanic_param::module.primordial_collapse.bh_damage_reduction_pct",
-          "legacy_key": "mechanic_param::module.primordial_collapse.in_bh_enemy_damage_reduction_pct",
+          "qe_surface_id": "state::module.primordial_collapse.bh_damage_reduction_pct",
+          "legacy_key": "state::module.primordial_collapse.in_bh_enemy_damage_reduction_pct",
           "tranche": "PH4-C-5",
           "formula_notes": "alias fix: compiler routes to in_bh_..., QE surface declared as bh_...; _SURFACE_ID_ALIASES maps input",
           "expensive_test": "test_progression_qe_matches_legacy_primordial_collapse_bh_damage_reduction_pct",
@@ -130,7 +130,7 @@
         },
         {
           "qe_surface_id": "state::tower.orb_speed_rpm",
-          "legacy_key": "canonical_stat::tower_orb_speed_rpm",
+          "legacy_key": "state::tower.orb_speed_rpm",
           "tranche": "PH4-C-6",
           "formula_notes": "workshop -> additive_pre_cap; relic/vault/module_substat -> multiplicative with (1+v) scaling; same path as tower_hp (unit=rpm)",
           "expensive_test": "test_progression_qe_matches_legacy_orb_speed_rpm",
@@ -147,7 +147,7 @@
       "surfaces": [
         {
           "qe_surface_id": "state::tower.package_chance_pct",
-          "legacy_key": "canonical_stat::package_chance_pct",
+          "legacy_key": "state::tower.package_chance_pct",
           "tranche": "PH4-C-5",
           "formula_notes": "timing_v1 surface; additive_pre_cap sum; no formula fix needed",
           "expensive_test": "test_timing_qe_matches_legacy_package_chance_pct",
@@ -169,12 +169,16 @@
       "reason": "cross-surface post-resolution dependency on tower_regen; same block as wall.hp"
     },
     {
-      "qe_surface_id": "mechanic_param::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
+      "qe_surface_id": "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
       "status": "open_deferred",
       "reason": "scenario_scoped=true, debug_only=true; QE correctly returns gated_off; no migration action until surface is exercised in a governed scenario"
     },
     {
-      "surfaces": ["max_recovery_multiplier", "recovery_amount_pct", "recovery_package_multiplier"],
+      "surfaces": [
+        "max_recovery_multiplier",
+        "recovery_amount_pct",
+        "recovery_package_multiplier"
+      ],
       "status": "out_of_scope",
       "reason": "not in declared family surface set; legacy-owned until surface set is extended"
     }

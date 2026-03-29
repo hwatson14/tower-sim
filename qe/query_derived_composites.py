@@ -1,14 +1,54 @@
-
+﻿
 from __future__ import annotations
 
 import math
 from typing import Dict, Any, Iterable
 
+from qe.contracts import (
+    compat_surface_from_legacy_canonical,
+    compat_surface_from_legacy_mechanic,
+    compat_surface_from_legacy_runtime,
+    normalize_surface_id_to_contract,
+    to_legacy_surface_id,
+)
 from qe.models import StatRow
 
 
+def _surface_id_candidates(key: str) -> tuple[str, ...]:
+    normalized = normalize_surface_id_to_contract(key)
+    legacy = to_legacy_surface_id(normalized)
+    ordered = []
+    for candidate in (normalized, legacy, key):
+        if candidate not in ordered:
+            ordered.append(candidate)
+    return tuple(ordered)
+
+
+def _compat_canon(destination_id: str) -> str:
+    """Compatibility lookup helper for legacy canonical stat ids."""
+    return compat_surface_from_legacy_canonical(destination_id)
+
+
+def _compat_mech(destination_id: str) -> str:
+    """Compatibility lookup helper for legacy mechanic ids."""
+    return compat_surface_from_legacy_mechanic(destination_id)
+
+
+def _compat_runtime(destination_id: str) -> str:
+    """Compatibility lookup helper for legacy runtime mechanic ids."""
+    return compat_surface_from_legacy_runtime(destination_id)
+
+
+def _row(rows: Dict[str, StatRow], key: str) -> StatRow | None:
+    for candidate in _surface_id_candidates(key):
+        row = rows.get(candidate)
+        if row is not None:
+            return row
+    return None
+
+
 def _get(rows: Dict[str, StatRow], key: str, default: float = 0.0) -> float:
-    row = rows.get(key)
+    row = _row(rows, key)
     if row is None or row.final_value is None:
         return default
     try:
@@ -19,7 +59,7 @@ def _get(rows: Dict[str, StatRow], key: str, default: float = 0.0) -> float:
 
 def _get_first(rows: Dict[str, StatRow], keys: Iterable[str], default: float = 0.0) -> float:
     for key in keys:
-        row = rows.get(key)
+        row = _row(rows, key)
         if row is None or row.final_value is None:
             continue
         try:
@@ -31,7 +71,7 @@ def _get_first(rows: Dict[str, StatRow], keys: Iterable[str], default: float = 0
 
 def _bool(rows: Dict[str, StatRow], keys: Iterable[str], default: bool = False) -> bool:
     for key in keys:
-        row = rows.get(key)
+        row = _row(rows, key)
         if row is None or row.final_value is None:
             continue
         value = row.final_value
@@ -218,8 +258,8 @@ def _ep_shock_factor(rows: Dict[str, StatRow]) -> float:
         [
             'support_surface::edamage.shock_factor',
             'support_surface::shock.factor',
-            'runtime_mechanic_param::shock.factor',
-            'mechanic_param::shock.factor',
+            _compat_runtime('shock.factor'),
+            _compat_mech('shock.factor'),
         ],
         0.0,
     )
@@ -227,15 +267,15 @@ def _ep_shock_factor(rows: Dict[str, StatRow]) -> float:
         return direct
     cl_active = _bool(
         rows,
-        ['runtime_mechanic_param::uw.chain_lightning.active', 'mechanic_param::uw.chain_lightning.active'],
-        default=_get_first(rows, ['mechanic_param::uw.chain_lightning.damage_multiplier', 'runtime_mechanic_param::uw.chain_lightning.damage_multiplier'], 0.0) > 0.0,
+        [_compat_runtime('uw.chain_lightning.active'), _compat_mech('uw.chain_lightning.active')],
+        default=_get_first(rows, [_compat_mech('uw.chain_lightning.damage_multiplier'), _compat_runtime('uw.chain_lightning.damage_multiplier')], 0.0) > 0.0,
     )
-    shock_enabled = _bool(rows, ['runtime_mechanic_param::shock.enabled', 'mechanic_param::shock.enabled'], default=cl_active)
+    shock_enabled = _bool(rows, [_compat_runtime('shock.enabled'), _compat_mech('shock.enabled')], default=cl_active)
     if not (cl_active and shock_enabled):
         return 1.0
-    shock_level = _get_first(rows, ['support_surface::shock.level', 'runtime_mechanic_param::shock.level', 'mechanic_param::shock.level'], 0.0)
-    has_dc = _get_first(rows, ['mechanic_param::module.dimension_core.multiplier', 'mechanic_param::module.dimension_core.damage_multiplier'], 0.0) > 0.0
-    dc_mult = _get_first(rows, ['mechanic_param::module.dimension_core.multiplier', 'mechanic_param::module.dimension_core.damage_multiplier'], 0.0)
+    shock_level = _get_first(rows, ['support_surface::shock.level', _compat_runtime('shock.level'), _compat_mech('shock.level')], 0.0)
+    has_dc = _get_first(rows, [_compat_mech('module.dimension_core.multiplier'), _compat_mech('module.dimension_core.damage_multiplier')], 0.0) > 0.0
+    dc_mult = _get_first(rows, [_compat_mech('module.dimension_core.multiplier'), _compat_mech('module.dimension_core.damage_multiplier')], 0.0)
     return 1.0 + (0.1 + 0.04 * shock_level) * (2.0 * dc_mult if has_dc else 1.0)
 
 
@@ -253,11 +293,11 @@ def _ep_tradeoff_defense_factor(rows: Dict[str, StatRow]) -> float:
         [
             'support_surface::ehp.tradeoff_defense_factor',
             'support_surface::perk.tradeoff_defense_factor',
-            'runtime_mechanic_param::perk.tradeoff_defense_factor',
-            'mechanic_param::perk.tradeoff_defense_factor',
+            _compat_runtime('perk.tradeoff_defense_factor'),
+            _compat_mech('perk.tradeoff_defense_factor'),
             'support_surface::perk.improve_tradeoff_defense_factor',
-            'runtime_mechanic_param::perk.improve_tradeoff_defense_factor',
-            'mechanic_param::perk.improve_tradeoff_defense_factor',
+            _compat_runtime('perk.improve_tradeoff_defense_factor'),
+            _compat_mech('perk.improve_tradeoff_defense_factor'),
         ],
         1.0,
     )
@@ -268,9 +308,9 @@ def _ep_armor_factor(rows: Dict[str, StatRow]) -> float:
         rows,
         [
             'support_surface::ehp.armor_factor',
-            'runtime_mechanic_param::armor.multiplier',
-            'mechanic_param::armor.multiplier',
-            'canonical_stat::tower_armor_multiplier',
+            _compat_runtime('armor.multiplier'),
+            _compat_mech('armor.multiplier'),
+            _compat_canon('tower_armor_multiplier'),
         ],
         0.0,
     )
@@ -278,27 +318,27 @@ def _ep_armor_factor(rows: Dict[str, StatRow]) -> float:
         return direct
     primary_bonus = _get_first(rows, [
         'support_surface::ehp.armor_primary_bonus',
-        'mechanic_param::module.armor.primary_bonus',
-        'mechanic_param::module.armor.primary_multiplier',
-        'mechanic_param::module.armor.multiplier',
+        _compat_mech('module.armor.primary_bonus'),
+        _compat_mech('module.armor.primary_multiplier'),
+        _compat_mech('module.armor.multiplier'),
     ], 1.0)
     has_assist = _bool(rows, [
         'support_surface::ehp.armor_assist_enabled',
-        'mechanic_param::module.armor.assist_enabled',
-        'mechanic_param::module.armor.has_assist',
+        _compat_mech('module.armor.assist_enabled'),
+        _compat_mech('module.armor.has_assist'),
     ], False)
     assist_bonus = _get_first(rows, [
         'support_surface::ehp.armor_assist_bonus',
-        'mechanic_param::module.armor.assist_bonus_multiplier',
-        'mechanic_param::module.armor.assist_bonus',
+        _compat_mech('module.armor.assist_bonus_multiplier'),
+        _compat_mech('module.armor.assist_bonus'),
     ], 1.0)
     stone_bac = _get_first(rows, [
         'support_surface::ehp.armor_assist_stone_bonus_pct',
-        'mechanic_param::module.armor.assist_stone_bonus_pct',
+        _compat_mech('module.armor.assist_stone_bonus_pct'),
     ], 0.0)
     lab_bac = _get_first(rows, [
         'support_surface::ehp.armor_assist_lab_bonus_pct',
-        'mechanic_param::module.armor.assist_lab_bonus_pct',
+        _compat_mech('module.armor.assist_lab_bonus_pct'),
     ], 0.0)
     return _ep_module_bonus(primary_bonus, has_assist, assist_bonus, stone_bac, lab_bac)
 
@@ -567,8 +607,8 @@ def _ep_chain_thunder_factor(rows: Dict[str, StatRow]) -> float:
         rows,
         [
             'support_surface::ehp.chain_thunder_reduction_pct',
-            'runtime_mechanic_param::uw.chain_thunder.reduction_pct',
-            'mechanic_param::uw.chain_thunder.reduction_pct',
+            _compat_runtime('uw.chain_thunder.reduction_pct'),
+            _compat_mech('uw.chain_thunder.reduction_pct'),
         ],
         0.0,
     )
@@ -577,11 +617,12 @@ def _ep_chain_thunder_factor(rows: Dict[str, StatRow]) -> float:
     return 1.0 / max(1.0 - min(0.98, reduction_pct / 100.0), 0.02)
 
 def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[str, Any]:
-    row = rows.get(key)
+    resolved_key = normalize_surface_id_to_contract(key)
+    row = _row(rows, key)
     return {
-        'stat_name': key,
+        'stat_name': resolved_key,
         'source_family': 'published_surface',
-        'source_name': key,
+        'source_name': resolved_key,
         'value': None if row is None else row.final_value,
         'value_type': None if row is None else row.value_type,
         'stage': 'derived_surface_publication',
@@ -610,8 +651,8 @@ def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str,
 
 def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     # eHP: closer to EP CN5 structure
-    health_factor = _get_first(rows, ['support_surface::ehp.health_factor', 'runtime_mechanic_param::ehp.health_factor'], 0.0)
-    health_ws = _get_first(rows, ['canonical_stat::tower_hp', 'support_surface::ehp.health_ws'], 0.0)
+    health_factor = _get_first(rows, ['support_surface::ehp.health_factor', _compat_runtime('ehp.health_factor')], 0.0)
+    health_ws = _get_first(rows, [_compat_canon('tower_hp'), 'support_surface::ehp.health_ws'], 0.0)
     health_lab_factor = 1.0 + 0.03 * _get_first(rows, ['support_surface::ehp.health_lab_level'], 0.0)
     health_card_active = _bool(rows, ['support_surface::ehp.health_card_active'], False)
     health_card_base = _get_first(rows, ['support_surface::ehp.health_card_multiplier'], 1.0)
@@ -634,27 +675,27 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     armor_primary_factor = _get_first(rows, [
         'support_surface::ehp.armor_primary_factor',
         'support_surface::ehp.armor_primary_bonus',
-        'mechanic_param::module.armor.primary_factor',
-        'mechanic_param::module.armor.primary_bonus',
-        'mechanic_param::module.armor.primary_multiplier',
-        'mechanic_param::module.armor.multiplier',
+        _compat_mech('module.armor.primary_factor'),
+        _compat_mech('module.armor.primary_bonus'),
+        _compat_mech('module.armor.primary_multiplier'),
+        _compat_mech('module.armor.multiplier'),
     ], 1.0)
     armor_assist_enabled = _bool(rows, [
         'support_surface::ehp.armor_assist_enabled',
-        'mechanic_param::module.armor.assist_enabled',
-        'mechanic_param::module.armor.has_assist',
+        _compat_mech('module.armor.assist_enabled'),
+        _compat_mech('module.armor.has_assist'),
     ], False)
     armor_assist_bonus = _get_first(rows, [
         'support_surface::ehp.armor_assist_bonus',
-        'mechanic_param::module.armor.assist_bonus_multiplier',
-        'mechanic_param::module.armor.assist_bonus',
+        _compat_mech('module.armor.assist_bonus_multiplier'),
+        _compat_mech('module.armor.assist_bonus'),
     ], 1.0)
-    armor_assist_factor = (((armor_assist_bonus - 1.0) * (1.0 + _get_first(rows, ['support_surface::ehp.armor_assist_stone_bonus_pct', 'mechanic_param::module.armor.assist_stone_bonus_pct'], 0.0) + _get_first(rows, ['support_surface::ehp.armor_assist_lab_bonus_pct', 'mechanic_param::module.armor.assist_lab_bonus_pct'], 0.0)) * 0.01) + 1.0) if armor_assist_enabled else 1.0
+    armor_assist_factor = (((armor_assist_bonus - 1.0) * (1.0 + _get_first(rows, ['support_surface::ehp.armor_assist_stone_bonus_pct', _compat_mech('module.armor.assist_stone_bonus_pct')], 0.0) + _get_first(rows, ['support_surface::ehp.armor_assist_lab_bonus_pct', _compat_mech('module.armor.assist_lab_bonus_pct')], 0.0)) * 0.01) + 1.0) if armor_assist_enabled else 1.0
     armor_factor = _get_first(rows, ['support_surface::ehp.armor_factor'], 0.0)
     if armor_factor <= 0.0:
         armor_factor = armor_primary_factor * armor_assist_factor
 
-    wall_health_ws = _get_first(rows, ['canonical_stat::wall_hp', 'support_surface::ehp.wall_hp_ws'], 0.0)
+    wall_health_ws = _get_first(rows, [_compat_canon('wall_hp'), 'support_surface::ehp.wall_hp_ws'], 0.0)
     wall_health_lab_term = 0.02 * _get_first(rows, ['support_surface::ehp.wall_hp_lab_level'], 0.0)
     ehp_sac_factor = (1.0 + _get_first(rows, ['support_surface::ehp.stone_sac_pct'], 0.0) + _get_first(rows, ['support_surface::ehp.lab_sac_pct'], 0.0)) * 0.01
     wall_health_substat_term = _get_first(rows, ['support_surface::ehp.wall_hp_prim_sub'], 0.0) + _get_first(rows, ['support_surface::ehp.wall_hp_ass_sub'], 0.0) * ehp_sac_factor
@@ -666,7 +707,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     if wall_health_factor <= 0.0:
         wall_health_factor = wall_health_pre_fort * wall_health_fort_factor
 
-    recovery_ws = _get_first(rows, ['canonical_stat::max_recovery_multiplier', 'support_surface::ehp.max_recovery_ws'], 0.0)
+    recovery_ws = _get_first(rows, [_compat_canon('max_recovery_multiplier'), 'support_surface::ehp.max_recovery_ws'], 0.0)
     recovery_lab_term = 0.01 * _get_first(rows, ['support_surface::ehp.max_recovery_lab_level'], 0.0)
     recovery_substat_term = _get_first(rows, ['support_surface::ehp.max_recovery_prim_sub'], 0.0) + _get_first(rows, ['support_surface::ehp.max_recovery_ass_sub'], 0.0) * ehp_sac_factor
     recovery_wse_factor = 1.0 + 0.01 * _get_first(rows, ['support_surface::ehp.workshop_enhancement_level'], 0.0)
@@ -679,7 +720,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     recovery_active = _bool(rows, ['support_surface::ehp.max_recovery_active'], max_recovery_factor > 0.0)
     wall_or_recovery_factor = (wall_health_factor + max_recovery_factor) if (wall_active or recovery_active) else 1.0
 
-    dabs_ws = _get_first(rows, ['canonical_stat::tower_defense_absolute', 'support_surface::ehp.dabs_ws'], 0.0)
+    dabs_ws = _get_first(rows, [_compat_canon('tower_defense_absolute'), 'support_surface::ehp.dabs_ws'], 0.0)
     dabs_lab_factor = 1.0 + 0.03 * _get_first(rows, ['support_surface::ehp.dabs_lab_level'], 0.0)
     dabs_card_factor = _get_first(rows, ['support_surface::ehp.dabs_card_multiplier'], 1.0) if _bool(rows, ['support_surface::ehp.dabs_card_active'], False) else 1.0
     dabs_substat_factor = 1.0 + _get_first(rows, ['support_surface::ehp.dabs_prim_sub'], 0.0) + _get_first(rows, ['support_surface::ehp.dabs_ass_sub'], 0.0) * ehp_sac_factor
@@ -692,7 +733,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     if dabs <= 0.0:
         dabs = dabs_base_factor
 
-    def_pct_ws = _get_first(rows, ['canonical_stat::tower_defense_pct', 'support_surface::ehp.def_pct_ws'], 0.0)
+    def_pct_ws = _get_first(rows, [_compat_canon('tower_defense_pct'), 'support_surface::ehp.def_pct_ws'], 0.0)
     def_pct_lab_term = 0.002 * _get_first(rows, ['support_surface::ehp.def_pct_lab_level'], 0.0)
     def_pct_card_term = (_get_first(rows, ['support_surface::ehp.def_pct_card_bonus'], 0.0) + 0.007 * (1.0 + _get_first(rows, ['support_surface::ehp.def_pct_card_mastery_level'], 0.0)) if _bool(rows, ['support_surface::ehp.def_pct_card_mastery_active'], False) else _get_first(rows, ['support_surface::ehp.def_pct_card_bonus'], 0.0)) if _bool(rows, ['support_surface::ehp.def_pct_card_active'], False) else 0.0
     def_pct_substat_term = _get_first(rows, ['support_surface::ehp.def_pct_prim_sub'], 0.0) + _get_first(rows, ['support_surface::ehp.def_pct_ass_sub'], 0.0) * ehp_sac_factor
@@ -707,14 +748,14 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
 
     chrono_duration = _get_first(rows, ['support_surface::ehp.chrono_field_duration_seconds'], -1.0)
     if chrono_duration < 0.0:
-        chrono_duration = _tp(rows, 'mechanic_param::uw.chrono_field.duration_seconds', 'runtime_mechanic_param::uw.chrono_field.duration_seconds')
-    chrono_cooldown = _get_first(rows, ['support_surface::ehp.chrono_field_cooldown_seconds', 'mechanic_param::uw.chrono_field.cooldown_seconds'], 0.0)
-    chrono_reduction_pct = _get_first(rows, ['support_surface::ehp.chrono_field_damage_reduction_pct', 'mechanic_param::uw.chrono_field.damage_reduction_pct'], 0.0)
+        chrono_duration = _tp(rows, _compat_mech('uw.chrono_field.duration_seconds'), _compat_runtime('uw.chrono_field.duration_seconds'))
+    chrono_cooldown = _get_first(rows, ['support_surface::ehp.chrono_field_cooldown_seconds', _compat_mech('uw.chrono_field.cooldown_seconds')], 0.0)
+    chrono_reduction_pct = _get_first(rows, ['support_surface::ehp.chrono_field_damage_reduction_pct', _compat_mech('uw.chrono_field.damage_reduction_pct')], 0.0)
     cfu = _uptime(chrono_duration, chrono_cooldown)
     cf_factor = 1.0 / max(1.0 - min(0.95, cfu * chrono_reduction_pct / 100.0), 0.05)
     wall_invuln_reduction_pct = _get_first(rows, ['support_surface::ehp.wall_invuln_reduction_pct'], 0.0)
     wall_invuln_factor = 1.0 / max(1.0 - wall_invuln_reduction_pct, 0.05)
-    chain_thunder_reduction_pct = _get_first(rows, ['support_surface::ehp.chain_thunder_reduction_pct', 'runtime_mechanic_param::uw.chain_thunder.reduction_pct', 'mechanic_param::uw.chain_thunder.reduction_pct'], 0.0)
+    chain_thunder_reduction_pct = _get_first(rows, ['support_surface::ehp.chain_thunder_reduction_pct', _compat_runtime('uw.chain_thunder.reduction_pct'), _compat_mech('uw.chain_thunder.reduction_pct')], 0.0)
     chain_thunder_factor = _ep_chain_thunder_factor(rows)
     tradeoff_defense_factor = _ep_tradeoff_defense_factor(rows)
     tradeoff_defense_reduction_pct = max(0.0, 1.0 - (1.0 / tradeoff_defense_factor)) * 100.0 if tradeoff_defense_factor > 0 else 0.0
@@ -724,7 +765,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     dabs_effective = dabs * wall_invuln_factor
     pre_tradeoff_ehp = (pre_defense_pool + dabs_effective) * defense_taken_factor
     ehp = pre_tradeoff_ehp * tradeoff_defense_factor
-    ehp_contrib = [_contributor(rows, 'canonical_stat::tower_hp', 'ehp'), _contributor(rows, 'canonical_stat::wall_hp', 'ehp')]
+    ehp_contrib = [_contributor(rows, _compat_canon('tower_hp'), 'ehp'), _contributor(rows, _compat_canon('wall_hp'), 'ehp')]
     _publish(rows, 'derived::ehp.health_lab_factor', health_lab_factor, 'multiplier', [], 'EPH_HEALTH lab factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.health_card_factor', health_card_factor, 'multiplier', [], 'EPH_HEALTH card factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.health_wse_factor', health_wse_factor, 'multiplier', [], 'EPH_HEALTH workshop enhancement factor [EP helper support surface]')
@@ -761,7 +802,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::ehp.dabs_vault_factor', dabs_vault_factor, 'multiplier', [], 'EPH_DABS vault factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.dabs_base_factor', dabs_base_factor, 'scalar', [], 'EPH_DABS base factor before wall invulnerability [EP helper support surface]')
     _publish(rows, 'derived::ehp.dabs_effective_factor', dabs_effective, 'scalar', [], 'EP CG5 additive DABS factor after wall invulnerability [EP helper support surface]')
-    _publish(rows, 'derived::ehp.dabs_factor', dabs, 'scalar', [_contributor(rows, 'canonical_stat::tower_defense_absolute', 'ehp.dabs_factor')], 'EPH_DABS-like additive absolute defense term [EP helper support surface]')
+    _publish(rows, 'derived::ehp.dabs_factor', dabs, 'scalar', [_contributor(rows, _compat_canon('tower_defense_absolute'), 'ehp.dabs_factor')], 'EPH_DABS-like additive absolute defense term [EP helper support surface]')
     _publish(rows, 'derived::ehp.def_pct_raw', def_pct_raw, 'ratio', [], 'EPH_DEF_PCT raw defense pct before direct override [EP helper support surface]')
     _publish(rows, 'derived::ehp.def_pct_lab_term', def_pct_lab_term, 'ratio', [], 'EPH_DEF_PCT lab term [EP helper support surface]')
     _publish(rows, 'derived::ehp.def_pct_card_term', def_pct_card_term, 'ratio', [], 'EPH_DEF_PCT card term [EP helper support surface]')
@@ -769,147 +810,147 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::ehp.def_pct_perk_term', def_pct_perk_term, 'ratio', [], 'EPH_DEF_PCT perk term [EP helper support surface]')
     _publish(rows, 'derived::ehp.def_pct_relic_term', def_pct_relic_term, 'ratio', [], 'EPH_DEF_PCT relic term [EP helper support surface]')
     _publish(rows, 'derived::ehp.def_pct_vault_term', def_pct_vault_term, 'ratio', [], 'EPH_DEF_PCT vault term [EP helper support surface]')
-    _publish(rows, 'derived::ehp.defense_taken_factor', defense_taken_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_defense_pct', 'ehp.defense_taken_factor')], '1/(1-EPH_DEF_PCT) [EP helper support surface]')
+    _publish(rows, 'derived::ehp.defense_taken_factor', defense_taken_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_defense_pct'), 'ehp.defense_taken_factor')], '1/(1-EPH_DEF_PCT) [EP helper support surface]')
     _publish(rows, 'derived::ehp.chrono_field_duration_seconds', chrono_duration, 'scalar', [], 'Chrono Field duration [EP helper support surface]')
     _publish(rows, 'derived::ehp.chrono_field_cooldown_seconds', chrono_cooldown, 'scalar', [], 'Chrono Field cooldown [EP helper support surface]')
     _publish(rows, 'derived::ehp.chrono_field_damage_reduction_pct', chrono_reduction_pct, 'ratio', [], 'Chrono Field damage reduction pct [EP helper support surface]')
-    _publish(rows, 'derived::ehp.chrono_field_uptime', cfu, 'ratio', [_contributor(rows, 'mechanic_param::uw.chrono_field.duration_seconds', 'ehp.chrono_field_uptime')], 'chrono field uptime [EP helper support surface]')
-    _publish(rows, 'derived::ehp.chrono_field_damage_reduction_factor', cf_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chrono_field.damage_reduction_pct', 'ehp.chrono_field_damage_reduction_factor')], 'chrono field reduction factor [EP helper support surface]')
+    _publish(rows, 'derived::ehp.chrono_field_uptime', cfu, 'ratio', [_contributor(rows, _compat_mech('uw.chrono_field.duration_seconds'), 'ehp.chrono_field_uptime')], 'chrono field uptime [EP helper support surface]')
+    _publish(rows, 'derived::ehp.chrono_field_damage_reduction_factor', cf_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.damage_reduction_pct'), 'ehp.chrono_field_damage_reduction_factor')], 'chrono field reduction factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.wall_invuln_reduction_pct', wall_invuln_reduction_pct, 'ratio', [], 'Wall invulnerability reduction pct [EP helper support surface]')
     _publish(rows, 'derived::ehp.wall_invuln_factor', wall_invuln_factor, 'multiplier', [_contributor(rows, 'support_surface::ehp.wall_invuln_reduction_pct', 'ehp.wall_invuln_factor')], 'wall invulnerability factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.chain_thunder_reduction_pct', chain_thunder_reduction_pct, 'ratio', [], 'Chain Thunder reduction pct [EP helper support surface]')
-    _publish(rows, 'derived::ehp.chain_thunder_factor', chain_thunder_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chain_thunder.reduction_pct', 'ehp.chain_thunder_factor')], 'EP CN5 chain thunder factor [EP helper support surface]')
+    _publish(rows, 'derived::ehp.chain_thunder_factor', chain_thunder_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chain_thunder.reduction_pct'), 'ehp.chain_thunder_factor')], 'EP CN5 chain thunder factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.tradeoff_defense_reduction_pct', tradeoff_defense_reduction_pct, 'ratio', [], 'Tradeoff defense reduction pct [EP helper support surface]')
-    _publish(rows, 'derived::ehp.tradeoff_defense_factor', tradeoff_defense_factor, 'multiplier', [_contributor(rows, 'mechanic_param::perk.tradeoff_defense_factor', 'ehp.tradeoff_defense_factor')], 'improve trade-off defense factor [EP helper support surface]')
+    _publish(rows, 'derived::ehp.tradeoff_defense_factor', tradeoff_defense_factor, 'multiplier', [_contributor(rows, _compat_mech('perk.tradeoff_defense_factor'), 'ehp.tradeoff_defense_factor')], 'improve trade-off defense factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.pre_defense_pool', pre_defense_pool, 'scalar', ehp_contrib, 'EP CN5 pre-defense multiplicative pool [EP helper support surface]')
     _publish(rows, 'derived::ehp.pre_tradeoff_ehp', pre_tradeoff_ehp, 'scalar', ehp_contrib, 'EP CN5 pre-tradeoff eHP [EP helper support surface]')
     _publish(rows, 'derived::ehp_ep_helper.ce_pool_factor', health_factor, 'scalar', ehp_contrib, 'EP eHP CE5 pool factor alias [EP helper support surface]')
     _publish(rows, 'derived::ehp_ep_helper.cf_armor_factor', armor_factor, 'multiplier', [_contributor(rows, 'support_surface::ehp.armor_factor', 'ehp.ep_cf_armor_factor')], 'EP eHP CF5 armor factor alias [EP helper support surface]')
     _publish(rows, 'derived::ehp_ep_helper.ci_wall_factor', wall_health_factor, 'scalar', ehp_contrib, 'EP eHP CI5 wall factor alias [EP helper support surface]')
     _publish(rows, 'derived::ehp_ep_helper.cj_recovery_factor', max_recovery_factor, 'scalar', ehp_contrib, 'EP eHP CJ5 max recovery factor alias [EP helper support surface]')
-    _publish(rows, 'derived::ehp_ep_helper.cg_dabs_factor', dabs_effective, 'scalar', [_contributor(rows, 'canonical_stat::tower_defense_absolute', 'ehp.ep_cg_dabs_factor')], 'EP eHP CG5 DABS factor alias [EP helper support surface]')
-    _publish(rows, 'derived::ehp_ep_helper.ch_defense_taken_factor', defense_taken_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_defense_pct', 'ehp.ep_ch_defense_taken_factor')], 'EP eHP CH5 defense taken factor alias [EP helper support surface]')
-    _publish(rows, 'derived::ehp_ep_helper.ck_tradeoff_factor', tradeoff_defense_factor, 'multiplier', [_contributor(rows, 'mechanic_param::perk.tradeoff_defense_factor', 'ehp.ep_ck_tradeoff_factor')], 'EP eHP CK5 tradeoff factor alias [EP helper support surface]')
-    _publish(rows, 'derived::ehp_ep_helper.cl_cfdr_factor', cf_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chrono_field.damage_reduction_pct', 'ehp.ep_cl_cfdr_factor')], 'EP eHP CL5 chrono damage reduction factor alias [EP helper support surface]')
-    _publish(rows, 'derived::ehp_ep_helper.cm_chain_thunder_factor', chain_thunder_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chain_thunder.reduction_pct', 'ehp.ep_cm_chain_thunder_factor')], 'EP eHP CM5 chain thunder factor alias [EP helper support surface]')
+    _publish(rows, 'derived::ehp_ep_helper.cg_dabs_factor', dabs_effective, 'scalar', [_contributor(rows, _compat_canon('tower_defense_absolute'), 'ehp.ep_cg_dabs_factor')], 'EP eHP CG5 DABS factor alias [EP helper support surface]')
+    _publish(rows, 'derived::ehp_ep_helper.ch_defense_taken_factor', defense_taken_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_defense_pct'), 'ehp.ep_ch_defense_taken_factor')], 'EP eHP CH5 defense taken factor alias [EP helper support surface]')
+    _publish(rows, 'derived::ehp_ep_helper.ck_tradeoff_factor', tradeoff_defense_factor, 'multiplier', [_contributor(rows, _compat_mech('perk.tradeoff_defense_factor'), 'ehp.ep_ck_tradeoff_factor')], 'EP eHP CK5 tradeoff factor alias [EP helper support surface]')
+    _publish(rows, 'derived::ehp_ep_helper.cl_cfdr_factor', cf_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.damage_reduction_pct'), 'ehp.ep_cl_cfdr_factor')], 'EP eHP CL5 chrono damage reduction factor alias [EP helper support surface]')
+    _publish(rows, 'derived::ehp_ep_helper.cm_chain_thunder_factor', chain_thunder_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chain_thunder.reduction_pct'), 'ehp.ep_cm_chain_thunder_factor')], 'EP eHP CM5 chain thunder factor alias [EP helper support surface]')
     _publish(rows, 'derived::ehp', ehp, 'scalar', ehp_contrib, 'Native eHP objective line; currently equal to EP line')
     _publish(rows, 'derived::ehp_ep', ehp, 'scalar', ehp_contrib, 'Exact Effective Paths eHP objective line')
 
     # eDamage: expanded EP-structured decomposition
-    td = _get(rows, 'canonical_stat::tower_damage')
-    asp = _get_first(rows, ['canonical_stat::tower_attack_speed', 'derived::attack_speed'])
-    dpm = _get(rows, 'canonical_stat::tower_damage_per_meter_multiplier')
-    rng = _get(rows, 'canonical_stat::tower_range_m')
-    kill_at_range = _get_first(rows, ['support_surface::timing.kill_at_range_multiplier', 'runtime_mechanic_param::targeting.kill_at_range_multiplier', 'mechanic_param::targeting.kill_at_range_multiplier'], 1.0)
+    td = _get(rows, _compat_canon('tower_damage'))
+    asp = _get_first(rows, [_compat_canon('tower_attack_speed'), 'derived::attack_speed'])
+    dpm = _get(rows, _compat_canon('tower_damage_per_meter_multiplier'))
+    rng = _get(rows, _compat_canon('tower_range_m'))
+    kill_at_range = _get_first(rows, ['support_surface::timing.kill_at_range_multiplier', _compat_runtime('targeting.kill_at_range_multiplier'), _compat_mech('targeting.kill_at_range_multiplier')], 1.0)
 
-    perk_damage_factor = _get_first(rows, ['support_surface::perk.damage_multiplier', 'runtime_mechanic_param::perk.damage_multiplier', 'mechanic_param::perk.damage_multiplier'], 1.0)
-    tradeoff_damage_factor = _get_first(rows, ['support_surface::perk.tradeoff_damage_multiplier', 'runtime_mechanic_param::perk.tradeoff_damage_multiplier', 'mechanic_param::perk.tradeoff_damage_multiplier'], 1.0)
+    perk_damage_factor = _get_first(rows, ['support_surface::perk.damage_multiplier', _compat_runtime('perk.damage_multiplier'), _compat_mech('perk.damage_multiplier')], 1.0)
+    tradeoff_damage_factor = _get_first(rows, ['support_surface::perk.tradeoff_damage_multiplier', _compat_runtime('perk.tradeoff_damage_multiplier'), _compat_mech('perk.tradeoff_damage_multiplier')], 1.0)
     shock_factor = _ep_shock_factor(rows)
-    card_damage_mastery_factor = _get_first(rows, ['runtime_mechanic_param::cards.damage.mastery_multiplier', 'mechanic_param::cards.damage.mastery_multiplier'], 1.0)
+    card_damage_mastery_factor = _get_first(rows, [_compat_runtime('cards.damage.mastery_multiplier'), _compat_mech('cards.damage.mastery_multiplier')], 1.0)
 
-    cannon_module_factor = _get_first(rows, ['mechanic_param::module.cannon.primary_damage_multiplier', 'mechanic_param::module.cannon.damage_multiplier', 'mechanic_param::module.cannon.multiplier'], 1.0)
-    cannon_assist_enabled = _bool(rows, ['mechanic_param::module.cannon.assist_enabled', 'mechanic_param::module.cannon.has_assist'], False)
-    cannon_assist_bonus = _get_first(rows, ['mechanic_param::module.cannon.assist_bonus_multiplier', 'mechanic_param::module.cannon.assist_multiplier'], 1.0)
+    cannon_module_factor = _get_first(rows, [_compat_mech('module.cannon.primary_damage_multiplier'), _compat_mech('module.cannon.damage_multiplier'), _compat_mech('module.cannon.multiplier')], 1.0)
+    cannon_assist_enabled = _bool(rows, [_compat_mech('module.cannon.assist_enabled'), _compat_mech('module.cannon.has_assist')], False)
+    cannon_assist_bonus = _get_first(rows, [_compat_mech('module.cannon.assist_bonus_multiplier'), _compat_mech('module.cannon.assist_multiplier')], 1.0)
     cannon_assist_factor = _ep_module_bonus(
         cannon_module_factor,
         cannon_assist_enabled,
         cannon_assist_bonus,
-        _get_first(rows, ['mechanic_param::module.cannon.assist_stone_bonus_pct'], 0.0),
-        _get_first(rows, ['mechanic_param::module.cannon.assist_lab_bonus_pct'], 0.0),
+        _get_first(rows, [_compat_mech('module.cannon.assist_stone_bonus_pct')], 0.0),
+        _get_first(rows, [_compat_mech('module.cannon.assist_lab_bonus_pct')], 0.0),
     )
 
-    acp_raw = _get_first(rows, ['mechanic_param::module.anti_cube_portal.damage_multiplier', 'mechanic_param::module.anti_cube_portal.multiplier', 'mechanic_param::module.acp.damage_multiplier', 'mechanic_param::module.acp.multiplier'], 0.0)
+    acp_raw = _get_first(rows, [_compat_mech('module.anti_cube_portal.damage_multiplier'), _compat_mech('module.anti_cube_portal.multiplier'), _compat_mech('module.acp.damage_multiplier'), _compat_mech('module.acp.multiplier')], 0.0)
     acp_factor = _ep_shockwave_damage(
         acp_raw,
-        _get_first(rows, ['canonical_stat::shockwave_size_level', 'mechanic_param::shockwave.size_ws_level'], 0.0),
-        _get_first(rows, ['runtime_mechanic_param::shockwave.size_lab_level', 'mechanic_param::shockwave.size_lab_level'], 0.0),
-        _get_first(rows, ['canonical_stat::shockwave_frequency_level', 'mechanic_param::shockwave.frequency_ws_level'], 0.0),
-        _get_first(rows, ['runtime_mechanic_param::shockwave.frequency_vault_bonus_seconds', 'mechanic_param::shockwave.frequency_vault_bonus_seconds'], 0.0),
-        _get_first(rows, ['mechanic_param::shockwave.frequency_substat_seconds', 'runtime_mechanic_param::shockwave.frequency_substat_seconds'], 0.0),
+        _get_first(rows, [_compat_canon('shockwave_size_level'), _compat_mech('shockwave.size_ws_level')], 0.0),
+        _get_first(rows, [_compat_runtime('shockwave.size_lab_level'), _compat_mech('shockwave.size_lab_level')], 0.0),
+        _get_first(rows, [_compat_canon('shockwave_frequency_level'), _compat_mech('shockwave.frequency_ws_level')], 0.0),
+        _get_first(rows, [_compat_runtime('shockwave.frequency_vault_bonus_seconds'), _compat_mech('shockwave.frequency_vault_bonus_seconds')], 0.0),
+        _get_first(rows, [_compat_mech('shockwave.frequency_substat_seconds'), _compat_runtime('shockwave.frequency_substat_seconds')], 0.0),
     )
-    amp_strike_factor = _get_first(rows, ['support_surface::amp_strike.damage_multiplier', 'mechanic_param::amp_strike.damage_multiplier'], 1.0)
+    amp_strike_factor = _get_first(rows, ['support_surface::amp_strike.damage_multiplier', _compat_mech('amp_strike.damage_multiplier')], 1.0)
 
     base_damage_stack = td * perk_damage_factor * tradeoff_damage_factor * shock_factor * card_damage_mastery_factor * cannon_assist_factor * acp_factor * amp_strike_factor
 
-    cc = _get(rows, 'canonical_stat::tower_crit_chance_pct')
-    cf = _get(rows, 'canonical_stat::tower_crit_multiplier')
-    scc = _get(rows, 'canonical_stat::tower_supercrit_chance_pct')
-    scm = _get(rows, 'canonical_stat::tower_supercrit_multiplier')
-    being_annihilator = _get_first(rows, ['mechanic_param::module.being_annihilator.streak_count', 'runtime_mechanic_param::module.being_annihilator.streak_count'], 0.0)
+    cc = _get(rows, _compat_canon('tower_crit_chance_pct'))
+    cf = _get(rows, _compat_canon('tower_crit_multiplier'))
+    scc = _get(rows, _compat_canon('tower_supercrit_chance_pct'))
+    scm = _get(rows, _compat_canon('tower_supercrit_multiplier'))
+    being_annihilator = _get_first(rows, [_compat_mech('module.being_annihilator.streak_count'), _compat_runtime('module.being_annihilator.streak_count')], 0.0)
     bullet_crit_factor = _ep_critical(cc, cf, scc, scm, being_annihilator)
     uw_crit_factor = _ep_uwcritical(cc, cf, scc, scm)
 
     bps = _ep_bullet_per_second(asp)
-    multishot_factor = _ep_multishot(_get(rows, 'canonical_stat::tower_multishot_chance_pct'), _get(rows, 'canonical_stat::tower_multishot_targets'))
+    multishot_factor = _ep_multishot(_get(rows, _compat_canon('tower_multishot_chance_pct')), _get(rows, _compat_canon('tower_multishot_targets')))
     bounce_factor = _ep_bounceshot(
-        _get(rows, 'canonical_stat::tower_bounce_shot_chance_pct'),
-        _get(rows, 'canonical_stat::tower_bounce_shot_targets'),
-        _get_first(rows, ['mechanic_param::module.astral_deliverance.bounce_bonus_per_hop', 'mechanic_param::module.astral_deliverance.multiplier_per_bounce', 'mechanic_param::module.astral_deliverance.multiplier'], 0.0),
+        _get(rows, _compat_canon('tower_bounce_shot_chance_pct')),
+        _get(rows, _compat_canon('tower_bounce_shot_targets')),
+        _get_first(rows, [_compat_mech('module.astral_deliverance.bounce_bonus_per_hop'), _compat_mech('module.astral_deliverance.multiplier_per_bounce'), _compat_mech('module.astral_deliverance.multiplier')], 0.0),
     )
-    rapidfire_factor = _ep_rapidfire_factor(_get(rows, 'canonical_stat::tower_rapid_fire_chance_pct'), _get(rows, 'canonical_stat::tower_rapid_fire_duration_seconds'), bps)
+    rapidfire_factor = _ep_rapidfire_factor(_get(rows, _compat_canon('tower_rapid_fire_chance_pct')), _get(rows, _compat_canon('tower_rapid_fire_duration_seconds')), bps)
     range_dpm_factor = _ep_rangedpm(rng, dpm, kill_at_range)
 
-    sl_quantity = _get_first(rows, ['mechanic_param::uw.spotlight.quantity', 'runtime_mechanic_param::uw.spotlight.quantity'], 0.0)
-    sl_angle = _get_first(rows, ['mechanic_param::uw.spotlight.angle_degrees', 'runtime_mechanic_param::uw.spotlight.angle_degrees', 'canonical_stat::uw.spotlight.angle_degrees'], 0.0)
-    sl_light_range = _get_first(rows, ['mechanic_param::uw.spotlight.light_range_bonus', 'runtime_mechanic_param::uw.spotlight.light_range_bonus'], 0.0)
+    sl_quantity = _get_first(rows, [_compat_mech('uw.spotlight.quantity'), _compat_runtime('uw.spotlight.quantity')], 0.0)
+    sl_angle = _get_first(rows, [_compat_mech('uw.spotlight.angle_degrees'), _compat_runtime('uw.spotlight.angle_degrees'), _compat_canon('uw.spotlight.angle_degrees')], 0.0)
+    sl_light_range = _get_first(rows, [_compat_mech('uw.spotlight.light_range_bonus'), _compat_runtime('uw.spotlight.light_range_bonus')], 0.0)
     spotlight_light_range_factor = _stat_uw_sl_final_lr(sl_light_range, range_dpm_factor)
     sl_bonus = _stat_uw_sl_final_dmg(
-        _get_first(rows, ['mechanic_param::uw.spotlight.damage_multiplier', 'runtime_mechanic_param::uw.spotlight.damage_multiplier'], 1.0),
+        _get_first(rows, [_compat_mech('uw.spotlight.damage_multiplier'), _compat_runtime('uw.spotlight.damage_multiplier')], 1.0),
         spotlight_light_range_factor,
-        _get_first(rows, ['mechanic_param::uw.spotlight.damage_substat', 'runtime_mechanic_param::uw.spotlight.damage_substat'], 0.0),
-        _get_first(rows, ['mechanic_param::uw.spotlight.relic_bonus'], 0.0),
-        _get_first(rows, ['mechanic_param::uw.spotlight.vault_bonus'], 0.0),
-        _bool(rows, ['runtime_mechanic_param::perk.spotlight_damage.active'], False),
+        _get_first(rows, [_compat_mech('uw.spotlight.damage_substat'), _compat_runtime('uw.spotlight.damage_substat')], 0.0),
+        _get_first(rows, [_compat_mech('uw.spotlight.relic_bonus')], 0.0),
+        _get_first(rows, [_compat_mech('uw.spotlight.vault_bonus')], 0.0),
+        _bool(rows, [_compat_runtime('perk.spotlight_damage.active')], False),
     )
     spotlight_coverage = _ep_sl_coverage(sl_quantity, sl_angle) if sl_quantity > 0 and sl_angle > 0 else 0.0
     spotlight_factor = _ep_sl_final_bonus(spotlight_coverage, sl_bonus) if spotlight_coverage > 0 else 1.0
 
     super_tower_factor = _ep_super_tower_effective_bonus(
-        _bool(rows, ['runtime_mechanic_param::cards.super_tower.active', 'mechanic_param::cards.super_tower.active'], False),
-        _bool(rows, ['runtime_mechanic_param::cards.super_tower.mastery_active', 'mechanic_param::cards.super_tower.mastery_active'], False),
-        _get_first(rows, ['runtime_mechanic_param::cards.super_tower.bonus_multiplier', 'mechanic_param::cards.super_tower.bonus_multiplier'], 1.0),
-        _get_first(rows, ['runtime_mechanic_param::cards.super_tower.cooldown_seconds', 'mechanic_param::cards.super_tower.cooldown_seconds'], 1.0),
+        _bool(rows, [_compat_runtime('cards.super_tower.active'), _compat_mech('cards.super_tower.active')], False),
+        _bool(rows, [_compat_runtime('cards.super_tower.mastery_active'), _compat_mech('cards.super_tower.mastery_active')], False),
+        _get_first(rows, [_compat_runtime('cards.super_tower.bonus_multiplier'), _compat_mech('cards.super_tower.bonus_multiplier')], 1.0),
+        _get_first(rows, [_compat_runtime('cards.super_tower.cooldown_seconds'), _compat_mech('cards.super_tower.cooldown_seconds')], 1.0),
         sl_quantity > 0 and sl_angle > 0,
         sl_quantity,
         sl_angle,
     )
     rend_factor = _ep_maxrend(
-        _bool(rows, ['runtime_mechanic_param::rend.active', 'mechanic_param::rend.active'], False),
-        _get_first(rows, ['runtime_mechanic_param::rend.lab_level', 'mechanic_param::rend.lab_level'], 0.0),
-        _get_first(rows, ['runtime_mechanic_param::rend.substat', 'mechanic_param::rend.substat'], 0.0),
-        _get_first(rows, ['runtime_mechanic_param::rend.enhancement_level', 'mechanic_param::rend.enhancement_level'], 0.0),
+        _bool(rows, [_compat_runtime('rend.active'), _compat_mech('rend.active')], False),
+        _get_first(rows, [_compat_runtime('rend.lab_level'), _compat_mech('rend.lab_level')], 0.0),
+        _get_first(rows, [_compat_runtime('rend.substat'), _compat_mech('rend.substat')], 0.0),
+        _get_first(rows, [_compat_runtime('rend.enhancement_level'), _compat_mech('rend.enhancement_level')], 0.0),
     )
     bullet_pipeline_factor = multishot_factor * bounce_factor * bps * rapidfire_factor * range_dpm_factor * super_tower_factor * rend_factor
 
     multi_rapid_bounce = multishot_factor * bounce_factor * rapidfire_factor
 
-    has_aoe_card = _bool(rows, ['runtime_mechanic_param::cards.aoe.active', 'mechanic_param::cards.aoe.active'], False)
-    aoe_card_level = _get_first(rows, ['runtime_mechanic_param::cards.aoe.level', 'mechanic_param::cards.aoe.level'], 0.0)
+    has_aoe_card = _bool(rows, [_compat_runtime('cards.aoe.active'), _compat_mech('cards.aoe.active')], False)
+    aoe_card_level = _get_first(rows, [_compat_runtime('cards.aoe.level'), _compat_mech('cards.aoe.level')], 0.0)
 
     dw = _ep_dw_dps(
-        _bool(rows, ['runtime_mechanic_param::uw.death_wave.active', 'mechanic_param::uw.death_wave.active'], default=_get_first(rows, ['mechanic_param::uw.death_wave.damage_multiplier', 'runtime_mechanic_param::uw.death_wave.damage_multiplier'], 0.0) > 0.0),
-        _get_first(rows, ['support_surface::uw.death_wave.final_damage', 'mechanic_param::uw.death_wave.damage_multiplier', 'runtime_mechanic_param::uw.death_wave.damage_multiplier'], 0.0),
-        _get_first(rows, ['support_surface::uw.death_wave.final_quantity', 'mechanic_param::uw.death_wave.quantity', 'runtime_mechanic_param::uw.death_wave.quantity'], 0.0),
-        _get_first(rows, ['support_surface::uw.death_wave.final_cooldown_seconds', 'mechanic_param::uw.death_wave.cooldown_seconds', 'runtime_mechanic_param::uw.death_wave.cooldown_seconds'], 1.0),
-        _get_first(rows, ['support_surface::uw.death_wave.damage_amp', 'mechanic_param::uw.death_wave.damage_amp', 'runtime_mechanic_param::uw.death_wave.damage_amp'], 0.0),
+        _bool(rows, [_compat_runtime('uw.death_wave.active'), _compat_mech('uw.death_wave.active')], default=_get_first(rows, [_compat_mech('uw.death_wave.damage_multiplier'), _compat_runtime('uw.death_wave.damage_multiplier')], 0.0) > 0.0),
+        _get_first(rows, ['support_surface::uw.death_wave.final_damage', _compat_mech('uw.death_wave.damage_multiplier'), _compat_runtime('uw.death_wave.damage_multiplier')], 0.0),
+        _get_first(rows, ['support_surface::uw.death_wave.final_quantity', _compat_mech('uw.death_wave.quantity'), _compat_runtime('uw.death_wave.quantity')], 0.0),
+        _get_first(rows, ['support_surface::uw.death_wave.final_cooldown_seconds', _compat_mech('uw.death_wave.cooldown_seconds'), _compat_runtime('uw.death_wave.cooldown_seconds')], 1.0),
+        _get_first(rows, ['support_surface::uw.death_wave.damage_amp', _compat_mech('uw.death_wave.damage_amp'), _compat_runtime('uw.death_wave.damage_amp')], 0.0),
     )
     cl = _ep_cl_dps(
-        _get_first(rows, ['support_surface::uw.chain_lightning.final_damage', 'mechanic_param::uw.chain_lightning.damage_multiplier', 'runtime_mechanic_param::uw.chain_lightning.damage_multiplier'], 0.0),
-        _get_first(rows, ['support_surface::uw.chain_lightning.final_quantity', 'mechanic_param::uw.chain_lightning.quantity', 'runtime_mechanic_param::uw.chain_lightning.quantity'], 0.0),
-        _get_first(rows, ['support_surface::uw.chain_lightning.final_chance', 'mechanic_param::uw.chain_lightning.chance_pct', 'runtime_mechanic_param::uw.chain_lightning.chance_pct'], 0.0),
+        _get_first(rows, ['support_surface::uw.chain_lightning.final_damage', _compat_mech('uw.chain_lightning.damage_multiplier'), _compat_runtime('uw.chain_lightning.damage_multiplier')], 0.0),
+        _get_first(rows, ['support_surface::uw.chain_lightning.final_quantity', _compat_mech('uw.chain_lightning.quantity'), _compat_runtime('uw.chain_lightning.quantity')], 0.0),
+        _get_first(rows, ['support_surface::uw.chain_lightning.final_chance', _compat_mech('uw.chain_lightning.chance_pct'), _compat_runtime('uw.chain_lightning.chance_pct')], 0.0),
         multi_rapid_bounce,
         bps,
     )
 
-    sm_damage = _get_first(rows, ['support_surface::uw.smart_missiles.final_damage', 'mechanic_param::uw.smart_missiles.damage_multiplier', 'runtime_mechanic_param::uw.smart_missiles.damage_multiplier'], 0.0)
-    sm_quantity = _get_first(rows, ['support_surface::uw.smart_missiles.final_quantity', 'mechanic_param::uw.smart_missiles.quantity', 'runtime_mechanic_param::uw.smart_missiles.quantity'], 0.0)
-    sm_cooldown = _get_first(rows, ['support_surface::uw.smart_missiles.final_cooldown_seconds', 'mechanic_param::uw.smart_missiles.cooldown_seconds', 'runtime_mechanic_param::uw.smart_missiles.cooldown_seconds'], 1.0)
-    sm_coverfire_time = _get_first(rows, ['support_surface::uw.smart_missiles.cover_fire_time_seconds', 'mechanic_param::uw.smart_missiles.cover_fire_time_seconds', 'runtime_mechanic_param::uw.smart_missiles.cover_fire_time_seconds'], 0.0)
+    sm_damage = _get_first(rows, ['support_surface::uw.smart_missiles.final_damage', _compat_mech('uw.smart_missiles.damage_multiplier'), _compat_runtime('uw.smart_missiles.damage_multiplier')], 0.0)
+    sm_quantity = _get_first(rows, ['support_surface::uw.smart_missiles.final_quantity', _compat_mech('uw.smart_missiles.quantity'), _compat_runtime('uw.smart_missiles.quantity')], 0.0)
+    sm_cooldown = _get_first(rows, ['support_surface::uw.smart_missiles.final_cooldown_seconds', _compat_mech('uw.smart_missiles.cooldown_seconds'), _compat_runtime('uw.smart_missiles.cooldown_seconds')], 1.0)
+    sm_coverfire_time = _get_first(rows, ['support_surface::uw.smart_missiles.cover_fire_time_seconds', _compat_mech('uw.smart_missiles.cover_fire_time_seconds'), _compat_runtime('uw.smart_missiles.cover_fire_time_seconds')], 0.0)
     sm_coverfire = _get_first(rows, ['support_surface::uw.smart_missiles.cover_fire_dps'], 0.0)
     if sm_coverfire <= 0.0 and sm_coverfire_time > 0.0:
         sm_coverfire = sm_damage / sm_coverfire_time
-    sm_heat = _get_first(rows, ['support_surface::uw.smart_missiles.heat_multiplier', 'mechanic_param::uw.smart_missiles.heat_multiplier', 'runtime_mechanic_param::uw.smart_missiles.heat_multiplier'], 1.0)
-    sm_aoe = _get_first(rows, ['support_surface::uw.smart_missiles.aoe_multiplier', 'mechanic_param::uw.smart_missiles.aoe_multiplier', 'runtime_mechanic_param::uw.smart_missiles.aoe_multiplier'], 1.0)
+    sm_heat = _get_first(rows, ['support_surface::uw.smart_missiles.heat_multiplier', _compat_mech('uw.smart_missiles.heat_multiplier'), _compat_runtime('uw.smart_missiles.heat_multiplier')], 1.0)
+    sm_aoe = _get_first(rows, ['support_surface::uw.smart_missiles.aoe_multiplier', _compat_mech('uw.smart_missiles.aoe_multiplier'), _compat_runtime('uw.smart_missiles.aoe_multiplier')], 1.0)
     sm = _ep_sm_dps(sm_damage, sm_quantity, sm_cooldown, sm_coverfire, sm_heat, sm_aoe, has_aoe_card, aoe_card_level)
 
     slm = _ep_slm_dps(
@@ -920,17 +961,17 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         sm_aoe,
         has_aoe_card,
         aoe_card_level,
-    ) if _bool(rows, ['runtime_mechanic_param::uw.spotlight.active', 'mechanic_param::uw.spotlight.active'], default=sl_quantity > 0.0 and sl_angle > 0.0) and _bool(rows, ['runtime_mechanic_param::uw.smart_missiles.active', 'mechanic_param::uw.smart_missiles.active'], default=sm_damage > 0.0) else 0.0
+    ) if _bool(rows, [_compat_runtime('uw.spotlight.active'), _compat_mech('uw.spotlight.active')], default=sl_quantity > 0.0 and sl_angle > 0.0) and _bool(rows, [_compat_runtime('uw.smart_missiles.active'), _compat_mech('uw.smart_missiles.active')], default=sm_damage > 0.0) else 0.0
 
-    ps_damage = _get_first(rows, ['support_surface::uw.poison_swamp.damage', 'mechanic_param::uw.poison_swamp.damage_multiplier', 'runtime_mechanic_param::uw.poison_swamp.damage_multiplier'], 0.0)
-    ps_duration = _get_first(rows, ['support_surface::uw.poison_swamp.duration_seconds', 'mechanic_param::uw.poison_swamp.duration_seconds', 'runtime_mechanic_param::uw.poison_swamp.duration_seconds'], 0.0)
-    ps_cooldown = _get_first(rows, ['support_surface::uw.poison_swamp.cooldown_seconds', 'mechanic_param::uw.poison_swamp.cooldown_seconds', 'runtime_mechanic_param::uw.poison_swamp.cooldown_seconds'], 1.0)
-    ps_deathcreep = _get_first(rows, ['support_surface::uw.poison_swamp.death_creep_multiplier', 'mechanic_param::uw.poison_swamp.death_creep_multiplier', 'runtime_mechanic_param::uw.poison_swamp.death_creep_multiplier'], 1.0)
+    ps_damage = _get_first(rows, ['support_surface::uw.poison_swamp.damage', _compat_mech('uw.poison_swamp.damage_multiplier'), _compat_runtime('uw.poison_swamp.damage_multiplier')], 0.0)
+    ps_duration = _get_first(rows, ['support_surface::uw.poison_swamp.duration_seconds', _compat_mech('uw.poison_swamp.duration_seconds'), _compat_runtime('uw.poison_swamp.duration_seconds')], 0.0)
+    ps_cooldown = _get_first(rows, ['support_surface::uw.poison_swamp.cooldown_seconds', _compat_mech('uw.poison_swamp.cooldown_seconds'), _compat_runtime('uw.poison_swamp.cooldown_seconds')], 1.0)
+    ps_deathcreep = _get_first(rows, ['support_surface::uw.poison_swamp.death_creep_multiplier', _compat_mech('uw.poison_swamp.death_creep_multiplier'), _compat_runtime('uw.poison_swamp.death_creep_multiplier')], 1.0)
     ps_rend = _get_first(rows, ['support_surface::uw.poison_swamp.rend_multiplier'], 0.0)
     if ps_rend <= 0.0:
-        ps_rend = 1.0 + max(0.0, rend_factor) * _get_first(rows, ['support_surface::uw.poison_swamp.rend_scalar', 'mechanic_param::uw.poison_swamp.rend_scalar'], 0.0)
+        ps_rend = 1.0 + max(0.0, rend_factor) * _get_first(rows, ['support_surface::uw.poison_swamp.rend_scalar', _compat_mech('uw.poison_swamp.rend_scalar')], 0.0)
     ps = _ep_ps_dps(
-        _bool(rows, ['runtime_mechanic_param::uw.poison_swamp.active', 'mechanic_param::uw.poison_swamp.active'], default=ps_damage > 0.0),
+        _bool(rows, [_compat_runtime('uw.poison_swamp.active'), _compat_mech('uw.poison_swamp.active')], default=ps_damage > 0.0),
         ps_damage,
         ps_duration,
         ps_cooldown,
@@ -940,88 +981,88 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         aoe_card_level,
     )
 
-    ilm_quantity = _get_first(rows, ['support_surface::uw.inner_land_mines.final_quantity', 'mechanic_param::uw.inner_land_mines.quantity', 'runtime_mechanic_param::uw.inner_land_mines.quantity'], 0.0)
-    ilm_cooldown = _get_first(rows, ['support_surface::uw.inner_land_mines.cooldown_seconds', 'mechanic_param::uw.inner_land_mines.cooldown_seconds', 'runtime_mechanic_param::uw.inner_land_mines.cooldown_seconds'], 1.0)
+    ilm_quantity = _get_first(rows, ['support_surface::uw.inner_land_mines.final_quantity', _compat_mech('uw.inner_land_mines.quantity'), _compat_runtime('uw.inner_land_mines.quantity')], 0.0)
+    ilm_cooldown = _get_first(rows, ['support_surface::uw.inner_land_mines.cooldown_seconds', _compat_mech('uw.inner_land_mines.cooldown_seconds'), _compat_runtime('uw.inner_land_mines.cooldown_seconds')], 1.0)
     ilm_spawn_per_second = ilm_quantity / max(ilm_cooldown, 1e-9)
     sd_chance = _get_first(rows, ['support_surface::uw.inner_land_mines.space_displacer_spawn_per_second'], 0.0)
     if sd_chance <= 0.0:
-        sd_chance = _get_first(rows, ['runtime_mechanic_param::land_mine.spawn_per_second', 'mechanic_param::land_mine.spawn_per_second'], 0.0) * _get_first(rows, ['runtime_mechanic_param::land_mine.chance', 'mechanic_param::land_mine.chance'], 0.0) * _get_first(rows, ['mechanic_param::module.space_displacer.spawn_multiplier', 'mechanic_param::module.space_displacer.multiplier'], 0.0)
-    chrono_jump = _get_first(rows, ['support_surface::uw.inner_land_mines.chrono_jump_multiplier', 'runtime_mechanic_param::uw.chrono_jump.multiplier', 'mechanic_param::uw.chrono_jump.multiplier'], 0.0) * _get_first(rows, ['support_surface::uw.inner_land_mines.chrono_jump_scalar'], 5.0)
+        sd_chance = _get_first(rows, [_compat_runtime('land_mine.spawn_per_second'), _compat_mech('land_mine.spawn_per_second')], 0.0) * _get_first(rows, [_compat_runtime('land_mine.chance'), _compat_mech('land_mine.chance')], 0.0) * _get_first(rows, [_compat_mech('module.space_displacer.spawn_multiplier'), _compat_mech('module.space_displacer.multiplier')], 0.0)
+    chrono_jump = _get_first(rows, ['support_surface::uw.inner_land_mines.chrono_jump_multiplier', _compat_runtime('uw.chrono_jump.multiplier'), _compat_mech('uw.chrono_jump.multiplier')], 0.0) * _get_first(rows, ['support_surface::uw.inner_land_mines.chrono_jump_scalar'], 5.0)
     ilm = _ep_ilm_dps(
-        _bool(rows, ['runtime_mechanic_param::uw.inner_land_mines.active', 'mechanic_param::uw.inner_land_mines.active'], default=False),
-        _get_first(rows, ['support_surface::uw.inner_land_mines.final_damage', 'mechanic_param::uw.inner_land_mines.damage_multiplier', 'runtime_mechanic_param::uw.inner_land_mines.damage_multiplier'], 0.0),
+        _bool(rows, [_compat_runtime('uw.inner_land_mines.active'), _compat_mech('uw.inner_land_mines.active')], default=False),
+        _get_first(rows, ['support_surface::uw.inner_land_mines.final_damage', _compat_mech('uw.inner_land_mines.damage_multiplier'), _compat_runtime('uw.inner_land_mines.damage_multiplier')], 0.0),
         ilm_spawn_per_second + sd_chance,
         chrono_jump,
-        _get_first(rows, ['support_surface::uw.inner_land_mines.charged_mines', 'mechanic_param::uw.inner_land_mines.charged_mines', 'runtime_mechanic_param::uw.inner_land_mines.charged_mines'], 0.0),
-        _get_first(rows, ['support_surface::uw.inner_land_mines.aoe_multiplier', 'mechanic_param::uw.inner_land_mines.aoe_multiplier', 'runtime_mechanic_param::uw.inner_land_mines.aoe_multiplier'], 1.0),
+        _get_first(rows, ['support_surface::uw.inner_land_mines.charged_mines', _compat_mech('uw.inner_land_mines.charged_mines'), _compat_runtime('uw.inner_land_mines.charged_mines')], 0.0),
+        _get_first(rows, ['support_surface::uw.inner_land_mines.aoe_multiplier', _compat_mech('uw.inner_land_mines.aoe_multiplier'), _compat_runtime('uw.inner_land_mines.aoe_multiplier')], 1.0),
         has_aoe_card,
         aoe_card_level,
     )
-    uw_damage_boost = _get_first(rows, ['support_surface::uw.total_damage_boost_multiplier', 'mechanic_param::uw.damage_boost_multiplier'], 1.0)
+    uw_damage_boost = _get_first(rows, ['support_surface::uw.total_damage_boost_multiplier', _compat_mech('uw.damage_boost_multiplier')], 1.0)
     st_uw_mastery = _get_first(
         rows,
         [
             'support_surface::uw.super_tower_effective_uw_bonus',
-            'runtime_mechanic_param::cards.super_tower.uw_mastery_multiplier',
-            'mechanic_param::cards.super_tower.uw_mastery_multiplier',
+            _compat_runtime('cards.super_tower.uw_mastery_multiplier'),
+            _compat_mech('cards.super_tower.uw_mastery_multiplier'),
         ],
         1.0,
     )
-    uw_crit_card = _get_first(rows, ['runtime_mechanic_param::cards.ultimate_weapon_crit.multiplier', 'mechanic_param::cards.ultimate_weapon_crit.multiplier'], 1.0)
+    uw_crit_card = _get_first(rows, [_compat_runtime('cards.ultimate_weapon_crit.multiplier'), _compat_mech('cards.ultimate_weapon_crit.multiplier')], 1.0)
     uw_total_damage = _ep_uw_total_damage(dw, cl, sm, slm, spotlight_factor, ps, ilm, uw_damage_boost, st_uw_mastery, uw_crit_card)
 
     slow_factor = _get_first(rows, ['support_surface::chrono_field.exposure_multiplier'], 0.0)
     if slow_factor <= 0.0:
-        cf_slow_pct = _get_first(rows, ['mechanic_param::uw.chrono_field.slow_pct', 'runtime_mechanic_param::uw.chrono_field.slow_pct'], 0.0)
+        cf_slow_pct = _get_first(rows, [_compat_mech('uw.chrono_field.slow_pct'), _compat_runtime('uw.chrono_field.slow_pct')], 0.0)
         slow_factor = 1.0
         if cf_slow_pct > 0.0:
             slow_factor *= 1.0 / max(1.0 - min(0.90, _pct(cf_slow_pct)), 0.1)
-    slow_factor *= _get_first(rows, ['support_surface::chrono_field.plus_exposure_multiplier', 'mechanic_param::uw.chrono_field.plus_exposure_multiplier'], 1.0)
+    slow_factor *= _get_first(rows, ['support_surface::chrono_field.plus_exposure_multiplier', _compat_mech('uw.chrono_field.plus_exposure_multiplier')], 1.0)
 
     edamage = base_damage_stack * (bullet_crit_factor * bullet_pipeline_factor * spotlight_factor + uw_total_damage * uw_crit_factor) * slow_factor
 
-    _publish(rows, 'derived::edamage.base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, 'canonical_stat::tower_damage', 'edamage.base_damage_stack')], 'EP EM5 DC5-like base damage stack [EP helper support surface]')
-    _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, 'mechanic_param::module.anti_cube_portal.damage_multiplier', 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_crit_chance_pct', 'edamage.bullet_crit_factor'), _contributor(rows, 'canonical_stat::tower_supercrit_chance_pct', 'edamage.bullet_crit_factor')], 'EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.bullet_per_second', bps, 'rate', [_contributor(rows, 'canonical_stat::tower_attack_speed', 'edamage.bullet_per_second')], 'EP BULLET_PER_SECOND from mechanics lineage [EP helper support surface]')
-    _publish(rows, 'derived::edamage.multishot_factor', multishot_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_multishot_chance_pct', 'edamage.multishot_factor'), _contributor(rows, 'canonical_stat::tower_multishot_targets', 'edamage.multishot_factor')], 'EPD_MULTISHOT-aligned multishot factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.bounce_factor', bounce_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_bounce_shot_chance_pct', 'edamage.bounce_factor'), _contributor(rows, 'canonical_stat::tower_bounce_shot_targets', 'edamage.bounce_factor')], 'EPD_BOUNCESHOT-aligned bounce factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.rapidfire_factor', rapidfire_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_rapid_fire_chance_pct', 'edamage.rapidfire_factor'), _contributor(rows, 'canonical_stat::tower_rapid_fire_duration_seconds', 'edamage.rapidfire_factor')], 'EPD_RAPIDFIRE-aligned rapidfire factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.range_dpm_factor', range_dpm_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_damage_per_meter_multiplier', 'edamage.range_dpm_factor'), _contributor(rows, 'canonical_stat::tower_range_m', 'edamage.range_dpm_factor')], 'EPD_RANGEDPM-aligned range x dpm x kill-at-range factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.spotlight_light_range_factor', spotlight_light_range_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.spotlight.light_range', 'edamage.spotlight_light_range_factor')], 'EP spotlight light-range factor before coverage/final bonus [EP helper support surface]')
-    _publish(rows, 'derived::edamage.spotlight_bonus_term', sl_bonus, 'multiplier', [_contributor(rows, 'mechanic_param::uw.spotlight.damage_multiplier', 'edamage.spotlight_bonus_term')], 'EP spotlight bonus term before coverage [EP helper support surface]')
-    _publish(rows, 'derived::edamage.spotlight_coverage', spotlight_coverage, 'ratio', [_contributor(rows, 'mechanic_param::uw.spotlight.quantity', 'edamage.spotlight_coverage'), _contributor(rows, 'mechanic_param::uw.spotlight.angle_degrees', 'edamage.spotlight_coverage')], 'EP spotlight coverage from quantity and angle [EP helper support surface]')
-    _publish(rows, 'derived::edamage.super_tower_factor', super_tower_factor, 'multiplier', [_contributor(rows, 'runtime_mechanic_param::cards.super_tower.bonus_multiplier', 'edamage.super_tower_factor')], 'EPD_SUPERTOWER_EFFECTIVE_BONUS-aligned factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.rend_factor', rend_factor, 'multiplier', [_contributor(rows, 'runtime_mechanic_param::rend.lab_level', 'edamage.rend_factor')], 'EPD_MAXREND-aligned rend factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.bullet_pipeline_factor', bullet_pipeline_factor, 'scalar', [_contributor(rows, 'canonical_stat::tower_attack_speed', 'edamage.bullet_pipeline_factor')], 'EP EM5 DV5-like bullet pipeline factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.spotlight_factor', spotlight_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.spotlight.damage_multiplier', 'edamage.spotlight_factor')], 'EP spotlight final bonus with quantity and angle coverage [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.death_wave_dps', dw, 'scalar', [_contributor(rows, 'mechanic_param::uw.death_wave.damage_multiplier', 'edamage.uw.death_wave_dps')], 'EP_DW_DPS-like death wave DPS [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.chain_lightning_dps', cl, 'scalar', [_contributor(rows, 'mechanic_param::uw.chain_lightning.damage_multiplier', 'edamage.uw.chain_lightning_dps')], 'EP_CL_DPS-like chain lightning DPS [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.smart_missiles_dps', sm, 'scalar', [_contributor(rows, 'mechanic_param::uw.smart_missiles.damage_multiplier', 'edamage.uw.smart_missiles_dps')], 'smart missiles DPS or proxy [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.spotlight_missiles_dps', slm, 'scalar', [_contributor(rows, 'mechanic_param::uw.spotlight_missiles.damage_multiplier', 'edamage.uw.spotlight_missiles_dps')], 'spotlight missiles DPS or proxy [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.poison_swamp_dps', ps, 'scalar', [_contributor(rows, 'mechanic_param::uw.poison_swamp.damage_multiplier', 'edamage.uw.poison_swamp_dps')], 'poison swamp DPS or proxy [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw.ilm_dps', ilm, 'scalar', [_contributor(rows, 'mechanic_param::uw.inner_land_mines.damage_multiplier', 'edamage.uw.ilm_dps')], 'EP_ILM_DPS-like inner land mine DPS including Space Displacer contribution [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, 'mechanic_param::uw.chain_lightning.damage_multiplier', 'edamage.uw_total_damage')], 'EP_UW_TOTAL_DAMAGE-like aggregate UW damage [EP helper support surface]')
-    _publish(rows, 'derived::edamage.uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_crit_chance_pct', 'edamage.uw_crit_factor')], 'EPD_UWCRITICAL-aligned UW crit factor [EP helper support surface]')
-    _publish(rows, 'derived::edamage.slow_factor', slow_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chrono_field.slow_pct', 'edamage.slow_factor')], 'EP Chrono Field slow exposure multiplier [EP helper support surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_light_range_factor', spotlight_light_range_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.spotlight.light_range', 'edamage.ep_dx_spotlight_light_range_factor')], 'EP eDamage DX5 spotlight light-range factor alias [EP helper support surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_bonus_term', sl_bonus, 'multiplier', [_contributor(rows, 'mechanic_param::uw.spotlight.damage_multiplier', 'edamage.ep_dx_spotlight_bonus_term')], 'EP eDamage DX5 spotlight bonus term alias [EP helper support surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_coverage', spotlight_coverage, 'ratio', [_contributor(rows, 'mechanic_param::uw.spotlight.quantity', 'edamage.ep_dx_spotlight_coverage'), _contributor(rows, 'mechanic_param::uw.spotlight.angle_degrees', 'edamage.ep_dx_spotlight_coverage')], 'EP eDamage DX5 spotlight coverage alias [EP helper support surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dc_base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, 'canonical_stat::tower_damage', 'edamage_ep_helper.dc_base_damage_stack')], 'EP eDamage DC5 base damage stack alias [EP helper surface]')
-    _publish(rows, 'derived::edamage_ep_helper.di_bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_crit_chance_pct', 'edamage_ep_helper.di_bullet_crit_factor')], 'EP eDamage DI5 bullet crit factor alias [EP helper surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dj_uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, 'canonical_stat::tower_crit_chance_pct', 'edamage_ep_helper.dj_uw_crit_factor')], 'EP eDamage DJ5 UW crit factor alias [EP helper surface]')
-    _publish(rows, 'derived::edamage_ep_helper.dv_bullet_pipeline_factor', bullet_pipeline_factor, 'scalar', [_contributor(rows, 'canonical_stat::tower_attack_speed', 'edamage_ep_helper.dv_bullet_pipeline_factor')], 'EP eDamage DV5 bullet pipeline factor alias [EP helper surface]')
-    _publish(rows, 'derived::edamage_ep_helper.ei_uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, 'mechanic_param::uw.chain_lightning.damage_multiplier', 'edamage_ep_helper.ei_uw_total_damage')], 'EP eDamage EI5 total UW damage alias [EP helper surface]')
-    _publish(rows, 'derived::edamage_ep_helper.el_slow_factor', slow_factor, 'multiplier', [_contributor(rows, 'mechanic_param::uw.chrono_field.slow_pct', 'edamage_ep_helper.el_slow_factor')], 'EP eDamage EL5 slow factor alias [EP helper surface]')
-    _publish(rows, 'derived::edamage', edamage, 'scalar', [_contributor(rows, 'canonical_stat::tower_damage', 'edamage')], 'Native eDamage objective line; currently equal to EP line')
-    _publish(rows, 'derived::edamage_ep', edamage, 'scalar', [_contributor(rows, 'canonical_stat::tower_damage', 'edamage_ep')], 'Exact Effective Paths eDamage objective line')
+    _publish(rows, 'derived::edamage.base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage.base_damage_stack')], 'EP EM5 DC5-like base damage stack [EP helper support surface]')
+    _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, _compat_mech('module.anti_cube_portal.damage_multiplier'), 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.bullet_crit_factor'), _contributor(rows, _compat_canon('tower_supercrit_chance_pct'), 'edamage.bullet_crit_factor')], 'EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.bullet_per_second', bps, 'rate', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage.bullet_per_second')], 'EP BULLET_PER_SECOND from mechanics lineage [EP helper support surface]')
+    _publish(rows, 'derived::edamage.multishot_factor', multishot_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_multishot_chance_pct'), 'edamage.multishot_factor'), _contributor(rows, _compat_canon('tower_multishot_targets'), 'edamage.multishot_factor')], 'EPD_MULTISHOT-aligned multishot factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.bounce_factor', bounce_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_bounce_shot_chance_pct'), 'edamage.bounce_factor'), _contributor(rows, _compat_canon('tower_bounce_shot_targets'), 'edamage.bounce_factor')], 'EPD_BOUNCESHOT-aligned bounce factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.rapidfire_factor', rapidfire_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_rapid_fire_chance_pct'), 'edamage.rapidfire_factor'), _contributor(rows, _compat_canon('tower_rapid_fire_duration_seconds'), 'edamage.rapidfire_factor')], 'EPD_RAPIDFIRE-aligned rapidfire factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.range_dpm_factor', range_dpm_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_damage_per_meter_multiplier'), 'edamage.range_dpm_factor'), _contributor(rows, _compat_canon('tower_range_m'), 'edamage.range_dpm_factor')], 'EPD_RANGEDPM-aligned range x dpm x kill-at-range factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.spotlight_light_range_factor', spotlight_light_range_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.light_range'), 'edamage.spotlight_light_range_factor')], 'EP spotlight light-range factor before coverage/final bonus [EP helper support surface]')
+    _publish(rows, 'derived::edamage.spotlight_bonus_term', sl_bonus, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.damage_multiplier'), 'edamage.spotlight_bonus_term')], 'EP spotlight bonus term before coverage [EP helper support surface]')
+    _publish(rows, 'derived::edamage.spotlight_coverage', spotlight_coverage, 'ratio', [_contributor(rows, _compat_mech('uw.spotlight.quantity'), 'edamage.spotlight_coverage'), _contributor(rows, _compat_mech('uw.spotlight.angle_degrees'), 'edamage.spotlight_coverage')], 'EP spotlight coverage from quantity and angle [EP helper support surface]')
+    _publish(rows, 'derived::edamage.super_tower_factor', super_tower_factor, 'multiplier', [_contributor(rows, _compat_runtime('cards.super_tower.bonus_multiplier'), 'edamage.super_tower_factor')], 'EPD_SUPERTOWER_EFFECTIVE_BONUS-aligned factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.rend_factor', rend_factor, 'multiplier', [_contributor(rows, _compat_runtime('rend.lab_level'), 'edamage.rend_factor')], 'EPD_MAXREND-aligned rend factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.bullet_pipeline_factor', bullet_pipeline_factor, 'scalar', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage.bullet_pipeline_factor')], 'EP EM5 DV5-like bullet pipeline factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.spotlight_factor', spotlight_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.damage_multiplier'), 'edamage.spotlight_factor')], 'EP spotlight final bonus with quantity and angle coverage [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.death_wave_dps', dw, 'scalar', [_contributor(rows, _compat_mech('uw.death_wave.damage_multiplier'), 'edamage.uw.death_wave_dps')], 'EP_DW_DPS-like death wave DPS [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.chain_lightning_dps', cl, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage.uw.chain_lightning_dps')], 'EP_CL_DPS-like chain lightning DPS [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.smart_missiles_dps', sm, 'scalar', [_contributor(rows, _compat_mech('uw.smart_missiles.damage_multiplier'), 'edamage.uw.smart_missiles_dps')], 'smart missiles DPS or proxy [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.spotlight_missiles_dps', slm, 'scalar', [_contributor(rows, _compat_mech('uw.spotlight_missiles.damage_multiplier'), 'edamage.uw.spotlight_missiles_dps')], 'spotlight missiles DPS or proxy [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.poison_swamp_dps', ps, 'scalar', [_contributor(rows, _compat_mech('uw.poison_swamp.damage_multiplier'), 'edamage.uw.poison_swamp_dps')], 'poison swamp DPS or proxy [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw.ilm_dps', ilm, 'scalar', [_contributor(rows, _compat_mech('uw.inner_land_mines.damage_multiplier'), 'edamage.uw.ilm_dps')], 'EP_ILM_DPS-like inner land mine DPS including Space Displacer contribution [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage.uw_total_damage')], 'EP_UW_TOTAL_DAMAGE-like aggregate UW damage [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.uw_crit_factor')], 'EPD_UWCRITICAL-aligned UW crit factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.slow_factor', slow_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.slow_pct'), 'edamage.slow_factor')], 'EP Chrono Field slow exposure multiplier [EP helper support surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_light_range_factor', spotlight_light_range_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.light_range'), 'edamage.ep_dx_spotlight_light_range_factor')], 'EP eDamage DX5 spotlight light-range factor alias [EP helper support surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_bonus_term', sl_bonus, 'multiplier', [_contributor(rows, _compat_mech('uw.spotlight.damage_multiplier'), 'edamage.ep_dx_spotlight_bonus_term')], 'EP eDamage DX5 spotlight bonus term alias [EP helper support surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dx_spotlight_coverage', spotlight_coverage, 'ratio', [_contributor(rows, _compat_mech('uw.spotlight.quantity'), 'edamage.ep_dx_spotlight_coverage'), _contributor(rows, _compat_mech('uw.spotlight.angle_degrees'), 'edamage.ep_dx_spotlight_coverage')], 'EP eDamage DX5 spotlight coverage alias [EP helper support surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dc_base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage_ep_helper.dc_base_damage_stack')], 'EP eDamage DC5 base damage stack alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.di_bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage_ep_helper.di_bullet_crit_factor')], 'EP eDamage DI5 bullet crit factor alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dj_uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage_ep_helper.dj_uw_crit_factor')], 'EP eDamage DJ5 UW crit factor alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dv_bullet_pipeline_factor', bullet_pipeline_factor, 'scalar', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage_ep_helper.dv_bullet_pipeline_factor')], 'EP eDamage DV5 bullet pipeline factor alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.ei_uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage_ep_helper.ei_uw_total_damage')], 'EP eDamage EI5 total UW damage alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.el_slow_factor', slow_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.slow_pct'), 'edamage_ep_helper.el_slow_factor')], 'EP eDamage EL5 slow factor alias [EP helper surface]')
+    _publish(rows, 'derived::edamage', edamage, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage')], 'Native eDamage objective line; currently equal to EP line')
+    _publish(rows, 'derived::edamage_ep', edamage, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage_ep')], 'Exact Effective Paths eDamage objective line')
 
     # eEcon: closer to EP DI5 structure (CL * CM * DC * DG * DH)
     adstarter_theme_relic_factor = _get_first(rows, ['support_surface::eecon.adstarter_theme_relic_factor', 'support_surface::eecon.base_meta_factor'], 1.0)
     cpk_factor = _get_first(rows, ['support_surface::eecon.cpk_factor'], 0.0)
     if cpk_factor <= 0.0:
         cpk_factor = _ep_cpk(
-            _get_first(rows, ['canonical_stat::coin_kill_multiplier', 'support_surface::eecon.coin_kill_ws'], 0.0),
+            _get_first(rows, [_compat_canon('coin_kill_multiplier'), 'support_surface::eecon.coin_kill_ws'], 0.0),
             _get_first(rows, ['support_surface::eecon.coin_kill_lab_level'], 0.0),
             _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0),
             _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0),
@@ -1084,8 +1125,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
                 _get_first(rows, ['support_surface::eecon.freeup_utility_vault_pct'], 0.0),
             )
             freeup = (freeup_att + freeup_def + freeup_uti) * freeup_pct
-            has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, ['runtime_mechanic_param::cards.wave_skip.chance_pct'], 0.0) > 0.0)
-            ws_card = _get_first(rows, ['runtime_mechanic_param::cards.wave_skip.chance_pct'], 0.0)
+            has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
+            ws_card = _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0)
             ws_mastery = _bool(rows, ['support_surface::eecon.wave_skip_mastery_active'], False)
             ws_mastery_level = _get_first(rows, ['support_surface::eecon.wave_skip_mastery_level'], 0.0)
             freeup_factor = 1.0
@@ -1094,19 +1135,19 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     coin_card_factor = _get_first(rows, ['support_surface::eecon.coin_card_factor'], 0.0)
     if coin_card_factor <= 0.0:
         coin_card_factor = _ep_card_coins(
-            _bool(rows, ['support_surface::eecon.coin_card_active'], _get_first(rows, ['runtime_mechanic_param::cards.coins.multiplier'], 0.0) != 0.0),
-            _get_first(rows, ['runtime_mechanic_param::cards.coins.multiplier', 'mechanic_param::cards.coins.multiplier'], 1.0),
+            _bool(rows, ['support_surface::eecon.coin_card_active'], _get_first(rows, [_compat_runtime('cards.coins.multiplier')], 0.0) != 0.0),
+            _get_first(rows, [_compat_runtime('cards.coins.multiplier'), _compat_mech('cards.coins.multiplier')], 1.0),
             _bool(rows, ['support_surface::eecon.coin_card_mastery_active'], False),
             _get_first(rows, ['support_surface::eecon.coin_card_mastery_level'], 0.0),
         )
     module_factor = _get_first(rows, ['support_surface::eecon.module_factor'], 0.0)
     if module_factor <= 0.0:
         module_factor = _ep_module_bonus(
-            _get_first(rows, ['mechanic_param::module.generator.primary_coin_multiplier', 'mechanic_param::module.generator.coin_multiplier'], 1.0),
-            _bool(rows, ['mechanic_param::module.generator.assist_enabled'], False),
-            _get_first(rows, ['mechanic_param::module.generator.assist_bonus_multiplier'], 1.0),
-            _get_first(rows, ['mechanic_param::module.generator.assist_stone_bonus_pct'], 0.0),
-            _get_first(rows, ['mechanic_param::module.generator.assist_lab_bonus_pct'], 0.0),
+            _get_first(rows, [_compat_mech('module.generator.primary_coin_multiplier'), _compat_mech('module.generator.coin_multiplier')], 1.0),
+            _bool(rows, [_compat_mech('module.generator.assist_enabled')], False),
+            _get_first(rows, [_compat_mech('module.generator.assist_bonus_multiplier')], 1.0),
+            _get_first(rows, [_compat_mech('module.generator.assist_stone_bonus_pct')], 0.0),
+            _get_first(rows, [_compat_mech('module.generator.assist_lab_bonus_pct')], 0.0),
         )
     cl_factor = adstarter_theme_relic_factor * cpk_factor * freeup_factor * coin_card_factor * module_factor
 
@@ -1135,10 +1176,10 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     gb_duration_term = _get_first(rows, ['support_surface::eecon.gb_duration'], 0.0)
     gb_cd_term = _get_first(rows, ['support_surface::eecon.gb_cooldown'], 0.0)
 
-    has_gt = _bool(rows, ['support_surface::eecon.gt_active', 'runtime_mechanic_param::uw.golden_tower.active', 'mechanic_param::uw.golden_tower.active'], False)
-    has_bh = _bool(rows, ['support_surface::eecon.bh_active', 'runtime_mechanic_param::uw.black_hole.active', 'mechanic_param::uw.black_hole.active'], False)
-    has_dw = _bool(rows, ['support_surface::eecon.dw_active', 'runtime_mechanic_param::uw.death_wave.active', 'mechanic_param::uw.death_wave.active'], False)
-    has_gb = _bool(rows, ['support_surface::eecon.gb_active', 'runtime_mechanic_param::uw.golden_bot.active', 'mechanic_param::uw.golden_bot.active'], False)
+    has_gt = _bool(rows, ['support_surface::eecon.gt_active', _compat_runtime('uw.golden_tower.active'), _compat_mech('uw.golden_tower.active')], False)
+    has_bh = _bool(rows, ['support_surface::eecon.bh_active', _compat_runtime('uw.black_hole.active'), _compat_mech('uw.black_hole.active')], False)
+    has_dw = _bool(rows, ['support_surface::eecon.dw_active', _compat_runtime('uw.death_wave.active'), _compat_mech('uw.death_wave.active')], False)
+    has_gb = _bool(rows, ['support_surface::eecon.gb_active', _compat_runtime('uw.golden_bot.active'), _compat_mech('uw.golden_bot.active')], False)
 
     stone_sac = _get_first(rows, ['support_surface::eecon.stone_sac_pct'], 0.0)
     lab_sac = _get_first(rows, ['support_surface::eecon.lab_sac_pct'], 0.0)
@@ -1283,14 +1324,14 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
             gb_cd_term,
         )
 
-    sl_coin_bonus = _get_first(rows, ['support_surface::eecon.spotlight_coin_bonus_multiplier', 'runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier', 'mechanic_param::uw.spotlight.coin_bonus_multiplier'], 1.0)
+    sl_coin_bonus = _get_first(rows, ['support_surface::eecon.spotlight_coin_bonus_multiplier', _compat_runtime('uw.spotlight.coin_bonus_multiplier'), _compat_mech('uw.spotlight.coin_bonus_multiplier')], 1.0)
     sl_quantity = _get_first(rows, ['support_surface::eecon.sl_quantity'], 0.0)
     if sl_quantity <= 0.0:
-        sl_quantity = _epc_slq(_get_first(rows, ['support_surface::eecon.sl_quantity_stone_level', 'mechanic_param::uw.spotlight.quantity_stone_level'], _get_first(rows, ['mechanic_param::uw.spotlight.quantity'], 0.0) - 1.0))
+        sl_quantity = _epc_slq(_get_first(rows, ['support_surface::eecon.sl_quantity_stone_level', _compat_mech('uw.spotlight.quantity_stone_level')], _get_first(rows, [_compat_mech('uw.spotlight.quantity')], 0.0) - 1.0))
     sl_angle = _get_first(rows, ['support_surface::eecon.sl_angle'], 0.0)
     if sl_angle <= 0.0:
         sl_angle = _epc_sla(
-            _get_first(rows, ['support_surface::eecon.sl_angle_stone_level', 'mechanic_param::uw.spotlight.angle_stone_level'], 0.0),
+            _get_first(rows, ['support_surface::eecon.sl_angle_stone_level', _compat_mech('uw.spotlight.angle_stone_level')], 0.0),
             stone_sac,
             lab_sac,
             _get_first(rows, ['support_surface::eecon.sl_angle_prim_sub'], 0.0),
@@ -1325,8 +1366,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
                 isd += extra
 
         ws_total = 0.0
-        has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, ['runtime_mechanic_param::cards.wave_skip.chance_pct'], 0.0) > 0.0)
-        ws_card = _get_first(rows, ['runtime_mechanic_param::cards.wave_skip.chance_pct'], 0.0)
+        has_ws = _bool(rows, ['support_surface::eecon.wave_skip_active'], _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0) > 0.0)
+        ws_card = _get_first(rows, [_compat_runtime('cards.wave_skip.chance_pct')], 0.0)
         ws_mastery = _bool(rows, ['support_surface::eecon.wave_skip_mastery_active'], False)
         ws_mastery_level = _get_first(rows, ['support_surface::eecon.wave_skip_mastery_level'], 0.0)
         for skip in range(1, 11):
@@ -1338,9 +1379,9 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
 
     eecon = cl_factor * eom_factor * sync_factor * spotlight_coin_factor * wave_factor
     _publish(rows, 'derived::eecon.base_meta_factor', adstarter_theme_relic_factor, 'multiplier', [], 'ad starter / theme / relic factor [EP helper support surface]')
-    _publish(rows, 'derived::eecon.cpk_factor', cpk_factor, 'multiplier', [_contributor(rows, 'canonical_stat::coin_kill_multiplier', 'eecon.cpk_factor')], 'EPC_CPK-like coin-per-kill factor [EP helper support surface]')
+    _publish(rows, 'derived::eecon.cpk_factor', cpk_factor, 'multiplier', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.cpk_factor')], 'EPC_CPK-like coin-per-kill factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.freeup_factor', freeup_factor, 'multiplier', [], 'free-up factor [EP helper support surface]')
-    _publish(rows, 'derived::eecon.coin_card_factor', coin_card_factor, 'multiplier', [_contributor(rows, 'runtime_mechanic_param::cards.coins.multiplier', 'eecon.coin_card_factor')], 'EPC_CARD_COINS factor [EP helper support surface]')
+    _publish(rows, 'derived::eecon.coin_card_factor', coin_card_factor, 'multiplier', [_contributor(rows, _compat_runtime('cards.coins.multiplier'), 'eecon.coin_card_factor')], 'EPC_CARD_COINS factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.module_factor', module_factor, 'multiplier', [], 'generator module factor [EP helper support surface]')
     _publish(rows, 'derived::eecon.cl_factor', cl_factor, 'multiplier', [], 'EP eEcon CL term [EP helper support surface]')
     _publish(rows, 'derived::eecon.eom_factor', eom_factor, 'multiplier', [], 'EP eEcon CM term [EP helper support surface]')
@@ -1362,14 +1403,14 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::eecon_ep_helper.dc_sync_factor', sync_factor, 'multiplier', [], 'EP eEcon DC workbook grouping alias [EP helper surface]')
     _publish(rows, 'derived::eecon.spotlight_coin_bonus_term', spotlight_coin_bonus, 'multiplier', [_contributor(rows, 'support_surface::eecon.sl_coin_bonus_lab_level', 'eecon.spotlight_coin_bonus_term')], 'EP spotlight coin bonus term before coverage [EP helper support surface]')
     _publish(rows, 'derived::eecon.spotlight_coin_coverage', spotlight_coin_coverage, 'ratio', [_contributor(rows, 'support_surface::eecon.sl_quantity', 'eecon.spotlight_coin_coverage'), _contributor(rows, 'support_surface::eecon.sl_angle', 'eecon.spotlight_coin_coverage')], 'EP spotlight coin coverage from quantity and angle [EP helper support surface]')
-    _publish(rows, 'derived::eecon.spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, 'runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier', 'eecon.spotlight_coin_factor')], 'EP eEcon DG term [EP helper support surface]')
+    _publish(rows, 'derived::eecon.spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, _compat_runtime('uw.spotlight.coin_bonus_multiplier'), 'eecon.spotlight_coin_factor')], 'EP eEcon DG term [EP helper support surface]')
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_bonus_term', spotlight_coin_bonus, 'multiplier', [_contributor(rows, 'support_surface::eecon.sl_coin_bonus_lab_level', 'eecon_ep_helper.dg_spotlight_coin_bonus_term')], 'EP eEcon DG workbook bonus-term alias [EP helper surface]')
     _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_coverage', spotlight_coin_coverage, 'ratio', [_contributor(rows, 'support_surface::eecon.sl_quantity', 'eecon_ep_helper.dg_spotlight_coin_coverage'), _contributor(rows, 'support_surface::eecon.sl_angle', 'eecon_ep_helper.dg_spotlight_coin_coverage')], 'EP eEcon DG workbook coverage alias [EP helper surface]')
-    _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, 'runtime_mechanic_param::uw.spotlight.coin_bonus_multiplier', 'eecon_ep_helper.dg_spotlight_coin_factor')], 'EP eEcon DG workbook factor alias [EP helper surface]')
+    _publish(rows, 'derived::eecon_ep_helper.dg_spotlight_coin_factor', spotlight_coin_factor, 'multiplier', [_contributor(rows, _compat_runtime('uw.spotlight.coin_bonus_multiplier'), 'eecon_ep_helper.dg_spotlight_coin_factor')], 'EP eEcon DG workbook factor alias [EP helper surface]')
     _publish(rows, 'derived::eecon.wave_factor', wave_factor, 'multiplier', [], 'EP eEcon DH term [EP helper support surface]')
-    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, 'canonical_stat::coin_kill_multiplier', 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [Phase 3 support surface]')
-    _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, 'canonical_stat::coin_kill_multiplier', 'eecon')], 'Native eEcon objective line; currently equal to EP line')
-    _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, 'canonical_stat::coin_kill_multiplier', 'eecon_ep')], 'Exact Effective Paths eEcon objective line')
+    _publish(rows, 'derived::eecon.base_coin_income', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon.base_coin_income')], 'Deterministic coin-income proxy surface derived from the governed eEcon line [Phase 3 support surface]')
+    _publish(rows, 'derived::eecon', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon')], 'Native eEcon objective line; currently equal to EP line')
+    _publish(rows, 'derived::eecon_ep', eecon, 'scalar', [_contributor(rows, _compat_canon('coin_kill_multiplier'), 'eecon_ep')], 'Exact Effective Paths eEcon objective line')
 
 
 def compute_derived_ehp(rows):
@@ -1388,3 +1429,4 @@ def compute_derived_eecon(rows):
     tmp = dict(rows)
     publish_derived_composites(tmp)
     return tmp['derived::eecon'].final_value
+

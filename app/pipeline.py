@@ -52,7 +52,8 @@ from simulators.perk_timeline_generator import (
     perk_state_at_wave,
 )
 from simulators.snapshot_resolver import SimulatorSnapshotResolver
-from simulators.timing import resolve_timing_consumer_bundle
+from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
+from simulators.scenario import publish_farming_throughput_support_surfaces
 
 
 # ---------------------------------------------------------------------------
@@ -261,7 +262,67 @@ def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_
     _annotate_display_fields(statbook_dict)
     return statbook_dict
 
+def _manual_input_numeric_value(
+    manual_advisory_inputs: dict,
+    input_id: str,
+    *,
+    default: float | None = None,
+) -> float | None:
+    entry = (manual_advisory_inputs or {}).get(input_id)
+    if not isinstance(entry, dict):
+        return default
+    if not entry.get('is_set', False) and entry.get('value') in (None, ''):
+        return default
+    try:
+        return float(entry.get('value'))
+    except (TypeError, ValueError):
+        return default
 
+
+def _merge_scenario_publication_rows(
+    statbook,
+    *,
+    account_state,
+    stat_inputs,
+    preset_name: str,
+    state_mode: str,
+    perks_enabled: bool,
+    manual_advisory_inputs: dict,
+) -> None:
+    scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
+    timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
+    farming_hours_per_day = _manual_input_numeric_value(
+        manual_advisory_inputs,
+        'module.farming.hours_per_day',
+        default=23.5,
+    )
+    bound, rows = compile_timing_family_rows(
+        account_state=account_state,
+        family_id=timing_family_id,
+        preset_name=preset_name,
+        scenario_config=scenario_config,
+        state_mode=state_mode,
+        perks_enabled=perks_enabled,
+    )
+    timing_statbook = QEResolutionPlanner().resolve_rows_declared_family_statbook(
+        identity=bound.binding.identity,
+        stat_inputs=rows,
+        family_id=timing_family_id,
+        requested_surface_ids=(
+            'support_surface::timing.wave_duration_seconds_effective',
+        ),
+        notes='run_stats scenario publication timing prerequisite merge',
+        diagnostics={'source': 'app.pipeline.publish_phase3_query_surfaces'},
+    )
+    for surface_id, row in timing_statbook.rows.items():
+        statbook.rows[surface_id] = row
+    publish_farming_throughput_support_surfaces(
+        statbook.rows,
+        account_state=account_state,
+        config=scenario_config,
+        stat_inputs=stat_inputs,
+        farming_hours_per_day=farming_hours_per_day,
+    )
 def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
 
@@ -1398,6 +1459,15 @@ def run_analysis_pipeline(args) -> int:
     )
     stat_inputs = list(main_snapshot.stat_inputs)
     statbook = main_snapshot.statbook
+    _merge_scenario_publication_rows(
+        statbook,
+        account_state=account_state,
+        stat_inputs=stat_inputs,
+        preset_name=args.preset,
+        state_mode=args.state_mode,
+        perks_enabled=perks_enabled,
+        manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+    )
     publish_phase3_query_surfaces(
         statbook.rows,
         manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
@@ -1420,6 +1490,15 @@ def run_analysis_pipeline(args) -> int:
         )
         matrix_inputs = list(matrix_snapshot.stat_inputs)
         matrix_statbook_obj = matrix_snapshot.statbook
+        _merge_scenario_publication_rows(
+            matrix_statbook_obj,
+            account_state=account_state,
+            stat_inputs=matrix_inputs,
+            preset_name=args.preset,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
+            manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+        )
         publish_phase3_query_surfaces(
             matrix_statbook_obj.rows,
             manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
@@ -1975,8 +2054,8 @@ def build_verification_snapshot_set(
         specs = (
             VerificationSnapshotSpec('Farming', 'start_of_run'),
             VerificationSnapshotSpec('Farming', 'max_progression'),
-            VerificationSnapshotSpec('Tourney', 'start_of_run'),
-            VerificationSnapshotSpec('Tourney', 'max_progression'),
+            VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
+            VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
         )
     results: list[PipelineRunResult] = []
     for spec in specs:

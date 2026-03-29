@@ -8,17 +8,31 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 
+from qe.contracts import normalize_surface_id_to_contract
 from qe.materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
 from qe.consumer_registry import resolve_consumer_bundle
 from simulators.scenario import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
+from qe.routing import QEResolutionPlanner
 from input.state_types import AccountState
 from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
 ORB_BOSS_HIT_LEVELS_TABLE = ROOT / "kb" / "global-rules" / "tables" / "note-derived-orb-boss-hit-levels-1-10.csv"
 WAVE_TIMING_BASELINES_TABLE = ROOT / "kb" / "global-rules" / "tables" / "wave-timing-baselines.csv"
+
+
+def _sid(surface_id: str) -> str:
+    return normalize_surface_id_to_contract(surface_id)
+
+
+def _mech(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_mech('{destination_id}'))
+
+
+def _runtime(destination_id: str) -> str:
+    return normalize_surface_id_to_contract(f_runtime('{destination_id}'))
 
 
 def _uptime(duration: float, cooldown: float) -> float:
@@ -170,8 +184,8 @@ def resolve_combat_runtime_surfaces(
     row_map = row_map or {}
 
     boss_hit_interval_override = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.boss_hit_interval_seconds',
-        'runtime_mechanic_param::combat.boss_interval_seconds',
+        _runtime('combat.boss_hit_interval_seconds'),
+        _runtime('combat.boss_interval_seconds'),
     ])
     if boss_hit_interval_override is not None:
         boss_hit_interval_seconds = float(boss_hit_interval_override)
@@ -181,9 +195,9 @@ def resolve_combat_runtime_surfaces(
         notes.append(f'Boss hit interval sourced from scenario engine: {boss_hit_interval_seconds}s.')
 
     orb_pct = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.orb_boss_hit_pct',
-        'runtime_mechanic_param::tower.orb_boss_hit_pct',
-        'runtime_mechanic_param::tower.orb.hit_pct_vs_boss',
+        _runtime('combat.orb_boss_hit_pct'),
+        _runtime('tower.orb_boss_hit_pct'),
+        _runtime('tower.orb.hit_pct_vs_boss'),
     ])
     if orb_pct is not None:
         notes.append(f'Orb boss-hit pct consumed from governed surface: {orb_pct}.')
@@ -207,9 +221,9 @@ def resolve_combat_runtime_surfaces(
             notes.append(f'Orb boss-hit pct using explicit override fallback: {orb_pct}.')
 
     orb_hz = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.orb_boss_hits_per_second',
-        'runtime_mechanic_param::tower.orb_boss_hits_per_second',
-        'runtime_mechanic_param::tower.orb.hits_per_second_vs_boss',
+        _runtime('combat.orb_boss_hits_per_second'),
+        _runtime('tower.orb_boss_hits_per_second'),
+        _runtime('tower.orb.hits_per_second_vs_boss'),
     ])
     if orb_hz is not None:
         notes.append(f'Orb boss-hit cadence consumed from governed surface: {orb_hz} Hz.')
@@ -223,9 +237,9 @@ def resolve_combat_runtime_surfaces(
         notes.append('Orb boss-hit cadence remains open: no defended formula in current KB/package.')
 
     electron_hz = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.electron_hits_per_second',
-        'runtime_mechanic_param::module.orbital_augment.electron_hits_per_second',
-        'runtime_mechanic_param::module.orbital_augment.hits_per_second_vs_boss',
+        _runtime('combat.electron_hits_per_second'),
+        _runtime('module.orbital_augment.electron_hits_per_second'),
+        _runtime('module.orbital_augment.hits_per_second_vs_boss'),
     ])
     if electron_hz is not None:
         notes.append(f'Electron cadence consumed from governed surface: {electron_hz} Hz.')
@@ -239,8 +253,8 @@ def resolve_combat_runtime_surfaces(
         notes.append('Electron cadence remains open: Orbital Augment speed is not governed in current KB/package.')
 
     contact_t = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.boss_contact_time_seconds',
-        'runtime_mechanic_param::combat.contact_time_seconds_vs_boss',
+        _runtime('combat.boss_contact_time_seconds'),
+        _runtime('combat.contact_time_seconds_vs_boss'),
     ])
     if contact_t is not None:
         notes.append(f'Boss contact time consumed from governed surface: {contact_t}s.')
@@ -254,7 +268,7 @@ def resolve_combat_runtime_surfaces(
         notes.append('Boss contact time remains open: no defended contact-distance/speed formula in current KB/package.')
 
     effective_dr = _lookup_row_value(row_map, [
-        'runtime_mechanic_param::combat.effective_damage_reduction_pct',
+        _runtime('combat.effective_damage_reduction_pct'),
     ])
     if effective_dr is not None:
         notes.append(f'Effective damage reduction consumed from governed surface: {effective_dr}%.')
@@ -540,7 +554,25 @@ def resolve_timing_family_query(
     kernel: StatQueryKernel | None = None,
 ) -> QueryResponse:
     query_kernel = kernel or get_default_query_kernel()
-    baseline = materialize_timing_family_baseline(
+    if kernel is not None:
+        query_kernel = kernel
+        baseline = materialize_timing_family_baseline(
+            account_state=account_state,
+            family_id=family_id,
+            preset_name=preset_name,
+            scenario_config=scenario_config,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
+            runtime_branch_id=runtime_branch_id,
+            card_preset_name=card_preset_name,
+            module_preset_name=module_preset_name,
+            perk_preset_name=perk_preset_name,
+            materializer=query_kernel.materializer,
+        )
+        return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+
+    planner = QEResolutionPlanner()
+    bound, rows = compile_timing_family_rows(
         account_state=account_state,
         family_id=family_id,
         preset_name=preset_name,
@@ -551,9 +583,15 @@ def resolve_timing_family_query(
         card_preset_name=card_preset_name,
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
-        materializer=query_kernel.materializer,
     )
-    return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
+    result = planner.resolve_rows_declared_family_query(
+        identity=bound.binding.identity,
+        stat_inputs=rows,
+        family_id=family_id,
+        requested_surface_ids=requested_surface_ids,
+        trace_mode=trace_mode,
+    )
+    return result.response
 
 
 def resolve_timing_consumer_bundle(
@@ -710,7 +748,7 @@ def _wave_acceleration_pct_from_rows(rows: Sequence[StatInput]) -> float:
 
 def build_default_econ_timing_mechanics(statbook_rows: Dict[str, dict]) -> List[TimingMechanic]:
     def _get(key: str, default: float = 0.0) -> float:
-        row = statbook_rows.get(key) or {}
+        row = statbook_rows.get(_sid(key)) or {}
         try:
             return float(row.get("final_value", default))
         except (TypeError, ValueError):
@@ -720,20 +758,20 @@ def build_default_econ_timing_mechanics(statbook_rows: Dict[str, dict]) -> List[
     return [
         TimingMechanic(
             mechanic_id="golden_tower",
-            active_duration_s=_get("mechanic_param::uw.golden_tower.duration_seconds"),
-            cooldown_s=_get("mechanic_param::uw.golden_tower.cooldown_seconds"),
-            active_multiplier=max(0.0, _get("mechanic_param::uw.golden_tower.bonus_multiplier")),
+            active_duration_s=_get(_mech('uw.golden_tower.duration_seconds')),
+            cooldown_s=_get(_mech('uw.golden_tower.cooldown_seconds')),
+            active_multiplier=max(0.0, _get(_mech('uw.golden_tower.bonus_multiplier'))),
         ),
         TimingMechanic(
             mechanic_id="black_hole_coin",
-            active_duration_s=_tp("mechanic_param::uw.black_hole.duration_seconds", "runtime_mechanic_param::uw.black_hole.duration_seconds"),
-            cooldown_s=_tp("mechanic_param::uw.black_hole.cooldown_seconds", "runtime_mechanic_param::uw.black_hole.cooldown_seconds"),
-            active_multiplier=max(0.0, _get("runtime_mechanic_param::uw.black_hole.coin_bonus_multiplier")),
+            active_duration_s=_tp(_mech('uw.black_hole.duration_seconds'), _runtime('uw.black_hole.duration_seconds')),
+            cooldown_s=_tp(_mech('uw.black_hole.cooldown_seconds'), _runtime('uw.black_hole.cooldown_seconds')),
+            active_multiplier=max(0.0, _get(_runtime('uw.black_hole.coin_bonus_multiplier'))),
         ),
         TimingMechanic(
             mechanic_id="golden_bot",
-            active_duration_s=_get("mechanic_param::bot.golden.duration_seconds"),
-            cooldown_s=_get("mechanic_param::bot.golden.cooldown_seconds"),
-            active_multiplier=max(0.0, _get("mechanic_param::bot.golden.bonus_multiplier")),
+            active_duration_s=_get(_mech('bot.golden.duration_seconds')),
+            cooldown_s=_get(_mech('bot.golden.cooldown_seconds')),
+            active_multiplier=max(0.0, _get(_mech('bot.golden.bonus_multiplier'))),
         ),
     ]

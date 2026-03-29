@@ -19,11 +19,38 @@ def test_main_entrypoint_is_importable__callable():
     assert callable(main)
 
 
-def test_pipeline_entrypoint_is_importable__callable():
-    from app.pipeline import execute_pipeline, run_pipeline
+def test_analysis_entrypoint_is_importable__callable():
+    from app.run_analysis import main
+
+    assert callable(main)
+
+
+def test_pipeline_entrypoints_are_importable__callable():
+    from app.pipeline import (
+        RunStatsSession,
+        execute_pipeline,
+        get_default_run_stats_session,
+        run_analysis_pipeline,
+        run_stats_client,
+        run_stats_ensure_local_server,
+        run_stats_local_server_is_healthy,
+        run_pipeline,
+        run_stats_pipeline,
+        run_stats_server,
+        run_stats_watch_loop,
+    )
 
     assert callable(execute_pipeline)
+    assert callable(run_stats_pipeline)
+    assert callable(run_stats_server)
+    assert callable(run_stats_client)
+    assert callable(run_stats_ensure_local_server)
+    assert callable(run_stats_local_server_is_healthy)
+    assert callable(run_stats_watch_loop)
+    assert callable(run_analysis_pipeline)
     assert callable(run_pipeline)
+    assert callable(RunStatsSession)
+    assert get_default_run_stats_session() is get_default_run_stats_session()
 
 
 def test_pipeline_module_imports_active_layers__contains_expected_imports():
@@ -33,18 +60,36 @@ def test_pipeline_module_imports_active_layers__contains_expected_imports():
     assert "from qe.publication import publish_phase3_query_surfaces" in src
     assert "from qe.shared_runtime_context import get_default_qe_shared_runtime_context" in src
     assert "from simulators.progression import resolve_run_stats_progression_bundle" in src
+    assert "resolve_run_stats_progression_bundle" in src
+    assert "resolve_timing_consumer_bundle" in src
+    assert "QEResolutionPlanner" in src
+    assert "publish_phase3_query_surfaces" in src
+    assert "from evaluators.scorer import compute_optimizer_scores" in src
     assert "from input.loader import load_inputs" in src
+    assert "from input.runtime_state import build_runtime_state" in src
 
 
-def test_cli_exposes_explicit_perk_mode_argument():
+def test_pipeline_uses_explicit_report_snapshot_path():
+    src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
+    assert "resolve_report_snapshot(" in src
+    assert "resolve_snapshot(" not in src
+
+
+def test_run_stats_cli_defaults_to_current_stats_mode():
     src = Path((ROOT / "app" / "run_stats.py")).read_text(encoding="utf-8")
     assert "--perk-mode" in src
-    assert "max_progression_policy" in src
+    assert "--watch" in src
+    assert "--server" in src
+    assert "--use-server" in src
+    assert "--state-mode" not in src
+    assert "--preset" not in src
+    assert "default='none'" in src
 
 
-def test_cli_exposes_slow_audits_flag():
+def test_run_analysis_cli_preserves_analysis_flags():
     src = Path((ROOT / "app" / "run_analysis.py")).read_text(encoding="utf-8")
     assert "--include-slow-audits" in src
+    assert "max_progression_policy" in src
 
 
 def test_streamlit_inspector_is_importable_when_streamlit_available():
@@ -91,3 +136,61 @@ def test_module_substat_unlock_count_matches_expected_thresholds():
     assert inspector_mod._module_substat_unlock_count(101) == 4
     assert inspector_mod._module_substat_unlock_count(165) == 6
     assert inspector_mod._module_substat_unlock_count(241) == 8
+
+def test_run_stats_pipeline_targets_farming_and_tourney():
+    src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
+    assert "preset_names = ['Farming', 'Tourney']" in src
+
+
+def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    called = {"ensure": 0, "client": 0, "pipeline": 0}
+
+    def _ensure(args):
+        called["ensure"] += 1
+        return True
+
+    def _client(args):
+        called["client"] += 1
+        return 0
+
+    def _pipeline(args):
+        called["pipeline"] += 1
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
+    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+
+    assert run_stats_mod.main() == 0
+    assert called == {"ensure": 1, "client": 1, "pipeline": 0}
+
+
+def test_run_stats_main_falls_back_to_pipeline_when_local_server_cannot_be_ensured(monkeypatch):
+    import app.pipeline as pipeline_mod
+    import app.run_stats as run_stats_mod
+
+    called = {"ensure": 0, "client": 0, "pipeline": 0}
+
+    def _ensure(args):
+        called["ensure"] += 1
+        return False
+
+    def _client(args):
+        called["client"] += 1
+        return 0
+
+    def _pipeline(args):
+        called["pipeline"] += 1
+        return 0
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
+    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
+    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
+    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+
+    assert run_stats_mod.main() == 0
+    assert called == {"ensure": 1, "client": 0, "pipeline": 1}
