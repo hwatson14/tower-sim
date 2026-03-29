@@ -129,6 +129,26 @@ _QE_FILE_ALLOWLIST = {
     "stat_input_compiler.py",
     "stat_resolution.py",
 }
+_SIMULATORS_FILE_ALLOWLIST = {
+    "__init__.py",
+    "contracts.py",
+    "incremental_cache_fingerprint.py",
+    "incremental_cache_validator.py",
+    "incremental_overlay_publisher.py",
+    "incremental_parity_harness.py",
+    "incremental_recalc_runtime.py",
+    "incremental_subset_executor.py",
+    "performance.py",
+    "perks.py",
+    "perk_timeline_generator.py",
+    "perk_timeline_state.py",
+    "progression.py",
+    "runtime_consumer_executor.py",
+    "scenario.py",
+    "snapshot_resolver.py",
+    "timing.py",
+    "wave_progression_policy.py",
+}
 
 pytestmark = pytest.mark.live
 
@@ -433,6 +453,14 @@ def test_qe_direct_file_inventory_remains_explicit():
     )
 
 
+def test_simulators_direct_file_inventory_remains_explicit():
+    """Keep simulators/ root-file sprawl under an explicit architecture-approved allowlist."""
+    simulator_files = {p.name for p in SIMULATORS_DIR.iterdir() if p.is_file()}
+    assert simulator_files <= _SIMULATORS_FILE_ALLOWLIST, (
+        f"Unexpected simulators/ files: {sorted(simulator_files - _SIMULATORS_FILE_ALLOWLIST)}"
+    )
+
+
 def test_app_and_compare_use_qe_planner_not_direct_resolve_calls():
     """App pipeline and compare builder should consume the QE planner's explicit report path, not raw resolve_stats or the ambiguous snapshot alias."""
     targets = [
@@ -495,6 +523,31 @@ def test_simulator_family_queries_default_to_qe_planner():
     )
     assert "resolve_snapshot(" not in timing_src, (
         "simulators/timing.py must not use the ambiguous snapshot alias on simulator-facing execution."
+    )
+
+
+def test_simulator_snapshot_resolver_stays_on_lightweight_checkpoint_path():
+    """snapshot_resolver.py is a hot-path seam and must not drift back to bridge, compat, or app orchestration imports."""
+    path = ROOT / "simulators" / "snapshot_resolver.py"
+    src = path.read_text(encoding="utf-8")
+
+    assert "resolve_checkpoint_surfaces" in src, (
+        "simulators/snapshot_resolver.py must keep using the explicit QE checkpoint seam."
+    )
+    assert "ProgressionRecalcBridge" not in src, (
+        "simulators/snapshot_resolver.py must not depend on ProgressionRecalcBridge."
+    )
+    assert "qe.stat_resolution" not in src, (
+        "simulators/snapshot_resolver.py must not import qe.stat_resolution."
+    )
+    assert "app.pipeline" not in src, (
+        "simulators/snapshot_resolver.py must not depend on app.pipeline orchestration."
+    )
+    assert "resolve_report_snapshot(" not in src, (
+        "simulators/snapshot_resolver.py must not use the report snapshot path."
+    )
+    assert "resolve_stats(" not in src, (
+        "simulators/snapshot_resolver.py must not call the broad compat/report resolver."
     )
 
 
