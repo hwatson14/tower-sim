@@ -58,8 +58,8 @@ def main() -> int:
     if args.watch:
         from app.pipeline import run_stats_watch_loop
         return run_stats_watch_loop(args)
-    from app.pipeline import run_stats_client, run_stats_local_server_is_healthy, run_stats_pipeline
-    if run_stats_local_server_is_healthy(args):
+    from app.pipeline import run_stats_client, run_stats_ensure_local_server, run_stats_pipeline
+    if run_stats_ensure_local_server(args):
         return run_stats_client(args)
     return run_stats_pipeline(args)
 

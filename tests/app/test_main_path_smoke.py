@@ -31,6 +31,7 @@ def test_pipeline_entrypoints_are_importable__callable():
         get_default_run_stats_session,
         run_analysis_pipeline,
         run_stats_client,
+        run_stats_ensure_local_server,
         run_stats_local_server_is_healthy,
         run_pipeline,
         run_stats_pipeline,
@@ -41,6 +42,7 @@ def test_pipeline_entrypoints_are_importable__callable():
     assert callable(run_stats_pipeline)
     assert callable(run_stats_server)
     assert callable(run_stats_client)
+    assert callable(run_stats_ensure_local_server)
     assert callable(run_stats_local_server_is_healthy)
     assert callable(run_stats_watch_loop)
     assert callable(run_analysis_pipeline)
@@ -90,14 +92,14 @@ def test_run_stats_pipeline_targets_farming_and_tourney():
     assert "preset_names = ['Farming', 'Tourney']" in src
 
 
-def test_run_stats_main_prefers_local_server_when_healthy(monkeypatch):
+def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
 
-    called = {"healthy": 0, "client": 0, "pipeline": 0}
+    called = {"ensure": 0, "client": 0, "pipeline": 0}
 
-    def _healthy(args):
-        called["healthy"] += 1
+    def _ensure(args):
+        called["ensure"] += 1
         return True
 
     def _client(args):
@@ -108,23 +110,23 @@ def test_run_stats_main_prefers_local_server_when_healthy(monkeypatch):
         called["pipeline"] += 1
         return 0
 
-    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", _healthy)
+    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
     monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
     monkeypatch.setattr(sys, "argv", ["app.run_stats"])
 
     assert run_stats_mod.main() == 0
-    assert called == {"healthy": 1, "client": 1, "pipeline": 0}
+    assert called == {"ensure": 1, "client": 1, "pipeline": 0}
 
 
-def test_run_stats_main_falls_back_to_pipeline_when_server_unavailable(monkeypatch):
+def test_run_stats_main_falls_back_to_pipeline_when_local_server_cannot_be_ensured(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
 
-    called = {"healthy": 0, "client": 0, "pipeline": 0}
+    called = {"ensure": 0, "client": 0, "pipeline": 0}
 
-    def _healthy(args):
-        called["healthy"] += 1
+    def _ensure(args):
+        called["ensure"] += 1
         return False
 
     def _client(args):
@@ -135,10 +137,10 @@ def test_run_stats_main_falls_back_to_pipeline_when_server_unavailable(monkeypat
         called["pipeline"] += 1
         return 0
 
-    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", _healthy)
+    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
     monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
     monkeypatch.setattr(sys, "argv", ["app.run_stats"])
 
     assert run_stats_mod.main() == 0
-    assert called == {"healthy": 1, "client": 0, "pipeline": 1}
+    assert called == {"ensure": 1, "client": 0, "pipeline": 1}
