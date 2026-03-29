@@ -83,7 +83,6 @@ def publish_phase3_query_surfaces(
     lab policy publisher which feeds into drop economy.
     """
     publish_derived_composites(rows)
-    publish_currency_income_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
     publish_module_runtime_policy_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
     publish_module_draw_policy_surfaces(rows)
     _publish_module_account_tier_surfaces(rows)
@@ -93,6 +92,7 @@ def publish_phase3_query_surfaces(
         publish_module_drop_economy_surfaces(rows, manual_advisory_inputs)
     if 'derived::module.runtime_profile.highest_tier_unlocked' in rows:
         publish_module_mission_economy_surfaces(rows)
+    publish_currency_income_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
 
 
 def phase3_publication_contract_snapshot() -> dict:

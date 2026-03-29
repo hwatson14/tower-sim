@@ -51,8 +51,8 @@ manual_advisory_inputs:
     - input_id: income.gems.per_week
       input_kind: external_observation
       value_type: per_week
-      value: null
-      is_set: false
+      value: 4000
+      is_set: true
       unit: gems_per_week
       consumer_scope: [simulator, optimizer, advisor]
       trust_label: externally_observed
@@ -62,8 +62,8 @@ manual_advisory_inputs:
     - input_id: income.keys.per_week
       input_kind: external_observation
       value_type: per_week
-      value: null
-      is_set: false
+      value: 0
+      is_set: true
       unit: keys_per_week
       consumer_scope: [simulator, optimizer, advisor]
       trust_label: externally_observed
@@ -73,36 +73,36 @@ manual_advisory_inputs:
     - input_id: income.medals.per_week
       input_kind: external_observation
       value_type: per_week
-      value: null
-      is_set: false
+      value: 1000
+      is_set: true
       unit: medals_per_week
       consumer_scope: [simulator, optimizer, advisor]
       trust_label: externally_observed
       rationale: "User-supplied weekly medals income when the repo cannot derive it deterministically."
       replacement_target: "future_query_surface::derived::economy.income.medals"
       notes: "Set is_set=true and provide a numeric value to publish this surface."
-    - input_id: income.shards.per_week
+    - input_id: income.power_stones.per_week
       input_kind: external_observation
       value_type: per_week
-      value: null
-      is_set: false
-      unit: shards_per_week
+      value: 450
+      is_set: true
+      unit: power_stones_per_week
       consumer_scope: [simulator, optimizer, advisor]
       trust_label: externally_observed
-      rationale: "User-supplied weekly shards income when the repo cannot derive it deterministically."
-      replacement_target: "future_query_surface::derived::economy.income.shards"
+      rationale: "User-supplied weekly power-stones income when the repo cannot derive it deterministically."
+      replacement_target: "future_query_surface::derived::economy.income.power_stones"
       notes: "Set is_set=true and provide a numeric value to publish this surface."
-    - input_id: income.stones.per_week
-      input_kind: external_observation
-      value_type: per_week
-      value: null
-      is_set: false
-      unit: stones_per_week
+    - input_id: module.farming.hours_per_day
+      input_kind: accepted_model_parameter
+      value_type: scalar
+      value: 23.5
+      is_set: true
+      unit: hours_per_day
       consumer_scope: [simulator, optimizer, advisor]
-      trust_label: externally_observed
-      rationale: "User-supplied weekly stones income when the repo cannot derive it deterministically."
-      replacement_target: "future_query_surface::derived::economy.income.stones"
-      notes: "Set is_set=true and provide a numeric value to publish this surface."
+      trust_label: accepted_model
+      rationale: "Average daily farming hours used by the simulator-owned farming throughput model."
+      replacement_target: "derived::module.runtime_profile.farming_hours_per_day"
+      notes: "Default accepted-model cadence assumption for farming throughput and shard income."
 
 observed_run_els_scenarios:
   scenarios:
