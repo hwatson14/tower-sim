@@ -19,7 +19,7 @@ import pandas as pd
 import yaml
 
 from input.runtime_state import build_runtime_state
-from qe.publication import publish_phase3_query_surfaces
+from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, classify_input_routing
 from qe.stat_input_compiler import compile_stat_inputs
 
@@ -2512,7 +2512,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
                 perks_enabled=perks_enabled,
             )
             statbook = snapshot.statbook
-            publish_phase3_query_surfaces(statbook.rows, account_state_labs=state.labs)
+            publish_query_surfaces(statbook.rows, account_state_labs=state.labs)
             statbook_dict = statbook.to_dict()
             for destination, row in statbook_dict.get('rows', {}).items():
                 row['formula_contract'] = _formula_contract(formula_ledger, destination)

@@ -4,7 +4,7 @@ import pytest
 
 from qe.query_currency_income import (
     currency_income_surface_contract_snapshot,
-    phase3_income_resolution_audit_snapshot,
+    income_resolution_audit_snapshot,
 )
 
 pytestmark = pytest.mark.live
@@ -25,7 +25,7 @@ def test_currency_income_contract_snapshot__uses_kb_aligned_power_stones_and_exc
 
 
 def test_currency_income_audit_snapshot__partitions_supported_and_unsupported_resources():
-    audit = phase3_income_resolution_audit_snapshot()
+    audit = income_resolution_audit_snapshot()
 
     assert "shards" in audit["deterministic_resources"]
     assert "shards" not in audit["externalized_manual_resources"]
