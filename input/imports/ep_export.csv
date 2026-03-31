@@ -21,16 +21,16 @@ edmg,super_crit_chance,Super Crit Chance,0.24900000000000003,0.24900000000000003
 edmg,super_crit_multiplier,Super Crit Multiplier,x35.43,x35.43
 edmg,max_rend_mult,Max Rend Mult,9.6,9.6
 edmg,recovery_package_chance,Recovery Package Chance,0.7879999999999999,0.7879999999999999
-ehp,ehp,eHP,190.14 q,190.14 q
-ehp,health,Health,7.4 T,7.4 T
+ehp,ehp,eHP,194.01 q,194.01 q
+ehp,health,Health,7.55 T,7.55 T
 ehp,health_regen,Health Regen,44.64 T,44.64 T
 ehp,defense_absolute,Defense Absolute,318.93 M,318.93 M
 ehp,defense_percent,Defense %,0.98,0.98
-ehp,wall_health,Wall Health,129.44 T,129.44 T
-ehp,wall_fortification,Wall Fortification,1.35 q,1.35 q
+ehp,wall_health,Wall Health,132.07 T,132.07 T
+ehp,wall_fortification,Wall Fortification,1.37 q,1.37 q
 ehp,wall_regen,Wall Regen,234.35 T,234.35 T
 ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,104.83 M,104.83 M
+eecon,cpk_average,Average CpK,105.44 M,105.44 M
 eecon,coins_per_kill_bonus,Coins / Kill Bonus,44.693475750000005,44.693475750000005
 eecon,free_attack_upgrade,Free Attack Upgrade,1.1062424999999998,1.1062424999999998
 eecon,free_defense_upgrade,Free Defense Upgrade,1.0749337499999998,1.0749337499999998
