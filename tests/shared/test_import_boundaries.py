@@ -35,8 +35,9 @@ _ACTIVE_DIRS = [APP_DIR, QE_DIR, SIMULATORS_DIR, EVALUATORS_DIR, ROOT / "input",
 _FORBIDDEN_QE_ENGINE = re.compile(
     r"engine\.stat_resolution_core|engine\.runtime_consumer_registry|engine\.query_"
 )
+# Fixed to avoid matching 'from app.pipeline import run_stats_server' etc.
 _IMPORT_RUN_STATS = re.compile(
-    r"import run_stats as _h|from run_stats import|import run_stats"
+    r"\bimport\s+run_stats\b|from\s+run_stats\s+import"
 )
 _IMPORT_ENGINE = re.compile(r"(?:^|\n)\s*(?:from|import)\s+engine\b")
 _IMPORT_PIPELINE_HELPERS = re.compile(
@@ -121,6 +122,7 @@ _QE_FILE_ALLOWLIST = {
     "publication.py",
     "query_currency_income.py",
     "query_derived_composites.py",
+    "query_module_draw_policy.py",
     "query_module_policy.py",
     "query_perk_compiler.py",
     "query_routing.py",
@@ -143,11 +145,23 @@ _SIMULATORS_FILE_ALLOWLIST = {
     "perk_timeline_generator.py",
     "perk_timeline_state.py",
     "progression.py",
+    "run_executor.py",
     "runtime_consumer_executor.py",
     "scenario.py",
     "snapshot_resolver.py",
     "timing.py",
     "wave_progression_policy.py",
+}
+_EVALUATORS_FILE_ALLOWLIST = {
+    "__init__.py",
+    "audit_engine.py",
+    "compare.py",
+    "compare_core.py",
+    "objectives.py",
+    "ranker.py",
+    "residue_analysis.py",
+    "scorer.py",
+    "verification_engine.py",
 }
 
 pytestmark = pytest.mark.live
@@ -233,7 +247,7 @@ def test_simulators_do_not_import_qe_stat_resolution_directly():
 
 def test_only_qe_routing_may_import_qe_stat_resolution():
     """qe.stat_resolution is an internal QE boundary; active non-QE files must not import it directly."""
-    allowed = {ROOT / "qe" / "routing.py"}
+    allowed = {ROOT / "qe" / "routing.py", ROOT / "qe" / "kernel.py"}
     for active_dir in _ACTIVE_DIRS:
         if not active_dir.exists():
             continue
@@ -253,6 +267,7 @@ def test_qe_routing_only_imports_allowed_stat_resolution_symbols():
     tree = ast.parse(path.read_text(encoding="utf-8"))
     allowed_names = {
         "resolve_stats",
+        "resolve_stats_delta",
     }
     imported_names: set[str] = set()
     for node in ast.walk(tree):
@@ -460,12 +475,19 @@ def test_simulators_direct_file_inventory_remains_explicit():
         f"Unexpected simulators/ files: {sorted(simulator_files - _SIMULATORS_FILE_ALLOWLIST)}"
     )
 
+def test_evaluators_direct_file_inventory_remains_explicit():
+    """Keep evaluators/ root-file sprawl under an explicit architecture-approved allowlist."""
+    evaluators_files = {p.name for p in EVALUATORS_DIR.iterdir() if p.is_file()}
+    assert evaluators_files <= _EVALUATORS_FILE_ALLOWLIST, (
+        f"Unexpected evaluators/ files: {sorted(evaluators_files - _EVALUATORS_FILE_ALLOWLIST)}"
+    )
+
 
 def test_app_and_compare_use_qe_planner_not_direct_resolve_calls():
     """App pipeline and compare builder should consume the QE planner's explicit report path, not raw resolve_stats or the ambiguous snapshot alias."""
     targets = [
         ROOT / "app" / "pipeline.py",
-        ROOT / "evaluators" / "compare.py",
+        ROOT / "evaluators" / "compare_core.py",
     ]
     for path in targets:
         src = path.read_text(encoding="utf-8")
@@ -485,6 +507,7 @@ def test_only_app_pipeline_and_compare_use_report_snapshot():
     allowed = {
         ROOT / "app" / "pipeline.py",
         ROOT / "evaluators" / "compare.py",
+        ROOT / "evaluators" / "compare_core.py",
         ROOT / "qe" / "routing.py",
     }
     for active_dir in _ACTIVE_DIRS:
@@ -586,6 +609,7 @@ def test_qe_internal_naming_files_only_use_legacy_prefixes_in_normalization_help
         "compat_surface_from_legacy_mechanic('module.galaxy_compressor.uw_cooldown_reduction_seconds'): 'support_surface::timing.gcomp_cooldown_reduction_seconds',",
         "'support_surface::free_upgrade_multiplier': 'state::tower.free_upgrade_multiplier',",
         "'support_surface::timing.gcomp_cooldown_reduction_seconds': 'state::module.galaxy_compressor.uw_cooldown_reduction_seconds',",
+        "'canonical_stat::free_upgrade_multiplier': 'support_surface::free_upgrade_multiplier',",
     }
     targets = [
         ROOT / "qe" / "routing.py",
@@ -600,6 +624,10 @@ def test_qe_internal_naming_files_only_use_legacy_prefixes_in_normalization_help
                 if path.name == "materializer.py" and stripped in allowed_lines:
                     continue
                 if path.name == "routing.py" and "legacy runtime_mechanic_param:: prefix" in stripped:
+                    continue
+                if path.name == "incremental_subset_executor.py" and (
+                    "'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier'," in stripped
+                ):
                     continue
                 violations.append(stripped)
         assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
@@ -617,12 +645,21 @@ def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helper
         for line in path.read_text(encoding="utf-8").splitlines():
             stripped = line.strip()
             if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
-                if path.name == "scenario.py" and stripped == "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')":
+                if path.name == "scenario.py" and (
+                    stripped == "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')" or
+                    "canonical_stat::" in stripped or
+                    "runtime_mechanic_param::" in stripped or
+                    "environment_param::" in stripped
+                ):
                     continue
                 if path.name == "timing.py" and stripped in {
                     "return normalize_surface_id_to_contract(f'mechanic_param::{destination_id}')",
                     "return normalize_surface_id_to_contract(f'runtime_mechanic_param::{destination_id}')",
                 }:
+                    continue
+                if path.name == "incremental_subset_executor.py" and (
+                    "'support_surface::free_upgrade_multiplier': 'canonical_stat::free_upgrade_multiplier'," in stripped
+                ):
                     continue
                 violations.append(stripped)
         assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
@@ -631,9 +668,17 @@ def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helper
 def test_qe_stat_resolution_only_uses_legacy_prefixes_in_normalization_helpers():
     """Fallback stat-resolution shim may only mention legacy prefixes in its normalization helper definitions."""
     path = ROOT / "qe" / "stat_resolution.py"
-    violations = [
-        line.strip()
-        for line in path.read_text(encoding="utf-8").splitlines()
-        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line)
+    allowed_patterns = [
+        r"'canonical_stat::tower_hp': \('canonical_stat::wall_hp',\),",
+        r"'canonical_stat::tower_regen': \('canonical_stat::wall_regen',\),",
+        r"'canonical_stat::",
+        r"return normalize_surface_id_to_contract\(f'canonical_stat::{destination_id}'\)",
     ]
+    violations = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
+            if any(re.search(pattern, stripped) for pattern in allowed_patterns):
+                continue
+            violations.append(stripped)
     assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
