@@ -974,6 +974,7 @@ class RunStatsSession:
 
     def execute(self, args) -> int:
         args.out.mkdir(parents=True, exist_ok=True)
+        _remove_run_stats_legacy_outputs(args.out)
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
         write_start = perf_counter()
@@ -1285,6 +1286,13 @@ def _load_json_artifact(path: Path) -> dict[str, object]:
 def _generated_output_paths(out_dir: Path) -> list[Path]:
     return sorted(out_dir.glob('*.json')) + sorted(out_dir.glob('*.csv'))
 
+def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
+    for name in _RUN_STATS_LEGACY_OUTPUTS:
+        path = out_dir / name
+        if path.exists():
+            path.unlink()
+
+
 def _build_pipeline_trace_from_artifacts(
     *,
     request: PipelineRunRequest,
@@ -1295,6 +1303,17 @@ def _build_pipeline_trace_from_artifacts(
         'recompute_mode': diagnostics.get('qe_resolution_backend') or diagnostics.get('query_backend') or 'analysis_pipeline',
         'execution_branch': diagnostics.get('qe_resolution_interface') or diagnostics.get('pipeline_kind') or 'analysis_pipeline',
         'cache_status': 'warm' if ((diagnostics.get('session') or {}).get('account_state_cache_hit')) else 'cold',
+        'fallback_required': False,
+        'fallback_reason': None,
+        'bundle_used': None,
+        'consumer_id': None,
+        'family_id': diagnostics.get('qe_native_family_id'),
+        'runtime_consumers': [],
+        'cache_fingerprint': None,
+        'cache_validation': None,
+        'incremental_plan': None,
+        'parity': None,
+        'runtime_publication': None,
         'total_elapsed_ms': total_elapsed_ms,
     }
     timings = diagnostics.get('timings_ms') or {}
@@ -1309,6 +1328,28 @@ def _build_pipeline_trace_from_artifacts(
             outputs_summary={'section_names': diagnostics.get('section_names', []), 'section_row_counts': diagnostics.get('section_row_counts', {})},
         ),
         PipelineStageRecord(
+            stage_id='runtime_account_assembly',
+            title='Runtime/account assembly',
+            owner_module='input.runtime_state',
+            entry_function='build_runtime_state',
+            status='ok',
+            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
+            outputs_summary={'perk_config_resolution': diagnostics.get('perk_config_resolution', {}), 'perk_support': diagnostics.get('perk_support', {})},
+        ),
+        PipelineStageRecord(
+            stage_id='compare_materialization',
+            title='Compare materialization',
+            owner_module='evaluators.compare',
+            entry_function='_build_compare_rows_by_preset',
+            status='ok',
+            elapsed_ms=0.0,
+            outputs_summary={
+                'default_preset': diagnostics.get('default_preset'),
+                'state_mode': diagnostics.get('state_mode'),
+                'perk_state': diagnostics.get('perk_support', {}).get('perk_state'),
+            },
+        ),
+        PipelineStageRecord(
             stage_id='stat_resolution',
             title='Stat-input compilation and resolution',
             owner_module='qe.routing',
@@ -1318,6 +1359,20 @@ def _build_pipeline_trace_from_artifacts(
             outputs_summary={
                 'stat_input_count': diagnostics.get('stat_input_count'),
                 'statbook_row_count': diagnostics.get('statbook_row_count'),
+                'engine_status': diagnostics.get('engine_status'),
+                'qe_resolution_backend': diagnostics.get('qe_resolution_backend'),
+            },
+        ),
+        PipelineStageRecord(
+            stage_id='checks_generation',
+            title='Compare/verification generation',
+            owner_module='evaluators.compare',
+            entry_function='build_line_by_line_verification',
+            status='ok',
+            elapsed_ms=0.0,
+            outputs_summary={
+                'ep_compare_summary': diagnostics.get('ep_compare_summary', {}),
+                'state_matrix_modes': list((diagnostics.get('state_matrix') or {}).keys()),
             },
         ),
         PipelineStageRecord(
@@ -1336,7 +1391,7 @@ def _build_pipeline_trace_from_artifacts(
             'out': _relpath_str(request.out),
             'preset': request.preset,
             'state_mode': request.state_mode,
-            'manual_inputs': _relpath_str(request.manual_inputs),
+            'manual_inputs': None if request.manual_inputs is None else _relpath_str(request.manual_inputs),
             'perk_mode': request.perk_mode,
             'include_slow_audits': request.include_slow_audits,
             'perk_state': request.perk_state,
@@ -1360,10 +1415,11 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
     generated_files = _generated_output_paths(request.out)
     trace = _build_pipeline_trace_from_artifacts(request=request, total_elapsed_ms=total_elapsed_ms, diagnostics=diagnostics)
     trace = PipelineTrace(
-        request=trace.request, execution_path=trace.execution_path, 
+        request=trace.request, execution_path=trace.execution_path,
         stages=trace.stages, artifacts_written=[_relpath_str(p) for p in generated_files]
     )
     write_pipeline_trace(request.out, trace, ROOT)
+    generated_files = _generated_output_paths(request.out)
     return PipelineRunResult(exit_code, request, request.out, diagnostics, tuple(generated_files), trace)
 
 def build_verification_snapshot_set(
