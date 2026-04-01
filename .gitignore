@@ -28,6 +28,7 @@ dist/
 .coverage
 htmlcov/
 
-# Keep shipped deterministic outputs tracked unless policy changes.
-# Add generated directories here later only if you choose to stop versioning them.
+# Generated pipeline outputs -- not versioned
+/out/
+
 /.claude/worktrees

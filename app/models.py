@@ -1,20 +1,16 @@
 """
-app/models.py -- Orchestration and pipeline data models. AUTHORITY (T12).
-
-T12: sharded from app/pipeline.py.
+app/models.py -- Pipeline data models.
 """
 from __future__ import annotations
 
 import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 
-@dataclass
+
+@dataclass(frozen=True)
 class PipelineRunRequest:
-    """
-    Mutable request for a pipeline run.
-    Must be mutable as run_analysis_pipeline normalizes/mutates fields in-place.
-    """
     ids: Path
     out: Path
     preset: str = 'Farming'
@@ -23,6 +19,24 @@ class PipelineRunRequest:
     perk_mode: str = 'max_progression_policy'
     include_slow_audits: bool = False
     perk_state: str = 'auto'
+
+
+def _run_stats_args_from_payload(payload: dict[str, object]):
+    return SimpleNamespace(
+        ids=Path(str(payload['ids'])),
+        out=Path(str(payload['out'])),
+        manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
+        perk_mode=str(payload.get('perk_mode', 'none')),
+        perk_state=str(payload.get('perk_state', 'auto')),
+    )
+
+
+def _normalize_perk_state(perk_state: str) -> str:
+    value = str(perk_state or 'auto').strip().lower()
+    if value not in {'auto', 'on', 'off'}:
+        raise ValueError(f'Unsupported perk state: {perk_state}')
+    return value
+
 
 @dataclass(frozen=True)
 class PipelineStageRecord:
@@ -38,6 +52,7 @@ class PipelineStageRecord:
     def to_dict(self) -> dict[str, object]:
         return dataclasses.asdict(self)
 
+
 @dataclass(frozen=True)
 class PipelineTrace:
     request: dict[str, object]
@@ -50,6 +65,7 @@ class PipelineTrace:
         payload['stages'] = [stage.to_dict() for stage in self.stages]
         return payload
 
+
 @dataclass(frozen=True)
 class PipelineRunResult:
     exit_code: int
@@ -59,12 +75,14 @@ class PipelineRunResult:
     generated_files: tuple[Path, ...]
     pipeline_trace: PipelineTrace
 
+
 @dataclass(frozen=True)
 class VerificationSnapshotSpec:
     preset: str
     state_mode: str
     perk_state: str = 'auto'
     out_subdir: str | None = None
+
 
 @dataclass(frozen=True)
 class FastCheckpointRequest:
@@ -75,6 +93,7 @@ class FastCheckpointRequest:
     perk_mode: str = 'max_progression_policy'
     perk_state: str = 'auto'
     requested_surface_ids: tuple[str, ...] = ()
+
 
 @dataclass(frozen=True)
 class FastCheckpointResult:

@@ -7,25 +7,57 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
-from app.models import PipelineTrace
+import pandas as pd
 
-def _json_sanitize(obj, root_path: Path):
+from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
+from qe.contracts import contract_json_payload as js
+from app.models import _normalize_perk_state
+
+ROOT = Path(__file__).resolve().parents[1]
+
+# --- Helper Functions ---
+
+def _relpath_str(path: Path | str | None, root_path: Path | None = None) -> str | None:
+    if path is None:
+        return None
+    p = Path(path)
+    base = root_path or ROOT
+    try:
+        return str(p.relative_to(base))
+    except (ValueError, RuntimeError):
+        return str(p)
+
+def _json_sanitize(obj, root_path: Path | None = None):
     if isinstance(obj, Path):
-        try:
-            return str(obj.resolve().relative_to(root_path))
-        except Exception:
-            try:
-                return str(obj.relative_to(root_path))
-            except Exception:
-                return str(obj)
+        return _relpath_str(obj, root_path)
     if isinstance(obj, dict):
         return {k: _json_sanitize(v, root_path) for k, v in obj.items()}
     if isinstance(obj, list):
         return [_json_sanitize(v, root_path) for v in obj]
     if isinstance(obj, tuple):
         return [_json_sanitize(v, root_path) for v in obj]
+    if isinstance(obj, str) and (obj.startswith('/') or obj.startswith('\\')):
+        try:
+            return _relpath_str(obj, root_path)
+        except Exception:
+            return obj
     return obj
+
+def _load_json_artifact(path: Path) -> dict[str, object]:
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
+def _generated_output_paths(out_dir: Path) -> list[Path]:
+    return sorted(path for path in out_dir.glob('*.json')) + sorted(path for path in out_dir.glob('*.csv'))
+
+# --- Core Output and Trace Writing ---
 
 def write_pipeline_trace(out_dir: Path, trace: PipelineTrace, root_path: Path) -> Path:
     path = out_dir / 'pipeline_trace.json'
@@ -34,14 +66,28 @@ def write_pipeline_trace(out_dir: Path, trace: PipelineTrace, root_path: Path) -
     path.write_text(json.dumps(sanitized, indent=2, default=str), encoding='utf-8')
     return path
 
-def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
-    legacy = (
-        'statbook_start_of_run.json',
-        'statbook_max_progression.json',
-        'stat_inputs_start_of_run.json',
-        'stat_inputs_max_progression.json',
-    )
-    for name in legacy:
+# Legacy filenames written by the pre-T12 analysis pipeline (run_stats.py monolith).
+# Cleaned up at the start of write_core_outputs() so stale artifacts do not persist.
+_ANALYSIS_PIPELINE_LEGACY_OUTPUTS: list[str] = [
+    'start_of_run.json',
+    'max_progression.json',
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+]
+
+# Legacy filenames written by the pre-T12 run-stats pipeline path.
+# Cleaned up at the start of RunStatsSession.execute() so stale artifacts do not persist.
+# Authority: publication.py (single source for all artifact cleanup contracts).
+_RUN_STATS_LEGACY_OUTPUTS: list[str] = [
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+]
+
+
+def _remove_legacy_outputs(out_dir: Path, legacy_list: list[str]) -> None:
+    for name in legacy_list:
         path = out_dir / name
         if path.exists():
             path.unlink()
@@ -64,13 +110,8 @@ def write_core_outputs(
     family_completeness_matrix: dict,
     root_path: Path,
 ) -> list[str]:
-    import pandas as pd
-    from qe.contracts import normalize_contract_payload
 
-    def js(obj):
-        return normalize_contract_payload(_json_sanitize(obj, root_path))
-
-    _remove_run_stats_legacy_outputs(out_dir)
+    _remove_legacy_outputs(out_dir, _ANALYSIS_PIPELINE_LEGACY_OUTPUTS)
 
     artifacts = [
         ('diagnostics.json', diagnostics),
@@ -91,10 +132,10 @@ def write_core_outputs(
     written = []
     for name, payload in artifacts:
         path = out_dir / name
-        path.write_text(json.dumps(js(payload), indent=2, default=str), encoding='utf-8')
+        path.write_text(json.dumps(js(_json_sanitize(payload, root_path)), indent=2, default=str), encoding='utf-8')
         written.append(name)
 
-    # Residue reports
+    # Residue reports (these are part of diagnostics, but writing them explicitly)
     residue_reports = [
         ('tower_regen_closure_report.json', diagnostics.get('tower_regen_closure_report')),
         ('tower_hp_semantic_gap_report.json', diagnostics.get('tower_hp_semantic_gap_report')),
@@ -105,7 +146,7 @@ def write_core_outputs(
     for name, payload in residue_reports:
         if payload:
             path = out_dir / name
-            path.write_text(json.dumps(js(payload), indent=2, default=str), encoding='utf-8')
+            path.write_text(json.dumps(js(_json_sanitize(payload, root_path)), indent=2, default=str), encoding='utf-8')
             written.append(name)
 
     # CSV export

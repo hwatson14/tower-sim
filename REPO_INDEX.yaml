@@ -43,61 +43,53 @@ root:
 
   run_stats.py:
     status: archived
-    reason: Monolith distributed to app/, evaluators/, input/, qe/.
+    target: archive/legacy/run_stats.py
+    reason: >
+      142 KB monolith mixing orchestration, domain logic, parsing, display.
+      T12: distribution complete. Orchestration in app/, domain in evaluators/, input/, qe/.
 
 # ─── app/ ────────────────────────────────────────────────────────────────────
 
 app:
   app/__init__.py:
     status: active_candidate
+    layer: app/
 
   app/display.py:
     status: active_candidate
+    layer: app/
+
+  app/inspector_data.py:
+    status: active_candidate
+    layer: app/
 
   app/pipeline.py:
     status: active_candidate
-    note: Orchestration authority; utilities sharded in T12.
+    layer: app/
+    note: orchestration authority; utilities extracted in T12
 
   app/run_analysis.py:
     status: active_candidate
+    layer: app/
 
   app/run_stats.py:
     status: active_candidate
-    note: Thin CLI entrypoint.
+    layer: app/
+    note: thin CLI entrypoint
+
+  app/streamlit_inspector.py:
+    status: active_candidate
+    layer: app/
 
   app/models.py:
     status: active_candidate
-    note: T12 extraction — pipeline dataclasses and trace models.
+    layer: app/
+    note: T12 extraction — pipeline dataclasses and trace models
 
   app/publication.py:
     status: active_candidate
-    note: T12 extraction — artifact writing and trace contract.
-
-# ─── evaluators/ ─────────────────────────────────────────────────────────────
-
-evaluators:
-  evaluators/__init__.py:
-    status: active_candidate
-
-  evaluators/compare.py:
-    status: active_candidate
-    note: Thin facade re-exporting sharded logic (T12).
-
-  evaluators/compare_core.py:
-    status: active_candidate
-    note: T12 shard — core scoring and EP comparison.
-
-  evaluators/audit_engine.py:
-    status: active_candidate
-    note: T12 shard — publishing gates and KB audits.
-
-  evaluators/residue_analysis.py:
-    status: active_candidate
-    note: T12 shard — gap analysis and closure reports.
-
-  evaluators/verification_engine.py:
-    status: active_candidate
-    note: T12 shard — oracle parity and loading logic.
+    layer: app/
+    note: T12 extraction — artifact writing and legacy cleanup logic
 
 # ─── input/ ───────────────────────────────────────────────────────────────────
 
@@ -105,26 +97,308 @@ input:
   input/*.py:
     status: active_candidate
 
+  input/loadout.json:
+    status: archive_candidate
+    target: archive/legacy/
+    reason: purpose unclear; not referenced by supported path
+
+  input/perks_max_progression_policy.README.md:
+    status: archive_candidate
+    target: archive/legacy/
+    reason: old doc for a superseded derived artifact pattern
+
+  input/manual_advisory_inputs.example.json:
+    status: archive_candidate
+    target: archive/legacy/
+
+  input/ids_parser.py:
+    status: active_candidate
+    layer: input/
+
+  input/loader.py:
+    status: active_candidate
+    layer: input/
+
   input/manual_inputs.yaml:
+    status: active_candidate
+    layer: input/
+
+  input/runtime_state.py:
+    status: active_candidate
+    layer: input/
+
+  input/state_builder.py:
+    status: active_candidate
+    layer: input/
+
+  input/state_types.py:
+    status: active_candidate
+    layer: input/
+
+  # imports/ — survive as-is
+  input/imports/ids.csv:
     status: active_candidate
 
 # ─── qe/ ──────────────────────────────────────────────────────────────────────
 
 qe:
-  qe/*.py:
+  qe/__init__.py:
     status: active_candidate
+    layer: qe/
+
+  qe/consumer_registry.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/contracts.py:
+    status: active_candidate
+    layer: qe/
+    note: "T12: absorbed _json_sanitize and _contract_json_payload from pipeline"
+
+  qe/dependency_registry.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/kb_surfaces.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/kernel.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/materializer.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/models.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/perk_tables.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/publication.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_currency_income.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_derived_composites.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_module_policy.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_perk_compiler.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_routing.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_state_mode_policy.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/routing.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/shared_runtime_context.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/stat_input_compiler.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/stat_resolution.py:
+    status: active_candidate
+    layer: qe/
 
 # ─── simulators/ ─────────────────────────────────────────────────────────────
 
 simulators:
-  simulators/*.py:
+  simulators/__init__.py:
     status: active_candidate
+    layer: simulators/
+
+  simulators/contracts.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_cache_fingerprint.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_cache_validator.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_overlay_publisher.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_parity_harness.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_recalc_runtime.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_subset_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/performance.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perk_timeline_generator.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perk_timeline_state.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perks.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/progression.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/run_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/runtime_consumer_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/scenario.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/snapshot_resolver.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/timing.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/wave_progression_policy.py:
+    status: active_candidate
+    layer: simulators/
+
+# ─── evaluators/ ─────────────────────────────────────────────────────────────
+
+evaluators:
+  evaluators/__init__.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/compare.py:
+    status: active_candidate
+    layer: evaluators/
+    note: thin facade re-exporting sharded logic (T12)
+
+  evaluators/compare_core.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — core scoring and EP comparison
+
+  evaluators/audit_engine.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — publishing gates and KB audits
+
+  evaluators/residue_analysis.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — gap analysis and closure reports
+
+  evaluators/verification_engine.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — oracle parity and loading logic
+
+  evaluators/objectives.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/ranker.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/scorer.py:
+    status: active_candidate
+    layer: evaluators/
 
 # ─── advisors/ ───────────────────────────────────────────────────────────────
 
 advisors:
-  advisors/*.py:
+  advisors/__init__.py:
     status: active_candidate
+    layer: advisors/
+
+  advisors/recommendation_policy.py:
+    status: active_candidate
+    layer: advisors/
+
+  advisors/upgrade_advisor.py:
+    status: active_candidate
+    layer: advisors/
+
+  # derived/ — single canonical artifact (duplicate removed in T11)
+  # input/derived/perks_max_progression_policy.runtime.json: DELETED (T11) — was identical to perks_derived.json
+
+  input/derived/perks_projected_max.json:
+    status: generated
+
+  input/derived/perks_projected_max.diagnostics.json:
+    status: generated
+
+  input/derived/perks_projected_max.final_state.json:
+    status: generated
+
+  input/derived/perks_projected_max.timeline.json:
+    status: generated
+
+  input/derived/.gitkeep:
+    status: delete_later
+
+# ─── archive/ ────────────────────────────────────────────────────────────────
+
+archive:
+  archive/legacy/:
+    status: active_candidate
+    note: physical location for all demoted code
+
+# ─── engine/ — shims (delete once legacy tests retired) ───────────────────────
+
+engine_shims:
+  engine/*.py:
+    status: shim
+    reason: legacy test compatibility; no active path imports
+
+# ─── models/ — shims ──────────────────────────────────────────────────────────
+
+models_shims:
+  models/*.py:
+    status: shim
+    reason: legacy test compatibility
 
 # ─── tests/ ──────────────────────────────────────────────────────────────────
 
@@ -132,6 +406,10 @@ tests:
   tests/*.py:
     status: active_candidate
 
-  tests/app/test_pipeline_functional.py:
+  tests/live/test_boundary_contracts.py:
     status: active_candidate
-    note: T12 functional verification suite.
+    layer: tests/live/
+
+  tests/test_*.py:
+    status: active_candidate
+    layer: tests/
