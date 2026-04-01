@@ -10,15 +10,13 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 """
 from __future__ import annotations
 
-import csv
-import dataclasses
 import json
 import sys
 from collections import Counter
-from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
+from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -37,9 +35,11 @@ from app.display import (
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.contracts import (
-    normalize_contract_payload,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
+    json_sanitize as _json_sanitize,
+    contract_json_payload as _contract_json_payload,
+    relpath_str as _relpath_str,
 )
 from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
@@ -55,89 +55,42 @@ from simulators.snapshot_resolver import SimulatorSnapshotResolver
 from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
 from simulators.scenario import publish_farming_throughput_support_surfaces
 
+# Data models
+from app.models import (
+    PipelineRunRequest,
+    PipelineStageRecord,
+    PipelineTrace,
+    PipelineRunResult,
+    VerificationSnapshotSpec,
+    FastCheckpointRequest,
+    FastCheckpointResult,
+)
+
+# Publication
+from app.publication import (
+    _write_core_outputs,
+    _remove_run_stats_legacy_outputs,
+    _cleanup_stale_outputs,
+)
 
 # ---------------------------------------------------------------------------
-# T9 bounding: pipeline-local utilities inlined from run_stats.
-# These are orchestration-adjacent helpers; remaining * calls are domain
-# builders legitimately in run_stats pending T-post-9 extraction.
+# Constants
 # ---------------------------------------------------------------------------
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 
+_RUN_STATS_QUERY_OUTPUTS = {
+    'start_of_run_rows': 'run_stats_query_rows_start_of_run.json',
+    'max_progression_rows': 'run_stats_query_rows_max_progression.json',
+    'start_of_run_plan': 'run_stats_query_plan_start_of_run.json',
+    'max_progression_plan': 'run_stats_query_plan_max_progression.json',
+}
 
-@dataclass(frozen=True)
-class PipelineRunRequest:
-    ids: Path
-    out: Path
-    preset: str = 'Farming'
-    state_mode: str = 'max_progression'
-    manual_inputs: Path | None = None
-    perk_mode: str = 'max_progression_policy'
-    include_slow_audits: bool = False
-    perk_state: str = 'auto'
-
-
-@dataclass(frozen=True)
-class PipelineStageRecord:
-    stage_id: str
-    title: str
-    owner_module: str
-    entry_function: str
-    status: str
-    elapsed_ms: float
-    outputs_summary: dict[str, object] = field(default_factory=dict)
-    notes: list[str] = field(default_factory=list)
-
-    def to_dict(self) -> dict[str, object]:
-        return dataclasses.asdict(self)
-
-
-@dataclass(frozen=True)
-class PipelineTrace:
-    request: dict[str, object]
-    execution_path: dict[str, object]
-    stages: list[PipelineStageRecord]
-    artifacts_written: list[str]
-
-    def to_dict(self) -> dict[str, object]:
-        payload = dataclasses.asdict(self)
-        payload['stages'] = [stage.to_dict() for stage in self.stages]
-        return payload
-
-
-@dataclass(frozen=True)
-class PipelineRunResult:
-    exit_code: int
-    request: PipelineRunRequest
-    out_dir: Path
-    diagnostics: dict[str, object]
-    generated_files: tuple[Path, ...]
-    pipeline_trace: PipelineTrace
-
-
-@dataclass(frozen=True)
-class VerificationSnapshotSpec:
-    preset: str
-    state_mode: str
-    perk_state: str = 'auto'
-    out_subdir: str | None = None
-
-
-@dataclass(frozen=True)
-class FastCheckpointRequest:
-    ids: Path
-    preset: str = 'Farming'
-    state_mode: str = 'start_of_run'
-    manual_inputs: Path | None = None
-    perk_mode: str = 'max_progression_policy'
-    perk_state: str = 'auto'
-    requested_surface_ids: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True)
-class FastCheckpointResult:
-    request: FastCheckpointRequest
-    statbook: dict[str, object]
-    diagnostics: dict[str, object]
+_RUN_STATS_LEGACY_OUTPUTS = (
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+)
 
 
 def request_from_args(args) -> PipelineRunRequest:
@@ -160,94 +113,6 @@ def _load_json_config(path: Path) -> dict:
 
 def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
-
-
-def _relpath_str(path_like) -> str:
-    p = Path(path_like)
-    try:
-        return str(p.resolve().relative_to(ROOT))
-    except Exception:
-        try:
-            return str(p.relative_to(ROOT))
-        except Exception:
-            return str(p)
-
-
-def _json_sanitize(obj):
-    if isinstance(obj, Path):
-        return _relpath_str(obj)
-    if isinstance(obj, dict):
-        return {k: _json_sanitize(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_json_sanitize(v) for v in obj]
-    if isinstance(obj, tuple):
-        return [_json_sanitize(v) for v in obj]
-    if isinstance(obj, str) and obj.startswith('/'):
-        try:
-            return _relpath_str(obj)
-        except Exception:
-            return obj
-    return obj
-
-
-def _contract_json_payload(obj):
-    return normalize_contract_payload(_json_sanitize(obj))
-
-
-def _write_core_outputs(
-    *,
-    out_dir: Path,
-    diagnostics: dict,
-    account_state,
-    canonical_output_preset: str,
-    stat_inputs,
-    statbook_dict: dict,
-    statbook_publishable_dict: dict,
-    ep_compare_publishable: dict,
-    line_verification: dict,
-    survivor_closure_report: dict,
-    state_matrix: dict,
-    optimizer_scores: dict,
-    audit_surface_manifest: dict,
-    artifact_contract_manifest: dict,
-    family_completeness_matrix: dict,
-) -> None:
-    import pandas as pd
-
-    js = _contract_json_payload
-    (out_dir / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
-    (out_dir / 'account_state.json').write_text(
-        json.dumps(js(_sanitized_account_state_for_output(account_state, canonical_output_preset)), indent=2, default=str)
-    )
-    (out_dir / 'stat_inputs.json').write_text(
-        json.dumps(js([row.to_dict() for row in stat_inputs]), indent=2, default=str)
-    )
-    (out_dir / 'statbook.json').write_text(json.dumps(js(statbook_dict), indent=2, default=str))
-    (out_dir / 'statbook_publishable.json').write_text(
-        json.dumps(js(statbook_publishable_dict), indent=2, default=str)
-    )
-    (out_dir / 'ep_oracle_compare.json').write_text(
-        json.dumps(js(ep_compare_publishable), indent=2, default=str)
-    )
-    (out_dir / 'line_by_line_verification.json').write_text(
-        json.dumps(js(line_verification), indent=2, default=str)
-    )
-    (out_dir / 'survivor_closure_report.json').write_text(
-        json.dumps(js(survivor_closure_report), indent=2, default=str)
-    )
-    (out_dir / 'state_matrix.json').write_text(json.dumps(js(state_matrix), indent=2, default=str))
-    (out_dir / 'audit_surface_manifest.json').write_text(
-        json.dumps(js(audit_surface_manifest), indent=2, default=str)
-    )
-    (out_dir / 'artifact_contract_manifest.json').write_text(
-        json.dumps(js(artifact_contract_manifest), indent=2, default=str)
-    )
-    (out_dir / 'family_completeness_matrix.json').write_text(
-        json.dumps(js(family_completeness_matrix), indent=2, default=str)
-    )
-    (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
-    verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
-    pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
 
 
 def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_state_labs: dict) -> dict:
@@ -449,28 +314,6 @@ def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: st
     return statbook_dict
 
 
-_RUN_STATS_QUERY_OUTPUTS = {
-    'start_of_run_rows': 'run_stats_query_rows_start_of_run.json',
-    'max_progression_rows': 'run_stats_query_rows_max_progression.json',
-    'start_of_run_plan': 'run_stats_query_plan_start_of_run.json',
-    'max_progression_plan': 'run_stats_query_plan_max_progression.json',
-}
-
-_RUN_STATS_LEGACY_OUTPUTS = (
-    'statbook_start_of_run.json',
-    'statbook_max_progression.json',
-    'stat_inputs_start_of_run.json',
-    'stat_inputs_max_progression.json',
-)
-
-
-def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
-    for name in _RUN_STATS_LEGACY_OUTPUTS:
-        path = out_dir / name
-        if path.exists():
-            path.unlink()
-
-
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     rows: dict[str, dict] = {}
     bundle_ids: list[str] = []
@@ -614,6 +457,7 @@ def _normalize_perk_mode(perk_mode: str | None) -> str:
 
 
 def _load_perk_entity_registry() -> list[dict]:
+    import csv
     path = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
     rows = []
     with path.open('r', encoding='utf-8-sig', newline='') as fh:
@@ -1244,8 +1088,6 @@ def _run_stats_request_payload(args) -> dict[str, object]:
 
 
 def _run_stats_args_from_payload(payload: dict[str, object]) -> SimpleNamespace:
-    from types import SimpleNamespace
-
     return SimpleNamespace(
         ids=Path(str(payload['ids'])),
         out=Path(str(payload['out'])),
@@ -1875,35 +1717,26 @@ def run_analysis_pipeline(args) -> int:
         family_completeness_matrix=family_completeness_matrix,
     )
 
-    # Remove stale output files
-    stale_outputs = [
-        'ep_oracle_compare_backfilled.json',
-        'statbook_oracle_backfilled.json',
-        'destination_formula_ledger.json',
-        'forensic_debug_focus.json',
-    ]
-    for stale_name in stale_outputs:
-        stale_path = args.out / stale_name
-        if stale_path.exists():
-            stale_path.unlink()
+    _cleanup_stale_outputs(args.out)
 
+    js = _contract_json_payload
     (args.out / 'tower_regen_closure_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_regen_closure_report']), indent=2, default=str)
+        json.dumps(js(diagnostics['tower_regen_closure_report']), indent=2, default=str)
     )
     (args.out / 'tower_hp_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
+        json.dumps(js(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_regen_ep_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
+        json.dumps(js(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
+        json.dumps(js(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
     )
     (args.out / 'tower_damage_runtime_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
+        json.dumps(js(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
     )
     (args.out / 'diagnostics.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics), indent=2, default=str)
+        json.dumps(js(diagnostics), indent=2, default=str)
     )
 
     return 0
@@ -1998,40 +1831,9 @@ def _build_pipeline_trace_from_artifacts(
                 'qe_resolution_backend': diagnostics.get('qe_resolution_backend'),
             },
         ),
-        PipelineStageRecord(
-            stage_id='checks_generation',
-            title='Compare/verification generation',
-            owner_module='evaluators.compare',
-            entry_function='build_line_by_line_verification',
-            status='ok',
-            elapsed_ms=0.0,
-            outputs_summary={
-                'ep_compare_summary': diagnostics.get('ep_compare_summary', {}),
-                'line_verification_summary': diagnostics.get('line_verification_summary', {}),
-                'state_matrix_modes': list((diagnostics.get('state_matrix') or {}).keys()),
-            },
-        ),
-        PipelineStageRecord(
-            stage_id='artifact_write',
-            title='Artifact write',
-            owner_module='app.pipeline',
-            entry_function='_write_core_outputs',
-            status='ok',
-            elapsed_ms=float(timings.get('write_outputs_ms') or 0.0),
-            outputs_summary={'out_dir': _relpath_str(request.out)},
-        ),
     ]
     return PipelineTrace(
-        request={
-            'ids': _relpath_str(request.ids),
-            'out': _relpath_str(request.out),
-            'preset': request.preset,
-            'state_mode': request.state_mode,
-            'manual_inputs': None if request.manual_inputs is None else _relpath_str(request.manual_inputs),
-            'perk_mode': request.perk_mode,
-            'include_slow_audits': request.include_slow_audits,
-            'perk_state': request.perk_state,
-        },
+        request=request.__dict__,
         execution_path=execution_path,
         stages=stages,
         artifacts_written=[],
@@ -2039,127 +1841,28 @@ def _build_pipeline_trace_from_artifacts(
 
 
 def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
-    started_at = perf_counter()
-    args = type('PipelineArgs', (), {})()
-    args.ids = request.ids
-    args.out = request.out
-    args.preset = request.preset
-    args.state_mode = request.state_mode
-    args.manual_inputs = request.manual_inputs
-    args.perk_mode = request.perk_mode
-    args.include_slow_audits = request.include_slow_audits
-    args.perk_state = request.perk_state
-    exit_code = run_analysis_pipeline(args)
-    diagnostics = _load_json_artifact(request.out / 'diagnostics.json')
-    total_elapsed_ms = round((perf_counter() - started_at) * 1000.0, 3)
-    pipeline_trace = _build_pipeline_trace_from_artifacts(
+    """
+    Unified entry point for pipeline execution.
+    """
+    start_time = perf_counter()
+    exit_code = run_pipeline(request)
+    total_elapsed_ms = _elapsed_ms(start_time)
+
+    out_dir = request.out
+    diagnostics = _load_json_artifact(out_dir / 'diagnostics.json')
+    generated_files = tuple(_generated_output_paths(out_dir))
+
+    trace = _build_pipeline_trace_from_artifacts(
         request=request,
         total_elapsed_ms=total_elapsed_ms,
         diagnostics=diagnostics,
     )
-    generated_files = _generated_output_paths(request.out)
-    pipeline_trace = PipelineTrace(
-        request=pipeline_trace.request,
-        execution_path=pipeline_trace.execution_path,
-        stages=pipeline_trace.stages,
-        artifacts_written=[_relpath_str(path) for path in generated_files],
-    )
-    (request.out / 'pipeline_trace.json').write_text(
-        json.dumps(_json_sanitize(pipeline_trace.to_dict()), indent=2, default=str),
-        encoding='utf-8',
-    )
-    generated_files = _generated_output_paths(request.out)
+
     return PipelineRunResult(
-        exit_code=int(exit_code),
+        exit_code=exit_code,
         request=request,
-        out_dir=request.out,
+        out_dir=out_dir,
         diagnostics=diagnostics,
-        generated_files=tuple(generated_files),
-        pipeline_trace=pipeline_trace,
-    )
-
-
-def build_verification_snapshot_set(
-    base_request: PipelineRunRequest,
-    specs: tuple[VerificationSnapshotSpec, ...] | list[VerificationSnapshotSpec] | None = None,
-) -> list[PipelineRunResult]:
-    if specs is None:
-        specs = (
-            VerificationSnapshotSpec('Farming', 'start_of_run'),
-            VerificationSnapshotSpec('Farming', 'max_progression'),
-            VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
-            VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
-        )
-    results: list[PipelineRunResult] = []
-    for spec in specs:
-        out_dir = base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}')
-        results.append(
-            execute_pipeline(
-                PipelineRunRequest(
-                    ids=base_request.ids,
-                    out=out_dir,
-                    preset=spec.preset,
-                    state_mode=spec.state_mode,
-                    manual_inputs=base_request.manual_inputs,
-                    perk_mode=base_request.perk_mode,
-                    include_slow_audits=base_request.include_slow_audits,
-                    perk_state=spec.perk_state,
-                )
-            )
-        )
-    return results
-
-
-def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
-    if not request.requested_surface_ids:
-        raise ValueError('Fast checkpoint resolution requires at least one requested surface id.')
-
-    input_bundle, account_state, _perk_config_resolution = _build_account_state(
-        ids_path=request.ids,
-        manual_inputs_path=request.manual_inputs,
-        preset=request.preset,
-        perk_mode=request.perk_mode,
-        diag_output_dir=None,
-    )
-    perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
-    checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
-        account_state=account_state,
-        checkpoint_state=SimulatorCheckpointState(),
-        preset_name=request.preset,
-        requested_surface_ids=request.requested_surface_ids,
-        state_mode=request.state_mode,
-        card_preset_name=account_state.active_card_preset,
-        module_preset_name=account_state.active_module_preset,
-        perk_preset_name=account_state.active_perk_preset,
-        perks_enabled=perks_enabled,
-    )
-    response = resolve_checkpoint_surfaces(
-        account_state,
-        requested_surface_ids=request.requested_surface_ids,
-        preset_name=request.preset,
-        state_mode=request.state_mode,
-        card_preset_name=account_state.active_card_preset,
-        module_preset_name=account_state.active_module_preset,
-        perk_preset_name=account_state.active_perk_preset,
-        perks_enabled=perks_enabled,
-        trace_mode='contributors',
-    )
-    statbook = query_response_to_statbook(
-        response,
-        notes='Lightweight QE checkpoint resolution for interactive stat verification.',
-        diagnostics={
-            'resolver_kind': checkpoint_resolution.diagnostics.get('resolver_kind'),
-            'phase_timing_ms': checkpoint_resolution.diagnostics.get('phase_timing_ms'),
-            'requested_surface_ids': list(request.requested_surface_ids),
-            'state_mode': request.state_mode,
-            'preset': request.preset,
-            'perk_state': request.perk_state,
-        },
-    )
-    statbook_dict = statbook.to_dict()
-    _annotate_display_fields(statbook_dict)
-    return FastCheckpointResult(
-        request=request,
-        statbook=statbook_dict,
-        diagnostics=dict(checkpoint_resolution.diagnostics),
+        generated_files=generated_files,
+        pipeline_trace=trace,
     )

@@ -54,12 +54,11 @@ root:
     layer: root
 
   run_stats.py:
-    status: archive_candidate
-    target: app/run_stats.py + app/pipeline.py
+    status: archived
+    target: archive/legacy/run_stats.py
     reason: >
       142 KB monolith mixing orchestration, domain logic, parsing, display.
-      Extract thin CLI shell to app/run_stats.py; wiring to app/pipeline.py;
-      domain logic to respective layers. Demote remainder to archive/legacy/.
+      T12: distribution complete. Orchestration in app/, domain in evaluators/, input/, qe/.
 
   AGENTS.md:
     status: archive_candidate
@@ -87,6 +86,49 @@ github:
   .github/workflows/ci.yml:
     status: delete_later
     reason: CI config to be rebuilt from scratch once new spine passes
+
+# ─── app/ ────────────────────────────────────────────────────────────────────
+
+app:
+  app/__init__.py:
+    status: active_candidate
+    layer: app/
+
+  app/display.py:
+    status: active_candidate
+    layer: app/
+
+  app/inspector_data.py:
+    status: active_candidate
+    layer: app/
+
+  app/pipeline.py:
+    status: active_candidate
+    layer: app/
+    note: orchestration authority; utilities extracted in T12
+
+  app/run_analysis.py:
+    status: active_candidate
+    layer: app/
+
+  app/run_stats.py:
+    status: active_candidate
+    layer: app/
+    note: thin CLI entrypoint
+
+  app/streamlit_inspector.py:
+    status: active_candidate
+    layer: app/
+
+  app/models.py:
+    status: active_candidate
+    layer: app/
+    note: T12 extraction — pipeline dataclasses and trace models
+
+  app/publication.py:
+    status: active_candidate
+    layer: app/
+    note: T12 extraction — artifact writing and legacy cleanup logic
 
 # ─── input/ ───────────────────────────────────────────────────────────────────
 
@@ -116,6 +158,29 @@ input:
     status: archive_candidate
     target: archive/legacy/
 
+  input/ids_parser.py:
+    status: active_candidate
+    layer: input/
+
+  input/loader.py:
+    status: active_candidate
+    layer: input/
+
+  input/manual_inputs.yaml:
+    status: active_candidate
+    layer: input/
+
+  input/runtime_state.py:
+    status: active_candidate
+    layer: input/
+
+  input/state_builder.py:
+    status: active_candidate
+    layer: input/
+
+  input/state_types.py:
+    status: active_candidate
+    layer: input/
 
   # imports/ — survive as-is
   input/imports/ids.csv:
@@ -152,484 +217,260 @@ input:
   input/derived/.gitkeep:
     status: delete_later
 
-# ─── engine/ — QE candidates ─────────────────────────────────────────────────
-# These files hold the proven QE logic; extract into qe/ layer (T3).
+# ─── qe/ ──────────────────────────────────────────────────────────────────────
 
-engine_qe:
-  engine/__init__.py:
-    status: archive_candidate
-    target: qe/__init__.py (if needed) or delete
-    reason: package init; recreate minimally in qe/ only if imports require it
-
-  engine/dependency_registry.py:
+qe:
+  qe/__init__.py:
     status: active_candidate
-    target: qe/dependency_registry.py
+    layer: qe/
 
-  engine/family_baseline_materializer.py:
+  qe/consumer_registry.py:
     status: active_candidate
-    target: qe/materializer.py
+    layer: qe/
 
-  engine/stat_query_kernel.py:
+  qe/contracts.py:
     status: active_candidate
-    target: qe/kernel.py
+    layer: qe/
+    note: T12: absorbed _json_sanitize and _contract_json_payload from pipeline
 
-  engine/query_routing.py:
+  qe/dependency_registry.py:
     status: active_candidate
-    target: qe/routing.py
+    layer: qe/
 
-  engine/query_surface_publication.py:
+  qe/kb_surfaces.py:
     status: active_candidate
-    target: qe/publication.py
+    layer: qe/
 
-  engine/state_identity.py:
+  qe/kernel.py:
     status: active_candidate
-    target: qe/models.py (state identity structs)
+    layer: qe/
 
-  engine/query_derived_composites.py:
+  qe/materializer.py:
     status: active_candidate
-    target: qe/kernel.py or qe/routing.py (composite resolution logic)
+    layer: qe/
 
-  engine/stat_resolution_core.py:
+  qe/models.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/perk_tables.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/publication.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_currency_income.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_derived_composites.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_module_policy.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_perk_compiler.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_routing.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/query_state_mode_policy.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/routing.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/shared_runtime_context.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/stat_input_compiler.py:
+    status: active_candidate
+    layer: qe/
+
+  qe/stat_resolution.py:
+    status: active_candidate
+    layer: qe/
+
+# ─── simulators/ ─────────────────────────────────────────────────────────────
+
+simulators:
+  simulators/__init__.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/contracts.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_cache_fingerprint.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_cache_validator.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_overlay_publisher.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_parity_harness.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_recalc_runtime.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/incremental_subset_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/performance.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perk_timeline_generator.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perk_timeline_state.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/perks.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/progression.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/run_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/runtime_consumer_executor.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/scenario.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/snapshot_resolver.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/timing.py:
+    status: active_candidate
+    layer: simulators/
+
+  simulators/wave_progression_policy.py:
+    status: active_candidate
+    layer: simulators/
+
+# ─── evaluators/ ─────────────────────────────────────────────────────────────
+
+evaluators:
+  evaluators/__init__.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/compare.py:
+    status: active_candidate
+    layer: evaluators/
+    note: thin facade re-exporting sharded logic (T12)
+
+  evaluators/compare_core.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — core scoring and EP comparison
+
+  evaluators/audit_engine.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — publishing gates and KB audits
+
+  evaluators/residue_analysis.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — gap analysis and closure reports
+
+  evaluators/verification_engine.py:
+    status: active_candidate
+    layer: evaluators/
+    note: T12 shard — oracle parity and loading logic
+
+  evaluators/objectives.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/ranker.py:
+    status: active_candidate
+    layer: evaluators/
+
+  evaluators/scorer.py:
+    status: active_candidate
+    layer: evaluators/
+
+# ─── advisors/ ───────────────────────────────────────────────────────────────
+
+advisors:
+  advisors/__init__.py:
+    status: active_candidate
+    layer: advisors/
+
+  advisors/recommendation_policy.py:
+    status: active_candidate
+    layer: advisors/
+
+  advisors/upgrade_advisor.py:
+    status: active_candidate
+    layer: advisors/
+
+# ─── archive/ ────────────────────────────────────────────────────────────────
+
+archive:
+  archive/legacy/:
+    status: active_candidate
+    note: physical location for all demoted code
+
+# ─── engine/ — shims (delete once legacy tests retired) ───────────────────────
+
+engine_shims:
+  engine/*.py:
     status: shim
-    target: qe/stat_resolution.py (explicit report/compat resolver; not native foundation)
+    reason: legacy test compatibility; no active path imports
 
-  engine/stat_engine.py:
+# ─── models/ — shims ──────────────────────────────────────────────────────────
+
+models_shims:
+  models/*.py:
     status: shim
-    target: qe/ (compat entrypoint only; do not add new logic here)
-
-  engine/runtime_consumer_executor.py:
-    status: shim
-    target: simulators/runtime_consumer_executor.py (T11 — authority moved)
-
-  engine/runtime_consumer_registry.py:
-    status: shim
-    target: qe/consumer_registry.py (T11 — authority moved)
-
-  engine/derived_surface_composer.py:
-    status: active_candidate
-    target: qe/materializer.py
-
-  engine/query_currency_income.py:
-    status: active_candidate
-    target: qe/ (currency income surface)
-
-  engine/query_module_draw_policy.py:
-    status: archive_candidate
-    target: qe/query_module_policy.py
-    reason: consolidated into bounded module policy/publisher owner
-
-  engine/query_module_drop_economy.py:
-    status: archive_candidate
-    target: qe/query_module_policy.py
-    reason: consolidated into bounded module policy/publisher owner
-
-  engine/query_module_lab_policy.py:
-    status: archive_candidate
-    target: qe/query_module_policy.py
-    reason: consolidated into bounded module policy/publisher owner
-
-  engine/query_module_mission_economy.py:
-    status: archive_candidate
-    target: qe/query_module_policy.py
-    reason: consolidated into bounded module policy/publisher owner
-
-  engine/query_module_runtime_policy.py:
-    status: archive_candidate
-    target: qe/query_module_policy.py
-    reason: consolidated into bounded module policy/publisher owner
-
-  engine/query_perk_compiler.py:
-    status: active_candidate
-    target: qe/ or input/ (perk compiler — bridges input and QE)
-
-  engine/query_state_mode_policy.py:
-    status: active_candidate
-    target: qe/ (state mode policy)
-
-  engine/perk_tables.py:
-    status: active_candidate
-    target: qe/ or input/ (perk lookup tables)
-
-# ─── engine/ — simulator candidates ──────────────────────────────────────────
-
-engine_simulators:
-  engine/progression_state.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/progression_recalc_bridge.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/timing_engine.py:
-    status: active_candidate
-    target: simulators/timing.py
-
-  engine/scenario_engine.py:
-    status: active_candidate
-    target: simulators/scenario.py
-
-  engine/scenario_runtime_inputs.py:
-    status: active_candidate
-    target: input/state_types.py or simulators/scenario.py
-
-  engine/boss_wave_engine.py:
-    status: active_candidate
-    target: simulators/progression.py or simulators/scenario.py
-
-  engine/wave_progression_policy.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/workshop_progression_policy.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/free_upgrade_generation_policy.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/perk_timeline_generator.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-  engine/perk_timeline_state.py:
-    status: active_candidate
-    target: simulators/progression.py
-
-# ─── engine/ — archive candidates ────────────────────────────────────────────
-
-engine_archive:
-  engine/geometry_wall_contact_artifact_harmonizer.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-    reason: geometry fitting subsystem; not in supported path
-
-  engine/geometry_wall_contact_fit_decision.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_fit_harness.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_fit_ingestion.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_fit_pipeline.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_fit_review.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_holdout.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_measurement_protocol.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/geometry_wall_contact_target_surface.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/incremental_cache_fingerprint.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-    reason: incremental cache subsystem; not needed in new architecture
-
-  engine/incremental_cache_validator.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/incremental_overlay_publisher.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/incremental_parity_harness.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/incremental_recalc_runtime.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/incremental_subset_executor.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-
-  engine/display.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-    reason: display helpers; any needed output formatting belongs in app/
-
-  engine/verification.py:
-    status: archive_candidate
-    target: archive/legacy/engine/
-    reason: verification harness logic; useful parts fold into tests/helpers.py
-
-  engine/lab_advisory.py:
-    status: active_candidate
-    target: advisors/upgrade_advisor.py (lab advisory logic)
-
-# ─── models/ ─────────────────────────────────────────────────────────────────
-
-models:
-  models/account_state.py:
-    status: active_candidate
-    target: input/state_types.py
-
-  models/bound_preset_family.py:
-    status: active_candidate
-    target: qe/models.py
-
-  models/ids_raw.py:
-    status: active_candidate
-    target: input/ids_parser.py
-
-  models/preset_contract.py:
-    status: active_candidate
-    target: qe/contracts.py
-
-  models/stat_input.py:
-    status: active_candidate
-    target: qe/models.py
-
-  models/statbook.py:
-    status: active_candidate
-    target: qe/models.py
-
-# ─── parsers/ ────────────────────────────────────────────────────────────────
-
-parsers:
-  parsers/ids_parser.py:
-    status: archive_candidate
-    ownership: SHIM — re-exports from input.ids_parser (authority)
-    target: archive/legacy/parsers/ in T8
-
-# ─── compilers/ ──────────────────────────────────────────────────────────────
-
-compilers:
-  compilers/account_state_compiler.py:
-    status: archive_candidate
-    ownership: >
-      Removed from active ownership; runtime-state assembly now lives in
-      input/state_builder.py and is exposed via input/runtime_state.py.
-    target: input/state_builder.py
-
-  compilers/stat_input_compiler.py:
-    status: active_candidate
-    target: input/loader.py or qe/kernel.py
-
-  compilers/module_horizon_optimizer_outputs.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-    reason: module horizon optimizer; not in supported path
-
-  compilers/module_planner_action_candidates.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_planner_horizon_profile.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_planner_plan.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_planner_resource_state.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_reroll_income_calculator.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_reroll_spend_calculator.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_shard_income_calculator.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_slot_level_optimizer.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-  compilers/module_substat_optimizer.py:
-    status: archive_candidate
-    target: archive/legacy/compilers/
-
-# ─── optimizer/ ──────────────────────────────────────────────────────────────
-
-optimizer:
-  optimizer/__init__.py:
-    status: archive_candidate
-    target: archive/legacy/optimizer/
-    reason: package init; recreate in evaluators/ only if needed
-
-  optimizer/enhancement_state_contracts.py:
-    status: active_candidate
-    target: evaluators/objectives.py or evaluators/scorer.py
-
-  optimizer/path_ranker.py:
-    status: active_candidate
-    target: evaluators/ranker.py
-
-  optimizer/scorer.py:
-    status: active_candidate
-    target: evaluators/scorer.py
-
-  optimizer/ACCURACY.md:
-    status: archive_candidate
-    target: archive/legacy/optimizer/
-
-# ─── registry/ ───────────────────────────────────────────────────────────────
-
-registry:
-  registry/__init__.py:
-    status: archive_candidate
-    target: archive/legacy/registry/
-    reason: naming/contract registry; contracts belong in kb/ or qe/contracts.py
-
-  registry/naming_contract.py:
-    status: archive_candidate
-    target: archive/legacy/registry/
-
-  registry/output_contracts.md:
-    status: archive_candidate
-    target: archive/legacy/registry/
-
-  registry/preset_contract.yaml:
-    status: archive_candidate
-    target: archive/legacy/registry/
-
-  registry/section_layout_contract.yaml:
-    status: archive_candidate
-    target: archive/legacy/registry/
-
-  registry/state_semantics.md:
-    status: archive_candidate
-    target: archive/legacy/registry/
-
-# ─── scripts/ ────────────────────────────────────────────────────────────────
-
-scripts:
-  scripts/apply_c14_c16.py:
-    status: archive_candidate
-    target: archive/legacy/scripts/
-    reason: migration-era script; not needed in new architecture
-
-  scripts/debug_ui.py:
-    status: archive_candidate
-    target: archive/legacy/scripts/
-
-  scripts/generate_perk_timeline.py:
-    status: archive_candidate
-    target: archive/legacy/scripts/
-
-  scripts/naming_contract_check.py:
-    status: archive_candidate
-    target: archive/legacy/scripts/
-
-  scripts/profile_test_durations.py:
-    status: archive_candidate
-    target: archive/legacy/scripts/
-
-# ─── templates/ ──────────────────────────────────────────────────────────────
-
-templates:
-  templates/wall_contact_measurements_fit_ready_example.json:
-    status: archive_candidate
-    target: archive/legacy/templates/
-    reason: geometry fitting fixture; not needed in new architecture
+    reason: legacy test compatibility
 
 # ─── tests/ ──────────────────────────────────────────────────────────────────
-# Full test cull happens in T7. For now all tests survive as active_candidate
-# pending classification into live/ expensive/ quarantine/.
 
 tests:
   tests/conftest.py:
     status: active_candidate
     layer: tests/
 
-  tests/helpers.py:
+  tests/live/test_boundary_contracts.py:
     status: active_candidate
-    layer: tests/
-
-  tests/golden_account_state.json:
-    status: active_candidate
-    layer: tests/
-    note: fixture
-
-  tests/golden_statbook.json:
-    status: active_candidate
-    layer: tests/
-    note: fixture
-
-  # T7 classification complete. Marker-based gate system:
-  #   slow marker   -> excluded from default gate (subprocess/integration tests)
-  #   expensive marker -> excluded from default gate (query-stack parity/completion)
-  #   quarantine marker -> excluded from all gates (pre-existing failures or stale coupling)
-  #
-  # QUARANTINE (pytest.mark.quarantine -- excluded from all gates):
-  #   test_tier_progression_account_state.py::test_account_state_compiles_tier_progression_fields_from_ids
-  #     reason: hardcodes player-specific tier data (Tier 19 == 52) that does not match current ids.csv
-  #   test_lab_advisory_lookup.py::test_lab_advisory_rankings_are_not_routed_into_mechanical_or_optimizer_surfaces
-  #     reason: uses rg subprocess not available on Windows PATH
-  #
-  # LIVE (tests/live/ -- always run, prove active architecture):
-  #   test_qe_core.py         -- 13 tests proving qe.* runtime authority (T3B)
-  #   test_main_path.py       -- 3 tests proving app/ CLI wiring (T6)
-  #   test_simulators_core.py -- 3 tests proving simulators/ layer (T7)
-  #   test_evaluators_core.py -- 4 tests proving evaluators/ + advisors/ layer (T7)
-
-  tests/test_tier_progression_account_state.py:
-    status: active_candidate
-    layer: tests/
-    note: T7 -- 1 test quarantined (stale player data); 1 test passes and remains in default gate
-
-  tests/test_lab_advisory_lookup.py:
-    status: active_candidate
-    layer: tests/
-    note: T7 -- 1 test quarantined (rg subprocess unavailable on Windows); 3 tests pass and remain in default gate
+    layer: tests/live/
 
   tests/test_*.py:
     status: active_candidate
     layer: tests/
-    note: T7 -- classified; default gate = not slow, not expensive, not quarantine; 416 tests active
-
-# ─── out/ ────────────────────────────────────────────────────────────────────
-
-out:
-  out/*.json:
-    status: generated
-    note: committed generated outputs consumed by tests; regenerated by pipeline
-
-  out/*.csv:
-    status: generated
-
-# ─── worker/ ─────────────────────────────────────────────────────────────────
-
-worker:
-  worker/agent_instructions.md:
-    status: archive_candidate
-    target: archive/legacy/worker/
-
-  worker/agent_openapi.yaml:
-    status: archive_candidate
-    target: archive/legacy/worker/
-
-  worker/src/index.js:
-    status: archive_candidate
-    target: archive/legacy/worker/
-
-  worker/wrangler.toml:
-    status: archive_candidate
-    target: archive/legacy/worker/

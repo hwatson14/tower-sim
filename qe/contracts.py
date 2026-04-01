@@ -334,3 +334,35 @@ def normalize_contract_payload(value: Any) -> Any:
     if isinstance(value, str):
         return normalize_surface_token_text(value)
     return value
+
+
+def relpath_str(path_like) -> str:
+    p = Path(path_like)
+    try:
+        return str(p.resolve().relative_to(ROOT))
+    except Exception:
+        try:
+            return str(p.relative_to(ROOT))
+        except Exception:
+            return str(p)
+
+
+def json_sanitize(obj):
+    if isinstance(obj, Path):
+        return relpath_str(obj)
+    if isinstance(obj, dict):
+        return {k: json_sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [json_sanitize(v) for v in obj]
+    if isinstance(obj, tuple):
+        return [json_sanitize(v) for v in obj]
+    if isinstance(obj, str) and (obj.startswith('/') or obj.startswith('\\')):
+        try:
+            return relpath_str(obj)
+        except Exception:
+            return obj
+    return obj
+
+
+def contract_json_payload(obj):
+    return normalize_contract_payload(json_sanitize(obj))
