@@ -446,6 +446,202 @@ def _build_dual_state_stats_view(start_statbook_dict: dict, max_statbook_dict: d
         },
     }
 
+def _perk_config_has_active_preset(config: dict) -> bool:
+    if not isinstance(config, dict):
+        return False
+    active = config.get('active_perk_preset')
+    presets = config.get('perk_presets') or {}
+    return bool(active) and active in presets and bool(presets.get(active))
+
+
+def _load_perk_entity_registry() -> list[dict]:
+    import csv as _csv
+    path = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
+    rows = []
+    with path.open('r', encoding='utf-8-sig', newline='') as fh:
+        reader = _csv.DictReader(fh)
+        for row in reader:
+            rows.append({k: (v.strip() if isinstance(v, str) else v) for k, v in row.items()})
+    return rows
+
+
+def _default_tradeoff_alias_map() -> dict[str, str]:
+    return {
+        "TO1": "x1.50 Tower Damage, but Bosses Have 8x Health",
+        "TO2": "x1.80 coins, but Tower Max Health -70%",
+        "TO3": "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%",
+        "TO4": "Enemies Damage -50%, but Tower Damage -50%",
+        "TO5": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3",
+        "TO6": "Enemies Speed -40%, But Enemies Damage x2.5",
+        "TO7": "x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash",
+        "TO8": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "TO9": "Boss Health -70%, But Boss Speed +50%",
+        "TO10": "Lifesteal x2.50, But Knockback force -70%",
+    }
+
+
+def _resolve_policy_banned_perk_names(raw_policy: dict) -> list[str]:
+    alias_map = _default_tradeoff_alias_map()
+    ordered: list[str] = []
+    seen: set[str] = set()
+    for alias in list(raw_policy.get("banned_perk_aliases", []) or []):
+        key = str(alias).strip().upper()
+        name = alias_map.get(key)
+        if name and name not in seen:
+            ordered.append(name)
+            seen.add(name)
+    for name in list(raw_policy.get("banned_perks", []) or []):
+        perk_name = str(name).strip()
+        if perk_name and perk_name not in seen:
+            ordered.append(perk_name)
+            seen.add(perk_name)
+    return ordered
+
+
+def _ids_player_value(ids_raw, name: str, default: int = 0) -> int:
+    rows = ids_raw.raw_sections.get('Player & Stuff', []) if ids_raw else []
+    for row in rows:
+        if row and str(row[0]).strip() == name:
+            token = str(row[1]).strip() if len(row) > 1 else ''
+            try:
+                return int(float(token.replace(',', '')))
+            except Exception:
+                return default
+    return default
+
+
+def _resolve_manual_banned_perks(perk_policy: dict) -> list[str]:
+    return _resolve_policy_banned_perk_names(perk_policy or {})
+
+
+def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
+    policy = perk_policy or {}
+    lab_rows = ids_raw.raw_sections.get('Labs', []) if ids_raw else []
+    labs = {}
+    for row in lab_rows:
+        if row and str(row[0]).strip():
+            try:
+                labs[str(row[0]).strip()] = int(float(str(row[1]).strip().replace(',', '')))
+            except Exception:
+                pass
+    banned_names = _resolve_manual_banned_perks(policy)
+    standard_perk_bonus_level = labs.get('Standard Perks Bonus', 0)
+    target_wave = int(policy.get('target_wave', 50000) or 50000)
+    payload = {
+        'seed': int(policy.get('seed', 42) or 42),
+        'target_wave': target_wave,
+        'waves_required_lab': int(labs.get('Waves Required', 0) or 0),
+        'standard_perk_bonus': float(standard_perk_bonus_level) / 100.0,
+        'perk_option_quantity': _ids_player_value(ids_raw, 'Perk Option Quantity', 0),
+        'ban_perks_capacity': max(_ids_player_value(ids_raw, 'Ban Perks', 0), len(banned_names)),
+        'banned_perks': banned_names,
+        'priority_order': list(policy.get('priority_order', []) or []),
+        'first_perk_choice': policy.get('first_perk_choice'),
+    }
+    context = {
+        'banned_names': banned_names,
+        'standard_perk_bonus_level': standard_perk_bonus_level,
+        'ban_perks_capacity_ids': _ids_player_value(ids_raw, 'Ban Perks', 0),
+        'banned_perk_aliases': list(policy.get('banned_perk_aliases', []) or []),
+    }
+    return payload, context
+
+
+def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
+    metadata = {
+        'requested_perks_path': 'manual_inputs.yaml:perk_policy',
+        'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
+        'fallback_applied': False,
+        'fallback_reason': None,
+    }
+    policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
+    entities = _load_perk_entity_registry()
+    banned_names = set(context['banned_names'])
+    selections = []
+    for row in entities:
+        perk_id = row.get('perk_id')
+        perk_name = row.get('perk_name')
+        if not perk_id or not perk_name or perk_name in banned_names:
+            continue
+        try:
+            picks = int(row.get('max_picks') or 1)
+        except Exception:
+            picks = 1
+        selections.append({'perk_id': perk_id, 'picks': max(1, picks)})
+    generated = {
+        'preset_namespace_class': 'transient',
+        'perk_presets': {'ProjectedMaxPolicy_AllExceptManualBans': selections},
+        'active_perk_preset': 'ProjectedMaxPolicy_AllExceptManualBans',
+        'notes': 'Deterministic max-progression forecasting assumption: all perks except manual bans from the input-owned perk policy.',
+        'generator': {
+            'perk_mode': 'max_progression_policy',
+            'manual_banned_perks': sorted(banned_names),
+            'manual_banned_perk_aliases': context['banned_perk_aliases'],
+            'selection_rule': 'all_perks_except_manual_bans_using_registry_max_picks',
+            'target_wave': policy_payload['target_wave'],
+        },
+    }
+    metadata.update({
+        'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
+        'perk_mode': 'max_progression_policy',
+        'manual_banned_perk_count': len(banned_names),
+    })
+    return generated, metadata
+
+
+def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_output_dir: Path | None = None) -> tuple[dict, dict]:
+    policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
+    policy = PerkTimelinePolicy(**policy_payload)
+    timeline, diag = generate_timeline_from_policy(policy)
+    taken_counts = perk_state_at_wave(timeline, policy.target_wave)
+    entities = _load_perk_entity_registry()
+    by_name = {row.get('perk_name'): row for row in entities if row.get('perk_name')}
+    selections = []
+    unknown_names = []
+    for perk_name, picks in sorted(taken_counts.items()):
+        meta = by_name.get(perk_name)
+        if not meta or not meta.get('perk_id'):
+            unknown_names.append(perk_name)
+            continue
+        selections.append({'perk_id': meta['perk_id'], 'picks': int(picks)})
+    generated = {
+        'preset_namespace_class': 'transient',
+        'perk_presets': {'ProjectedRuntimeTimeline': selections},
+        'active_perk_preset': 'ProjectedRuntimeTimeline',
+        'notes': 'Simulator-owned runtime perk timeline projected to target_wave from the input-owned perk policy.',
+        'generator': {
+            'perk_mode': 'runtime_timeline',
+            'target_wave': policy.target_wave,
+            'manual_banned_perks': context['banned_names'],
+            'manual_banned_perk_aliases': context['banned_perk_aliases'],
+            'unknown_generated_perk_names': unknown_names,
+            'priority_order': policy.priority_order or [],
+            'first_perk_choice': policy.first_perk_choice,
+            'waves_required_lab': policy.waves_required_lab,
+            'standard_perk_bonus_level': context['standard_perk_bonus_level'],
+            'perk_option_quantity': policy.perk_option_quantity,
+            'ban_perks_capacity_ids': context['ban_perks_capacity_ids'],
+            'ban_perks_capacity_effective': policy.ban_perks_capacity,
+        },
+    }
+    if diag_output_dir is not None:
+        diag_output_dir.mkdir(parents=True, exist_ok=True)
+        (diag_output_dir / 'perk_generation_diagnostics.json').write_text(
+            json.dumps(diag, indent=2), encoding='utf-8'
+        )
+    metadata = {
+        'requested_perks_path': 'manual_inputs.yaml:perk_policy',
+        'resolved_perks_path': 'simulator::runtime_timeline',
+        'fallback_applied': False,
+        'fallback_reason': None,
+        'perk_mode': 'runtime_timeline',
+        'target_wave': policy.target_wave,
+    }
+    if diag_output_dir is not None:
+        metadata['generated_diagnostics_path'] = str(diag_output_dir / 'perk_generation_diagnostics.json')
+    return generated, metadata
+
+
 def _resolve_perk_config(
     *,
     perk_mode: str,
@@ -454,27 +650,30 @@ def _resolve_perk_config(
     ids_raw,
     diag_output_dir: Path | None = None,
 ) -> tuple[dict, dict]:
-    # Transitional logic — keep in pipeline until input.loader is ready to absorb generator calls
-    import csv
-
-    def _normalize_perk_mode(val):
-        return str(val or 'max_progression_policy').lower()
-
     mode = _normalize_perk_mode(perk_mode)
     primary = primary_config if isinstance(primary_config, dict) else {}
-
     if mode == 'none':
-        return {'perk_presets': {}, 'active_perk_preset': None}, {'perk_mode': 'none'}
-
+        return {
+            'perk_presets': {},
+            'active_perk_preset': None,
+        }, {
+            'requested_perks_path': 'manual_inputs.yaml:perk_config',
+            'resolved_perks_path': 'none',
+            'fallback_applied': False,
+            'fallback_reason': None,
+            'perk_mode': 'none',
+        }
     if mode == 'max_progression_policy':
-        # Delegate to sharded evaluator logic or keep as local helper
-        from evaluators.compare import _build_max_progression_policy_perk_config
         return _build_max_progression_policy_perk_config(ids_raw, perk_policy)
-
-    return _build_runtime_timeline_perk_config(ids_raw, perk_policy, diag_output_dir=diag_output_dir)
-
-def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_output_dir: Path | None = None) -> tuple[dict, dict]:
-    from evaluators.compare import _build_runtime_timeline_perk_config
+    if _perk_config_has_active_preset(primary):
+        return primary, {
+            'requested_perks_path': 'manual_inputs.yaml:perk_config',
+            'resolved_perks_path': 'manual_inputs.yaml:perk_config',
+            'fallback_applied': False,
+            'fallback_reason': None,
+            'perk_mode': 'runtime_timeline',
+            'runtime_policy_source': 'existing_active_perk_config',
+        }
     return _build_runtime_timeline_perk_config(ids_raw, perk_policy, diag_output_dir=diag_output_dir)
 
 def _build_account_state(
@@ -1145,6 +1344,17 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         preset=request.preset, perk_mode=request.perk_mode,
     )
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
+    checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
+        account_state=account_state,
+        checkpoint_state=SimulatorCheckpointState(),
+        preset_name=request.preset,
+        requested_surface_ids=request.requested_surface_ids,
+        state_mode=request.state_mode,
+        card_preset_name=account_state.active_card_preset,
+        module_preset_name=account_state.active_module_preset,
+        perk_preset_name=account_state.active_perk_preset,
+        perks_enabled=perks_enabled,
+    )
     response = resolve_checkpoint_surfaces(
         account_state,
         requested_surface_ids=request.requested_surface_ids,
@@ -1156,7 +1366,22 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         perks_enabled=perks_enabled,
         trace_mode='contributors',
     )
-    statbook = query_response_to_statbook(response, notes='resolve_fast_checkpoint')
+    statbook = query_response_to_statbook(
+        response,
+        notes='Lightweight QE checkpoint resolution for interactive stat verification.',
+        diagnostics={
+            'resolver_kind': checkpoint_resolution.diagnostics.get('resolver_kind'),
+            'phase_timing_ms': checkpoint_resolution.diagnostics.get('phase_timing_ms'),
+            'requested_surface_ids': list(request.requested_surface_ids),
+            'state_mode': request.state_mode,
+            'preset': request.preset,
+            'perk_state': request.perk_state,
+        },
+    )
     statbook_dict = statbook.to_dict()
     _annotate_display_fields(statbook_dict)
-    return FastCheckpointResult(request=request, statbook=statbook_dict, diagnostics={})
+    return FastCheckpointResult(
+        request=request,
+        statbook=statbook_dict,
+        diagnostics=dict(checkpoint_resolution.diagnostics),
+    )

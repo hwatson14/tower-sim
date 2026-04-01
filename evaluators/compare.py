@@ -361,11 +361,3 @@ def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, prese
     return {}
 
 
-def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
-    """Stub: max-progression perk config generator (future evaluators.assumptions)."""
-    return {'perk_presets': {}, 'active_perk_preset': None}, {'perk_mode': 'max_progression_policy_stub'}
-
-
-def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_output_dir=None) -> tuple[dict, dict]:
-    """Stub: runtime-timeline perk config generator (future evaluators.assumptions)."""
-    return {'perk_presets': {}, 'active_perk_preset': None}, {'perk_mode': 'runtime_timeline_stub'}
