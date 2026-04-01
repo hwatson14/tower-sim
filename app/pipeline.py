@@ -319,6 +319,14 @@ _RUN_STATS_QUERY_OUTPUTS = {
     'max_progression_plan': 'run_stats_query_plan_max_progression.json',
 }
 
+# Legacy output filenames written by pre-T12 run-stats path; deleted on each run.
+_RUN_STATS_LEGACY_OUTPUTS = [
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+]
+
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     rows: dict[str, dict] = {}
     bundle_ids: list[str] = []
