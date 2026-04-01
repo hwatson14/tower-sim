@@ -53,60 +53,6 @@ root:
 app:
   app/__init__.py:
     status: active_candidate
-
-  app/display.py:
-    status: active_candidate
-
-  app/pipeline.py:
-    status: active_candidate
-    note: Orchestration authority; utilities sharded in T12.
-
-  app/run_analysis.py:
-    status: active_candidate
-
-  app/run_stats.py:
-    status: active_candidate
-    note: Thin CLI entrypoint.
-
-  app/models.py:
-    status: active_candidate
-    note: T12 extraction — pipeline dataclasses and trace models.
-
-  app/publication.py:
-    status: active_candidate
-    note: T12 extraction — artifact writing and trace contract.
-
-# ─── evaluators/ ─────────────────────────────────────────────────────────────
-
-evaluators:
-  evaluators/__init__.py:
-    status: active_candidate
-
-  evaluators/compare.py:
-    status: active_candidate
-    note: Thin facade re-exporting sharded logic (T12).
-
-  evaluators/compare_core.py:
-    status: active_candidate
-    note: T12 shard — core scoring and EP comparison.
-
-  evaluators/audit_engine.py:
-    status: active_candidate
-    note: T12 shard — publishing gates and KB audits.
-
-  evaluators/residue_analysis.py:
-    status: active_candidate
-    note: T12 shard — gap analysis and closure reports.
-
-  evaluators/verification_engine.py:
-    status: active_candidate
-    note: T12 shard — oracle parity and loading logic.
-
-# ─── app/ ────────────────────────────────────────────────────────────────────
-
-app:
-  app/__init__.py:
-    status: active_candidate
     layer: app/
 
   app/display.py:
@@ -196,43 +142,6 @@ input:
 # ─── qe/ ──────────────────────────────────────────────────────────────────────
 
 qe:
-  qe/*.py:
-    status: active_candidate
-
-# ─── simulators/ ─────────────────────────────────────────────────────────────
-
-simulators:
-  simulators/*.py:
-    status: active_candidate
-
-# ─── advisors/ ───────────────────────────────────────────────────────────────
-
-advisors:
-  advisors/*.py:
-    status: active_candidate
-    layer: input/imports/
-
-  # derived/ — single canonical artifact (duplicate removed in T11)
-  # input/derived/perks_max_progression_policy.runtime.json: DELETED (T11) — was identical to perks_derived.json
-
-  input/derived/perks_projected_max.json:
-    status: generated
-
-  input/derived/perks_projected_max.diagnostics.json:
-    status: generated
-
-  input/derived/perks_projected_max.final_state.json:
-    status: generated
-
-  input/derived/perks_projected_max.timeline.json:
-    status: generated
-
-  input/derived/.gitkeep:
-    status: delete_later
-
-# ─── qe/ ──────────────────────────────────────────────────────────────────────
-
-qe:
   qe/__init__.py:
     status: active_candidate
     layer: qe/
@@ -244,7 +153,7 @@ qe:
   qe/contracts.py:
     status: active_candidate
     layer: qe/
-    note: T12: absorbed _json_sanitize and _contract_json_payload from pipeline
+    note: "T12: absorbed _json_sanitize and _contract_json_payload from pipeline"
 
   qe/dependency_registry.py:
     status: active_candidate
@@ -451,6 +360,24 @@ advisors:
   advisors/upgrade_advisor.py:
     status: active_candidate
     layer: advisors/
+
+  # derived/ — single canonical artifact (duplicate removed in T11)
+  # input/derived/perks_max_progression_policy.runtime.json: DELETED (T11) — was identical to perks_derived.json
+
+  input/derived/perks_projected_max.json:
+    status: generated
+
+  input/derived/perks_projected_max.diagnostics.json:
+    status: generated
+
+  input/derived/perks_projected_max.final_state.json:
+    status: generated
+
+  input/derived/perks_projected_max.timeline.json:
+    status: generated
+
+  input/derived/.gitkeep:
+    status: delete_later
 
 # ─── archive/ ────────────────────────────────────────────────────────────────
 

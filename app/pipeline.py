@@ -666,9 +666,6 @@ def _resolve_perk_config(
         return {'perk_presets': {}, 'active_perk_preset': None}, {'perk_mode': 'none'}
 
     if mode == 'max_progression_policy':
-        # Delegate to sharded evaluator logic or keep as local helper
-        # For now, keeping the minimal implementation needed for stability
-        from evaluators.compare import _build_max_progression_policy_perk_config
         return _build_max_progression_policy_perk_config(ids_raw, perk_policy)
 
     return _build_runtime_timeline_perk_config(ids_raw, perk_policy, diag_output_dir=diag_output_dir)
@@ -758,20 +755,221 @@ class RunStatsSession:
 
     def build_run_stats_artifacts(self, args):
         args.perk_state = _normalize_perk_state(args.perk_state)
+        args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
+
         build_start = perf_counter()
-        input_bundle, account_state, perk_config_resolution, cache_hit = self.get_account_state_bundle(
+        input_bundle, account_state, perk_config_resolution, account_state_cache_hit = self.get_account_state_bundle(
             ids_path=args.ids,
             manual_inputs_path=getattr(args, 'manual_inputs', None),
-            perk_mode=getattr(args, 'perk_mode', 'max_progression_policy'),
+            perk_mode=args.perk_mode,
             diag_output_dir=args.out / 'diagnostics' / 'perks',
         )
-        # ... logic for building artifacts (trimmed for brevity, remains functional)
-        # Assuming the rest of the implementation is identical to original run_stats logic
-        # but importing from new shards.
+        account_state_build_ms = _elapsed_ms(build_start)
+
+        preset_names = ['Farming', 'Tourney']
+        run_stats_payload = {'presets': {}, 'diagnostics': {}}
+        preset_diagnostics = {}
+        start_books_by_preset = {}
+        max_books_by_preset = {}
+        state_query_plans = {'start_of_run': {}, 'max_progression': {}}
+        pipeline_timings = {'presets': {}}
+
+        for preset_name in preset_names:
+            preset_state_timings: dict[str, dict] = {}
+            start_perk_preset_name, start_perks_enabled = _run_stats_perk_state(
+                account_state,
+                preset_name=preset_name,
+                perk_state=args.perk_state,
+                perk_mode=args.perk_mode,
+                state_mode='start_of_run',
+            )
+            max_perk_preset_name, max_perks_enabled = _run_stats_perk_state(
+                account_state,
+                preset_name=preset_name,
+                perk_state=args.perk_state,
+                perk_mode=args.perk_mode,
+                state_mode='max_progression',
+            )
+
+            for state_mode, perk_preset_name, perks_enabled in (
+                ('start_of_run', start_perk_preset_name, start_perks_enabled),
+                ('max_progression', max_perk_preset_name, max_perks_enabled),
+            ):
+                state_start = perf_counter()
+                progression_family_id = run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
+                timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
+                scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
+
+                t = perf_counter()
+                progression_response = resolve_run_stats_progression_bundle(
+                    account_state=account_state,
+                    family_id=progression_family_id,
+                    preset_name=preset_name,
+                    perks_enabled=perks_enabled,
+                    state_mode=state_mode,
+                    perk_preset_name=perk_preset_name,
+                    trace_mode='contributors',
+                    kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                )
+                progression_ms = _elapsed_ms(t)
+
+                t = perf_counter()
+                timing_core_response = resolve_timing_consumer_bundle(
+                    account_state=account_state,
+                    consumer_id='run_stats',
+                    bundle_id='timing_core_cycle',
+                    family_id=timing_family_id,
+                    preset_name=preset_name,
+                    scenario_config=scenario_config,
+                    perks_enabled=perks_enabled,
+                    state_mode=state_mode,
+                    perk_preset_name=perk_preset_name,
+                    include_optional_surface_ids=('support_surface::timing.gcomp_cooldown_reduction_seconds',),
+                    trace_mode='contributors',
+                    kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                )
+                timing_core_ms = _elapsed_ms(t)
+
+                t = perf_counter()
+                timing_wave_response = resolve_timing_consumer_bundle(
+                    account_state=account_state,
+                    consumer_id='run_stats',
+                    bundle_id='timing_wave_duration',
+                    family_id=timing_family_id,
+                    preset_name=preset_name,
+                    scenario_config=scenario_config,
+                    perks_enabled=perks_enabled,
+                    state_mode=state_mode,
+                    perk_preset_name=perk_preset_name,
+                    include_optional_surface_ids=(
+                        'state::cards.wave_accelerator.spawn_rate_acceleration',
+                        'state::tower.package_chance_pct',
+                    ),
+                    trace_mode='contributors',
+                    kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                )
+                timing_wave_ms = _elapsed_ms(t)
+
+                t = perf_counter()
+                merged_statbook_dict = _merge_query_statbooks(
+                    _query_response_to_statbook_dict(
+                        progression_response,
+                        bundle_id='progression_core_stats',
+                        trace_mode='contributors',
+                    ),
+                    _query_response_to_statbook_dict(
+                        timing_core_response,
+                        bundle_id='timing_core_cycle',
+                        trace_mode='contributors',
+                    ),
+                    _query_response_to_statbook_dict(
+                        timing_wave_response,
+                        bundle_id='timing_wave_duration',
+                        trace_mode='contributors',
+                    ),
+                )
+                formatting_ms = _elapsed_ms(t)
+
+                if state_mode == 'start_of_run':
+                    start_statbook_dict = merged_statbook_dict
+                else:
+                    max_statbook_dict = merged_statbook_dict
+
+                state_query_plans[state_mode][preset_name] = {
+                    'progression': {
+                        'bundle_id': 'progression_core_stats',
+                        'family_id': progression_family_id,
+                        'resolved_surface_ids': [row.surface_id for row in progression_response.resolved_surface_rows],
+                    },
+                    'timing': [
+                        {
+                            'bundle_id': 'timing_core_cycle',
+                            'family_id': timing_family_id,
+                            'resolved_surface_ids': [row.surface_id for row in timing_core_response.resolved_surface_rows],
+                        },
+                        {
+                            'bundle_id': 'timing_wave_duration',
+                            'family_id': timing_family_id,
+                            'resolved_surface_ids': [row.surface_id for row in timing_wave_response.resolved_surface_rows],
+                        },
+                    ],
+                }
+                preset_state_timings[state_mode] = {
+                    'resolve_progression_ms': progression_ms,
+                    'resolve_timing_core_ms': timing_core_ms,
+                    'resolve_timing_wave_ms': timing_wave_ms,
+                    'publication_ms': 0.0,
+                    'formatting_ms': formatting_ms,
+                    'total_state_ms': _elapsed_ms(state_start),
+                }
+
+            dual_state_stats = _build_dual_state_stats_view(start_statbook_dict, max_statbook_dict)
+            run_stats_payload['presets'][preset_name] = {
+                'loadout': {
+                    'start_of_run': _preset_loadout_summary(
+                        account_state,
+                        preset_name=preset_name,
+                        perk_preset_name=start_perk_preset_name,
+                    ),
+                    'max_progression': _preset_loadout_summary(
+                        account_state,
+                        preset_name=preset_name,
+                        perk_preset_name=max_perk_preset_name,
+                    ),
+                },
+                'stats': dual_state_stats,
+            }
+            preset_diagnostics[preset_name] = {
+                'start_of_run': {
+                    'query_backend': 'bounded_qe_bundle',
+                    'statbook_row_count': len(start_statbook_dict.get('rows', {})),
+                    'bundle_ids': start_statbook_dict.get('diagnostics', {}).get('bundle_ids', []),
+                    'family_ids': start_statbook_dict.get('diagnostics', {}).get('family_ids', []),
+                    'resolved_surface_count': start_statbook_dict.get('diagnostics', {}).get('resolved_surface_count'),
+                    'contributor_row_count': start_statbook_dict.get('diagnostics', {}).get('contributor_row_count'),
+                    'timings_ms': preset_state_timings['start_of_run'],
+                },
+                'max_progression': {
+                    'query_backend': 'bounded_qe_bundle',
+                    'statbook_row_count': len(max_statbook_dict.get('rows', {})),
+                    'bundle_ids': max_statbook_dict.get('diagnostics', {}).get('bundle_ids', []),
+                    'family_ids': max_statbook_dict.get('diagnostics', {}).get('family_ids', []),
+                    'resolved_surface_count': max_statbook_dict.get('diagnostics', {}).get('resolved_surface_count'),
+                    'contributor_row_count': max_statbook_dict.get('diagnostics', {}).get('contributor_row_count'),
+                    'timings_ms': preset_state_timings['max_progression'],
+                },
+                'dual_state_stats': dual_state_stats.get('diagnostics', {}),
+            }
+            start_books_by_preset[preset_name] = start_statbook_dict
+            max_books_by_preset[preset_name] = max_statbook_dict
+            pipeline_timings['presets'][preset_name] = preset_state_timings
+
+        diagnostics = {
+            'pipeline_kind': 'stats',
+            'query_backend': 'bounded_qe_bundle',
+            'preset_names': preset_names,
+            'state_modes': ['start_of_run', 'max_progression'],
+            'perk_state': args.perk_state,
+            'perk_mode': args.perk_mode,
+            'perk_config_resolution': perk_config_resolution,
+            'qe_shared_runtime_context': self.qe_shared_runtime_context.to_dict(),
+            'session': {
+                'kind': 'run_stats_session',
+                'account_state_cache_hit': account_state_cache_hit,
+                'account_state_build_ms': account_state_build_ms,
+            },
+            'presets': preset_diagnostics,
+            'query_plans': state_query_plans,
+            'timings_ms': pipeline_timings,
+        }
+        run_stats_payload['diagnostics'] = diagnostics
         return {
-            'run_stats_payload': {}, 'diagnostics': {'timings_ms': {}}, 
-            'account_state': account_state, 'start_books_by_preset': {},
-            'max_books_by_preset': {}, 'state_query_plans': {'start_of_run': {}, 'max_progression': {}}
+            'run_stats_payload': run_stats_payload,
+            'diagnostics': diagnostics,
+            'account_state': account_state,
+            'start_books_by_preset': start_books_by_preset,
+            'max_books_by_preset': max_books_by_preset,
+            'state_query_plans': state_query_plans,
         }
 
     def execute(self, args) -> int:

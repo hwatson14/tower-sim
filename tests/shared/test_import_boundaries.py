@@ -484,14 +484,6 @@ def test_evaluators_direct_file_inventory_remains_explicit():
     )
 
 
-def test_evaluators_direct_file_inventory_remains_explicit():
-    """Keep evaluators/ root-file sprawl under an explicit architecture-approved allowlist."""
-    evaluators_files = {p.name for p in EVALUATORS_DIR.iterdir() if p.is_file()}
-    assert evaluators_files <= _EVALUATORS_FILE_ALLOWLIST, (
-        f"Unexpected evaluators/ files: {sorted(evaluators_files - _EVALUATORS_FILE_ALLOWLIST)}"
-    )
-
-
 def test_app_and_compare_use_qe_planner_not_direct_resolve_calls():
     """App pipeline and compare builder should consume the QE planner's explicit report path, not raw resolve_stats or the ambiguous snapshot alias."""
     targets = [
