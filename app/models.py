@@ -6,6 +6,7 @@ from __future__ import annotations
 import dataclasses
 from dataclasses import dataclass, field
 from pathlib import Path
+from types import SimpleNamespace
 
 
 @dataclass(frozen=True)
@@ -19,6 +20,7 @@ class PipelineRunRequest:
     include_slow_audits: bool = False
     perk_state: str = 'auto'
 
+
 def _run_stats_args_from_payload(payload: dict[str, object]):
     return SimpleNamespace(
         ids=Path(str(payload['ids'])),
@@ -28,12 +30,12 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
         perk_state=str(payload.get('perk_state', 'auto')),
     )
 
+
 def _normalize_perk_state(perk_state: str) -> str:
     value = str(perk_state or 'auto').strip().lower()
     if value not in {'auto', 'on', 'off'}:
         raise ValueError(f'Unsupported perk state: {perk_state}')
     return value
-
 
 
 @dataclass(frozen=True)
@@ -79,22 +81,6 @@ class VerificationSnapshotSpec:
     preset: str
     state_mode: str
     perk_state: str = 'auto'
-
-def _run_stats_args_from_payload(payload: dict[str, object]):
-    return SimpleNamespace(
-        ids=Path(str(payload['ids'])),
-        out=Path(str(payload['out'])),
-        manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
-        perk_mode=str(payload.get('perk_mode', 'none')),
-        perk_state=str(payload.get('perk_state', 'auto')),
-    )
-
-def _normalize_perk_state(perk_state: str) -> str:
-    value = str(perk_state or 'auto').strip().lower()
-    if value not in {'auto', 'on', 'off'}:
-        raise ValueError(f'Unsupported perk state: {perk_state}')
-    return value
-
     out_subdir: str | None = None
 
 
@@ -106,22 +92,6 @@ class FastCheckpointRequest:
     manual_inputs: Path | None = None
     perk_mode: str = 'max_progression_policy'
     perk_state: str = 'auto'
-
-def _run_stats_args_from_payload(payload: dict[str, object]):
-    return SimpleNamespace(
-        ids=Path(str(payload['ids'])),
-        out=Path(str(payload['out'])),
-        manual_inputs=Path(str(payload['manual_inputs'])) if payload.get('manual_inputs') else None,
-        perk_mode=str(payload.get('perk_mode', 'none')),
-        perk_state=str(payload.get('perk_state', 'auto')),
-    )
-
-def _normalize_perk_state(perk_state: str) -> str:
-    value = str(perk_state or 'auto').strip().lower()
-    if value not in {'auto', 'on', 'off'}:
-        raise ValueError(f'Unsupported perk state: {perk_state}')
-    return value
-
     requested_surface_ids: tuple[str, ...] = ()
 
 

@@ -10,22 +10,40 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import pandas as pd
-import pytest # Keep for potential type checking during development; remove if unused
 
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
 from qe.contracts import contract_json_payload as js
 from app.models import _normalize_perk_state
 
+ROOT = Path(__file__).resolve().parents[1]
+
 # --- Helper Functions ---
 
-def _relpath_str(path: Path | str | None) -> str | None:
+def _relpath_str(path: Path | str | None, root_path: Path | None = None) -> str | None:
     if path is None:
         return None
     p = Path(path)
+    base = root_path or ROOT
     try:
-        return str(p.relative_to(ROOT)) # ROOT is assumed to be global or passed in
+        return str(p.relative_to(base))
     except (ValueError, RuntimeError):
         return str(p)
+
+def _json_sanitize(obj, root_path: Path | None = None):
+    if isinstance(obj, Path):
+        return _relpath_str(obj, root_path)
+    if isinstance(obj, dict):
+        return {k: _json_sanitize(v, root_path) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_sanitize(v, root_path) for v in obj]
+    if isinstance(obj, tuple):
+        return [_json_sanitize(v, root_path) for v in obj]
+    if isinstance(obj, str) and (obj.startswith('/') or obj.startswith('\\')):
+        try:
+            return _relpath_str(obj, root_path)
+        except Exception:
+            return obj
+    return obj
 
 def _load_json_artifact(path: Path) -> dict[str, object]:
     if not path.exists():
@@ -49,8 +67,6 @@ def write_pipeline_trace(out_dir: Path, trace: PipelineTrace, root_path: Path) -
     return path
 
 def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
-    # Assuming _RUN_STATS_LEGACY_OUTPUTS is defined elsewhere or locally
-    # For now, defining a placeholder based on context
     _RUN_STATS_LEGACY_OUTPUTS = [
         'start_of_run.json', 'max_progression.json', 'stat_inputs_start_of_run.json',
         'stat_inputs_max_progression.json', 'tower_regen_closure_report.json',
@@ -80,7 +96,7 @@ def write_core_outputs(
     family_completeness_matrix: dict,
     root_path: Path,
 ) -> list[str]:
-    
+
     _remove_run_stats_legacy_outputs(out_dir)
 
     artifacts = [
@@ -102,7 +118,7 @@ def write_core_outputs(
     written = []
     for name, payload in artifacts:
         path = out_dir / name
-        path.write_text(json.dumps(js(payload, root_path), indent=2, default=str), encoding='utf-8')
+        path.write_text(json.dumps(js(_json_sanitize(payload, root_path)), indent=2, default=str), encoding='utf-8')
         written.append(name)
 
     # Residue reports (these are part of diagnostics, but writing them explicitly)
@@ -116,7 +132,7 @@ def write_core_outputs(
     for name, payload in residue_reports:
         if payload:
             path = out_dir / name
-            path.write_text(json.dumps(js(payload, root_path), indent=2, default=str), encoding='utf-8')
+            path.write_text(json.dumps(js(_json_sanitize(payload, root_path)), indent=2, default=str), encoding='utf-8')
             written.append(name)
 
     # CSV export
