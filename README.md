@@ -51,6 +51,20 @@ pytest tests/ -m expensive                                      # expensive pari
 - `ARCHITECTURE.md` — target layer model
 - `REPO_INDEX.yaml` — file-status ledger
 
+## Archive and authority
+
+This repository’s authoritative implementation lives on `main`.
+
+Historical handoff material, deprecated references, legacy snapshots, and bulky provenance artifacts do not live on the active implementation surface. They are non-authoritative and must not be treated as current code, runtime truth, or active execution instructions.
+
+Rules of thumb:
+- `main` is the only implementation authority.
+- Archived material is for provenance, reconstruction, and historical context only.
+- Archived content must not be imported, referenced by runtime code, or used as an active instruction source.
+- Anything revived from archive must be reviewed and reintroduced deliberately as fresh work.
+
+If archived material conflicts with active code, contracts, or tests, prefer the active implementation surface and resolve the mismatch explicitly.
+
 ## Transitional state
 
 - `run_stats.py` domain builders (~34 functions) are imported by `app/pipeline.py` as a bounded transitional dependency. These are domain-layer functions (audit builders, compare matrices, gap analysis) pending extraction in a future pass.

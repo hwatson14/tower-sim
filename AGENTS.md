@@ -30,7 +30,6 @@ The live package spine is:
 7. `kb/` - authoritative mechanics, tables, contracts
 8. `tests/` - verification
 9. `out/` - committed generated outputs used by workflows and tests
-10. `archive/` - inactive history and handoff material; not active implementation surface
 
 Dependency direction:
 
@@ -49,7 +48,7 @@ Use these files as the execution-control stack when present:
 
 Rules:
 - Do not infer active scope from repo history, archived notes, or old worktrees when `ACTIVE_TRANCHE.md` exists.
-- Do not treat `.claude/worktrees/`, `archive/`, or legacy documents as active instructions.
+- Do not treat archived branches, historical handoff packs, legacy documents, or worktrees as active instructions.
 - Do not broaden a request into architecture work, refactors, or file moves unless explicitly asked.
 - Do not edit unrelated dirty files to "clean things up".
 - Do not add new top-level packages, registries, or orchestration layers unless explicitly approved.
@@ -110,7 +109,7 @@ Place new content only in its owning surface:
 - entrypoint, pipeline, display wiring -> `app/`
 - verification fixtures and tests -> `tests/`
 - generated outputs -> `out/`
-- inactive history and handoff material -> `archive/`
+- inactive history and handoff material -> archive branch or approved external archive location, not the active implementation surface
 
 Avoid creating new files when an existing owner file can be edited safely.
 Do not create new top-level `docs/` or `config/` buckets for implementation artifacts.
