@@ -46,6 +46,7 @@ from qe.stat_input_compiler import (
     _scaled_perk_value,
 )
 from simulators.contracts import PerkState
+from app.display import _format_display_number, _format_display_value
 from simulators.run_executor import (
     RunToMaxConfig,
     build_boss_wave_table,
@@ -1590,7 +1591,32 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
         'the intervening waves using the interval-start resolved values.'
     )
-    st.dataframe(frame, use_container_width=True, hide_index=True)
+    _BOSS_WAVE_SCALAR_COLS = {
+        'wave_attack', 'wave_health', 'boss_attack', 'boss_health',
+        'wall_hp', 'wall_regen', 'boss_survival_margin_hp', 'boss_total_damage_taken',
+    }
+    _BOSS_WAVE_PCT_COLS = {
+        'tower_defense_pct', 'tower_thorns_damage_pct', 'plasma_cannon_effect_pct',
+        'free_attack_upgrade_chance_pct', 'free_defense_upgrade_chance_pct',
+        'free_utility_upgrade_chance_pct', 'enemy_attack_level_skip_pct',
+        'enemy_health_level_skip_pct',
+    }
+    _BOSS_WAVE_MULTIPLIER_COLS = {'wall_fortification_multiplier'}
+    display_frame = frame.copy()
+    for col in display_frame.columns:
+        if col in _BOSS_WAVE_SCALAR_COLS:
+            display_frame[col] = display_frame[col].map(
+                lambda v: _format_display_number(v) if v is not None else None
+            )
+        elif col in _BOSS_WAVE_PCT_COLS:
+            display_frame[col] = display_frame[col].map(
+                lambda v: _format_display_value(v, 'pct') if v is not None else None
+            )
+        elif col in _BOSS_WAVE_MULTIPLIER_COLS:
+            display_frame[col] = display_frame[col].map(
+                lambda v: _format_display_value(v, 'multiplier_display') if v is not None else None
+            )
+    st.dataframe(display_frame, use_container_width=True, hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
         data=frame.to_csv(index=False).encode('utf-8'),
