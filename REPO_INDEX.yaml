@@ -4,14 +4,11 @@
 # Every non-KB file is classified here.
 #
 # Status values:
-#   active_candidate  — survives in the new active spine (may need renaming/moving)
-#   archive_candidate — moves to archive/legacy/ once its layer is migrated
+#   active_candidate  — survives in the new active spine
+#   archived          — exists only on the separate archive branch
 #   generated         — runtime output, not owned by active code
-#   delete_later      — no value in the new architecture; remove after T8
 #
-# target: where the logic lands in the new architecture (if active_candidate)
-
-version: 1
+# version: 1
 
 # ─── ROOT CONTROL FILES ───────────────────────────────────────────────────────
 
@@ -19,31 +16,22 @@ root:
   README.md:
     status: active_candidate
     layer: root
-    note: update to reflect new architecture
 
   ARCHITECTURE.md:
     status: active_candidate
     layer: root
-    note: rewritten for whitelist rebuild (this file's companion)
 
   ACTIVE_TRANCHE.md:
     status: active_candidate
     layer: root
-    note: rewritten for whitelist rebuild tranche cursor
 
   REPO_INDEX.yaml:
     status: active_candidate
     layer: root
-    note: this file; replaces REPO_MAP.yaml
-
-  REPO_MAP.yaml:
-    status: delete_later
-    reason: superseded by REPO_INDEX.yaml
 
   pyproject.toml:
     status: active_candidate
     layer: root
-    note: package plumbing; update package discovery for new layers
 
   requirements.txt:
     status: active_candidate
@@ -60,32 +48,59 @@ root:
       142 KB monolith mixing orchestration, domain logic, parsing, display.
       T12: distribution complete. Orchestration in app/, domain in evaluators/, input/, qe/.
 
-  AGENTS.md:
-    status: archive_candidate
-    target: archive/legacy/AGENTS.md
-    reason: old agent governance doc, superseded by new architecture docs
+# ─── app/ ────────────────────────────────────────────────────────────────────
 
-  AI_EXECUTION_PLAN.md:
-    status: archive_candidate
-    target: archive/legacy/AI_EXECUTION_PLAN.md
-    reason: old phase plan (Phase 1–4), superseded by whitelist rebuild tranche plan
+app:
+  app/__init__.py:
+    status: active_candidate
 
-  BURNDOWN.yaml:
-    status: archive_candidate
-    target: archive/legacy/BURNDOWN.yaml
-    reason: old burndown format, superseded
+  app/display.py:
+    status: active_candidate
 
-# ─── DEVCONTAINER / CI ────────────────────────────────────────────────────────
+  app/pipeline.py:
+    status: active_candidate
+    note: Orchestration authority; utilities sharded in T12.
 
-devcontainer:
-  .devcontainer/devcontainer.json:
-    status: delete_later
-    reason: not needed in new architecture
+  app/run_analysis.py:
+    status: active_candidate
 
-github:
-  .github/workflows/ci.yml:
-    status: delete_later
-    reason: CI config to be rebuilt from scratch once new spine passes
+  app/run_stats.py:
+    status: active_candidate
+    note: Thin CLI entrypoint.
+
+  app/models.py:
+    status: active_candidate
+    note: T12 extraction — pipeline dataclasses and trace models.
+
+  app/publication.py:
+    status: active_candidate
+    note: T12 extraction — artifact writing and trace contract.
+
+# ─── evaluators/ ─────────────────────────────────────────────────────────────
+
+evaluators:
+  evaluators/__init__.py:
+    status: active_candidate
+
+  evaluators/compare.py:
+    status: active_candidate
+    note: Thin facade re-exporting sharded logic (T12).
+
+  evaluators/compare_core.py:
+    status: active_candidate
+    note: T12 shard — core scoring and EP comparison.
+
+  evaluators/audit_engine.py:
+    status: active_candidate
+    note: T12 shard — publishing gates and KB audits.
+
+  evaluators/residue_analysis.py:
+    status: active_candidate
+    note: T12 shard — gap analysis and closure reports.
+
+  evaluators/verification_engine.py:
+    status: active_candidate
+    note: T12 shard — oracle parity and loading logic.
 
 # ─── app/ ────────────────────────────────────────────────────────────────────
 
@@ -133,16 +148,8 @@ app:
 # ─── input/ ───────────────────────────────────────────────────────────────────
 
 input:
-  input/assumptions.yaml:
-    status: archived
-    ownership: ARCHIVED T10 — authority is input/manual_inputs.yaml
-    target: archive/legacy/ in T8
-    note: run_stats.py now reads manual_inputs.yaml; this file is the stale copy
-
-  input/perks.json:
+  input/*.py:
     status: active_candidate
-    target: input/manual_inputs.yaml or input/ (perk config section)
-    note: merge perk config into manual_inputs.yaml or keep as side-car
 
   input/loadout.json:
     status: archive_candidate
@@ -185,17 +192,23 @@ input:
   # imports/ — survive as-is
   input/imports/ids.csv:
     status: active_candidate
-    layer: input/imports/
 
-  input/imports/progress.csv:
+# ─── qe/ ──────────────────────────────────────────────────────────────────────
+
+qe:
+  qe/*.py:
     status: active_candidate
-    layer: input/imports/
 
-  input/imports/ep_export.csv:
+# ─── simulators/ ─────────────────────────────────────────────────────────────
+
+simulators:
+  simulators/*.py:
     status: active_candidate
-    layer: input/imports/
 
-  input/imports/manifest.json:
+# ─── advisors/ ───────────────────────────────────────────────────────────────
+
+advisors:
+  advisors/*.py:
     status: active_candidate
     layer: input/imports/
 
@@ -463,9 +476,8 @@ models_shims:
 # ─── tests/ ──────────────────────────────────────────────────────────────────
 
 tests:
-  tests/conftest.py:
+  tests/*.py:
     status: active_candidate
-    layer: tests/
 
   tests/live/test_boundary_contracts.py:
     status: active_candidate

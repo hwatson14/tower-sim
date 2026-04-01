@@ -35,6 +35,7 @@ _ACTIVE_DIRS = [APP_DIR, QE_DIR, SIMULATORS_DIR, EVALUATORS_DIR, ROOT / "input",
 _FORBIDDEN_QE_ENGINE = re.compile(
     r"engine\.stat_resolution_core|engine\.runtime_consumer_registry|engine\.query_"
 )
+# Fixed to avoid matching 'from app.pipeline import run_stats_server' etc.
 _IMPORT_RUN_STATS = re.compile(
     r"\bimport\s+run_stats\b|from\s+run_stats\s+import"
 )
@@ -442,7 +443,8 @@ def test_input_loader_does_not_regress_to_runtime_timeline_generation():
 
 def test_repo_layout_allowlists_remain_explicit():
     """Keep root and tests/ root direct-file sprawl under an explicit allowlist."""
-    root_files = {p.name for p in ROOT.iterdir() if p.is_file()}
+    # Exclude .git — in a git worktree it is a plain file (gitdir pointer), not a directory
+    root_files = {p.name for p in ROOT.iterdir() if p.is_file() and p.name != '.git'}
     tests_root_files = {p.name for p in (ROOT / "tests").iterdir() if p.is_file()}
     assert root_files <= _ROOT_FILE_ALLOWLIST, f"Unexpected repo-root files: {sorted(root_files - _ROOT_FILE_ALLOWLIST)}"
     assert tests_root_files <= _TESTS_ROOT_FILE_ALLOWLIST, (
@@ -472,6 +474,13 @@ def test_simulators_direct_file_inventory_remains_explicit():
     simulator_files = {p.name for p in SIMULATORS_DIR.iterdir() if p.is_file()}
     assert simulator_files <= _SIMULATORS_FILE_ALLOWLIST, (
         f"Unexpected simulators/ files: {sorted(simulator_files - _SIMULATORS_FILE_ALLOWLIST)}"
+    )
+
+def test_evaluators_direct_file_inventory_remains_explicit():
+    """Keep evaluators/ root-file sprawl under an explicit architecture-approved allowlist."""
+    evaluators_files = {p.name for p in EVALUATORS_DIR.iterdir() if p.is_file()}
+    assert evaluators_files <= _EVALUATORS_FILE_ALLOWLIST, (
+        f"Unexpected evaluators/ files: {sorted(evaluators_files - _EVALUATORS_FILE_ALLOWLIST)}"
     )
 
 

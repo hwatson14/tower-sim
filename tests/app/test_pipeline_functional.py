@@ -219,3 +219,16 @@ def test_ep_oracle_compare_populated(tmp_path):
 
     compare = json.loads((out_dir / 'ep_oracle_compare.json').read_text(encoding='utf-8'))
     assert isinstance(compare, dict) and len(compare) > 0
+
+
+@pytest.mark.live
+def test_sharded_evaluators_parity(tmp_path):
+    """Sharded evaluators produce non-empty comparison artifacts (from main's T12 contract)."""
+    out_dir = tmp_path / "out"
+    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
+    execute_pipeline(request)
+
+    compare_path = out_dir / "ep_oracle_compare.json"
+    assert compare_path.exists()
+    compare_data = json.loads(compare_path.read_text(encoding='utf-8'))
+    assert isinstance(compare_data, dict) and len(compare_data) > 0
