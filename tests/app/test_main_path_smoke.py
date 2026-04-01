@@ -203,3 +203,63 @@ def test_run_stats_main_falls_back_to_pipeline_when_local_server_cannot_be_ensur
 
     assert run_stats_mod.main() == 0
     assert called == {"ensure": 1, "client": 0, "pipeline": 1}
+
+
+def test_run_stats_ensure_local_server_forwards_host_and_port_to_spawned_command(monkeypatch):
+    """run_stats_ensure_local_server must pass --host and --port to the spawned server subprocess.
+
+    This exercises the real implementation — not a monkeypatched stub — to verify the
+    CLI contract: health checks and the spawned server use the same address.
+    """
+    import app.pipeline as pipeline_mod
+    from types import SimpleNamespace
+
+    spawned_commands = []
+
+    class _FakePopen:
+        def __init__(self, command, **kwargs):
+            spawned_commands.append(command)
+
+    # Health check always fails so we reach the Popen call, then always fails
+    # the retry loop so ensure returns False. We only care about the command built.
+    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", lambda args: False)
+    monkeypatch.setattr("subprocess.Popen", _FakePopen)
+
+    args = SimpleNamespace(host='0.0.0.0', port=9123)
+    pipeline_mod.run_stats_ensure_local_server(args)
+
+    assert len(spawned_commands) == 1, "Expected exactly one Popen call"
+    cmd = spawned_commands[0]
+    assert '--host' in cmd, "Spawned server command must include --host"
+    assert '--port' in cmd, "Spawned server command must include --port"
+    host_idx = cmd.index('--host')
+    port_idx = cmd.index('--port')
+    assert cmd[host_idx + 1] == '0.0.0.0', f"--host value must be forwarded from args; got {cmd[host_idx + 1]!r}"
+    assert cmd[port_idx + 1] == '9123', f"--port value must be forwarded from args; got {cmd[port_idx + 1]!r}"
+    assert '--server' in cmd, "Spawned command must include --server flag"
+
+
+def test_run_stats_ensure_local_server_default_host_port_forwarded(monkeypatch):
+    """run_stats_ensure_local_server must forward defaults (127.0.0.1:8765) when args has no host/port."""
+    import app.pipeline as pipeline_mod
+    from types import SimpleNamespace
+
+    spawned_commands = []
+
+    class _FakePopen:
+        def __init__(self, command, **kwargs):
+            spawned_commands.append(command)
+
+    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", lambda args: False)
+    monkeypatch.setattr("subprocess.Popen", _FakePopen)
+
+    # args has no host/port attributes — ensure falls back to defaults
+    args = SimpleNamespace()
+    pipeline_mod.run_stats_ensure_local_server(args)
+
+    assert len(spawned_commands) == 1
+    cmd = spawned_commands[0]
+    host_idx = cmd.index('--host')
+    port_idx = cmd.index('--port')
+    assert cmd[host_idx + 1] == '127.0.0.1'
+    assert cmd[port_idx + 1] == '8765'

@@ -1087,7 +1087,9 @@ def run_stats_local_server_is_healthy(args, *, timeout_seconds: float = 0.25) ->
 def run_stats_ensure_local_server(args) -> bool:
     import subprocess, time
     if run_stats_local_server_is_healthy(args): return True
-    command = [sys.executable, '-m', 'app.run_stats', '--server']
+    host = getattr(args, 'host', '127.0.0.1')
+    port = int(getattr(args, 'port', 8765))
+    command = [sys.executable, '-m', 'app.run_stats', '--server', '--host', str(host), '--port', str(port)]
     subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     for _ in range(30):
         if run_stats_local_server_is_healthy(args): return True
