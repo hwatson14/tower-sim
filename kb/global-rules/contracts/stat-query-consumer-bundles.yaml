@@ -268,6 +268,36 @@ consumers:
     overlays_allowed: false
     publish_default: true
     debug_only: false
+- consumer_id: simulator_boss_wave
+  bundles:
+  - bundle_id: boss_wave_hot_surfaces
+    family_bundle_id: progression_core_stats
+    allowed_family_ids:
+    - progression_start_of_run
+    - progression_runtime_no_perks
+    - progression_runtime_with_perks
+    required_surface_ids:
+    - state::tower.hp
+    - state::tower.regen
+    - state::wall.hp
+    - state::wall.regen
+    - state::wall.fortification_multiplier
+    - state::tower.defense_pct
+    - state::tower.thorns_damage_pct
+    - state::tower.orb_count
+    - state::tower.orb_speed_rpm
+    - state::cards.plasma_cannon.effect_pct
+    - state::module.orbital_augment.electron_count
+    - state::tower.free_attack_upgrade_chance_pct
+    - state::tower.free_defense_upgrade_chance_pct
+    - state::tower.free_utility_upgrade_chance_pct
+    - state::tower.enemy_attack_level_skip_pct
+    - state::tower.enemy_health_level_skip_pct
+    optional_surface_ids: []
+    minimum_trace_mode: contributors
+    overlays_allowed: false
+    publish_default: true
+    debug_only: false
 rules:
 - consumer bundles constrain what each bounded consumer may request; they do not redefine
   surface ownership

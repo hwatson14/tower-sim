@@ -20,7 +20,11 @@ from qe.contracts import (
     to_v2_surface_id,
 )
 from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, compile_stat_inputs_with_identity
-from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
+from qe.consumer_registry import resolve_consumer_bundle
+from qe.dependency_registry import DependencyRegistry
+from qe.materializer import BaselineContributorRow
+from qe.kernel import QueryResponse, ResolvedSurfaceRow, StatQueryKernel, get_default_query_kernel
+from simulators.incremental_recalc_runtime import IncrementalRecalcRuntime
 from qe.stat_resolution import (
     resolve_stats as _fallback_resolve_stats,
     resolve_stats_delta as _fallback_resolve_stats_delta,
@@ -1348,6 +1352,282 @@ def resolve_checkpoint_surfaces(
     )
 
 
+def _compile_checkpoint_bound_inputs(
+    account_state: AccountState,
+    *,
+    preset_name: str,
+    state_mode: str,
+    card_preset_name: str | None,
+    module_preset_name: str | None,
+    perk_preset_name: str | None,
+    perks_enabled: bool,
+    runtime_branch_id: str,
+    scenario_runtime_inputs: ScenarioRuntimeInputs | None,
+    scenario_projection_state: ScenarioProjectionState | None,
+) -> BoundStatInputs:
+    return compile_stat_inputs_with_identity(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=scenario_projection_state,
+        scenario_context={'mode_id': 'checkpoint'},
+    )
+
+
+def resolve_checkpoint_consumer_bundle(
+    account_state: AccountState,
+    *,
+    consumer_id: str,
+    bundle_id: str,
+    family_id: str,
+    preset_name: str,
+    state_mode: str = 'start_of_run',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    perks_enabled: bool = False,
+    runtime_branch_id: str = 'branch_checkpoint',
+    scenario_runtime_inputs: ScenarioRuntimeInputs | None = None,
+    scenario_projection_state: ScenarioProjectionState | None = None,
+    trace_mode: str = 'contributors',
+    include_optional_surface_ids: Sequence[str] = (),
+    kernel: StatQueryKernel | None = None,
+) -> QueryResponse:
+    resolved_bundle = resolve_consumer_bundle(
+        consumer_id,
+        bundle_id,
+        family_id=family_id,
+        include_optional_surface_ids=include_optional_surface_ids,
+        trace_mode=trace_mode,
+    )
+    bound_inputs = _compile_checkpoint_bound_inputs(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=scenario_projection_state,
+    )
+    query_kernel = kernel or get_default_query_kernel()
+    baseline = query_kernel.materializer.materialize_from_rows(
+        bound_inputs.binding.identity,
+        family_id,
+        bound_inputs.stat_inputs,
+    )
+    return query_kernel.resolve_surfaces(
+        baseline,
+        requested_surface_ids=resolved_bundle.surface_ids,
+        trace_mode=trace_mode,
+    )
+
+
+def _contributor_row_from_statbook_dict(surface_id: str, contributor: dict[str, object]) -> BaselineContributorRow:
+    return BaselineContributorRow(
+        surface_id=surface_id,
+        surface_class=str(contributor.get('surface_class') or ''),
+        domain=str(contributor.get('domain') or ''),
+        source_class=str(contributor.get('source_class') or ''),
+        source_family=None,
+        source_name=None,
+        composition_stage=str(contributor.get('composition_stage') or ''),
+        contributor_id=str(contributor.get('contributor_id') or ''),
+        value=contributor.get('value'),
+        value_type=str(contributor.get('value_type') or ''),
+        input_value=contributor.get('value'),
+        input_value_type=str(contributor.get('value_type') or ''),
+        input_notes=None,
+        active=bool(contributor.get('active', True)),
+        gate_reason=None if contributor.get('gate_reason') is None else str(contributor.get('gate_reason')),
+        provenance_ref=str(contributor.get('provenance_ref') or ''),
+    )
+
+
+def _delta_statbook_from_response(
+    *,
+    base_statbook: StatBook,
+    response: QueryResponse,
+    bundle_surface_ids: Sequence[str],
+    impacted_surface_ids: Sequence[str],
+    diagnostics: dict[str, object],
+) -> StatBook:
+    impacted_surface_set = set(impacted_surface_ids)
+    response_surface_rows = {row.surface_id: row for row in response.resolved_surface_rows}
+    response_contributors: dict[str, list[BaselineContributorRow]] = {}
+    for contributor in response.contributor_rows:
+        response_contributors.setdefault(contributor.surface_id, []).append(contributor)
+
+    merged_rows = dict(base_statbook.rows)
+    for surface_id in impacted_surface_ids:
+        row = response_surface_rows.get(surface_id)
+        if row is None:
+            raise ValueError(f'Delta response omitted impacted surface {surface_id!r}.')
+        impacted_statbook = query_response_to_statbook(
+            QueryResponse(
+                family_id=response.family_id,
+                resolved_surface_rows=(row,),
+                contributor_rows=tuple(response_contributors.get(surface_id, ())),
+                dependency_trace={surface_id: tuple(response.dependency_trace.get(surface_id, ()))},
+            ),
+            notes='Resolved through checkpoint consumer-bundle delta.',
+            diagnostics=diagnostics,
+        )
+        merged_rows[surface_id] = impacted_statbook.rows[surface_id]
+
+    contributor_rows: list[BaselineContributorRow] = []
+    dependency_trace: dict[str, tuple[str, ...]] = {}
+    resolved_surface_rows: list[ResolvedSurfaceRow] = []
+    for surface_id in bundle_surface_ids:
+        row = merged_rows.get(surface_id)
+        if row is None:
+            continue
+        resolved_surface_rows.append(
+            ResolvedSurfaceRow(
+                surface_id=surface_id,
+                final_value=row.final_value,
+                value_type=row.value_type,
+                status=row.status,
+            )
+        )
+        if surface_id in impacted_surface_set:
+            contributor_rows.extend(response_contributors.get(surface_id, ()))
+            dependency_trace[surface_id] = tuple(response.dependency_trace.get(surface_id, ()))
+        else:
+            contributor_rows.extend(
+                _contributor_row_from_statbook_dict(surface_id, contributor)
+                for contributor in (merged_rows[surface_id].contributors or ())
+            )
+            dependency_trace[surface_id] = tuple(base_statbook.diagnostics.get('dependency_trace', {}).get(surface_id, ()))
+
+    merged_response = QueryResponse(
+        family_id=response.family_id,
+        resolved_surface_rows=tuple(resolved_surface_rows),
+        contributor_rows=tuple(contributor_rows),
+        dependency_trace=dependency_trace,
+    )
+    return query_response_to_statbook(
+        merged_response,
+        notes='Resolved through checkpoint consumer-bundle delta.',
+        diagnostics=diagnostics,
+    )
+
+
+def resolve_checkpoint_consumer_bundle_delta(
+    *,
+    base_statbook: StatBook,
+    account_state: AccountState,
+    consumer_id: str,
+    bundle_id: str,
+    family_id: str,
+    preset_name: str,
+    state_mode: str = 'start_of_run',
+    card_preset_name: str | None = None,
+    module_preset_name: str | None = None,
+    perk_preset_name: str | None = None,
+    perks_enabled: bool = False,
+    runtime_branch_id: str = 'branch_checkpoint',
+    scenario_runtime_inputs: ScenarioRuntimeInputs | None = None,
+    scenario_projection_state: ScenarioProjectionState | None = None,
+    trace_mode: str = 'contributors',
+    include_optional_surface_ids: Sequence[str] = (),
+    mutation_class: str = 'workshop_mutation',
+    trigger_keys: Sequence[str] = (),
+    kernel: StatQueryKernel | None = None,
+) -> StatBook:
+    resolved_bundle = resolve_consumer_bundle(
+        consumer_id,
+        bundle_id,
+        family_id=family_id,
+        include_optional_surface_ids=include_optional_surface_ids,
+        trace_mode=trace_mode,
+    )
+    planner = IncrementalRecalcRuntime(DependencyRegistry.load_default())
+    plan = planner.plan_overlay_mutation(
+        family_id=family_id,
+        mutation_class=mutation_class,
+        trigger_keys=trigger_keys,
+        consumer_id=consumer_id,
+        bundle_id=bundle_id,
+    )
+    impacted_surface_ids = sorted(set(plan.dirty_nodes) & set(resolved_bundle.surface_ids))
+    diagnostics = dict(base_statbook.diagnostics or {})
+    diagnostics.update({
+        'family_id': family_id,
+        'qe_resolution_interface': 'checkpoint_consumer_bundle_delta',
+        'qe_resolution_backend': 'native_family_query_delta',
+        'qe_native_family_available': True,
+        'qe_native_family_id': family_id,
+        'consumer_id': consumer_id,
+        'bundle_id': bundle_id,
+        'delta_mutation_class': mutation_class,
+        'delta_trigger_keys': list(trigger_keys),
+        'delta_fallback_used': False,
+        'delta_impacted_surface_ids': impacted_surface_ids,
+    })
+    if plan.fallback_required or not impacted_surface_ids:
+        diagnostics['delta_fallback_used'] = True
+        diagnostics['delta_fallback_reason'] = plan.fallback_reason or ('No impacted bundle surfaces for trigger keys.' if not impacted_surface_ids else 'unsupported_delta_plan')
+        response = resolve_checkpoint_consumer_bundle(
+            account_state,
+            consumer_id=consumer_id,
+            bundle_id=bundle_id,
+            family_id=family_id,
+            preset_name=preset_name,
+            state_mode=state_mode,
+            card_preset_name=card_preset_name,
+            module_preset_name=module_preset_name,
+            perk_preset_name=perk_preset_name,
+            perks_enabled=perks_enabled,
+            runtime_branch_id=runtime_branch_id,
+            scenario_runtime_inputs=scenario_runtime_inputs,
+            scenario_projection_state=scenario_projection_state,
+            trace_mode=trace_mode,
+            include_optional_surface_ids=include_optional_surface_ids,
+            kernel=kernel,
+        )
+        return query_response_to_statbook(response, notes='Resolved through checkpoint consumer-bundle full fallback.', diagnostics=diagnostics)
+
+    bound_inputs = _compile_checkpoint_bound_inputs(
+        account_state,
+        preset_name=preset_name,
+        state_mode=state_mode,
+        card_preset_name=card_preset_name,
+        module_preset_name=module_preset_name,
+        perk_preset_name=perk_preset_name,
+        perks_enabled=perks_enabled,
+        runtime_branch_id=runtime_branch_id,
+        scenario_runtime_inputs=scenario_runtime_inputs,
+        scenario_projection_state=scenario_projection_state,
+    )
+    query_kernel = kernel or get_default_query_kernel()
+    baseline = query_kernel.materializer.materialize_from_rows(
+        bound_inputs.binding.identity,
+        family_id,
+        bound_inputs.stat_inputs,
+    )
+    response = query_kernel.resolve_surfaces(
+        baseline,
+        requested_surface_ids=tuple(impacted_surface_ids),
+        trace_mode=trace_mode,
+    )
+    return _delta_statbook_from_response(
+        base_statbook=base_statbook,
+        response=response,
+        bundle_surface_ids=resolved_bundle.surface_ids,
+        impacted_surface_ids=impacted_surface_ids,
+        diagnostics=diagnostics,
+    )
+
+
 def _snapshot_cache_key(bound_inputs: BoundStatInputs) -> tuple[str, str, str, str]:
     identity = bound_inputs.binding.identity
     return (
@@ -1478,6 +1758,8 @@ __all__ = [
     'QEResolvedSnapshot',
     'query_response_to_statbook',
     'resolve_checkpoint_surfaces',
+    'resolve_checkpoint_consumer_bundle',
+    'resolve_checkpoint_consumer_bundle_delta',
     'resolve_stats',
     'resolve_stats_delta',
     '_multiplier_from_value',

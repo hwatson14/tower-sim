@@ -31,6 +31,12 @@ def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
 
 
+def run_stats_progression_family_id(*, state_mode: str, perks_enabled: bool) -> str:
+    if state_mode == 'start_of_run' and not perks_enabled:
+        return 'progression_start_of_run'
+    return 'progression_runtime_with_perks' if perks_enabled else 'progression_runtime_no_perks'
+
+
 @dataclass(frozen=True)
 class ProgressionRecalcRequest:
     account_state: AccountState

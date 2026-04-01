@@ -1407,6 +1407,14 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall Regen lab contributes to wall regen.
+  - upstream_node_id: state::tower.regen
+    downstream_node_id: state::wall.regen
+    invalidation_semantics: recompute_downstream
+    mutation_classes:
+    - workshop_mutation
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Wall regen is derived from tower regen.
   - upstream_node_id: source_input::lab:Wall Fortification
     downstream_node_id: state::wall.fortification_multiplier
     invalidation_semantics: recompute_downstream
@@ -2168,6 +2176,13 @@ mutation_triggers:
   - mutation_class: workshop_mutation
     trigger_key: Health
     source_node_id: source_input::workshop:Health
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Health Regen
+    source_node_id: source_input::workshop:Health Regen
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified
