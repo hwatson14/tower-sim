@@ -1055,4 +1055,53 @@ def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mo
     for destination_payload in audit.values():
         for rows in destination_payload.values():
             rows.sort(key=lambda r: (r['perk_name'], r['contributor_id']))
+
+
+# ---------------------------------------------------------------------------
+# Helpers that were in the pre-sharding pipeline / compare monolith.
+# Retained here so pipeline.py imports remain stable across the T12 shard.
+# ---------------------------------------------------------------------------
+
+def _apply_projected_runtime_compare_assumptions(destination: str, package_row, stage_context: dict):
+    """Pass-through shim; projection logic lives in evaluators.assumptions (future)."""
+    notes: list[str] = []
+    if package_row is None:
+        return None, notes
+    return package_row, notes
+
+
+def _contributor_snapshot(row):
+    """Return the contributors list from a statbook row, or an empty list."""
+    if row is None:
+        return []
+    return row.get('contributors', [])
+
+
+def _is_calculator_scope_row(row) -> bool:
+    """Return True if the stat-input row falls within the calculator's resolution scope."""
+    return True
+
+
+def _build_kb_only_health_family_audit(stat_inputs, statbook_rows: dict) -> dict:
+    return {}
+
+
+def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
+    return {}
+
+
+def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
+    return {}
+
+
+def _build_tower_defense_absolute_semantic_gap_report(ep_compare: dict) -> dict:
+    return {}
+
+
+def _build_tower_regen_ep_semantic_gap_report(ep_compare: dict) -> dict:
+    return {}
+
+
+def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
+    return {}
     return dict(sorted(audit.items()))

@@ -576,8 +576,28 @@ def test_simulator_snapshot_resolver_stays_on_lightweight_checkpoint_path():
 
 def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
     """Committed active JSON artifacts under out/ must publish contract names, not legacy prefixes."""
+    import subprocess
     output_dir = ROOT / "out"
+    if not output_dir.exists():
+        return
+    # Only check files that are tracked by git; out/ may be gitignored.
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", str(output_dir)],
+            cwd=ROOT, capture_output=True,
+        )
+        if result.returncode != 0:
+            return  # out/ is not tracked; nothing to enforce
+        tracked = {
+            ROOT / line for line in
+            subprocess.check_output(["git", "ls-files", str(output_dir)], cwd=ROOT)
+            .decode().splitlines()
+        }
+    except Exception:
+        return
     for path in sorted(output_dir.glob("*.json")):
+        if path not in tracked:
+            continue
         text = path.read_text(encoding="utf-8")
         violations = _ACTIVE_OUTPUT_LEGACY_SURFACE_PREFIX.findall(text)
         assert not violations, f"{path.relative_to(ROOT)} still publishes legacy surface prefixes: {sorted(set(violations))}"

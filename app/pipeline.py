@@ -73,7 +73,6 @@ from simulators.scenario import publish_farming_throughput_support_surfaces
 # Evaluators sharded
 from evaluators.compare_core import (
     build_ep_compare,
-    build_compare_status_summary,
     _build_compare_rows_by_preset,
 )
 from evaluators.audit_engine import (
@@ -85,7 +84,6 @@ from evaluators.audit_engine import (
 )
 from evaluators.residue_analysis import (
     build_survivor_closure_report,
-    build_survivability_residue_analysis,
     _build_tower_regen_closure_report,
     _build_tower_hp_semantic_gap_report,
     _build_tower_damage_residue_analysis,
@@ -115,6 +113,7 @@ from evaluators.compare import (
     _is_calculator_scope_row,
     _load_formula_ledger,
     _normalize_compare_values,
+    build_compare_status_summary,
     ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
     ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
     _build_perk_contributor_audit,

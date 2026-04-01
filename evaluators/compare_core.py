@@ -12,7 +12,8 @@ from qe.contracts import (
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
-from qe.routing import QEResolutionPlanner, publish_query_surfaces
+from qe.routing import QEResolutionPlanner
+from qe.publication import publish_query_surfaces
 from input.runtime_state import build_runtime_state
 
 
