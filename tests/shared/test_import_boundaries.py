@@ -35,15 +35,17 @@ _ACTIVE_DIRS = [APP_DIR, QE_DIR, SIMULATORS_DIR, EVALUATORS_DIR, ROOT / "input",
 _FORBIDDEN_QE_ENGINE = re.compile(
     r"engine\.stat_resolution_core|engine\.runtime_consumer_registry|engine\.query_"
 )
-_IMPORT_RUN_STATS = re.compile(
-    r"import run_stats as _h|from run_stats import|import run_stats"
+_RUN_STATS_IMPORT_PATTERN = (
+    r"^\s*(?:from\s+run_stats\s+import|import\s+run_stats(?:\s+as\s+\w+)?)\b"
 )
+_IMPORT_RUN_STATS = re.compile(_RUN_STATS_IMPORT_PATTERN, re.MULTILINE)
 _IMPORT_ENGINE = re.compile(r"(?:^|\n)\s*(?:from|import)\s+engine\b")
 _IMPORT_PIPELINE_HELPERS = re.compile(
     r"evaluators\.pipeline_helpers|from evaluators import pipeline_helpers"
 )
 _IMPORT_RUN_STATS_FROM_EVALUATORS = re.compile(
-    r"from run_stats import|import run_stats"
+    _RUN_STATS_IMPORT_PATTERN,
+    re.MULTILINE,
 )
 # Consolidated transitional-root boundary (post-T13)
 _IMPORT_TRANSITIONAL_ROOTS = re.compile(

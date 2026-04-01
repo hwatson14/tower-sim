@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import sys
+from types import SimpleNamespace
 from pathlib import Path
 
 import pytest
@@ -149,6 +150,46 @@ def test_run_stats_pipeline_writes_query_artifacts_not_fake_statbooks():
     assert "run_stats_query_plan_start_of_run.json" in src
     assert "run_stats_query_plan_max_progression.json" in src
     assert "_remove_run_stats_legacy_outputs" in src
+
+
+def test_run_stats_pipeline_defines_legacy_output_contract():
+    import app.pipeline as pipeline_mod
+
+    assert hasattr(pipeline_mod, "_RUN_STATS_LEGACY_OUTPUTS")
+    assert isinstance(pipeline_mod._RUN_STATS_LEGACY_OUTPUTS, tuple)
+    assert "statbook_start_of_run.json" in pipeline_mod._RUN_STATS_LEGACY_OUTPUTS
+    assert "statbook_max_progression.json" in pipeline_mod._RUN_STATS_LEGACY_OUTPUTS
+
+
+def test_run_stats_session_execute_removes_legacy_outputs_and_writes_diagnostics(tmp_path):
+    import app.pipeline as pipeline_mod
+
+    legacy_output = tmp_path / "statbook_start_of_run.json"
+    legacy_output.write_text("{}", encoding="utf-8")
+
+    class _StubAccountState:
+        def to_dict(self):
+            return {'presets': {'Farming': {}}}
+
+    def _build_stub_artifacts(_args):
+        return {
+            'diagnostics': {'timings_ms': {}},
+            'account_state': _StubAccountState(),
+            'state_query_plans': {'start_of_run': {}, 'max_progression': {}},
+            'start_books_by_preset': {'Farming': {'rows': {}, 'diagnostics': {}}},
+            'max_books_by_preset': {'Farming': {'rows': {}, 'diagnostics': {}}},
+            'run_stats_payload': {'diagnostics': {}},
+        }
+
+    session = pipeline_mod.RunStatsSession()
+    session.build_run_stats_artifacts = _build_stub_artifacts
+
+    rc = session.execute(SimpleNamespace(out=tmp_path))
+
+    assert rc == 0
+    assert not legacy_output.exists()
+    assert (tmp_path / "diagnostics.json").exists()
+    assert (tmp_path / "run_stats.json").exists()
 
 
 def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
