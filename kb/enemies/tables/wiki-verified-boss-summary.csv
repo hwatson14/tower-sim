@@ -1,8 +1,0 @@
-rule,value_or_note,source_page
-appearance,Every 10 waves,Enemies
-health_multiplier_vs_basic,x20,Enemies
-speed_modifier_vs_basic,+30%,Enemies
-base_coin_value,5,Enemies
-electron_remaining_hp_pct,3.75,Enemies (electron boss: 15% of 25% threshold = 0.0375)
-thorns_effectiveness_vs_boss_pct,50.0,Enemies (thorns deal 50% effectiveness vs boss)
-heat_up_damage_per_hit_pct,4.0,Enemies (boss heat-up damage per hit = 4%)

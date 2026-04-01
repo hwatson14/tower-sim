@@ -1,4 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-free_upgrades,free_attack_upgrade,800 coins after Coins/Kill Bonus and Coins/Wave,99,0.5%,+0.5% per level,49.5%,No free upgrades wasted if any stat can still be upgraded.,Free Upgrades,row-verified-live-wiki
-free_upgrades,free_defense_upgrade,800 coins after Coins/Kill Bonus and Coins/Wave,99,0.5%,+0.5% per level,49.5%,Wave Skip can trigger additional free upgrades for skipped waves.,Free Upgrades,row-verified-live-wiki
-free_upgrades,free_utility_upgrade,800 coins after Coins/Kill Bonus and Coins/Wave,99,0.5%,+0.5% per level,49.5%,"If free-upgrades chance exceeds 100%, extra upgrade roll occurs.",Free Upgrades,row-verified-live-wiki

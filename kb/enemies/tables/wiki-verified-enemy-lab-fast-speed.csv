@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Fast Enemy Speed,fast,Tier 9 Wave 300,Reduces Fast enemy speed at all waves.,30,-0.40%,-12.00%,Speed reduction is separate from health/attack research.,Lab/Fast_Enemy_Speed,row_verified_v62

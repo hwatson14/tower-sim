@@ -1,5 +1,0 @@
-entity_id,canonical_name,runtime_type,primary_effect,primary_surface,status,note
-BOT_AMPLIFY_BOT,Amplify Bot,timed_multiplier_aura,damage_multiplier,kb/bots/tables/bot-upgrade-tracks-long.csv,active_canonical_registry,Normalized from bundled all-bots long table.
-BOT_FLAME_BOT,Flame Bot,timed_aura,damage_reduction_and_damage,kb/bots/tables/bot-upgrade-tracks-long.csv,active_canonical_registry,Normalized from bundled all-bots long table.
-BOT_GOLDEN_BOT,Golden Bot,timed_economy_aura,coin_bonus,kb/bots/tables/bot-upgrade-tracks-long.csv,active_canonical_registry,Normalized from bundled all-bots long table.
-BOT_THUNDER_BOT,Thunder Bot,timed_zone,damage_and_stun_linger,kb/bots/tables/bot-upgrade-tracks-long.csv,active_canonical_registry,Normalized from bundled all-bots long table.

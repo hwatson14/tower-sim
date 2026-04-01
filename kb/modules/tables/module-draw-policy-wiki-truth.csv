@@ -1,7 +1,0 @@
-topic,key,value,unit,source_note
-draw_rate,common_rate,68.5,pct,Wiki Modules purchasing section
-draw_rate,rare_rate,29.0,pct,Wiki Modules purchasing section
-draw_rate,epic_rate,2.5,pct,Wiki Modules purchasing section
-draw_policy,epic_pity_draws,150,draws,Wiki Modules purchasing section
-draw_policy,ten_pull_minimum_rare,1,rare_per_ten_pull,Wiki Modules purchasing section
-draw_policy,gem_cost_per_draw,20,gems,Wiki Modules purchasing section

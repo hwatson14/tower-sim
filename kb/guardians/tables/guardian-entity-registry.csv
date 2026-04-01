@@ -1,7 +1,0 @@
-guardian_id,guardian_name,effect_family,unlock_source,base_cooldown_seconds,base_effect,base_targets,secondary_base,status
-GUARDIAN_ATTACK,Attack,missing_health_damage,base,120,1% missing-health damage,1,,normalized_for_material_simulator_scope
-GUARDIAN_ALLY,Ally,ally_conversion_recovery,base,120,1s ally conversion / recovery package,1,,normalized_for_material_simulator_scope
-GUARDIAN_BOUNTY,Bounty,bounty_multiplier,guild_shop_200_tokens,120,0.01x bounty multiplier,1,,normalized_for_material_simulator_scope
-GUARDIAN_FETCH,Fetch,drop_find,guild_shop_200_tokens,120,10% find chance,,2% double find chance,normalized_for_material_simulator_scope
-GUARDIAN_SUMMON,Summon,summon_cash_bonus,guild_shop_season_5_200_tokens,140,5s duration,,x1.00 cash bonus,normalized_for_material_simulator_scope
-GUARDIAN_SCOUT,Scout,range_support,guild_shop_season_7_200_tokens,105,5s duration,,x2.0 range effect,normalized_for_material_simulator_scope

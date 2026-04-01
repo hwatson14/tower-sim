@@ -1,2 +1,0 @@
-enhancement_name,category,unlock_requirement,base_multiplier,increment_per_level,max_level,max_multiplier,special_notes,source_page,verification_status
-Wall Health,defense,Requires 50 trillion coins to be spent on defense enhancements to unlock.,x1.0,+0.01,400,x5.00,Multiplier applies to Wall Health.,Workshop_Enhancement/Defense/Wall_Health,row_verified_v61

@@ -1,2 +1,0 @@
-lab_name,enemy_family,unlock_requirement,effect,max_level,increment_per_level,max_reduction,special_notes,source_page,verification_status
-Ranged Enemy Attack,ranged,Tier 9 Wave 20,Reduces ranged enemy attack at all waves.,30,-0.40%,-12.00%,Ranged labs change enemy family-specific stats independently.,Enemies,row_verified_v62

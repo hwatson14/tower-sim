@@ -1,2 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-coins_kill_bonus,coins_per_kill_multiplier,100 coins with Coins/Wave after Cash Bonus and Cash/Wave,149,1.00x,+0.01x per level,2.49x,Formula page notes enhancement is double counted through tier bonus and CPK.,Coins Per Kill Bonus,row-verified-live-wiki

@@ -1,3 +1,0 @@
-vault_tree_id,tree_name,unlock_condition,purchase_currency,tree_scope,status,source,verification_status
-VAULT_POWER,Power,legend-league-promotion,keys,tower-related buffs,normalized_from_vault_overview,kb/economy/sources/wiki-economy-and-vault-baselines.md,row_verified_against_live_wiki_vault_page
-VAULT_HARMONY,Harmony,legend-league-promotion,keys,non-tower buffs and quality-of-life upgrades,normalized_from_vault_overview,kb/economy/sources/wiki-economy-and-vault-baselines.md,row_verified_against_live_wiki_vault_page

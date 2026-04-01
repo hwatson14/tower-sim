@@ -1,3 +1,0 @@
-surface,component,unlock,levels,base_value,increment,max_value,notes,source_page,verification_status
-critical_hits,critical_chance,free at workshop start,79,1.00%,+1.00% per level,80.00%,Critical chance can exceed 100% with other sources; extra over 100% only impacts UW damage.,Critical Hits,row-verified-live-wiki
-critical_hits,critical_factor,free at workshop start,150,1.2x,+0.1x per level,16.2x,Critical Factor is used for UW critical hits with Ultimate Crit card.,Critical Hits,row-verified-live-wiki

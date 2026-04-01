@@ -1,5 +1,0 @@
-constant_id,value_type,value,closure_class,source_ref,notes
-module.reroll.currency,string,reroll_shards,canonical_kb_truth,kb/modules/sources/wiki-modules-and-submodules.md,Sub-modules consume reroll shards when rerolled.
-module.reroll.locking_increases_cost,boolean,true,canonical_kb_truth,kb/modules/sources/wiki-modules-and-submodules.md,Locking existing sub-modules increases the reroll cost.
-module.reroll.numeric_cost_ladder_closed,boolean,false,canonical_kb_truth,kb/modules/sources/wiki-modules-and-submodules.md,The live wiki summary used in this repo confirms cost escalation but does not close the numeric shard ladder.
-module.reroll.assist_caps_still_apply,boolean,true,canonical_kb_truth,kb/modules/contracts/module-unique-runtime-semantics.md,Assist rerolls still obey the documented hard caps.

@@ -1,3 +1,0 @@
-domain,levels,base_chance_pct,increment_per_level_pct,max_chance_pct,unlock_cost_coins,deterministic_note,source_ref
-workshop_enemy_attack_level_skip,699,0.05,0.05,35.0,1000000000,non-random/deterministic as of V26,wiki_verified_2026_03_14
-workshop_enemy_health_level_skip,699,0.05,0.05,35.0,1000000000,non-random/deterministic as of V26,wiki_verified_2026_03_14
