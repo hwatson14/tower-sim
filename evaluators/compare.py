@@ -332,32 +332,5 @@ def _contributor_snapshot(row):
     return row.get('contributors', [])
 
 
-def _is_calculator_scope_row(row) -> bool:
-    """Return True if the stat-input row falls within the calculator's resolution scope."""
-    return True
-
-
-def _build_kb_only_health_family_audit(stat_inputs, statbook_rows: dict) -> dict:
-    return {}
-
-
-def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
-    return {}
-
-
-def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
-    return {}
-
-
-def _build_tower_defense_absolute_semantic_gap_report(ep_compare: dict) -> dict:
-    return {}
-
-
-def _build_tower_regen_ep_semantic_gap_report(ep_compare: dict) -> dict:
-    return {}
-
-
-def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
-    return {}
 
 

@@ -101,17 +101,11 @@ from evaluators.compare import (
     _build_compare_situation_fit_matrix,
     _build_damage_defabs_scope_audit,
     _build_family_completeness_matrix,
-    _build_kb_only_health_family_audit,
     _build_publishable_statbook,
-    _build_run_perk_residue_analysis,
-    _build_tower_damage_runtime_gap_report,
-    _build_tower_defense_absolute_semantic_gap_report,
-    _build_tower_regen_ep_semantic_gap_report,
     _compare_state_key_for_destination,
     _contributor_snapshot,
     _ep_stage_context_for_destination,
     _formula_contract,
-    _is_calculator_scope_row,
     _load_formula_ledger,
     _normalize_compare_values,
     ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
@@ -707,14 +701,44 @@ def _normalize_perk_mode(perk_mode: str | None) -> str:
     return value
 
 
+def _effective_manual_inputs_path(path: Path | None) -> Path:
+    return path if path is not None else ROOT / 'input' / 'manual_inputs.yaml'
+
+
+def _path_cache_token(path: Path) -> tuple:
+    resolved = path.resolve()
+    try:
+        s = resolved.stat()
+        return (str(resolved), s.st_mtime_ns, s.st_size)
+    except OSError:
+        return (str(resolved), None, None)
+
+
 class RunStatsSession:
     def __init__(self) -> None:
         self.qe_shared_runtime_context = get_default_qe_shared_runtime_context()
         self.query_kernel = self.qe_shared_runtime_context.query_kernel
         self._account_state_cache: dict[tuple, tuple] = {}
 
+    def _account_state_cache_key(
+        self,
+        *,
+        ids_path: Path,
+        manual_inputs_path: Path | None,
+        perk_mode: str,
+    ) -> tuple:
+        return (
+            _path_cache_token(ids_path),
+            _path_cache_token(_effective_manual_inputs_path(manual_inputs_path)),
+            str(perk_mode),
+        )
+
     def get_account_state_bundle(self, *, ids_path: Path, manual_inputs_path: Path | None, perk_mode: str, diag_output_dir: Path | None):
-        cache_key = (str(ids_path), str(manual_inputs_path), perk_mode)
+        cache_key = self._account_state_cache_key(
+            ids_path=ids_path,
+            manual_inputs_path=manual_inputs_path,
+            perk_mode=perk_mode,
+        )
         cached = self._account_state_cache.get(cache_key)
         if cached is not None:
             return (*cached, True)
@@ -953,7 +977,6 @@ class RunStatsSession:
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
         write_start = perf_counter()
-        (args.out / 'diagnostics.json').write_text(json.dumps(_json_sanitize(diagnostics), indent=2, default=str))
         (args.out / 'account_state.json').write_text(
             json.dumps(_json_sanitize(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
         )
@@ -975,6 +998,7 @@ class RunStatsSession:
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(json.dumps(_json_sanitize(artifacts['max_books_by_preset']), indent=2, default=str))
         (args.out / 'run_stats.json').write_text(json.dumps(_json_sanitize(artifacts['run_stats_payload']), indent=2, default=str))
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
+        (args.out / 'diagnostics.json').write_text(json.dumps(_json_sanitize(diagnostics), indent=2, default=str))
         return 0
 
 @lru_cache(maxsize=1)
@@ -1110,6 +1134,20 @@ def run_analysis_pipeline(args) -> int:
     )
     stat_inputs = list(main_snapshot.stat_inputs)
     statbook = main_snapshot.statbook
+    _merge_scenario_publication_rows(
+        statbook,
+        account_state=account_state,
+        stat_inputs=stat_inputs,
+        preset_name=args.preset,
+        state_mode=args.state_mode,
+        perks_enabled=perks_enabled,
+        manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+    )
+    publish_query_surfaces(
+        statbook.rows,
+        manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+        account_state_labs=account_state.labs,
+    )
     statbook_dict = statbook.to_dict()
     for destination, row in statbook_dict.get('rows', {}).items():
         row['formula_contract'] = _formula_contract(formula_ledger, destination)
@@ -1124,7 +1162,22 @@ def run_analysis_pipeline(args) -> int:
             account_state, preset_name=args.preset, state_mode=state_mode, perks_enabled=perks_enabled,
         )
         matrix_inputs = list(matrix_snapshot.stat_inputs)
-        matrix_statbook = matrix_snapshot.statbook.to_dict()
+        matrix_statbook_obj = matrix_snapshot.statbook
+        _merge_scenario_publication_rows(
+            matrix_statbook_obj,
+            account_state=account_state,
+            stat_inputs=matrix_inputs,
+            preset_name=args.preset,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
+            manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+        )
+        publish_query_surfaces(
+            matrix_statbook_obj.rows,
+            manual_advisory_inputs=_input_bundle.manual_advisory_inputs,
+            account_state_labs=account_state.labs,
+        )
+        matrix_statbook = matrix_statbook_obj.to_dict()
         state_matrix[state_mode] = {
             'support': state_mode_support(state_mode),
             'input_count': len(matrix_inputs),
