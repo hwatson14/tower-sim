@@ -761,22 +761,22 @@ class RunStatsSession:
         (args.out / 'account_state.json').write_text(
             json.dumps(_json_sanitize(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
         )
-        (args.out / 'stat_inputs_start_of_run.json').write_text(
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan']).write_text(
             json.dumps(_json_sanitize({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'start_of_run',
                 'presets': artifacts['state_query_plans']['start_of_run'],
             }), indent=2, default=str)
         )
-        (args.out / 'stat_inputs_max_progression.json').write_text(
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']).write_text(
             json.dumps(_json_sanitize({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'max_progression',
                 'presets': artifacts['state_query_plans']['max_progression'],
             }), indent=2, default=str)
         )
-        (args.out / 'statbook_start_of_run.json').write_text(json.dumps(_json_sanitize(artifacts['start_books_by_preset']), indent=2, default=str))
-        (args.out / 'statbook_max_progression.json').write_text(json.dumps(_json_sanitize(artifacts['max_books_by_preset']), indent=2, default=str))
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows']).write_text(json.dumps(_json_sanitize(artifacts['start_books_by_preset']), indent=2, default=str))
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(json.dumps(_json_sanitize(artifacts['max_books_by_preset']), indent=2, default=str))
         (args.out / 'run_stats.json').write_text(json.dumps(_json_sanitize(artifacts['run_stats_payload']), indent=2, default=str))
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
         return 0
@@ -876,13 +876,14 @@ def run_stats_ensure_local_server(args) -> bool:
 def run_analysis_pipeline(args) -> int:
     args.state_mode = normalize_state_mode(args.state_mode)
     args.perk_state = _normalize_perk_state(args.perk_state)
+    args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
     args.out.mkdir(parents=True, exist_ok=True)
 
     _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=getattr(args, 'manual_inputs', None))
     ids_raw = _input_bundle.ids_raw
     loadout_config = _input_bundle.loadout_config
     perk_config, perk_config_resolution = _resolve_perk_config(
-        perk_mode=getattr(args, 'perk_mode', 'max_progression_policy'),
+        perk_mode=args.perk_mode,
         primary_config=_input_bundle.perk_config,
         perk_policy=_input_bundle.perk_policy,
         ids_raw=ids_raw,
@@ -891,6 +892,15 @@ def run_analysis_pipeline(args) -> int:
     formula_ledger = _load_formula_ledger(FORMULA_LEDGER_PATH)
     ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
     qe_planner = QEResolutionPlanner()
+
+    _ep_kwargs = dict(
+        ep_stage_context_for_destination=_ep_stage_context_for_destination,
+        compare_state_key_for_destination=_compare_state_key_for_destination,
+        contributor_snapshot=_contributor_snapshot,
+        apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
+        formula_contract=_formula_contract,
+        normalize_compare_values=_normalize_compare_values,
+    )
 
     (account_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context) = _build_compare_rows_by_preset(
         ids_raw=ids_raw, loadout_config=loadout_config, perk_config=perk_config,
@@ -904,32 +914,113 @@ def run_analysis_pipeline(args) -> int:
     )
     stat_inputs = list(main_snapshot.stat_inputs)
     statbook = main_snapshot.statbook
-    
-    # Publication logic
+    statbook_dict = statbook.to_dict()
+    for destination, row in statbook_dict.get('rows', {}).items():
+        row['formula_contract'] = _formula_contract(formula_ledger, destination)
+    _annotate_display_fields(statbook_dict)
+
+    statbook_publishable_dict = _build_publishable_statbook(statbook_dict, formula_ledger)
+    _annotate_display_fields(statbook_publishable_dict)
+
+    state_matrix: dict[str, object] = {}
+    for state_mode in SUPPORTED_STATE_MODES:
+        matrix_snapshot = qe_planner.resolve_report_snapshot(
+            account_state, preset_name=args.preset, state_mode=state_mode, perks_enabled=perks_enabled,
+        )
+        matrix_inputs = list(matrix_snapshot.stat_inputs)
+        matrix_statbook = matrix_snapshot.statbook.to_dict()
+        state_matrix[state_mode] = {
+            'support': state_mode_support(state_mode),
+            'input_count': len(matrix_inputs),
+            'mapped_input_count': sum(1 for r in matrix_inputs if r.destination_id),
+            'resolved_stat_count': matrix_statbook.get('diagnostics', {}).get('resolved_stat_count', 0),
+            'partially_resolved_stat_count': matrix_statbook.get('diagnostics', {}).get('partially_resolved_stat_count', 0),
+        }
+
+    ep_compare = build_ep_compare(
+        ep_oracle, compare_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
+    )
     ep_compare_publishable = build_ep_compare(
-        ep_oracle, compare_publishable_rows_by_preset, formula_ledger, package_stage_context,
-        ep_stage_context_for_destination=_ep_stage_context_for_destination,
-        compare_state_key_for_destination=_compare_state_key_for_destination,
-        contributor_snapshot=_contributor_snapshot,
-        apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
-        formula_contract=_formula_contract,
-        normalize_compare_values=_normalize_compare_values,
+        ep_oracle, compare_publishable_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
     )
-    
+    _annotate_compare_display_fields(ep_compare)
+    _annotate_compare_display_fields(ep_compare_publishable)
+    current_compare_summary = build_compare_status_summary(ep_compare_publishable)
+
+    ep_compare_publishable = _ensure_compare_authoritative_verdict_fields(ep_compare_publishable)
     line_verification = build_line_by_line_verification(
-        _build_publishable_statbook(statbook.to_dict(), formula_ledger), 
-        ep_compare_publishable, formula_ledger, _formula_contract
+        statbook_publishable_dict, ep_compare_publishable, formula_ledger, _formula_contract
     )
-    
+    line_verification = _ensure_line_verification_authoritative_verdict_fields(line_verification)
     survivor_report = build_survivor_closure_report(ep_compare_publishable, line_verification)
-    
+
+    optimizer_scores = compute_optimizer_scores(statbook_dict)
+    audit_surface_manifest = _build_audit_surface_manifest(account_state, args.preset)
+    artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
+    family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
+
+    audits = _build_publish_gate_audits(stat_inputs, statbook_publishable_dict, ep_compare_publishable, formula_ledger)
+    kb_incomplete_areas = _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_ledger)
+    kb_gap_register = _build_kb_gap_register(kb_incomplete_areas, audits)
+
+    routed_input_count = sum(1 for r in stat_inputs if r.destination_id)
+    truly_unrouted_input_count = sum(1 for r in stat_inputs if not r.destination_id)
+    resolved_surface_count = statbook.diagnostics.get('resolved_stat_count', 0)
+    partial_surface_count = statbook.diagnostics.get('partially_resolved_stat_count', 0)
+    total_input_count = len(stat_inputs)
+
+    diagnostics = {
+        'section_names': list(ids_raw.raw_sections.keys()),
+        'section_row_counts': {k: len(v) for k, v in ids_raw.raw_sections.items()},
+        'default_preset': args.preset,
+        'state_mode': args.state_mode,
+        'perk_mode': args.perk_mode,
+        'perk_config_resolution': perk_config_resolution,
+        'state_mode_support': state_mode_support(args.state_mode),
+        'supported_state_modes': list(SUPPORTED_STATE_MODES),
+        'state_matrix': state_matrix,
+        'stat_input_count': total_input_count,
+        'statbook_row_count': len(statbook.rows),
+        'engine_status': statbook.diagnostics.get('resolver_status'),
+        'qe_resolution_interface': statbook.diagnostics.get('qe_resolution_interface'),
+        'qe_resolution_backend': statbook.diagnostics.get('qe_resolution_backend'),
+        'publish_status': statbook_publishable_dict.get('diagnostics', {}).get('oracle_policy'),
+        'formula_ledger_version': formula_ledger.get('version'),
+        'mapped_stat_input_count': routed_input_count,
+        'unmapped_stat_input_count': truly_unrouted_input_count,
+        'resolved_stat_count': resolved_surface_count,
+        'partially_resolved_stat_count': partial_surface_count,
+        'ep_compare_summary': current_compare_summary,
+        **current_compare_summary,
+        'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
+        'configured_perk_presets': _sanitized_configured_perk_presets(account_state, args.preset),
+        'active_card_preset': account_state.active_card_preset,
+        'active_module_preset': account_state.active_module_preset,
+        'perk_state': args.perk_state,
+        'kb_incomplete_areas': kb_incomplete_areas,
+        'kb_gap_register': kb_gap_register,
+        'audits': audits,
+        'timings_ms': {},
+    }
+    diagnostics['tower_regen_closure_report'] = _build_tower_regen_closure_report(ep_compare_publishable)
+    diagnostics['tower_hp_semantic_gap_report'] = _build_tower_hp_semantic_gap_report(ep_compare_publishable)
+    diagnostics['tower_damage_residue_analysis'] = _build_tower_damage_residue_analysis(ep_compare_publishable)
+
     write_core_outputs(
-        out_dir=args.out, diagnostics={'timings_ms': {}}, account_state_payload=account_state.to_dict(),
+        out_dir=args.out,
+        diagnostics=diagnostics,
+        account_state_payload=_sanitized_account_state_for_output(account_state, args.preset),
         stat_inputs_payload=[row.to_dict() for row in stat_inputs],
-        statbook_dict=statbook.to_dict(), statbook_publishable_dict={},
-        ep_compare_publishable=ep_compare_publishable, line_verification=line_verification,
-        survivor_closure_report=survivor_report, state_matrix={}, optimizer_scores={},
-        audit_surface_manifest={}, artifact_contract_manifest={}, family_completeness_matrix={},
+        statbook_dict=statbook_dict,
+        statbook_publishable_dict=statbook_publishable_dict,
+        ep_compare_publishable=ep_compare_publishable,
+        line_verification=line_verification,
+        survivor_closure_report=survivor_report,
+        state_matrix=state_matrix,
+        optimizer_scores=optimizer_scores,
+        audit_surface_manifest=audit_surface_manifest,
+        artifact_contract_manifest=artifact_contract_manifest,
+        family_completeness_matrix=family_completeness_matrix,
         root_path=ROOT,
     )
     return 0
@@ -1026,20 +1117,49 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
     write_pipeline_trace(request.out, trace, ROOT)
     return PipelineRunResult(exit_code, request, request.out, diagnostics, tuple(generated_files), trace)
 
-def build_verification_snapshot_set(base_request: PipelineRunRequest, specs=None) -> list[PipelineRunResult]:
+def build_verification_snapshot_set(
+    base_request: PipelineRunRequest,
+    specs: tuple[VerificationSnapshotSpec, ...] | None = None,
+) -> list[PipelineRunResult]:
     if specs is None:
-        specs = (VerificationSnapshotSpec('Farming', 'start_of_run'), VerificationSnapshotSpec('Farming', 'max_progression'))
+        specs = (
+            VerificationSnapshotSpec('Farming', 'start_of_run'),
+            VerificationSnapshotSpec('Farming', 'max_progression'),
+            VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
+            VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
+        )
     results = []
     for spec in specs:
-        req = PipelineRunRequest(base_request.ids, base_request.out / spec.preset.lower(), spec.preset, spec.state_mode)
+        out_dir = base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}')
+        req = PipelineRunRequest(
+            ids=base_request.ids, out=out_dir, preset=spec.preset,
+            state_mode=spec.state_mode, manual_inputs=base_request.manual_inputs,
+            perk_mode=base_request.perk_mode, include_slow_audits=base_request.include_slow_audits,
+            perk_state=spec.perk_state,
+        )
         results.append(execute_pipeline(req))
     return results
 
 def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
-    _, account_state, _ = _build_account_state(ids_path=request.ids, manual_inputs_path=request.manual_inputs, preset=request.preset, perk_mode=request.perk_mode)
+    if not request.requested_surface_ids:
+        raise ValueError('FastCheckpointRequest.requested_surface_ids must be non-empty')
+    _, account_state, _ = _build_account_state(
+        ids_path=request.ids, manual_inputs_path=request.manual_inputs,
+        preset=request.preset, perk_mode=request.perk_mode,
+    )
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
-    response = resolve_checkpoint_surfaces(account_state, requested_surface_ids=request.requested_surface_ids, preset_name=request.preset, state_mode=request.state_mode, perks_enabled=perks_enabled)
+    response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=request.requested_surface_ids,
+        preset_name=request.preset,
+        state_mode=request.state_mode,
+        card_preset_name=account_state.active_card_preset,
+        module_preset_name=account_state.active_module_preset,
+        perk_preset_name=account_state.active_perk_preset,
+        perks_enabled=perks_enabled,
+        trace_mode='contributors',
+    )
     statbook = query_response_to_statbook(response, notes='resolve_fast_checkpoint')
     statbook_dict = statbook.to_dict()
     _annotate_display_fields(statbook_dict)
-    return FastCheckpointResult(request, statbook_dict, {})
+    return FastCheckpointResult(request=request, statbook=statbook_dict, diagnostics={})

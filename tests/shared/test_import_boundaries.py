@@ -667,5 +667,18 @@ def test_simulator_naming_files_only_use_legacy_prefixes_in_normalization_helper
 
 def test_qe_stat_resolution_only_uses_legacy_prefixes_in_normalization_helpers():
     """Fallback stat-resolution shim may only mention legacy prefixes in its normalization helper definitions."""
-    # Transitional exemption for stat_resolution.py as it is the primary fallback shim
-    return
+    path = ROOT / "qe" / "stat_resolution.py"
+    allowed_patterns = [
+        r"'canonical_stat::tower_hp': \('canonical_stat::wall_hp',\),",
+        r"'canonical_stat::tower_regen': \('canonical_stat::wall_regen',\),",
+        r"'canonical_stat::",
+        r"return normalize_surface_id_to_contract\(f'canonical_stat::{destination_id}'\)",
+    ]
+    violations = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        stripped = line.strip()
+        if _LEGACY_PREFIX_IN_ACTIVE_CODE.search(line):
+            if any(re.search(pattern, stripped) for pattern in allowed_patterns):
+                continue
+            violations.append(stripped)
+    assert not violations, f"{path.relative_to(ROOT)} still contains active legacy surface literals: {violations[:10]}"
