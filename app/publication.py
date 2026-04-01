@@ -66,14 +66,28 @@ def write_pipeline_trace(out_dir: Path, trace: PipelineTrace, root_path: Path) -
     path.write_text(json.dumps(sanitized, indent=2, default=str), encoding='utf-8')
     return path
 
-def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
-    _RUN_STATS_LEGACY_OUTPUTS = [
-        'start_of_run.json', 'max_progression.json', 'stat_inputs_start_of_run.json',
-        'stat_inputs_max_progression.json', 'tower_regen_closure_report.json',
-        'tower_hp_semantic_gap_report.json', 'tower_regen_ep_semantic_gap_report.json',
-        'tower_defense_absolute_semantic_gap_report.json', 'tower_damage_runtime_gap_report.json',
-    ]
-    for name in _RUN_STATS_LEGACY_OUTPUTS:
+# Legacy filenames written by the pre-T12 analysis pipeline (run_stats.py monolith).
+# Cleaned up at the start of write_core_outputs() so stale artifacts do not persist.
+_ANALYSIS_PIPELINE_LEGACY_OUTPUTS: list[str] = [
+    'start_of_run.json',
+    'max_progression.json',
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+]
+
+# Legacy filenames written by the pre-T12 run-stats pipeline path.
+# Cleaned up at the start of RunStatsSession.execute() so stale artifacts do not persist.
+# Authority: publication.py (single source for all artifact cleanup contracts).
+_RUN_STATS_LEGACY_OUTPUTS: list[str] = [
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+]
+
+
+def _remove_legacy_outputs(out_dir: Path, legacy_list: list[str]) -> None:
+    for name in legacy_list:
         path = out_dir / name
         if path.exists():
             path.unlink()
@@ -97,7 +111,7 @@ def write_core_outputs(
     root_path: Path,
 ) -> list[str]:
 
-    _remove_run_stats_legacy_outputs(out_dir)
+    _remove_legacy_outputs(out_dir, _ANALYSIS_PIPELINE_LEGACY_OUTPUTS)
 
     artifacts = [
         ('diagnostics.json', diagnostics),

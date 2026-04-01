@@ -148,7 +148,7 @@ def test_run_stats_pipeline_writes_query_artifacts_not_fake_statbooks():
     assert "run_stats_query_rows_max_progression.json" in src
     assert "run_stats_query_plan_start_of_run.json" in src
     assert "run_stats_query_plan_max_progression.json" in src
-    assert "_remove_run_stats_legacy_outputs" in src
+    assert "_remove_legacy_outputs" in src
 
 
 def test_residue_artifact_contract_is_internally_consistent():

@@ -52,6 +52,7 @@ from evaluators.compare_core import (
     build_compare_status_summary,
     ensure_compare_authoritative_verdict_fields,
     ensure_line_verification_authoritative_verdict_fields,
+    _apply_projected_runtime_compare_assumptions,
 )
 from evaluators.audit_engine import (
     _build_publish_gate_audits,
@@ -313,19 +314,6 @@ def _build_family_completeness_matrix(account_state, stat_inputs) -> dict:
         'preset_lane_completeness': preset_lane_completeness,
         'families': families,
     }
-
-
-# ---------------------------------------------------------------------------
-# Helpers that were in the pre-sharding pipeline / compare monolith.
-# Retained here so pipeline.py imports remain stable across the T12 shard.
-# ---------------------------------------------------------------------------
-
-def _apply_projected_runtime_compare_assumptions(destination: str, package_row, stage_context: dict):
-    """Pass-through shim; projection logic lives in evaluators.assumptions (future)."""
-    notes: list[str] = []
-    if package_row is None:
-        return None, notes
-    return package_row, notes
 
 
 def _contributor_snapshot(row):

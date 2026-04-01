@@ -589,3 +589,60 @@ def ensure_line_verification_authoritative_verdict_fields(verification: dict) ->
         if payload.get('verdict') is None:
             payload['verdict'] = verdict_from_verification(payload.get('verification_status'), compare_status)
     return verification
+
+
+def _project_funding_compare_multiplier(stage_context: dict) -> tuple:
+    compare_preset = stage_context.get('compare_preset')
+    active_modules = (stage_context.get('active_modules_by_preset') or {}).get(compare_preset) or {}
+    generator = active_modules.get('generator') or {}
+    primary_name = generator.get('primary')
+    if primary_name != 'Project Funding':
+        return None, None
+    assumption = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS.get((_state('tower_damage'), 'Project Funding'))
+    if not assumption:
+        return None, None
+    modules_inventory = stage_context.get('modules_inventory') or {}
+    module_row = modules_inventory.get('Project Funding') or {}
+    rarity = str(module_row.get('rarity') or '').strip()
+    rarity_family = None
+    for base in ('Ancestral', 'Mythic', 'Legendary', 'Epic'):
+        if rarity.startswith(base):
+            rarity_family = base
+            break
+    coeff = PROJECT_FUNDING_RARITY_COEFFICIENTS.get(rarity_family)
+    cash = assumption.get('cash')
+    if coeff is None or not cash or cash <= 0:
+        return None, None
+    multiplier = max(1.0, 1.0 + math.log10(float(cash)) * float(coeff))
+    note = f"{assumption['note']}__rarity_family_{(rarity_family or 'unknown').lower()}__multiplier_{multiplier:.6f}"
+    return multiplier, note
+
+
+def _apply_projected_runtime_compare_assumptions(destination: str, package_row, stage_context: dict) -> tuple:
+    """Apply projected-runtime compare assumption multipliers for cards and Project Funding module."""
+    if package_row is None:
+        return None, []
+    if stage_context.get('package_progression_state') != 'projected_max_progression':
+        return package_row, []
+    compare_preset = stage_context.get('compare_preset')
+    active_cards = set((stage_context.get('active_cards_by_preset') or {}).get(compare_preset) or [])
+    adjusted = dict(package_row)
+    notes: list[str] = []
+    for card_name in active_cards:
+        assumption = PROJECTED_RUNTIME_COMPARE_ASSUMPTIONS.get((destination, card_name))
+        if not assumption:
+            continue
+        try:
+            adjusted['final_value'] = float(adjusted.get('final_value')) * float(assumption['multiplier'])
+            notes.append(assumption['note'])
+        except Exception:
+            continue
+    if destination == _state('tower_damage'):
+        try:
+            pf_multiplier, pf_note = _project_funding_compare_multiplier(stage_context)
+            if pf_multiplier is not None:
+                adjusted['final_value'] = float(adjusted.get('final_value')) * float(pf_multiplier)
+                notes.append(pf_note)
+        except Exception:
+            pass
+    return adjusted, notes

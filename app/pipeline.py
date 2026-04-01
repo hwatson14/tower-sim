@@ -38,6 +38,8 @@ from app.publication import (
     write_core_outputs,
     write_pipeline_trace,
     _json_sanitize,
+    _RUN_STATS_LEGACY_OUTPUTS,
+    _remove_legacy_outputs,
 )
 # Active layer imports
 from qe.stat_input_compiler import (
@@ -322,13 +324,8 @@ _RUN_STATS_QUERY_OUTPUTS = {
     'max_progression_plan': 'run_stats_query_plan_max_progression.json',
 }
 
-# Legacy output filenames written by pre-T12 run-stats path; deleted on each run.
-_RUN_STATS_LEGACY_OUTPUTS = [
-    'stat_inputs_start_of_run.json',
-    'stat_inputs_max_progression.json',
-    'statbook_start_of_run.json',
-    'statbook_max_progression.json',
-]
+# _RUN_STATS_LEGACY_OUTPUTS and _remove_legacy_outputs are imported from app.publication,
+# which is the single authority for all artifact cleanup contracts.
 
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     rows: dict[str, dict] = {}
@@ -977,7 +974,7 @@ class RunStatsSession:
 
     def execute(self, args) -> int:
         args.out.mkdir(parents=True, exist_ok=True)
-        _remove_run_stats_legacy_outputs(args.out)
+        _remove_legacy_outputs(args.out, _RUN_STATS_LEGACY_OUTPUTS)
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
         write_start = perf_counter()
@@ -1293,13 +1290,6 @@ def _load_json_artifact(path: Path) -> dict[str, object]:
 def _generated_output_paths(out_dir: Path) -> list[Path]:
     return sorted(out_dir.glob('*.json')) + sorted(out_dir.glob('*.csv'))
 
-def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
-    for name in _RUN_STATS_LEGACY_OUTPUTS:
-        path = out_dir / name
-        if path.exists():
-            path.unlink()
-
-
 def _relpath_str(path: Path | str | None) -> str | None:
     if path is None:
         return None
@@ -1437,16 +1427,44 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         preset=request.preset, perk_mode=request.perk_mode,
     )
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
+    checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
+        account_state=account_state,
+        checkpoint_state=SimulatorCheckpointState(),
+        preset_name=request.preset,
+        requested_surface_ids=request.requested_surface_ids,
+        state_mode=request.state_mode,
+        card_preset_name=account_state.active_card_preset,
+        module_preset_name=account_state.active_module_preset,
+        perk_preset_name=account_state.active_perk_preset,
+        perks_enabled=perks_enabled,
+    )
     response = resolve_checkpoint_surfaces(
-        account_state, requested_surface_ids=request.requested_surface_ids,
-        preset_name=request.preset, state_mode=request.state_mode,
+        account_state,
+        requested_surface_ids=request.requested_surface_ids,
+        preset_name=request.preset,
+        state_mode=request.state_mode,
         card_preset_name=account_state.active_card_preset,
         module_preset_name=account_state.active_module_preset,
         perk_preset_name=account_state.active_perk_preset,
         perks_enabled=perks_enabled,
         trace_mode='contributors',
     )
-    statbook = query_response_to_statbook(response, notes='resolve_fast_checkpoint')
+    statbook = query_response_to_statbook(
+        response,
+        notes='Lightweight QE checkpoint resolution for interactive stat verification.',
+        diagnostics={
+            'resolver_kind': checkpoint_resolution.diagnostics.get('resolver_kind'),
+            'phase_timing_ms': checkpoint_resolution.diagnostics.get('phase_timing_ms'),
+            'requested_surface_ids': list(request.requested_surface_ids),
+            'state_mode': request.state_mode,
+            'preset': request.preset,
+            'perk_state': request.perk_state,
+        },
+    )
     statbook_dict = statbook.to_dict()
     _annotate_display_fields(statbook_dict)
-    return FastCheckpointResult(request=request, statbook=statbook_dict, diagnostics={})
+    return FastCheckpointResult(
+        request=request,
+        statbook=statbook_dict,
+        diagnostics=dict(checkpoint_resolution.diagnostics),
+    )
