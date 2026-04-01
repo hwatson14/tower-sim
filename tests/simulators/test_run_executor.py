@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import sys
 from pathlib import Path
 
@@ -370,209 +371,179 @@ def test_run_to_max__table_sweep_reuses_baseline_when_rows_do_not_change(monkeyp
     assert result.diagnostics['execution_mode'] == 'table_sweep'
     assert result.diagnostics['qe_resolution_count'] == 1
     assert result.diagnostics['snapshot_reuse_count'] == 3
-    assert result.diagnostics['fast_overlay_count'] == 0
+    assert result.diagnostics['qe_dirty_reresolve_count'] == 0
+    assert result.diagnostics['delta_fallback_count'] == 0
     assert result.diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
 
 
-def test_run_to_max__table_sweep_uses_fast_overlay_when_workshop_levels_change(monkeypatch):
+def _safe_mutated_workshop_levels(state, projected, deltas):
+    workshop = dict(projected.workshop_levels_current)
+    for track_name, delta in deltas.items():
+        entry = state.workshop[track_name]
+        current = int(workshop.get(track_name, 0))
+        max_level = int(entry.max_level) if entry.max_level is not None else current + delta
+        workshop[track_name] = min(max_level, current + delta)
+    return workshop
+
+
+def _build_state_and_projected():
     from input.loader import load_inputs
     from input.runtime_state import build_runtime_state
     from simulators.contracts import PerkState
-    import simulators.run_executor as run_executor_module
-    from simulators.run_executor import RunToMaxConfig, build_start_of_run_state, run_to_max
-
-    class _FakeRow:
-        def __init__(self, value):
-            self.final_value = value
-
-    class _FakeSnapshot:
-        def __init__(self, wave):
-            from qe.models import StatRow
-            from simulators.contracts import PerformanceMetrics, WaveCheckpoint
-            self.checkpoint = WaveCheckpoint(display_wave=wave)
-            self.resolved_statbook = type(
-                'StatBook',
-                (),
-                {
-                    'rows': {
-                        'state::tower.enemy_attack_level_skip_pct': StatRow(
-                            stat_name='state::tower.enemy_attack_level_skip_pct',
-                            final_value=0.0,
-                            value_type='scalar',
-                            source_count=3,
-                            contributors=[
-                                {'contributor_id': 'workshop__tower__enemy_attack_level_skip__pct', 'value': 0.05, 'composition_stage': 'additive_pre_cap', 'active': True},
-                                {'contributor_id': 'enhancement.enemy_level_skips_+.account_state', 'value': 1.16, 'composition_stage': 'additive_pre_cap', 'active': True},
-                                {'contributor_id': 'enhancements__tower__enemy_attack_level_skip__multiplier', 'value': 1.16, 'composition_stage': 'multiplicative', 'active': True},
-                            ],
-                        ),
-                        'state::tower.enemy_health_level_skip_pct': StatRow(
-                            stat_name='state::tower.enemy_health_level_skip_pct',
-                            final_value=0.0,
-                            value_type='scalar',
-                            source_count=2,
-                            contributors=[
-                                {'contributor_id': 'workshop__tower__enemy_health_level_skip__pct', 'value': 0.05, 'composition_stage': 'additive_pre_cap', 'active': True},
-                                {'contributor_id': 'enhancements__tower__enemy_health_level_skip__multiplier', 'value': 1.16, 'composition_stage': 'multiplicative', 'active': True},
-                            ],
-                        ),
-                        'state::tower.free_attack_upgrade_chance_pct': _FakeRow(100.0),
-                        'state::tower.free_defense_upgrade_chance_pct': _FakeRow(100.0),
-                        'state::tower.free_utility_upgrade_chance_pct': _FakeRow(100.0),
-                        'state::wall.hp': StatRow(
-                            stat_name='state::wall.hp',
-                            final_value=1000.0,
-                            value_type='scalar',
-                            source_count=2,
-                            contributors=[
-                                {'contributor_id': 'workshop__wall__health__flat', 'value': 0.2, 'composition_stage': 'additive_pre_cap', 'active': True},
-                                {'contributor_id': 'lab__wall__health__pct', 'value': 100.0, 'composition_stage': 'additive_pre_cap', 'active': True},
-                            ],
-                        ),
-                        'state::wall.regen': _FakeRow(10.0),
-                        'state::wall.fortification_multiplier': _FakeRow(1.0),
-                        'state::tower.defense_pct': _FakeRow(50.0),
-                        'state::tower.thorns_damage_pct': _FakeRow(10.0),
-                        'state::cards.plasma_cannon.effect_pct': _FakeRow(30.0),
-                    }
-                },
-            )()
-            self.scenario_context = {}
-            self.timing_context = type('Timing', (), {})()
-            self.geometry_context = {}
-            self.combat_runtime = type(
-                'Combat',
-                (),
-                {
-                    'orb_boss_hit_pct': 5.0,
-                    'orb_boss_hits_per_second': 5.0,
-                    'electron_hits_per_second': 5.0,
-                    'boss_contact_time_seconds': 1.0,
-                    'boss_hit_interval_seconds': 2.0,
-                    'effective_damage_reduction_pct': 90.0,
-                    'incoming_damage_multiplier': 1.0,
-                },
-            )()
-            self.metrics = PerformanceMetrics(row_resolution_ms=1.0, qe_resolution_count=1, timing_recompute_count=1)
+    from simulators.run_executor import build_start_of_run_state
 
     bundle = load_inputs()
     state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
     projected = build_start_of_run_state(state, preset_name='Farming', perk_state=PerkState(wave=0, counts={}, dirty=False))
-    projected = type(projected)(
-        checkpoint=projected.checkpoint,
-        workshop_levels_current={
-            **projected.workshop_levels_current,
-            'Damage': 0,
-            'Health': 0,
-            'Cash Bonus': 0,
-        },
+    return state, projected
+
+
+def test_run_executor_source__does_not_reintroduce_local_qe_formula_recompute():
+    import simulators.run_executor as run_executor
+
+    source = inspect.getsource(run_executor)
+    assert '_apply_fast_progression_overlay' not in source
+    assert '_recompute_hot_surface_row' not in source
+    assert '_supports_fast_overlay' not in source
+    assert 'WORKSHOP_FORMULA_VALUES' not in source
+    assert 'CANONICAL_PCT_CAPS' not in source
+
+
+def test_resolve_snapshot_for_projected_state__delta_path_matches_full_resolve_for_supported_tracks():
+    from simulators.contracts import DirtyLedger, ProjectedRunState, WaveCheckpoint
+    from simulators.run_executor import RunToMaxConfig, _normalized_checkpoint_state_for_projected_state, _resolve_snapshot_for_projected_state
+    from simulators.snapshot_resolver import resolve_wave_row_snapshot
+
+    state, projected = _build_state_and_projected()
+    config = RunToMaxConfig(perks_enabled=False, state_mode='start_of_run')
+    baseline_normalized = _normalized_checkpoint_state_for_projected_state(
+        account_state=state,
+        config=config,
+        projected_state=projected,
+    )
+    baseline_snapshot = resolve_wave_row_snapshot(baseline_normalized)
+
+    workshop = _safe_mutated_workshop_levels(state, projected, {'Health': 1, 'Health Regen': 1, 'Defense %': 1, 'Thorn Damage': 1})
+    target_projected = ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=10),
+        workshop_levels_current=workshop,
         perk_state=projected.perk_state,
         wave_progression_state=dict(projected.wave_progression_state),
         free_upgrade_state=dict(projected.free_upgrade_state),
         counters=dict(projected.counters),
-        dirty_ledger=projected.dirty_ledger,
+        dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
         notes=projected.notes,
     )
-    seen = []
 
-    def _resolver(normalized):
-        wave = normalized.checkpoint.display_wave
-        seen.append((wave, dict(normalized.projected_run_state.workshop_levels_current)))
-        return _FakeSnapshot(wave)
-
-    monkeypatch.setattr(
-        run_executor_module,
-        '_simulate_boss_ttk',
-        lambda **kwargs: run_executor_module.BossTTKResult(ttk_seconds=5.0),
-    )
-    monkeypatch.setattr(
-        run_executor_module,
-        '_simulate_boss_damage_intake',
-        lambda **kwargs: run_executor_module.BossDamageIntakeResult(
-            survival_margin_hp=100.0,
-            total_damage_taken=0.0,
-            boss_hits_taken=1,
-        ),
-    )
-
-    result = run_to_max(
+    delta_snapshot, fallback_used = _resolve_snapshot_for_projected_state(
         account_state=state,
-        initial_projected_state=projected,
-        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10),
-        row_resolver=_resolver,
+        config=config,
+        projected_state=target_projected,
+        current_snapshot=baseline_snapshot,
+        row_resolver=resolve_wave_row_snapshot,
+        changed_tracks=('Health', 'Health Regen', 'Defense %', 'Thorn Damage'),
+    )
+    full_snapshot = resolve_wave_row_snapshot(
+        _normalized_checkpoint_state_for_projected_state(
+            account_state=state,
+            config=config,
+            projected_state=target_projected,
+        )
     )
 
-    assert len(seen) == 1
-    assert result.diagnostics['qe_resolution_count'] == 1
-    assert result.diagnostics['fast_overlay_count'] > 0
+    assert fallback_used is False
+    assert delta_snapshot.resolved_statbook.diagnostics['qe_bundle_id'] == 'boss_wave_hot_surfaces'
+    for surface_id in (
+        'state::wall.hp',
+        'state::wall.regen',
+        'state::tower.defense_pct',
+        'state::tower.thorns_damage_pct',
+    ):
+        assert delta_snapshot.resolved_statbook.rows[surface_id].final_value == full_snapshot.resolved_statbook.rows[surface_id].final_value
+        assert delta_snapshot.resolved_statbook.rows[surface_id].contributors
 
 
-def test_run_to_max__table_sweep_ignores_irrelevant_workshop_change(monkeypatch):
+def test_resolve_snapshot_for_projected_state__falls_back_for_unsupported_tracks_and_matches_full_resolve():
+    from simulators.contracts import DirtyLedger, ProjectedRunState, WaveCheckpoint
+    from simulators.run_executor import RunToMaxConfig, _normalized_checkpoint_state_for_projected_state, _resolve_snapshot_for_projected_state
+    from simulators.snapshot_resolver import resolve_wave_row_snapshot
+
+    state, projected = _build_state_and_projected()
+    config = RunToMaxConfig(perks_enabled=False, state_mode='start_of_run')
+    baseline_snapshot = resolve_wave_row_snapshot(
+        _normalized_checkpoint_state_for_projected_state(
+            account_state=state,
+            config=config,
+            projected_state=projected,
+        )
+    )
+    workshop = _safe_mutated_workshop_levels(state, projected, {'Wall Health': 1})
+    target_projected = ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=10),
+        workshop_levels_current=workshop,
+        perk_state=projected.perk_state,
+        wave_progression_state=dict(projected.wave_progression_state),
+        free_upgrade_state=dict(projected.free_upgrade_state),
+        counters=dict(projected.counters),
+        dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
+        notes=projected.notes,
+    )
+
+    delta_snapshot, fallback_used = _resolve_snapshot_for_projected_state(
+        account_state=state,
+        config=config,
+        projected_state=target_projected,
+        current_snapshot=baseline_snapshot,
+        row_resolver=resolve_wave_row_snapshot,
+        changed_tracks=('Wall Health',),
+    )
+    full_snapshot = resolve_wave_row_snapshot(
+        _normalized_checkpoint_state_for_projected_state(
+            account_state=state,
+            config=config,
+            projected_state=target_projected,
+        )
+    )
+
+    assert fallback_used is True
+    assert delta_snapshot.resolved_statbook.diagnostics['delta_fallback_used'] is True
+    for surface_id in ('state::wall.hp', 'state::wall.regen', 'state::tower.defense_pct'):
+        assert delta_snapshot.resolved_statbook.rows[surface_id].final_value == full_snapshot.resolved_statbook.rows[surface_id].final_value
+
+
+def test_run_to_max__table_sweep_uses_delta_path_not_overlay(monkeypatch):
     from input.loader import load_inputs
     from input.runtime_state import build_runtime_state
     from simulators.contracts import DirtyLedger, PerkState
     import simulators.run_executor as run_executor_module
     from simulators.run_executor import RunToMaxConfig, build_start_of_run_state, run_to_max
 
-    class _FakeRow:
-        def __init__(self, value):
-            self.final_value = value
-
-    class _FakeSnapshot:
-        def __init__(self, wave):
-            from simulators.contracts import PerformanceMetrics, WaveCheckpoint
-            self.checkpoint = WaveCheckpoint(display_wave=wave)
-            self.resolved_statbook = type(
-                'StatBook',
-                (),
-                {
-                    'rows': {
-                        'state::tower.enemy_attack_level_skip_pct': _FakeRow(0.0),
-                        'state::tower.enemy_health_level_skip_pct': _FakeRow(0.0),
-                        'state::tower.free_attack_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::tower.free_defense_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::wall.hp': _FakeRow(1000.0),
-                        'state::wall.regen': _FakeRow(10.0),
-                        'state::wall.fortification_multiplier': _FakeRow(1.0),
-                        'state::tower.defense_pct': _FakeRow(50.0),
-                        'state::tower.thorns_damage_pct': _FakeRow(10.0),
-                        'state::cards.plasma_cannon.effect_pct': _FakeRow(30.0),
-                    }
-                },
-            )()
-            self.scenario_context = {}
-            self.timing_context = type('Timing', (), {})()
-            self.geometry_context = {}
-            self.combat_runtime = type(
-                'Combat',
-                (),
-                {
-                    'orb_boss_hit_pct': 5.0,
-                    'orb_boss_hits_per_second': 5.0,
-                    'electron_hits_per_second': 5.0,
-                    'boss_contact_time_seconds': 1.0,
-                    'boss_hit_interval_seconds': 2.0,
-                    'effective_damage_reduction_pct': 90.0,
-                    'incoming_damage_multiplier': 1.0,
-                },
-            )()
-            self.metrics = PerformanceMetrics(row_resolution_ms=1.0, qe_resolution_count=1, timing_recompute_count=1)
-
     bundle = load_inputs()
     state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
     projected = build_start_of_run_state(state, preset_name='Farming', perk_state=PerkState(wave=0, counts={}, dirty=False))
-    seen = []
 
-    def _resolver(normalized):
-        seen.append(normalized.checkpoint.display_wave)
-        return _FakeSnapshot(normalized.checkpoint.display_wave)
+    def _raise_if_called(*args, **kwargs):
+        raise AssertionError('overlay path must not be used')
 
-    def _allocate_irrelevant_change(projected_state, **kwargs):
+    monkeypatch.setattr(run_executor_module, '_apply_fast_progression_overlay', _raise_if_called, raising=False)
+
+    delta_calls = {'count': 0}
+    original_delta = run_executor_module.resolve_wave_row_snapshot_delta
+
+    def _counting_delta(*args, **kwargs):
+        delta_calls['count'] += 1
+        return original_delta(*args, **kwargs)
+
+    monkeypatch.setattr(run_executor_module, 'resolve_wave_row_snapshot_delta', _counting_delta)
+
+    def _allocate_supported_change(projected_state, **kwargs):
         counters = dict(projected_state.counters)
-        counters['changed_workshop_tracks_last_step'] = ('Damage',)
+        counters['changed_workshop_tracks_last_step'] = ('Health Regen',)
         workshop_levels = dict(projected_state.workshop_levels_current)
-        workshop_levels['Damage'] = workshop_levels.get('Damage', 0) + 1
+        entry = state.workshop['Health Regen']
+        current = int(workshop_levels.get('Health Regen', 0))
+        max_level = int(entry.max_level) if entry.max_level is not None else current + 1
+        workshop_levels['Health Regen'] = min(max_level, current + 1)
         return type(projected_state)(
             checkpoint=projected_state.checkpoint,
             workshop_levels_current=workshop_levels,
@@ -584,12 +555,8 @@ def test_run_to_max__table_sweep_ignores_irrelevant_workshop_change(monkeypatch)
             notes=projected_state.notes,
         )
 
-    monkeypatch.setattr(run_executor_module, 'allocate_generated_free_upgrades_to_workshop', _allocate_irrelevant_change)
-    monkeypatch.setattr(
-        run_executor_module,
-        '_simulate_boss_ttk',
-        lambda **kwargs: run_executor_module.BossTTKResult(ttk_seconds=5.0),
-    )
+    monkeypatch.setattr(run_executor_module, 'allocate_generated_free_upgrades_to_workshop', _allocate_supported_change)
+    monkeypatch.setattr(run_executor_module, '_simulate_boss_ttk', lambda **kwargs: run_executor_module.BossTTKResult(ttk_seconds=5.0))
     monkeypatch.setattr(
         run_executor_module,
         '_simulate_boss_damage_intake',
@@ -603,122 +570,13 @@ def test_run_to_max__table_sweep_ignores_irrelevant_workshop_change(monkeypatch)
     result = run_to_max(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10),
-        row_resolver=_resolver,
+        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10, perks_enabled=False, state_mode='start_of_run'),
     )
 
-    assert len(seen) == 1
-    assert result.diagnostics['qe_resolution_count'] == 1
-    assert result.diagnostics['snapshot_reuse_count'] == 3
-    assert result.diagnostics['ignored_workshop_track_count'] == 3
-    assert result.diagnostics['qe_fallback_track_count'] == 0
-
-
-def test_run_to_max__table_sweep_reruns_qe_for_fallback_track(monkeypatch):
-    from input.loader import load_inputs
-    from input.runtime_state import build_runtime_state
-    from simulators.contracts import DirtyLedger, PerkState
-    import simulators.run_executor as run_executor_module
-    from simulators.run_executor import RunToMaxConfig, build_start_of_run_state, run_to_max
-
-    class _FakeRow:
-        def __init__(self, value):
-            self.final_value = value
-
-    class _FakeSnapshot:
-        def __init__(self, wave):
-            from simulators.contracts import PerformanceMetrics, WaveCheckpoint
-            self.checkpoint = WaveCheckpoint(display_wave=wave)
-            self.resolved_statbook = type(
-                'StatBook',
-                (),
-                {
-                    'rows': {
-                        'state::tower.enemy_attack_level_skip_pct': _FakeRow(0.0),
-                        'state::tower.enemy_health_level_skip_pct': _FakeRow(0.0),
-                        'state::tower.free_attack_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::tower.free_defense_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
-                        'state::wall.hp': _FakeRow(1000.0),
-                        'state::wall.regen': _FakeRow(10.0),
-                        'state::wall.fortification_multiplier': _FakeRow(1.0),
-                        'state::tower.defense_pct': _FakeRow(50.0),
-                        'state::tower.thorns_damage_pct': _FakeRow(10.0),
-                        'state::cards.plasma_cannon.effect_pct': _FakeRow(30.0),
-                    }
-                },
-            )()
-            self.scenario_context = {}
-            self.timing_context = type('Timing', (), {})()
-            self.geometry_context = {}
-            self.combat_runtime = type(
-                'Combat',
-                (),
-                {
-                    'orb_boss_hit_pct': 5.0,
-                    'orb_boss_hits_per_second': 5.0,
-                    'electron_hits_per_second': 5.0,
-                    'boss_contact_time_seconds': 1.0,
-                    'boss_hit_interval_seconds': 2.0,
-                    'effective_damage_reduction_pct': 90.0,
-                    'incoming_damage_multiplier': 1.0,
-                },
-            )()
-            self.metrics = PerformanceMetrics(row_resolution_ms=1.0, qe_resolution_count=1, timing_recompute_count=1)
-
-    bundle = load_inputs()
-    state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
-    projected = build_start_of_run_state(state, preset_name='Farming', perk_state=PerkState(wave=0, counts={}, dirty=False))
-    seen = []
-
-    def _resolver(normalized):
-        seen.append(normalized.checkpoint.display_wave)
-        return _FakeSnapshot(normalized.checkpoint.display_wave)
-
-    def _allocate_fallback_change(projected_state, **kwargs):
-        counters = dict(projected_state.counters)
-        counters['changed_workshop_tracks_last_step'] = ('Orbs',)
-        workshop_levels = dict(projected_state.workshop_levels_current)
-        workshop_levels['Orbs'] = workshop_levels.get('Orbs', 0) + 1
-        return type(projected_state)(
-            checkpoint=projected_state.checkpoint,
-            workshop_levels_current=workshop_levels,
-            perk_state=projected_state.perk_state,
-            wave_progression_state=dict(projected_state.wave_progression_state),
-            free_upgrade_state=dict(projected_state.free_upgrade_state),
-            counters=counters,
-            dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
-            notes=projected_state.notes,
-        )
-
-    monkeypatch.setattr(run_executor_module, 'allocate_generated_free_upgrades_to_workshop', _allocate_fallback_change)
-    monkeypatch.setattr(
-        run_executor_module,
-        '_simulate_boss_ttk',
-        lambda **kwargs: run_executor_module.BossTTKResult(ttk_seconds=5.0),
-    )
-    monkeypatch.setattr(
-        run_executor_module,
-        '_simulate_boss_damage_intake',
-        lambda **kwargs: run_executor_module.BossDamageIntakeResult(
-            survival_margin_hp=100.0,
-            total_damage_taken=0.0,
-            boss_hits_taken=1,
-        ),
-    )
-
-    result = run_to_max(
-        account_state=state,
-        initial_projected_state=projected,
-        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10),
-        row_resolver=_resolver,
-    )
-
-    assert len(seen) == 4
-    assert result.diagnostics['qe_resolution_count'] == 4
-    assert result.diagnostics['snapshot_reuse_count'] == 0
-    assert result.diagnostics['qe_fallback_track_count'] == 3
-    assert result.diagnostics['ignored_workshop_track_count'] == 0
+    assert result.max_wave == 30
+    assert delta_calls['count'] == 3
+    assert result.diagnostics['qe_dirty_reresolve_count'] == 3
+    assert result.diagnostics['delta_fallback_count'] == 0
 
 
 def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monkeypatch):

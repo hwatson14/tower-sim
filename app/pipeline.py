@@ -44,7 +44,7 @@ from qe.contracts import (
 from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
-from simulators.progression import resolve_run_stats_progression_bundle
+from simulators.progression import resolve_run_stats_progression_bundle, run_stats_progression_family_id
 from simulators.contracts import SimulatorCheckpointState
 from simulators.perk_timeline_generator import (
     PerkTimelinePolicy,
@@ -512,13 +512,6 @@ def _extract_tier_number(value) -> int | None:
     except ValueError:
         return None
 
-
-def _run_stats_progression_family_id(*, state_mode: str, perks_enabled: bool) -> str:
-    if state_mode == 'start_of_run' and not perks_enabled:
-        return 'progression_start_of_run'
-    return 'progression_runtime_with_perks' if perks_enabled else 'progression_runtime_no_perks'
-
-
 def _run_stats_timing_family_id(*, preset_name: str, perks_enabled: bool) -> str:
     if preset_name == 'Tourney':
         return 'timing_tournament_no_perks'
@@ -978,7 +971,7 @@ class RunStatsSession:
                 ('max_progression', max_perk_preset_name, max_perks_enabled),
             ):
                 state_start = perf_counter()
-                progression_family_id = _run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
+                progression_family_id = run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
                 timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
                 scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
 

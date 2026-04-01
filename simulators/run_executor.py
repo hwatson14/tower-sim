@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Callable, Dict, Optional
 
 from input.state_types import AccountState, ScenarioRuntimeInputs
-from qe.kb_surfaces import CANONICAL_PCT_CAPS, WORKSHOP_FORMULA_VALUES
+from qe.consumer_registry import load_consumer_bundle_definitions
 from qe.models import StatBook, StatRow
 from qe.kb_surfaces import (
     BOSS_HEAT_UP_DAMAGE_PER_HIT_PCT,
@@ -29,7 +29,7 @@ from simulators.progression import (
     advance_projected_wave_state,
     allocate_generated_free_upgrades_to_workshop,
 )
-from simulators.snapshot_resolver import resolve_wave_row_snapshot
+from simulators.snapshot_resolver import resolve_wave_row_snapshot, resolve_wave_row_snapshot_delta
 from simulators.timing import compute_average_damage_reduction_fraction_over_interval
 from simulators.wave_progression_policy import WaveProgressionPolicy, WaveProgressionState
 
@@ -38,42 +38,6 @@ ENEMY_DAMAGE_TABLE = ROOT / 'kb' / 'enemies' / 'tables' / 'enemy-damage-table.cs
 ENEMY_HEALTH_TABLE = ROOT / 'kb' / 'enemies' / 'tables' / 'enemy-health-table.csv'
 KILL_HP_THRESHOLD = 1e-9
 _BASELINE_SNAPSHOT_CACHE: dict[tuple[object, ...], WaveRowSnapshot] = {}
-_HOT_SURFACE_IDS: tuple[str, ...] = (
-    'state::tower.free_attack_upgrade_chance_pct',
-    'state::tower.free_defense_upgrade_chance_pct',
-    'state::tower.free_utility_upgrade_chance_pct',
-    'state::tower.enemy_attack_level_skip_pct',
-    'state::tower.enemy_health_level_skip_pct',
-    'state::wall.hp',
-    'state::wall.regen',
-    'state::wall.fortification_multiplier',
-    'state::tower.defense_pct',
-    'state::tower.thorns_damage_pct',
-    'state::cards.plasma_cannon.effect_pct',
-)
-_OVERLAY_SURFACE_IDS_BY_WORKSHOP_TRACK: dict[str, tuple[str, ...]] = {
-    'Wall Health': ('state::wall.hp',),
-    'Wall Regen': ('state::wall.regen',),
-    'Wall Fortification': ('state::wall.fortification_multiplier',),
-    'Defense %': ('state::tower.defense_pct',),
-    'Thorn Damage': ('state::tower.thorns_damage_pct',),
-    'Enemy Attack Level Skip': ('state::tower.enemy_attack_level_skip_pct',),
-    'Enemy Health Level Skip': ('state::tower.enemy_health_level_skip_pct',),
-}
-_WORKSHOP_CONTRIBUTOR_ID_BY_TRACK: dict[str, str] = {
-    'Wall Health': 'workshop__wall__health__flat',
-    'Wall Regen': 'lab__wall__regen__flat',
-    'Wall Fortification': 'lab__wall__fortification__multiplier',
-    'Defense %': 'workshop__tower__defense_pct__pct',
-    'Thorn Damage': 'workshop__tower__thorns_damage__pct',
-    'Enemy Attack Level Skip': 'workshop__tower__enemy_attack_level_skip__pct',
-    'Enemy Health Level Skip': 'workshop__tower__enemy_health_level_skip__pct',
-}
-_QE_FALLBACK_TRACKS_FOR_MAX_WAVE: frozenset[str] = frozenset({
-    'Orb Speed',
-    'Orb Boss Hit',
-    'Orbs',
-})
 _WORKSHOP_TRACK_CATEGORY_BY_NAME: dict[str, str] = {
     'Damage': 'attack',
     'Attack Speed': 'attack',
@@ -129,6 +93,36 @@ _WORKSHOP_TRACK_CATEGORY_BY_NAME: dict[str, str] = {
     'Enemy Attack Level Skip': 'utility',
     'Enemy Health Level Skip': 'utility',
 }
+
+
+@lru_cache(maxsize=1)
+def _boss_wave_hot_surface_ids() -> tuple[str, ...]:
+    definition = load_consumer_bundle_definitions()[('simulator_boss_wave', 'boss_wave_hot_surfaces')]
+    return definition.required_surface_ids + definition.optional_surface_ids
+
+
+def _resolve_snapshot_for_projected_state(
+    *,
+    account_state: AccountState,
+    config: RunToMaxConfig,
+    projected_state: ProjectedRunState,
+    current_snapshot: WaveRowSnapshot,
+    row_resolver: Callable[[NormalizedCheckpointState], WaveRowSnapshot],
+    changed_tracks: tuple[str, ...],
+) -> tuple[WaveRowSnapshot, bool]:
+    normalized = _normalized_checkpoint_state_for_projected_state(
+        account_state=account_state,
+        config=config,
+        projected_state=projected_state,
+    )
+    if row_resolver is not resolve_wave_row_snapshot:
+        return row_resolver(normalized), False
+    snapshot = resolve_wave_row_snapshot_delta(
+        normalized,
+        baseline_snapshot=current_snapshot,
+        changed_tracks=changed_tracks,
+    )
+    return snapshot, bool(snapshot.resolved_statbook.diagnostics.get('delta_fallback_used'))
 
 
 @dataclass(frozen=True)
@@ -258,23 +252,22 @@ def build_boss_wave_table(
             track_max_levels=track_max_levels,
         )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
-        overlay_tracks, fallback_tracks, _ignored_tracks = _classify_changed_tracks_for_max_wave(changed_tracks)
-        overlay_surface_ids = _overlay_surface_ids_for_changed_tracks(overlay_tracks)
-        if current_projected_state.dirty_ledger.qe_dirty and overlay_surface_ids and _supports_fast_overlay(overlay_tracks):
-            current_snapshot = _apply_fast_progression_overlay(
+        if current_projected_state.dirty_ledger.qe_dirty:
+            current_snapshot, _delta_fallback_used = _resolve_snapshot_for_projected_state(
+                account_state=account_state,
+                config=config,
+                projected_state=current_projected_state,
+                current_snapshot=current_snapshot,
+                row_resolver=row_resolver,
+                changed_tracks=changed_tracks,
+            )
+            timing_context = current_snapshot.timing_context
+            combat_runtime = current_snapshot.combat_runtime
+            hot_values = _extract_hot_surface_values(current_snapshot)
+        else:
+            current_snapshot = _reuse_snapshot_for_projected_state(
                 current_snapshot,
                 projected_state=current_projected_state,
-                changed_tracks=overlay_tracks,
-                surface_ids=overlay_surface_ids,
-            )
-            hot_values = _extract_hot_surface_values(current_snapshot)
-        elif current_projected_state.dirty_ledger.qe_dirty and fallback_tracks:
-            current_snapshot = row_resolver(
-                _normalized_checkpoint_state_for_projected_state(
-                    account_state=account_state,
-                    config=config,
-                    projected_state=current_projected_state,
-                )
             )
             timing_context = current_snapshot.timing_context
             combat_runtime = current_snapshot.combat_runtime
@@ -444,9 +437,8 @@ def _run_to_max_progression_mutating(
     qe_resolution_count = 0
     timing_recompute_count = 0
     snapshot_reuse_count = 0
-    fast_overlay_count = 0
-    ignored_workshop_track_count = 0
-    qe_fallback_track_count = 0
+    qe_dirty_reresolve_count = 0
+    delta_fallback_count = 0
     boss_wave_interval = max(1, int(config.boss_wave_step))
     category_track_order = _category_track_order_from_account_state(account_state)
     track_max_levels = _track_max_levels_from_account_state(account_state)
@@ -493,30 +485,21 @@ def _run_to_max_progression_mutating(
         )
         current_projected_state = allocate_generated_free_upgrades_to_workshop(
             current_projected_state,
-            category_track_order=_category_track_order_from_account_state(account_state),
-            track_max_levels=_track_max_levels_from_account_state(account_state),
+            category_track_order=category_track_order,
+            track_max_levels=track_max_levels,
         )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
-        overlay_tracks, fallback_tracks, ignored_tracks = _classify_changed_tracks_for_max_wave(changed_tracks)
-        ignored_workshop_track_count += len(ignored_tracks)
-        qe_fallback_track_count += len(fallback_tracks)
-        overlay_surface_ids = _overlay_surface_ids_for_changed_tracks(overlay_tracks)
-        if current_projected_state.dirty_ledger.qe_dirty and overlay_surface_ids and _supports_fast_overlay(overlay_tracks):
-            current_snapshot = _apply_fast_progression_overlay(
-                current_snapshot,
+        if current_projected_state.dirty_ledger.qe_dirty:
+            current_snapshot, delta_fallback_used = _resolve_snapshot_for_projected_state(
+                account_state=account_state,
+                config=config,
                 projected_state=current_projected_state,
-                changed_tracks=overlay_tracks,
-                surface_ids=overlay_surface_ids,
+                current_snapshot=current_snapshot,
+                row_resolver=row_resolver,
+                changed_tracks=changed_tracks,
             )
-            fast_overlay_count += 1
-        elif current_projected_state.dirty_ledger.qe_dirty and fallback_tracks:
-            current_snapshot = row_resolver(
-                _normalized_checkpoint_state_for_projected_state(
-                    account_state=account_state,
-                    config=config,
-                    projected_state=current_projected_state,
-                )
-            )
+            qe_dirty_reresolve_count += 1
+            delta_fallback_count += int(delta_fallback_used)
             qe_resolution_count += current_snapshot.metrics.qe_resolution_count if current_snapshot.metrics else 1
             timing_recompute_count += current_snapshot.metrics.timing_recompute_count if current_snapshot.metrics else 1
         else:
@@ -560,9 +543,8 @@ def _run_to_max_progression_mutating(
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
-            'fast_overlay_count': fast_overlay_count,
-            'ignored_workshop_track_count': ignored_workshop_track_count,
-            'qe_fallback_track_count': qe_fallback_track_count,
+            'qe_dirty_reresolve_count': qe_dirty_reresolve_count,
+            'delta_fallback_count': delta_fallback_count,
             'checkpoint_resolution_mode': 'per_boss_wave',
         },
     )
@@ -581,9 +563,8 @@ def _run_to_max_table_sweep(
     qe_resolution_count = 0
     timing_recompute_count = 0
     snapshot_reuse_count = 0
-    fast_overlay_count = 0
-    ignored_workshop_track_count = 0
-    qe_fallback_track_count = 0
+    qe_dirty_reresolve_count = 0
+    delta_fallback_count = 0
     boss_wave_interval = max(1, int(config.boss_wave_step))
     category_track_order = _category_track_order_from_account_state(account_state)
     track_max_levels = _track_max_levels_from_account_state(account_state)
@@ -625,34 +606,28 @@ def _run_to_max_table_sweep(
             track_max_levels=track_max_levels,
         )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
-        overlay_tracks, fallback_tracks, ignored_tracks = _classify_changed_tracks_for_max_wave(changed_tracks)
-        ignored_workshop_track_count += len(ignored_tracks)
-        qe_fallback_track_count += len(fallback_tracks)
-        overlay_surface_ids = _overlay_surface_ids_for_changed_tracks(overlay_tracks)
-        if current_projected_state.dirty_ledger.qe_dirty and overlay_surface_ids and _supports_fast_overlay(overlay_tracks):
-            current_snapshot = _apply_fast_progression_overlay(
-                current_snapshot,
+        if current_projected_state.dirty_ledger.qe_dirty:
+            current_snapshot, delta_fallback_used = _resolve_snapshot_for_projected_state(
+                account_state=account_state,
+                config=config,
                 projected_state=current_projected_state,
-                changed_tracks=overlay_tracks,
-                surface_ids=overlay_surface_ids,
+                current_snapshot=current_snapshot,
+                row_resolver=row_resolver,
+                changed_tracks=changed_tracks,
             )
-            hot_values = _extract_hot_surface_values(current_snapshot)
-            fast_overlay_count += 1
-        elif current_projected_state.dirty_ledger.qe_dirty and fallback_tracks:
-            current_snapshot = row_resolver(
-                _normalized_checkpoint_state_for_projected_state(
-                    account_state=account_state,
-                    config=config,
-                    projected_state=current_projected_state,
-                )
-            )
+            qe_dirty_reresolve_count += 1
+            delta_fallback_count += int(delta_fallback_used)
             qe_resolution_count += current_snapshot.metrics.qe_resolution_count if current_snapshot.metrics else 1
             timing_recompute_count += current_snapshot.metrics.timing_recompute_count if current_snapshot.metrics else 1
-            timing_context = current_snapshot.timing_context
-            combat_runtime = current_snapshot.combat_runtime
-            hot_values = _extract_hot_surface_values(current_snapshot)
         else:
+            current_snapshot = _reuse_snapshot_for_projected_state(
+                current_snapshot,
+                projected_state=current_projected_state,
+            )
             snapshot_reuse_count += 1
+        timing_context = current_snapshot.timing_context
+        combat_runtime = current_snapshot.combat_runtime
+        hot_values = _extract_hot_surface_values(current_snapshot)
         wave_progression_state = current_projected_state.wave_progression_state
         intake = _evaluate_boss_hot_values_fast(
             hot_values=hot_values,
@@ -688,9 +663,8 @@ def _run_to_max_table_sweep(
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
-            'fast_overlay_count': fast_overlay_count,
-            'ignored_workshop_track_count': ignored_workshop_track_count,
-            'qe_fallback_track_count': qe_fallback_track_count,
+            'qe_dirty_reresolve_count': qe_dirty_reresolve_count,
+            'delta_fallback_count': delta_fallback_count,
             'checkpoint_resolution_mode': 'per_boss_wave',
             'execution_architecture': 'table_sweep_hot_columns',
         },
@@ -767,105 +741,6 @@ def _reuse_snapshot_for_projected_state(
     )
 
 
-def _overlay_surface_ids_for_changed_tracks(changed_tracks: tuple[str, ...]) -> tuple[str, ...]:
-    surface_ids: list[str] = []
-    for track_name in changed_tracks:
-        surface_ids.extend(_OVERLAY_SURFACE_IDS_BY_WORKSHOP_TRACK.get(track_name, ()))
-    return tuple(dict.fromkeys(surface_ids))
-
-
-def _classify_changed_tracks_for_max_wave(changed_tracks: tuple[str, ...]) -> tuple[tuple[str, ...], tuple[str, ...], tuple[str, ...]]:
-    overlay_tracks: list[str] = []
-    fallback_tracks: list[str] = []
-    ignored_tracks: list[str] = []
-    for track_name in changed_tracks:
-        if track_name in _OVERLAY_SURFACE_IDS_BY_WORKSHOP_TRACK:
-            overlay_tracks.append(track_name)
-        elif track_name in _QE_FALLBACK_TRACKS_FOR_MAX_WAVE:
-            fallback_tracks.append(track_name)
-        else:
-            ignored_tracks.append(track_name)
-    return tuple(overlay_tracks), tuple(fallback_tracks), tuple(ignored_tracks)
-
-
-def _supports_fast_overlay(changed_tracks: tuple[str, ...]) -> bool:
-    # For the current max-wave path, tracks outside this map are treated as irrelevant to the
-    # hot survivability surface set and therefore do not force a QE rerun.
-    return True
-
-
-def _apply_fast_progression_overlay(
-    snapshot: WaveRowSnapshot,
-    *,
-    projected_state: ProjectedRunState,
-    changed_tracks: tuple[str, ...],
-    surface_ids: tuple[str, ...],
-) -> WaveRowSnapshot:
-    rows = dict(snapshot.resolved_statbook.rows)
-    workshop_override_values = {
-        _WORKSHOP_CONTRIBUTOR_ID_BY_TRACK[track_name]: _workshop_value_for_track(track_name, projected_state.workshop_levels_current[track_name])
-        for track_name in changed_tracks
-        if track_name in _WORKSHOP_CONTRIBUTOR_ID_BY_TRACK and track_name in projected_state.workshop_levels_current
-    }
-    for surface_id in surface_ids:
-        existing = rows.get(surface_id)
-        if existing is None:
-            continue
-        rows[surface_id] = _recompute_hot_surface_row(existing, workshop_override_values)
-    statbook = StatBook(rows=rows, diagnostics=dict(getattr(snapshot.resolved_statbook, 'diagnostics', {}) or {}))
-    return WaveRowSnapshot(
-        checkpoint=WaveCheckpoint(display_wave=int(projected_state.checkpoint.display_wave)),
-        projected_run_state=projected_state,
-        resolved_statbook=statbook,
-        scenario_context=snapshot.scenario_context,
-        timing_context=snapshot.timing_context,
-        geometry_context=dict(snapshot.geometry_context),
-        combat_runtime=snapshot.combat_runtime,
-        metrics=snapshot.metrics,
-    )
-
-
-def _recompute_hot_surface_row(row: StatRow, workshop_override_values: dict[str, float]) -> StatRow:
-    additive_total = 0.0
-    multiplier_total = 1.0
-    for contributor in row.contributors:
-        if not contributor.get('active', True):
-            continue
-        value = contributor.get('value')
-        if contributor.get('contributor_id') in workshop_override_values:
-            value = workshop_override_values[contributor['contributor_id']]
-        try:
-            numeric_value = float(value)
-        except (TypeError, ValueError):
-            continue
-        stage = str(contributor.get('composition_stage') or '')
-        if stage in {'additive_pre_cap', 'scenario_adjustment'}:
-            additive_total += numeric_value
-        elif stage == 'multiplicative':
-            multiplier_total *= numeric_value
-    final = additive_total * multiplier_total if additive_total != 0.0 else multiplier_total
-    destination_id = row.stat_name.split('::', 1)[1] if '::' in row.stat_name else row.stat_name
-    cap = CANONICAL_PCT_CAPS.get(destination_id)
-    if cap is not None:
-        final = max(0.0, min(float(cap), final))
-    return StatRow(
-        stat_name=row.stat_name,
-        final_value=final,
-        value_type=row.value_type,
-        source_count=row.source_count,
-        status='resolved',
-        notes='Updated through fast simulator progression overlay.',
-        contributors=list(row.contributors),
-        schema=dict(row.schema) if row.schema else None,
-    )
-
-
-def _workshop_value_for_track(track_name: str, level: int) -> float:
-    formula = WORKSHOP_FORMULA_VALUES.get(track_name)
-    if formula is None:
-        raise KeyError(f'No KB-backed workshop formula registered for track {track_name!r}.')
-    return float(formula(int(level)))
-
 
 def _category_track_order_from_account_state(account_state: AccountState) -> dict[str, tuple[str, ...]]:
     grouped: dict[str, list[str]] = {'attack': [], 'defense': [], 'utility': []}
@@ -941,7 +816,7 @@ def _row_float(row_map: Dict[str, object], surface_id: str) -> Optional[float]:
 
 def _extract_hot_surface_values(snapshot: WaveRowSnapshot) -> dict[str, Optional[float]]:
     row_map = snapshot.resolved_statbook.rows
-    return {surface_id: _row_float(row_map, surface_id) for surface_id in _HOT_SURFACE_IDS}
+    return {surface_id: _row_float(row_map, surface_id) for surface_id in _boss_wave_hot_surface_ids()}
 
 
 def _evaluate_boss_hot_values(
