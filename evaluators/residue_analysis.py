@@ -309,6 +309,341 @@ def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
     }
 
 
+def _project_funding_cash_evidence() -> dict:
+    from evaluators.compare_core import PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS, _state
+    return {
+        'assumed_cash': PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[(_state('tower_damage'), 'Project Funding')]['cash'],
+        'evidence_strength': 'user_provided_for_current_ep_compare_basis',
+        'note': 'User clarified that EP uses 50b cash for Project Funding compare. This is treated as an explicit compare-policy input rather than a calculator truth claim.',
+    }
+
+
+def _build_tower_damage_runtime_gap_report(ep_compare: dict) -> dict:
+    import math
+    from evaluators.compare_core import (
+        PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS,
+        PROJECT_FUNDING_RARITY_COEFFICIENTS,
+        _state,
+    )
+    dest = _state('tower_damage')
+    row = (ep_compare or {}).get(dest) or {}
+    base_value = row.get('package_value_before_runtime_assumptions')
+    package_value = row.get('package_value')
+    ep_value = row.get('ep_value')
+    assumptions = list(row.get('runtime_compare_assumptions') or [])
+    applied_runtime_multiplier = None
+    if isinstance(base_value, (int, float)) and base_value not in (None, 0) and isinstance(package_value, (int, float)):
+        applied_runtime_multiplier = package_value / base_value
+    required_total_runtime_multiplier = None
+    if isinstance(base_value, (int, float)) and base_value not in (None, 0) and isinstance(ep_value, (int, float)):
+        required_total_runtime_multiplier = ep_value / base_value
+
+    pf_cash = PROJECTED_RUNTIME_COMPARE_CASH_ASSUMPTIONS[(_state('tower_damage'), 'Project Funding')]['cash']
+    pf_coeff = PROJECT_FUNDING_RARITY_COEFFICIENTS['Mythic']
+    pf_multiplier = 1.0 + math.log10(float(pf_cash)) * float(pf_coeff)
+    required_berserker_if_pf_fixed = None
+    if required_total_runtime_multiplier is not None and pf_multiplier not in (None, 0):
+        required_berserker_if_pf_fixed = required_total_runtime_multiplier / pf_multiplier
+
+    scenarios = []
+
+    def add_scenario(name: str, runtime_multiplier, note: str):
+        value = None if runtime_multiplier is None or base_value in (None, 0) else float(base_value) * float(runtime_multiplier)
+        required = None
+        if isinstance(value, (int, float)) and value not in (None, 0) and isinstance(ep_value, (int, float)):
+            required = ep_value / value
+        scenarios.append({
+            'scenario': name,
+            'runtime_multiplier': runtime_multiplier,
+            'package_value': value,
+            'relative_delta_pct': None if value in (None, 0) or not isinstance(ep_value, (int, float)) else ((value - ep_value) / ep_value) * 100.0,
+            'required_residual_multiplier_to_match_ep': required,
+            'note': note,
+        })
+
+    add_scenario('current_package_runtime_assumptions', applied_runtime_multiplier, 'Current compare-only runtime assumptions as emitted by the package.')
+    add_scenario('ep_cash_50b_with_berserker_x8', 8.0 * pf_multiplier, 'EP compare uses Project Funding cash assumption of 50b; this scenario keeps Berserker at x8 and swaps only the PF cash assumption.')
+    if required_berserker_if_pf_fixed is not None:
+        add_scenario('ep_cash_50b_with_fitted_berserker', required_berserker_if_pf_fixed * pf_multiplier, 'Diagnostic only: if 50b cash is fixed, this is the Berserker multiplier that would exactly close the EP row.')
+
+    return {
+        'destination': dest,
+        'compare_state_key': row.get('compare_state_key'),
+        'compare_preset': row.get('compare_preset'),
+        'compare_perk_state': row.get('compare_perk_state'),
+        'package_value_before_runtime_assumptions': base_value,
+        'package_value_after_runtime_assumptions': package_value,
+        'ep_value': ep_value,
+        'runtime_compare_assumptions': assumptions,
+        'ep_evidence': _project_funding_cash_evidence(),
+        'current_assumption_parameters': {
+            'project_funding_cash_assumption': pf_cash,
+            'project_funding_rarity_family': 'Mythic',
+            'project_funding_multiplier_at_assumed_cash': pf_multiplier,
+            'berserker_assumption_multiplier': 8.0,
+        },
+        'derived_fit': {
+            'applied_runtime_multiplier': applied_runtime_multiplier,
+            'required_total_runtime_multiplier_to_match_ep': required_total_runtime_multiplier,
+            'required_berserker_multiplier_if_project_funding_cash_assumption_fixed': required_berserker_if_pf_fixed,
+        },
+        'assessment': {
+            'calculator_change_recommended': False,
+            'compare_assumption_change_recommended': True,
+            'reason': 'tower_damage residue sits in the compare-only runtime normalization layer, not the base damage resolver. With EP cash assumption fixed at 50b, the current x8 Berserker assumption nearly exactly closes the EP row.',
+        },
+        'scenarios': scenarios,
+    }
+
+
+def _build_tower_defense_absolute_semantic_gap_report(ep_compare: dict) -> dict:
+    from evaluators.compare_core import _state
+    dest = _state('tower_defense_absolute')
+    row = (ep_compare or {}).get(dest) or {}
+    contributors = row.get('package_contributors') or []
+
+    workshop_base = None
+    current_factors = {}
+    for c in contributors:
+        family = c.get('source_family')
+        name = c.get('source_name')
+        key = f"{family}::{name}"
+        value = c.get('value')
+        try:
+            vf = float(value)
+        except Exception:
+            vf = None
+        factor = None
+        if vf is None:
+            factor = None
+        elif family == 'workshop':
+            workshop_base = vf
+        elif family == 'module_substat' and c.get('value_type') == 'percent_display':
+            factor = 1.0 + (vf / 100.0)
+        elif family == 'enhancement':
+            factor = vf
+        elif family in {'relic', 'vault'}:
+            factor = 1.0 + vf
+        else:
+            factor = vf if vf > 1.0 else 1.0 + vf
+        if factor is not None:
+            current_factors[key] = factor
+
+    def _recompute(factors: dict) -> float | None:
+        if workshop_base is None:
+            return None
+        out = workshop_base
+        for _, factor in factors.items():
+            out *= factor
+        return out
+
+    package_value = row.get('package_value')
+    ep_value = row.get('ep_value')
+    recomputed = _recompute(current_factors)
+
+    standard_key = 'perk::x1.15 Defense Absolute'
+    current_standard = current_factors.get(standard_key)
+    ep_standard = None if current_standard is None else (1.0 + 5.0 * 0.15) * (1.0 + 0.01 * 25.0)
+
+    scenarios = []
+
+    def add_scenario(name: str, updates: dict, note: str):
+        factors = dict(current_factors)
+        factors.update(updates)
+        value = _recompute(factors)
+        required = None
+        if isinstance(value, (int, float)) and value not in (None, 0) and isinstance(ep_value, (int, float)):
+            required = ep_value / value
+        scenarios.append({
+            'scenario': name,
+            'package_value': value,
+            'relative_delta_pct': None if value in (None, 0) or not isinstance(ep_value, (int, float)) else ((value - ep_value) / ep_value) * 100.0,
+            'required_residual_multiplier_to_match_ep': required,
+            'note': note,
+        })
+
+    add_scenario('current_package_semantics', {}, 'Current calculator semantics and compare-row inputs as emitted.')
+    if ep_standard is not None:
+        add_scenario('ep_standard_perk_semantics_only', {standard_key: ep_standard}, 'EP Defense Absolute appears to scale the full standard-perk result by Standard Perk Bonus rather than scaling only the perk delta. This is treated as workbook semantics, not calculator truth.')
+
+    best_fit = scenarios[-1] if scenarios else None
+
+    return {
+        'destination': dest,
+        'compare_state_key': row.get('compare_state_key'),
+        'compare_preset': row.get('compare_preset'),
+        'compare_perk_state': row.get('compare_perk_state'),
+        'package_value': package_value,
+        'ep_value': ep_value,
+        'package_value_recomputed_from_current_factors': recomputed,
+        'current_factors': {
+            'standard_perk_factor': current_standard,
+        },
+        'ep_formula_hypotheses': {
+            'ep_standard_perk_factor': ep_standard,
+            'residual_multiplier_after_ep_standard_perk_semantics': None if best_fit is None else best_fit.get('required_residual_multiplier_to_match_ep'),
+        },
+        'scenarios': scenarios,
+        'assessment': {
+            'best_fit_hypothesis': 'tower_defense_absolute EP delta is almost exactly explained by EP-style full-result Standard Perk Bonus scaling on the Defense Absolute standard perk.',
+            'calculator_change_recommended': False,
+            'reason': 'The package row is internally consistent and the EP value is matched almost exactly by swapping only the standard-perk semantic to the workbook-style full-result scaling.'
+        }
+    }
+
+
+def _build_tower_regen_ep_semantic_gap_report(ep_compare: dict) -> dict:
+    from evaluators.compare_core import _state
+    dest = _state('tower_regen')
+    row = (ep_compare or {}).get(dest) or {}
+    contributors = row.get('package_contributors') or []
+
+    workshop_base = None
+    current_factors = {}
+    contributor_meta = {}
+    for c in contributors:
+        family = c.get('source_family')
+        name = c.get('source_name')
+        key = f"{family}::{name}"
+        value = c.get('value')
+        try:
+            vf = float(value)
+        except Exception:
+            vf = None
+        factor = None
+        if vf is None:
+            factor = None
+        elif family == 'workshop':
+            workshop_base = vf
+        elif family == 'module_substat' and c.get('value_type') == 'percent_display':
+            factor = 1.0 + (vf / 100.0)
+        elif family == 'enhancement':
+            factor = vf
+        elif family in {'relic', 'vault'}:
+            factor = 1.0 + vf
+        else:
+            factor = vf if vf > 1.0 else 1.0 + vf
+        if factor is not None:
+            current_factors[key] = factor
+        contributor_meta[key] = c
+
+    def _recompute(factors: dict) -> float | None:
+        if workshop_base is None:
+            return None
+        out = workshop_base
+        for _, factor in factors.items():
+            out *= factor
+        return out
+
+    ep_value = row.get('ep_value')
+    package_value = row.get('package_value')
+    package_from_factors = _recompute(current_factors)
+
+    standard_key = 'perk::x1.75 Health Regen'
+    tradeoff_key = 'perk::Tower Health Regen x8.00, But Tower Max Max Health -60%'
+    enhancement_key = 'enhancement::Health Regen +'
+
+    current_standard = current_factors.get(standard_key)
+    current_tradeoff = current_factors.get(tradeoff_key)
+    current_enhancement = current_factors.get(enhancement_key)
+
+    ep_standard = None if current_standard is None else (1.0 + 0.75 * 5.0) * (1.0 + 0.01 * 25.0)
+    ep_tradeoff = None if current_tradeoff is None else 8.0 * (1.0 + 0.01 * 10.0)
+
+    scenarios = []
+
+    def add_scenario(name: str, updates: dict, note: str):
+        factors = dict(current_factors)
+        factors.update(updates)
+        value = _recompute(factors)
+        required = None
+        if isinstance(value, (int, float)) and value not in (None, 0) and isinstance(ep_value, (int, float)):
+            required = ep_value / value
+        scenarios.append({
+            'scenario': name,
+            'package_value': value,
+            'relative_delta_pct': None if value in (None, 0) or not isinstance(ep_value, (int, float)) else ((value - ep_value) / ep_value) * 100.0,
+            'required_residual_multiplier_to_match_ep': required,
+            'note': note,
+        })
+
+    add_scenario(
+        'current_package_semantics',
+        {},
+        'Current calculator semantics: standard perk and trade-off perk improve the delta only; enhancement handled as direct multiplier row.'
+    )
+
+    if ep_standard is not None:
+        add_scenario(
+            'ep_standard_perk_semantics_only',
+            {standard_key: ep_standard},
+            'EP EPH_REGEN formula multiplies the full perk result by Standard Perks Bonus rather than scaling only the perk delta.'
+        )
+
+    if ep_tradeoff is not None:
+        add_scenario(
+            'ep_tradeoff_semantics_only',
+            {tradeoff_key: ep_tradeoff},
+            'EP EPH_REGEN formula applies Improve Trade-Off Perks to the full x8 regen multiplier rather than scaling only the +7 delta.'
+        )
+
+    if ep_standard is not None and ep_tradeoff is not None:
+        add_scenario(
+            'ep_perk_semantics_bundle',
+            {standard_key: ep_standard, tradeoff_key: ep_tradeoff},
+            'Apply both EP-style perk semantics while leaving the rest of the calculator unchanged.'
+        )
+        residual_after_bundle = scenarios[-1]['required_residual_multiplier_to_match_ep']
+    else:
+        residual_after_bundle = None
+
+    inferred_wse_level_after_bundle = None
+    integer_wse_candidate = None
+    integer_wse_multiplier = None
+    if isinstance(residual_after_bundle, (int, float)) and residual_after_bundle > 0:
+        inferred_wse_level_after_bundle = (residual_after_bundle - 1.0) / 0.01
+        integer_wse_candidate = round(inferred_wse_level_after_bundle)
+        integer_wse_multiplier = 1.0 + 0.01 * integer_wse_candidate
+        add_scenario(
+            'ep_perk_semantics_plus_inferred_wse',
+            {
+                standard_key: ep_standard,
+                tradeoff_key: ep_tradeoff,
+                enhancement_key: (current_enhancement or 1.0) * integer_wse_multiplier,
+            },
+            'Model the remaining residual as an EP-only WSE multiplier applied on top of the existing enhancement multiplier. This is a semantic audit scenario, not a calculator truth claim.'
+        )
+
+    return {
+        'destination': dest,
+        'compare_state_key': row.get('compare_state_key'),
+        'compare_preset': row.get('compare_preset'),
+        'compare_perk_state': row.get('compare_perk_state'),
+        'package_value': package_value,
+        'ep_value': ep_value,
+        'package_value_recomputed_from_current_factors': package_from_factors,
+        'current_factors': {
+            'standard_perk_factor': current_standard,
+            'tradeoff_regen_factor': current_tradeoff,
+            'enhancement_factor': current_enhancement,
+        },
+        'ep_formula_hypotheses': {
+            'ep_standard_perk_factor': ep_standard,
+            'ep_tradeoff_regen_factor': ep_tradeoff,
+            'residual_multiplier_after_ep_perk_semantics': residual_after_bundle,
+            'inferred_wse_level_after_ep_perk_semantics': inferred_wse_level_after_bundle,
+            'nearest_integer_wse_level_candidate': integer_wse_candidate,
+            'nearest_integer_wse_multiplier': integer_wse_multiplier,
+        },
+        'scenarios': scenarios,
+        'assessment': {
+            'best_fit_hypothesis': 'EP regen delta is largely explained by EP-specific semantics: full-result standard perk scaling, full-result trade-off scaling, and an unresolved WSE multiplier near +8%.',
+            'calculator_change_recommended': False,
+            'reason': 'These semantics appear to be EP workbook behavior and are not yet KB-backed as true in-game calculator rules.'
+        }
+    }
+
+
 def build_survivor_closure_report(ep_compare: dict, line_verification: dict) -> dict:
     from evaluators.compare_core import _state
     tracked = [

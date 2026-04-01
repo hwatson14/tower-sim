@@ -72,6 +72,9 @@ from evaluators.residue_analysis import (
     _build_tower_regen_closure_report,
     _build_tower_hp_semantic_gap_report,
     _build_tower_damage_residue_analysis,
+    _build_tower_damage_runtime_gap_report,
+    _build_tower_defense_absolute_semantic_gap_report,
+    _build_tower_regen_ep_semantic_gap_report,
     build_survivor_closure_report,
     # Newly migrated to residue_analysis
     build_survivability_residue_analysis,

@@ -88,6 +88,9 @@ from evaluators.residue_analysis import (
     _build_tower_regen_closure_report,
     _build_tower_hp_semantic_gap_report,
     _build_tower_damage_residue_analysis,
+    _build_tower_damage_runtime_gap_report,
+    _build_tower_defense_absolute_semantic_gap_report,
+    _build_tower_regen_ep_semantic_gap_report,
 )
 from evaluators.verification_engine import (
     build_line_by_line_verification,
@@ -1255,6 +1258,9 @@ def run_analysis_pipeline(args) -> int:
     }
     diagnostics['tower_regen_closure_report'] = _build_tower_regen_closure_report(ep_compare_publishable)
     diagnostics['tower_hp_semantic_gap_report'] = _build_tower_hp_semantic_gap_report(ep_compare_publishable)
+    diagnostics['tower_regen_ep_semantic_gap_report'] = _build_tower_regen_ep_semantic_gap_report(ep_compare_publishable)
+    diagnostics['tower_defense_absolute_semantic_gap_report'] = _build_tower_defense_absolute_semantic_gap_report(ep_compare_publishable)
+    diagnostics['tower_damage_runtime_gap_report'] = _build_tower_damage_runtime_gap_report(ep_compare_publishable)
     diagnostics['tower_damage_residue_analysis'] = _build_tower_damage_residue_analysis(ep_compare_publishable)
 
     write_core_outputs(

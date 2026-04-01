@@ -151,6 +151,42 @@ def test_run_stats_pipeline_writes_query_artifacts_not_fake_statbooks():
     assert "_remove_run_stats_legacy_outputs" in src
 
 
+def test_residue_artifact_contract_is_internally_consistent():
+    """Producer keys in pipeline.py must exactly match the keys consumed by publication.py.
+
+    This asserts the end-to-end contract at the source level:
+    - Every key written to diagnostics[] in run_analysis_pipeline() must appear
+      as a diagnostics.get('<key>') call in write_core_outputs().
+    - The filenames written by publication.py are the single authoritative list.
+    """
+    pipeline_src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
+    publication_src = Path((ROOT / "app" / "publication.py")).read_text(encoding="utf-8")
+
+    # These are the 5 residue filenames owned by publication.write_core_outputs().
+    # Each file must have a matching producer key in pipeline.py diagnostics.
+    expected_contract = {
+        'tower_regen_closure_report.json':              "diagnostics['tower_regen_closure_report']",
+        'tower_hp_semantic_gap_report.json':            "diagnostics['tower_hp_semantic_gap_report']",
+        'tower_regen_ep_semantic_gap_report.json':      "diagnostics['tower_regen_ep_semantic_gap_report']",
+        'tower_defense_absolute_semantic_gap_report.json': "diagnostics['tower_defense_absolute_semantic_gap_report']",
+        'tower_damage_runtime_gap_report.json':         "diagnostics['tower_damage_runtime_gap_report']",
+    }
+
+    for filename, producer_assignment in expected_contract.items():
+        assert filename in publication_src, (
+            f"publication.py does not reference artifact file '{filename}'"
+        )
+        assert producer_assignment in pipeline_src, (
+            f"pipeline.py is missing producer assignment '{producer_assignment}' "
+            f"required to populate '{filename}'"
+        )
+
+    # Confirm the builder imports are present at module level (not as late stubs)
+    assert "_build_tower_regen_ep_semantic_gap_report" in pipeline_src
+    assert "_build_tower_defense_absolute_semantic_gap_report" in pipeline_src
+    assert "_build_tower_damage_runtime_gap_report" in pipeline_src
+
+
 def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
