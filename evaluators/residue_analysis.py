@@ -4,8 +4,65 @@ evaluators/residue_analysis.py -- Residue analysis and closure reports.
 from __future__ import annotations
 
 
+def build_survivability_residue_analysis(ep_compare: dict, compare_situation_fit_matrix: dict, statbook_dict: dict) -> dict:
+    from evaluators.compare_core import _state
+    destinations = [
+        _state('tower_hp'),
+        _state('tower_regen'),
+        _state('tower_defense_absolute'),
+        _state('wall_hp'),
+        _state('wall_regen'),
+    ]
+    best_fit = compare_situation_fit_matrix.get('best_fit_by_destination', {}) if isinstance(compare_situation_fit_matrix, dict) else {}
+    analysis = {}
+    for dest in destinations:
+        compare_row = ep_compare.get(dest, {}) if isinstance(ep_compare, dict) else {}
+        fit = best_fit.get(dest, {}) if isinstance(best_fit, dict) else {}
+        package_value = compare_row.get('package_value')
+        ep_value = compare_row.get('ep_value')
+        ratio = None
+        if isinstance(package_value, (int, float)) and isinstance(ep_value, (int, float)) and ep_value:
+            ratio = package_value / ep_value
+        contributor_summary = []
+        for c in compare_row.get('package_contributors', []) or []:
+            contributor_summary.append({
+                'source_family': c.get('source_family'),
+                'source_name': c.get('source_name'),
+                'preset_name': c.get('preset_name'),
+                'value': c.get('value'),
+                'value_type': c.get('value_type'),
+            })
+        analysis[dest] = {
+            'status': compare_row.get('status'),
+            'package_value': package_value,
+            'ep_value': ep_value,
+            'relative_delta_pct': compare_row.get('relative_delta_pct'),
+            'package_to_ep_ratio': ratio,
+            'best_fit_state_key': fit.get('state_key'),
+            'best_fit_preset': fit.get('preset'),
+            'best_fit_perk_state': fit.get('perk_state'),
+            'compare_state_key': compare_row.get('compare_state_key'),
+            'compare_preset': compare_row.get('compare_preset'),
+            'compare_perk_state': compare_row.get('compare_perk_state'),
+            'contributors': contributor_summary,
+        }
+    tower_hp_ratio = analysis.get(_state('tower_hp'), {}).get('package_to_ep_ratio')
+    wall_hp_ratio = analysis.get(_state('wall_hp'), {}).get('package_to_ep_ratio')
+    tower_regen_ratio = analysis.get(_state('tower_regen'), {}).get('package_to_ep_ratio')
+    wall_regen_ratio = analysis.get(_state('wall_regen'), {}).get('package_to_ep_ratio')
+    analysis['_shared_residue_summary'] = {
+        'tower_hp_ratio': tower_hp_ratio,
+        'wall_hp_ratio': wall_hp_ratio,
+        'tower_regen_ratio': tower_regen_ratio,
+        'wall_regen_ratio': wall_regen_ratio,
+        'tower_hp_vs_wall_hp_ratio_gap': None if tower_hp_ratio is None or wall_hp_ratio is None else wall_hp_ratio - tower_hp_ratio,
+        'tower_regen_vs_wall_regen_ratio_gap': None if tower_regen_ratio is None or wall_regen_ratio is None else wall_regen_ratio - tower_regen_ratio,
+    }
+    return analysis
+
+
 def _build_tower_regen_closure_report(ep_compare: dict) -> dict:
-    from evaluators.compare import _state
+    from evaluators.compare_core import _state
     dest = _state('tower_regen')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
@@ -67,7 +124,8 @@ def _build_tower_regen_closure_report(ep_compare: dict) -> dict:
 
 
 def _build_tower_hp_semantic_gap_report(ep_compare: dict) -> dict:
-    from evaluators.compare import _state, ROOT
+    from evaluators.compare_core import _state
+    from evaluators.compare import ROOT
     dest = _state('tower_hp')
     row = (ep_compare or {}).get(dest) or {}
     contributors = row.get('package_contributors') or []
@@ -198,7 +256,7 @@ def _build_tower_hp_semantic_gap_report(ep_compare: dict) -> dict:
 
 
 def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
-    from evaluators.compare import _state
+    from evaluators.compare_core import _state
     import math
     row = ep_compare.get(_state('tower_damage')) or {}
     pre_runtime = row.get('package_value_before_runtime_assumptions')
@@ -252,7 +310,7 @@ def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
 
 
 def build_survivor_closure_report(ep_compare: dict, line_verification: dict) -> dict:
-    from evaluators.compare import _state
+    from evaluators.compare_core import _state
     tracked = [
         _state('tower_regen'),
         _state('tower_hp'),

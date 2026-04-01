@@ -10,9 +10,78 @@ from typing import Callable
 
 import pandas as pd
 
+from qe.contracts import compat_surface_from_legacy_canonical as _state
+
+
+def _parse_ep_value(raw):
+    if raw is None:
+        return None, None
+    s = str(raw).strip()
+    if not s or s.lower() == 'nan':
+        return None, None
+    if s.startswith('x'):
+        try:
+            return float(s[1:]), 'multiplier_display'
+        except ValueError:
+            return None, None
+    suffixes = {'K': 1e3, 'M': 1e6, 'B': 1e9, 'T': 1e12, 'q': 1e15, 'Q': 1e18, 'O': 1e27}
+    m = re.fullmatch(r'([0-9]+(?:\.[0-9]+)?)\s*([KMBTqQO])', s)
+    if m:
+        return float(m.group(1)) * suffixes[m.group(2)], 'scaled_number'
+    try:
+        return float(s), 'number'
+    except ValueError:
+        return None, None
+
+
+EP_NONCOMPARABLE_DESTINATIONS = {
+    _state('free_attack_upgrade_chance_pct'),
+    _state('free_defense_upgrade_chance_pct'),
+    _state('free_utility_upgrade_chance_pct'),
+}
+
+EP_LABEL_TO_DESTINATION = {
+    'Attack Speed': _state('tower_attack_speed'),
+    'Critical Chance': _state('tower_crit_chance_pct'),
+    'Critical Factor': _state('tower_crit_multiplier'),
+    'Range': _state('tower_range_m'),
+    'Damage / Meter': _state('tower_damage_per_meter_multiplier'),
+    'Multishot Chance': _state('tower_multishot_chance_pct'),
+    'Multishot Targets': _state('tower_multishot_targets'),
+    'Rapid Fire Chance': _state('tower_rapid_fire_chance_pct'),
+    'Rapid Fire Duration': _state('tower_rapid_fire_duration_seconds'),
+    'Bounce Shot Chance': _state('tower_bounce_shot_chance_pct'),
+    'Bounce Shot Targets': _state('tower_bounce_shot_targets'),
+    'Super Crit Chance': _state('tower_supercrit_chance_pct'),
+    'Super Crit Multiplier': _state('tower_supercrit_multiplier'),
+    'Recovery Package Chance': _state('package_chance_pct'),
+    'Health': _state('tower_hp'),
+    'Health Regen': _state('tower_regen'),
+    'Defense Absolute': _state('tower_defense_absolute'),
+    'Defense %': _state('tower_defense_pct'),
+    'Wall Health': _state('wall_hp'),
+    'Wall Fortification': _state('wall_fortification_multiplier'),
+    'Wall Regen': _state('wall_regen'),
+    'Max Recovery': _state('max_recovery_multiplier'),
+    'Coins / Kill Bonus': _state('coins_per_kill_bonus'),
+    'Free Attack Upgrade': _state('free_attack_upgrade_chance_pct'),
+    'Free Defense Upgrade': _state('free_defense_upgrade_chance_pct'),
+    'Free Utility Upgrade': _state('free_utility_upgrade_chance_pct'),
+    'Damage': _state('tower_damage'),
+}
+
+
+def verdict_from_verification(verification_status: str, compare_status: str | None) -> str:
+    if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending', 'needs_work'}:
+        return 'fail' if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending'} else 'needs_work'
+    if verification_status == 'trace_only':
+        return 'trace_only'
+    if compare_status in {'stage_scope_mismatch', 'formula_blocked', 'not_comparable'}:
+        return 'pass_with_compare_limitations'
+    return 'pass'
+
 
 def _load_ep_oracle(ep_path: Path):
-    from evaluators.compare import EP_LABEL_TO_DESTINATION, _parse_ep_value
     if not ep_path.exists():
         return {}
     df = pd.read_csv(ep_path, header=None)
@@ -42,7 +111,8 @@ def _load_csv_rows(path: Path) -> list[dict]:
 
 
 def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, formula_contract: Callable[[dict, str], dict]):
-    from evaluators.compare import kb_alignment_status_from_compare_status, verdict_from_verification
+    from evaluators.compare_core import kb_alignment_status_from_compare_status
+    from evaluators.verification_engine import verdict_from_verification
     verification = {}
     rows = statbook_dict['rows']
     for key, row in rows.items():

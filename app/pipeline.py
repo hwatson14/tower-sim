@@ -74,6 +74,7 @@ from simulators.scenario import publish_farming_throughput_support_surfaces
 from evaluators.compare_core import (
     build_ep_compare,
     _build_compare_rows_by_preset,
+    build_compare_status_summary,
 )
 from evaluators.audit_engine import (
     _build_publish_gate_audits,
@@ -113,11 +114,8 @@ from evaluators.compare import (
     _is_calculator_scope_row,
     _load_formula_ledger,
     _normalize_compare_values,
-    build_compare_status_summary,
     ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
     ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
-    _build_perk_contributor_audit,
-    _build_tradeoff_routing_audit,
 )
 from evaluators.scorer import compute_optimizer_scores
 

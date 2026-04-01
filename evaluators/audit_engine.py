@@ -98,7 +98,9 @@ def _build_publish_gate_audits(stat_inputs, statbook_dict, ep_compare, formula_l
 
 
 def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_ledger):
-    from evaluators.compare import _formula_contract, _load_csv_rows, ROOT
+    from evaluators.compare_core import _formula_contract
+    from evaluators.verification_engine import _load_csv_rows
+    from evaluators.compare import ROOT
     blocked_formula_contracts = []
     for destination_id, contract in (formula_ledger.get('surfaces') or {}).items():
         if contract.get('publish_policy') == 'block':
@@ -178,7 +180,8 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
 
 
 def _build_kb_gap_register(kb_incomplete_areas, audits):
-    from evaluators.compare import COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES, _classify_unmapped_input_gap
+    from qe.contracts import COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES
+    from evaluators.audit_engine import _classify_unmapped_input_gap
     register = []
 
     for item in kb_incomplete_areas.get('blocked_formula_contracts', []):
@@ -276,7 +279,7 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
     from qe.query_routing import compiler_routing_indexes
     from input.state_types import PerkSelection
     from dataclasses import replace
-    from evaluators.compare import _perk_operation_supported, _relpath_str
+    from evaluators.audit_engine import _perk_operation_supported, _relpath_str
 
     def _slug(text: str) -> str:
         return re.sub(r'[^a-z0-9]+', '_', text.lower()).strip('_')
@@ -400,7 +403,7 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
 
 
 def _build_artifact_contract_manifest(account_state, canonical_output_preset: str, stat_inputs, statbook_dict: dict) -> dict:
-    from evaluators.compare import _synthetic_preset_names_present
+    from evaluators.audit_engine import _synthetic_preset_names_present
     return {
         'version': 1,
         'canonical_output_preset': canonical_output_preset,
@@ -422,3 +425,383 @@ def _build_artifact_contract_manifest(account_state, canonical_output_preset: st
             {'surface': 'family_completeness_matrix.json', 'artifact_class': 'audit_manifest', 'contract': 'full', 'provenance': 'manifest_generated_from_current_run', 'producer': 'run_stats.py', 'canonical': True},
         ],
     }
+
+
+# ---------------------------------------------------------------------------
+# Functions migrated from compare.py (T12 shard)
+# ---------------------------------------------------------------------------
+
+def _synthetic_preset_names_present(account_state) -> list[str]:
+    from qe.contracts import CANONICAL_PRESET_NAMES
+    raw_names = set()
+    for lane_map_name in ('card_presets', 'module_presets', 'perk_presets'):
+        lane_map = getattr(account_state, lane_map_name, {}) or {}
+        raw_names.update(lane_map.keys())
+    return sorted(name for name in raw_names if name not in CANONICAL_PRESET_NAMES)
+
+
+def _relpath_str(path_like) -> str | None:
+    if path_like is None:
+        return None
+    from qe.contracts import relpath_str
+    return relpath_str(path_like)
+
+
+def _classify_unmapped_input_gap(item):
+    source_family = (item.get('source_family') or '').strip().lower()
+    stat_name = (item.get('stat_name') or '').strip()
+    contributor_id = item.get('contributor_id')
+
+    if contributor_id:
+        return 'Calculator wiring / implementation gap'
+
+    runtime_only_patterns = [
+        r'Mastery$',
+        r'Effect Bans',
+        r'Assist Module',
+        r'Enemy',
+        r'Boss',
+        r'Protector',
+        r'Ranged',
+        r'Fast',
+        r'Tank',
+        r'Vampire',
+        r'Scatter',
+        r'Ray',
+        r'Resistance',
+        r'Ultimate',
+        r'Battle Condition',
+        r'Card Presets',
+        r'Buy Multiplier',
+        r'More Round Stats',
+        r'Auto Pick',
+        r'Ban Perks',
+        r'Perk Option Quantity',
+        r'First Perk Choice',
+        r'Standard Perks Bonus',
+        r'Unlock Perks',
+        r'END OF ARRAY',
+        r'Keys spent',
+        r'Total Bonuses',
+        r'Misc\.',
+        r'Unlocks$',
+        r'Discount',
+        r'Shards',
+        r'Module Coin Cost',
+        r'Rare Drop Chance',
+        r'Unmerge Module',
+        r'Shatter Shards',
+    ]
+    if any(re.search(pattern, stat_name) for pattern in runtime_only_patterns):
+        return 'Intentional non-goal / runtime-only surface'
+
+    if source_family == 'vault' and stat_name in {
+        'Attack', 'Defense', 'Utility', 'Cash / Wave', 'Coins / Kill',
+        'Coins / Wave', 'Interest / Wave', 'Keys spent', 'Misc.',
+        'Total Bonuses', 'Unlocks'
+    }:
+        return 'Intentional non-goal / runtime-only surface'
+
+    if source_family in {'lab', 'vault'}:
+        return 'KB missing executable contract'
+    return 'KB missing fact'
+
+
+def _perk_operation_supported(operation: str) -> bool:
+    return operation in {
+        'multiplier',
+        'remaining_fraction',
+        'percentage_points_add',
+        'count_add',
+        'seconds_add',
+        'raw_add',
+        'set_to',
+        'special_unlock',
+        'special_reduction',
+    }
+
+
+def _build_damage_defabs_scope_audit(account_state, stat_inputs, statbook_rows: dict) -> dict:
+    from qe.contracts import compat_surface_from_legacy_canonical as _state_fn
+    def _state(s):
+        return _state_fn(s)
+
+    surfaces = {
+        'tower_damage': {
+            'destination_key': _state('tower_damage'),
+            'admissible_families': ['workshop', 'lab', 'card', 'module', 'enhancement', 'relic', 'vault'],
+        },
+        'tower_defense_absolute': {
+            'destination_key': _state('tower_defense_absolute'),
+            'admissible_families': ['workshop', 'lab', 'module_substat', 'enhancement', 'relic', 'vault'],
+        },
+    }
+    active_preset = account_state.default_preset
+    active_cards = set(account_state.card_presets.get(active_preset, []))
+    other_presets_with_card = [
+        preset for preset, cards in account_state.card_presets.items()
+        if preset != active_preset and 'Damage' in cards
+    ]
+    active_modules = account_state.module_presets.get(active_preset, {})
+    active_armor_selection = active_modules.get('armor') if hasattr(active_modules, 'get') else None
+    active_armor_modules = []
+    for role in ('primary', 'assist'):
+        mod_name = getattr(active_armor_selection, role, None) if active_armor_selection is not None else None
+        if mod_name:
+            mod = account_state.modules_inventory.get(mod_name)
+            if mod:
+                active_armor_modules.append((role, mod_name, mod))
+
+    def _surface_unmapped_rows(surface_id: str):
+        out = []
+        for row in stat_inputs:
+            if row.destination_id == surface_id and not row.kb_mapped:
+                out.append({
+                    'source_family': row.source_family,
+                    'source_name': row.source_name,
+                    'stat_name': row.stat_name,
+                    'value': row.value,
+                    'value_type': row.value_type,
+                    'notes': row.notes,
+                })
+        return out
+
+    payload = {
+        'scope': 'kb_only_damage_defense_absolute_scope_audit',
+        'active_preset': active_preset,
+        'surfaces': {},
+        'findings': [],
+    }
+
+    for surface_id, meta in surfaces.items():
+        row = statbook_rows.get(meta['destination_key']) or {}
+        contributors = row.get('contributors', [])
+        contributor_families = sorted({c.get('source_family') for c in contributors if c.get('source_family')})
+        contributor_names = sorted({c.get('source_name') for c in contributors if c.get('source_name')})
+        payload['surfaces'][surface_id] = {
+            'status': row.get('status'),
+            'final_value': row.get('final_value'),
+            'display_value': row.get('display_value'),
+            'admissible_families': meta['admissible_families'],
+            'active_contributor_families': contributor_families,
+            'active_contributor_names': contributor_names,
+            'missing_admissible_families_in_active_preset': [f for f in meta['admissible_families'] if f not in contributor_families],
+            'unmapped_rows_bound_to_surface': _surface_unmapped_rows(surface_id),
+        }
+
+    damage_inventory = account_state.cards_inventory.get('Damage')
+    damage_card_detail = {
+        'owned_in_inventory': damage_inventory is not None,
+        'inventory_level': damage_inventory.level if damage_inventory is not None else None,
+        'active_in_current_preset': 'Damage' in active_cards,
+        'other_presets_with_card_active': other_presets_with_card,
+    }
+    payload['surfaces']['tower_damage']['inactive_admissible_contributors'] = {
+        'damage_card': damage_card_detail,
+    }
+
+    defense_abs_armor_substats = []
+    for role, mod_name, mod in active_armor_modules:
+        for sub in mod.substats:
+            if (sub.name or '').strip().lower() == 'defense absolute':
+                defense_abs_armor_substats.append({
+                    'role': role,
+                    'module_name': mod_name,
+                    'raw_token': sub.raw_token,
+                    'display_value': sub.value,
+                })
+    payload['surfaces']['tower_defense_absolute']['inactive_admissible_contributors'] = {
+        'active_armor_module_defense_absolute_substats': defense_abs_armor_substats,
+    }
+
+    if damage_inventory is not None and 'Damage' not in active_cards:
+        payload['findings'].append({
+            'severity': 'medium',
+            'surface': 'tower_damage',
+            'finding': 'Damage card is owned but not active in the current preset, so card-family damage contribution is legitimately absent from this stat path.',
+            'kb_basis': 'kb/cards/tables/card-effect-registry.csv routes DAMAGE base-card effect to tower.damage_multiplier and kb/cards/tables/card-base-ladders.csv provides the ladder.',
+            'evidence_in_account': {
+                'active_preset': active_preset,
+                'damage_card_inventory_level': damage_inventory.level,
+                'other_presets_with_card_active': other_presets_with_card,
+            },
+            'fix_applied': 'No formula patch applied; audit surfaced preset-scoped contributor absence only.',
+        })
+    elif damage_inventory is None and other_presets_with_card:
+        payload['findings'].append({
+            'severity': 'high',
+            'surface': 'tower_damage',
+            'finding': 'Card preset data references Damage in another preset, but cards_inventory has no Damage snapshot. That is an account-state inconsistency worth treating as a parser or source-shape bug until proven otherwise.',
+            'kb_basis': 'kb/cards/tables/card-entity-registry.csv and card-base-ladders.csv define DAMAGE as a valid card surface; a preset should not reference a non-existent inventory card silently.',
+            'evidence_in_account': {
+                'active_preset': active_preset,
+                'other_presets_with_card_active': other_presets_with_card,
+                'cards_inventory_contains_damage': False,
+            },
+            'fix_applied': 'No formula patch applied in this iteration; audit surfaced a likely account-state/parser inconsistency.',
+        })
+    else:
+        payload['findings'].append({
+            'severity': 'info',
+            'surface': 'tower_damage',
+            'finding': 'No admissible current-preset contributor family was proven missing from the KB-routed tower_damage path.',
+            'kb_basis': 'Active contributors already include workshop, lab, enhancement, relic, vault, and module.',
+            'fix_applied': 'None; current mismatch remains unexplained within the active-preset static path.',
+        })
+
+    if not defense_abs_armor_substats:
+        payload['findings'].append({
+            'severity': 'info',
+            'surface': 'tower_defense_absolute',
+            'finding': 'No active armor-module Defense Absolute substat exists in the current preset, so module-substat contribution is legitimately absent from tower_defense_absolute.',
+            'kb_basis': 'kb/modules/tables/module-substats.csv defines Armor -> Defense Absolute as an admissible routed family when present.',
+            'evidence_in_account': {
+                'active_preset': active_preset,
+                'active_armor_modules': [
+                    {
+                        'role': role,
+                        'module_name': mod_name,
+                    }
+                    for role, mod_name, _ in active_armor_modules
+                ],
+            },
+            'fix_applied': 'No formula patch applied; audit surfaced current-preset contributor absence only.',
+        })
+    else:
+        payload['findings'].append({
+            'severity': 'info',
+            'surface': 'tower_defense_absolute',
+            'finding': 'Active armor module already exposes Defense Absolute substat(s); no missing-family conclusion was warranted.',
+            'kb_basis': 'Active armor-module substats include Defense Absolute in the current preset.',
+            'fix_applied': 'None.',
+        })
+
+    return payload
+
+
+def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, formula_ledger, ep_oracle: dict) -> dict:
+    from evaluators.compare_core import (
+        _build_compare_rows_by_preset,
+        build_ep_compare,
+        build_compare_status_summary,
+        _ep_stage_context_for_destination,
+        _compare_state_key_for_destination,
+        _normalize_compare_values,
+        _formula_contract,
+        _build_publishable_statbook,
+    )
+    from evaluators.compare import (
+        _contributor_snapshot,
+        _apply_projected_runtime_compare_assumptions,
+    )
+
+    states = [
+        ('farming__perks_off', 'Farming', 'off', None),
+        ('farming__perks_on', 'Farming', 'on', None),
+        ('tourney__perks_off', 'Tourney', 'off', None),
+        ('tourney__perks_on', 'Tourney', 'on', {'Tourney': 'on'}),
+    ]
+    views = {}
+    best_fit_by_destination = {}
+    for state_key, preset, perk_state, forced_preset_perk_states in states:
+        _default_state, rows_by_preset, _publishable_rows_by_preset, stage_context = _build_compare_rows_by_preset(
+            ids_raw,
+            loadout_config,
+            perk_config,
+            formula_ledger,
+            'max_progression',
+            preset,
+            ep_oracle,
+            perk_state,
+            forced_preset_perk_states,
+        )
+        compare = build_ep_compare(
+            ep_oracle, rows_by_preset, formula_ledger, stage_context,
+            ep_stage_context_for_destination=_ep_stage_context_for_destination,
+            compare_state_key_for_destination=_compare_state_key_for_destination,
+            contributor_snapshot=_contributor_snapshot,
+            apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
+            formula_contract=_formula_contract,
+            normalize_compare_values=_normalize_compare_values,
+        )
+        views[state_key] = {
+            'preset': preset,
+            'perk_state': perk_state,
+            **build_compare_status_summary(compare),
+        }
+        for destination, row in compare.items():
+            rel = row.get('relative_delta_pct')
+            abs_rel = abs(float(rel)) if rel is not None else float('inf')
+            candidate = {
+                'state_key': state_key,
+                'preset': preset,
+                'perk_state': perk_state,
+                'status': row.get('status'),
+                'package_value': row.get('package_value'),
+                'ep_value': row.get('ep_value'),
+                'relative_delta_pct': rel,
+                'abs_relative_delta_pct': None if rel is None else abs_rel,
+            }
+            current = best_fit_by_destination.get(destination)
+            if current is None or abs_rel < (current.get('abs_relative_delta_pct') if current.get('abs_relative_delta_pct') is not None else float('inf')):
+                best_fit_by_destination[destination] = candidate
+    best_fit_state_counts = Counter(v['state_key'] for v in best_fit_by_destination.values())
+    best_fit_status_counts = Counter(v['status'] for v in best_fit_by_destination.values())
+    return {
+        'states': views,
+        'best_fit_by_destination': dict(sorted(best_fit_by_destination.items())),
+        'destination_count': len(best_fit_by_destination),
+        'best_fit_state_counts': dict(sorted(best_fit_state_counts.items())),
+        'best_fit_status_counts': dict(sorted(best_fit_status_counts.items())),
+    }
+
+
+def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mode: str, default_preset: str) -> dict:
+    from qe.contracts import compat_surface_from_legacy_canonical as _state_fn
+    from input.runtime_state import build_runtime_state
+    from qe.stat_input_compiler import compile_stat_inputs
+
+    def _state(s):
+        return _state_fn(s)
+
+    destinations_of_interest = {
+        _state('tower_damage'),
+        _state('tower_hp'),
+        _state('tower_regen'),
+        _state('tower_defense_absolute'),
+        _state('tower_bounce_shot_targets'),
+        _state('wall_hp'),
+        _state('wall_regen'),
+    }
+    audit: dict[str, dict] = {}
+    for preset_name in ("Farming", "Tourney"):
+        account_state = build_runtime_state(
+            ids_raw,
+            default_preset=default_preset,
+            loadout_config=loadout_config,
+            perk_config=perk_config,
+        )
+        stat_inputs = compile_stat_inputs(
+            account_state,
+            preset_name=preset_name,
+            state_mode=state_mode,
+            perks_enabled=True,
+        )
+        for item in stat_inputs:
+            if item.source_family != 'perk':
+                continue
+            destination = f"{item.destination_object_type}::{item.destination_id}"
+            if destination not in destinations_of_interest:
+                continue
+            audit.setdefault(destination, {}).setdefault(preset_name, []).append({
+                'perk_name': item.source_name,
+                'contributor_id': item.contributor_id,
+                'value': item.value,
+                'value_type': item.value_type,
+                'notes': item.notes,
+                'preset_name': item.preset_name,
+            })
+    for destination_payload in audit.values():
+        for rows in destination_payload.values():
+            rows.sort(key=lambda r: (r['perk_name'], r['contributor_id']))
+    return dict(sorted(audit.items()))
