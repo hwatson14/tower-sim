@@ -99,7 +99,7 @@ class QueryResponse:
     family_id: str
     resolved_surface_rows: tuple[ResolvedSurfaceRow, ...]
     contributor_rows: tuple[BaselineContributorRow, ...]
-    dependency_trace: Mapping[str, tuple[str, ...]]
+    dependency_trace: Mapping[str, Mapping[str, Any]]
 
 
 class OverlayApplicator:
@@ -307,6 +307,38 @@ class StatQueryKernel:
                     return candidate
             return None
 
+        def _publish_surface_id(surface_id: str) -> str:
+            return publish_lookup.get(surface_id, to_v2_surface_id(surface_id))
+
+        def _surface_step(
+            surface_id: str,
+            *,
+            step_index: int,
+            step_kind: str,
+            status: str,
+            note: str = '',
+            **details: Any,
+        ) -> dict[str, Any]:
+            payload: dict[str, Any] = {
+                'step_index': int(step_index),
+                'step_kind': str(step_kind),
+                'node_id': _publish_surface_id(surface_id),
+                'status': str(status),
+            }
+            if note:
+                payload['note'] = str(note)
+            for key, value in details.items():
+                if value is None:
+                    continue
+                if isinstance(value, (list, tuple, set)):
+                    payload[key] = [
+                        _publish_surface_id(item) if 'surface' in key or 'node' in key else item
+                        for item in value
+                    ]
+                else:
+                    payload[key] = _publish_surface_id(value) if ('surface' in key or 'node' in key) and isinstance(value, str) else value
+            return payload
+
         available_requested = tuple(_resolve_available_surface_id(surface_id) for surface_id in requested)
         missing = sorted(surface_id for surface_id, available_surface_id in zip(requested, available_requested) if available_surface_id is None)
         if missing:
@@ -331,42 +363,136 @@ class StatQueryKernel:
             if available_surface_id is None or available_surface_id in resolution_surface_ids:
                 continue
             resolution_surface_ids.append(available_surface_id)
+
+        trace_steps_by_surface: dict[str, list[dict[str, Any]]] = {}
+        resolution_attempts: dict[str, int] = {}
+        resolution_order_index_by_surface: dict[str, int] = {}
+        if trace_mode == 'full_trace':
+            for available_surface_id in dependency_seeds:
+                published_surface_id = _publish_surface_id(available_surface_id)
+                direct_upstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.upstream.get(available_surface_id, []))
+                direct_downstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.downstream.get(available_surface_id, []))
+                trace_steps_by_surface[published_surface_id] = [
+                    _surface_step(
+                        available_surface_id,
+                        step_index=1,
+                        step_kind='surface_requested',
+                        status='ready',
+                        note='Surface selected for QE resolution trace.',
+                        requested_surface_ids=published_requested,
+                    ),
+                    _surface_step(
+                        available_surface_id,
+                        step_index=2,
+                        step_kind='dependency_lineage_loaded',
+                        status='ready',
+                        note='Declared dependency lineage loaded from registry.',
+                        direct_upstream_node_ids=direct_upstream,
+                        direct_downstream_node_ids=direct_downstream,
+                    ),
+                ]
+
         resolved_rows_by_surface: dict[str, object] = {}
         resolved_by_available_surface: dict[str, ResolvedSurfaceRow] = {}
         pending = {surface_id for surface_id in resolution_surface_ids if surface_id in available}
         ordered_resolution = [surface_id for surface_id in resolution_surface_ids if surface_id in pending]
+        resolution_order_counter = 0
         while pending:
             progress = False
             for available_surface_id in ordered_resolution:
                 if available_surface_id not in pending:
                     continue
+                resolution_attempts[available_surface_id] = resolution_attempts.get(available_surface_id, 0) + 1
+                if trace_mode == 'full_trace' and available_surface_id in publish_lookup:
+                    published_surface_id = _publish_surface_id(available_surface_id)
+                    upstream_nodes = self.registry.upstream.get(available_surface_id, [])
+                    resolved_upstream = [node_id for node_id in upstream_nodes if node_id in resolved_rows_by_surface]
+                    unresolved_upstream = [node_id for node_id in upstream_nodes if node_id not in resolved_rows_by_surface]
+                    trace_steps_by_surface.setdefault(published_surface_id, []).append(
+                        _surface_step(
+                            available_surface_id,
+                            step_index=len(trace_steps_by_surface.get(published_surface_id, [])) + 1,
+                            step_kind='resolve_attempt',
+                            status='running',
+                            note='QE attempting to resolve surface against current upstream availability.',
+                            attempt_index=resolution_attempts[available_surface_id],
+                            resolved_upstream_node_ids=resolved_upstream,
+                            unresolved_upstream_node_ids=unresolved_upstream,
+                        )
+                    )
+                surface_trace_steps = trace_steps_by_surface.get(_publish_surface_id(available_surface_id)) if trace_mode == 'full_trace' else None
                 resolved = self._resolve_surface(
                     available_surface_id,
                     available[available_surface_id],
                     resolved_rows=resolved_rows_by_surface,
+                    trace_steps=surface_trace_steps,
                 )
                 if resolved.status == 'mapped_not_resolved':
+                    if trace_mode == 'full_trace' and available_surface_id in publish_lookup:
+                        trace_steps_by_surface[_publish_surface_id(available_surface_id)].append(
+                            _surface_step(
+                                available_surface_id,
+                                step_index=len(trace_steps_by_surface[_publish_surface_id(available_surface_id)]) + 1,
+                                step_kind='resolve_deferred',
+                                status='waiting',
+                                note='Resolution deferred because required upstream data is not yet resolved.',
+                            )
+                        )
                     continue
                 resolved_by_available_surface[available_surface_id] = resolved
                 resolved_rows_by_surface[available_surface_id] = SimpleNamespace(
                     final_value=resolved.final_value,
                     status=resolved.status,
                 )
+                resolution_order_counter += 1
+                resolution_order_index_by_surface[available_surface_id] = resolution_order_counter
+                if trace_mode == 'full_trace' and available_surface_id in publish_lookup:
+                    trace_steps_by_surface[_publish_surface_id(available_surface_id)].append(
+                        _surface_step(
+                            available_surface_id,
+                            step_index=len(trace_steps_by_surface[_publish_surface_id(available_surface_id)]) + 1,
+                            step_kind='surface_resolved',
+                            status=resolved.status,
+                            note='QE published a final row for this surface.',
+                            resolution_order_index=resolution_order_counter,
+                            value_type=resolved.value_type,
+                            final_value=resolved.final_value,
+                        )
+                    )
                 pending.remove(available_surface_id)
                 progress = True
             if progress:
                 continue
             for available_surface_id in list(pending):
+                resolution_attempts[available_surface_id] = resolution_attempts.get(available_surface_id, 0) + 1
+                surface_trace_steps = trace_steps_by_surface.get(_publish_surface_id(available_surface_id)) if trace_mode == 'full_trace' else None
                 resolved = self._resolve_surface(
                     available_surface_id,
                     available[available_surface_id],
                     resolved_rows=resolved_rows_by_surface,
+                    trace_steps=surface_trace_steps,
                 )
                 resolved_by_available_surface[available_surface_id] = resolved
                 resolved_rows_by_surface[available_surface_id] = SimpleNamespace(
                     final_value=resolved.final_value,
                     status=resolved.status,
                 )
+                resolution_order_counter += 1
+                resolution_order_index_by_surface[available_surface_id] = resolution_order_counter
+                if trace_mode == 'full_trace' and available_surface_id in publish_lookup:
+                    trace_steps_by_surface.setdefault(_publish_surface_id(available_surface_id), []).append(
+                        _surface_step(
+                            available_surface_id,
+                            step_index=len(trace_steps_by_surface.get(_publish_surface_id(available_surface_id), [])) + 1,
+                            step_kind='forced_resolution_finalize',
+                            status=resolved.status,
+                            note='QE finalized the remaining pending surface after dependency progress stalled.',
+                            attempt_index=resolution_attempts[available_surface_id],
+                            resolution_order_index=resolution_order_counter,
+                            value_type=resolved.value_type,
+                            final_value=resolved.final_value,
+                        )
+                    )
                 pending.remove(available_surface_id)
         resolved_rows = tuple(
             replace(
@@ -382,11 +508,31 @@ class StatQueryKernel:
             if available_surface_id is not None
             for row in available[available_surface_id]
         )
-        dependency_closure = self._dependency_closure(dependency_seeds, trace_mode)
-        dependency_trace = {
-            'requested_surface_ids': published_requested,
-            'dependency_closure': tuple(publish_lookup.get(surface_id, surface_id) for surface_id in dependency_closure),
-        }
+        dependency_trace: dict[str, dict[str, Any]] = {}
+        for available_surface_id in dependency_seeds:
+            published_surface_id = _publish_surface_id(available_surface_id)
+            direct_upstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.upstream.get(available_surface_id, []))
+            direct_downstream = tuple(_publish_surface_id(node_id) for node_id in self.registry.downstream.get(available_surface_id, []))
+            upstream_closure = tuple(_publish_surface_id(node_id) for node_id in sorted(self.registry.closure_upstream((available_surface_id,)) - {available_surface_id}))
+            downstream_closure = tuple(_publish_surface_id(node_id) for node_id in sorted(self.registry.closure_downstream((available_surface_id,)) - {available_surface_id}))
+            resolved_upstream = tuple(node_id for node_id in direct_upstream if node_id in {_publish_surface_id(key) for key in resolved_rows_by_surface})
+            unresolved_upstream = tuple(node_id for node_id in direct_upstream if node_id not in resolved_upstream)
+            trace_steps = trace_steps_by_surface.get(published_surface_id, ()) if trace_mode == 'full_trace' else ()
+            dependency_trace[published_surface_id] = {
+                'trace_contract_id': 'qe_dependency_trace_v1',
+                'surface_id': published_surface_id,
+                'trace_mode': trace_mode,
+                'requested_surface_ids': list(published_requested),
+                'resolution_order_index': resolution_order_index_by_surface.get(available_surface_id),
+                'direct_upstream_node_ids': list(direct_upstream),
+                'direct_downstream_node_ids': list(direct_downstream),
+                'upstream_closure_node_ids': list(upstream_closure),
+                'downstream_closure_node_ids': list(downstream_closure),
+                'resolved_upstream_node_ids': list(resolved_upstream),
+                'unresolved_upstream_node_ids': list(unresolved_upstream),
+                'has_runtime_trace_steps': bool(trace_steps),
+                'trace_steps': list(trace_steps),
+            }
         return QueryResponse(
             family_id=overlay_applied_contributor_map.family_id,
             resolved_surface_rows=resolved_rows,
@@ -400,6 +546,7 @@ class StatQueryKernel:
         rows: Sequence[BaselineContributorRow],
         *,
         resolved_rows: Mapping[str, object] | None = None,
+        trace_steps: list[dict[str, Any]] | None = None,
     ) -> ResolvedSurfaceRow:
         legacy_surface_id = to_legacy_surface_id(surface_id)
         destination_object_type, separator, destination_id = legacy_surface_id.partition('::')
@@ -435,7 +582,20 @@ class StatQueryKernel:
                 )
                 for row in rows
             ]
-            final_value, status, _notes, _schema, meta = resolve_bucket_value(
+            if trace_steps is not None:
+                trace_steps.append({
+                    'step_index': len(trace_steps) + 1,
+                    'step_kind': 'resolution_backend_selected',
+                    'node_id': to_v2_surface_id(surface_id),
+                    'status': 'running',
+                    'note': 'QE selected the native bucket resolver path for this surface.',
+                    'backend': 'qe_native_bucket',
+                    'destination_object_type': destination_object_type,
+                    'destination_id': destination_id,
+                    'contributor_count': len(stat_inputs),
+                    'active_contributor_count': sum(1 for row in stat_inputs if row.active),
+                })
+            final_value, status, notes, _schema, meta = resolve_bucket_value(
                 destination_object_type,
                 destination_id,
                 stat_inputs,
@@ -444,6 +604,18 @@ class StatQueryKernel:
                     for key, value in (resolved_rows or {}).items()
                 },
             )
+            if trace_steps is not None:
+                trace_steps.append({
+                    'step_index': len(trace_steps) + 1,
+                    'step_kind': 'resolution_backend_result',
+                    'node_id': to_v2_surface_id(surface_id),
+                    'status': status,
+                    'note': notes,
+                    'backend': 'qe_native_bucket',
+                    'resolver_id': str(meta.get('resolver') or ''),
+                    'value_type': str(meta.get('unit') or next(iter({row.value_type for row in rows}))),
+                    'final_value': final_value,
+                })
             return ResolvedSurfaceRow(
                 surface_id=surface_id,
                 final_value=final_value,
@@ -455,7 +627,29 @@ class StatQueryKernel:
         if len(value_types) != 1:
             raise ValueError(f'Surface {surface_id!r} mixes multiple contributor value types: {sorted(value_types)}.')
         active_rows = [row for row in rows if row.active]
+        if trace_steps is not None:
+            trace_steps.append({
+                'step_index': len(trace_steps) + 1,
+                'step_kind': 'resolution_backend_selected',
+                'node_id': to_v2_surface_id(surface_id),
+                'status': 'running',
+                'note': 'QE selected direct composition for this surface.',
+                'backend': 'kernel_direct_composition',
+                'contributor_count': len(rows),
+                'active_contributor_count': len(active_rows),
+                'composition_stages': sorted({row.composition_stage for row in rows}),
+            })
         if not active_rows:
+            if trace_steps is not None:
+                trace_steps.append({
+                    'step_index': len(trace_steps) + 1,
+                    'step_kind': 'resolution_backend_result',
+                    'node_id': to_v2_surface_id(surface_id),
+                    'status': 'gated_off',
+                    'note': 'All contributors are inactive, so QE gated this surface off.',
+                    'backend': 'kernel_direct_composition',
+                    'value_type': next(iter(value_types)),
+                })
             return ResolvedSurfaceRow(surface_id=surface_id, final_value=None, value_type=next(iter(value_types)), status='gated_off')
 
         supported_stages = _MUTATING_STAGES | {'multiplicative', 'gate_enable_disable'}
@@ -468,6 +662,17 @@ class StatQueryKernel:
         gate_rows = [row for row in active_rows if row.composition_stage == 'gate_enable_disable']
 
         if gate_rows and not additive_rows and not multiplicative_rows:
+            if trace_steps is not None:
+                trace_steps.append({
+                    'step_index': len(trace_steps) + 1,
+                    'step_kind': 'resolution_backend_result',
+                    'node_id': to_v2_surface_id(surface_id),
+                    'status': 'resolved',
+                    'note': 'Gate-only surface resolved true from active gate contributors.',
+                    'backend': 'kernel_direct_composition',
+                    'value_type': next(iter(value_types)),
+                    'final_value': True,
+                })
             return ResolvedSurfaceRow(surface_id=surface_id, final_value=True, value_type=next(iter(value_types)), status='resolved')
 
         additive_total = sum(_coerce_numeric(row.value) for row in additive_rows)
@@ -481,6 +686,17 @@ class StatQueryKernel:
         final_value = _normalize_number(final_value)
         if surface_id in _QE_PCT_CAPS and isinstance(final_value, (int, float)):
             final_value = max(0.0, min(_QE_PCT_CAPS[surface_id], float(final_value)))
+        if trace_steps is not None:
+            trace_steps.append({
+                'step_index': len(trace_steps) + 1,
+                'step_kind': 'resolution_backend_result',
+                'node_id': to_v2_surface_id(surface_id),
+                'status': 'resolved',
+                'note': 'Direct kernel composition completed for this surface.',
+                'backend': 'kernel_direct_composition',
+                'value_type': next(iter(value_types)),
+                'final_value': final_value,
+            })
         return ResolvedSurfaceRow(surface_id=surface_id, final_value=final_value, value_type=next(iter(value_types)), status='resolved')
 
     def _dependency_closure(self, requested: Sequence[str], trace_mode: str) -> tuple[str, ...]:

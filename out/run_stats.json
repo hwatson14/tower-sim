@@ -35,7 +35,7 @@
             },
             "generator": {
               "primary": "Singularity Harness",
-              "assist": "Pulsar Harvester"
+              "assist": "Black Hole Digestor"
             },
             "core": {
               "primary": "Primordial Collapse",
@@ -114,7 +114,7 @@
             },
             "generator": {
               "primary": "Singularity Harness",
-              "assist": "Pulsar Harvester"
+              "assist": "Black Hole Digestor"
             },
             "core": {
               "primary": "Primordial Collapse",
@@ -263,14 +263,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 35.3916,
-              "display_value": "35.392",
+              "final_value": 35.1596,
+              "display_value": "35.16",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 79.04,
-              "display_value": "79.04",
+              "final_value": 78.72000000000001,
+              "display_value": "78.72",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -279,14 +279,14 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 31.146,
-              "display_value": "31.146",
+              "final_value": 30.914,
+              "display_value": "30.914",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 73.28,
-              "display_value": "73.28",
+              "final_value": 72.96000000000001,
+              "display_value": "72.96",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -327,14 +327,14 @@
             "stat_name": "state::tower.free_utility_upgrade_chance_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 75.7,
-              "display_value": "75.7",
+              "final_value": 74.9,
+              "display_value": "74.9",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 75.7,
-              "display_value": "75.7",
+              "final_value": 74.9,
+              "display_value": "74.9",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -343,14 +343,14 @@
             "stat_name": "state::tower.hp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1094512346934.979,
-              "display_value": "1.09T",
+              "final_value": 1116758532848.2913,
+              "display_value": "1.12T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 76115727956718.33,
-              "display_value": "76.1T",
+              "final_value": 77662795598115.03,
+              "display_value": "77.7T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -391,14 +391,14 @@
             "stat_name": "state::tower.package_chance_pct",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 78.5,
-              "display_value": "78.5",
+              "final_value": 79.1,
+              "display_value": "79.1",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 78.5,
-              "display_value": "78.5",
+              "final_value": 79.1,
+              "display_value": "79.1",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1207,7 +1207,7 @@
     "session": {
       "kind": "run_stats_session",
       "account_state_cache_hit": true,
-      "account_state_build_ms": 1.615
+      "account_state_build_ms": 19.212
     },
     "presets": {
       "Farming": {
@@ -1227,12 +1227,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 83,
           "timings_ms": {
-            "resolve_progression_ms": 43.702,
-            "resolve_timing_core_ms": 30.761,
-            "resolve_timing_wave_ms": 28.108,
+            "resolve_progression_ms": 99.449,
+            "resolve_timing_core_ms": 34.109,
+            "resolve_timing_wave_ms": 29.707,
             "publication_ms": 0.0,
-            "formatting_ms": 1.002,
-            "total_state_ms": 104.117
+            "formatting_ms": 1.308,
+            "total_state_ms": 165.633
           }
         },
         "max_progression": {
@@ -1251,12 +1251,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 84,
           "timings_ms": {
-            "resolve_progression_ms": 53.602,
-            "resolve_timing_core_ms": 50.117,
-            "resolve_timing_wave_ms": 37.192,
+            "resolve_progression_ms": 83.371,
+            "resolve_timing_core_ms": 65.93,
+            "resolve_timing_wave_ms": 52.006,
             "publication_ms": 0.0,
-            "formatting_ms": 0.29,
-            "total_state_ms": 141.29
+            "formatting_ms": 0.508,
+            "total_state_ms": 201.924
           }
         },
         "dual_state_stats": {
@@ -1281,12 +1281,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 73,
           "timings_ms": {
-            "resolve_progression_ms": 35.302,
-            "resolve_timing_core_ms": 29.765,
-            "resolve_timing_wave_ms": 33.046,
+            "resolve_progression_ms": 36.54,
+            "resolve_timing_core_ms": 32.177,
+            "resolve_timing_wave_ms": 29.445,
             "publication_ms": 0.0,
-            "formatting_ms": 0.498,
-            "total_state_ms": 98.659
+            "formatting_ms": 0.463,
+            "total_state_ms": 98.667
           }
         },
         "max_progression": {
@@ -1305,12 +1305,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 74,
           "timings_ms": {
-            "resolve_progression_ms": 48.837,
-            "resolve_timing_core_ms": 59.139,
-            "resolve_timing_wave_ms": 42.745,
+            "resolve_progression_ms": 57.962,
+            "resolve_timing_core_ms": 42.772,
+            "resolve_timing_wave_ms": 40.623,
             "publication_ms": 0.0,
-            "formatting_ms": 0.494,
-            "total_state_ms": 151.269
+            "formatting_ms": 0.508,
+            "total_state_ms": 141.923
           }
         },
         "dual_state_stats": {
@@ -1521,38 +1521,38 @@
       "presets": {
         "Farming": {
           "start_of_run": {
-            "resolve_progression_ms": 43.702,
-            "resolve_timing_core_ms": 30.761,
-            "resolve_timing_wave_ms": 28.108,
+            "resolve_progression_ms": 99.449,
+            "resolve_timing_core_ms": 34.109,
+            "resolve_timing_wave_ms": 29.707,
             "publication_ms": 0.0,
-            "formatting_ms": 1.002,
-            "total_state_ms": 104.117
+            "formatting_ms": 1.308,
+            "total_state_ms": 165.633
           },
           "max_progression": {
-            "resolve_progression_ms": 53.602,
-            "resolve_timing_core_ms": 50.117,
-            "resolve_timing_wave_ms": 37.192,
+            "resolve_progression_ms": 83.371,
+            "resolve_timing_core_ms": 65.93,
+            "resolve_timing_wave_ms": 52.006,
             "publication_ms": 0.0,
-            "formatting_ms": 0.29,
-            "total_state_ms": 141.29
+            "formatting_ms": 0.508,
+            "total_state_ms": 201.924
           }
         },
         "Tourney": {
           "start_of_run": {
-            "resolve_progression_ms": 35.302,
-            "resolve_timing_core_ms": 29.765,
-            "resolve_timing_wave_ms": 33.046,
+            "resolve_progression_ms": 36.54,
+            "resolve_timing_core_ms": 32.177,
+            "resolve_timing_wave_ms": 29.445,
             "publication_ms": 0.0,
-            "formatting_ms": 0.498,
-            "total_state_ms": 98.659
+            "formatting_ms": 0.463,
+            "total_state_ms": 98.667
           },
           "max_progression": {
-            "resolve_progression_ms": 48.837,
-            "resolve_timing_core_ms": 59.139,
-            "resolve_timing_wave_ms": 42.745,
+            "resolve_progression_ms": 57.962,
+            "resolve_timing_core_ms": 42.772,
+            "resolve_timing_wave_ms": 40.623,
             "publication_ms": 0.0,
-            "formatting_ms": 0.494,
-            "total_state_ms": 151.269
+            "formatting_ms": 0.508,
+            "total_state_ms": 141.923
           }
         }
       }

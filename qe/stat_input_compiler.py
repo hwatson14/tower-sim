@@ -8,6 +8,13 @@ from typing import Dict, List, Optional, Tuple
 
 import yaml
 
+from qe.query_module_policy import (
+    load_assist_efficiency_lookup,
+    load_module_substat_values,
+    load_module_unique_effect_values,
+    module_main_effect_multiplier,
+    normalize_module_unique_rarity,
+)
 from qe.query_perk_compiler import (
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
     TRADE_OFF_LAB_SCALED_BENEFIT_EFFECT_INDEXES,
@@ -86,9 +93,6 @@ ASSIST_MODULE_SUBSTAT_VALUES_PATH = KB / 'modules' / 'tables' / 'assist-module-s
 MODULE_COIN_COST_VALUES_PATH = KB / 'modules' / 'tables' / 'module-coin-cost-wiki-truth.csv'
 MODULE_SHARD_COST_VALUES_PATH = KB / 'modules' / 'tables' / 'module-shard-cost-wiki-truth.csv'
 STARTING_CASH_VALUES_PATH = KB / 'labs' / 'tables' / 'starting-cash-wiki-truth.csv'
-MODULE_UNIQUE_EFFECTS_TABLE_PATH = KB / 'modules' / 'tables' / 'module-unique-effects.csv'
-MODULE_MAIN_EFFECT_BASES_PATH = KB / 'modules' / 'tables' / 'module-main-effect-bases.csv'
-MODULE_MAIN_EFFECT_STEPS_PATH = KB / 'modules' / 'sources' / 'raw' / 'effective-paths' / 'sheet-exports' / 'module-base-stat-values.csv'
 BOT_TRACK_REGISTRY_PATH = KB / 'bots' / 'tables' / 'bot-track-registry.csv'
 BOT_TRACK_VALUES_PATH = KB / 'bots' / 'tables' / 'bot-upgrade-tracks-long.csv'
 BOT_LABS_SUMMARY_PATH = KB / 'bots' / 'tables' / 'bot-labs-summary.yaml'
@@ -440,162 +444,6 @@ def _load_guardian_scout_values() -> Dict[Tuple[str, int], float]:
                 out[(key, level)] = val
     return out
 
-
-
-@lru_cache(maxsize=1)
-def _load_module_substat_values() -> Dict[Tuple[str, str, str], Tuple[float, str]]:
-    out: Dict[Tuple[str, str, str], Tuple[float, str]] = {}
-    path = KB / 'modules' / 'tables' / 'module-substats.csv'
-    with path.open(newline='', encoding='utf-8') as f:
-        for row in csv.DictReader(f):
-            slot = str(row.get('slot', '')).strip().lower()
-            substat = str(row.get('substat', '')).strip()
-            rarity = str(row.get('rarity', '')).strip()
-            try:
-                value = float(row.get('value'))
-            except (TypeError, ValueError):
-                continue
-            unit = str(row.get('unit', '')).strip().lower()
-            out[(slot, substat, rarity)] = (value, unit)
-    return out
-
-
-
-
-def _normalize_module_unique_rarity(rarity: str) -> str:
-    r = (rarity or '').strip().lower()
-    if r.startswith('epic'):
-        return 'epic'
-    if r.startswith('legendary'):
-        return 'legendary'
-    if r.startswith('mythic'):
-        return 'mythic'
-    if r.startswith('ancestral'):
-        return 'ancestral'
-    return r
-
-
-
-
-@lru_cache(maxsize=1)
-def _load_module_main_effect_bases() -> Dict[str, Dict[str, float]]:
-    out: Dict[str, Dict[str, float]] = {}
-    if not MODULE_MAIN_EFFECT_BASES_PATH.exists():
-        return out
-    with MODULE_MAIN_EFFECT_BASES_PATH.open(newline='', encoding='utf-8') as f:
-        for row in csv.DictReader(f):
-            rarity = str(row.get('rarity', '')).strip()
-            if not rarity:
-                continue
-            vals = {}
-            for slot in ('cannon', 'armor', 'generator', 'core'):
-                try:
-                    vals[slot] = float(row.get(f'{slot}_base'))
-                except (TypeError, ValueError):
-                    continue
-            out[rarity] = vals
-    return out
-
-
-@lru_cache(maxsize=1)
-def _load_module_main_effect_steps() -> Dict[str, list[tuple[int, float]]]:
-    out: Dict[str, list[tuple[int, float]]] = {'cannon': [], 'armor': [], 'generator': [], 'core': []}
-    if not MODULE_MAIN_EFFECT_STEPS_PATH.exists():
-        return out
-    with MODULE_MAIN_EFFECT_STEPS_PATH.open(newline='') as f:
-        rows = list(csv.reader(f))
-    capture = False
-    for row in rows:
-        if not row:
-            continue
-        key = str(row[0]).strip()
-        if key == 'Increase / lvl':
-            capture = True
-            continue
-        if not capture:
-            continue
-        if key == '300.0':
-            break
-        try:
-            level = int(float(key))
-        except (TypeError, ValueError):
-            continue
-        for idx, slot in enumerate(('cannon', 'armor', 'generator', 'core'), start=1):
-            try:
-                inc = float(row[idx])
-            except (TypeError, ValueError):
-                continue
-            out[slot].append((level, inc))
-    return out
-
-
-def _normalize_module_base_rarity(rarity: str | None) -> tuple[str | None, int]:
-    value = str(rarity or '').strip()
-    if not value:
-        return None, 0
-    match = re.match(r'^(Ancestral)(?:\s+(\d)\*)?$', value)
-    if match:
-        return 'Ancestral', int(match.group(2) or 0)
-    return value, 0
-
-
-def _module_main_effect_multiplier(slot_type: str, rarity: str | None, level: int | None) -> float | None:
-    base_rarity, stars = _normalize_module_base_rarity(rarity)
-    if not base_rarity or level is None:
-        return None
-    bases = _load_module_main_effect_bases().get(base_rarity)
-    if not bases:
-        return None
-    try:
-        base = float(bases[slot_type])
-    except Exception:
-        return None
-    step_rows = _load_module_main_effect_steps().get(slot_type, [])
-    total = base
-    next_levels = [lvl for lvl, _ in step_rows[1:]] + [300]
-    for (start, inc), nxt in zip(step_rows, next_levels):
-        if level <= start:
-            continue
-        total += (min(level, nxt) - start) * inc
-    star_factor = 1.0 + 0.04 * stars
-    return round(total * star_factor + 1.0, 3)
-
-@lru_cache(maxsize=1)
-def _load_module_unique_effect_values() -> Dict[Tuple[str, str], Tuple[float, str]]:
-    out: Dict[Tuple[str, str], Tuple[float, str]] = {}
-    if not MODULE_UNIQUE_EFFECTS_TABLE_PATH.exists():
-        return out
-    rarity_columns = ('epic', 'legendary', 'mythic', 'ancestral')
-    with MODULE_UNIQUE_EFFECTS_TABLE_PATH.open(newline='', encoding='utf-8') as f:
-        for row in csv.DictReader(f):
-            module_slug = slug_text(str(row.get('module', '')).strip())
-            measure = str(row.get('measure', '')).strip().lower()
-            if not module_slug:
-                continue
-            for rarity in rarity_columns:
-                try:
-                    value = float(row.get(rarity))
-                except (TypeError, ValueError):
-                    continue
-                out[(module_slug, rarity)] = (value, measure)
-    return out
-
-
-@lru_cache(maxsize=1)
-def _load_assist_efficiency_lookup() -> Dict[int, float]:
-    out: Dict[int, float] = {}
-    path = KB / 'modules' / 'tables' / 'assist-stone-levels.csv'
-    if not path.exists():
-        return out
-    with path.open(newline='', encoding='utf-8') as f:
-        for row in csv.DictReader(f):
-            try:
-                level = int(row.get('stone_level'))
-                frac = float(row.get('assist_efficiency_frac'))
-            except (TypeError, ValueError):
-                continue
-            out[level] = frac
-    return out
 
 
 def _load_level_value_table(path: Path, value_column: str) -> Dict[int, float]:
@@ -1047,9 +895,9 @@ def compile_stat_inputs(
     module_substat_units = _load_module_substat_units()
     perk_entities = _load_perk_entities()
     perk_effects = _load_perk_effects()
-    module_substat_values = _load_module_substat_values()
-    module_unique_effect_values = _load_module_unique_effect_values()
-    assist_efficiency_lookup = _load_assist_efficiency_lookup()
+    module_substat_values = load_module_substat_values()
+    module_unique_effect_values = load_module_unique_effect_values()
+    assist_efficiency_lookup = load_assist_efficiency_lookup()
     card_mastery_values = _load_card_mastery_values()
     lab_application_registry = load_lab_application_registry()
     uw_lab_wiki_values = _load_uw_lab_wiki_values()
@@ -1700,14 +1548,14 @@ def compile_stat_inputs(
                 except (ValueError, TypeError):
                     main_value = None
                 if role == 'assist' and assist_level is not None and assist_multiplier_eff is not None:
-                    full_assist_main = _module_main_effect_multiplier(slot_type, mod.rarity, assist_level)
+                    full_assist_main = module_main_effect_multiplier(slot_type, mod.rarity, assist_level)
                     if full_assist_main is not None:
                         main_value = 1.0 + (full_assist_main - 1.0) * assist_multiplier_eff
                     elif main_value is not None:
                         main_value = 1.0 + (main_value - 1.0) * assist_multiplier_eff
-                unique_rarity = _normalize_module_unique_rarity(str(mod.rarity))
+                unique_rarity = normalize_module_unique_rarity(str(mod.rarity))
                 if role == 'assist' and slot_state and getattr(slot_state, 'rarity_cap', None):
-                    unique_rarity = _normalize_module_unique_rarity(str(slot_state.rarity_cap))
+                    unique_rarity = normalize_module_unique_rarity(str(slot_state.rarity_cap))
                 unique_lookup = module_unique_effect_values.get((slug_text(mod_name), unique_rarity))
                 unique_value = unique_lookup[0] if unique_lookup is not None else main_value
                 unique_measure = unique_lookup[1] if unique_lookup is not None else ''

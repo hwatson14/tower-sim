@@ -1,4 +1,4 @@
-contract_id: stat_query_api_contract_v1
+contract_id: stat_query_api_contract_v2
 api_methods:
   materialise_family_baseline:
     inputs:
@@ -35,9 +35,37 @@ resolved_surface_row_schema:
     - value_type
     - status
 dependency_trace_schema:
-  required_fields:
+  per_surface_required_fields:
+    - trace_contract_id
+    - surface_id
+    - trace_mode
     - requested_surface_ids
-    - dependency_closure
+    - direct_upstream_node_ids
+    - direct_downstream_node_ids
+    - upstream_closure_node_ids
+    - downstream_closure_node_ids
+    - resolved_upstream_node_ids
+    - unresolved_upstream_node_ids
+    - has_runtime_trace_steps
+    - trace_steps
+  runtime_trace_step_required_fields:
+    - step_index
+    - step_kind
+    - node_id
+    - status
+  optional_fields:
+    - resolution_order_index
+    - note
+    - backend
+    - destination_object_type
+    - destination_id
+    - contributor_count
+    - active_contributor_count
+    - composition_stages
+    - resolver_id
+    - value_type
+    - final_value
+    - attempt_index
 error_model:
   fail_closed_conditions:
     - family/surface mismatch
@@ -45,3 +73,4 @@ error_model:
     - unresolved required dependency in a supposedly covered family
 rules:
   - important phase-1 surfaces must support contributor_rows and at least contributors trace mode
+  - full_trace must emit per-surface lineage metadata and ordered runtime trace_steps for each requested surface
