@@ -66,6 +66,14 @@ _IMPORT_UPWARD_LAYER_FROM_INPUT = re.compile(
     r"^\s*(?:from|import)\s+(?:simulators|evaluators|advisors|app)\b",
     re.MULTILINE,
 )
+_IMPORT_UPWARD_LAYER_FROM_QE = re.compile(
+    r"^\s*(?:from|import)\s+(?:simulators|evaluators|advisors|app)\b",
+    re.MULTILINE,
+)
+_IMPORT_UPWARD_LAYER_FROM_SIMULATORS = re.compile(
+    r"^\s*(?:from|import)\s+(?:evaluators|advisors|app)\b",
+    re.MULTILINE,
+)
 _IMPORT_FORBIDDEN_INPUT_FROM_QE = re.compile(
     r"^\s*(?:from|import)\s+input\.(?:runtime_state|loader|state_builder)\b",
     re.MULTILINE,
@@ -185,6 +193,24 @@ def _py_sources(directory: Path) -> list[Path]:
 
 def _violation_lines(src: str, pattern: re.Pattern) -> list[str]:
     return [line.strip() for line in src.splitlines() if pattern.search(line)]
+
+
+def _violation_line_details(src: str, pattern: re.Pattern) -> list[str]:
+    return [
+        f"L{lineno}: {line.strip()}"
+        for lineno, line in enumerate(src.splitlines(), start=1)
+        if pattern.search(line)
+    ]
+
+
+def _boundary_violation_details(directory: Path, pattern: re.Pattern) -> list[str]:
+    details: list[str] = []
+    for py in _py_sources(directory):
+        src = py.read_text(encoding="utf-8")
+        violating_lines = _violation_line_details(src, pattern)
+        if violating_lines:
+            details.append(f"{py.relative_to(ROOT)} -> {violating_lines}")
+    return details
 
 
 # ---------------------------------------------------------------------------
@@ -423,6 +449,24 @@ def test_input_files_do_not_import_upward_layers():
         src = py.read_text(encoding="utf-8")
         violations = _violation_lines(src, _IMPORT_UPWARD_LAYER_FROM_INPUT)
         assert not violations, f"input/{py.name} imports an upward layer: {violations}"
+
+
+def test_qe_files_do_not_import_upward_layers():
+    """No file under qe/ may import simulators, evaluators, advisors, or app."""
+    violations = _boundary_violation_details(QE_DIR, _IMPORT_UPWARD_LAYER_FROM_QE)
+    assert not violations, (
+        "Upward-layer imports detected in qe/*.py (forbidden: simulators/evaluators/advisors/app): "
+        f"{violations}"
+    )
+
+
+def test_simulators_files_do_not_import_upward_layers():
+    """No file under simulators/ may import evaluators, advisors, or app."""
+    violations = _boundary_violation_details(SIMULATORS_DIR, _IMPORT_UPWARD_LAYER_FROM_SIMULATORS)
+    assert not violations, (
+        "Upward-layer imports detected in simulators/*.py (forbidden: evaluators/advisors/app): "
+        f"{violations}"
+    )
 
 
 def test_qe_files_do_not_import_forbidden_input_modules():
