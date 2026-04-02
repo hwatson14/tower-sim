@@ -98,6 +98,118 @@ def _display_label(surface_id: str) -> str:
     return surface_id.split('::', 1)[-1]
 
 
+_WORKSHOP_OFFENSE_SURFACES = frozenset(
+    {
+        'state::tower.attack_speed',
+        'state::tower.crit_chance_pct',
+        'state::tower.crit_multiplier',
+        'state::tower.damage',
+        'state::tower.damage_per_meter_multiplier',
+        'state::tower.multishot_chance_pct',
+        'state::tower.multishot_targets',
+        'state::tower.range_m',
+        'state::tower.rapid_fire_chance_pct',
+        'state::tower.rapid_fire_duration_seconds',
+        'state::tower.bounce_shot_chance_pct',
+        'state::tower.bounce_shot_range_m',
+        'state::tower.bounce_shot_targets',
+        'state::tower.supercrit_chance_pct',
+        'state::tower.supercrit_multiplier',
+        'state::tower.rend_armor_chance_pct',
+        'state::tower.rend_armor_multiplier',
+        'state::tower.ultimate_damage_multiplier',
+    }
+)
+_WORKSHOP_DEFENSE_SURFACES = frozenset(
+    {
+        'state::tower.hp',
+        'state::tower.regen',
+        'state::tower.defense_pct',
+        'state::tower.defense_absolute',
+        'state::tower.thorns_damage_pct',
+        'state::tower.lifesteal_pct',
+        'state::tower.knockback_chance_pct',
+        'state::tower.knockback_force',
+        'state::tower.orb_count',
+        'state::tower.orb_speed_rpm',
+        'state::tower.orb_size_multiplier',
+        'state::tower.shockwave_interval_seconds',
+        'state::tower.shockwave_size_m',
+        'state::tower.death_defy_chance_pct',
+        'state::tower.land_mine_chance_pct',
+        'state::tower.land_mine_damage',
+        'state::tower.land_mine_radius_m',
+    }
+)
+_WORKSHOP_UTILITY_SURFACES = frozenset(
+    {
+        'state::tower.package_chance_pct',
+        'state::tower.max_recovery_multiplier',
+        'state::tower.recovery_amount_pct',
+        'state::tower.recovery_package_multiplier',
+        'state::tower.enemy_attack_level_skip_pct',
+        'state::tower.enemy_health_level_skip_pct',
+        'state::tower.free_attack_upgrade_chance_pct',
+        'state::tower.free_defense_upgrade_chance_pct',
+        'state::tower.free_utility_upgrade_chance_pct',
+        'state::tower.free_upgrade_multiplier',
+    }
+)
+
+
+def run_stats_section_name(surface_id: str) -> str:
+    if surface_id.startswith('state::cards.'):
+        return 'Cards'
+    if surface_id.startswith('state::uw.'):
+        return 'Ultimate Weapons'
+    if surface_id.startswith('state::bot.'):
+        return 'Bots'
+    if surface_id.startswith('state::guardian.'):
+        return 'Guardians'
+    if surface_id.startswith('state::module.'):
+        return 'Modules'
+    if surface_id.startswith('state::wall.'):
+        return 'Wall'
+    if surface_id.startswith('state::economy.'):
+        return 'Economy'
+    if surface_id in _WORKSHOP_OFFENSE_SURFACES:
+        return 'Workshop Offense'
+    if surface_id in _WORKSHOP_DEFENSE_SURFACES:
+        return 'Workshop Defense'
+    if surface_id in _WORKSHOP_UTILITY_SURFACES:
+        return 'Workshop Utility'
+    if surface_id.startswith('support_surface::') or surface_id.startswith('derived::'):
+        if surface_id.startswith(('derived::edamage', 'derived::edamage_ep', 'support_surface::timing.gcomp_')):
+            return 'Workshop Offense'
+        if surface_id.startswith(('derived::ehp', 'derived::ehp_ep')):
+            return 'Workshop Defense'
+        if surface_id.startswith(('derived::eecon', 'derived::economy')) or surface_id == 'support_surface::free_upgrade_multiplier':
+            return 'Workshop Utility'
+        return 'Derived / Support'
+    if surface_id.startswith('context::'):
+        return 'Context'
+    if surface_id.startswith('state::tower.'):
+        return 'Workshop Utility'
+    return 'Other'
+
+
+RUN_STATS_SECTION_ORDER: tuple[str, ...] = (
+    'Workshop Offense',
+    'Workshop Defense',
+    'Workshop Utility',
+    'Wall',
+    'Economy',
+    'Ultimate Weapons',
+    'Bots',
+    'Modules',
+    'Cards',
+    'Guardians',
+    'Derived / Support',
+    'Context',
+    'Other',
+)
+
+
 def statbook_rows_frame(statbook_payload: dict[str, Any]) -> pd.DataFrame:
     rows = []
     for raw_surface_id, payload in (statbook_payload.get('rows') or {}).items():

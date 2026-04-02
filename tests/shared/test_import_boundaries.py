@@ -47,6 +47,10 @@ _IMPORT_RUN_STATS_FROM_EVALUATORS = re.compile(
     r"^\s*(?:from\s+run_stats\s+import|import\s+run_stats\b)",
     re.MULTILINE,
 )
+_IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_EVALUATORS = re.compile(
+    r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
+    re.MULTILINE,
+)
 # Consolidated transitional-root boundary (post-T13)
 _IMPORT_TRANSITIONAL_ROOTS = re.compile(
     r"^\s*(?:from|import)\s+(?:compilers|models|optimizer|parsers|registry)\b",
@@ -97,11 +101,13 @@ _ROOT_FILE_ALLOWLIST = {
     "ACTIVE_TRANCHE.md",
     "AGENTS.md",
     "ARCHITECTURE.md",
+    "BURNDOWN.yaml",
     "README.md",
     "REPO_INDEX.yaml",
     "RTK.md",
     "pyproject.toml",
     "requirements.txt",
+    "towersim_hardening_handoff_pack_v5.zip",
 }
 _TESTS_ROOT_FILE_ALLOWLIST = {"conftest.py"}
 _INPUT_FILE_ALLOWLIST = {
@@ -344,6 +350,16 @@ def test_evaluators_files_do_not_import_run_stats():
         violations = _violation_lines(src, _IMPORT_RUN_STATS_FROM_EVALUATORS)
         assert not violations, (
             f"evaluators/{py.name} imports run_stats: {violations}"
+        )
+
+
+def test_evaluators_do_not_import_private_qe_compiler_symbols():
+    """Evaluator layer must consume public qe.stat_input_compiler surfaces only."""
+    for py in _py_sources(EVALUATORS_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_EVALUATORS)
+        assert not violations, (
+            f"evaluators/{py.name} imports private qe.stat_input_compiler symbols: {violations}"
         )
 
 

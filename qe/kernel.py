@@ -20,7 +20,6 @@ from qe.materializer import (
 )
 from qe.contracts import to_legacy_surface_id, to_v2_surface_id
 from qe.models import BoundStatInputs, StatInput
-from qe.stat_resolution import resolve_bucket_value
 
 ROOT = Path(__file__).resolve().parents[1]
 _OVERLAY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'overlay-delta-schema.yaml'
@@ -50,6 +49,31 @@ _MUTATION_METADATA_FIELDS = frozenset(
     }
 )
 _REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', 'factor'})
+
+
+def _resolve_bucket_value_via_bridge(
+    destination_object_type: str,
+    destination_id: str,
+    stat_inputs: list[StatInput],
+    *,
+    resolved_rows: Mapping[str, object] | None = None,
+) -> tuple[float | None, str, str, dict[str, object], dict[str, str]]:
+    """Transitional bridge for bucket resolution while T2 authority closure is active.
+
+    Keeps qe.kernel free of a module-level qe.stat_resolution import while native
+    resolver parity is being finalized.
+    """
+    from qe.stat_resolution import resolve_bucket_value
+
+    return resolve_bucket_value(
+        destination_object_type,
+        destination_id,
+        stat_inputs,
+        resolved_rows={
+            str(key): value
+            for key, value in (resolved_rows or {}).items()
+        },
+    )
 
 
 @lru_cache(maxsize=1)
@@ -595,14 +619,11 @@ class StatQueryKernel:
                     'contributor_count': len(stat_inputs),
                     'active_contributor_count': sum(1 for row in stat_inputs if row.active),
                 })
-            final_value, status, notes, _schema, meta = resolve_bucket_value(
+            final_value, status, notes, _schema, meta = _resolve_bucket_value_via_bridge(
                 destination_object_type,
                 destination_id,
                 stat_inputs,
-                resolved_rows={
-                    str(key): value
-                    for key, value in (resolved_rows or {}).items()
-                },
+                resolved_rows=resolved_rows,
             )
             if trace_steps is not None:
                 trace_steps.append({

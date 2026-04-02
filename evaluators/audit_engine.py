@@ -275,7 +275,7 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
 
 
 def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from qe.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
+    from qe.stat_input_compiler import load_perk_entities, load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
     from qe.query_routing import compiler_routing_indexes
     from input.state_types import PerkSelection
     from dataclasses import replace
@@ -284,8 +284,8 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
     def _slug(text: str) -> str:
         return re.sub(r'[^a-z0-9]+', '_', text.lower()).strip('_')
 
-    perk_entities = _load_perk_entities()
-    perk_effects = _load_perk_effects()
+    perk_entities = load_perk_entities()
+    perk_effects = load_perk_effects()
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
 
     audit_perk_presets = {

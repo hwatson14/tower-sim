@@ -22,6 +22,7 @@ from qe.contracts import (
 from qe.routing import QEResolutionPlanner
 from qe.publication import publish_query_surfaces
 from input.runtime_state import build_runtime_state
+from qe.stat_input_compiler import load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
 
 
 def _sid(surface_id: str) -> str:
@@ -30,6 +31,30 @@ def _sid(surface_id: str) -> str:
 
 def _state(destination_id: str) -> str:
     return compat_surface_from_legacy_canonical(destination_id)
+
+
+def _slug_text(text: str) -> str:
+    return re.sub(r'[^a-z0-9]+', '_', text.lower()).strip('_')
+
+
+def resolve_perk_effect_destination(
+    target_stat_id: str,
+    *,
+    canon_stats: dict,
+    alias_index: dict,
+    perk_target_destination_overrides: dict,
+) -> tuple[str | None, str | None, bool]:
+    if target_stat_id in perk_target_destination_overrides:
+        destination_object_type, destination_id = perk_target_destination_overrides[target_stat_id]
+        return destination_object_type, destination_id, False
+    if target_stat_id in canon_stats:
+        return 'canonical_stat', target_stat_id, False
+    alias_slug = _slug_text(target_stat_id.replace('_', ' '))
+    alias_match = alias_index.get(alias_slug)
+    if alias_match is None:
+        return None, None, False
+    destination_object_type, destination_id = alias_match
+    return destination_object_type, destination_id, True
 
 
 def _normalize_row_keyed_payload(rows: dict) -> dict:
@@ -317,14 +342,14 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
 }
 
 
+def load_perk_compiler_metadata() -> tuple[dict, dict]:
+    return load_perk_effects(), PERK_TARGET_DESTINATION_OVERRIDES
+
+
 def _load_lineage_backed_run_perk_destinations() -> set[str]:
-    from qe.stat_input_compiler import _load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
     from qe.query_routing import compiler_routing_indexes
 
-    def slug_text(text: str) -> str:
-        return re.sub(r'[^a-z0-9]+', '_', text.lower()).strip('_')
-
-    perk_effects = _load_perk_effects()
+    perk_effects, perk_target_destination_overrides = load_perk_compiler_metadata()
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
     destinations: set[str] = set()
     for effects in perk_effects.values():
@@ -334,17 +359,12 @@ def _load_lineage_backed_run_perk_destinations() -> set[str]:
             target_stat_id = str(effect.get('target_stat_id', '')).strip()
             if not target_stat_id:
                 continue
-            destination_object_type = None
-            destination_id = None
-            if target_stat_id in PERK_TARGET_DESTINATION_OVERRIDES:
-                destination_object_type, destination_id = PERK_TARGET_DESTINATION_OVERRIDES[target_stat_id]
-            elif target_stat_id in canon_stats:
-                destination_object_type, destination_id = 'canonical_stat', target_stat_id
-            else:
-                alias_slug = slug_text(target_stat_id.replace('_', ' '))
-                alias_match = alias_index.get(alias_slug)
-                if alias_match is not None:
-                    destination_object_type, destination_id = alias_match
+            destination_object_type, destination_id, _from_alias = resolve_perk_effect_destination(
+                target_stat_id,
+                canon_stats=canon_stats,
+                alias_index=alias_index,
+                perk_target_destination_overrides=perk_target_destination_overrides,
+            )
             if destination_object_type == 'canonical_stat' and destination_id:
                 destinations.add(_state(destination_id))
     return destinations

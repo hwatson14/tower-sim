@@ -1656,6 +1656,25 @@ def resolve_stats_delta(
     base_stat_inputs: list[StatInput],
     target_stat_inputs: list[StatInput],
 ) -> StatBook:
+    base_family_id = _infer_manifest_approved_family(base_stat_inputs)
+    target_family_id = _infer_manifest_approved_family(target_stat_inputs)
+    if base_family_id is not None and base_family_id == target_family_id:
+        response = _resolve_manifest_approved_family(
+            family_id=target_family_id,
+            stat_inputs=target_stat_inputs,
+        )
+        merged = _merge_delegated_family_rows(
+            fallback_statbook=base_statbook,
+            delegated_response=response,
+            family_id=target_family_id,
+        )
+        diagnostics = dict(merged.diagnostics or {})
+        diagnostics['delta_resolution'] = {
+            'path': 'native_family_query_delta_no_compat_fallback',
+            'family_id': target_family_id,
+        }
+        return StatBook(rows=merged.rows, diagnostics=diagnostics)
+
     return _fallback_resolve_stats_delta(
         base_statbook,
         base_stat_inputs=base_stat_inputs,

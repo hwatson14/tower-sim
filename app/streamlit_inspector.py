@@ -55,6 +55,8 @@ from app.inspector_data import (
     query_rows_dual_state_frame,
     query_rows_surface_detail,
     run_stats_rows_frame,
+    RUN_STATS_SECTION_ORDER,
+    run_stats_section_name,
     snapshot_label,
     statbook_rows_frame,
     verification_rows_frame,
@@ -537,94 +539,6 @@ def _render_pipeline(trace_payload: dict, diagnostics: dict) -> None:
         st.json(diagnostics.get('pipeline_incremental_summary') or {})
 
 
-def _stats_section_name(surface_id: str) -> str:
-    label = surface_id.split('::', 1)[-1]
-    workshop_offense_surfaces = {
-        'state::tower.attack_speed',
-        'state::tower.crit_chance_pct',
-        'state::tower.crit_multiplier',
-        'state::tower.damage',
-        'state::tower.damage_per_meter_multiplier',
-        'state::tower.multishot_chance_pct',
-        'state::tower.multishot_targets',
-        'state::tower.range_m',
-        'state::tower.rapid_fire_chance_pct',
-        'state::tower.rapid_fire_duration_seconds',
-        'state::tower.bounce_shot_chance_pct',
-        'state::tower.bounce_shot_range_m',
-        'state::tower.bounce_shot_targets',
-        'state::tower.supercrit_chance_pct',
-        'state::tower.supercrit_multiplier',
-        'state::tower.rend_armor_chance_pct',
-        'state::tower.rend_armor_multiplier',
-        'state::tower.ultimate_damage_multiplier',
-    }
-    workshop_defense_surfaces = {
-        'state::tower.hp',
-        'state::tower.regen',
-        'state::tower.defense_pct',
-        'state::tower.defense_absolute',
-        'state::tower.thorns_damage_pct',
-        'state::tower.lifesteal_pct',
-        'state::tower.knockback_chance_pct',
-        'state::tower.knockback_force',
-        'state::tower.orb_count',
-        'state::tower.orb_speed_rpm',
-        'state::tower.orb_size_multiplier',
-        'state::tower.shockwave_interval_seconds',
-        'state::tower.shockwave_size_m',
-        'state::tower.death_defy_chance_pct',
-        'state::tower.land_mine_chance_pct',
-        'state::tower.land_mine_damage',
-        'state::tower.land_mine_radius_m',
-    }
-    workshop_utility_surfaces = {
-        'state::tower.package_chance_pct',
-        'state::tower.max_recovery_multiplier',
-        'state::tower.recovery_amount_pct',
-        'state::tower.recovery_package_multiplier',
-        'state::tower.enemy_attack_level_skip_pct',
-        'state::tower.enemy_health_level_skip_pct',
-        'state::tower.free_attack_upgrade_chance_pct',
-        'state::tower.free_defense_upgrade_chance_pct',
-        'state::tower.free_utility_upgrade_chance_pct',
-        'state::tower.free_upgrade_multiplier',
-    }
-    if surface_id.startswith('state::cards.'):
-        return 'Cards'
-    if surface_id.startswith('state::uw.'):
-        return 'Ultimate Weapons'
-    if surface_id.startswith('state::bot.'):
-        return 'Bots'
-    if surface_id.startswith('state::guardian.'):
-        return 'Guardians'
-    if surface_id.startswith('state::module.'):
-        return 'Modules'
-    if surface_id.startswith('state::wall.'):
-        return 'Wall'
-    if surface_id.startswith('state::economy.'):
-        return 'Economy'
-    if surface_id in workshop_offense_surfaces:
-        return 'Workshop Offense'
-    if surface_id in workshop_defense_surfaces:
-        return 'Workshop Defense'
-    if surface_id in workshop_utility_surfaces:
-        return 'Workshop Utility'
-    if surface_id.startswith('support_surface::') or surface_id.startswith('derived::'):
-        if surface_id.startswith(('derived::edamage', 'derived::edamage_ep', 'support_surface::timing.gcomp_')):
-            return 'Workshop Offense'
-        if surface_id.startswith(('derived::ehp', 'derived::ehp_ep')):
-            return 'Workshop Defense'
-        if surface_id.startswith(('derived::eecon', 'derived::economy')) or surface_id == 'support_surface::free_upgrade_multiplier':
-            return 'Workshop Utility'
-        return 'Derived / Support'
-    if surface_id.startswith('context::'):
-        return 'Context'
-    if surface_id.startswith('state::tower.'):
-        return 'Workshop Utility'
-    return 'Other'
-
-
 def _render_cards_matrix(account_state: dict, *, selected_preset: str) -> None:
     card_presets = account_state.get('card_presets') or {}
     if not isinstance(card_presets, dict) or not card_presets:
@@ -939,23 +853,8 @@ def _render_loadout_panel(
 
 def _render_sectioned_run_stats_table(frame: pd.DataFrame, *, show_raw_ids: bool) -> None:
     frame = frame.copy()
-    frame['section'] = frame['surface_id'].map(_stats_section_name)
-    ordered_sections = [
-        'Workshop Offense',
-        'Workshop Defense',
-        'Workshop Utility',
-        'Wall',
-        'Economy',
-        'Ultimate Weapons',
-        'Bots',
-        'Modules',
-        'Cards',
-        'Guardians',
-        'Derived / Support',
-        'Context',
-        'Other',
-    ]
-    for section_name in ordered_sections:
+    frame['section'] = frame['surface_id'].map(run_stats_section_name)
+    for section_name in RUN_STATS_SECTION_ORDER:
         section_df = frame[frame['section'] == section_name].copy()
         if section_df.empty:
             continue

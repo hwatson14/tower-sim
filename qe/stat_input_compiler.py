@@ -820,6 +820,16 @@ def _load_perk_effects() -> Dict[str, List[Dict[str, str]]]:
     return out
 
 
+def load_perk_entities() -> Dict[str, Dict[str, object]]:
+    """Public evaluator/app-facing surface for perk entity metadata."""
+    return _load_perk_entities()
+
+
+def load_perk_effects() -> Dict[str, List[Dict[str, str]]]:
+    """Public evaluator/app-facing surface for perk effect metadata."""
+    return _load_perk_effects()
+
+
 @lru_cache(maxsize=1)
 def _load_module_substat_units() -> Dict[str, str]:
     out: Dict[str, str] = {}

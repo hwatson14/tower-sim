@@ -122,6 +122,23 @@ def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_pa
     assert isinstance(payload, dict)
 
 
+def test_load_streamlit_reference_data_exposes_module_lookup_contract():
+    from app.pipeline import load_streamlit_reference_data
+
+    payload = load_streamlit_reference_data(
+        ids_path=ROOT / 'input' / 'imports' / 'ids.csv',
+        manual_inputs_path=None,
+    )
+
+    module_lookup = payload.get('module_substat_lookup')
+    assert isinstance(module_lookup, dict)
+    assert ('armor', 'Knockback Force') in module_lookup
+    rows = module_lookup[('armor', 'Knockback Force')]
+    assert isinstance(rows, list)
+    assert rows
+    assert {'rarity', 'unit', 'value'}.issubset(rows[0].keys())
+
+
 def test_build_verification_snapshot_set_runs_default_matrix(tmp_path):
     from app.pipeline import PipelineRunRequest, build_verification_snapshot_set
 
