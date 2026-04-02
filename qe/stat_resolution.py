@@ -14,15 +14,15 @@ from typing import Any, Dict, List, Tuple
 
 import yaml
 
-from qe.contracts import (
-    compat_surface_from_legacy_capability,
-    compat_surface_from_legacy_canonical,
-    compat_surface_from_legacy_context,
-    compat_surface_from_legacy_cosmetic,
-    compat_surface_from_legacy_flag,
-    compat_surface_from_legacy_mechanic,
-    compat_surface_from_legacy_runtime,
-    to_legacy_surface_id,
+from qe.compat.legacy_surface_ids import (
+    legacy_capability_surface_id as _compat_cap,
+    legacy_canonical_surface_id as _state,
+    legacy_context_surface_id as _compat_context,
+    legacy_cosmetic_surface_id as _compat_cosmetic,
+    legacy_flag_surface_id as _compat_flag,
+    legacy_mechanic_surface_id as _compat_mech,
+    legacy_runtime_surface_id as _compat_runtime,
+    legacy_surface_id,
 )
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
@@ -51,34 +51,6 @@ _DELTA_SUCCESSORS_BY_BUCKET_KEY: dict[str, tuple[str, ...]] = {
 }
 
 
-def _state(destination_id: str) -> str:
-    return compat_surface_from_legacy_canonical(destination_id)
-
-
-def _compat_mech(destination_id: str) -> str:
-    return compat_surface_from_legacy_mechanic(destination_id)
-
-
-def _compat_runtime(destination_id: str) -> str:
-    return compat_surface_from_legacy_runtime(destination_id)
-
-
-def _compat_flag(destination_id: str) -> str:
-    return compat_surface_from_legacy_flag(destination_id)
-
-
-def _compat_context(destination_id: str) -> str:
-    return compat_surface_from_legacy_context(destination_id)
-
-
-def _compat_cap(destination_id: str) -> str:
-    return compat_surface_from_legacy_capability(destination_id)
-
-
-def _compat_cosmetic(destination_id: str) -> str:
-    return compat_surface_from_legacy_cosmetic(destination_id)
-
-
 def _canonical_bucket_key(destination_id: str) -> str:
     return f'canonical_stat::{destination_id}'
 
@@ -97,7 +69,7 @@ def _resolved_row_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> Sta
         row = resolved_rows.get(alias_key)
         if row is not None:
             return row
-    legacy_key = to_legacy_surface_id(str(row_key))
+    legacy_key = legacy_surface_id(str(row_key))
     if legacy_key != row_key:
         row = resolved_rows.get(legacy_key)
         if row is not None:

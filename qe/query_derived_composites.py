@@ -4,39 +4,17 @@ from __future__ import annotations
 import math
 from typing import Dict, Any, Iterable
 
-from qe.contracts import (
-    compat_surface_from_legacy_canonical,
-    compat_surface_from_legacy_mechanic,
-    compat_surface_from_legacy_runtime,
-    normalize_surface_id_to_contract,
-    to_legacy_surface_id,
+from qe.compat.legacy_surface_ids import (
+    legacy_canonical_surface_id as _compat_canon,
+    legacy_mechanic_surface_id as _compat_mech,
+    legacy_runtime_surface_id as _compat_runtime,
+    surface_id_candidates,
 )
 from qe.models import StatRow
 
 
 def _surface_id_candidates(key: str) -> tuple[str, ...]:
-    normalized = normalize_surface_id_to_contract(key)
-    legacy = to_legacy_surface_id(normalized)
-    ordered = []
-    for candidate in (normalized, legacy, key):
-        if candidate not in ordered:
-            ordered.append(candidate)
-    return tuple(ordered)
-
-
-def _compat_canon(destination_id: str) -> str:
-    """Compatibility lookup helper for legacy canonical stat ids."""
-    return compat_surface_from_legacy_canonical(destination_id)
-
-
-def _compat_mech(destination_id: str) -> str:
-    """Compatibility lookup helper for legacy mechanic ids."""
-    return compat_surface_from_legacy_mechanic(destination_id)
-
-
-def _compat_runtime(destination_id: str) -> str:
-    """Compatibility lookup helper for legacy runtime mechanic ids."""
-    return compat_surface_from_legacy_runtime(destination_id)
+    return surface_id_candidates(key)
 
 
 def _row(rows: Dict[str, StatRow], key: str) -> StatRow | None:
@@ -1429,4 +1407,3 @@ def compute_derived_eecon(rows):
     tmp = dict(rows)
     publish_derived_composites(tmp)
     return tmp['derived::eecon'].final_value
-

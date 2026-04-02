@@ -1,0 +1,42 @@
+version: 1
+entries:
+  - key: legacy_canonical_surface_id
+    owner: qe/compat
+    rationale: bridge legacy canonical_stat destinations into active contract surface ids while migrated callers still emit legacy ids
+    deletion_condition: no caller in qe/ or tests/ requests canonical_stat:: legacy ids and naming remap no longer maps canonical->support/state surfaces
+  - key: legacy_mechanic_surface_id
+    owner: qe/compat
+    rationale: bridge legacy mechanic_param destination ids used by residual QE materializer/composite lookups
+    deletion_condition: all mechanic lookups in qe use contract-native support_surface/state ids only
+  - key: legacy_runtime_surface_id
+    owner: qe/compat
+    rationale: bridge runtime_mechanic_param legacy ids in derived composite fallback lookups
+    deletion_condition: runtime lookup callsites remove runtime legacy fallback lists
+  - key: legacy_flag_surface_id
+    owner: qe/compat
+    rationale: bridge account_flag legacy ids for compatibility with older flag buckets
+    deletion_condition: account_flag callers exclusively read canonical contract ids
+  - key: legacy_context_surface_id
+    owner: qe/compat
+    rationale: bridge account_context legacy ids for compatibility with older context buckets
+    deletion_condition: context readers no longer emit account_context:: legacy ids
+  - key: legacy_capability_surface_id
+    owner: qe/compat
+    rationale: bridge capability legacy ids until capability surfaces are fully canonicalized
+    deletion_condition: capability callers resolve only through canonical support/state ids
+  - key: legacy_cosmetic_surface_id
+    owner: qe/compat
+    rationale: bridge cosmetic_bonus legacy ids for older cosmetic contribution rows
+    deletion_condition: cosmetic rows are emitted/consumed only as canonical contract ids
+  - key: legacy_surface_id
+    owner: qe/compat
+    rationale: fallback bridge for reverse mapping from normalized ids back to legacy ids during row lookup
+    deletion_condition: no row lookup path needs reverse mapping through legacy naming remap
+  - key: surface_id_candidates
+    owner: qe/compat
+    rationale: shared fallback candidate generation prevents per-module duplication of normalized/legacy key search order
+    deletion_condition: all readers use a single canonical key with no compatibility fallback
+  - key: qe.materializer._COMPATIBILITY_SURFACE_ID_ALIASES
+    owner: qe/materializer.py
+    rationale: explicit alias map for known legacy->support surface mismatches still emitted by compiler lineage
+    deletion_condition: compiler emits canonical destination ids for every alias entry and alias map is empty

@@ -8,17 +8,16 @@ from pathlib import Path
 import yaml
 
 from input.state_types import AccountState, ScenarioProjectionState, ScenarioRuntimeInputs
-from qe.contracts import (
-    compat_surface_from_legacy_capability,
-    compat_surface_from_legacy_canonical,
-    compat_surface_from_legacy_context,
-    compat_surface_from_legacy_cosmetic,
-    compat_surface_from_legacy_flag,
-    compat_surface_from_legacy_mechanic,
-    compat_surface_from_legacy_runtime,
-    normalize_surface_id_to_contract,
-    to_v2_surface_id,
+from qe.compat.legacy_surface_ids import (
+    legacy_capability_surface_id as _compat_cap,
+    legacy_canonical_surface_id as _state_from_legacy_canonical,
+    legacy_context_surface_id as _compat_context,
+    legacy_cosmetic_surface_id as _compat_cosmetic,
+    legacy_flag_surface_id as _compat_flag,
+    legacy_mechanic_surface_id as _compat_mech,
+    legacy_runtime_surface_id as _compat_runtime,
 )
+from qe.contracts import normalize_surface_id_to_contract, to_v2_surface_id
 from qe.models import BoundStatInputs, StateIdentity, StateIdentityBinding, compile_stat_inputs_with_identity
 from qe.consumer_registry import resolve_consumer_bundle
 from qe.dependency_registry import DependencyRegistry
@@ -46,36 +45,8 @@ _CONTRACT_PATHS = (
 )
 
 
-def _compat_mech(destination_id: str) -> str:
-    return compat_surface_from_legacy_mechanic(destination_id)
-
-
 def _state(destination_id: str) -> str:
     return normalize_surface_id_to_contract(f'state::{destination_id}')
-
-
-def _state_from_legacy_canonical(destination_id: str) -> str:
-    return compat_surface_from_legacy_canonical(destination_id)
-
-
-def _compat_runtime(destination_id: str) -> str:
-    return compat_surface_from_legacy_runtime(destination_id)
-
-
-def _compat_flag(destination_id: str) -> str:
-    return compat_surface_from_legacy_flag(destination_id)
-
-
-def _compat_context(destination_id: str) -> str:
-    return compat_surface_from_legacy_context(destination_id)
-
-
-def _compat_cosmetic(destination_id: str) -> str:
-    return compat_surface_from_legacy_cosmetic(destination_id)
-
-
-def _compat_cap(destination_id: str) -> str:
-    return compat_surface_from_legacy_capability(destination_id)
 
 
 def _as_float(value) -> float | None:
