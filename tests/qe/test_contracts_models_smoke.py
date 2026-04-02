@@ -236,6 +236,11 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
 
 
+def test_workshop_defense_pct_formula_matches_expected_track() -> None:
+    defense_pct_formula = WORKSHOP_FORMULA_VALUES['Defense %']
+    assert defense_pct_formula(99) == pytest.approx(49.5)
+
+
 def test_formula_authority_bridge_retirement_threshold_not_met_while_bridge_entries_exist() -> None:
     bridge_entries = [
         runtime_key

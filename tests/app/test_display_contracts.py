@@ -60,3 +60,24 @@ def test_display_helpers_preserve_output_contract():
     assert compare['coin_bonus']['ep_value_display'] == 'x4.25'
     assert compare['coin_bonus']['delta_display'] == 'x0.75'
     assert compare['coin_bonus']['relative_delta_display'] is None
+
+
+def test_contributor_display_uses_input_value_type_when_available():
+    statbook = {
+        'rows': {
+            'state::tower.defense_pct': {
+                'final_value': 98.0,
+                'value_type': 'pct',
+                'contributors': [
+                    {'value': 69.3, 'value_type': 'scalar', 'input_value_type': 'pct'},
+                    {'value': 1.2, 'value_type': 'scalar', 'input_value_type': 'multiplier'},
+                    {'contributor_id': 'workshop__tower__defense_pct__pct', 'value': 30.0, 'value_type': 'scalar'},
+                ],
+            },
+        },
+    }
+    annotate_display_fields(statbook)
+    contributors = statbook['rows']['state::tower.defense_pct']['contributors']
+    assert contributors[0]['display_value'] == '69.3%'
+    assert contributors[1]['display_value'] == 'x1.2'
+    assert contributors[2]['display_value'] == '30%'

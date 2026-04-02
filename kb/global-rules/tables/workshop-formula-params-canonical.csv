@@ -1,6 +1,6 @@
 stat_name,formula_type,base,per_level,floor,source_domain,notes
 Attack Speed,linear,1.0,0.05,,workshop,value = 1.0 + 0.05 * level
-Defense %,linear,0.0,0.7,,workshop,value = 0.7 * level
+Defense %,linear,0.0,0.5,,workshop,value = 0.5 * level
 Critical Chance,linear,1.0,1.0,,workshop,value = 1.0 + level
 Critical Factor,linear,1.2,0.1,,workshop,value = 1.2 + 0.1 * level
 Cash Bonus,linear,1.0,0.01,,workshop,value = 1.0 + 0.01 * level

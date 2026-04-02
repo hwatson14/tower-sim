@@ -52,12 +52,25 @@ def _format_display_value(value, value_type: str | None) -> str | None:
     return _format_display_number(value) or str(value)
 
 
+def _contributor_display_type(contributor: dict) -> str | None:
+    preferred = contributor.get('input_value_type') or contributor.get('value_type')
+    preferred_text = str(preferred or '').strip().lower()
+    if preferred_text not in {'', 'scalar', 'resolved_value'}:
+        return str(preferred)
+    contributor_id = str(contributor.get('contributor_id') or '').lower()
+    if '__pct' in contributor_id or 'percent' in contributor_id:
+        return 'pct'
+    if '__multiplier' in contributor_id or 'multiplier' in contributor_id:
+        return 'multiplier'
+    return str(preferred) if preferred is not None else None
+
 
 def annotate_display_fields(statbook_dict: dict) -> None:
     for row in statbook_dict.get('rows', {}).values():
         row['display_value'] = _format_display_value(row.get('final_value'), row.get('value_type'))
         for contributor in row.get('contributors', []):
-            contributor['display_value'] = _format_display_value(contributor.get('value'), contributor.get('value_type'))
+            contributor_display_type = _contributor_display_type(contributor)
+            contributor['display_value'] = _format_display_value(contributor.get('value'), contributor_display_type)
 
 
 
