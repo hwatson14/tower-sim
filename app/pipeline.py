@@ -43,7 +43,10 @@ from app.publication import (
     _RUN_STATS_LEGACY_OUTPUTS,
     _json_sanitize,
     _relpath_str,
+    _load_json_artifact,
+    _generated_output_paths,
     write_core_outputs,
+    write_pipeline_trace,
 )
 from app.display import (
     annotate_compare_display_fields as _annotate_compare_display_fields,
@@ -1750,20 +1753,6 @@ def run_pipeline(args) -> int:
     return run_analysis_pipeline(args)
 
 
-def _load_json_artifact(path: Path) -> dict[str, object]:
-    if not path.exists():
-        return {}
-    try:
-        payload = json.loads(path.read_text(encoding='utf-8'))
-    except Exception:
-        return {}
-    return payload if isinstance(payload, dict) else {}
-
-
-def _generated_output_paths(out_dir: Path) -> list[Path]:
-    return sorted(path for path in out_dir.glob('*.json')) + sorted(path for path in out_dir.glob('*.csv'))
-
-
 def _build_pipeline_trace_from_artifacts(
     *,
     request: PipelineRunRequest,
@@ -1850,8 +1839,8 @@ def _build_pipeline_trace_from_artifacts(
         PipelineStageRecord(
             stage_id='artifact_write',
             title='Artifact write',
-            owner_module='app.pipeline',
-            entry_function='_write_core_outputs',
+            owner_module='app.publication',
+            entry_function='write_core_outputs',
             status='ok',
             elapsed_ms=float(timings.get('write_outputs_ms') or 0.0),
             outputs_summary={'out_dir': _relpath_str(request.out)},
@@ -1900,10 +1889,7 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
         stages=pipeline_trace.stages,
         artifacts_written=[_relpath_str(path) for path in generated_files],
     )
-    (request.out / 'pipeline_trace.json').write_text(
-        json.dumps(_json_sanitize(pipeline_trace.to_dict()), indent=2, default=str),
-        encoding='utf-8',
-    )
+    write_pipeline_trace(request.out, pipeline_trace, ROOT)
     generated_files = _generated_output_paths(request.out)
     return PipelineRunResult(
         exit_code=int(exit_code),
