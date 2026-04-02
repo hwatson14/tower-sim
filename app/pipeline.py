@@ -30,6 +30,10 @@ from qe.stat_input_compiler import (
     SUPPORTED_STATE_MODES,
     state_mode_support,
 )
+from app.publication import (
+    _remove_legacy_outputs,
+    _RUN_STATS_LEGACY_OUTPUTS,
+)
 from app.display import (
     annotate_compare_display_fields as _annotate_compare_display_fields,
     annotate_display_fields as _annotate_display_fields,
@@ -459,28 +463,6 @@ _RUN_STATS_QUERY_OUTPUTS = {
     'start_of_run_plan': 'run_stats_query_plan_start_of_run.json',
     'max_progression_plan': 'run_stats_query_plan_max_progression.json',
 }
-
-_RUN_STATS_LEGACY_OUTPUTS = (
-    'statbook_start_of_run.json',
-    'statbook_max_progression.json',
-    'stat_inputs_start_of_run.json',
-    'stat_inputs_max_progression.json',
-)
-
-
-def _remove_legacy_outputs(out_dir: Path, legacy_list) -> None:
-    for name in legacy_list:
-        path = out_dir / name
-        if path.exists():
-            path.unlink()
-
-
-def _remove_legacy_outputs(out_dir: Path, legacy_list) -> None:
-    for name in legacy_list:
-        path = out_dir / name
-        if path.exists():
-            path.unlink()
-
 
 def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
     _remove_legacy_outputs(out_dir, _RUN_STATS_LEGACY_OUTPUTS)
