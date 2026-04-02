@@ -73,6 +73,9 @@ from simulators.perk_timeline_generator import (
 from simulators.snapshot_resolver import SimulatorSnapshotResolver
 from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
 from simulators.scenario import publish_farming_throughput_support_surfaces
+from simulators.contracts import PerkState
+from simulators.run_executor import RunToMaxConfig, build_boss_wave_table, build_start_of_run_state
+from input.state_types import ScenarioRuntimeInputs
 
 
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
@@ -102,6 +105,141 @@ def _safe_pct(n: int, d: int) -> float:
 
 def _contract_json_payload(obj):
     return normalize_contract_payload(_json_sanitize(obj))
+
+
+def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | None) -> dict[str, object]:
+    from qe.stat_input_compiler import _load_card_mastery_values, _load_perk_effects, _load_perk_entities
+
+    card_effects: dict[str, str] = {}
+    with (ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv').open(newline='', encoding='utf-8') as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            if str(row.get('layer') or '').strip() == 'base_card':
+                card_effects[str(row.get('card_id') or '').strip()] = str(row.get('effect_name') or '').strip()
+
+    card_values: dict[tuple[str, int], str] = {}
+    with (ROOT / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv').open(newline='', encoding='utf-8') as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            card_values[(str(row.get('card_id') or '').strip(), int(row.get('base_level') or 0))] = (
+                f"{str(row.get('raw_value') or '').strip()} {str(row.get('unit') or '').strip()}".strip()
+            )
+    module_substat_lookup: dict[tuple[str, str], list[dict[str, object]]] = {}
+    with (ROOT / 'kb' / 'modules' / 'tables' / 'module-substats.csv').open(newline='', encoding='utf-8') as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            slot = str(row.get('slot') or '').strip().lower()
+            substat = str(row.get('substat') or '').strip()
+            if substat == 'Defense %':
+                substat = 'Defense'
+            elif substat == 'Critical Factor':
+                substat = 'Crit Factor'
+            elif substat == 'MultiShot Chance':
+                substat = 'Multishot Chance'
+            rarity = str(row.get('rarity') or '').strip()
+            unit = str(row.get('unit') or '').strip().lower()
+            try:
+                value = float(str(row.get('value') or '').strip())
+            except ValueError:
+                continue
+            module_substat_lookup.setdefault((slot, substat), []).append({'rarity': rarity, 'unit': unit, 'value': value})
+
+    bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
+    perk_policy = bundle.perk_policy or {}
+    manual_banned_names = set(_resolve_manual_banned_perks(perk_policy))
+    perk_entity_rows = _load_perk_entity_registry()
+    perk_entity_map = {str(row.get('perk_id') or '').strip(): row for row in perk_entity_rows if str(row.get('perk_id') or '').strip()}
+    by_name = {str(row.get('perk_name') or '').strip(): perk_id for perk_id, row in perk_entity_map.items()}
+    manual_banned_perk_ids = {by_name[name] for name in manual_banned_names if name in by_name}
+
+    return {
+        'card_effects': card_effects,
+        'card_values': card_values,
+        'card_mastery_values': _load_card_mastery_values(),
+        'perk_entity_map': perk_entity_map,
+        'perk_entities': _load_perk_entities(),
+        'perk_effects': _load_perk_effects(),
+        'manual_banned_perk_ids': manual_banned_perk_ids,
+        'module_substat_lookup': module_substat_lookup,
+    }
+
+
+def compute_perk_max_effect_displays(
+    *,
+    perk_id: str,
+    standard_bonus_pct: float | None,
+    tradeoff_bonus_pct: float | None,
+) -> list[tuple[object, object]]:
+    from qe.stat_input_compiler import _load_perk_effects, _load_perk_entities, _scaled_perk_value
+
+    perk_entities = _load_perk_entities()
+    perk_effects = _load_perk_effects()
+    perk_meta = perk_entities.get(perk_id) or {}
+    max_picks = int(perk_meta.get('max_picks') or 0)
+    perk_lab_state = {
+        'standard_bonus_multiplier': 1.0 + (((standard_bonus_pct or 0.0) / 100.0)),
+        'tradeoff_bonus_multiplier': 1.0 + (((tradeoff_bonus_pct or 0.0) / 100.0)),
+    }
+    rows: list[tuple[object, object]] = []
+    for effect in (perk_effects.get(perk_id) or []):
+        scaled = _scaled_perk_value(
+            perk_meta=perk_meta,
+            perk_effect_meta=effect,
+            perk_id=perk_id,
+            operation=str(effect.get('operation') or '').strip(),
+            raw_value=str(effect.get('effect_value') or '').strip(),
+            picks=max_picks,
+            effect_index=str(effect.get('effect_index') or '').strip(),
+            perk_lab_state=perk_lab_state,
+        )
+        rows.append((scaled, effect.get('operation')))
+    return rows
+
+
+def build_boss_wave_payload(
+    request: PipelineRunRequest,
+    *,
+    preset_name: str,
+    tier_number: int,
+    end_wave: int,
+    boss_wave_step: int,
+    stop_on_failure: bool,
+    scenario_runtime_inputs: dict[str, float],
+) -> dict[str, object]:
+    bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
+    account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    initial_state = build_start_of_run_state(
+        account_state,
+        preset_name=preset_name,
+        perk_state=PerkState(wave=0, counts={}, dirty=False),
+    )
+    config = RunToMaxConfig(
+        execution_mode='table_sweep',
+        preset_name=preset_name,
+        tier_column=f'Tier {int(tier_number)}',
+        start_wave=max(1, int(boss_wave_step)),
+        end_wave=int(end_wave),
+        boss_wave_step=int(boss_wave_step),
+        state_mode='start_of_run',
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+    )
+    rows = build_boss_wave_table(
+        account_state=account_state,
+        initial_projected_state=initial_state,
+        config=config,
+        stop_on_failure=bool(stop_on_failure),
+    )
+    return {
+        'rows': rows,
+        'diagnostics': {
+            'preset_name': preset_name,
+            'tier_column': config.tier_column,
+            'boss_wave_step': config.boss_wave_step,
+            'row_count': len(rows),
+            'state_mode': config.state_mode,
+            'checkpoint_mode': 'boss_wave_only',
+        },
+    }
 
 
 

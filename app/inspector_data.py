@@ -18,8 +18,6 @@ CORE_ARTIFACTS = (
     'run_stats.json',
     'statbook.json',
     'statbook_publishable.json',
-    'statbook_start_of_run.json',
-    'statbook_max_progression.json',
     'run_stats_query_rows_start_of_run.json',
     'run_stats_query_rows_max_progression.json',
     'run_stats_query_plan_start_of_run.json',
@@ -204,6 +202,101 @@ def run_stats_rows_frame(run_stats_payload: dict[str, Any], *, preset: str) -> p
             ]
         )
     return pd.DataFrame(rows)
+
+
+def query_rows_dual_state_frame(
+    start_rows_payload: dict[str, Any],
+    max_rows_payload: dict[str, Any],
+    *,
+    preset: str,
+) -> pd.DataFrame:
+    start_rows = ((start_rows_payload.get(preset) or {}).get('rows') or {}) if isinstance(start_rows_payload, dict) else {}
+    max_rows = ((max_rows_payload.get(preset) or {}).get('rows') or {}) if isinstance(max_rows_payload, dict) else {}
+    all_surface_ids = {
+        normalize_surface_id_to_contract(raw_surface_id)
+        for raw_surface_id in start_rows
+    } | {
+        normalize_surface_id_to_contract(raw_surface_id)
+        for raw_surface_id in max_rows
+    }
+    rows: list[dict[str, Any]] = []
+    for surface_id in sorted(all_surface_ids):
+        start_match = next(
+            (
+                (raw_surface_id, payload)
+                for raw_surface_id, payload in start_rows.items()
+                if normalize_surface_id_to_contract(raw_surface_id) == surface_id
+            ),
+            (None, {}),
+        )
+        max_match = next(
+            (
+                (raw_surface_id, payload)
+                for raw_surface_id, payload in max_rows.items()
+                if normalize_surface_id_to_contract(raw_surface_id) == surface_id
+            ),
+            (None, {}),
+        )
+        start_raw_surface_id, start_payload = start_match
+        max_raw_surface_id, max_payload = max_match
+        preferred_raw_surface_id = start_raw_surface_id or max_raw_surface_id or surface_id
+        rows.append(
+            {
+                'preset': preset,
+                'surface_id': surface_id,
+                'raw_surface_id': preferred_raw_surface_id,
+                'start_raw_surface_id': start_raw_surface_id,
+                'max_raw_surface_id': max_raw_surface_id,
+                'raw_surface_id_mismatch': bool(start_raw_surface_id and max_raw_surface_id and start_raw_surface_id != max_raw_surface_id),
+                'group': _semantic_group(surface_id),
+                'display_label': _display_label(surface_id),
+                'changed_in_max_progression': (
+                    start_payload.get('display_value') != max_payload.get('display_value')
+                    or start_payload.get('final_value') != max_payload.get('final_value')
+                ),
+                'start_of_run_value': start_payload.get('final_value'),
+                'start_of_run_display': start_payload.get('display_value'),
+                'start_of_run_type': start_payload.get('value_type'),
+                'start_of_run_status': start_payload.get('status'),
+                'max_progression_value': max_payload.get('final_value'),
+                'max_progression_display': max_payload.get('display_value'),
+                'max_progression_type': max_payload.get('value_type'),
+                'max_progression_status': max_payload.get('status'),
+            }
+        )
+    if not rows:
+        return pd.DataFrame(
+            columns=[
+                'preset',
+                'surface_id',
+                'raw_surface_id',
+                'group',
+                'display_label',
+                'changed_in_max_progression',
+                'start_of_run_value',
+                'start_of_run_display',
+                'start_of_run_type',
+                'start_of_run_status',
+                'max_progression_value',
+                'max_progression_display',
+                'max_progression_type',
+                'max_progression_status',
+            ]
+        )
+    return pd.DataFrame(rows)
+
+
+def query_rows_surface_detail(
+    state_rows_payload: dict[str, Any],
+    *,
+    preset: str,
+    surface_id: str,
+) -> dict[str, Any]:
+    rows_payload = ((state_rows_payload.get(preset) or {}).get('rows') or {}) if isinstance(state_rows_payload, dict) else {}
+    for raw_surface_id, payload in rows_payload.items():
+        if normalize_surface_id_to_contract(raw_surface_id) == surface_id:
+            return dict(payload)
+    return {}
 
 
 def dual_state_statbook_rows_frame(

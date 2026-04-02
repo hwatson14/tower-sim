@@ -204,15 +204,19 @@ def test_streamlit_inspector_perks_render_path_handles_minimal_qe_rows(monkeypat
     st_stub = _InspectorStreamlitStub()
     monkeypatch.setattr(inspector_mod, 'st', st_stub)
     monkeypatch.setattr(inspector_mod, '_perk_entity_map', lambda: {'PERK_X': {'perk_name': 'Test Perk', 'category': 'standard'}})
-    monkeypatch.setattr(inspector_mod, '_manual_banned_perks', lambda: set())
-    monkeypatch.setattr(inspector_mod, '_load_perk_entities', lambda: {'PERK_X': {'max_picks': 1}})
-    monkeypatch.setattr(inspector_mod, '_load_perk_effects', lambda: {'PERK_X': [{'operation': 'multiplier', 'effect_value': '1.1', 'effect_index': '1'}]})
-    monkeypatch.setattr(inspector_mod, '_scaled_perk_value', lambda **_kwargs: 1.1)
+    monkeypatch.setattr(inspector_mod, '_manual_banned_perks', lambda *_args, **_kwargs: set())
+    monkeypatch.setattr(inspector_mod, 'compute_perk_max_effect_displays', lambda **_kwargs: [(1.1, 'multiplier')])
 
     account_state = {'perk_presets': {'Farming': [{'perk_id': 'PERK_X', 'picks': 1}]}}
     stat_inputs = [{'source_family': 'perk', 'active': True, 'preset_name': 'Farming', 'contributor_id': 'perk::PERK_X::effect_1', 'value': 1.1, 'value_type': 'multiplier'}]
 
-    inspector_mod._render_perks_table(account_state, selected_preset='Farming', stat_inputs_payload=stat_inputs)
+    inspector_mod._render_perks_table(
+        account_state,
+        selected_preset='Farming',
+        stat_inputs_payload=stat_inputs,
+        ids_path=Path('input/imports/ids.csv'),
+        manual_inputs_path=None,
+    )
 
     assert st_stub.dataframes
     perk_frame = st_stub.dataframes[-1][0]

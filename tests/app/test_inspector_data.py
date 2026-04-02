@@ -21,8 +21,8 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
         'statbook.json': {'rows': {}, 'diagnostics': {}},
         'statbook_publishable.json': {'rows': {}, 'diagnostics': {}},
         'run_stats.json': {'presets': {}},
-        'statbook_start_of_run.json': {'rows': {}},
-        'statbook_max_progression.json': {'rows': {}},
+        'run_stats_query_rows_start_of_run.json': {'Farming': {'rows': {}}},
+        'run_stats_query_rows_max_progression.json': {'Farming': {'rows': {}}},
         'state_matrix.json': {},
         'ep_oracle_compare.json': {},
         'line_by_line_verification.json': {},
@@ -34,6 +34,39 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
     artifacts = load_artifacts(out_dir)
     assert artifacts.get('diagnostics.json', {})['default_preset'] == 'Farming'
     assert artifacts.get('tower_regen_closure_report.json', {}) == {}
+
+
+def test_query_rows_dual_state_frame_and_surface_detail_share_normalized_path():
+    from app.inspector_data import query_rows_dual_state_frame, query_rows_surface_detail
+
+    start_rows = {
+        'Farming': {
+            'rows': {
+                'canonical_stat::tower_damage': {'final_value': 10, 'display_value': '10', 'value_type': 'scalar', 'status': 'resolved'},
+            }
+        }
+    }
+    max_rows = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {'final_value': 20, 'display_value': '20', 'value_type': 'scalar', 'status': 'resolved'},
+            }
+        }
+    }
+
+    frame = query_rows_dual_state_frame(start_rows, max_rows, preset='Farming')
+    assert len(frame) == 1
+    row = frame.iloc[0]
+    assert row['surface_id'] == 'state::tower.damage'
+    assert row['start_of_run_value'] == 10
+    assert row['max_progression_value'] == 20
+    assert row['raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['start_raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['max_raw_surface_id'] == 'state::tower.damage'
+    assert bool(row['raw_surface_id_mismatch']) is True
+
+    detail = query_rows_surface_detail(max_rows, preset='Farming', surface_id='state::tower.damage')
+    assert detail['display_value'] == '20'
 
 
 def test_statbook_rows_frame_groups_mixed_surface_ids():
