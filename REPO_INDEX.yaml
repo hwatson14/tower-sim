@@ -41,13 +41,6 @@ root:
     status: active_candidate
     layer: root
 
-  run_stats.py:
-    status: archived
-    target: archive/legacy/run_stats.py
-    reason: >
-      142 KB monolith mixing orchestration, domain logic, parsing, display.
-      T12: distribution complete. Orchestration in app/, domain in evaluators/, input/, qe/.
-
 # ─── app/ ────────────────────────────────────────────────────────────────────
 
 app:
@@ -379,36 +372,15 @@ advisors:
   input/derived/.gitkeep:
     status: delete_later
 
-# ─── archive/ ────────────────────────────────────────────────────────────────
-
-archive:
-  archive/legacy/:
-    status: active_candidate
-    note: physical location for all demoted code
-
-# ─── engine/ — shims (delete once legacy tests retired) ───────────────────────
-
-engine_shims:
-  engine/*.py:
-    status: shim
-    reason: legacy test compatibility; no active path imports
-
-# ─── models/ — shims ──────────────────────────────────────────────────────────
-
-models_shims:
-  models/*.py:
-    status: shim
-    reason: legacy test compatibility
-
 # ─── tests/ ──────────────────────────────────────────────────────────────────
 
 tests:
   tests/*.py:
     status: active_candidate
 
-  tests/live/test_boundary_contracts.py:
+  tests/shared/test_import_boundaries.py:
     status: active_candidate
-    layer: tests/live/
+    layer: tests/shared/
 
   tests/test_*.py:
     status: active_candidate

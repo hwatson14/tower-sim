@@ -72,6 +72,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     query_module_policy.py       # bounded publisher: module runtime/draw/drop/lab/mission policy
 
   simulators/
+    __init__.py
     contracts.py                # simulator-facing checkpoint/row contracts
     perks.py                    # checkpoint-local perk application helpers
     snapshot_resolver.py        # lightweight QE-backed checkpoint resolver
@@ -89,6 +90,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     incremental_parity_harness.py
     incremental_recalc_runtime.py
     incremental_subset_executor.py
+    run_executor.py             # run-level simulator executor
 
   evaluators/
     scorer.py                # scoring engine
@@ -101,9 +103,15 @@ The active surface should be small enough that an AI agent can navigate it in on
     upgrade_advisor.py       # upgrade/next-step advice
 
   app/
+    __init__.py
+    inspector_data.py        # inspector data transforms
+    models.py                # app-level dataclasses for orchestration/display
     run_stats.py             # thin CLI entrypoint
+    run_analysis.py          # analysis-oriented app entrypoint
     pipeline.py              # layer wiring only
+    publication.py           # app-level output publishing helpers
     display.py               # output number formatting and display annotation
+    streamlit_inspector.py   # streamlit inspector wiring
 
   tests/
     conftest.py
@@ -178,6 +186,52 @@ Explicit report/compat boundary:
 The bounded publisher modules are allowed as active files today, but they are the first
 consolidation candidates if `qe/` needs to shrink further. No new direct files may be added
 under `qe/` without updating this inventory and the matching enforcement test.
+
+### Simulator inventory control
+
+`simulators/` direct-file inventory must remain explicit.
+Allowed direct files are:
+
+- `__init__.py`
+- `contracts.py`
+- `incremental_cache_fingerprint.py`
+- `incremental_cache_validator.py`
+- `incremental_overlay_publisher.py`
+- `incremental_parity_harness.py`
+- `incremental_recalc_runtime.py`
+- `incremental_subset_executor.py`
+- `performance.py`
+- `perk_timeline_generator.py`
+- `perk_timeline_state.py`
+- `perks.py`
+- `progression.py`
+- `run_executor.py`
+- `runtime_consumer_executor.py`
+- `scenario.py`
+- `snapshot_resolver.py`
+- `timing.py`
+- `wave_progression_policy.py`
+
+No new direct files may be added under `simulators/` without updating this inventory and
+the matching enforcement test.
+
+### App inventory control
+
+`app/` direct-file inventory must remain explicit.
+Allowed direct files are:
+
+- `__init__.py`
+- `display.py`
+- `inspector_data.py`
+- `models.py`
+- `pipeline.py`
+- `publication.py`
+- `run_analysis.py`
+- `run_stats.py`
+- `streamlit_inspector.py`
+
+No new direct files may be added under `app/` without updating this inventory and
+the matching enforcement test.
 
 ---
 

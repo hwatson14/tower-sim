@@ -19,6 +19,7 @@ import pytest
 import re
 import sys
 from pathlib import Path
+import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -122,6 +123,17 @@ _INPUT_FILE_ALLOWLIST = {
     "state_builder.py",
     "state_types.py",
 }
+_APP_FILE_ALLOWLIST = {
+    "__init__.py",
+    "display.py",
+    "inspector_data.py",
+    "models.py",
+    "pipeline.py",
+    "publication.py",
+    "run_analysis.py",
+    "run_stats.py",
+    "streamlit_inspector.py",
+}
 _QE_FILE_ALLOWLIST = {
     "__init__.py",
     "shared_runtime_context.py",
@@ -178,6 +190,38 @@ _EVALUATORS_FILE_ALLOWLIST = {
 }
 
 pytestmark = pytest.mark.live
+
+
+def _extract_inventory_from_architecture(heading: str) -> set[str]:
+    doc = (ROOT / "ARCHITECTURE.md").read_text(encoding="utf-8")
+    pattern = re.compile(
+        rf"### {re.escape(heading)}\n\n.*?Allowed direct files are:\n\n(.*?)(?:\n\nNo new direct files may be added under)",
+        re.DOTALL,
+    )
+    match = pattern.search(doc)
+    assert match, f"Could not find inventory section: {heading}"
+    return {m.group(1) for m in re.finditer(r"- `([^`]+)`", match.group(1))}
+
+
+def _active_candidate_python_files_from_repo_index(section: str) -> set[str]:
+    repo_index = yaml.safe_load((ROOT / "REPO_INDEX.yaml").read_text(encoding="utf-8"))
+    section_map = repo_index[section]
+    names = set()
+    for key, metadata in section_map.items():
+        if not isinstance(metadata, dict):
+            continue
+        if metadata.get("status") != "active_candidate":
+            continue
+        if not key.endswith(".py"):
+            continue
+        names.add(Path(key).name)
+    return names
+
+
+def _repo_index_contains_key(section: str, key: str) -> bool:
+    repo_index = yaml.safe_load((ROOT / "REPO_INDEX.yaml").read_text(encoding="utf-8"))
+    section_map = repo_index.get(section, {})
+    return key in section_map
 
 def _py_sources(directory: Path) -> list[Path]:
     return [p for p in directory.glob("*.py") if p.name != "__init__.py"]
@@ -494,6 +538,14 @@ def test_input_direct_file_inventory_remains_explicit():
     )
 
 
+def test_app_direct_file_inventory_remains_explicit():
+    """Keep app/ root-file sprawl under an explicit architecture-approved allowlist."""
+    app_files = {p.name for p in APP_DIR.iterdir() if p.is_file()}
+    assert app_files <= _APP_FILE_ALLOWLIST, (
+        f"Unexpected app/ files: {sorted(app_files - _APP_FILE_ALLOWLIST)}"
+    )
+
+
 def test_qe_direct_file_inventory_remains_explicit():
     """Keep qe/ root-file sprawl under an explicit architecture-approved allowlist."""
     qe_files = {p.name for p in QE_DIR.iterdir() if p.is_file()}
@@ -509,12 +561,68 @@ def test_simulators_direct_file_inventory_remains_explicit():
         f"Unexpected simulators/ files: {sorted(simulator_files - _SIMULATORS_FILE_ALLOWLIST)}"
     )
 
+
 def test_evaluators_direct_file_inventory_remains_explicit():
     """Keep evaluators/ root-file sprawl under an explicit architecture-approved allowlist."""
     evaluators_files = {p.name for p in EVALUATORS_DIR.iterdir() if p.is_file()}
     assert evaluators_files <= _EVALUATORS_FILE_ALLOWLIST, (
         f"Unexpected evaluators/ files: {sorted(evaluators_files - _EVALUATORS_FILE_ALLOWLIST)}"
     )
+
+
+def test_architecture_inventory_matches_repo_index_for_app_and_simulators():
+    """
+    Governance consistency guard:
+    ARCHITECTURE.md inventory, REPO_INDEX active candidates, and boundary-test allowlists
+    must stay aligned for app/ and simulators/.
+    """
+    app_inventory = _extract_inventory_from_architecture("App inventory control")
+    simulators_inventory = _extract_inventory_from_architecture("Simulator inventory control")
+
+    assert app_inventory == _APP_FILE_ALLOWLIST, (
+        "ARCHITECTURE.md app inventory does not match test allowlist: "
+        f"{sorted(app_inventory ^ _APP_FILE_ALLOWLIST)}"
+    )
+    assert simulators_inventory == _SIMULATORS_FILE_ALLOWLIST, (
+        "ARCHITECTURE.md simulators inventory does not match test allowlist: "
+        f"{sorted(simulators_inventory ^ _SIMULATORS_FILE_ALLOWLIST)}"
+    )
+
+    app_repo_index = _active_candidate_python_files_from_repo_index("app")
+    simulators_repo_index = _active_candidate_python_files_from_repo_index("simulators")
+    assert app_repo_index == _APP_FILE_ALLOWLIST, (
+        "REPO_INDEX.yaml app active candidates do not match test allowlist: "
+        f"{sorted(app_repo_index ^ _APP_FILE_ALLOWLIST)}"
+    )
+    assert simulators_repo_index == _SIMULATORS_FILE_ALLOWLIST, (
+        "REPO_INDEX.yaml simulators active candidates do not match test allowlist: "
+        f"{sorted(simulators_repo_index ^ _SIMULATORS_FILE_ALLOWLIST)}"
+    )
+
+
+def test_governance_docs_do_not_reference_absent_legacy_runtime_paths():
+    """Governance docs should not describe legacy runtime files/directories that are absent on this branch."""
+    readme = (ROOT / "README.md").read_text(encoding="utf-8")
+    assert "python run_stats.py" not in readme, "README.md still instructs using missing root run_stats.py"
+    assert "`run_stats.py` — legacy domain helper library" not in readme, (
+        "README.md still lists missing root run_stats.py as a key active file"
+    )
+    assert "`engine/` shims re-export from active layers" not in readme, (
+        "README.md still claims engine shims exist on this branch"
+    )
+    assert "`models/` shims re-export from `qe.models`." not in readme, (
+        "README.md still claims models shims exist on this branch"
+    )
+
+    assert not (ROOT / "run_stats.py").exists(), "Unexpected root run_stats.py present; update governance checks."
+    assert not _repo_index_contains_key("root", "run_stats.py"), (
+        "REPO_INDEX.yaml root section still tracks missing run_stats.py entry"
+    )
+
+    for stale_section in ("archive", "engine_shims", "models_shims"):
+        assert stale_section not in yaml.safe_load((ROOT / "REPO_INDEX.yaml").read_text(encoding="utf-8")), (
+            f"REPO_INDEX.yaml still includes stale '{stale_section}' section for absent paths."
+        )
 
 
 def test_app_and_compare_use_qe_planner_not_direct_resolve_calls():
