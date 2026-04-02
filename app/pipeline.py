@@ -500,6 +500,7 @@ def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: st
             'contributor_id': contributor.contributor_id,
             'value': contributor.value,
             'value_type': contributor.value_type,
+            'input_value_type': contributor.input_value_type,
             'active': contributor.active,
             'gate_reason': contributor.gate_reason,
             'composition_stage': contributor.composition_stage,
