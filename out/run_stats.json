@@ -1206,8 +1206,8 @@
     },
     "session": {
       "kind": "run_stats_session",
-      "account_state_cache_hit": false,
-      "account_state_build_ms": 761.756
+      "account_state_cache_hit": true,
+      "account_state_build_ms": 19.212
     },
     "presets": {
       "Farming": {
@@ -1227,12 +1227,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 83,
           "timings_ms": {
-            "resolve_progression_ms": 196.662,
-            "resolve_timing_core_ms": 68.636,
-            "resolve_timing_wave_ms": 28.132,
+            "resolve_progression_ms": 99.449,
+            "resolve_timing_core_ms": 34.109,
+            "resolve_timing_wave_ms": 29.707,
             "publication_ms": 0.0,
-            "formatting_ms": 0.538,
-            "total_state_ms": 294.209
+            "formatting_ms": 1.308,
+            "total_state_ms": 165.633
           }
         },
         "max_progression": {
@@ -1251,12 +1251,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 84,
           "timings_ms": {
-            "resolve_progression_ms": 123.781,
-            "resolve_timing_core_ms": 48.924,
-            "resolve_timing_wave_ms": 36.242,
+            "resolve_progression_ms": 83.371,
+            "resolve_timing_core_ms": 65.93,
+            "resolve_timing_wave_ms": 52.006,
             "publication_ms": 0.0,
-            "formatting_ms": 1.988,
-            "total_state_ms": 210.999
+            "formatting_ms": 0.508,
+            "total_state_ms": 201.924
           }
         },
         "dual_state_stats": {
@@ -1281,12 +1281,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 73,
           "timings_ms": {
-            "resolve_progression_ms": 27.695,
-            "resolve_timing_core_ms": 28.794,
-            "resolve_timing_wave_ms": 31.5,
+            "resolve_progression_ms": 36.54,
+            "resolve_timing_core_ms": 32.177,
+            "resolve_timing_wave_ms": 29.445,
             "publication_ms": 0.0,
-            "formatting_ms": 0.481,
-            "total_state_ms": 88.52
+            "formatting_ms": 0.463,
+            "total_state_ms": 98.667
           }
         },
         "max_progression": {
@@ -1305,12 +1305,12 @@
           "resolved_surface_count": 26,
           "contributor_row_count": 74,
           "timings_ms": {
-            "resolve_progression_ms": 70.219,
-            "resolve_timing_core_ms": 45.491,
-            "resolve_timing_wave_ms": 42.523,
+            "resolve_progression_ms": 57.962,
+            "resolve_timing_core_ms": 42.772,
+            "resolve_timing_wave_ms": 40.623,
             "publication_ms": 0.0,
-            "formatting_ms": 0.516,
-            "total_state_ms": 158.804
+            "formatting_ms": 0.508,
+            "total_state_ms": 141.923
           }
         },
         "dual_state_stats": {
@@ -1521,38 +1521,38 @@
       "presets": {
         "Farming": {
           "start_of_run": {
-            "resolve_progression_ms": 196.662,
-            "resolve_timing_core_ms": 68.636,
-            "resolve_timing_wave_ms": 28.132,
+            "resolve_progression_ms": 99.449,
+            "resolve_timing_core_ms": 34.109,
+            "resolve_timing_wave_ms": 29.707,
             "publication_ms": 0.0,
-            "formatting_ms": 0.538,
-            "total_state_ms": 294.209
+            "formatting_ms": 1.308,
+            "total_state_ms": 165.633
           },
           "max_progression": {
-            "resolve_progression_ms": 123.781,
-            "resolve_timing_core_ms": 48.924,
-            "resolve_timing_wave_ms": 36.242,
+            "resolve_progression_ms": 83.371,
+            "resolve_timing_core_ms": 65.93,
+            "resolve_timing_wave_ms": 52.006,
             "publication_ms": 0.0,
-            "formatting_ms": 1.988,
-            "total_state_ms": 210.999
+            "formatting_ms": 0.508,
+            "total_state_ms": 201.924
           }
         },
         "Tourney": {
           "start_of_run": {
-            "resolve_progression_ms": 27.695,
-            "resolve_timing_core_ms": 28.794,
-            "resolve_timing_wave_ms": 31.5,
+            "resolve_progression_ms": 36.54,
+            "resolve_timing_core_ms": 32.177,
+            "resolve_timing_wave_ms": 29.445,
             "publication_ms": 0.0,
-            "formatting_ms": 0.481,
-            "total_state_ms": 88.52
+            "formatting_ms": 0.463,
+            "total_state_ms": 98.667
           },
           "max_progression": {
-            "resolve_progression_ms": 70.219,
-            "resolve_timing_core_ms": 45.491,
-            "resolve_timing_wave_ms": 42.523,
+            "resolve_progression_ms": 57.962,
+            "resolve_timing_core_ms": 42.772,
+            "resolve_timing_wave_ms": 40.623,
             "publication_ms": 0.0,
-            "formatting_ms": 0.516,
-            "total_state_ms": 158.804
+            "formatting_ms": 0.508,
+            "total_state_ms": 141.923
           }
         }
       }
