@@ -31,7 +31,6 @@ from qe.query_routing import (
     CARD_NAME_FALLBACK_DESTINATION,
     CARD_TARGET_SURFACE_TO_DESTINATION,
     ENHANCEMENT_ALIAS_OVERRIDES,
-    ENHANCEMENT_CONTRIBUTOR_OVERRIDES,
     GOVERNED_NUMERIC_ROWS,
     GUARDIAN_DESTINATION_OVERRIDES,
     LAB_APPLICATION_TARGET_TO_DESTINATION,
@@ -1158,12 +1157,7 @@ def compile_stat_inputs(
         _set_row_field(row, 'resolved_unit', 'x')
         if resolved_projection_state.max_workshop and max_level is not None:
             _set_row_field(row, 'notes', 'projection_state=max_workshop:using_ws_plus_max_level')
-        contributor_id = ENHANCEMENT_CONTRIBUTOR_OVERRIDES.get(slug_text(alias_name))
-        if contributor_id:
-            bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
-            _set_row_field(row, 'notes', ((row.notes or '') + ':kb_contributor_override_enhancement').strip(':'))
-        else:
-            bind_alias_destination(row, alias_name, alias_index, canonical_stats, note='kb_alias_routed_enhancement')
+        bind_alias_destination(row, alias_name, alias_index, canonical_stats, note='kb_alias_routed_enhancement')
         alias_slug = slug_text(alias_name)
         if alias_slug == 'enemy level skips':
             for extra_id in ('enhancements__tower__enemy_attack_level_skip__multiplier', 'enhancements__tower__enemy_health_level_skip__multiplier'):
