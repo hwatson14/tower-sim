@@ -78,6 +78,48 @@ def test_streamlit_app_contract_is_frozen_in_repo() -> None:
     assert '`streamlit` is optional' in text.lower()
     assert 'boss waves is interactive' in text.lower()
     assert 'permanently removed' in text.lower()
+    assert 'from input.loader import load_inputs' not in text
+    assert 'from input.runtime_state import build_runtime_state' not in text
+    assert 'from simulators.run_executor import' not in text
+    assert 'from qe.stat_input_compiler import' not in text
+    assert 'manual_inputs.yaml' not in text
+    assert 'kb/' not in text
+
+
+def test_streamlit_stats_and_boss_waves_use_sanctioned_facades() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    assert 'query_rows_dual_state_frame(' in text
+    assert 'query_rows_surface_detail(' in text
+    assert 'build_boss_wave_payload(' in text
+    assert '_module_unique_effect_map(' not in text
+
+
+def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):
+    from app import pipeline as pipeline_mod
+
+    captured: dict[str, object] = {}
+
+    class _Bundle:
+        perk_policy = {}
+
+    def _fake_load_inputs(*, ids_path, manual_inputs_path):
+        captured['ids_path'] = ids_path
+        captured['manual_inputs_path'] = manual_inputs_path
+        return _Bundle()
+
+    monkeypatch.setattr(pipeline_mod, 'load_inputs', _fake_load_inputs)
+    monkeypatch.setattr(pipeline_mod, '_load_perk_entity_registry', lambda: [])
+
+    ids_path = tmp_path / 'custom_ids.csv'
+    ids_path.write_text('h1,h2\n', encoding='utf-8')
+    manual_path = tmp_path / 'manual.yaml'
+    manual_path.write_text('perk_policy: {}\n', encoding='utf-8')
+
+    payload = pipeline_mod.load_streamlit_reference_data(ids_path=ids_path, manual_inputs_path=manual_path)
+
+    assert captured['ids_path'] == ids_path
+    assert captured['manual_inputs_path'] == manual_path
+    assert isinstance(payload, dict)
 
 
 def test_build_verification_snapshot_set_runs_default_matrix(tmp_path):

@@ -20,7 +20,6 @@ Legacy policy:
 """
 from __future__ import annotations
 
-import csv
 import json
 from functools import lru_cache
 from pathlib import Path
@@ -35,7 +34,6 @@ except ModuleNotFoundError:  # pragma: no cover - import-safe helper tests
             raise ModuleNotFoundError('streamlit is required to run the inspector UI.')
 
     st = _MissingStreamlit()
-import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
@@ -44,7 +42,6 @@ if str(ROOT) not in sys.path:
 from app.display import MODULE_CARD_CSS, render_module_card_html
 from app.inspector_data import (
     compare_rows_frame,
-    dual_state_statbook_rows_frame,
     input_lineage_rows_frame,
     load_artifacts,
     pipeline_stages_frame,
@@ -55,6 +52,8 @@ from app.inspector_data import (
     qe_surface_payload,
     qe_trace_steps_frame,
     qe_trace_summary_frame,
+    query_rows_dual_state_frame,
+    query_rows_surface_detail,
     run_stats_rows_frame,
     snapshot_label,
     statbook_rows_frame,
@@ -63,36 +62,17 @@ from app.inspector_data import (
 from app.pipeline import (
     FastCheckpointRequest,
     PipelineRunRequest,
+    build_boss_wave_payload,
     build_verification_snapshot_set,
+    compute_perk_max_effect_displays,
     execute_pipeline,
+    load_streamlit_reference_data,
     resolve_fast_checkpoint,
 )
-from input.loader import load_inputs
-from input.runtime_state import build_runtime_state
-from input.state_types import ScenarioRuntimeInputs
 from qe.contracts import normalize_surface_id_to_contract
-from qe.stat_input_compiler import (
-    _load_card_mastery_values,
-    _load_perk_effects,
-    _load_perk_entities,
-    _scaled_perk_value,
-)
-from simulators.contracts import PerkState
-from simulators.run_executor import (
-    RunToMaxConfig,
-    build_boss_wave_table,
-    build_start_of_run_state,
-)
 
 DEFAULT_OUT = ROOT / 'out'
 DEFAULT_IDS = ROOT / 'input' / 'imports' / 'ids.csv'
-PERK_ENTITY_REGISTRY = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
-CARD_EFFECT_REGISTRY = ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv'
-CARD_BASE_LADDERS = ROOT / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv'
-MODULE_UNIQUE_EFFECTS = ROOT / 'kb' / 'modules' / 'tables' / 'module-unique-effects.csv'
-MODULE_UNIQUE_RUNTIME_CATALOG = ROOT / 'kb' / 'modules' / 'contracts' / 'module-unique-runtime-catalog.csv'
-MODULE_SUBSTATS = ROOT / 'kb' / 'modules' / 'tables' / 'module-substats.csv'
-MANUAL_INPUTS = ROOT / 'input' / 'manual_inputs.yaml'
 
 
 def _friendly_recompute_mode(value: object) -> str:
@@ -182,42 +162,8 @@ def _normalize_module_substat_name(value: object) -> str:
 
 
 @lru_cache(maxsize=1)
-def _module_unique_effect_map() -> dict[str, dict]:
-    strengths: dict[str, dict] = {}
-    with MODULE_UNIQUE_EFFECTS.open(newline='', encoding='utf-8') as handle:
-        for row in csv.DictReader(handle):
-            strengths[_slug_text(str(row['module']).strip())] = dict(row)
-    descriptions: dict[str, dict] = {}
-    with MODULE_UNIQUE_RUNTIME_CATALOG.open(newline='', encoding='utf-8') as handle:
-        for row in csv.DictReader(handle):
-            descriptions[_slug_text(str(row['module_name']).strip())] = dict(row)
-    merged: dict[str, dict] = {}
-    for key in set(strengths) | set(descriptions):
-        merged[key] = {**descriptions.get(key, {}), **strengths.get(key, {})}
-    return merged
-
-
-@lru_cache(maxsize=1)
 def _module_substat_lookup() -> dict[tuple[str, str], list[dict[str, object]]]:
-    lookup: dict[tuple[str, str], list[dict[str, object]]] = {}
-    with MODULE_SUBSTATS.open(newline='', encoding='utf-8') as handle:
-        for row in csv.DictReader(handle):
-            slot = str(row.get('slot') or '').strip().lower()
-            substat = _normalize_module_substat_name(row.get('substat'))
-            rarity = str(row.get('rarity') or '').strip()
-            unit = str(row.get('unit') or '').strip().lower()
-            try:
-                value = float(str(row.get('value') or '').strip())
-            except ValueError:
-                continue
-            lookup.setdefault((slot, substat), []).append(
-                {
-                    'rarity': rarity,
-                    'unit': unit,
-                    'value': value,
-                }
-            )
-    return lookup
+    return dict(_streamlit_reference_data(str(DEFAULT_IDS), None).get('module_substat_lookup') or {})
 
 
 def _infer_module_substat_rarity(slot_type: str, sub: dict, *, role: str, slot_state: dict | None) -> str | None:
@@ -258,75 +204,30 @@ def _uw_slug(value: str) -> str:
     return _slug_text(value)
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=8)
+def _streamlit_reference_data(ids_path: str | None = None, manual_inputs_path: str | None = None) -> dict[str, object]:
+    ids = Path(ids_path) if ids_path else DEFAULT_IDS
+    manual = None if not manual_inputs_path else Path(manual_inputs_path)
+    return load_streamlit_reference_data(ids_path=ids, manual_inputs_path=manual)
+
+
 def _perk_entity_map() -> dict[str, dict]:
-    with PERK_ENTITY_REGISTRY.open(newline='', encoding='utf-8') as handle:
-        return {str(row['perk_id']).strip(): row for row in csv.DictReader(handle)}
+    return dict(_streamlit_reference_data(str(DEFAULT_IDS), None).get('perk_entity_map') or {})
 
 
-@lru_cache(maxsize=1)
 def _card_effect_map() -> dict[str, str]:
-    with CARD_EFFECT_REGISTRY.open(newline='', encoding='utf-8') as handle:
-        rows = {}
-        for row in csv.DictReader(handle):
-            if str(row.get('layer') or '').strip() != 'base_card':
-                continue
-            rows[str(row.get('card_id') or '').strip()] = str(row.get('effect_name') or '').strip()
-        return rows
+    return dict(_streamlit_reference_data(str(DEFAULT_IDS), None).get('card_effects') or {})
 
 
-@lru_cache(maxsize=1)
 def _card_value_map() -> dict[tuple[str, int], str]:
-    with CARD_BASE_LADDERS.open(newline='', encoding='utf-8') as handle:
-        rows: dict[tuple[str, int], str] = {}
-        for row in csv.DictReader(handle):
-            key = (str(row.get('card_id') or '').strip(), int(row.get('base_level') or 0))
-            raw_value = str(row.get('raw_value') or '').strip()
-            unit = str(row.get('unit') or '').strip()
-            rows[key] = f'{raw_value} {unit}'.strip()
-        return rows
+    return dict(_streamlit_reference_data(str(DEFAULT_IDS), None).get('card_values') or {})
 
 
-@lru_cache(maxsize=1)
-def _card_mastery_value_map() -> dict[tuple[str, int], tuple[float, str]]:
-    return _load_card_mastery_values()
-
-
-@lru_cache(maxsize=1)
-def _perk_effect_map() -> dict[str, dict]:
-    path = ROOT / 'kb' / 'perks' / 'tables' / 'perk-effect-registry.csv'
-    rows: dict[str, dict] = {}
-    with path.open(newline='', encoding='utf-8') as handle:
-        for row in csv.DictReader(handle):
-            perk_id = str(row.get('perk_id') or '').strip()
-            if not perk_id or str(row.get('effect_index') or '').strip() != '1':
-                continue
-            rows[perk_id] = dict(row)
-    return rows
-
-
-@lru_cache(maxsize=1)
-def _manual_banned_perks() -> set[str]:
-    try:
-        payload = yaml.safe_load(MANUAL_INPUTS.read_text(encoding='utf-8')) or {}
-    except Exception:
-        return set()
-    banned_ids = {
-        str(item).strip()
-        for item in (payload.get('perk_config') or {}).get('banned_perk_ids', [])
-        if str(item).strip()
-    }
-    banned_names = {
-        str(item).strip()
-        for item in (payload.get('perk_policy') or {}).get('banned_perks', [])
-        if str(item).strip()
-    }
-    by_name = {row.get('perk_name', ''): perk_id for perk_id, row in _perk_entity_map().items()}
-    for name in banned_names:
-        perk_id = by_name.get(name)
-        if perk_id:
-            banned_ids.add(perk_id)
-    return banned_ids
+def _manual_banned_perks(ids_path: Path, manual_inputs_path: Path | None) -> set[str]:
+    return set(
+        _streamlit_reference_data(str(ids_path), str(manual_inputs_path) if manual_inputs_path else None).get('manual_banned_perk_ids')
+        or set()
+    )
 
 
 def _rarity_color(rarity: object) -> str:
@@ -786,7 +687,14 @@ def _render_modules_table(active_artifacts, *, selected_preset: str) -> None:
                 st.markdown(render_module_card_html(card_payload), unsafe_allow_html=True)
 
 
-def _render_perks_table(account_state: dict, *, selected_preset: str, stat_inputs_payload: object) -> None:
+def _render_perks_table(
+    account_state: dict,
+    *,
+    selected_preset: str,
+    stat_inputs_payload: object,
+    ids_path: Path,
+    manual_inputs_path: Path | None,
+) -> None:
     st.subheader('Perks')
     perk_rows = _perk_entity_map()
     qe_perk_rows = _perk_rows_from_qe(stat_inputs_payload, selected_preset=selected_preset)
@@ -802,13 +710,7 @@ def _render_perks_table(account_state: dict, *, selected_preset: str, stat_input
         row.get('perk_id'): int(row.get('picks') or 0)
         for row in ((account_state.get('perk_presets') or {}).get(preset_for_rows) or [])
     }
-    banned_ids = _manual_banned_perks()
-    perk_entities = _load_perk_entities()
-    perk_effects = _load_perk_effects()
-    perk_lab_state = {
-        'standard_bonus_multiplier': 1.0 + ((standard_bonus or 0.0) / 100.0),
-        'tradeoff_bonus_multiplier': 1.0 + ((tradeoff_bonus or 0.0) / 100.0),
-    }
+    banned_ids = _manual_banned_perks(ids_path, manual_inputs_path)
     rows = []
     for perk_id, meta in perk_rows.items():
         picks = selections.get(perk_id, 0)
@@ -821,20 +723,12 @@ def _render_perks_table(account_state: dict, *, selected_preset: str, stat_input
             if _format_qe_perk_value(row.get('value'), row.get('value_type'))
         ]
         max_values = []
-        perk_meta = perk_entities.get(perk_id) or {}
-        max_picks = int(perk_meta.get('max_picks') or 0)
-        for effect in (perk_effects.get(perk_id) or []):
-            scaled = _scaled_perk_value(
-                perk_meta=perk_meta,
-                perk_effect_meta=effect,
-                perk_id=perk_id,
-                operation=str(effect.get('operation') or '').strip(),
-                raw_value=str(effect.get('effect_value') or '').strip(),
-                picks=max_picks,
-                effect_index=str(effect.get('effect_index') or '').strip(),
-                perk_lab_state=perk_lab_state,
-            )
-            formatted = _format_qe_perk_value(scaled, effect.get('operation'))
+        for scaled, value_type in compute_perk_max_effect_displays(
+            perk_id=perk_id,
+            standard_bonus_pct=standard_bonus,
+            tradeoff_bonus_pct=tradeoff_bonus,
+        ):
+            formatted = _format_qe_perk_value(scaled, value_type)
             if formatted:
                 max_values.append(formatted)
         rows.append(
@@ -1013,7 +907,14 @@ def _render_uw_groups(
                 st.dataframe(pd.DataFrame(plus_rows), width='stretch', hide_index=True)
 
 
-def _render_loadout_panel(active_artifacts, *, preset: str, max_progression_rows: dict[str, dict]) -> None:
+def _render_loadout_panel(
+    active_artifacts,
+    *,
+    preset: str,
+    max_progression_rows: dict[str, dict],
+    ids_path: Path,
+    manual_inputs_path: Path | None,
+) -> None:
     account_state = active_artifacts.get('account_state.json', {}) or {}
     if not account_state:
         return
@@ -1024,12 +925,14 @@ def _render_loadout_panel(active_artifacts, *, preset: str, max_progression_rows
         account_state,
         selected_preset=preset,
         stat_inputs_payload=active_artifacts.get('stat_inputs.json', []),
+        ids_path=ids_path,
+        manual_inputs_path=manual_inputs_path,
     )
     _render_uw_groups(
         account_state,
         selected_preset=preset,
         max_progression_rows=max_progression_rows,
-        statbook_max_progression=active_artifacts.get('statbook_max_progression.json', {}),
+        statbook_max_progression=active_artifacts.get('run_stats_query_rows_max_progression.json', {}),
         resolved_statbook_rows=_resolved_statbook_row_map(resolved_statbook),
     )
 
@@ -1189,8 +1092,8 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
     run_stats_payload = active_artifacts.get('run_stats.json', {})
     available_presets = sorted(
         set(((run_stats_payload.get('presets') or {}).keys()))
-        | set((active_artifacts.get('statbook_start_of_run.json', {}) or {}).keys())
-        | set((active_artifacts.get('statbook_max_progression.json', {}) or {}).keys())
+        | set((active_artifacts.get('run_stats_query_rows_start_of_run.json', {}) or {}).keys())
+        | set((active_artifacts.get('run_stats_query_rows_max_progression.json', {}) or {}).keys())
     )
     active_preset = request.preset if request.preset in available_presets else (available_presets[0] if available_presets else request.preset)
     preset = st.selectbox('Preset', options=available_presets or [active_preset], index=(available_presets.index(active_preset) if active_preset in available_presets else 0))
@@ -1200,9 +1103,9 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
     search_text = st.text_input('Search stats', value='').strip().lower()
 
     if view_mode == 'Analysis statbook (all stats)':
-        active_df = dual_state_statbook_rows_frame(
-            active_artifacts.get('statbook_start_of_run.json', {}),
-            active_artifacts.get('statbook_max_progression.json', {}),
+        active_df = query_rows_dual_state_frame(
+            active_artifacts.get('run_stats_query_rows_start_of_run.json', {}),
+            active_artifacts.get('run_stats_query_rows_max_progression.json', {}),
             preset=preset,
         )
     elif view_mode == 'Run stats (fast subset)':
@@ -1246,7 +1149,13 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         return
 
     if view_mode in {'Analysis statbook (all stats)', 'Run stats (fast subset)'}:
-        _render_loadout_panel(active_artifacts, preset=preset, max_progression_rows=_max_progression_lookup(active_df))
+        _render_loadout_panel(
+            active_artifacts,
+            preset=preset,
+            max_progression_rows=_max_progression_lookup(active_df),
+            ids_path=request.ids,
+            manual_inputs_path=request.manual_inputs,
+        )
         filtered_active['ep delta vs max'] = pd.to_numeric(filtered_active.get('max_progression_value'), errors='coerce') - pd.to_numeric(
             filtered_active.get('ep value'),
             errors='coerce',
@@ -1382,9 +1291,9 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         for label, artifacts in comparison_artifacts:
             if label not in selected:
                 continue
-            frame = dual_state_statbook_rows_frame(
-                artifacts.get('statbook_start_of_run.json', {}),
-                artifacts.get('statbook_max_progression.json', {}),
+            frame = query_rows_dual_state_frame(
+                artifacts.get('run_stats_query_rows_start_of_run.json', {}),
+                artifacts.get('run_stats_query_rows_max_progression.json', {}),
                 preset=preset,
             )
             if frame.empty:
@@ -1404,12 +1313,8 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             st.dataframe(merged, width='stretch', hide_index=True)
 
     selected_surface = st.selectbox('Contributor drilldown surface', options=filtered_active['surface_id'].tolist())
-    detail_payload_name = 'statbook_start_of_run.json' if request.state_mode == 'start_of_run' else 'statbook_max_progression.json'
-    selected_row = {}
-    for raw_surface_id, payload in ((active_artifacts.get(detail_payload_name, {}).get('rows') or {}).items()):
-        if normalize_surface_id_to_contract(raw_surface_id) == selected_surface:
-            selected_row = payload
-            break
+    detail_payload_name = 'run_stats_query_rows_start_of_run.json' if request.state_mode == 'start_of_run' else 'run_stats_query_rows_max_progression.json'
+    selected_row = query_rows_surface_detail(active_artifacts.get(detail_payload_name, {}), preset=preset, surface_id=selected_surface)
     if selected_row:
         st.subheader('Contributor Drilldown')
         st.json(selected_row)
@@ -1646,57 +1551,33 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         effective_damage_reduction_pct = runtime_cols_2[1].number_input('Effective DR %', min_value=0.0, max_value=100.0, value=90.0, step=0.1)
         incoming_damage_multiplier = runtime_cols_2[2].number_input('Incoming damage multiplier', min_value=0.0, max_value=100.0, value=1.0, step=0.1)
 
-    bundle = load_inputs(
-        ids_path=request.ids,
-        manual_inputs_path=request.manual_inputs,
-    )
-    account_state = build_runtime_state(
-        bundle.ids_raw,
-        loadout_config=bundle.loadout_config,
-        perk_config=bundle.perk_config,
-    )
-    initial_state = build_start_of_run_state(
-        account_state,
+    boss_payload = build_boss_wave_payload(
+        request,
         preset_name=preset_name,
-        perk_state=PerkState(wave=0, counts={}, dirty=False),
-    )
-    config = RunToMaxConfig(
-        execution_mode='table_sweep',
-        preset_name=preset_name,
-        tier_column=f'Tier {int(tier_number)}',
-        start_wave=max(1, int(boss_wave_step)),
+        tier_number=int(tier_number),
         end_wave=int(end_wave),
         boss_wave_step=int(boss_wave_step),
-        state_mode='start_of_run',
-        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(
-            {
-                'orb_boss_hit_pct': orb_boss_hit_pct,
-                'orb_boss_hits_per_second': orb_boss_hits_per_second,
-                'electron_hits_per_second': electron_hits_per_second,
-                'boss_contact_time_seconds': boss_contact_time_seconds,
-                'effective_damage_reduction_pct': effective_damage_reduction_pct,
-                'incoming_damage_multiplier': incoming_damage_multiplier,
-            }
-        ),
+        stop_on_failure=bool(stop_on_failure),
+        scenario_runtime_inputs={
+            'orb_boss_hit_pct': orb_boss_hit_pct,
+            'orb_boss_hits_per_second': orb_boss_hits_per_second,
+            'electron_hits_per_second': electron_hits_per_second,
+            'boss_contact_time_seconds': boss_contact_time_seconds,
+            'effective_damage_reduction_pct': effective_damage_reduction_pct,
+            'incoming_damage_multiplier': incoming_damage_multiplier,
+        },
     )
-    frame = pd.DataFrame(
-        build_boss_wave_table(
-            account_state=account_state,
-            initial_projected_state=initial_state,
-            config=config,
-            stop_on_failure=bool(stop_on_failure),
-        )
-    )
+    frame = pd.DataFrame(boss_payload.get('rows') or [])
     if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:
         frame['changed_workshop_tracks_last_step'] = frame['changed_workshop_tracks_last_step'].fillna('')
     surviving_rows = frame[frame['survives_boss'] == True] if not frame.empty else frame
     diagnostics = {
         'preset_name': preset_name,
-        'tier_column': config.tier_column,
-        'boss_wave_step': config.boss_wave_step,
+        'tier_column': (boss_payload.get('diagnostics') or {}).get('tier_column'),
+        'boss_wave_step': (boss_payload.get('diagnostics') or {}).get('boss_wave_step'),
         'row_count': int(len(frame)),
         'max_surviving_wave': int(surviving_rows['display_wave'].max()) if not surviving_rows.empty else 0,
-        'state_mode': config.state_mode,
+        'state_mode': (boss_payload.get('diagnostics') or {}).get('state_mode'),
         'checkpoint_mode': 'boss_wave_only',
     }
 
