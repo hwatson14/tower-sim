@@ -59,7 +59,7 @@ class InputBundle:
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _load_json_optional(path: Path) -> dict:
-    """Load a JSON file; return {} if missing or invalid."""
+    """Load an optional JSON file; return {} if missing, invalid, or not a dict."""
     if not path.exists():
         return {}
     try:
@@ -70,7 +70,7 @@ def _load_json_optional(path: Path) -> dict:
 
 
 def _load_yaml_optional(path: Path) -> dict:
-    """Load a YAML file; return {} if missing or invalid."""
+    """Load an optional YAML file; return {} if missing, invalid, or not a dict."""
     if not path.exists():
         return {}
     try:
@@ -78,6 +78,36 @@ def _load_yaml_optional(path: Path) -> dict:
     except Exception:
         return {}
     return data if isinstance(data, dict) else {}
+
+
+def _load_json_required(path: Path, *, context: str) -> dict:
+    """Load a required JSON file and enforce top-level dict payload."""
+    if not path.exists():
+        raise FileNotFoundError(f"{context}: required file not found: {path}")
+    try:
+        data = json.loads(path.read_text())
+    except Exception as exc:
+        raise ValueError(f"{context}: failed to parse JSON at {path}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"{context}: expected top-level JSON object (dict) at {path}, got {type(data).__name__}"
+        )
+    return data
+
+
+def _load_yaml_required(path: Path, *, context: str) -> dict:
+    """Load a required YAML file and enforce top-level dict payload."""
+    if not path.exists():
+        raise FileNotFoundError(f"{context}: required file not found: {path}")
+    try:
+        data = yaml.safe_load(path.read_text())
+    except Exception as exc:
+        raise ValueError(f"{context}: failed to parse YAML at {path}: {exc}") from exc
+    if not isinstance(data, dict):
+        raise ValueError(
+            f"{context}: expected top-level YAML mapping (dict) at {path}, got {type(data).__name__}"
+        )
+    return data
 
 
 def parse_perk_policy(manual_inputs: dict) -> dict:
@@ -136,12 +166,12 @@ def load_inputs(
 
     ids_raw = parse_ids(ids_path)
 
-    manual_inputs = _load_yaml_optional(manual_inputs_path)
+    manual_inputs = _load_yaml_required(manual_inputs_path, context="manual_inputs")
     loadout_config = manual_inputs.get("loadout") or {}
     perk_config = manual_inputs.get("perk_config") or {}
     perk_policy = parse_perk_policy(manual_inputs)
     manual_advisory_inputs = parse_manual_advisory_inputs(manual_inputs)
-    perks_derived = _load_json_optional(perks_derived_path)
+    perks_derived = _load_json_required(perks_derived_path, context="perks_derived")
     manifest = _load_json_optional(MANIFEST_PATH)
 
     return InputBundle(
@@ -156,5 +186,3 @@ def load_inputs(
         progress_csv_path=PROGRESS_CSV_PATH,
         manifest=manifest,
     )
-
-
