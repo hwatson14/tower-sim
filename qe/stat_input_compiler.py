@@ -1597,7 +1597,7 @@ def compile_stat_inputs(
                             value=unique_value,
                             value_type=unique_value_type,
                             stage='loadout_resolved',
-                            preset_name=preset,
+                            preset_name=module_preset,
                             provenance='IDS::Modules',
                             notes=f'module_{role}_unique_effect:{note}',
                         )
