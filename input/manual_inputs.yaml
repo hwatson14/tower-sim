@@ -3,7 +3,7 @@
 # Single canonical manual runtime input file for tower-sim.
 # This is the authoritative location for all user-configurable runtime assumptions.
 #
-# Renamed from: input/assumptions.yaml (backward-compat path stays until T6 app migration)
+# Renamed from: input/assumptions.yaml during tranche migration; active runtime now uses only this path.
 # Loaded by: input/loader.py
 #
 # Edit this file to configure loadout, perk policy, manual income observations,

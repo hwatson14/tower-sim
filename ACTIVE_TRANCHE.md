@@ -38,10 +38,8 @@ The repo is now in **concentrated hardening territory**, where small remaining o
 
 ### Remaining constraints
 
-- Streamlit contract execution is not fully complete yet (test strategy remains mixed)
-- native QE execution is not fully separated from compat/report execution
-- evaluators still import private QE/compiler helpers
-- some Streamlit tests still entrench helper-local mixed-ownership behavior
+- No open tranche blockers remain for T0-T4 closeout on this branch baseline.
+- Any new regressions should be tracked as maintain-only follow-up work, not reopened as tranche migration scope.
 
 ---
 
@@ -115,9 +113,8 @@ Release closeout is complete only when all of the following are true:
 1. **Boss Waves remains interactive**, but only through a sanctioned app-level runtime facade
 2. **Streamlit remains optional/import-safe**
 3. **Legacy start/max statbooks are permanently removed**, not restored
-4. **Formula-authority bridge remains active** until explicit retirement conditions are met
-5. **Streamlit helper-local tests must be rewritten toward boundary/contract tests**, not preserved as-is
-6. **Repo should not be described as fully re-certified green** without a durable full-suite artifact for the current snapshot
+4. **Formula-authority bridge retirement remains explicitly tracked in `BURNDOWN.yaml` thresholds**
+5. **Repo should not be described as fully re-certified green** without a durable full-suite artifact for the current snapshot
 
 ---
 

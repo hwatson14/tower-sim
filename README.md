@@ -6,7 +6,7 @@ KB-aligned deterministic simulator and calculator stack for The Tower.
 
 ```bash
 pip install -e .[dev]
-python run_stats.py   # or: python -m app.run_stats
+python -m app.run_stats
 pytest                # runs the live architecture gate (23 tests, ~3 min)
 ```
 
@@ -42,7 +42,6 @@ pytest tests/ -m expensive                                      # expensive pari
 - `app/run_stats.py` — CLI entrypoint (argparse)
 - `app/pipeline.py` — orchestration: input → qe → evaluators → out
 - `app/display.py` — output display formatting
-- `run_stats.py` — legacy domain helper library (bounded transitional; used by pipeline for domain builders)
 - `qe/` — Query Engine authority
 - `input/manual_inputs.yaml` — manual advisory assumptions
 - `input/imports/` — IDS/Progress/EP_Export CSVs
@@ -67,7 +66,6 @@ If archived material conflicts with active code, contracts, or tests, prefer the
 
 ## Transitional state
 
-- `run_stats.py` domain builders (~34 functions) are imported by `app/pipeline.py` as a bounded transitional dependency. These are domain-layer functions (audit builders, compare matrices, gap analysis) pending extraction in a future pass.
-- `engine/` shims re-export from active layers for legacy test backward-compat.
-- `models/` shims re-export from `qe.models`.
-- `optimizer/scorer.py`, `optimizer/path_ranker.py` are shims → `evaluators/`.
+There is no active root-level `run_stats.py` transitional dependency on this branch.
+The active CLI entrypoint is `app/run_stats.py`, and runtime/domain ownership follows the
+layer model documented in `ARCHITECTURE.md`.
