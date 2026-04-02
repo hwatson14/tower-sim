@@ -1,5 +1,5 @@
 {
-  "ids_path": "input\\imports\\ids.csv",
+  "ids_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\fervent-meitner\\input\\imports\\ids.csv",
   "labs": {
     "Game Speed": 7,
     "Starting Cash": 6,
@@ -849,7 +849,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "10.44 q"
+      "12.33 q"
     ],
     "rows": [
       [
@@ -994,9 +994,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.35",
-        "35",
-        "35",
+        "1.37",
+        "37",
+        "37",
         "",
         "",
         "",
@@ -1203,10 +1203,10 @@
     },
     "Coin Bonus +": {
       "name": "Coin Bonus +",
-      "current_multiplier": 1.35,
+      "current_multiplier": 1.37,
       "preset_levels": {
-        "Farming": 35,
-        "Tourney": 35,
+        "Farming": 37,
+        "Tourney": 37,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -1310,12 +1310,12 @@
       "unlocked": "true",
       "track_levels": [
         "15",
-        "07",
+        "08",
         "12"
       ],
       "track_values": [
         20.0,
-        0.55,
+        0.6,
         60.0
       ]
     },
@@ -1471,9 +1471,9 @@
       {
         "uw_name": "Chrono Field",
         "track_name": "Speed Reduction",
-        "level": 7,
-        "level_token": "07 | 55% | Cost 200 ? | Next 300 ?",
-        "resolved_value": 0.55
+        "level": 8,
+        "level_token": "08 | 60% | Cost 300 ? | Next 450 ?",
+        "resolved_value": 0.6
       },
       {
         "uw_name": "Chrono Field",
@@ -2469,7 +2469,7 @@
     "core": {
       "slot_type": "core",
       "assist_unlocked": true,
-      "assist_level": 101,
+      "assist_level": 106,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.15,
       "substat_cap": 0.15
@@ -2505,7 +2505,7 @@
       },
       "generator": {
         "primary": "Singularity Harness",
-        "assist": "Pulsar Harvester"
+        "assist": "Black Hole Digestor"
       },
       "core": {
         "primary": "Primordial Collapse",
@@ -2645,9 +2645,9 @@
     "Shrink Ray": {
       "name": "Shrink Ray",
       "slot_type": "cannon",
-      "rarity": "Legendary",
-      "level": 100,
-      "stat": "2.27",
+      "rarity": "Mythic+",
+      "level": 160,
+      "stat": "8.19",
       "substats": []
     },
     "Amplifying Strike": {
@@ -2741,8 +2741,8 @@
       "name": "Space Displacer",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 168,
-      "stat": "10.547",
+      "level": 169,
+      "stat": "10.763",
       "substats": []
     },
     "Wormhole Redirector": {
@@ -2773,8 +2773,8 @@
       "name": "Sharp Fortitude",
       "slot_type": "armor",
       "rarity": "Ancestral",
-      "level": 168,
-      "stat": "9.84",
+      "level": 169,
+      "stat": "10.04",
       "substats": [
         {
           "name": "Health Regen",
@@ -2812,8 +2812,8 @@
       "name": "Orbital Augment",
       "slot_type": "armor",
       "rarity": "Ancestral 1*",
-      "level": 168,
-      "stat": "10.194",
+      "level": 169,
+      "stat": "10.402",
       "substats": [
         {
           "name": "Defense %",
@@ -2840,24 +2840,34 @@
     "Black Hole Digestor": {
       "name": "Black Hole Digestor",
       "slot_type": "generator",
-      "rarity": "Legendary",
-      "level": 100,
-      "stat": "1.275",
+      "rarity": "Mythic+",
+      "level": 160,
+      "stat": "1.665",
       "substats": [
         {
-          "name": "Coins / Kill Bonus",
-          "value": "+0.4x",
-          "raw_token": "0.4"
+          "name": "Package Chance",
+          "value": "+11%",
+          "raw_token": "0.11"
         },
         {
           "name": "Enemy Attack Level Skip",
+          "value": "+6%",
+          "raw_token": "0.06"
+        },
+        {
+          "name": "Free Utility Upgrade",
           "value": "+4%",
           "raw_token": "0.04"
         },
         {
-          "name": "Free Utility Upgrade",
-          "value": "+8%",
-          "raw_token": "0.08"
+          "name": "Enemy Health Level Skip",
+          "value": "+6%",
+          "raw_token": "0.06"
+        },
+        {
+          "name": "Coins / Kill Bonus",
+          "value": "+0.4x",
+          "raw_token": "0.4"
         }
       ]
     },
@@ -2889,8 +2899,8 @@
       "name": "Singularity Harness",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "1.72",
+      "level": 166,
+      "stat": "1.73",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -2923,8 +2933,8 @@
       "name": "Pulsar Harvester",
       "slot_type": "generator",
       "rarity": "Ancestral 1*",
-      "level": 165,
-      "stat": "1.749",
+      "level": 166,
+      "stat": "1.759",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -2990,9 +3000,9 @@
     "Restorative Bonus": {
       "name": "Restorative Bonus",
       "slot_type": "generator",
-      "rarity": "Mythic+",
-      "level": 160,
-      "stat": "1.665",
+      "rarity": "Ancestral",
+      "level": 166,
+      "stat": "1.73",
       "substats": [
         {
           "name": "Enemy Health Level Skip",
@@ -3020,8 +3030,8 @@
       "name": "Multiverse Nexus",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 165,
-      "stat": "13.204",
+      "level": 164,
+      "stat": "12.934",
       "substats": [
         {
           "name": "Death Wave - Quantity",
@@ -3069,8 +3079,8 @@
       "name": "Dimension Core",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "12.3",
+      "level": 164,
+      "stat": "12.05",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3108,16 +3118,16 @@
       "name": "Harmony Conductor",
       "slot_type": "core",
       "rarity": "Ancestral 5*",
-      "level": 165,
-      "stat": "14.56",
+      "level": 164,
+      "stat": "14.26",
       "substats": []
     },
     "Om Chip": {
       "name": "Om Chip",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "12.3",
+      "level": 164,
+      "stat": "12.05",
       "substats": [
         {
           "name": "Chrono Field - Duration",
@@ -3145,16 +3155,16 @@
       "name": "Magnetic Hook",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 165,
-      "stat": "12.3",
+      "level": 164,
+      "stat": "12.05",
       "substats": []
     },
     "Primordial Collapse": {
       "name": "Primordial Collapse",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 165,
-      "stat": "13.204",
+      "level": 164,
+      "stat": "12.934",
       "substats": [
         {
           "name": "Black Hole - Duration",
@@ -5171,7 +5181,7 @@
         "Preset 3",
         "Preset 4",
         "Preset 5",
-        "10.44 q"
+        "12.33 q"
       ],
       [
         "",
@@ -5315,9 +5325,9 @@
       ],
       [
         "Coin Bonus +",
-        "1.35",
-        "35",
-        "35",
+        "1.37",
+        "37",
+        "37",
         "",
         "",
         "",
@@ -5460,8 +5470,8 @@
         "",
         "",
         "Speed Reduction",
-        "0.55",
-        "07 | 55% | Cost 200 ? | Next 300 ?"
+        "0.6",
+        "08 | 60% | Cost 300 ? | Next 450 ?"
       ],
       [
         "true",
@@ -6526,7 +6536,7 @@
         "",
         "Assist Slot",
         "true",
-        "101",
+        "106",
         ""
       ],
       [
@@ -6596,7 +6606,7 @@
         "",
         "",
         "",
-        "0.4444444444444444",
+        "0.44675925925925924",
         "",
         "",
         "",
@@ -6667,7 +6677,7 @@
         "",
         "",
         "Assist Slot",
-        "Pulsar Harvester",
+        "Black Hole Digestor",
         "",
         "",
         "",
@@ -6897,14 +6907,14 @@
         "8.19",
         "",
         "",
-        "Legendary",
-        "100",
-        "1.275",
+        "Mythic+",
+        "160",
+        "1.665",
         "",
         "",
         "Ancestral 2*",
-        "165",
-        "13.204",
+        "164",
+        "12.934",
         ""
       ],
       [
@@ -6918,10 +6928,10 @@
         "-3s",
         "-3",
         "",
-        "Coins / Kill Bonus",
-        "Legendary",
-        "+0.4x",
-        "0.4",
+        "Package Chance",
+        "Mythic",
+        "+11%",
+        "0.11",
         "",
         "Death Wave - Quantity",
         "Legendary",
@@ -6940,9 +6950,9 @@
         "0.3",
         "",
         "Enemy Attack Level Skip",
-        "Legendary",
-        "+4%",
-        "0.04",
+        "Mythic",
+        "+6%",
+        "0.06",
         "",
         "Golden Tower - Bonus",
         "Legendary",
@@ -6961,9 +6971,9 @@
         "0.015",
         "",
         "Free Utility Upgrade",
-        "Legendary",
-        "+8%",
-        "0.08",
+        "Rare",
+        "+4%",
+        "0.04",
         "",
         "Black Hole - Size",
         "Legendary",
@@ -6981,10 +6991,10 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
+        "Enemy Health Level Skip",
+        "Mythic",
+        "+6%",
+        "0.06",
         "",
         "Spotlight - Angle",
         "",
@@ -7002,10 +7012,10 @@
         "",
         "",
         "",
-        "",
-        "",
-        "",
-        "",
+        "Coins / Kill Bonus",
+        "Legendary",
+        "+0.4x",
+        "0.4",
         "",
         "Death Wave - Quantity",
         "",
@@ -7134,8 +7144,8 @@
         "",
         "",
         "Ancestral",
-        "165",
-        "12.3",
+        "164",
+        "12.05",
         ""
       ],
       [
@@ -7313,18 +7323,18 @@
         "",
         "",
         "Ancestral 2*",
-        "168",
-        "10.547",
+        "169",
+        "10.763",
         "",
         "",
         "Ancestral",
-        "165",
-        "1.72",
+        "166",
+        "1.73",
         "",
         "",
         "Ancestral 5*",
-        "165",
-        "14.56",
+        "164",
+        "14.26",
         ""
       ],
       [
@@ -7486,13 +7496,13 @@
         "",
         "",
         "Ancestral 1*",
-        "165",
-        "1.749",
+        "166",
+        "1.759",
         "",
         "",
         "Ancestral",
-        "165",
-        "12.3",
+        "164",
+        "12.05",
         ""
       ],
       [
@@ -7643,14 +7653,14 @@
         ""
       ],
       [
-        "Legendary",
-        "100",
-        "2.27",
+        "Mythic+",
+        "160",
+        "8.19",
         "",
         "",
         "Ancestral",
-        "168",
-        "9.84",
+        "169",
+        "10.04",
         "",
         "",
         "Mythic+",
@@ -7659,8 +7669,8 @@
         "",
         "",
         "Ancestral",
-        "165",
-        "12.3",
+        "164",
+        "12.05",
         ""
       ],
       [
@@ -7838,18 +7848,18 @@
         "",
         "",
         "Ancestral 1*",
-        "168",
-        "10.194",
+        "169",
+        "10.402",
         "",
         "",
-        "Mythic+",
-        "160",
-        "1.665",
+        "Ancestral",
+        "166",
+        "1.73",
         "",
         "",
         "Ancestral 2*",
-        "165",
-        "13.204",
+        "164",
+        "12.934",
         ""
       ],
       [

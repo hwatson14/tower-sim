@@ -6,41 +6,24 @@ output assembly, pipeline configuration.
 Must not own: domain logic.
 
 T12: bridge removed; all _h.* calls resolved to real owners.
-Orchestration utilities sharded to app/models.py and app/publication.py.
+Domain helpers live in their real owners (evaluators.compare, input.loader).
 """
 from __future__ import annotations
 
+import csv
+import dataclasses
 import json
 import sys
 from collections import Counter
+from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
-from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-# Models and Publication
-from app.models import (
-    PipelineRunRequest,
-    PipelineRunResult,
-    PipelineStageRecord,
-    PipelineTrace,
-    VerificationSnapshotSpec,
-    FastCheckpointRequest,
-    FastCheckpointResult,
-    _normalize_perk_state,
-    _run_stats_args_from_payload,
-)
-from app.publication import (
-    write_core_outputs,
-    write_pipeline_trace,
-    _json_sanitize,
-    _RUN_STATS_LEGACY_OUTPUTS,
-    _remove_legacy_outputs,
-)
 # Active layer imports
 from qe.stat_input_compiler import (
     normalize_state_mode,
@@ -54,14 +37,15 @@ from app.display import (
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.contracts import (
+    normalize_contract_payload,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
-    normalize_contract_payload as _contract_json_payload,
 )
 from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
-from simulators.progression import resolve_run_stats_progression_bundle, run_stats_progression_family_id
+from qe.query_module_policy import build_module_card_payloads
+from simulators.progression import resolve_run_stats_progression_bundle
 from simulators.contracts import SimulatorCheckpointState
 from simulators.perk_timeline_generator import (
     PerkTimelinePolicy,
@@ -72,62 +56,90 @@ from simulators.snapshot_resolver import SimulatorSnapshotResolver
 from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
 from simulators.scenario import publish_farming_throughput_support_surfaces
 
-# Evaluators sharded
-from evaluators.compare_core import (
-    build_ep_compare,
-    _build_compare_rows_by_preset,
-    build_compare_status_summary,
-)
-from evaluators.audit_engine import (
-    _build_publish_gate_audits,
-    _build_kb_incomplete_areas,
-    _build_kb_gap_register,
-    _build_perk_coverage_audit,
-    _build_artifact_contract_manifest,
-)
-from evaluators.residue_analysis import (
-    build_survivor_closure_report,
-    _build_tower_regen_closure_report,
-    _build_tower_hp_semantic_gap_report,
-    _build_tower_damage_residue_analysis,
-    _build_tower_damage_runtime_gap_report,
-    _build_tower_defense_absolute_semantic_gap_report,
-    _build_tower_regen_ep_semantic_gap_report,
-)
-from evaluators.verification_engine import (
-    build_line_by_line_verification,
-    _load_ep_oracle,
-)
-from evaluators.compare import (
-    COMPARE_DESTINATION_RUN_PERK_FACETS,
-    COMPARE_PRESET_OVERRIDES,
-    _apply_projected_runtime_compare_assumptions,
-    _build_audit_surface_manifest,
-    _build_compare_situation_fit_matrix,
-    _build_damage_defabs_scope_audit,
-    _build_family_completeness_matrix,
-    _build_publishable_statbook,
-    _compare_state_key_for_destination,
-    _contributor_snapshot,
-    _ep_stage_context_for_destination,
-    _formula_contract,
-    _load_formula_ledger,
-    _normalize_compare_values,
-    ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
-    ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
-)
-from evaluators.scorer import compute_optimizer_scores
 
+# ---------------------------------------------------------------------------
+# T9 bounding: pipeline-local utilities inlined from run_stats.
+# These are orchestration-adjacent helpers; remaining * calls are domain
+# builders legitimately in run_stats pending T-post-9 extraction.
+# ---------------------------------------------------------------------------
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 
-def _relpath_str(path: Path | str | None) -> str | None:
-    if path is None:
-        return None
-    p = Path(path)
-    try:
-        return str(p.relative_to(ROOT))
-    except (ValueError, RuntimeError):
-        return str(p)
+
+@dataclass(frozen=True)
+class PipelineRunRequest:
+    ids: Path
+    out: Path
+    preset: str = 'Farming'
+    state_mode: str = 'max_progression'
+    manual_inputs: Path | None = None
+    perk_mode: str = 'max_progression_policy'
+    include_slow_audits: bool = False
+    perk_state: str = 'auto'
+
+
+@dataclass(frozen=True)
+class PipelineStageRecord:
+    stage_id: str
+    title: str
+    owner_module: str
+    entry_function: str
+    status: str
+    elapsed_ms: float
+    outputs_summary: dict[str, object] = field(default_factory=dict)
+    notes: list[str] = field(default_factory=list)
+
+    def to_dict(self) -> dict[str, object]:
+        return dataclasses.asdict(self)
+
+
+@dataclass(frozen=True)
+class PipelineTrace:
+    request: dict[str, object]
+    execution_path: dict[str, object]
+    stages: list[PipelineStageRecord]
+    artifacts_written: list[str]
+
+    def to_dict(self) -> dict[str, object]:
+        payload = dataclasses.asdict(self)
+        payload['stages'] = [stage.to_dict() for stage in self.stages]
+        return payload
+
+
+@dataclass(frozen=True)
+class PipelineRunResult:
+    exit_code: int
+    request: PipelineRunRequest
+    out_dir: Path
+    diagnostics: dict[str, object]
+    generated_files: tuple[Path, ...]
+    pipeline_trace: PipelineTrace
+
+
+@dataclass(frozen=True)
+class VerificationSnapshotSpec:
+    preset: str
+    state_mode: str
+    perk_state: str = 'auto'
+    out_subdir: str | None = None
+
+
+@dataclass(frozen=True)
+class FastCheckpointRequest:
+    ids: Path
+    preset: str = 'Farming'
+    state_mode: str = 'start_of_run'
+    manual_inputs: Path | None = None
+    perk_mode: str = 'max_progression_policy'
+    perk_state: str = 'auto'
+    requested_surface_ids: tuple[str, ...] = ()
+
+
+@dataclass(frozen=True)
+class FastCheckpointResult:
+    request: FastCheckpointRequest
+    statbook: dict[str, object]
+    diagnostics: dict[str, object]
+
 
 def request_from_args(args) -> PipelineRunRequest:
     return PipelineRunRequest(
@@ -141,8 +153,118 @@ def request_from_args(args) -> PipelineRunRequest:
         perk_state=str(getattr(args, 'perk_state', 'auto')),
     )
 
+
+def _load_json_config(path: Path) -> dict:
+    import json
+    return json.loads(path.read_text(encoding='utf-8'))
+
+
 def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
+
+
+def _relpath_str(path_like) -> str:
+    p = Path(path_like)
+    try:
+        return str(p.resolve().relative_to(ROOT))
+    except Exception:
+        try:
+            return str(p.relative_to(ROOT))
+        except Exception:
+            return str(p)
+
+
+def _json_sanitize(obj):
+    if isinstance(obj, Path):
+        return _relpath_str(obj)
+    if isinstance(obj, dict):
+        return {k: _json_sanitize(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_sanitize(v) for v in obj]
+    if isinstance(obj, tuple):
+        return [_json_sanitize(v) for v in obj]
+    if isinstance(obj, str) and obj.startswith('/'):
+        try:
+            return _relpath_str(obj)
+        except Exception:
+            return obj
+    return obj
+
+
+def _contract_json_payload(obj):
+    return normalize_contract_payload(_json_sanitize(obj))
+
+
+def _write_core_outputs(
+    *,
+    out_dir: Path,
+    diagnostics: dict,
+    account_state,
+    canonical_output_preset: str,
+    stat_inputs,
+    statbook_dict: dict,
+    statbook_publishable_dict: dict,
+    ep_compare_publishable: dict,
+    line_verification: dict,
+    survivor_closure_report: dict,
+    state_matrix: dict,
+    optimizer_scores: dict,
+    audit_surface_manifest: dict,
+    artifact_contract_manifest: dict,
+    family_completeness_matrix: dict,
+) -> None:
+    import pandas as pd
+
+    js = _contract_json_payload
+    (out_dir / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
+    (out_dir / 'account_state.json').write_text(
+        json.dumps(js(_sanitized_account_state_for_output(account_state, canonical_output_preset)), indent=2, default=str)
+    )
+    (out_dir / 'module_card_payloads.json').write_text(
+        json.dumps(js(build_module_card_payloads(account_state)), indent=2, default=str)
+    )
+    (out_dir / 'stat_inputs.json').write_text(
+        json.dumps(js([row.to_dict() for row in stat_inputs]), indent=2, default=str)
+    )
+    (out_dir / 'statbook.json').write_text(json.dumps(js(statbook_dict), indent=2, default=str))
+    (out_dir / 'statbook_publishable.json').write_text(
+        json.dumps(js(statbook_publishable_dict), indent=2, default=str)
+    )
+    (out_dir / 'ep_oracle_compare.json').write_text(
+        json.dumps(js(ep_compare_publishable), indent=2, default=str)
+    )
+    (out_dir / 'line_by_line_verification.json').write_text(
+        json.dumps(js(line_verification), indent=2, default=str)
+    )
+    (out_dir / 'survivor_closure_report.json').write_text(
+        json.dumps(js(survivor_closure_report), indent=2, default=str)
+    )
+    (out_dir / 'state_matrix.json').write_text(json.dumps(js(state_matrix), indent=2, default=str))
+    (out_dir / 'audit_surface_manifest.json').write_text(
+        json.dumps(js(audit_surface_manifest), indent=2, default=str)
+    )
+    (out_dir / 'artifact_contract_manifest.json').write_text(
+        json.dumps(js(artifact_contract_manifest), indent=2, default=str)
+    )
+    (out_dir / 'family_completeness_matrix.json').write_text(
+        json.dumps(js(family_completeness_matrix), indent=2, default=str)
+    )
+    (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
+    verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
+    pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
+
+
+def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_state_labs: dict) -> dict:
+    from qe.publication import publish_query_surfaces
+
+    publish_query_surfaces(
+        statbook.rows,
+        manual_advisory_inputs=manual_advisory_inputs,
+        account_state_labs=account_state_labs,
+    )
+    statbook_dict = statbook.to_dict()
+    _annotate_display_fields(statbook_dict)
+    return statbook_dict
 
 def _manual_input_numeric_value(
     manual_advisory_inputs: dict,
@@ -159,6 +281,7 @@ def _manual_input_numeric_value(
         return float(entry.get('value'))
     except (TypeError, ValueError):
         return default
+
 
 def _merge_scenario_publication_rows(
     statbook,
@@ -204,9 +327,15 @@ def _merge_scenario_publication_rows(
         stat_inputs=stat_inputs,
         farming_hours_per_day=farming_hours_per_day,
     )
-
 def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
+
+
+def _normalize_perk_state(perk_state: str) -> str:
+    value = str(perk_state or 'auto').strip().lower()
+    if value not in {'auto', 'on', 'off'}:
+        raise ValueError(f'Unsupported perk state: {perk_state}')
+    return value
 
 
 def _perks_enabled_for_state(active_perk_preset: str | None, perk_state: str) -> bool:
@@ -216,6 +345,7 @@ def _perks_enabled_for_state(active_perk_preset: str | None, perk_state: str) ->
     if normalized == 'off':
         return False
     return bool(active_perk_preset)
+
 
 def _sanitized_account_state_for_output(account_state, canonical_output_preset: str) -> dict:
     payload = account_state.to_dict()
@@ -233,6 +363,7 @@ def _sanitized_account_state_for_output(account_state, canonical_output_preset: 
     )
     return payload
 
+
 def _sanitized_configured_perk_presets(account_state, canonical_output_preset: str) -> dict[str, list[str]]:
     raw = {name: [selection.perk_id for selection in selections] for name, selections in account_state.perk_presets.items()}
     return sanitize_perk_presets_for_canonical_output(
@@ -242,12 +373,14 @@ def _sanitized_configured_perk_presets(account_state, canonical_output_preset: s
         active_preset_name=getattr(account_state, 'active_perk_preset', None),
     )
 
+
 def _sanitized_active_perk_preset(account_state, canonical_output_preset: str) -> str | None:
     return sanitize_preset_name_for_canonical_output(
         getattr(account_state, 'active_perk_preset', None),
         namespace_class=getattr(account_state, 'perk_preset_namespace_class', 'canonical'),
         fallback_preset_name=canonical_output_preset,
     )
+
 
 def _perk_selection_payload(account_state, perk_preset_name: str | None) -> dict:
     selections = account_state.perk_presets.get(perk_preset_name or '', []) if perk_preset_name else []
@@ -258,6 +391,7 @@ def _perk_selection_payload(account_state, perk_preset_name: str | None) -> dict
             for selection in selections
         ],
     }
+
 
 def _preset_loadout_summary(account_state, *, preset_name: str, perk_preset_name: str | None) -> dict:
     module_preset = account_state.module_presets.get(preset_name, {})
@@ -277,6 +411,7 @@ def _preset_loadout_summary(account_state, *, preset_name: str, perk_preset_name
             'upgrades': dict(account_state.bot_upgrades),
         },
     }
+
 
 def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: str) -> dict:
     contributor_rows_by_surface: dict[str, list[dict]] = {}
@@ -299,7 +434,7 @@ def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: st
             'value_type': resolved.value_type,
             'status': resolved.status,
             'contributors': contributor_rows_by_surface.get(resolved.surface_id, []),
-            'dependency_trace': list(response.dependency_trace.get(resolved.surface_id, ())),
+            'dependency_trace': dict(response.dependency_trace.get(resolved.surface_id, {})),
             'bundle_id': bundle_id,
             'family_id': response.family_id,
             'trace_mode': trace_mode,
@@ -317,6 +452,7 @@ def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: st
     _annotate_display_fields(statbook_dict)
     return statbook_dict
 
+
 _RUN_STATS_QUERY_OUTPUTS = {
     'start_of_run_rows': 'run_stats_query_rows_start_of_run.json',
     'max_progression_rows': 'run_stats_query_rows_max_progression.json',
@@ -324,8 +460,31 @@ _RUN_STATS_QUERY_OUTPUTS = {
     'max_progression_plan': 'run_stats_query_plan_max_progression.json',
 }
 
-# _RUN_STATS_LEGACY_OUTPUTS and _remove_legacy_outputs are imported from app.publication,
-# which is the single authority for all artifact cleanup contracts.
+_RUN_STATS_LEGACY_OUTPUTS = (
+    'statbook_start_of_run.json',
+    'statbook_max_progression.json',
+    'stat_inputs_start_of_run.json',
+    'stat_inputs_max_progression.json',
+)
+
+
+def _remove_legacy_outputs(out_dir: Path, legacy_list) -> None:
+    for name in legacy_list:
+        path = out_dir / name
+        if path.exists():
+            path.unlink()
+
+
+def _remove_legacy_outputs(out_dir: Path, legacy_list) -> None:
+    for name in legacy_list:
+        path = out_dir / name
+        if path.exists():
+            path.unlink()
+
+
+def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
+    _remove_legacy_outputs(out_dir, _RUN_STATS_LEGACY_OUTPUTS)
+
 
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     rows: dict[str, dict] = {}
@@ -355,6 +514,7 @@ def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
     _annotate_display_fields(merged)
     return merged
 
+
 def _extract_tier_number(value) -> int | None:
     if value is None:
         return None
@@ -367,6 +527,13 @@ def _extract_tier_number(value) -> int | None:
     except ValueError:
         return None
 
+
+def _run_stats_progression_family_id(*, state_mode: str, perks_enabled: bool) -> str:
+    if state_mode == 'start_of_run' and not perks_enabled:
+        return 'progression_start_of_run'
+    return 'progression_runtime_with_perks' if perks_enabled else 'progression_runtime_no_perks'
+
+
 def _run_stats_timing_family_id(*, preset_name: str, perks_enabled: bool) -> str:
     if preset_name == 'Tourney':
         return 'timing_tournament_no_perks'
@@ -374,8 +541,10 @@ def _run_stats_timing_family_id(*, preset_name: str, perks_enabled: bool) -> str
         return 'timing_farm_with_perks'
     return 'timing_scenario_probe'
 
+
 def _run_stats_scenario_config(account_state, *, preset_name: str):
     from simulators.scenario import ScenarioConfig
+
     if preset_name == 'Tourney':
         league = (
             account_state.player_meta.get('Tourney League')
@@ -391,6 +560,7 @@ def _run_stats_scenario_config(account_state, *, preset_name: str):
     )
     return ScenarioConfig(mode_id='farming', tier=int(tier))
 
+
 def _run_stats_perk_state(account_state, *, preset_name: str, perk_state: str, perk_mode: str, state_mode: str) -> tuple[str | None, bool]:
     if preset_name == 'Tourney':
         return None, False
@@ -402,6 +572,7 @@ def _run_stats_perk_state(account_state, *, preset_name: str, perk_state: str, p
         projected_preset_name = account_state.active_perk_preset
         return projected_preset_name, _perks_enabled_for_state(projected_preset_name, perk_state)
     return current_perk_preset_name, current_perks_enabled
+
 
 def _build_dual_state_stats_view(start_statbook_dict: dict, max_statbook_dict: dict) -> dict:
     start_rows = start_statbook_dict.get('rows', {})
@@ -448,6 +619,7 @@ def _build_dual_state_stats_view(start_statbook_dict: dict, max_statbook_dict: d
         },
     }
 
+
 def _perk_config_has_active_preset(config: dict) -> bool:
     if not isinstance(config, dict):
         return False
@@ -456,12 +628,18 @@ def _perk_config_has_active_preset(config: dict) -> bool:
     return bool(active) and active in presets and bool(presets.get(active))
 
 
+def _normalize_perk_mode(perk_mode: str | None) -> str:
+    value = str(perk_mode or 'max_progression_policy').strip().lower()
+    if value not in {'none', 'max_progression_policy', 'runtime_timeline'}:
+        raise ValueError(f'Unsupported perk mode: {perk_mode}')
+    return value
+
+
 def _load_perk_entity_registry() -> list[dict]:
-    import csv as _csv
     path = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
     rows = []
     with path.open('r', encoding='utf-8-sig', newline='') as fh:
-        reader = _csv.DictReader(fh)
+        reader = csv.DictReader(fh)
         for row in reader:
             rows.append({k: (v.strip() if isinstance(v, str) else v) for k, v in row.items()})
     return rows
@@ -526,6 +704,7 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
                 labs[str(row[0]).strip()] = int(float(str(row[1]).strip().replace(',', '')))
             except Exception:
                 pass
+
     banned_names = _resolve_manual_banned_perks(policy)
     standard_perk_bonus_level = labs.get('Standard Perks Bonus', 0)
     target_wave = int(policy.get('target_wave', 50000) or 50000)
@@ -570,6 +749,7 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
         except Exception:
             picks = 1
         selections.append({'perk_id': perk_id, 'picks': max(1, picks)})
+
     generated = {
         'preset_namespace_class': 'transient',
         'perk_presets': {'ProjectedMaxPolicy_AllExceptManualBans': selections},
@@ -583,11 +763,13 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
             'target_wave': policy_payload['target_wave'],
         },
     }
-    metadata.update({
-        'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
-        'perk_mode': 'max_progression_policy',
-        'manual_banned_perk_count': len(banned_names),
-    })
+    metadata.update(
+        {
+            'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
+            'perk_mode': 'max_progression_policy',
+            'manual_banned_perk_count': len(banned_names),
+        }
+    )
     return generated, metadata
 
 
@@ -606,6 +788,7 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
             unknown_names.append(perk_name)
             continue
         selections.append({'perk_id': meta['perk_id'], 'picks': int(picks)})
+
     generated = {
         'preset_namespace_class': 'transient',
         'perk_presets': {'ProjectedRuntimeTimeline': selections},
@@ -629,8 +812,10 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
     if diag_output_dir is not None:
         diag_output_dir.mkdir(parents=True, exist_ok=True)
         (diag_output_dir / 'perk_generation_diagnostics.json').write_text(
-            json.dumps(diag, indent=2), encoding='utf-8'
+            json.dumps(_contract_json_payload(diag), indent=2),
+            encoding='utf-8',
         )
+
     metadata = {
         'requested_perks_path': 'manual_inputs.yaml:perk_policy',
         'resolved_perks_path': 'simulator::runtime_timeline',
@@ -652,23 +837,32 @@ def _resolve_perk_config(
     ids_raw,
     diag_output_dir: Path | None = None,
 ) -> tuple[dict, dict]:
-    # Transitional logic — keep in pipeline until input.loader is ready to absorb generator calls
-    import csv
-    from qe.contracts import normalize_contract_payload
-
-    def _normalize_perk_mode(val):
-        return str(val or 'max_progression_policy').lower()
-
     mode = _normalize_perk_mode(perk_mode)
     primary = primary_config if isinstance(primary_config, dict) else {}
-
     if mode == 'none':
-        return {'perk_presets': {}, 'active_perk_preset': None}, {'perk_mode': 'none'}
-
+        return {
+            'perk_presets': {},
+            'active_perk_preset': None,
+        }, {
+            'requested_perks_path': 'manual_inputs.yaml:perk_config',
+            'resolved_perks_path': 'none',
+            'fallback_applied': False,
+            'fallback_reason': None,
+            'perk_mode': 'none',
+        }
     if mode == 'max_progression_policy':
         return _build_max_progression_policy_perk_config(ids_raw, perk_policy)
-
+    if _perk_config_has_active_preset(primary):
+        return primary, {
+            'requested_perks_path': 'manual_inputs.yaml:perk_config',
+            'resolved_perks_path': 'manual_inputs.yaml:perk_config',
+            'fallback_applied': False,
+            'fallback_reason': None,
+            'perk_mode': 'runtime_timeline',
+            'runtime_policy_source': 'existing_active_perk_config',
+        }
     return _build_runtime_timeline_perk_config(ids_raw, perk_policy, diag_output_dir=diag_output_dir)
+
 
 def _build_account_state(
     *,
@@ -694,27 +888,23 @@ def _build_account_state(
     )
     return input_bundle, account_state, perk_config_resolution
 
-def _normalize_perk_mode(perk_mode: str | None) -> str:
-    value = str(perk_mode or 'max_progression_policy').strip().lower()
-    if value not in {'none', 'max_progression_policy', 'runtime_timeline'}:
-        raise ValueError(f'Unsupported perk mode: {perk_mode}')
-    return value
-
 
 def _effective_manual_inputs_path(path: Path | None) -> Path:
     return path if path is not None else ROOT / 'input' / 'manual_inputs.yaml'
 
 
-def _path_cache_token(path: Path) -> tuple:
+def _path_cache_token(path: Path) -> tuple[str, int | None, int | None]:
     resolved = path.resolve()
     try:
-        s = resolved.stat()
-        return (str(resolved), s.st_mtime_ns, s.st_size)
+        stat = resolved.stat()
+        return (str(resolved), stat.st_mtime_ns, stat.st_size)
     except OSError:
         return (str(resolved), None, None)
 
 
 class RunStatsSession:
+    """Warm in-process session for repeated bounded run_stats queries."""
+
     def __init__(self) -> None:
         self.qe_shared_runtime_context = get_default_qe_shared_runtime_context()
         self.query_kernel = self.qe_shared_runtime_context.query_kernel
@@ -733,7 +923,14 @@ class RunStatsSession:
             str(perk_mode),
         )
 
-    def get_account_state_bundle(self, *, ids_path: Path, manual_inputs_path: Path | None, perk_mode: str, diag_output_dir: Path | None):
+    def get_account_state_bundle(
+        self,
+        *,
+        ids_path: Path,
+        manual_inputs_path: Path | None,
+        perk_mode: str,
+        diag_output_dir: Path | None,
+    ):
         cache_key = self._account_state_cache_key(
             ids_path=ids_path,
             manual_inputs_path=manual_inputs_path,
@@ -796,7 +993,7 @@ class RunStatsSession:
                 ('max_progression', max_perk_preset_name, max_perks_enabled),
             ):
                 state_start = perf_counter()
-                progression_family_id = run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
+                progression_family_id = _run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
                 timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
                 scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
 
@@ -808,7 +1005,7 @@ class RunStatsSession:
                     perks_enabled=perks_enabled,
                     state_mode=state_mode,
                     perk_preset_name=perk_preset_name,
-                    trace_mode='contributors',
+                    trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
                 )
                 progression_ms = _elapsed_ms(t)
@@ -825,7 +1022,7 @@ class RunStatsSession:
                     state_mode=state_mode,
                     perk_preset_name=perk_preset_name,
                     include_optional_surface_ids=('support_surface::timing.gcomp_cooldown_reduction_seconds',),
-                    trace_mode='contributors',
+                    trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
                 )
                 timing_core_ms = _elapsed_ms(t)
@@ -845,7 +1042,7 @@ class RunStatsSession:
                         'state::cards.wave_accelerator.spawn_rate_acceleration',
                         'state::tower.package_chance_pct',
                     ),
-                    trace_mode='contributors',
+                    trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
                 )
                 timing_wave_ms = _elapsed_ms(t)
@@ -855,17 +1052,17 @@ class RunStatsSession:
                     _query_response_to_statbook_dict(
                         progression_response,
                         bundle_id='progression_core_stats',
-                        trace_mode='contributors',
+                        trace_mode='full_trace',
                     ),
                     _query_response_to_statbook_dict(
                         timing_core_response,
                         bundle_id='timing_core_cycle',
-                        trace_mode='contributors',
+                        trace_mode='full_trace',
                     ),
                     _query_response_to_statbook_dict(
                         timing_wave_response,
                         bundle_id='timing_wave_duration',
-                        trace_mode='contributors',
+                        trace_mode='full_trace',
                     ),
                 )
                 formatting_ms = _elapsed_ms(t)
@@ -974,50 +1171,93 @@ class RunStatsSession:
 
     def execute(self, args) -> int:
         args.out.mkdir(parents=True, exist_ok=True)
-        _remove_legacy_outputs(args.out, _RUN_STATS_LEGACY_OUTPUTS)
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
+        js = _json_sanitize
         write_start = perf_counter()
+        _remove_run_stats_legacy_outputs(args.out)
+        (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         (args.out / 'account_state.json').write_text(
-            json.dumps(_json_sanitize(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
+            json.dumps(js(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
+        )
+        (args.out / 'module_card_payloads.json').write_text(
+            json.dumps(js(build_module_card_payloads(artifacts['account_state'])), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan']).write_text(
-            json.dumps(_json_sanitize({
+            json.dumps(js({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'start_of_run',
                 'presets': artifacts['state_query_plans']['start_of_run'],
             }), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']).write_text(
-            json.dumps(_json_sanitize({
+            json.dumps(js({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'max_progression',
                 'presets': artifacts['state_query_plans']['max_progression'],
             }), indent=2, default=str)
         )
-        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows']).write_text(json.dumps(_json_sanitize(artifacts['start_books_by_preset']), indent=2, default=str))
-        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(json.dumps(_json_sanitize(artifacts['max_books_by_preset']), indent=2, default=str))
-        (args.out / 'run_stats.json').write_text(json.dumps(_json_sanitize(artifacts['run_stats_payload']), indent=2, default=str))
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows']).write_text(
+            json.dumps(js(artifacts['start_books_by_preset']), indent=2, default=str)
+        )
+        (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(
+            json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str)
+        )
+        (args.out / 'run_stats.json').write_text(json.dumps(js(artifacts['run_stats_payload']), indent=2, default=str))
+        diagnostics['output_contract'] = {
+            'product_artifact': 'run_stats.json',
+            'query_row_artifacts': [
+                _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'],
+                _RUN_STATS_QUERY_OUTPUTS['max_progression_rows'],
+            ],
+            'query_plan_artifacts': [
+                _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'],
+                _RUN_STATS_QUERY_OUTPUTS['max_progression_plan'],
+            ],
+            'removed_legacy_fast_path_artifacts': list(_RUN_STATS_LEGACY_OUTPUTS),
+            'ui_payload_artifacts': ['module_card_payloads.json'],
+        }
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
-        (args.out / 'diagnostics.json').write_text(json.dumps(_json_sanitize(diagnostics), indent=2, default=str))
+        (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         return 0
+
 
 @lru_cache(maxsize=1)
 def get_default_run_stats_session() -> RunStatsSession:
     return RunStatsSession()
 
+
 def run_stats_pipeline(args) -> int:
+    """
+    Execute the fast stats pipeline.
+
+    Wires: input -> qe -> out.
+    Produces side-by-side start_of_run and max_progression composite stat views.
+    Runs through the warm in-process run_stats session.
+    """
     return get_default_run_stats_session().execute(args)
 
+
 def run_stats_watch_loop(args) -> int:
+    """
+    Execute run_stats in a warm local loop.
+
+    Reuses the process-local RunStatsSession so repeated runs avoid bootstrap
+    and account-state cold costs whenever the inputs have not changed.
+    """
     session = get_default_run_stats_session()
     print("run_stats watch mode is warm. Press Enter to rerun, or type 'q' to quit.")
     while True:
         rc = session.execute(args)
-        if rc != 0: return rc
-        try: user_input = input("run_stats watch > ").strip().lower()
-        except EOFError: return 0
-        if user_input in {'q', 'quit', 'exit'}: return 0
+        if rc != 0:
+            return rc
+        try:
+            user_input = input("run_stats watch > ").strip().lower()
+        except EOFError:
+            return 0
+        if user_input in {'q', 'quit', 'exit'}:
+            return 0
+
 
 def _run_stats_request_payload(args) -> dict[str, object]:
     return {
@@ -1028,7 +1268,10 @@ def _run_stats_request_payload(args) -> dict[str, object]:
         'perk_state': getattr(args, 'perk_state', 'auto'),
     }
 
-def _run_stats_args_from_payload(payload: dict[str, object]):
+
+def _run_stats_args_from_payload(payload: dict[str, object]) -> SimpleNamespace:
+    from types import SimpleNamespace
+
     return SimpleNamespace(
         ids=Path(str(payload['ids'])),
         out=Path(str(payload['out'])),
@@ -1037,75 +1280,209 @@ def _run_stats_args_from_payload(payload: dict[str, object]):
         perk_state=str(payload.get('perk_state', 'auto')),
     )
 
+
 def run_stats_server(args) -> int:
+    """
+    Serve warm run_stats requests over localhost using the shared session.
+    """
     from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
+
     session = get_default_run_stats_session()
     server_address = (getattr(args, 'host', '127.0.0.1'), int(getattr(args, 'port', 8765)))
+
     class _RunStatsHandler(BaseHTTPRequestHandler):
-        def do_POST(self) -> None:
-            if self.path != '/run': self.send_error(404); return
+        def do_POST(self) -> None:  # noqa: N802 - stdlib API name
+            if self.path != '/run':
+                self.send_error(404)
+                return
             content_length = int(self.headers.get('Content-Length', '0'))
             payload = json.loads(self.rfile.read(content_length).decode('utf-8'))
             request_args = _run_stats_args_from_payload(payload)
+            started = perf_counter()
             rc = session.execute(request_args)
-            body = json.dumps({'ok': rc == 0, 'exit_code': rc, 'out': str(request_args.out)}).encode('utf-8')
+            elapsed_ms = _elapsed_ms(started)
+            body = json.dumps({
+                'ok': rc == 0,
+                'exit_code': rc,
+                'elapsed_ms': elapsed_ms,
+                'out': str(request_args.out),
+            }).encode('utf-8')
             self.send_response(200 if rc == 0 else 500)
             self.send_header('Content-Type', 'application/json')
             self.send_header('Content-Length', str(len(body)))
             self.end_headers()
             self.wfile.write(body)
-        def do_GET(self) -> None:
-            if self.path != '/health': self.send_error(404); return
-            body = json.dumps({'ok': True}).encode('utf-8')
-            self.send_response(200); self.end_headers(); self.wfile.write(body)
-        def log_message(self, format: str, *args) -> None: return
+
+        def do_GET(self) -> None:  # noqa: N802 - stdlib API name
+            if self.path != '/health':
+                self.send_error(404)
+                return
+            body = json.dumps({'ok': True, 'kind': 'run_stats_server'}).encode('utf-8')
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, format: str, *args) -> None:  # noqa: A003 - stdlib signature
+            return
+
     with ThreadingHTTPServer(server_address, _RunStatsHandler) as server:
-        try: server.serve_forever()
-        except KeyboardInterrupt: return 0
+        host, port = server.server_address
+        print(f"run_stats server is warm on http://{host}:{port}")
+        try:
+            server.serve_forever()
+        except KeyboardInterrupt:
+            return 0
     return 0
 
+
 def run_stats_client(args) -> int:
+    """
+    Send a run_stats request to a local warm run_stats server.
+    """
+    from urllib import error as urllib_error
     from urllib import request as urllib_request
+
     url = f"http://{getattr(args, 'host', '127.0.0.1')}:{int(getattr(args, 'port', 8765))}/run"
     request_body = json.dumps(_run_stats_request_payload(args)).encode('utf-8')
-    req = urllib_request.Request(url, data=request_body, headers={'Content-Type': 'application/json'}, method='POST')
+    request = urllib_request.Request(
+        url,
+        data=request_body,
+        headers={'Content-Type': 'application/json'},
+        method='POST',
+    )
     try:
-        with urllib_request.urlopen(req, timeout=60) as response:
+        with urllib_request.urlopen(request, timeout=60) as response:
             payload = json.loads(response.read().decode('utf-8'))
-            print(json.dumps(payload, indent=2))
-            return int(payload.get('exit_code', 1))
-    except Exception as exc: print(f"run_stats client failed: {exc}"); return 1
+    except urllib_error.URLError as exc:
+        print(f"run_stats local server request failed: {exc}")
+        return 1
+    print(json.dumps(payload, indent=2))
+    return int(payload.get('exit_code', 1))
+
 
 def run_stats_local_server_is_healthy(args, *, timeout_seconds: float = 0.25) -> bool:
+    """
+    Return True when a local warm run_stats server is reachable and healthy.
+    """
+    from urllib import error as urllib_error
     from urllib import request as urllib_request
+
     url = f"http://{getattr(args, 'host', '127.0.0.1')}:{int(getattr(args, 'port', 8765))}/health"
     try:
         with urllib_request.urlopen(url, timeout=timeout_seconds) as response:
-            return bool(json.loads(response.read().decode('utf-8')).get('ok'))
-    except: return False
+            payload = json.loads(response.read().decode('utf-8'))
+    except (urllib_error.URLError, TimeoutError, ValueError, json.JSONDecodeError):
+        return False
+    return bool(payload.get('ok'))
 
-def run_stats_ensure_local_server(args) -> bool:
-    import subprocess, time
-    if run_stats_local_server_is_healthy(args): return True
-    host = getattr(args, 'host', '127.0.0.1')
-    port = int(getattr(args, 'port', 8765))
-    command = [sys.executable, '-m', 'app.run_stats', '--server', '--host', str(host), '--port', str(port)]
-    subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    for _ in range(30):
-        if run_stats_local_server_is_healthy(args): return True
-        time.sleep(0.1)
+
+def run_stats_ensure_local_server(args, *, startup_timeout_seconds: float = 3.0, poll_interval_seconds: float = 0.1) -> bool:
+    """
+    Ensure a local warm run_stats server is available.
+
+    Returns True when an existing server is healthy or when a new local server
+    was spawned and became healthy within the startup timeout.
+    """
+    import subprocess
+    import sys
+    import time
+
+    if run_stats_local_server_is_healthy(args):
+        return True
+
+    command = [
+        sys.executable,
+        '-m',
+        'app.run_stats',
+        '--server',
+        '--host',
+        str(getattr(args, 'host', '127.0.0.1')),
+        '--port',
+        str(int(getattr(args, 'port', 8765))),
+    ]
+    creationflags = 0
+    popen_kwargs: dict[str, object] = {
+        'stdout': subprocess.DEVNULL,
+        'stderr': subprocess.DEVNULL,
+        'stdin': subprocess.DEVNULL,
+    }
+    if sys.platform == 'win32':
+        creationflags = getattr(subprocess, 'DETACHED_PROCESS', 0) | getattr(subprocess, 'CREATE_NEW_PROCESS_GROUP', 0)
+    else:
+        popen_kwargs['start_new_session'] = True
+    subprocess.Popen(command, creationflags=creationflags, **popen_kwargs)
+
+    deadline = time.time() + startup_timeout_seconds
+    while time.time() < deadline:
+        if run_stats_local_server_is_healthy(args):
+            return True
+        time.sleep(poll_interval_seconds)
     return False
 
+
 def run_analysis_pipeline(args) -> int:
+    """
+    Execute the full stat pipeline.
+
+    Wires: input -> qe -> evaluators -> out.
+    Transitional domain helpers sourced from run_stats module until T7.
+    """
     args.state_mode = normalize_state_mode(args.state_mode)
     args.perk_state = _normalize_perk_state(args.perk_state)
+    args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
     args.out.mkdir(parents=True, exist_ok=True)
 
-    _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=getattr(args, 'manual_inputs', None))
+    from evaluators.compare import (
+        COMPARE_DESTINATION_RUN_PERK_FACETS,
+        COMPARE_PRESET_OVERRIDES,
+        _apply_projected_runtime_compare_assumptions,
+        _build_artifact_contract_manifest,
+        _build_audit_surface_manifest,
+        _build_compare_rows_by_preset,
+        _build_compare_situation_fit_matrix,
+        build_compare_status_summary as _build_compare_status_summary,
+        _build_damage_defabs_scope_audit,
+        build_ep_compare as _build_ep_compare,
+        _build_family_completeness_matrix,
+        _build_kb_gap_register,
+        _build_kb_incomplete_areas,
+        _build_kb_only_health_family_audit,
+        build_line_by_line_verification as _build_line_by_line_verification,
+        _build_perk_contributor_audit,
+        _build_perk_coverage_audit,
+        _build_publish_gate_audits,
+        _build_publishable_statbook,
+        _build_run_perk_residue_analysis,
+        build_survivability_residue_analysis as _build_survivability_residue_analysis,
+        build_survivor_closure_report as _build_survivor_closure_report,
+        _build_tower_damage_residue_analysis,
+        _build_tower_damage_runtime_gap_report,
+        _build_tower_defense_absolute_semantic_gap_report,
+        _build_tower_hp_semantic_gap_report,
+        _build_tower_regen_closure_report,
+        _build_tower_regen_ep_semantic_gap_report,
+        _build_tradeoff_routing_audit,
+        _compare_state_key_for_destination,
+        _contributor_snapshot,
+        _ep_stage_context_for_destination,
+        _formula_contract,
+        _is_calculator_scope_row,
+        _load_ep_oracle,
+        _load_formula_ledger,
+        _normalize_compare_values,
+        ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
+        ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
+    )
+    from evaluators.scorer import compute_optimizer_scores
+
+    _manual_inputs_path = getattr(args, 'manual_inputs', None)
+    _input_bundle = load_inputs(ids_path=args.ids, manual_inputs_path=_manual_inputs_path)
     ids_raw = _input_bundle.ids_raw
     loadout_config = _input_bundle.loadout_config
     perk_config, perk_config_resolution = _resolve_perk_config(
-        perk_mode=getattr(args, 'perk_mode', 'max_progression_policy'),
+        perk_mode=args.perk_mode,
         primary_config=_input_bundle.perk_config,
         perk_policy=_input_bundle.perk_policy,
         ids_raw=ids_raw,
@@ -1115,24 +1492,29 @@ def run_analysis_pipeline(args) -> int:
     ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
     qe_planner = QEResolutionPlanner()
 
-    _ep_kwargs = dict(
-        ep_stage_context_for_destination=_ep_stage_context_for_destination,
-        compare_state_key_for_destination=_compare_state_key_for_destination,
-        contributor_snapshot=_contributor_snapshot,
-        apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
-        formula_contract=_formula_contract,
-        normalize_compare_values=_normalize_compare_values,
-    )
-
-    (account_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context) = _build_compare_rows_by_preset(
-        ids_raw=ids_raw, loadout_config=loadout_config, perk_config=perk_config,
-        formula_ledger=formula_ledger, state_mode=args.state_mode, default_preset=args.preset,
-        ep_oracle=ep_oracle, perk_state=args.perk_state, snapshot_planner=qe_planner,
+    (
+        account_state,
+        compare_rows_by_preset,
+        compare_publishable_rows_by_preset,
+        package_stage_context,
+    ) = _build_compare_rows_by_preset(
+        ids_raw=ids_raw,
+        loadout_config=loadout_config,
+        perk_config=perk_config,
+        formula_ledger=formula_ledger,
+        state_mode=args.state_mode,
+        default_preset=args.preset,
+        ep_oracle=ep_oracle,
+        perk_state=args.perk_state,
+        snapshot_planner=qe_planner,
     )
 
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
     main_snapshot = qe_planner.resolve_report_snapshot(
-        account_state, preset_name=args.preset, state_mode=args.state_mode, perks_enabled=perks_enabled,
+        account_state,
+        preset_name=args.preset,
+        state_mode=args.state_mode,
+        perks_enabled=perks_enabled,
     )
     stat_inputs = list(main_snapshot.stat_inputs)
     statbook = main_snapshot.statbook
@@ -1154,14 +1536,16 @@ def run_analysis_pipeline(args) -> int:
     for destination, row in statbook_dict.get('rows', {}).items():
         row['formula_contract'] = _formula_contract(formula_ledger, destination)
     _annotate_display_fields(statbook_dict)
-
     statbook_publishable_dict = _build_publishable_statbook(statbook_dict, formula_ledger)
     _annotate_display_fields(statbook_publishable_dict)
 
-    state_matrix: dict[str, object] = {}
+    state_matrix = {}
     for state_mode in SUPPORTED_STATE_MODES:
         matrix_snapshot = qe_planner.resolve_report_snapshot(
-            account_state, preset_name=args.preset, state_mode=state_mode, perks_enabled=perks_enabled,
+            account_state,
+            preset_name=args.preset,
+            state_mode=state_mode,
+            perks_enabled=perks_enabled,
         )
         matrix_inputs = list(matrix_snapshot.stat_inputs)
         matrix_statbook_obj = matrix_snapshot.statbook
@@ -1188,37 +1572,102 @@ def run_analysis_pipeline(args) -> int:
             'partially_resolved_stat_count': matrix_statbook.get('diagnostics', {}).get('partially_resolved_stat_count', 0),
         }
 
-    ep_compare = build_ep_compare(
+    _ep_kwargs = dict(
+        ep_stage_context_for_destination=_ep_stage_context_for_destination,
+        compare_state_key_for_destination=_compare_state_key_for_destination,
+        contributor_snapshot=_contributor_snapshot,
+        apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
+        formula_contract=_formula_contract,
+        normalize_compare_values=_normalize_compare_values,
+    )
+    ep_compare = _build_ep_compare(
         ep_oracle, compare_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
     )
-    ep_compare_publishable = build_ep_compare(
+    ep_compare_publishable = _build_ep_compare(
         ep_oracle, compare_publishable_rows_by_preset, formula_ledger, package_stage_context, **_ep_kwargs
     )
     _annotate_compare_display_fields(ep_compare)
     _annotate_compare_display_fields(ep_compare_publishable)
-    current_compare_summary = build_compare_status_summary(ep_compare_publishable)
+    current_compare_summary = _build_compare_status_summary(ep_compare_publishable)
 
-    ep_compare_publishable = _ensure_compare_authoritative_verdict_fields(ep_compare_publishable)
-    line_verification = build_line_by_line_verification(
-        statbook_publishable_dict, ep_compare_publishable, formula_ledger, _formula_contract
+    if args.state_mode == 'max_progression':
+        projected_account_state = account_state
+        projected_compare_rows_by_preset = compare_rows_by_preset
+        projected_compare_publishable_rows_by_preset = compare_publishable_rows_by_preset
+        projected_stage_context = package_stage_context
+    else:
+        (
+            projected_account_state,
+            projected_compare_rows_by_preset,
+            projected_compare_publishable_rows_by_preset,
+            projected_stage_context,
+        ) = _build_compare_rows_by_preset(
+            ids_raw=ids_raw,
+            loadout_config=loadout_config,
+            perk_config=perk_config,
+            formula_ledger=formula_ledger,
+            state_mode='max_progression',
+            default_preset=args.preset,
+            ep_oracle=ep_oracle,
+            perk_state=args.perk_state,
+            snapshot_planner=qe_planner,
+        )
+    projected_ep_compare_publishable = _build_ep_compare(
+        ep_oracle, projected_compare_publishable_rows_by_preset, formula_ledger,
+        projected_stage_context, **_ep_kwargs
     )
-    line_verification = _ensure_line_verification_authoritative_verdict_fields(line_verification)
-    survivor_report = build_survivor_closure_report(ep_compare_publishable, line_verification)
+    _annotate_compare_display_fields(projected_ep_compare_publishable)
+    projected_compare_summary = _build_compare_status_summary(projected_ep_compare_publishable)
 
-    optimizer_scores = compute_optimizer_scores(statbook_dict)
-    audit_surface_manifest = _build_audit_surface_manifest(account_state, args.preset)
-    artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
-    family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
+    routing_class_counts = statbook.diagnostics.get('input_routing_class_counts', {})
+    routed_input_count = statbook.diagnostics.get('mapped_input_count', sum(1 for row in stat_inputs if row.destination_id))
+    truly_unrouted_input_count = statbook.diagnostics.get('unmapped_input_count', sum(1 for row in stat_inputs if not row.destination_id))
+    unmapped_examples = {}
+    for row in stat_inputs:
+        if not row.destination_id and row.source_family not in unmapped_examples:
+            unmapped_examples[row.source_family] = row.stat_name
 
-    audits = _build_publish_gate_audits(stat_inputs, statbook_publishable_dict, ep_compare_publishable, formula_ledger)
-    kb_incomplete_areas = _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_ledger)
-    kb_gap_register = _build_kb_gap_register(kb_incomplete_areas, audits)
+    mapped_counter = Counter(row.source_family for row in stat_inputs if row.destination_id)
+    total_counter = Counter(row.source_family for row in stat_inputs)
 
-    routed_input_count = sum(1 for r in stat_inputs if r.destination_id)
-    truly_unrouted_input_count = sum(1 for r in stat_inputs if not r.destination_id)
+    card_preset_sizes = {name: len(cards) for name, cards in account_state.card_presets.items()}
+    card_slot_limit_exceeded = {
+        name: size
+        for name, size in card_preset_sizes.items()
+        if account_state.card_slots_unlocked is not None and size > account_state.card_slots_unlocked
+    }
+
     resolved_surface_count = statbook.diagnostics.get('resolved_stat_count', 0)
     partial_surface_count = statbook.diagnostics.get('partially_resolved_stat_count', 0)
     total_input_count = len(stat_inputs)
+    family_burn_down = {
+        family: {
+            'routed': mapped_counter.get(family, 0),
+            'total': total_counter.get(family, 0),
+            'pct': _safe_pct(mapped_counter.get(family, 0), total_counter.get(family, 0)),
+        }
+        for family in sorted(total_counter)
+    }
+    scoped_rows = [row for row in stat_inputs if _is_calculator_scope_row(row)]
+    scoped_total = len(scoped_rows)
+    scoped_mapped = sum(1 for row in scoped_rows if row.destination_id)
+    scope_excluded_rows = [row for row in stat_inputs if not _is_calculator_scope_row(row)]
+    scoped_family_totals = Counter(row.source_family for row in scoped_rows)
+
+    audits = _build_publish_gate_audits(
+        stat_inputs, statbook_publishable_dict, ep_compare_publishable, formula_ledger
+    )
+    kb_incomplete_areas = _build_kb_incomplete_areas(
+        stat_inputs, statbook_publishable_dict, formula_ledger
+    )
+    kb_gap_register = _build_kb_gap_register(kb_incomplete_areas, audits)
+    ep_compare_publishable = _ensure_compare_authoritative_verdict_fields(ep_compare_publishable)
+    line_verification = _build_line_by_line_verification(
+        statbook_publishable_dict, ep_compare_publishable, formula_ledger, _formula_contract
+    )
+    line_verification = _ensure_line_verification_authoritative_verdict_fields(line_verification)
+    survivor_closure_report = _build_survivor_closure_report(ep_compare_publishable, line_verification)
+    verification_counter = Counter(v['verification_status'] for v in line_verification.values())
 
     diagnostics = {
         'section_names': list(ids_raw.raw_sections.keys()),
@@ -1230,74 +1679,279 @@ def run_analysis_pipeline(args) -> int:
         'state_mode_support': state_mode_support(args.state_mode),
         'supported_state_modes': list(SUPPORTED_STATE_MODES),
         'state_matrix': state_matrix,
-        'stat_input_count': total_input_count,
+        'stat_input_count': len(stat_inputs),
         'statbook_row_count': len(statbook.rows),
         'engine_status': statbook.diagnostics.get('resolver_status'),
         'qe_resolution_interface': statbook.diagnostics.get('qe_resolution_interface'),
         'qe_resolution_backend': statbook.diagnostics.get('qe_resolution_backend'),
+        'qe_native_family_available': statbook.diagnostics.get('qe_native_family_available'),
+        'qe_native_family_id': statbook.diagnostics.get('qe_native_family_id'),
+        'qe_native_family_merge': statbook.diagnostics.get('qe_native_family_merge'),
         'publish_status': statbook_publishable_dict.get('diagnostics', {}).get('oracle_policy'),
         'formula_ledger_version': formula_ledger.get('version'),
+        'ep_compare_stage_rules': {
+            'default_compare_preset': 'Farming',
+            'preset_overrides': COMPARE_PRESET_OVERRIDES,
+            'ep_progression_state': 'max_progression',
+            'ep_workshop_state': 'derived_from_max_progression',
+            'ep_run_state_default': 'farming',
+            'ep_run_state_tourney_offense': 'tourney_present',
+            'package_compare_capability': {
+                'progression_state': 'dynamic_current_or_projected_max_by_state_mode',
+                'workshop_state': 'dynamic_current_or_projected_max_by_state_mode',
+                'perk_state': args.perk_state,
+                'perk_mode': args.perk_mode,
+                'perk_materialization': perks_enabled,
+                'perk_ids_parser_support': False,
+                'perk_external_config_support': True,
+                'perk_account_state_support': True,
+                'perk_stat_input_support': True,
+                'perk_resolver_support': True,
+                'perk_account_state_support': True,
+                'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
+                'state_mode': args.state_mode,
+            },
+            'notes': [
+                'EP export compare uses run-situation policy: offense surfaces use Tourney loadout with perks off; non-offense surfaces use Farming by default and follow the selected perk state/mode.',
+                'EP export max progression implies max workshop and farming-side perk application beyond the current IDS/loadout-present package state.',
+                'Perk policy is input-owned; pipeline selects explicit perk mode none|max_progression_policy|runtime_timeline.',
+                'Perk selections are not parsed from IDS itself; they must be supplied explicitly when a run state needs them.',
+                'Perk application is controlled at pipeline scope via --perk-mode plus --perk-state auto|on|off.',
+                'When values do not match and EP uses unsupported stage facets, compare status is stage_scope_mismatch rather than a hard formula mismatch.',
+                'Max Recovery EP export is treated as a non-comparable health-at-cap surface, not a multiplier.',
+            ],
+        },
+        'destination_type_schema': statbook.diagnostics.get('destination_type_schema', {}),
         'mapped_stat_input_count': routed_input_count,
         'unmapped_stat_input_count': truly_unrouted_input_count,
+        'input_routing_class_counts': routing_class_counts,
         'resolved_stat_count': resolved_surface_count,
         'partially_resolved_stat_count': partial_surface_count,
-        'ep_compare_summary': current_compare_summary,
-        **current_compare_summary,
+        'burn_down': {
+            'input_mapping_pct': _safe_pct(routed_input_count, total_input_count),
+            'fully_resolved_surface_pct_of_inputs': _safe_pct(resolved_surface_count, total_input_count),
+            'resolved_or_partial_surface_pct_of_inputs': _safe_pct(
+                resolved_surface_count + partial_surface_count, total_input_count
+            ),
+            'family_mapping_pct': family_burn_down,
+            'calculator_scope_total_inputs': scoped_total,
+            'calculator_scope_mapped_inputs': scoped_mapped,
+            'calculator_scope_mapping_pct': _safe_pct(scoped_mapped, scoped_total),
+            'calculator_scope_excluded_inputs': len(scope_excluded_rows),
+            'calculator_scope_excluded_examples': sorted({row.stat_name for row in scope_excluded_rows})[:20],
+            'calculator_scope_family_totals': dict(sorted(scoped_family_totals.items())),
+            'calculator_scope_unmapped_examples': sorted({row.stat_name for row in scoped_rows if not row.destination_id})[:20],
+            'note': 'calculator_scope tracks true unrouted inputs only; routed metadata/capability/runtime-only classes no longer inflate unmapped counts.',
+        },
+        'tests_passed': 'not_run_by_run_stats',
+        'calculator_scope_mapping_pct': _safe_pct(scoped_mapped, scoped_total),
+        'calculator_scope_excluded_inputs': len(scope_excluded_rows),
+        'calculator_scope_unmapped_examples': sorted({row.stat_name for row in scoped_rows if not row.destination_id})[:20],
+        'card_slots_unlocked': account_state.card_slots_unlocked,
         'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
         'configured_perk_presets': _sanitized_configured_perk_presets(account_state, args.preset),
         'active_card_preset': account_state.active_card_preset,
         'active_module_preset': account_state.active_module_preset,
-        'perk_state': args.perk_state,
+        'perk_input_file': 'manual_inputs.yaml',
+        'compare_package_value_provenance': {
+            'statbook_default_output_preset': args.preset,
+            'ep_compare_uses_rows_by_preset': True,
+            'preset_overrides': COMPARE_PRESET_OVERRIDES,
+            'note': 'ep_oracle_compare package_value may differ from statbook.json when compare_preset differs from the default output preset.',
+        },
         'kb_incomplete_areas': kb_incomplete_areas,
         'kb_gap_register': kb_gap_register,
+        'blocked_formula_contract_count': kb_incomplete_areas['summary']['blocked_formula_contract_count'],
+        'active_unmapped_input_count': kb_incomplete_areas['summary']['active_unmapped_input_count'],
+        'resolved_unknown_schema_unit_count': kb_incomplete_areas['summary']['resolved_unknown_schema_unit_count'],
+        'ambiguous_relic_semantic_hint_count': kb_incomplete_areas['summary']['ambiguous_relic_semantic_hint_count'],
+        'perk_support': {
+            'perk_ids_parser_support': False,
+            'perk_ids_parser_note': 'Perk selections are not parsed from IDS; they are supplied through external perk config.',
+            'perk_external_config_support': True,
+            'perk_account_state_support': True,
+            'perk_stat_input_support': True,
+            'perk_resolver_support': True,
+            'perk_state': args.perk_state,
+            'perk_mode': args.perk_mode,
+            'perk_materialization': perks_enabled,
+        },
+        'card_preset_sizes': card_preset_sizes,
+        'card_slot_limit_exceeded': card_slot_limit_exceeded,
+        'mapped_count_by_family': dict(sorted(mapped_counter.items())),
+        'total_count_by_family': dict(sorted(total_counter.items())),
+        'unmapped_example_by_family': unmapped_examples,
+        'ep_compare_summary': current_compare_summary,
+        **current_compare_summary,
+        'ep_compare_projection_views': {
+            'current_state_mode': {
+                'state_mode': args.state_mode,
+                'perk_state': args.perk_state,
+                'active_perk_preset': _sanitized_active_perk_preset(account_state, args.preset),
+                **current_compare_summary,
+            },
+            'projected_max_progression': {
+                'state_mode': 'max_progression',
+                'perk_state': args.perk_state,
+                'active_perk_preset': _sanitized_active_perk_preset(projected_account_state, args.preset),
+                **projected_compare_summary,
+            },
+        },
+        'lineage_backed_run_perk_destinations': sorted(COMPARE_DESTINATION_RUN_PERK_FACETS.keys()),
+        'compare_layer_destination_unit_inconsistencies': audits.get('compare_layer_destination_unit_inconsistencies', []),
         'audits': audits,
-        'timings_ms': {},
+        'line_verification_summary': dict(sorted(verification_counter.items())),
+        'slow_audits': {
+            'include_slow_audits': bool(getattr(args, 'include_slow_audits', False)),
+            'compare_situation_fit_matrix': 'enabled' if bool(getattr(args, 'include_slow_audits', False)) else 'skipped_by_default',
+        },
+        'presentation': {
+            'scope': 'display_fields_only',
+            'raw_value_policy': 'preserve_full_precision_raw_numeric_values',
+            'abbreviations': ['k', 'M', 'B', 'T', 'q', 'Q', 's', 'S'],
+            'percent_policy': 'pct_and_percent_display_render_with_percent_sign',
+            'multiplier_policy': 'multiplier_and_multiplier_display_render_with_leading_x',
+        },
+        'kb_only_health_family_audit': _build_kb_only_health_family_audit(
+            stat_inputs, statbook_publishable_dict['rows']
+        ),
+        'kb_only_damage_defense_absolute_scope_audit': _build_damage_defabs_scope_audit(
+            account_state, stat_inputs, statbook_publishable_dict['rows']
+        ),
+        'perk_coverage_audit': _build_perk_coverage_audit(
+            ids_raw, account_state, statbook.diagnostics.get('destination_type_schema', {}), None,
+        ),
+        'tower_damage_residue_analysis': _build_tower_damage_residue_analysis(
+            projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable
+        ),
+        'run_perk_residue_analysis': _build_run_perk_residue_analysis(
+            projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable
+        ),
+        'tradeoff_routing_audit': _build_tradeoff_routing_audit(
+            ids_raw, loadout_config, perk_config,
+            preset=args.preset, state_mode=args.state_mode, perk_state=args.perk_state,
+        ),
+        'perk_contributor_audit': _build_perk_contributor_audit(
+            ids_raw, loadout_config, perk_config, args.state_mode, args.preset
+        ),
+        'compare_situation_fit_matrix': {
+            'status': 'skipped',
+            'reason': 'disabled_by_default_use_include_slow_audits',
+            'destination_count': 0,
+            'best_fit_by_destination': {},
+            'best_fit_state_counts': {},
+            'best_fit_status_counts': {},
+            'states': {},
+        },
     }
+    if bool(getattr(args, 'include_slow_audits', False)):
+        diagnostics['compare_situation_fit_matrix'] = _build_compare_situation_fit_matrix(
+            ids_raw, loadout_config, perk_config, formula_ledger, ep_oracle
+        )
+    diagnostics['survivability_residue_analysis'] = _build_survivability_residue_analysis(
+        ep_compare_publishable, diagnostics['compare_situation_fit_matrix'], statbook_dict
+    )
     diagnostics['tower_regen_closure_report'] = _build_tower_regen_closure_report(ep_compare_publishable)
     diagnostics['tower_hp_semantic_gap_report'] = _build_tower_hp_semantic_gap_report(ep_compare_publishable)
     diagnostics['tower_regen_ep_semantic_gap_report'] = _build_tower_regen_ep_semantic_gap_report(ep_compare_publishable)
     diagnostics['tower_defense_absolute_semantic_gap_report'] = _build_tower_defense_absolute_semantic_gap_report(ep_compare_publishable)
     diagnostics['tower_damage_runtime_gap_report'] = _build_tower_damage_runtime_gap_report(ep_compare_publishable)
-    diagnostics['tower_damage_residue_analysis'] = _build_tower_damage_residue_analysis(ep_compare_publishable)
+    diagnostics['compare_situation_policy'] = {
+        'tournament': {
+            'preset': 'Tourney',
+            'perk_state': package_stage_context.get('perk_state_by_preset', {}).get('Tourney', 'off'),
+        },
+        'farming': {
+            'preset': 'Farming',
+            'perk_state': package_stage_context.get('perk_state_by_preset', {}).get('Farming', args.perk_state),
+        },
+        'milestone_engine': {
+            'preset': args.preset,
+            'perk_state': package_stage_context.get('perk_state_by_preset', {}).get(args.preset, args.perk_state),
+        },
+        'milestone_compare_policy': {
+            'preset': 'Milestone',
+            'perk_state': 'on',
+            'note': 'Milestone is a real preset with perks on, but EP compare excludes milestone loadout.',
+        },
+        'policy_note': 'Perks are controlled by run situation. Tournament compare uses Tourney loadout with perks off; farming follows the selected perk state/mode; milestone is a real preset with perks on, but EP compare excludes milestone loadout.',
+    }
+    diagnostics['perk_support'] = diagnostics['ep_compare_stage_rules']['package_compare_capability']
 
-    write_core_outputs(
+    audit_surface_manifest = _build_audit_surface_manifest(account_state, args.preset)
+    artifact_contract_manifest = _build_artifact_contract_manifest(account_state, args.preset, stat_inputs, statbook_dict)
+    family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
+    optimizer_scores = compute_optimizer_scores(statbook_dict)
+
+    _write_core_outputs(
         out_dir=args.out,
         diagnostics=diagnostics,
-        account_state_payload=_sanitized_account_state_for_output(account_state, args.preset),
-        stat_inputs_payload=[row.to_dict() for row in stat_inputs],
+        account_state=account_state,
+        canonical_output_preset=args.preset,
+        stat_inputs=stat_inputs,
         statbook_dict=statbook_dict,
         statbook_publishable_dict=statbook_publishable_dict,
         ep_compare_publishable=ep_compare_publishable,
         line_verification=line_verification,
-        survivor_closure_report=survivor_report,
+        survivor_closure_report=survivor_closure_report,
         state_matrix=state_matrix,
         optimizer_scores=optimizer_scores,
         audit_surface_manifest=audit_surface_manifest,
         artifact_contract_manifest=artifact_contract_manifest,
         family_completeness_matrix=family_completeness_matrix,
-        root_path=ROOT,
     )
+
+    # Remove stale output files
+    stale_outputs = [
+        'ep_oracle_compare_backfilled.json',
+        'statbook_oracle_backfilled.json',
+        'destination_formula_ledger.json',
+        'forensic_debug_focus.json',
+    ]
+    for stale_name in stale_outputs:
+        stale_path = args.out / stale_name
+        if stale_path.exists():
+            stale_path.unlink()
+
+    (args.out / 'tower_regen_closure_report.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics['tower_regen_closure_report']), indent=2, default=str)
+    )
+    (args.out / 'tower_hp_semantic_gap_report.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
+    )
+    (args.out / 'tower_regen_ep_semantic_gap_report.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
+    )
+    (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
+    )
+    (args.out / 'tower_damage_runtime_gap_report.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
+    )
+    (args.out / 'diagnostics.json').write_text(
+        json.dumps(_contract_json_payload(diagnostics), indent=2, default=str)
+    )
+
     return 0
 
+
 def run_pipeline(args) -> int:
+    """Compatibility alias for the heavy analysis pipeline."""
     return run_analysis_pipeline(args)
 
+
 def _load_json_artifact(path: Path) -> dict[str, object]:
-    if not path.exists(): return {}
-    try: return json.loads(path.read_text(encoding='utf-8'))
-    except: return {}
+    if not path.exists():
+        return {}
+    try:
+        payload = json.loads(path.read_text(encoding='utf-8'))
+    except Exception:
+        return {}
+    return payload if isinstance(payload, dict) else {}
+
 
 def _generated_output_paths(out_dir: Path) -> list[Path]:
-    return sorted(out_dir.glob('*.json')) + sorted(out_dir.glob('*.csv'))
-
-def _relpath_str(path: Path | str | None) -> str | None:
-    if path is None:
-        return None
-    p = Path(path)
-    try:
-        return str(p.relative_to(ROOT))
-    except (ValueError, RuntimeError):
-        return str(p)
+    return sorted(path for path in out_dir.glob('*.json')) + sorted(path for path in out_dir.glob('*.csv'))
 
 
 def _build_pipeline_trace_from_artifacts(
@@ -1310,6 +1964,17 @@ def _build_pipeline_trace_from_artifacts(
         'recompute_mode': diagnostics.get('qe_resolution_backend') or diagnostics.get('query_backend') or 'analysis_pipeline',
         'execution_branch': diagnostics.get('qe_resolution_interface') or diagnostics.get('pipeline_kind') or 'analysis_pipeline',
         'cache_status': 'warm' if ((diagnostics.get('session') or {}).get('account_state_cache_hit')) else 'cold',
+        'fallback_required': False,
+        'fallback_reason': None,
+        'bundle_used': None,
+        'consumer_id': None,
+        'family_id': diagnostics.get('qe_native_family_id'),
+        'runtime_consumers': [],
+        'cache_fingerprint': None,
+        'cache_validation': None,
+        'incremental_plan': None,
+        'parity': None,
+        'runtime_publication': None,
         'total_elapsed_ms': total_elapsed_ms,
     }
     timings = diagnostics.get('timings_ms') or {}
@@ -1322,6 +1987,28 @@ def _build_pipeline_trace_from_artifacts(
             status='ok',
             elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
             outputs_summary={'section_names': diagnostics.get('section_names', []), 'section_row_counts': diagnostics.get('section_row_counts', {})},
+        ),
+        PipelineStageRecord(
+            stage_id='runtime_account_assembly',
+            title='Runtime/account assembly',
+            owner_module='input.runtime_state',
+            entry_function='build_runtime_state',
+            status='ok',
+            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
+            outputs_summary={'perk_config_resolution': diagnostics.get('perk_config_resolution', {}), 'perk_support': diagnostics.get('perk_support', {})},
+        ),
+        PipelineStageRecord(
+            stage_id='compare_materialization',
+            title='Compare materialization',
+            owner_module='evaluators.compare',
+            entry_function='_build_compare_rows_by_preset',
+            status='ok',
+            elapsed_ms=0.0,
+            outputs_summary={
+                'default_preset': diagnostics.get('default_preset'),
+                'state_mode': diagnostics.get('state_mode'),
+                'perk_state': diagnostics.get('perk_support', {}).get('perk_state'),
+            },
         ),
         PipelineStageRecord(
             stage_id='stat_resolution',
@@ -1346,6 +2033,7 @@ def _build_pipeline_trace_from_artifacts(
             elapsed_ms=0.0,
             outputs_summary={
                 'ep_compare_summary': diagnostics.get('ep_compare_summary', {}),
+                'line_verification_summary': diagnostics.get('line_verification_summary', {}),
                 'state_matrix_modes': list((diagnostics.get('state_matrix') or {}).keys()),
             },
         ),
@@ -1353,7 +2041,7 @@ def _build_pipeline_trace_from_artifacts(
             stage_id='artifact_write',
             title='Artifact write',
             owner_module='app.pipeline',
-            entry_function='write_core_outputs',
+            entry_function='_write_core_outputs',
             status='ok',
             elapsed_ms=float(timings.get('write_outputs_ms') or 0.0),
             outputs_summary={'out_dir': _relpath_str(request.out)},
@@ -1365,7 +2053,7 @@ def _build_pipeline_trace_from_artifacts(
             'out': _relpath_str(request.out),
             'preset': request.preset,
             'state_mode': request.state_mode,
-            'manual_inputs': _relpath_str(request.manual_inputs),
+            'manual_inputs': None if request.manual_inputs is None else _relpath_str(request.manual_inputs),
             'perk_mode': request.perk_mode,
             'include_slow_audits': request.include_slow_audits,
             'perk_state': request.perk_state,
@@ -1375,30 +2063,51 @@ def _build_pipeline_trace_from_artifacts(
         artifacts_written=[],
     )
 
+
 def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
     started_at = perf_counter()
-    args = SimpleNamespace(
-        ids=request.ids, out=request.out, preset=request.preset, 
-        state_mode=request.state_mode, manual_inputs=request.manual_inputs,
-        perk_mode=request.perk_mode, include_slow_audits=request.include_slow_audits,
-        perk_state=request.perk_state
-    )
+    args = type('PipelineArgs', (), {})()
+    args.ids = request.ids
+    args.out = request.out
+    args.preset = request.preset
+    args.state_mode = request.state_mode
+    args.manual_inputs = request.manual_inputs
+    args.perk_mode = request.perk_mode
+    args.include_slow_audits = request.include_slow_audits
+    args.perk_state = request.perk_state
     exit_code = run_analysis_pipeline(args)
-    total_elapsed_ms = _elapsed_ms(started_at)
     diagnostics = _load_json_artifact(request.out / 'diagnostics.json')
-    generated_files = _generated_output_paths(request.out)
-    trace = _build_pipeline_trace_from_artifacts(request=request, total_elapsed_ms=total_elapsed_ms, diagnostics=diagnostics)
-    trace = PipelineTrace(
-        request=trace.request, execution_path=trace.execution_path,
-        stages=trace.stages, artifacts_written=[_relpath_str(p) for p in generated_files]
+    total_elapsed_ms = round((perf_counter() - started_at) * 1000.0, 3)
+    pipeline_trace = _build_pipeline_trace_from_artifacts(
+        request=request,
+        total_elapsed_ms=total_elapsed_ms,
+        diagnostics=diagnostics,
     )
-    write_pipeline_trace(request.out, trace, ROOT)
     generated_files = _generated_output_paths(request.out)
-    return PipelineRunResult(exit_code, request, request.out, diagnostics, tuple(generated_files), trace)
+    pipeline_trace = PipelineTrace(
+        request=pipeline_trace.request,
+        execution_path=pipeline_trace.execution_path,
+        stages=pipeline_trace.stages,
+        artifacts_written=[_relpath_str(path) for path in generated_files],
+    )
+    (request.out / 'pipeline_trace.json').write_text(
+        json.dumps(_json_sanitize(pipeline_trace.to_dict()), indent=2, default=str),
+        encoding='utf-8',
+    )
+    generated_files = _generated_output_paths(request.out)
+    return PipelineRunResult(
+        exit_code=int(exit_code),
+        request=request,
+        out_dir=request.out,
+        diagnostics=diagnostics,
+        generated_files=tuple(generated_files),
+        pipeline_trace=pipeline_trace,
+    )
+
 
 def build_verification_snapshot_set(
     base_request: PipelineRunRequest,
-    specs: tuple[VerificationSnapshotSpec, ...] | None = None,
+    specs: tuple[VerificationSnapshotSpec, ...] | list[VerificationSnapshotSpec] | None = None,
 ) -> list[PipelineRunResult]:
     if specs is None:
         specs = (
@@ -1407,24 +2116,36 @@ def build_verification_snapshot_set(
             VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
             VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
         )
-    results = []
+    results: list[PipelineRunResult] = []
     for spec in specs:
         out_dir = base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}')
-        req = PipelineRunRequest(
-            ids=base_request.ids, out=out_dir, preset=spec.preset,
-            state_mode=spec.state_mode, manual_inputs=base_request.manual_inputs,
-            perk_mode=base_request.perk_mode, include_slow_audits=base_request.include_slow_audits,
-            perk_state=spec.perk_state,
+        results.append(
+            execute_pipeline(
+                PipelineRunRequest(
+                    ids=base_request.ids,
+                    out=out_dir,
+                    preset=spec.preset,
+                    state_mode=spec.state_mode,
+                    manual_inputs=base_request.manual_inputs,
+                    perk_mode=base_request.perk_mode,
+                    include_slow_audits=base_request.include_slow_audits,
+                    perk_state=spec.perk_state,
+                )
+            )
         )
-        results.append(execute_pipeline(req))
     return results
+
 
 def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
     if not request.requested_surface_ids:
-        raise ValueError('FastCheckpointRequest.requested_surface_ids must be non-empty')
-    _, account_state, _ = _build_account_state(
-        ids_path=request.ids, manual_inputs_path=request.manual_inputs,
-        preset=request.preset, perk_mode=request.perk_mode,
+        raise ValueError('requested_surface_ids must not be empty: fast checkpoint resolution requires at least one surface id.')
+
+    input_bundle, account_state, _perk_config_resolution = _build_account_state(
+        ids_path=request.ids,
+        manual_inputs_path=request.manual_inputs,
+        preset=request.preset,
+        perk_mode=request.perk_mode,
+        diag_output_dir=None,
     )
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, request.perk_state)
     checkpoint_resolution = SimulatorSnapshotResolver().resolve_checkpoint(
@@ -1447,7 +2168,7 @@ def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointRes
         module_preset_name=account_state.active_module_preset,
         perk_preset_name=account_state.active_perk_preset,
         perks_enabled=perks_enabled,
-        trace_mode='contributors',
+        trace_mode='full_trace',
     )
     statbook = query_response_to_statbook(
         response,

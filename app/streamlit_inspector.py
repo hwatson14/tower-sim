@@ -7,18 +7,33 @@ from pathlib import Path
 import sys
 
 import pandas as pd
-import streamlit as st
+try:
+    import streamlit as st
+except ModuleNotFoundError:  # pragma: no cover - import-safe helper tests
+    class _MissingStreamlit:
+        def __getattr__(self, name):
+            raise ModuleNotFoundError('streamlit is required to run the inspector UI.')
+
+    st = _MissingStreamlit()
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from app.display import MODULE_CARD_CSS, render_module_card_html
 from app.inspector_data import (
     compare_rows_frame,
     dual_state_statbook_rows_frame,
     load_artifacts,
     pipeline_stages_frame,
+    qe_contributor_rows_frame,
+    qe_dependency_nodes_frame,
+    qe_plan_coverage_frame,
+    qe_query_rows_frame,
+    qe_surface_payload,
+    qe_trace_steps_frame,
+    qe_trace_summary_frame,
     run_stats_rows_frame,
     snapshot_label,
     statbook_rows_frame,
@@ -36,17 +51,12 @@ from input.runtime_state import build_runtime_state
 from input.state_types import ScenarioRuntimeInputs
 from qe.contracts import normalize_surface_id_to_contract
 from qe.stat_input_compiler import (
-    _load_assist_efficiency_lookup,
     _load_card_mastery_values,
-    _load_module_unique_effect_values,
     _load_perk_effects,
     _load_perk_entities,
-    _module_main_effect_multiplier,
-    _normalize_module_unique_rarity,
     _scaled_perk_value,
 )
 from simulators.contracts import PerkState
-from app.display import _format_display_number, _format_display_value
 from simulators.run_executor import (
     RunToMaxConfig,
     build_boss_wave_table,
@@ -56,11 +66,11 @@ from simulators.run_executor import (
 DEFAULT_OUT = ROOT / 'out'
 DEFAULT_IDS = ROOT / 'input' / 'imports' / 'ids.csv'
 PERK_ENTITY_REGISTRY = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
+CARD_EFFECT_REGISTRY = ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv'
+CARD_BASE_LADDERS = ROOT / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv'
 MODULE_UNIQUE_EFFECTS = ROOT / 'kb' / 'modules' / 'tables' / 'module-unique-effects.csv'
 MODULE_UNIQUE_RUNTIME_CATALOG = ROOT / 'kb' / 'modules' / 'contracts' / 'module-unique-runtime-catalog.csv'
 MODULE_SUBSTATS = ROOT / 'kb' / 'modules' / 'tables' / 'module-substats.csv'
-CARD_EFFECT_REGISTRY = ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv'
-CARD_BASE_LADDERS = ROOT / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv'
 MANUAL_INPUTS = ROOT / 'input' / 'manual_inputs.yaml'
 
 
@@ -140,14 +150,6 @@ def _module_substat_unlock_count(level: object) -> int:
     return sum(1 for threshold in thresholds if numeric >= threshold)
 
 
-def _card_key(value: str) -> str:
-    return _slug_text(value).upper()
-
-
-def _uw_slug(value: str) -> str:
-    return _slug_text(value)
-
-
 def _normalize_module_substat_name(value: object) -> str:
     text = str(value or '').strip()
     aliases = {
@@ -156,12 +158,6 @@ def _normalize_module_substat_name(value: object) -> str:
         'MultiShot Chance': 'Multishot Chance',
     }
     return aliases.get(text, text)
-
-
-@lru_cache(maxsize=1)
-def _perk_entity_map() -> dict[str, dict]:
-    with PERK_ENTITY_REGISTRY.open(newline='', encoding='utf-8') as handle:
-        return {str(row['perk_id']).strip(): row for row in csv.DictReader(handle)}
 
 
 @lru_cache(maxsize=1)
@@ -201,6 +197,50 @@ def _module_substat_lookup() -> dict[tuple[str, str], list[dict[str, object]]]:
                 }
             )
     return lookup
+
+
+def _infer_module_substat_rarity(slot_type: str, sub: dict, *, role: str, slot_state: dict | None) -> str | None:
+    name = _normalize_module_substat_name(sub.get('name'))
+    if not name:
+        return None
+    entries = _module_substat_lookup().get((slot_type.strip().lower(), name))
+    if not entries:
+        return _cap_rarity(None, slot_state.get('rarity_cap') if slot_state else None) if role == 'assist' else None
+    raw_token = str(sub.get('raw_token') or '').strip()
+    try:
+        raw_value = float(raw_token)
+    except ValueError:
+        raw_value = None
+    matched_rarity = None
+    if raw_value is not None:
+        for entry in entries:
+            candidate = float(entry['value'])
+            unit = str(entry['unit'])
+            comparisons = [candidate]
+            if unit == 'percent':
+                comparisons.append(candidate / 100.0)
+            if any(abs(raw_value - probe) <= 1e-9 for probe in comparisons):
+                matched_rarity = str(entry['rarity'])
+                break
+    if matched_rarity is None:
+        matched_rarity = str(entries[-1]['rarity'])
+    if role == 'assist':
+        return _cap_rarity(matched_rarity, slot_state.get('rarity_cap') if slot_state else None) or matched_rarity
+    return matched_rarity
+
+
+def _card_key(value: str) -> str:
+    return _slug_text(value).upper()
+
+
+def _uw_slug(value: str) -> str:
+    return _slug_text(value)
+
+
+@lru_cache(maxsize=1)
+def _perk_entity_map() -> dict[str, dict]:
+    with PERK_ENTITY_REGISTRY.open(newline='', encoding='utf-8') as handle:
+        return {str(row['perk_id']).strip(): row for row in csv.DictReader(handle)}
 
 
 @lru_cache(maxsize=1)
@@ -586,301 +626,26 @@ def _render_cards_matrix(account_state: dict, *, selected_preset: str) -> None:
     st.dataframe(frame.style.apply(_style_selected, axis=1), use_container_width=True, hide_index=True)
 
 
-def _blank_pair_table(rows: list[tuple[object, object]]) -> pd.DataFrame:
-    return pd.DataFrame(rows, columns=['', ' '])
-
-
-def _scaled_module_main_value(slot_type: str, module: dict, *, role: str, slot_state: dict | None) -> str:
-    display = str(module.get('stat') or '').strip()
-    if role != 'assist':
-        return display
-    assist_level = slot_state.get('assist_level') if slot_state else None
-    lookup_eff = _load_assist_efficiency_lookup().get(int(assist_level or -1))
-    assist_multiplier_eff = (
-        slot_state.get('multiplier_cap')
-        if slot_state and slot_state.get('multiplier_cap') is not None
-        else lookup_eff
-    )
-    if assist_level is None or assist_multiplier_eff is None:
-        return display
-    full_assist_main = _module_main_effect_multiplier(slot_type, str(module.get('rarity') or ''), int(assist_level))
-    value, suffix = _parse_display_with_suffix(display)
-    if full_assist_main is not None:
-        scaled = 1.0 + (full_assist_main - 1.0) * assist_multiplier_eff
-        return _format_scaled_value(scaled, 'x' if suffix == '' else suffix)
-    if value is not None:
-        scaled = 1.0 + (value - 1.0) * assist_multiplier_eff
-        return _format_scaled_value(scaled, suffix)
-    return display
-
-
-def _scaled_module_unique_value(module_name: str, module: dict, *, role: str, slot_state: dict | None) -> tuple[str, str]:
-    rarity = str(module.get('rarity') or '')
-    assist_level = slot_state.get('assist_level') if slot_state else None
-    lookup_eff = _load_assist_efficiency_lookup().get(int(assist_level or -1))
-    assist_multiplier_eff = (
-        slot_state.get('multiplier_cap')
-        if slot_state and slot_state.get('multiplier_cap') is not None
-        else lookup_eff
-    )
-    unique_rarity = _normalize_module_unique_rarity(rarity)
-    display_rarity = rarity
-    if role == 'assist' and slot_state and slot_state.get('rarity_cap'):
-        unique_rarity = _normalize_module_unique_rarity(str(slot_state.get('rarity_cap')))
-        display_rarity = f"{rarity} -> {slot_state.get('rarity_cap')}"
-    unique_lookup = _module_unique_value_map().get((_slug_text(module_name), unique_rarity))
-    if unique_lookup is None:
-        return display_rarity, ''
-    unique_value, unique_measure = unique_lookup
-    if role == 'assist' and unique_value is not None and assist_multiplier_eff is not None and unique_measure != 'count':
-        unique_value = unique_value * assist_multiplier_eff
-    suffix = {
-        'pct': '%',
-        'multiplier': 'x',
-        'seconds': 's',
-        'm': 'm',
-        'count': '',
-    }.get(unique_measure, '')
-    if unique_measure == 'count':
-        return display_rarity, str(int(unique_value))
-    return display_rarity, _format_scaled_value(unique_value, suffix)
-
-
-def _scaled_substat_value(sub: dict, *, role: str, slot_state: dict | None) -> str:
-    display = str(sub.get('value') or '').strip()
-    if role != 'assist':
-        return display
-    assist_level = slot_state.get('assist_level') if slot_state else None
-    lookup_eff = _load_assist_efficiency_lookup().get(int(assist_level or -1))
-    assist_substat_eff = (
-        slot_state.get('substat_cap')
-        if slot_state and slot_state.get('substat_cap') is not None
-        else lookup_eff
-    )
-    if assist_substat_eff is None:
-        return display
-    value, suffix = _parse_display_with_suffix(display)
-    if value is None:
-        return display
-    return _format_scaled_value(value * assist_substat_eff, suffix)
-
-
-def _infer_module_substat_rarity(slot_type: str, sub: dict, *, role: str, slot_state: dict | None) -> str | None:
-    name = _normalize_module_substat_name(sub.get('name'))
-    if not name:
-        return None
-    entries = _module_substat_lookup().get((slot_type.strip().lower(), name))
-    if not entries:
-        return _cap_rarity(None, slot_state.get('rarity_cap') if slot_state else None) if role == 'assist' else None
-    raw_token = str(sub.get('raw_token') or '').strip()
-    try:
-        raw_value = float(raw_token)
-    except ValueError:
-        raw_value = None
-    matched_rarity = None
-    if raw_value is not None:
-        for entry in entries:
-            candidate = float(entry['value'])
-            unit = str(entry['unit'])
-            comparisons = [candidate]
-            if unit == 'percent':
-                comparisons.append(candidate / 100.0)
-            if any(abs(raw_value - probe) <= 1e-9 for probe in comparisons):
-                matched_rarity = str(entry['rarity'])
-                break
-    if matched_rarity is None:
-        matched_rarity = str(entries[-1]['rarity'])
-    if role == 'assist':
-        return _cap_rarity(matched_rarity, slot_state.get('rarity_cap') if slot_state else None) or matched_rarity
-    return matched_rarity
-
-
-def _style_module_table(
-    frame: pd.DataFrame,
-    *,
-    top_rarity: object,
-    substat_rarities: list[object],
-    unlocked_substat_count: int,
-):
-    top_color = _rarity_color(top_rarity)
-    locked_color = 'rgba(120, 120, 120, 0.16)'
-    locked_text = 'color: rgba(200, 200, 200, 0.65)'
-
-    def _style_row(row: pd.Series):
-        idx = int(row.name)
-        if idx <= 2:
-            return [f'background-color: {top_color}' for _ in row]
-        if idx >= 3:
-            substat_index = idx - 3
-            if substat_index >= unlocked_substat_count:
-                return [f'background-color: {locked_color}; {locked_text}' for _ in row]
-            substat_color = _rarity_color(
-                substat_rarities[substat_index] if substat_index < len(substat_rarities) else None
-            )
-            return [f'background-color: {substat_color}' for _ in row]
-        return ['' for _ in row]
-
-    return frame.style.apply(_style_row, axis=1)
-
-
-def _format_perk_value(effect_meta: dict | None, *, max_picks: int) -> tuple[str, str]:
-    if not effect_meta:
-        return '', ''
-    effect_value_raw = str(effect_meta.get('effect_value') or '').strip()
-    operation = str(effect_meta.get('operation') or '').strip()
-    if not effect_value_raw:
-        return '', ''
-    try:
-        numeric = float(effect_value_raw)
-    except ValueError:
-        return effect_value_raw, effect_value_raw
-    if operation == 'percentage_points_add':
-        return f'+{numeric:g}%', f'+{(numeric * max_picks):g}%'
-    if operation == 'count_add':
-        return f'+{numeric:g}', f'+{(numeric * max_picks):g}'
-    if operation == 'seconds_add':
-        return f'+{numeric:g}s', f'+{(numeric * max_picks):g}s'
-    if operation == 'multiplier':
-        return f'x{numeric:g}', f'x{(numeric * max_picks):g}'
-    return f'{numeric:g}', f'{(numeric * max_picks):g}'
-
-
-def _coerce_float(value: object) -> float | None:
-    try:
-        return float(value)
-    except (TypeError, ValueError):
-        return None
-
-
-def _format_qe_perk_value(value: object, value_type: object) -> str:
-    if isinstance(value, bool):
-        return 'true' if value else 'false'
-    if value is None:
-        return ''
-    numeric = _coerce_float(value)
-    value_type_text = str(value_type or '').strip().lower()
-    if numeric is None:
-        return str(value)
-    if value_type_text == 'multiplier':
-        return f'x{numeric:g}'
-    if value_type_text in {'pct', 'percentage_points_add'}:
-        return f'+{numeric:g}%'
-    if value_type_text == 'seconds_add':
-        return f'+{numeric:g}s'
-    if value_type_text in {'count_add', 'flat'}:
-        return f'+{numeric:g}' if numeric >= 0 else f'{numeric:g}'
-    if value_type_text == 'pct':
-        return f'+{numeric:g}%'
-    if value_type_text in {'flat', 'resolved_value'}:
-        return f'+{numeric:g}' if numeric >= 0 else f'{numeric:g}'
-    return f'{numeric:g}'
-
-
-def _perk_lab_bonus_summary(stat_inputs_payload: object) -> tuple[float | None, float | None]:
-    if not isinstance(stat_inputs_payload, list):
-        return None, None
-    standard = None
-    tradeoff = None
-    for row in stat_inputs_payload:
-        if not isinstance(row, dict) or str(row.get('source_family') or '') != 'lab':
-            continue
-        destination_id = str(row.get('destination_id') or '').strip()
-        if destination_id == 'perk.standard_perks_bonus_pct':
-            standard = _coerce_float(row.get('value'))
-        elif destination_id == 'perk.tradeoff_bonus_pct':
-            tradeoff = _coerce_float(row.get('value'))
-    return standard, tradeoff
-
-
-def _perk_rows_from_qe(
-    stat_inputs_payload: object,
-    *,
-    selected_preset: str,
-) -> dict[str, list[dict]]:
-    out: dict[str, list[dict]] = {}
-    if not isinstance(stat_inputs_payload, list):
-        return out
-    for row in stat_inputs_payload:
-        if not isinstance(row, dict):
-            continue
-        if str(row.get('source_family') or '').strip() != 'perk':
-            continue
-        if str(row.get('preset_name') or '').strip() != selected_preset:
-            continue
-        source_name = str(row.get('source_name') or '').strip()
-        if not source_name:
-            continue
-        out.setdefault(source_name, []).append(row)
-    return out
-
-
-def _resolved_statbook_row_map(statbook_payload: dict) -> dict[str, dict]:
-    rows = {}
-    for raw_surface_id, payload in ((statbook_payload.get('rows') or {}).items()):
-        rows[normalize_surface_id_to_contract(raw_surface_id)] = dict(payload)
-    return rows
-
-
-def _render_modules_table(account_state: dict, *, selected_preset: str) -> None:
-    module_presets = account_state.get('module_presets') or {}
-    modules_inventory = account_state.get('modules_inventory') or {}
-    module_system_state = account_state.get('module_system_state') or {}
-    selected_modules = module_presets.get(selected_preset) or {}
-    if not selected_modules:
+def _render_modules_table(active_artifacts, *, selected_preset: str) -> None:
+    payload_root = active_artifacts.get('module_card_payloads.json', {}) or {}
+    preset_payload = ((payload_root.get('presets') or {}).get(selected_preset) or {})
+    if not preset_payload:
+        st.info('module_card_payloads.json not present for this snapshot')
         return
     st.subheader('Modules Equipped')
-    unique_effects = _module_unique_effect_map()
+    st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
     slot_columns = st.columns(4)
     for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):
         with slot_columns[idx]:
             st.markdown(f'**{slot.title()}**')
-            selection = selected_modules.get(slot) or {}
+            slot_payload = preset_payload.get(slot) or {}
             for role in ['primary', 'assist']:
-                module_name = selection.get(role)
                 st.caption(role.title())
-                if not module_name:
+                card_payload = slot_payload.get(role)
+                if not card_payload:
                     st.write('No module equipped')
                     continue
-                module = modules_inventory.get(module_name) or {}
-                module_meta = unique_effects.get(_slug_text(str(module_name)), {})
-                slot_state = module_system_state.get(slot) or {}
-                effective_substat_rarity = (
-                    slot_state.get('rarity_cap')
-                    if role == 'assist' and slot_state.get('rarity_cap')
-                    else module.get('rarity')
-                )
-                display_rarity, unique_strength = _scaled_module_unique_value(
-                    module_name,
-                    module,
-                    role=role,
-                    slot_state=slot_state,
-                )
-                rows = [
-                    (module_name, display_rarity),
-                    (module.get('level'), _scaled_module_main_value(slot, module, role=role, slot_state=slot_state)),
-                    (module_meta.get('behavior') or module_meta.get('ability_text'), unique_strength),
-                ]
-                unlocked_substat_count = _module_substat_unlock_count(module.get('level'))
-                substat_rarities: list[object] = []
-                for sub in (module.get('substats') or []):
-                    rows.append((sub.get('name'), _scaled_substat_value(sub, role=role, slot_state=slot_state)))
-                    substat_rarities.append(
-                        _infer_module_substat_rarity(slot, sub, role=role, slot_state=slot_state)
-                    )
-                while len(substat_rarities) < 8:
-                    rows.append(('', ''))
-                    substat_rarities.append(None)
-                frame = _blank_pair_table(rows)
-                st.dataframe(
-                    _style_module_table(
-                        frame,
-                        top_rarity=effective_substat_rarity if role == 'assist' else module.get('rarity'),
-                        substat_rarities=substat_rarities,
-                        unlocked_substat_count=unlocked_substat_count,
-                    ),
-                    use_container_width=True,
-                    hide_index=True,
-                )
+                st.markdown(render_module_card_html(card_payload), unsafe_allow_html=True)
 
 
 def _render_perks_table(account_state: dict, *, selected_preset: str, stat_inputs_payload: object) -> None:
@@ -1116,7 +881,7 @@ def _render_loadout_panel(active_artifacts, *, preset: str, max_progression_rows
         return
     resolved_statbook = active_artifacts.get('statbook_publishable.json') or active_artifacts.get('statbook.json') or {}
     _render_cards_matrix(account_state, selected_preset=preset)
-    _render_modules_table(account_state, selected_preset=preset)
+    _render_modules_table(active_artifacts, selected_preset=preset)
     _render_perks_table(
         account_state,
         selected_preset=preset,
@@ -1185,6 +950,93 @@ def _max_progression_lookup(frame: pd.DataFrame) -> dict[str, dict]:
         }
     return rows
 
+
+def _render_qe(active_artifacts, request: PipelineRunRequest) -> None:
+    st.subheader('QE Surface Lineage Explorer')
+    state_mode = st.selectbox('QE state mode', options=['start_of_run', 'max_progression'], index=0 if request.state_mode == 'start_of_run' else 1)
+    query_rows_name = f'run_stats_query_rows_{state_mode}.json'
+    query_plan_name = f'run_stats_query_plan_{state_mode}.json'
+    query_rows_payload = active_artifacts.get(query_rows_name, {})
+    query_plan_payload = active_artifacts.get(query_plan_name, {})
+    preset_options = sorted((query_rows_payload or {}).keys())
+    if not preset_options:
+        st.info('No QE query-row artifacts found for this state mode yet. Run the pipeline to populate run_stats_query_rows outputs.')
+        return
+    preset_name = request.preset if request.preset in preset_options else preset_options[0]
+    preset_name = st.selectbox('QE preset', options=preset_options, index=preset_options.index(preset_name))
+    frame = qe_query_rows_frame(query_rows_payload, preset=preset_name)
+    if frame.empty:
+        st.info('No QE rows available for the selected preset.')
+        return
+
+    control_cols = st.columns((2, 1, 1))
+    surface_search = control_cols[0].text_input('Surface search', value='')
+    active_only = control_cols[1].toggle('Active only', value=True)
+    unresolved_only = control_cols[2].toggle('Unresolved only', value=False)
+
+    filtered = frame.copy()
+    if surface_search:
+        needle = surface_search.lower()
+        filtered = filtered[filtered['surface_id'].str.lower().str.contains(needle)]
+    if active_only:
+        filtered = filtered[filtered['status'] != 'gated_off']
+    if unresolved_only:
+        filtered = filtered[filtered['status'] != 'resolved']
+    if filtered.empty:
+        st.warning('No QE surfaces match the current filters.')
+        return
+
+    st.dataframe(
+        filtered[['group', 'display_label', 'surface_id', 'status', 'bundle_id', 'family_id', 'contributor_count', 'resolution_order_index', 'has_trace_steps']],
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    selected_surface = st.selectbox('Selected surface', options=filtered['surface_id'].tolist())
+    row_payload = qe_surface_payload(query_rows_payload, preset=preset_name, surface_id=selected_surface)
+    trace_payload = row_payload.get('dependency_trace') or {}
+
+    summary_rows = [
+        ('surface_id', row_payload.get('surface_id')),
+        ('raw_surface_id', row_payload.get('raw_surface_id')),
+        ('status', row_payload.get('status')),
+        ('final_value', row_payload.get('final_value')),
+        ('display_value', row_payload.get('display_value')),
+        ('value_type', row_payload.get('value_type')),
+        ('bundle_id', row_payload.get('bundle_id')),
+        ('family_id', row_payload.get('family_id')),
+        ('trace_mode', row_payload.get('trace_mode')),
+    ]
+    st.subheader('Selected Surface Summary')
+    st.dataframe(pd.DataFrame(summary_rows, columns=['field', 'value']), use_container_width=True, hide_index=True)
+
+    st.subheader('Contributor Lineage')
+    st.dataframe(qe_contributor_rows_frame(row_payload), use_container_width=True, hide_index=True)
+
+    st.subheader('Dependency Trace Summary')
+    st.dataframe(qe_trace_summary_frame(trace_payload), use_container_width=True, hide_index=True)
+
+    trace_cols = st.columns(2)
+    with trace_cols[0]:
+        st.caption('Direct upstream nodes')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_upstream_node_ids'), use_container_width=True, hide_index=True)
+        st.caption('Resolved upstream nodes')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='resolved_upstream_node_ids'), use_container_width=True, hide_index=True)
+        st.caption('Unresolved upstream nodes')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='unresolved_upstream_node_ids'), use_container_width=True, hide_index=True)
+    with trace_cols[1]:
+        st.caption('Direct downstream nodes')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_downstream_node_ids'), use_container_width=True, hide_index=True)
+        st.caption('Upstream closure')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='upstream_closure_node_ids'), use_container_width=True, hide_index=True)
+        st.caption('Downstream closure')
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='downstream_closure_node_ids'), use_container_width=True, hide_index=True)
+
+    st.subheader('Runtime Trace Steps')
+    st.dataframe(qe_trace_steps_frame(trace_payload), use_container_width=True, hide_index=True)
+
+    st.subheader('Active Query-Plan Coverage')
+    st.dataframe(qe_plan_coverage_frame(query_plan_payload, preset=preset_name, surface_id=selected_surface), use_container_width=True, hide_index=True)
 
 def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
     st.subheader('Stats')
@@ -1591,32 +1443,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
         'the intervening waves using the interval-start resolved values.'
     )
-    _BOSS_WAVE_SCALAR_COLS = {
-        'wave_attack', 'wave_health', 'boss_attack', 'boss_health',
-        'wall_hp', 'wall_regen', 'boss_survival_margin_hp', 'boss_total_damage_taken',
-    }
-    _BOSS_WAVE_PCT_COLS = {
-        'tower_defense_pct', 'tower_thorns_damage_pct', 'plasma_cannon_effect_pct',
-        'free_attack_upgrade_chance_pct', 'free_defense_upgrade_chance_pct',
-        'free_utility_upgrade_chance_pct', 'enemy_attack_level_skip_pct',
-        'enemy_health_level_skip_pct',
-    }
-    _BOSS_WAVE_MULTIPLIER_COLS = {'wall_fortification_multiplier'}
-    display_frame = frame.copy()
-    for col in display_frame.columns:
-        if col in _BOSS_WAVE_SCALAR_COLS:
-            display_frame[col] = display_frame[col].map(
-                lambda v: _format_display_number(v) if v is not None else None
-            )
-        elif col in _BOSS_WAVE_PCT_COLS:
-            display_frame[col] = display_frame[col].map(
-                lambda v: _format_display_value(v, 'pct') if v is not None else None
-            )
-        elif col in _BOSS_WAVE_MULTIPLIER_COLS:
-            display_frame[col] = display_frame[col].map(
-                lambda v: _format_display_value(v, 'multiplier_display') if v is not None else None
-            )
-    st.dataframe(display_frame, use_container_width=True, hide_index=True)
+    st.dataframe(frame, use_container_width=True, hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
         data=frame.to_csv(index=False).encode('utf-8'),
@@ -1642,17 +1469,19 @@ def main() -> None:
         if Path(path) != active_out_dir
     ]
 
-    pipeline_tab, stats_tab, boss_waves_tab, checks_tab, inputs_tab = st.tabs(['Pipeline', 'Stats', 'Boss Waves', 'Checks', 'Inputs'])
-    with pipeline_tab:
-        _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}))
+    inputs_tab, qe_tab, stats_tab, boss_waves_tab, pipeline_tab, checks_tab = st.tabs(['Input', 'QE', 'Stats', 'Boss Waves', 'Pipeline', 'Checks'])
+    with inputs_tab:
+        _render_inputs(active_artifacts, active_out_dir)
+    with qe_tab:
+        _render_qe(active_artifacts, request)
     with stats_tab:
         _render_stats(active_artifacts, comparison_artifacts, request)
     with boss_waves_tab:
         _render_boss_waves(request)
+    with pipeline_tab:
+        _render_pipeline(active_artifacts.get('pipeline_trace.json', {}), active_artifacts.get('diagnostics.json', {}))
     with checks_tab:
         _render_checks(active_artifacts)
-    with inputs_tab:
-        _render_inputs(active_artifacts, active_out_dir)
 
     with st.expander('Current request'):
         st.code(json.dumps(request.__dict__, indent=2, default=str))

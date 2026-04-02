@@ -12,6 +12,7 @@ from qe.contracts import normalize_surface_id_to_contract
 CORE_ARTIFACTS = (
     'pipeline_trace.json',
     'diagnostics.json',
+    'module_card_payloads.json',
     'account_state.json',
     'stat_inputs.json',
     'run_stats.json',
@@ -19,6 +20,10 @@ CORE_ARTIFACTS = (
     'statbook_publishable.json',
     'statbook_start_of_run.json',
     'statbook_max_progression.json',
+    'run_stats_query_rows_start_of_run.json',
+    'run_stats_query_rows_max_progression.json',
+    'run_stats_query_plan_start_of_run.json',
+    'run_stats_query_plan_max_progression.json',
     'state_matrix.json',
     'ep_oracle_compare.json',
     'line_by_line_verification.json',
@@ -270,3 +275,111 @@ def dual_state_statbook_rows_frame(
 
 def snapshot_label(*, preset: str, state_mode: str, perk_state: str, out_dir: Path) -> str:
     return f'{preset} | {state_mode} | perks {perk_state} | {out_dir.name}'
+
+
+def qe_query_rows_frame(query_rows_payload: dict[str, Any], *, preset: str) -> pd.DataFrame:
+    preset_payload = (query_rows_payload.get(preset) or {}) if isinstance(query_rows_payload, dict) else {}
+    rows_payload = preset_payload.get('rows') or {}
+    rows = []
+    for raw_surface_id, payload in rows_payload.items():
+        surface_id = normalize_surface_id_to_contract(raw_surface_id)
+        dependency_trace = payload.get('dependency_trace') or {}
+        rows.append({
+            'raw_surface_id': raw_surface_id,
+            'surface_id': surface_id,
+            'group': _semantic_group(surface_id),
+            'display_label': _display_label(surface_id),
+            'final_value': payload.get('final_value'),
+            'display_value': payload.get('display_value'),
+            'value_type': payload.get('value_type'),
+            'status': payload.get('status'),
+            'bundle_id': payload.get('bundle_id'),
+            'family_id': payload.get('family_id'),
+            'trace_mode': payload.get('trace_mode'),
+            'contributor_count': len(payload.get('contributors') or []),
+            'has_trace_steps': bool(dependency_trace.get('trace_steps')),
+            'resolution_order_index': dependency_trace.get('resolution_order_index'),
+        })
+    if not rows:
+        return pd.DataFrame(columns=['surface_id', 'group', 'status', 'bundle_id', 'family_id'])
+    return pd.DataFrame(rows).sort_values(['group', 'surface_id']).reset_index(drop=True)
+
+
+def qe_surface_payload(query_rows_payload: dict[str, Any], *, preset: str, surface_id: str) -> dict[str, Any]:
+    preset_payload = (query_rows_payload.get(preset) or {}) if isinstance(query_rows_payload, dict) else {}
+    rows_payload = preset_payload.get('rows') or {}
+    for raw_surface_id, payload in rows_payload.items():
+        if normalize_surface_id_to_contract(raw_surface_id) == surface_id:
+            row = dict(payload)
+            row['surface_id'] = normalize_surface_id_to_contract(raw_surface_id)
+            row['raw_surface_id'] = raw_surface_id
+            return row
+    return {}
+
+
+def qe_trace_summary_frame(trace_payload: dict[str, Any]) -> pd.DataFrame:
+    if not trace_payload:
+        return pd.DataFrame(columns=['field', 'value'])
+    rows = [
+        ('trace_contract_id', trace_payload.get('trace_contract_id')),
+        ('trace_mode', trace_payload.get('trace_mode')),
+        ('resolution_order_index', trace_payload.get('resolution_order_index')),
+        ('direct_upstream_count', len(trace_payload.get('direct_upstream_node_ids') or [])),
+        ('direct_downstream_count', len(trace_payload.get('direct_downstream_node_ids') or [])),
+        ('upstream_closure_count', len(trace_payload.get('upstream_closure_node_ids') or [])),
+        ('downstream_closure_count', len(trace_payload.get('downstream_closure_node_ids') or [])),
+        ('resolved_upstream_count', len(trace_payload.get('resolved_upstream_node_ids') or [])),
+        ('unresolved_upstream_count', len(trace_payload.get('unresolved_upstream_node_ids') or [])),
+        ('has_runtime_trace_steps', bool(trace_payload.get('has_runtime_trace_steps'))),
+    ]
+    return pd.DataFrame(rows, columns=['field', 'value'])
+
+
+def qe_contributor_rows_frame(row_payload: dict[str, Any]) -> pd.DataFrame:
+    rows = []
+    for contributor in (row_payload.get('contributors') or []):
+        rows.append({
+            'contributor_id': contributor.get('contributor_id'),
+            'source_class': contributor.get('source_class'),
+            'composition_stage': contributor.get('composition_stage'),
+            'active': contributor.get('active'),
+            'gate_reason': contributor.get('gate_reason'),
+            'value': contributor.get('value'),
+            'value_type': contributor.get('value_type'),
+            'provenance_ref': contributor.get('provenance_ref'),
+            'display_value': contributor.get('display_value'),
+        })
+    return pd.DataFrame(rows) if rows else pd.DataFrame(columns=['contributor_id', 'source_class'])
+
+
+def qe_trace_steps_frame(trace_payload: dict[str, Any]) -> pd.DataFrame:
+    steps = trace_payload.get('trace_steps') or []
+    return pd.DataFrame(steps) if steps else pd.DataFrame(columns=['step_index', 'step_kind', 'node_id', 'status', 'note'])
+
+
+def qe_dependency_nodes_frame(trace_payload: dict[str, Any], *, field_name: str) -> pd.DataFrame:
+    node_ids = trace_payload.get(field_name) or []
+    return pd.DataFrame([{'node_id': node_id} for node_id in node_ids]) if node_ids else pd.DataFrame(columns=['node_id'])
+
+
+def qe_plan_coverage_frame(query_plan_payload: dict[str, Any], *, preset: str, surface_id: str) -> pd.DataFrame:
+    presets_payload = (query_plan_payload.get('presets') or {}) if isinstance(query_plan_payload, dict) else {}
+    preset_payload = presets_payload.get(preset) or {}
+    rows = []
+    progression = preset_payload.get('progression') or {}
+    if surface_id in (progression.get('resolved_surface_ids') or []):
+        rows.append({
+            'bundle_kind': 'progression',
+            'bundle_id': progression.get('bundle_id'),
+            'family_id': progression.get('family_id'),
+            'surface_id': surface_id,
+        })
+    for timing_payload in (preset_payload.get('timing') or []):
+        if surface_id in (timing_payload.get('resolved_surface_ids') or []):
+            rows.append({
+                'bundle_kind': 'timing',
+                'bundle_id': timing_payload.get('bundle_id'),
+                'family_id': timing_payload.get('family_id'),
+                'surface_id': surface_id,
+            })
+    return pd.DataFrame(rows) if rows else pd.DataFrame(columns=['bundle_kind', 'bundle_id', 'family_id', 'surface_id'])

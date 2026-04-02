@@ -1295,6 +1295,7 @@ def query_response_to_statbook(
     merged_diagnostics['qe_resolution_backend'] = 'native_family_query'
     merged_diagnostics['qe_native_family_available'] = True
     merged_diagnostics['qe_native_family_id'] = response.family_id
+    merged_diagnostics['dependency_trace'] = dict(response.dependency_trace or {})
     return StatBook(rows=rows, diagnostics=merged_diagnostics)
 
 
@@ -1476,7 +1477,7 @@ def _delta_statbook_from_response(
                 family_id=response.family_id,
                 resolved_surface_rows=(row,),
                 contributor_rows=tuple(response_contributors.get(surface_id, ())),
-                dependency_trace={surface_id: tuple(response.dependency_trace.get(surface_id, ()))},
+                dependency_trace={surface_id: dict(response.dependency_trace.get(surface_id, {}))},
             ),
             notes='Resolved through checkpoint consumer-bundle delta.',
             diagnostics=diagnostics,
@@ -1484,7 +1485,7 @@ def _delta_statbook_from_response(
         merged_rows[surface_id] = impacted_statbook.rows[surface_id]
 
     contributor_rows: list[BaselineContributorRow] = []
-    dependency_trace: dict[str, tuple[str, ...]] = {}
+    dependency_trace: dict[str, dict[str, object]] = {}
     resolved_surface_rows: list[ResolvedSurfaceRow] = []
     for surface_id in bundle_surface_ids:
         row = merged_rows.get(surface_id)
@@ -1500,13 +1501,13 @@ def _delta_statbook_from_response(
         )
         if surface_id in impacted_surface_set:
             contributor_rows.extend(response_contributors.get(surface_id, ()))
-            dependency_trace[surface_id] = tuple(response.dependency_trace.get(surface_id, ()))
+            dependency_trace[surface_id] = dict(response.dependency_trace.get(surface_id, {}))
         else:
             contributor_rows.extend(
                 _contributor_row_from_statbook_dict(surface_id, contributor)
                 for contributor in (merged_rows[surface_id].contributors or ())
             )
-            dependency_trace[surface_id] = tuple(base_statbook.diagnostics.get('dependency_trace', {}).get(surface_id, ()))
+            dependency_trace[surface_id] = dict(base_statbook.diagnostics.get('dependency_trace', {}).get(surface_id, {}))
 
     merged_response = QueryResponse(
         family_id=response.family_id,
