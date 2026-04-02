@@ -236,6 +236,15 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
 
 
+def test_formula_authority_bridge_retirement_threshold_not_met_while_bridge_entries_exist() -> None:
+    bridge_entries = [
+        runtime_key
+        for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items()
+        if (metadata.get('authority_source') or '').strip() == 'bridge_formula_params'
+    ]
+    assert bridge_entries, 'Bridge retirement threshold requires zero bridge_formula_params entries before retirement.'
+
+
 def test_scenario_projection_state__debug_payload_is_explicit():
     projection = ScenarioProjectionState(
         max_workshop=True,

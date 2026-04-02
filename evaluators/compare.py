@@ -21,7 +21,11 @@ import yaml
 from input.runtime_state import build_runtime_state
 from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, classify_input_routing
-from qe.stat_input_compiler import compile_stat_inputs
+from qe.stat_input_compiler import compile_stat_inputs, load_perk_entities
+from evaluators.compare_core import (
+    load_perk_compiler_metadata as load_core_perk_compiler_metadata,
+    resolve_perk_effect_destination,
+)
 
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
@@ -769,11 +773,16 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
     },
 }
 
+
+def _load_perk_compiler_metadata():
+    perk_effects, perk_target_destination_overrides = load_core_perk_compiler_metadata()
+    return load_perk_entities(), perk_effects, perk_target_destination_overrides, resolve_perk_effect_destination
+
+
 def _load_lineage_backed_run_perk_destinations() -> set[str]:
-    from qe.stat_input_compiler import _load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
     from qe.query_routing import compiler_routing_indexes
 
-    perk_effects = _load_perk_effects()
+    _perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata()
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
     destinations: set[str] = set()
     for effects in perk_effects.values():
@@ -783,17 +792,12 @@ def _load_lineage_backed_run_perk_destinations() -> set[str]:
             target_stat_id = str(effect.get('target_stat_id', '')).strip()
             if not target_stat_id:
                 continue
-            destination_object_type = None
-            destination_id = None
-            if target_stat_id in PERK_TARGET_DESTINATION_OVERRIDES:
-                destination_object_type, destination_id = PERK_TARGET_DESTINATION_OVERRIDES[target_stat_id]
-            elif target_stat_id in canon_stats:
-                destination_object_type, destination_id = 'canonical_stat', target_stat_id
-            else:
-                alias_slug = slug_text(target_stat_id.replace('_', ' '))
-                alias_match = alias_index.get(alias_slug)
-                if alias_match is not None:
-                    destination_object_type, destination_id = alias_match
+            destination_object_type, destination_id, _from_alias = resolve_destination(
+                target_stat_id,
+                canon_stats=canon_stats,
+                alias_index=alias_index,
+                perk_target_destination_overrides=perk_target_destination_overrides,
+            )
             if destination_object_type == 'canonical_stat' and destination_id:
                 destinations.add(_state(destination_id))
     return destinations
@@ -2243,12 +2247,12 @@ def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
     return out
 
 def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
-    from qe.stat_input_compiler import compile_stat_inputs, _load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
+    from qe.stat_input_compiler import compile_stat_inputs, load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
 
     state = build_runtime_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
     perks_enabled = _perks_enabled_for_state(state.active_perk_preset, perk_state)
     rows = compile_stat_inputs(state, preset_name=preset, state_mode=state_mode, perks_enabled=perks_enabled)
-    perk_entities = _load_perk_entities()
+    perk_entities = load_perk_entities()
     banned_ids = {str(item).strip() for item in (perk_config or {}).get('banned_perk_ids', []) if str(item).strip()}
 
     by_perk = {}
@@ -2623,13 +2627,12 @@ def _perk_operation_supported(operation: str) -> bool:
 
 
 def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from qe.stat_input_compiler import _load_perk_entities, _load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
+    from qe.stat_input_compiler import compile_stat_inputs
     from qe.query_routing import compiler_routing_indexes
     from input.state_types import PerkSelection
     from dataclasses import replace
 
-    perk_entities = _load_perk_entities()
-    perk_effects = _load_perk_effects()
+    perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata()
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
 
     audit_perk_presets = {
@@ -2664,20 +2667,22 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
             operation = effect.get('operation', '').strip()
             target_stat_id = effect.get('target_stat_id', '').strip()
             route_category = 'unbound'
-            destination_object_type = None
-            destination_id = None
-            if target_stat_id in PERK_TARGET_DESTINATION_OVERRIDES:
-                destination_object_type, destination_id = PERK_TARGET_DESTINATION_OVERRIDES[target_stat_id]
-                route_category = f'routed::{destination_object_type}'
-            elif target_stat_id in canon_stats:
-                destination_object_type, destination_id = 'canonical_stat', target_stat_id
-                route_category = 'routed::canonical_stat_direct'
-            else:
-                alias_slug = _slug(target_stat_id.replace('_', ' '))
-                alias_match = alias_index.get(alias_slug)
-                if alias_match is not None:
-                    destination_object_type, destination_id = alias_match
-                    route_category = f'routed_alias::{destination_object_type}'
+            destination_object_type, destination_id, from_alias = resolve_destination(
+                target_stat_id,
+                canon_stats=canon_stats,
+                alias_index=alias_index,
+                perk_target_destination_overrides=perk_target_destination_overrides,
+            )
+            if destination_object_type is not None and destination_id is not None:
+                route_category = (
+                    f'routed_alias::{destination_object_type}'
+                    if from_alias
+                    else (
+                        'routed::canonical_stat_direct'
+                        if destination_object_type == 'canonical_stat' and target_stat_id in canon_stats
+                        else f'routed::{destination_object_type}'
+                    )
+                )
             operation_supported = _perk_operation_supported(operation)
             picks = int(meta.get('max_picks') or 1)
             compiled_count = audit_row_index.get((perk_id, effect_index), 0)
@@ -2744,4 +2749,3 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
         'all_perks_compile_audit_row_count': len(audit_rows),
         'perks': per_perk,
     }
-

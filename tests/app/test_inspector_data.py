@@ -120,6 +120,36 @@ def test_run_stats_rows_frame_preserves_all_stats_and_normalizes_ids():
     assert row['max_progression_value'] == 20
 
 
+def test_dual_state_statbook_rows_frame_preserves_raw_surface_provenance():
+    from app.inspector_data import dual_state_statbook_rows_frame
+
+    frame = dual_state_statbook_rows_frame(
+        {
+            'Farming': {
+                'rows': {
+                    'canonical_stat::tower_damage': {'final_value': 10, 'display_value': '10', 'value_type': 'scalar', 'status': 'resolved'},
+                }
+            }
+        },
+        {
+            'Farming': {
+                'rows': {
+                    'state::tower.damage': {'final_value': 12, 'display_value': '12', 'value_type': 'scalar', 'status': 'resolved'},
+                }
+            }
+        },
+        preset='Farming',
+    )
+
+    assert len(frame) == 1
+    row = frame.iloc[0]
+    assert row['surface_id'] == 'state::tower.damage'
+    assert row['raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['start_raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['max_raw_surface_id'] == 'state::tower.damage'
+    assert bool(row['raw_surface_id_mismatch']) is True
+
+
 def test_input_lineage_rows_frame_projects_source_and_resolved_columns():
     from app.inspector_data import input_lineage_rows_frame
 
@@ -188,3 +218,92 @@ def test_input_lineage_rows_frame_prefers_account_state_source_values_when_avail
     row = frame.iloc[0]
     assert row['source_value'] == 7
     assert row['resolved_value'] == 5.0
+
+
+def test_qe_query_helpers_build_expected_contract_frames():
+    from app.inspector_data import (
+        qe_contributor_rows_frame,
+        qe_dependency_nodes_frame,
+        qe_plan_coverage_frame,
+        qe_query_rows_frame,
+        qe_surface_payload,
+        qe_trace_steps_frame,
+        qe_trace_summary_frame,
+    )
+
+    query_rows_payload = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {
+                    'status': 'resolved',
+                    'display_value': '42',
+                    'final_value': 42.0,
+                    'value_type': 'scalar',
+                    'bundle_id': 'bundle-A',
+                    'family_id': 'family-A',
+                    'resolution_order_index': 0,
+                    'contributors': [{'contributor_id': 'c1', 'display_value': '2.0', 'value': 2.0}],
+                    'dependency_trace': {
+                        'trace_contract_id': 'trace-1',
+                        'trace_mode': 'full',
+                        'resolution_order_index': 0,
+                        'has_runtime_trace_steps': True,
+                        'trace_steps': [{'step_index': 1, 'node_id': 'node-1'}],
+                        'input_nodes': ['i-1'],
+                        'calculation_nodes': ['c-1'],
+                        'output_nodes': ['o-1'],
+                    },
+                }
+            }
+        }
+    }
+    query_plan_payload = {
+        'presets': {
+            'Farming': {
+                'progression': {
+                    'bundle_id': 'bundle-A',
+                    'family_id': 'family-A',
+                    'resolved_surface_ids': ['state::tower.damage'],
+                }
+            }
+        }
+    }
+
+    query_frame = qe_query_rows_frame(query_rows_payload, preset='Farming')
+    assert len(query_frame) == 1
+    assert query_frame.iloc[0]['surface_id'] == 'state::tower.damage'
+
+    row_payload = qe_surface_payload(query_rows_payload, preset='Farming', surface_id='state::tower.damage')
+    assert row_payload['status'] == 'resolved'
+    assert row_payload['family_id'] == 'family-A'
+
+    summary_frame = qe_trace_summary_frame(row_payload.get('dependency_trace') or {})
+    assert set(summary_frame.columns) == {'field', 'value'}
+
+    contributors = qe_contributor_rows_frame(row_payload)
+    assert len(contributors) == 1
+    assert contributors.iloc[0]['contributor_id'] == 'c1'
+
+    trace_steps = qe_trace_steps_frame(row_payload.get('dependency_trace') or {})
+    assert len(trace_steps) == 1
+    assert trace_steps.iloc[0]['node_id'] == 'node-1'
+
+    input_nodes = qe_dependency_nodes_frame(row_payload.get('dependency_trace') or {}, field_name='input_nodes')
+    assert len(input_nodes) == 1
+    assert input_nodes.iloc[0]['node_id'] == 'i-1'
+
+    coverage = qe_plan_coverage_frame(query_plan_payload, preset='Farming', surface_id='state::tower.damage')
+    assert len(coverage) == 1
+    assert coverage.iloc[0]['bundle_kind'] == 'progression'
+
+
+def test_run_stats_section_name_groups_expected_surfaces():
+    from app.inspector_data import RUN_STATS_SECTION_ORDER, run_stats_section_name
+
+    assert run_stats_section_name('state::tower.damage') == 'Workshop Offense'
+    assert run_stats_section_name('state::tower.hp') == 'Workshop Defense'
+    assert run_stats_section_name('state::tower.enemy_health_level_skip_pct') == 'Workshop Utility'
+    assert run_stats_section_name('state::uw.black_hole.damage_multiplier') == 'Ultimate Weapons'
+    assert run_stats_section_name('derived::ehp_total') == 'Workshop Defense'
+    assert RUN_STATS_SECTION_ORDER[0] == 'Workshop Offense'
+    assert RUN_STATS_SECTION_ORDER[-1] == 'Other'

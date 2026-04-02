@@ -1,0 +1,134 @@
+version: 1
+prepared: '2026-04-02'
+status:
+  mode: repo_hardening
+  baseline: latest reviewed baseline plus merged Streamlit contract execution PRs through #341
+  active_tranche: closeout
+  active_tranche_name: Release hardening closeout
+  overall_state: concentrated_hardening
+  confidence:
+    high_signal_suites_green: true
+    full_suite_recertified_here: true
+verified_baseline:
+  high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
+  high_signal_result:
+    passed: 86
+    skipped: 1
+  notes:
+  - manual-inputs override blocker fixed truthfully
+  - streamlit contract header landed
+  - runtime formula authority bridge exported explicitly
+  - streamlit import/provenance facades advanced in PR #341
+  - streamlit helper-local private assertions removed from app smoke coverage
+hardening_sequence:
+- id: T0
+  name: Governance truth
+  status: complete
+  goal: Make repo governance reflect the current hardening reality before wider implementation continues.
+  tasks:
+  - id: T0.1
+    task: Replace stale tranche cursor with current hardening sequence
+    status: complete
+  - id: T0.2
+    task: Freeze key hardening decisions in repo-governance-adjacent docs
+    status: complete
+  - id: T0.3
+    task: Align BURNDOWN.yaml with ACTIVE_TRANCHE.md and master plan
+    status: complete
+- id: T1
+  name: Streamlit contract execution
+  status: complete
+  goal: Bring app/streamlit_inspector.py into actual alignment with its contract header.
+  tasks:
+  - id: T1.1
+    task: Resolve legacy statbook contradiction across publication, inspector_data, Streamlit, and tests
+    status: complete
+  - id: T1.2
+    task: Remove private QE/compiler imports from Streamlit
+    status: complete
+  - id: T1.3
+    task: Remove direct KB/manual file reads from Streamlit
+    status: complete
+  - id: T1.4
+    task: Move Boss Waves runtime orchestration behind sanctioned app-level seam
+    status: complete
+  - id: T1.5
+    task: Rewrite Streamlit tests from helper-local behavior toward boundary/contract coverage
+    status: complete
+  dependencies:
+  - T0
+- id: T2
+  name: QE authority closure
+  status: complete
+  goal: Finish separating native QE execution from compat/report execution while keeping formula bridge truth explicit.
+  tasks:
+  - id: T2.1
+    task: Remove qe.kernel dependency on qe.stat_resolution.resolve_bucket_value
+    status: complete
+  - id: T2.2
+    task: Remove qe.routing reliance on compat delta execution for native operation
+    status: complete
+  - id: T2.3
+    task: Keep formula-authority bridge explicit until retirement threshold is met and recorded
+    status: complete
+  dependencies:
+  - T1
+- id: T3
+  name: Evaluator cleanup
+  status: complete
+  goal: Remove evaluator dependence on private QE/compiler helpers.
+  tasks:
+  - id: T3.1
+    task: Replace underscore-prefixed compiler imports with public surfaces
+    status: complete
+  - id: T3.2
+    task: Add regression coverage preventing private-import reintroduction
+    status: complete
+  dependencies:
+  - T2
+- id: T4
+  name: Thinning and polish
+  status: complete
+  goal: Reduce file size and residue only after ownership seams are closed.
+  tasks:
+  - id: T4.1
+    task: Thin app/streamlit_inspector.py after T1 completion
+    status: complete
+  - id: T4.2
+    task: Thin large QE/evaluator files only where justified
+    status: complete
+  - id: T4.3
+    task: Clean residue helpers and mapping duplication
+    status: complete
+  dependencies:
+  - T3
+decision_freeze:
+  boss_waves_mode: interactive_via_sanctioned_facade
+  streamlit_dependency_policy: optional_import_safe
+  legacy_start_max_statbooks: permanently_removed
+  formula_authority_bridge: active_until_explicit_retirement_threshold_met
+  formula_authority_bridge_retirement_threshold:
+    canonical_formula_registry_coverage_pct_required: 100
+    bridge_formula_params_entry_count_required: 0
+    current_status: not_met_bridge_entries_present
+  streamlit_test_strategy: rewrite_helper_local_tests_to_boundary_contract_tests
+  full_suite_certification_wording: do_not_claim_fully_recertified_green_without_durable_artifact
+known_verified_issues: []
+stop_conditions:
+- Do not start file splitting before T1-T3 are complete
+- Do not widen tranche scope into broad refactors
+- Do not claim repo is rock solid before acceptance checklist is satisfied
+definition_of_done:
+  t4_done:
+  - T4.1-T4.3 complete
+  - BURNDOWN and ACTIVE_TRANCHE remain aligned
+  release_closeout:
+  - full_pytest_command: pytest -q
+  - full_pytest_result: 187_passed
+  - full_pytest_date_utc: '2026-04-02'
+  repo_rock_solid_threshold:
+  - Governance truth aligned
+  - Streamlit ownership cleaned in implementation and tests
+  - Native QE/compat seams closed
+  - Evaluator private imports removed
+  - Repo re-certified green with durable full-suite artifact
