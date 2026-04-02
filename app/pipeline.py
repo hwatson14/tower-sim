@@ -62,6 +62,7 @@ from app.display import (
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.contracts import (
+    normalize_surface_id_to_contract,
     normalize_contract_payload,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
@@ -108,6 +109,94 @@ def _load_json_config(path: Path) -> dict:
 
 def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
+
+
+def _slug_text(value: str) -> str:
+    return ''.join(ch.lower() if ch.isalnum() else '_' for ch in str(value or '')).strip('_')
+
+
+def _uw_slug(value: str) -> str:
+    return _slug_text(value)
+
+
+def _uw_track_surface_tokens(track_name: object) -> tuple[str, ...]:
+    text = str(track_name or '').strip().lower()
+    mapping = {
+        'damage': ('damage',),
+        'quantity': ('quantity', 'count'),
+        'chance': ('chance',),
+        'cooldown': ('cooldown',),
+        'duration': ('duration',),
+        'multiplier': ('multiplier', 'bonus'),
+        'bonus': ('bonus', 'multiplier'),
+        'angle': ('angle',),
+        'size': ('size',),
+        'speed reduction': ('speed_reduction',),
+    }
+    return mapping.get(text, (text.replace(' ', '_'),))
+
+
+def _build_input_dashboard_qe_publications(
+    *,
+    account_state,
+    projected_compare_rows_by_preset: dict[str, dict],
+    stat_inputs: list,
+    preset_name: str,
+) -> dict[str, object]:
+    preset_rows = dict(projected_compare_rows_by_preset.get(preset_name) or {})
+    normalized_rows = {normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in preset_rows.items()}
+
+    workshop_surface_map: dict[str, str] = {}
+    for row in stat_inputs:
+        if str(getattr(row, 'source_family', '')).strip() != 'workshop':
+            continue
+        source_name = str(getattr(row, 'source_name', '') or getattr(row, 'stat_name', '') or '').strip()
+        destination_id = str(getattr(row, 'destination_id', '') or '').strip()
+        if source_name and destination_id and source_name not in workshop_surface_map:
+            workshop_surface_map[source_name] = normalize_surface_id_to_contract(destination_id)
+
+    workshop_max_values: dict[str, object] = {}
+    for source_name, surface_id in workshop_surface_map.items():
+        row_payload = normalized_rows.get(surface_id) or {}
+        workshop_max_values[source_name] = row_payload.get('display_value') or row_payload.get('final_value')
+
+    uw_track_effects: dict[str, dict[str, object]] = {}
+    for uw_name, tracks in (account_state.uw_tracks or {}).items():
+        uw_slug = _uw_slug(uw_name)
+        for track_row in tracks or []:
+            track_name = track_row.get('track_name')
+            if not track_name:
+                continue
+            tokens = _uw_track_surface_tokens(track_name)
+            surface_id = None
+            for candidate_surface_id in normalized_rows:
+                if f'state::uw.{uw_slug}.' not in candidate_surface_id:
+                    continue
+                if any(token in candidate_surface_id for token in tokens):
+                    surface_id = candidate_surface_id
+                    break
+            row_payload = normalized_rows.get(surface_id or '') or {}
+            contributors = row_payload.get('contributors') or []
+            module_values = []
+            perk_values = []
+            for contributor in contributors:
+                source_family = str((contributor or {}).get('source_family') or '').strip().lower()
+                display = (contributor or {}).get('display_value')
+                value = (contributor or {}).get('value')
+                if 'module' in source_family and (display is not None or value is not None):
+                    module_values.append(str(display if display is not None else value))
+                if source_family == 'perk' and (display is not None or value is not None):
+                    perk_values.append(str(display if display is not None else value))
+            uw_track_effects[f'{uw_name}::{track_name}'] = {
+                'surface_id': surface_id,
+                'module_effect': '; '.join(module_values) if module_values else None,
+                'perk_effect': '; '.join(perk_values) if perk_values else None,
+                'final_value': row_payload.get('display_value') or row_payload.get('final_value'),
+            }
+    return {
+        'workshop_max_values': workshop_max_values,
+        'uw_track_effects': uw_track_effects,
+    }
 
 
 def _contract_json_payload(obj):
@@ -1928,6 +2017,12 @@ def run_analysis_pipeline(args) -> int:
     account_state_payload = _sanitized_account_state_for_output(account_state, args.preset)
     stat_inputs_payload = [row.to_dict() for row in stat_inputs]
     module_card_payloads_data = build_module_card_payloads(account_state)
+    qe_dashboard_publications = _build_input_dashboard_qe_publications(
+        account_state=account_state,
+        projected_compare_rows_by_preset=projected_compare_rows_by_preset,
+        stat_inputs=stat_inputs,
+        preset_name=args.preset,
+    )
 
     write_core_outputs(
         out_dir=args.out,
@@ -1945,6 +2040,7 @@ def run_analysis_pipeline(args) -> int:
         artifact_contract_manifest=artifact_contract_manifest,
         family_completeness_matrix=family_completeness_matrix,
         root_path=ROOT,
+        qe_dashboard_publications=qe_dashboard_publications,
     )
 
     # Write module card payloads (QE-generated orchestration artifact, PR329)
