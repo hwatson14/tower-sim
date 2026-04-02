@@ -11,10 +11,9 @@ It identifies:
 - what must happen next
 - stop conditions and closeout criteria
 
-Narrative contract truth lives in the root handoff pack:
-- `towersim_hardening_handoff_pack_v5.zip` → `01_MASTER_HARDENING_PLAN.md`
-- `towersim_hardening_handoff_pack_v5.zip` → `02_DECISION_LOG_AND_AMBIGUITIES.md`
-- `towersim_hardening_handoff_pack_v5.zip` → `03_ACCEPTANCE_CHECKLIST.md`
+Narrative contract truth now lives directly in:
+- this `ACTIVE_TRANCHE.md` file
+- `BURNDOWN.yaml`
 
 Machine-readable state lives in:
 - `BURNDOWN.yaml`
@@ -106,9 +105,8 @@ Release closeout is complete only when all of the following are true:
 
 - targeted thinning-change tests plus high-signal regression checks
 - consistency check against:
-  - handoff pack `01_MASTER_HARDENING_PLAN.md`
-  - handoff pack `02_DECISION_LOG_AND_AMBIGUITIES.md`
-  - handoff pack `03_ACCEPTANCE_CHECKLIST.md`
+  - `ACTIVE_TRANCHE.md`
+  - `BURNDOWN.yaml`
 
 ---
 

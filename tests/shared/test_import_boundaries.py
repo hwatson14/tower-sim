@@ -111,7 +111,6 @@ _ROOT_FILE_ALLOWLIST = {
     "RTK.md",
     "pyproject.toml",
     "requirements.txt",
-    "towersim_hardening_handoff_pack_v5.zip",
 }
 _TESTS_ROOT_FILE_ALLOWLIST = {"conftest.py"}
 _INPUT_FILE_ALLOWLIST = {
