@@ -323,6 +323,23 @@ Tests import any active layer. Tests must not import `archive/`.
 
 ---
 
+## Strict layer consumption rules
+
+These rules are mandatory and must be treated as architecture truth:
+
+- `input/` owns parsing/state assembly only.
+- `kb/` owns mechanic truth only.
+- `qe/` owns deterministic stat resolution.
+- `simulators/` consume QE only.
+- `evaluators/` consume simulator/QE outputs only.
+- `advisors/` consume evaluator outputs only.
+- `app/` orchestrates/renders only.
+- `tests/` enforce architecture truth.
+
+Any change that weakens these boundaries must update this document and the matching governance tests in `tests/shared/`.
+
+---
+
 ## File survival rules
 
 A file survives as active only if ALL are true:

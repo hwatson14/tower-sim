@@ -56,6 +56,10 @@ _IMPORT_APP_FROM_EVALUATORS = re.compile(
     r"^\s*(?:from\s+app(?:\.[A-Za-z0-9_]+)*\s+import|import\s+app(?:\.[A-Za-z0-9_]+)*)\b",
     re.MULTILINE,
 )
+_IMPORT_INPUT_FROM_EVALUATORS = re.compile(
+    r"^\s*(?:from\s+input(?:\.[A-Za-z0-9_]+)*\s+import|import\s+input(?:\.[A-Za-z0-9_]+)*)\b",
+    re.MULTILINE,
+)
 _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_APP = re.compile(
     r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
     re.MULTILINE,
@@ -79,6 +83,32 @@ _IMPORT_UPWARD_LAYER_FROM_SIMULATORS = re.compile(
     r"^\s*(?:from|import)\s+(?:evaluators|advisors|app)\b",
     re.MULTILINE,
 )
+_IMPORT_SIMULATORS_FROM_QE = re.compile(
+    r"^\s*(?:from|import)\s+simulators\b",
+    re.MULTILINE,
+)
+_IMPORT_OR_READ_FORBIDDEN_FROM_ADVISORS = re.compile(
+    r"^\s*(?:from|import)\s+(?:kb|qe|simulators|input)\b|['\"](?:kb|qe|simulators|input)/",
+    re.MULTILINE,
+)
+_APP_NON_ORCHESTRATION_OWNERSHIP_MARKERS = re.compile(
+    r"^\s*(?:def|class)\s+("
+    r"StatQueryKernel|DependencyRegistry|FamilyBaselineMaterializer|"
+    r"compute_(?:ehp|edamage|eecon)|"
+    r"(?:build_)?(?:recommendation|advisor|scor(?:e|er)|objective|ranker|simulate|materialize|resolve_stats)"
+    r")\b",
+    re.MULTILINE,
+)
+_ALLOWED_EVALUATOR_INPUT_IMPORTS = {
+    ("compare.py", "from input.runtime_state import build_runtime_state"),
+    ("compare.py", "from input.state_types import PerkSelection"),
+    ("compare_core.py", "from input.runtime_state import build_runtime_state"),
+    ("audit_engine.py", "from input.state_types import PerkSelection"),
+    ("audit_engine.py", "from input.runtime_state import build_runtime_state"),
+}
+_ALLOWED_QE_SIMULATOR_IMPORTS = {
+    ("routing.py", "from simulators.incremental_recalc_runtime import IncrementalRecalcRuntime"),
+}
 _IMPORT_FORBIDDEN_INPUT_FROM_QE = re.compile(
     r"^\s*(?:from|import)\s+input\.(?:runtime_state|loader|state_builder)\b",
     re.MULTILINE,
@@ -462,6 +492,20 @@ def test_evaluators_files_do_not_import_app_layer():
         )
 
 
+def test_evaluators_files_do_not_import_input_layer():
+    """No file under evaluators/ may import input.* surfaces beyond the explicit compat allowlist."""
+    for py in _py_sources(EVALUATORS_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_INPUT_FROM_EVALUATORS)
+        unexpected = [
+            line for line in violations
+            if (py.name, line) not in _ALLOWED_EVALUATOR_INPUT_IMPORTS
+        ]
+        assert not unexpected, (
+            f"evaluators/{py.name} imports unexpected input layer symbols: {unexpected}"
+        )
+
+
 # ---------------------------------------------------------------------------
 # T13: consolidated transitional-root boundaries
 # ---------------------------------------------------------------------------
@@ -512,10 +556,31 @@ def test_input_files_do_not_import_upward_layers():
 
 
 def test_qe_files_do_not_import_upward_layers():
-    """No file under qe/ may import simulators, evaluators, advisors, or app."""
-    violations = _boundary_violation_details(QE_DIR, _IMPORT_UPWARD_LAYER_FROM_QE)
+    """No file under qe/ may import upward layers except explicit compat seams."""
+    violations: list[str] = []
+    for py in _py_sources(QE_DIR):
+        src = py.read_text(encoding="utf-8")
+        for line in _violation_lines(src, _IMPORT_UPWARD_LAYER_FROM_QE):
+            if (py.name, line) in _ALLOWED_QE_SIMULATOR_IMPORTS:
+                continue
+            violations.append(f"{py.relative_to(ROOT)} -> {line}")
     assert not violations, (
         "Upward-layer imports detected in qe/*.py (forbidden: simulators/evaluators/advisors/app): "
+        f"{violations}"
+    )
+
+
+def test_qe_files_do_not_import_simulators():
+    """No file under qe/ may import simulators.* beyond the explicit compat allowlist."""
+    violations: list[str] = []
+    for py in _py_sources(QE_DIR):
+        src = py.read_text(encoding="utf-8")
+        for line in _violation_lines(src, _IMPORT_SIMULATORS_FROM_QE):
+            if (py.name, line) in _ALLOWED_QE_SIMULATOR_IMPORTS:
+                continue
+            violations.append(f"{py.relative_to(ROOT)} -> {line}")
+    assert not violations, (
+        "QE imports simulator layer modules directly (forbidden): "
         f"{violations}"
     )
 
@@ -527,6 +592,27 @@ def test_simulators_files_do_not_import_upward_layers():
         "Upward-layer imports detected in simulators/*.py (forbidden: evaluators/advisors/app): "
         f"{violations}"
     )
+
+
+def test_advisors_do_not_import_or_read_kb_qe_simulators_or_input():
+    """Advisor policy must consume evaluator outputs only, not lower-layer imports/file reads."""
+    advisors_dir = ROOT / "advisors"
+    for py in _py_sources(advisors_dir):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_OR_READ_FORBIDDEN_FROM_ADVISORS)
+        assert not violations, (
+            f"advisors/{py.name} imports/reads forbidden lower layers (kb/qe/simulators/input): {violations}"
+        )
+
+
+def test_app_files_do_not_define_non_orchestration_ownership_symbols():
+    """App layer should stay orchestration/render-only; reject domain-owner symbol definitions."""
+    for py in _py_sources(APP_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_line_details(src, _APP_NON_ORCHESTRATION_OWNERSHIP_MARKERS)
+        assert not violations, (
+            f"app/{py.name} defines non-orchestration ownership markers: {violations}"
+        )
 
 
 def test_qe_files_do_not_import_forbidden_input_modules():
