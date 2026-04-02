@@ -28,6 +28,16 @@ app/ → advisors/ → evaluators/ → simulators/ → qe/ → input/
                                                      → kb/
 ```
 
+Strict consumption rules:
+- `input/` owns parsing/state assembly only.
+- `kb/` owns mechanic truth only.
+- `qe/` owns deterministic stat resolution.
+- `simulators/` consume QE only.
+- `evaluators/` consume simulator/QE outputs only.
+- `advisors/` consume evaluator outputs only.
+- `app/` orchestrates/renders only.
+- `tests/` enforce architecture truth.
+
 ## Default test gate
 
 ```bash
