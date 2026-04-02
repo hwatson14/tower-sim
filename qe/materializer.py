@@ -662,11 +662,7 @@ def _normalize_composition_stage(surface_id: str, row: StatInput) -> str:
     # post-additive scaling role in stat_resolution_core: _contributor_measure extracts
     # 'multiplier' from the id suffix and routes the row to multiplier_product.  Mirror
     # that here so the QE applies them as a product over the additive sum.
-    if (
-        row.source_family == 'enhancement'
-        and row.contributor_id is not None
-        and row.contributor_id.endswith('__multiplier')
-    ):
+    if row.source_family == 'enhancement':
         return 'multiplicative'
     if row.destination_object_type == 'runtime_mechanic_param':
         return 'scenario_adjustment'

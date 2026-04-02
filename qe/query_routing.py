@@ -460,12 +460,6 @@ RELIC_CONTRIBUTOR_OVERRIDES = {
     'wall rebuild': 'relic__tower__wall_rebuild_seconds_reduction',
 }
 
-ENHANCEMENT_CONTRIBUTOR_OVERRIDES = {
-    'orb size': 'enhancements__tower__orb_size__multiplier',
-    'super crit multi': 'enhancements__tower__supercrit_multiplier__multiplier',
-    'super critical mult': 'enhancements__tower__supercrit_multiplier__multiplier',
-}
-
 PERK_TARGET_DESTINATION_OVERRIDES = {
     'tower_hp': ('canonical_stat', 'tower_hp'),
     'tower_damage': ('canonical_stat', 'tower_damage'),
@@ -698,7 +692,6 @@ __all__ = [
     'MODULE_SUBSTAT_NAME_TO_DESTINATION',
     'ENHANCEMENT_ALIAS_OVERRIDES',
     'RELIC_CONTRIBUTOR_OVERRIDES',
-    'ENHANCEMENT_CONTRIBUTOR_OVERRIDES',
     'PERK_TARGET_DESTINATION_OVERRIDES',
     'to_v2_surface_id',
     'to_legacy_surface_id',
