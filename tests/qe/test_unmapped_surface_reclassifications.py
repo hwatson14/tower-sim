@@ -7,7 +7,9 @@ from input.state_types import PerkSelection, ScenarioProjectionState, UltimateWe
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from evaluators.compare import _build_kb_incomplete_areas
+from qe import models as qe_models
 from qe.stat_input_compiler import compile_stat_inputs
+import qe.stat_input_compiler as stat_input_compiler
 from qe.routing import QEResolutionPlanner
 
 
@@ -227,17 +229,64 @@ def test_max_workshop_projection_uses_max_levels_without_mode_string_coupling() 
     assert projected_row.notes == 'projection_state=max_workshop:using_workshop_max_level'
 
 
+def test_sharp_fortitude_rows_use_module_preset_and_keep_module_provenance_and_contributors(monkeypatch) -> None:
+    state = _base_account_state()
+    original_bind = stat_input_compiler.bind_preset_family
+
+    def _bind_with_distinct_module_lane(**kwargs):
+        bound = original_bind(**kwargs)
+        return qe_models.BoundPresetFamily(
+            preset_name=bound.preset_name,
+            card_preset_name=bound.card_preset_name,
+            module_preset_name='Milestone',
+            perk_preset_name=bound.perk_preset_name,
+            perk_namespace_class=bound.perk_namespace_class,
+            state_mode=bound.state_mode,
+            perks_enabled=bound.perks_enabled,
+        )
+
+    monkeypatch.setattr(stat_input_compiler, 'bind_preset_family', _bind_with_distinct_module_lane)
+    rows = compile_stat_inputs(
+        state,
+        preset_name=state.default_preset,
+        state_mode='start_of_run',
+    )
+
+    sharp_rows = [
+        row for row in rows
+        if row.source_family == 'module'
+        and row.source_name == 'Sharp Fortitude'
+        and row.stat_name in {'Sharp Fortitude::main', 'Sharp Fortitude::unique'}
+    ]
+    assert sharp_rows
+    assert all(row.preset_name == 'Milestone' for row in sharp_rows)
+    assert all(row.provenance == 'IDS::Modules' for row in sharp_rows)
+
+    sf_manual_unique_rows = [
+        row for row in sharp_rows
+        if 'kb_manual_sharp_fortitude' in (row.notes or '')
+    ]
+    assert {row.contributor_id for row in sf_manual_unique_rows} == {
+        'module__armor__wall_health__pct@@sharp fortitude@@primary@@unique',
+        'module__armor__wall_regen__pct@@sharp fortitude@@primary@@unique',
+    }
+
+
 def test_routing_diagnostics_distinguish_classes_without_false_unmapped_inflation() -> None:
     state = _base_account_state()
     snapshot = _resolved_snapshot(state)
     statbook = snapshot.statbook
     class_counts = statbook.diagnostics.get('input_routing_class_counts') or {}
+    mapped_count_by_family = statbook.diagnostics.get('mapped_count_by_family') or {}
+    input_count_by_family = statbook.diagnostics.get('input_count_by_family') or {}
 
     assert class_counts.get('account_metadata', 0) >= 1
     assert class_counts.get('capability_policy', 0) >= 1
     assert class_counts.get('resolved', 0) >= 1
     assert statbook.diagnostics.get('unmapped_input_count', 0) == class_counts.get('truly_unrouted_unknown', 0)
     assert statbook.diagnostics.get('qe_resolution_interface') == 'report_snapshot_planner'
+    assert mapped_count_by_family.get('module', 0) >= 1
+    assert input_count_by_family.get('module', 0) >= mapped_count_by_family.get('module', 0)
 
 
 def test_compare_kb_incomplete_areas_only_count_true_unrouted_inputs() -> None:
