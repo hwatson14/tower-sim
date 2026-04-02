@@ -4,6 +4,7 @@ import pytest
 
 from input.state_types import ScenarioProjectionState
 from qe.consumer_registry import resolve_consumer_bundle
+from qe.kb_surfaces import LAB_FORMULA_VALUES, RUNTIME_FORMULA_AUTHORITY, WORKSHOP_FORMULA_VALUES
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
     normalize_contract_payload,
@@ -218,6 +219,21 @@ def test_qe_resolution_planner__report_snapshot_uses_hybrid_backend_when_native_
     assert snapshot.statbook.diagnostics["qe_resolution_interface"] == "report_snapshot_planner"
     assert snapshot.statbook.diagnostics["qe_resolution_backend"] == "report_snapshot_hybrid"
     assert snapshot.statbook.diagnostics["qe_native_family_available"] is True
+
+
+def test_runtime_formula_keys_have_explicit_authority() -> None:
+    runtime_keys = {f'workshop:{key}' for key in WORKSHOP_FORMULA_VALUES} | {f'lab:{key}' for key in LAB_FORMULA_VALUES}
+    assert runtime_keys == set(RUNTIME_FORMULA_AUTHORITY)
+
+
+def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
+    allowed = {'canonical_formula_registry', 'bridge_formula_params'}
+    for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
+        source = metadata.get('authority_source')
+        assert source in allowed, f'{runtime_key} has unsupported authority source: {source!r}'
+        if source == 'canonical_formula_registry':
+            formula_id = (metadata.get('formula_id') or '').strip()
+            assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():
