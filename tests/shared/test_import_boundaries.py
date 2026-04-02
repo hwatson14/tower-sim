@@ -95,6 +95,8 @@ _QE_DIRECT_MANUAL_INPUT_READ = re.compile(
     r"manual_inputs\.yaml|manual_input_path|manual_advisory_inputs.*safe_load|safe_load.*manual_advisory_inputs",
     re.MULTILINE,
 )
+_ADVISORS_DIRECT_KB_PATH_REFERENCE = re.compile(r"['\"]kb/", re.MULTILINE)
+_ADVISORS_CSV_PARSE_IMPORT = re.compile(r"^\s*import\s+csv\b|^\s*from\s+csv\s+import\b", re.MULTILINE)
 _IMPORT_DELETED_LEGACY_STATE_OWNERS = re.compile(
     r"^\s*(?:from|import)\s+(?:input\.(?:ids_raw|scenario_inputs|account_state_compiler)|qe\.account_state)\b",
     re.MULTILINE,
@@ -541,6 +543,23 @@ def test_qe_files_do_not_read_manual_inputs_directly():
         src = py.read_text(encoding="utf-8")
         violations = _violation_lines(src, _QE_DIRECT_MANUAL_INPUT_READ)
         assert not violations, f"qe/{py.name} reads manual inputs directly: {violations}"
+
+def test_advisors_files_do_not_reference_kb_paths_directly():
+    """advisors/* must consume evaluator bundles, not own kb/* file path references."""
+    advisor_dir = ROOT / "advisors"
+    for py in _py_sources(advisor_dir):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _ADVISORS_DIRECT_KB_PATH_REFERENCE)
+        assert not violations, f"advisors/{py.name} references kb/ path directly: {violations}"
+
+
+def test_advisors_files_do_not_parse_csv_directly():
+    """advisors/* should not parse CSV directly; evaluator layer owns advisory input materialisation."""
+    advisor_dir = ROOT / "advisors"
+    for py in _py_sources(advisor_dir):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _ADVISORS_CSV_PARSE_IMPORT)
+        assert not violations, f"advisors/{py.name} imports csv directly: {violations}"
 
 
 def test_no_active_layer_imports_deleted_legacy_state_modules():
