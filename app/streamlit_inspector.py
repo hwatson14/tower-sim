@@ -285,11 +285,6 @@ def _perk_effect_map() -> dict[str, dict]:
 
 
 @lru_cache(maxsize=1)
-def _module_unique_value_map() -> dict[tuple[str, str], tuple[float, str]]:
-    return _load_module_unique_effect_values()
-
-
-@lru_cache(maxsize=1)
 def _manual_banned_perks() -> set[str]:
     try:
         payload = yaml.safe_load(MANUAL_INPUTS.read_text(encoding='utf-8')) or {}
@@ -375,6 +370,128 @@ def _parse_display_with_suffix(display: object) -> tuple[float | None, str]:
         return None, ''
 
 
+def _coerce_float(value: object) -> float | None:
+    if value is None:
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    text = str(value).strip()
+    if not text:
+        return None
+    try:
+        return float(text)
+    except ValueError:
+        return None
+
+
+def _format_qe_perk_value(value: object, value_type: object) -> str:
+    if value is None:
+        return ''
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    numeric = _coerce_float(value)
+    if numeric is None:
+        return str(value)
+    kind = str(value_type or '').strip().lower()
+    if kind == 'multiplier':
+        return f"x{numeric:g}"
+    if kind in {'pct', 'additive_percent', 'percent', 'percentage_points_add'}:
+        return f"+{numeric:g}%"
+    if kind == 'seconds_add':
+        return f"+{numeric:g}s"
+    if kind in {'count_add', 'flat'} and numeric >= 0:
+        return f"+{numeric:g}"
+    return f"{numeric:g}"
+
+
+def _perk_rows_from_qe(stat_inputs_payload: object, *, selected_preset: str) -> dict[str, list[dict]]:
+    if not isinstance(stat_inputs_payload, list):
+        return {}
+    perk_entities = _perk_entity_map()
+    perk_rows: dict[str, list[dict]] = {}
+    for row in stat_inputs_payload:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get('source_family') or '').strip() != 'perk':
+            continue
+        if row.get('active') is False:
+            continue
+        preset_name = str(row.get('preset_name') or '').strip()
+        if preset_name and preset_name != selected_preset:
+            continue
+        perk_name = str(row.get('source_name') or '').strip()
+        if not perk_name:
+            contributor_id = str(row.get('contributor_id') or '').strip()
+            perk_id = contributor_id.split('::')[1] if contributor_id.startswith('perk::') and '::' in contributor_id else ''
+            perk_name = str((perk_entities.get(perk_id) or {}).get('perk_name') or perk_id).strip()
+        if not perk_name:
+            continue
+        perk_rows.setdefault(str(perk_name), []).append(
+            {
+                'value': row.get('value'),
+                'value_type': row.get('value_type'),
+            }
+        )
+    return perk_rows
+
+
+def _perk_lab_bonus_summary(stat_inputs_payload: object) -> tuple[float | None, float | None]:
+    if not isinstance(stat_inputs_payload, list):
+        return None, None
+    standard_bonus = None
+    tradeoff_bonus = None
+    for row in stat_inputs_payload:
+        if not isinstance(row, dict):
+            continue
+        if str(row.get('source_family') or '').strip() != 'lab':
+            continue
+        if row.get('active') is False:
+            continue
+        destination_id = str(row.get('destination_id') or '').strip()
+        if destination_id == 'perk.standard_perks_bonus_pct':
+            standard_bonus = _coerce_float(row.get('value'))
+        elif destination_id == 'perk.tradeoff_bonus_pct':
+            tradeoff_bonus = _coerce_float(row.get('value'))
+    return standard_bonus, tradeoff_bonus
+
+
+def _resolved_statbook_row_map(resolved_statbook_payload: object) -> dict[str, dict]:
+    if not isinstance(resolved_statbook_payload, dict):
+        return {}
+    row_map: dict[str, dict] = {}
+    if isinstance(resolved_statbook_payload.get('rows'), dict):
+        for raw_surface_id, payload in (resolved_statbook_payload.get('rows') or {}).items():
+            row_map[normalize_surface_id_to_contract(raw_surface_id)] = dict(payload or {})
+        return row_map
+    for preset_payload in resolved_statbook_payload.values():
+        if not isinstance(preset_payload, dict):
+            continue
+        for raw_surface_id, payload in (preset_payload.get('rows') or {}).items():
+            row_map[normalize_surface_id_to_contract(raw_surface_id)] = dict(payload or {})
+    return row_map
+
+
+def _stringify_for_display(value: object) -> str:
+    if value is None:
+        return ''
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    if isinstance(value, float):
+        return f'{value:g}'
+    return str(value)
+
+
+def _arrow_safe_frame(frame: pd.DataFrame, *, columns: tuple[str, ...] = ('value',)) -> pd.DataFrame:
+    safe = frame.copy()
+    for column in columns:
+        if column not in safe.columns:
+            continue
+        sample_types = {type(item) for item in safe[column] if item is not None}
+        if len(sample_types) > 1:
+            safe[column] = safe[column].map(_stringify_for_display)
+    return safe
+
+
 def _init_state() -> None:
     st.session_state.setdefault('snapshot_dirs', {DEFAULT_OUT.name: str(DEFAULT_OUT)})
     st.session_state.setdefault('active_out_dir', str(DEFAULT_OUT))
@@ -423,9 +540,9 @@ def _sidebar() -> PipelineRunRequest:
         include_slow_audits=include_slow_audits,
         perk_state=perk_state,
     )
-    if st.sidebar.button('Run current request', use_container_width=True):
+    if st.sidebar.button('Run current request', width='stretch'):
         _run_request(request)
-    if st.sidebar.button('Build default verification set', use_container_width=True):
+    if st.sidebar.button('Build default verification set', width='stretch'):
         _run_default_verification_set(request)
     snapshot_labels = list(st.session_state['snapshot_dirs'].keys())
     selected_label = st.sidebar.selectbox('Active snapshot', options=snapshot_labels, index=max(0, snapshot_labels.index(next((label for label, path in st.session_state['snapshot_dirs'].items() if path == st.session_state['active_out_dir']), snapshot_labels[0]))))
@@ -455,7 +572,7 @@ def _render_pipeline(trace_payload: dict, diagnostics: dict) -> None:
     stage_df = pipeline_stages_frame(trace_payload)
     if not stage_df.empty:
         st.subheader('Stages')
-        st.dataframe(stage_df, use_container_width=True, hide_index=True)
+        st.dataframe(stage_df, width='stretch', hide_index=True)
         for stage in trace_payload.get('stages') or []:
             title = f"{stage.get('title', stage.get('stage_id'))} - {stage.get('owner_module', '')}"
             with st.expander(title):
@@ -623,7 +740,7 @@ def _render_cards_matrix(account_state: dict, *, selected_preset: str) -> None:
         active = row.get(selected_header) == 'used'
         return ['background-color: rgba(255, 214, 102, 0.2)' if active else '' for _ in row]
 
-    st.dataframe(frame.style.apply(_style_selected, axis=1), use_container_width=True, hide_index=True)
+    st.dataframe(frame.style.apply(_style_selected, axis=1), width='stretch', hide_index=True)
 
 
 def _render_modules_table(active_artifacts, *, selected_preset: str) -> None:
@@ -709,7 +826,7 @@ def _render_perks_table(account_state: dict, *, selected_preset: str, stat_input
                 'max value': ' | '.join(max_values),
             }
         )
-    st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+    st.dataframe(pd.DataFrame(rows), width='stretch', hide_index=True)
 
 
 def _uw_track_stat_suffix(track_name: object) -> tuple[str, ...]:
@@ -867,12 +984,12 @@ def _render_uw_groups(
                         ),
                     }
                 )
-            st.dataframe(pd.DataFrame(track_rows), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(track_rows), width='stretch', hide_index=True)
             plus_rows = [
                 row for key, row in uw_plus_tracks.items() if key.startswith(f'{uw_name}::')
             ]
             if plus_rows:
-                st.dataframe(pd.DataFrame(plus_rows), use_container_width=True, hide_index=True)
+                st.dataframe(pd.DataFrame(plus_rows), width='stretch', hide_index=True)
 
 
 def _render_loadout_panel(active_artifacts, *, preset: str, max_progression_rows: dict[str, dict]) -> None:
@@ -938,7 +1055,7 @@ def _render_sectioned_run_stats_table(frame: pd.DataFrame, *, show_raw_ids: bool
         ]
         if show_raw_ids:
             table_columns.insert(2, 'raw_surface_id')
-        st.dataframe(section_df[table_columns], use_container_width=True, hide_index=True)
+        st.dataframe(section_df[table_columns], width='stretch', hide_index=True)
 
 
 def _max_progression_lookup(frame: pd.DataFrame) -> dict[str, dict]:
@@ -988,7 +1105,7 @@ def _render_qe(active_artifacts, request: PipelineRunRequest) -> None:
 
     st.dataframe(
         filtered[['group', 'display_label', 'surface_id', 'status', 'bundle_id', 'family_id', 'contributor_count', 'resolution_order_index', 'has_trace_steps']],
-        use_container_width=True,
+        width='stretch',
         hide_index=True,
     )
 
@@ -1008,35 +1125,43 @@ def _render_qe(active_artifacts, request: PipelineRunRequest) -> None:
         ('trace_mode', row_payload.get('trace_mode')),
     ]
     st.subheader('Selected Surface Summary')
-    st.dataframe(pd.DataFrame(summary_rows, columns=['field', 'value']), use_container_width=True, hide_index=True)
+    st.dataframe(
+        _arrow_safe_frame(pd.DataFrame(summary_rows, columns=['field', 'value'])),
+        width='stretch',
+        hide_index=True,
+    )
 
     st.subheader('Contributor Lineage')
-    st.dataframe(qe_contributor_rows_frame(row_payload), use_container_width=True, hide_index=True)
+    st.dataframe(
+        _arrow_safe_frame(qe_contributor_rows_frame(row_payload), columns=('value', 'display_value')),
+        width='stretch',
+        hide_index=True,
+    )
 
     st.subheader('Dependency Trace Summary')
-    st.dataframe(qe_trace_summary_frame(trace_payload), use_container_width=True, hide_index=True)
+    st.dataframe(_arrow_safe_frame(qe_trace_summary_frame(trace_payload)), width='stretch', hide_index=True)
 
     trace_cols = st.columns(2)
     with trace_cols[0]:
         st.caption('Direct upstream nodes')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_upstream_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_upstream_node_ids'), width='stretch', hide_index=True)
         st.caption('Resolved upstream nodes')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='resolved_upstream_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='resolved_upstream_node_ids'), width='stretch', hide_index=True)
         st.caption('Unresolved upstream nodes')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='unresolved_upstream_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='unresolved_upstream_node_ids'), width='stretch', hide_index=True)
     with trace_cols[1]:
         st.caption('Direct downstream nodes')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_downstream_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='direct_downstream_node_ids'), width='stretch', hide_index=True)
         st.caption('Upstream closure')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='upstream_closure_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='upstream_closure_node_ids'), width='stretch', hide_index=True)
         st.caption('Downstream closure')
-        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='downstream_closure_node_ids'), use_container_width=True, hide_index=True)
+        st.dataframe(qe_dependency_nodes_frame(trace_payload, field_name='downstream_closure_node_ids'), width='stretch', hide_index=True)
 
     st.subheader('Runtime Trace Steps')
-    st.dataframe(qe_trace_steps_frame(trace_payload), use_container_width=True, hide_index=True)
+    st.dataframe(qe_trace_steps_frame(trace_payload), width='stretch', hide_index=True)
 
     st.subheader('Active Query-Plan Coverage')
-    st.dataframe(qe_plan_coverage_frame(query_plan_payload, preset=preset_name, surface_id=selected_surface), use_container_width=True, hide_index=True)
+    st.dataframe(qe_plan_coverage_frame(query_plan_payload, preset=preset_name, surface_id=selected_surface), width='stretch', hide_index=True)
 
 def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
     st.subheader('Stats')
@@ -1127,12 +1252,12 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             ]
             if show_raw_ids:
                 table_columns.insert(3, 'raw_surface_id')
-            st.dataframe(filtered_active[table_columns], use_container_width=True, hide_index=True)
+            st.dataframe(filtered_active[table_columns], width='stretch', hide_index=True)
     else:
         table_columns = ['group', 'display_label', 'surface_id', 'final_value', 'display_value', 'value_type', 'status', 'contributor_count', 'ep display', 'ep value', 'ep preset', 'ep perks', 'ep status']
         if show_raw_ids:
             table_columns.insert(3, 'raw_surface_id')
-        st.dataframe(filtered_active[table_columns], use_container_width=True, hide_index=True)
+        st.dataframe(filtered_active[table_columns], width='stretch', hide_index=True)
 
     st.subheader('Fast Checkpoint Verification')
     st.caption('Uses the lightweight QE checkpoint resolver from PR 318 for exact targeted surfaces. Mixed visible tables can span unsupported families, so verification should be focused.')
@@ -1165,7 +1290,7 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
     )
     requested_surface_ids = tuple(verification_options[label] for label in selected_verification_labels)
     st.write(f'Surfaces selected for fast verification: `{len(requested_surface_ids)}`')
-    if st.button('Resolve selected stats via fast checkpoint', use_container_width=True, disabled=not requested_surface_ids):
+    if st.button('Resolve selected stats via fast checkpoint', width='stretch', disabled=not requested_surface_ids):
         fast_result = resolve_fast_checkpoint(
             FastCheckpointRequest(
                 ids=request.ids,
@@ -1226,7 +1351,7 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             fast_compare['delta'] = pd.to_numeric(fast_compare['fast value'], errors='coerce') - pd.to_numeric(
                 fast_compare['artifact value'], errors='coerce'
             )
-            st.dataframe(fast_compare, use_container_width=True, hide_index=True)
+            st.dataframe(fast_compare, width='stretch', hide_index=True)
 
     if comparison_artifacts:
         st.subheader('Comparison Workbench')
@@ -1255,7 +1380,7 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             merged = merged.rename(columns={'start_of_run_display': 'active start', 'max_progression_display': 'active max'})
             for frame in comparison_frames:
                 merged = merged.merge(frame, on='surface_id', how='left')
-            st.dataframe(merged, use_container_width=True, hide_index=True)
+            st.dataframe(merged, width='stretch', hide_index=True)
 
     selected_surface = st.selectbox('Contributor drilldown surface', options=filtered_active['surface_id'].tolist())
     detail_payload_name = 'statbook_start_of_run.json' if request.state_mode == 'start_of_run' else 'statbook_max_progression.json'
@@ -1307,15 +1432,15 @@ def _render_checks(active_artifacts) -> None:
                     'pct': payload.get('pct'),
                 }
             )
-        st.dataframe(pd.DataFrame(family_rows), use_container_width=True, hide_index=True)
+        st.dataframe(pd.DataFrame(family_rows), width='stretch', hide_index=True)
     active_unmapped_inputs = diagnostics.get('active_unmapped_inputs') or []
     if active_unmapped_inputs:
         with st.expander('Active unmapped inputs'):
-            st.dataframe(pd.DataFrame(active_unmapped_inputs), use_container_width=True, hide_index=True)
+            st.dataframe(pd.DataFrame(active_unmapped_inputs), width='stretch', hide_index=True)
     st.subheader('EP Compare')
-    st.dataframe(compare_df, use_container_width=True, hide_index=True)
+    st.dataframe(compare_df, width='stretch', hide_index=True)
     st.subheader('Line Verification')
-    st.dataframe(verification_df, use_container_width=True, hide_index=True)
+    st.dataframe(verification_df, width='stretch', hide_index=True)
     st.subheader('State Matrix')
     st.json(active_artifacts.get('state_matrix.json', {}))
     st.subheader('Family Completeness')
@@ -1443,13 +1568,13 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
         'the intervening waves using the interval-start resolved values.'
     )
-    st.dataframe(frame, use_container_width=True, hide_index=True)
+    st.dataframe(frame, width='stretch', hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
         data=frame.to_csv(index=False).encode('utf-8'),
         file_name=f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
         mime='text/csv',
-        use_container_width=True,
+        width='stretch',
     )
     with st.expander('Boss-wave diagnostics'):
         st.json(diagnostics)
