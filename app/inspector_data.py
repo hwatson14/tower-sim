@@ -408,10 +408,27 @@ def _lineage_resolved_surface_id(row: dict[str, Any]) -> str | None:
     return None
 
 
-def input_lineage_rows_frame(stat_inputs_payload: Any) -> pd.DataFrame:
+def _account_state_source_values(account_state_payload: Any) -> dict[str, Any]:
+    if not isinstance(account_state_payload, dict):
+        return {}
+    source_values: dict[str, Any] = {}
+    for _, section_payload in account_state_payload.items():
+        if not isinstance(section_payload, dict):
+            continue
+        for key, value in section_payload.items():
+            if isinstance(value, (dict, list)):
+                continue
+            normalized_key = str(key).strip().casefold()
+            if normalized_key and normalized_key not in source_values:
+                source_values[normalized_key] = value
+    return source_values
+
+
+def input_lineage_rows_frame(stat_inputs_payload: Any, *, account_state_payload: Any = None) -> pd.DataFrame:
     columns = ['source_group', 'source_key', 'source_value', 'resolved_surface_id', 'resolved_value', 'mapping_status']
     if not isinstance(stat_inputs_payload, list):
         return pd.DataFrame(columns=columns)
+    account_state_sources = _account_state_source_values(account_state_payload)
     rows: list[dict[str, Any]] = []
     for raw_row in stat_inputs_payload:
         if not isinstance(raw_row, dict):
@@ -422,10 +439,14 @@ def input_lineage_rows_frame(stat_inputs_payload: Any) -> pd.DataFrame:
             or str(raw_row.get('destination_id') or '').strip()
         )
         resolved_surface_id = _lineage_resolved_surface_id(raw_row)
-        source_value = raw_row.get('value')
+        raw_source_value = raw_row.get('value')
+        source_value = raw_source_value
+        source_lookup_key = source_key.casefold()
+        if source_lookup_key and source_lookup_key in account_state_sources:
+            source_value = account_state_sources[source_lookup_key]
         resolved_value = raw_row.get('resolved_value')
         if resolved_value is None:
-            resolved_value = source_value
+            resolved_value = raw_source_value
         kb_mapped = bool(raw_row.get('kb_mapped'))
         if resolved_surface_id:
             mapping_status = 'mapped'

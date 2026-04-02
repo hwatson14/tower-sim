@@ -128,3 +128,30 @@ def test_input_lineage_rows_frame_projects_source_and_resolved_columns():
     unmapped_row = frame.loc[frame['source_key'] == 'Workshop Defense Discount'].iloc[0]
     assert unmapped_row['resolved_surface_id'] is None
     assert unmapped_row['mapping_status'] == 'unmapped'
+
+
+def test_input_lineage_rows_frame_prefers_account_state_source_values_when_available():
+    from app.inspector_data import input_lineage_rows_frame
+
+    frame = input_lineage_rows_frame(
+        [
+            {
+                'stage': 'account_state',
+                'source_family': 'lab',
+                'source_name': 'Game Speed',
+                'value': 5.0,
+                'destination_object_type': 'runtime_mechanic_param',
+                'destination_id': 'game_runtime.speed_multiplier',
+                'kb_mapped': True,
+            }
+        ],
+        account_state_payload={
+            'labs': {
+                'Game Speed': 7,
+            }
+        },
+    )
+
+    row = frame.iloc[0]
+    assert row['source_value'] == 7
+    assert row['resolved_value'] == 5.0

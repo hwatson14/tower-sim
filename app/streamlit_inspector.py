@@ -1574,14 +1574,16 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
         st.info('artifact missing: stat_inputs.json')
 
     st.subheader('Input lineage')
-    lineage_frame = input_lineage_rows_frame(stat_inputs_payload)
+    lineage_frame = input_lineage_rows_frame(
+        stat_inputs_payload,
+        account_state_payload=account_state_payload,
+    )
     if not lineage_frame.empty:
         lineage_search = st.text_input('Filter lineage by source_key or resolved_surface_id', value='').strip().lower()
         mapping_options = sorted(lineage_frame['mapping_status'].dropna().unique().tolist())
         selected_mapping_status = st.multiselect('Mapping status', options=mapping_options, default=mapping_options)
         filtered_lineage = lineage_frame.copy()
-        if selected_mapping_status:
-            filtered_lineage = filtered_lineage[filtered_lineage['mapping_status'].isin(selected_mapping_status)]
+        filtered_lineage = filtered_lineage[filtered_lineage['mapping_status'].isin(selected_mapping_status)]
         if lineage_search:
             filtered_lineage = filtered_lineage[
                 filtered_lineage['source_key'].astype(str).str.lower().str.contains(lineage_search, na=False)
