@@ -24,6 +24,9 @@ if str(ROOT) not in sys.path:
 
 # Active layer imports
 from qe.stat_input_compiler import (
+    PERK_TARGET_DESTINATION_OVERRIDES,
+    TRADE_OFF_BENEFIT_EFFECT_INDEXES,
+    compile_stat_inputs,
     load_card_mastery_values,
     load_perk_effects,
     load_perk_entities,
@@ -1441,6 +1444,10 @@ def run_analysis_pipeline(args) -> int:
         ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
         ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
     )
+    from evaluators.compare_core import PreparedCompareRowsBundle
+    from qe.query_routing import compiler_routing_indexes
+    from input.state_types import PerkSelection
+    from dataclasses import replace
     from evaluators.scorer import compute_optimizer_scores
 
     _manual_inputs_path = getattr(args, 'manual_inputs', None)
@@ -1458,22 +1465,67 @@ def run_analysis_pipeline(args) -> int:
     ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
     qe_planner = QEResolutionPlanner()
 
+    def _prepare_compare_rows_bundle(state_mode: str, default_preset: str, perk_state: str) -> PreparedCompareRowsBundle:
+        compare_rows_by_preset = {}
+        compare_publishable_rows_by_preset = {}
+        perk_state_by_preset = {}
+        perk_materialized_by_preset = {}
+        state_cache = {}
+
+        def _state_for_preset(preset_name: str):
+            state = state_cache.get(preset_name)
+            if state is None:
+                state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
+                state_cache[preset_name] = state
+            return state
+
+        def _materialize(preset_name: str, forced_perk_state: str | None = None):
+            state = _state_for_preset(preset_name)
+            preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else ('off' if preset_name == 'Tourney' else perk_state)
+            perks_enabled_local = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
+            state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
+            perk_state_by_preset[state_key] = preset_perk_state
+            perk_materialized_by_preset[state_key] = perks_enabled_local
+            snapshot = qe_planner.resolve_report_snapshot(
+                state,
+                preset_name=preset_name,
+                state_mode=state_mode,
+                perks_enabled=perks_enabled_local,
+            )
+            statbook = snapshot.statbook
+            publish_query_surfaces(statbook.rows, account_state_labs=state.labs)
+            statbook_dict_local = statbook.to_dict()
+            for destination, row in statbook_dict_local.get('rows', {}).items():
+                row['formula_contract'] = _formula_contract(formula_ledger, destination)
+            publishable = _build_publishable_statbook(statbook_dict_local, formula_ledger)
+            compare_rows_by_preset[state_key] = {str(k): v for k, v in statbook_dict_local.get('rows', {}).items()}
+            compare_publishable_rows_by_preset[state_key] = {str(k): v for k, v in publishable.get('rows', {}).items()}
+            return state
+
+        default_state = _materialize(default_preset)
+        _materialize('Tourney')
+        _materialize('Tourney', forced_perk_state='on')
+        _materialize('Farming', forced_perk_state='on')
+        stage_context = {
+            'state_mode': state_mode,
+            'perk_state': perk_state,
+            'perk_state_by_preset': dict(sorted(perk_state_by_preset.items())),
+            'perk_materialized_by_preset': dict(sorted(perk_materialized_by_preset.items())),
+            'active_perk_preset': _sanitized_active_perk_preset(default_state, default_preset),
+            'default_compare_preset': default_preset,
+            'active_cards_by_preset': {default_preset: list(default_state.card_presets.get(default_preset, []))},
+            'active_modules_by_preset': {default_preset: {}},
+            'modules_inventory': {},
+        }
+        return PreparedCompareRowsBundle(default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, stage_context)
+
+    prepared_bundle = _prepare_compare_rows_bundle(args.state_mode, args.preset, args.perk_state)
     (
         account_state,
         compare_rows_by_preset,
         compare_publishable_rows_by_preset,
         package_stage_context,
-    ) = _build_compare_rows_by_preset(
-        ids_raw=ids_raw,
-        loadout_config=loadout_config,
-        perk_config=perk_config,
-        formula_ledger=formula_ledger,
-        state_mode=args.state_mode,
-        default_preset=args.preset,
-        ep_oracle=ep_oracle,
-        perk_state=args.perk_state,
-        snapshot_planner=qe_planner,
-    )
+    ) = _build_compare_rows_by_preset(prepared_bundle)
     _annotate_compare_row_payloads_by_preset(compare_rows_by_preset)
     _annotate_compare_row_payloads_by_preset(compare_publishable_rows_by_preset)
 
@@ -1564,22 +1616,13 @@ def run_analysis_pipeline(args) -> int:
         projected_compare_publishable_rows_by_preset = compare_publishable_rows_by_preset
         projected_stage_context = package_stage_context
     else:
+        projected_bundle = _prepare_compare_rows_bundle('max_progression', args.preset, args.perk_state)
         (
             projected_account_state,
             projected_compare_rows_by_preset,
             projected_compare_publishable_rows_by_preset,
             projected_stage_context,
-        ) = _build_compare_rows_by_preset(
-            ids_raw=ids_raw,
-            loadout_config=loadout_config,
-            perk_config=perk_config,
-            formula_ledger=formula_ledger,
-            state_mode='max_progression',
-            default_preset=args.preset,
-            ep_oracle=ep_oracle,
-            perk_state=args.perk_state,
-            snapshot_planner=qe_planner,
-        )
+        ) = _build_compare_rows_by_preset(projected_bundle)
         _annotate_compare_row_payloads_by_preset(projected_compare_rows_by_preset)
         _annotate_compare_row_payloads_by_preset(projected_compare_publishable_rows_by_preset)
     projected_ep_compare_publishable = _build_ep_compare(
@@ -1623,6 +1666,23 @@ def run_analysis_pipeline(args) -> int:
     scoped_mapped = sum(1 for row in scoped_rows if row.destination_id)
     scope_excluded_rows = [row for row in stat_inputs if not _is_calculator_scope_row(row)]
     scoped_family_totals = Counter(row.source_family for row in scoped_rows)
+    perk_entities = load_perk_entities()
+    perk_effects = load_perk_effects()
+    _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
+    audit_perk_presets = {
+        '__audit_all_perks__': [PerkSelection(perk_id=perk_id, picks=int(meta.get('max_picks') or 1)) for perk_id, meta in sorted(perk_entities.items())]
+    }
+    audit_state = replace(
+        account_state,
+        perk_presets=audit_perk_presets,
+        perk_preset_namespace_class='transient',
+        active_perk_preset='__audit_all_perks__',
+    )
+    all_perk_rows = [row for row in compile_stat_inputs(audit_state, preset_name=account_state.default_preset, state_mode='start_of_run') if row.source_family == 'perk']
+    contributor_stat_inputs_by_preset = {
+        preset_name: compile_stat_inputs(account_state, preset_name=preset_name, state_mode=args.state_mode, perks_enabled=True)
+        for preset_name in ("Farming", "Tourney")
+    }
 
     audits = _build_publish_gate_audits(
         stat_inputs, statbook_publishable_dict, ep_compare_publishable, formula_ledger
@@ -1789,7 +1849,13 @@ def run_analysis_pipeline(args) -> int:
             account_state, stat_inputs, statbook_publishable_dict['rows']
         ),
         'perk_coverage_audit': _build_perk_coverage_audit(
-            ids_raw, account_state, statbook.diagnostics.get('destination_type_schema', {}), None,
+            perk_entities,
+            perk_effects,
+            PERK_TARGET_DESTINATION_OVERRIDES,
+            all_perk_rows,
+            canon_stats,
+            alias_index,
+            None,
         ),
         'tower_damage_residue_analysis': _build_tower_damage_residue_analysis(
             projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable
@@ -1798,11 +1864,14 @@ def run_analysis_pipeline(args) -> int:
             projected_ep_compare_publishable if args.state_mode != 'max_progression' else ep_compare_publishable
         ),
         'tradeoff_routing_audit': _build_tradeoff_routing_audit(
-            ids_raw, loadout_config, perk_config,
+            compile_stat_inputs(account_state, preset_name=args.preset, state_mode=args.state_mode, perks_enabled=perks_enabled),
+            perk_entities,
+            TRADE_OFF_BENEFIT_EFFECT_INDEXES,
+            {str(item).strip() for item in (perk_config or {}).get('banned_perk_ids', []) if str(item).strip()},
             preset=args.preset, state_mode=args.state_mode, perk_state=args.perk_state,
         ),
         'perk_contributor_audit': _build_perk_contributor_audit(
-            ids_raw, loadout_config, perk_config, args.state_mode, args.preset
+            contributor_stat_inputs_by_preset
         ),
         'compare_situation_fit_matrix': {
             'status': 'skipped',
@@ -1815,9 +1884,11 @@ def run_analysis_pipeline(args) -> int:
         },
     }
     if bool(getattr(args, 'include_slow_audits', False)):
-        diagnostics['compare_situation_fit_matrix'] = _build_compare_situation_fit_matrix(
-            ids_raw, loadout_config, perk_config, formula_ledger, ep_oracle
-        )
+        compare_states = {
+            'current': {'preset': args.preset, 'perk_state': args.perk_state, 'compare': ep_compare_publishable},
+            'projected': {'preset': args.preset, 'perk_state': args.perk_state, 'compare': projected_ep_compare_publishable},
+        }
+        diagnostics['compare_situation_fit_matrix'] = _build_compare_situation_fit_matrix(compare_states)
     diagnostics['survivability_residue_analysis'] = _build_survivability_residue_analysis(
         ep_compare_publishable, diagnostics['compare_situation_fit_matrix'], statbook_dict
     )

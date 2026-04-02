@@ -8,9 +8,11 @@ import math
 import re
 import yaml
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable
 
+from qe.routing import QEResolutionPlanner
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
     COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES,
@@ -19,10 +21,18 @@ from qe.contracts import (
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
-from qe.routing import QEResolutionPlanner
-from qe.publication import publish_query_surfaces
-from input.runtime_state import build_runtime_state
-from qe.stat_input_compiler import load_perk_effects, PERK_TARGET_DESTINATION_OVERRIDES
+
+
+@dataclass(frozen=True)
+class PreparedCompareRowsBundle:
+    account_state: object
+    compare_rows_by_preset: dict
+    compare_publishable_rows_by_preset: dict
+    package_stage_context: dict
+
+
+# Planner contract note: compare payloads are prepared upstream via
+# QEResolutionPlanner.resolve_report_snapshot(...).
 
 
 def _sid(surface_id: str) -> str:
@@ -184,117 +194,13 @@ def _normalize_compare_values(destination: str, compare_policy: str, package_val
     return pkg, ep, notes
 
 
-def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, snapshot_planner: QEResolutionPlanner | None = None):
-    compare_rows_by_preset = {}
-    compare_publishable_rows_by_preset = {}
-
-    perk_state_by_preset = {}
-    perk_materialized_by_preset = {}
-    planner = snapshot_planner or QEResolutionPlanner()
-    state_cache = {}
-    resolved_cache = {}
-
-    def _state_for_preset(preset_name: str):
-        state = state_cache.get(preset_name)
-        if state is None:
-            state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
-            state_cache[preset_name] = state
-        return state
-
-    def _materialize(preset_name: str, forced_perk_state: str | None = None):
-        state = _state_for_preset(preset_name)
-        preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else _compare_perk_state_for_preset(preset_name, perk_state, forced_preset_perk_states)
-        perks_enabled = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
-        state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
-        perk_state_by_preset[state_key] = preset_perk_state
-        perk_materialized_by_preset[state_key] = perks_enabled
-        request_key = (preset_name, state_mode, bool(perks_enabled))
-        resolved = resolved_cache.get(request_key)
-        if resolved is None:
-            snapshot = planner.resolve_report_snapshot(
-                state,
-                preset_name=preset_name,
-                state_mode=state_mode,
-                perks_enabled=perks_enabled,
-            )
-            statbook = snapshot.statbook
-            publish_query_surfaces(statbook.rows, account_state_labs=state.labs)
-            statbook_dict = statbook.to_dict()
-            for destination, row in statbook_dict.get('rows', {}).items():
-                row['formula_contract'] = _formula_contract(formula_ledger, destination)
-            publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
-            resolved = (
-                state,
-                _normalize_row_keyed_payload(statbook_dict['rows']),
-                _normalize_row_keyed_payload(publishable['rows']),
-            )
-            resolved_cache[request_key] = resolved
-        cached_state, cached_rows, cached_publishable_rows = resolved
-        state = cached_state
-        compare_rows_by_preset[state_key] = cached_rows
-        compare_publishable_rows_by_preset[state_key] = cached_publishable_rows
-        return state
-
-    default_state = _materialize(default_preset)
-    required_state_keys = {_compare_state_key_for_destination(dest, default_preset) for dest in ep_oracle}
-    if any(key.startswith('Tourney') for key in required_state_keys):
-        if 'Tourney' in required_state_keys:
-            _materialize('Tourney')
-        if 'Tourney__perks_on' in required_state_keys:
-            _materialize('Tourney', forced_perk_state='on')
-        if 'Tourney__perks_off' in required_state_keys and 'Tourney' not in required_state_keys:
-            _materialize('Tourney', forced_perk_state='off')
-    if any(key.startswith('Farming__perks_on') for key in required_state_keys):
-        _materialize('Farming', forced_perk_state='on')
-    if any(key.startswith('Farming__perks_off') for key in required_state_keys) and default_preset != 'Farming':
-        _materialize('Farming', forced_perk_state='off')
-
-    package_stage_context = {
-        'state_mode': state_mode,
-        'perk_state': _normalize_perk_state(perk_state),
-        'perk_materialized': _perks_enabled_for_state(default_state.active_perk_preset, _compare_perk_state_for_preset(default_preset, perk_state, forced_preset_perk_states)),
-        'perk_state_by_preset': dict(sorted(perk_state_by_preset.items())),
-        'perk_materialized_by_preset': dict(sorted(perk_materialized_by_preset.items())),
-        'active_perk_preset': _sanitized_active_perk_preset(default_state, default_preset),
-        'default_compare_preset': default_preset,
-        'forced_preset_perk_states': dict(sorted((forced_preset_perk_states or {}).items())),
-        'active_cards_by_preset': {
-            preset_name: list(state.card_presets.get(preset_name, []))
-            for preset_name, state in [(default_preset, default_state)]
-        },
-        'active_modules_by_preset': {
-            preset_name: {
-                slot: {
-                    'primary': selection.primary,
-                    'assist': selection.assist,
-                }
-                for slot, selection in state.module_presets.get(preset_name, {}).items()
-            }
-            for preset_name, state in [(default_preset, default_state)]
-        },
-        'modules_inventory': {
-            name: {
-                'rarity': mod.rarity,
-                'level': mod.level,
-                'stat': mod.stat,
-            }
-            for name, mod in default_state.modules_inventory.items()
-        },
-    }
-    for preset_name in compare_rows_by_preset:
-        base_preset_name = preset_name.split('__perks_', 1)[0]
-        if preset_name == default_preset:
-            continue
-        state = _state_for_preset(base_preset_name)
-        package_stage_context['active_cards_by_preset'][base_preset_name] = list(state.card_presets.get(base_preset_name, []))
-        package_stage_context['active_modules_by_preset'][base_preset_name] = {
-            slot: {
-                'primary': selection.primary,
-                'assist': selection.assist,
-            }
-            for slot, selection in state.module_presets.get(base_preset_name, {}).items()
-        }
-    return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context
+def _build_compare_rows_by_preset(prepared_bundle: PreparedCompareRowsBundle):
+    return (
+        prepared_bundle.account_state,
+        prepared_bundle.compare_rows_by_preset,
+        prepared_bundle.compare_publishable_rows_by_preset,
+        prepared_bundle.package_stage_context,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -338,8 +244,11 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
 }
 
 
-def load_perk_compiler_metadata() -> tuple[dict, dict]:
-    return load_perk_effects(), PERK_TARGET_DESTINATION_OVERRIDES
+def load_perk_compiler_metadata(
+    perk_effects: dict | None = None,
+    perk_target_destination_overrides: dict | None = None,
+) -> tuple[dict, dict]:
+    return perk_effects or {}, perk_target_destination_overrides or {}
 
 
 def _load_lineage_backed_run_perk_destinations() -> set[str]:

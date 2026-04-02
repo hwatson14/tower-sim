@@ -274,30 +274,21 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
     }
 
 
-def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from qe.stat_input_compiler import load_perk_entities, load_perk_effects, compile_stat_inputs, PERK_TARGET_DESTINATION_OVERRIDES
-    from qe.query_routing import compiler_routing_indexes
-    from input.state_types import PerkSelection
-    from dataclasses import replace
+def _build_perk_coverage_audit(
+    perk_entities: dict,
+    perk_effects: dict,
+    perk_target_destination_overrides: dict,
+    audit_rows: list,
+    canonical_stats,
+    alias_index: dict,
+    perks_input_path: Path | None,
+):
     from evaluators.audit_engine import _perk_operation_supported, _relpath_str
 
     def _slug(text: str) -> str:
         return re.sub(r'[^a-z0-9]+', '_', text.lower()).strip('_')
 
-    perk_entities = load_perk_entities()
-    perk_effects = load_perk_effects()
-    _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
-
-    audit_perk_presets = {
-        '__audit_all_perks__': [PerkSelection(perk_id=perk_id, picks=int(meta.get('max_picks') or 1)) for perk_id, meta in sorted(perk_entities.items())]
-    }
-    audit_state = replace(
-        account_state,
-        perk_presets=audit_perk_presets,
-        perk_preset_namespace_class='transient',
-        active_perk_preset='__audit_all_perks__',
-    )
-    audit_rows = [row for row in compile_stat_inputs(audit_state, preset_name=account_state.default_preset, state_mode='start_of_run') if row.source_family == 'perk']
+    canon_stats = canonical_stats
     audit_row_index = Counter()
     sample_row_index = {}
     for row in audit_rows:
@@ -322,8 +313,8 @@ def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_in
             route_category = 'unbound'
             destination_object_type = None
             destination_id = None
-            if target_stat_id in PERK_TARGET_DESTINATION_OVERRIDES:
-                destination_object_type, destination_id = PERK_TARGET_DESTINATION_OVERRIDES[target_stat_id]
+            if target_stat_id in perk_target_destination_overrides:
+                destination_object_type, destination_id = perk_target_destination_overrides[target_stat_id]
                 route_category = f'routed::{destination_object_type}'
             elif target_stat_id in canon_stats:
                 destination_object_type, destination_id = 'canonical_stat', target_stat_id
@@ -679,51 +670,13 @@ def _build_damage_defabs_scope_audit(account_state, stat_inputs, statbook_rows: 
     return payload
 
 
-def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, formula_ledger, ep_oracle: dict) -> dict:
-    from evaluators.compare_core import (
-        _build_compare_rows_by_preset,
-        build_ep_compare,
-        build_compare_status_summary,
-        _ep_stage_context_for_destination,
-        _compare_state_key_for_destination,
-        _normalize_compare_values,
-        _formula_contract,
-        _build_publishable_statbook,
-    )
-    from evaluators.compare import (
-        _contributor_snapshot,
-        _apply_projected_runtime_compare_assumptions,
-    )
-
-    states = [
-        ('farming__perks_off', 'Farming', 'off', None),
-        ('farming__perks_on', 'Farming', 'on', None),
-        ('tourney__perks_off', 'Tourney', 'off', None),
-        ('tourney__perks_on', 'Tourney', 'on', {'Tourney': 'on'}),
-    ]
+def _build_compare_situation_fit_matrix(compare_by_state_key: dict) -> dict:
     views = {}
     best_fit_by_destination = {}
-    for state_key, preset, perk_state, forced_preset_perk_states in states:
-        _default_state, rows_by_preset, _publishable_rows_by_preset, stage_context = _build_compare_rows_by_preset(
-            ids_raw,
-            loadout_config,
-            perk_config,
-            formula_ledger,
-            'max_progression',
-            preset,
-            ep_oracle,
-            perk_state,
-            forced_preset_perk_states,
-        )
-        compare = build_ep_compare(
-            ep_oracle, rows_by_preset, formula_ledger, stage_context,
-            ep_stage_context_for_destination=_ep_stage_context_for_destination,
-            compare_state_key_for_destination=_compare_state_key_for_destination,
-            contributor_snapshot=_contributor_snapshot,
-            apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions,
-            formula_contract=_formula_contract,
-            normalize_compare_values=_normalize_compare_values,
-        )
+    for state_key, payload in compare_by_state_key.items():
+        preset = payload.get('preset')
+        perk_state = payload.get('perk_state')
+        compare = payload.get('compare', {})
         views[state_key] = {
             'preset': preset,
             'perk_state': perk_state,
@@ -756,10 +709,8 @@ def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, fo
     }
 
 
-def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mode: str, default_preset: str) -> dict:
+def _build_perk_contributor_audit(stat_inputs_by_preset: dict[str, list]) -> dict:
     from qe.contracts import compat_surface_from_legacy_canonical as _state_fn
-    from input.runtime_state import build_runtime_state
-    from qe.stat_input_compiler import compile_stat_inputs
 
     def _state(s):
         return _state_fn(s)
@@ -775,18 +726,7 @@ def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mo
     }
     audit: dict[str, dict] = {}
     for preset_name in ("Farming", "Tourney"):
-        account_state = build_runtime_state(
-            ids_raw,
-            default_preset=default_preset,
-            loadout_config=loadout_config,
-            perk_config=perk_config,
-        )
-        stat_inputs = compile_stat_inputs(
-            account_state,
-            preset_name=preset_name,
-            state_mode=state_mode,
-            perks_enabled=True,
-        )
+        stat_inputs = stat_inputs_by_preset.get(preset_name, [])
         for item in stat_inputs:
             if item.source_family != 'perk':
                 continue

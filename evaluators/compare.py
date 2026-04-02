@@ -18,12 +18,10 @@ from typing import Callable
 import pandas as pd
 import yaml
 
-from input.runtime_state import build_runtime_state
 from qe.publication import publish_query_surfaces
-from qe.routing import QEResolutionPlanner, classify_input_routing
-from qe.stat_input_compiler import compile_stat_inputs, load_perk_entities
+from qe.routing import classify_input_routing
 from evaluators.compare_core import (
-    load_perk_compiler_metadata as load_core_perk_compiler_metadata,
+    PreparedCompareRowsBundle,
     resolve_perk_effect_destination,
 )
 
@@ -774,15 +772,23 @@ COMPARE_DESTINATION_RUNTIME_CARD_FACETS = {
 }
 
 
-def _load_perk_compiler_metadata():
-    perk_effects, perk_target_destination_overrides = load_core_perk_compiler_metadata()
-    return load_perk_entities(), perk_effects, perk_target_destination_overrides, resolve_perk_effect_destination
+def _load_perk_compiler_metadata(perk_entities: dict, perk_effects: dict, perk_target_destination_overrides: dict):
+    return perk_entities, perk_effects, perk_target_destination_overrides, resolve_perk_effect_destination
 
 
-def _load_lineage_backed_run_perk_destinations() -> set[str]:
+def _load_lineage_backed_run_perk_destinations(
+    perk_effects: dict | None = None,
+    perk_target_destination_overrides: dict | None = None,
+) -> set[str]:
     from qe.query_routing import compiler_routing_indexes
 
-    _perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata()
+    if not perk_effects:
+        return set()
+    _perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata(
+        {},
+        perk_effects,
+        perk_target_destination_overrides or {},
+    )
     _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
     destinations: set[str] = set()
     for effects in perk_effects.values():
@@ -2246,17 +2252,19 @@ def _build_run_perk_residue_analysis(ep_compare: dict) -> dict:
     out['stage_scope_row_count'] = len(out['stage_scope_rows'])
     return out
 
-def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, preset: str, state_mode: str, perk_state: str) -> dict:
-    from qe.stat_input_compiler import compile_stat_inputs, load_perk_entities, TRADE_OFF_BENEFIT_EFFECT_INDEXES
-
-    state = build_runtime_state(ids_raw, default_preset=preset, loadout_config=loadout_config, perk_config=perk_config)
-    perks_enabled = _perks_enabled_for_state(state.active_perk_preset, perk_state)
-    rows = compile_stat_inputs(state, preset_name=preset, state_mode=state_mode, perks_enabled=perks_enabled)
-    perk_entities = load_perk_entities()
-    banned_ids = {str(item).strip() for item in (perk_config or {}).get('banned_perk_ids', []) if str(item).strip()}
+def _build_tradeoff_routing_audit(
+    compiled_rows,
+    perk_entities: dict,
+    tradeoff_benefit_effect_indexes: dict,
+    banned_ids: set[str],
+    *,
+    preset: str,
+    state_mode: str,
+    perk_state: str,
+) -> dict:
 
     by_perk = {}
-    for row in rows:
+    for row in compiled_rows:
         if row.source_family != 'perk' or not row.contributor_id or '::effect_' not in row.contributor_id:
             continue
         contrib = row.contributor_id
@@ -2281,7 +2289,7 @@ def _build_tradeoff_routing_audit(ids_raw, loadout_config, perk_config, *, prese
             active_tradeoff_count += 1
         if perk_id in banned_ids and active:
             banned_present.append(perk_id)
-        benefit_indexes = set(TRADE_OFF_BENEFIT_EFFECT_INDEXES.get(perk_id, set()))
+        benefit_indexes = set(tradeoff_benefit_effect_indexes.get(perk_id, set()))
         compiled_indexes = set()
         destinations = []
         benefit_rows = 0
@@ -2384,7 +2392,7 @@ def _build_tower_damage_residue_analysis(ep_compare: dict) -> dict:
 
 
 # --- perk contributor audit, compare situation fit, compare rows builder ---
-def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mode: str, default_preset: str) -> dict:
+def _build_perk_contributor_audit(stat_inputs_by_preset: dict[str, list]) -> dict:
     destinations_of_interest = {
         _state('tower_damage'),
         _state('tower_hp'),
@@ -2396,18 +2404,7 @@ def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mo
     }
     audit: dict[str, dict] = {}
     for preset_name in ("Farming", "Tourney"):
-        account_state = build_runtime_state(
-            ids_raw,
-            default_preset=default_preset,
-            loadout_config=loadout_config,
-            perk_config=perk_config,
-        )
-        stat_inputs = compile_stat_inputs(
-            account_state,
-            preset_name=preset_name,
-            state_mode=state_mode,
-            perks_enabled=True,
-        )
+        stat_inputs = stat_inputs_by_preset.get(preset_name, [])
         for item in stat_inputs:
             if item.source_family != 'perk':
                 continue
@@ -2430,28 +2427,13 @@ def _build_perk_contributor_audit(ids_raw, loadout_config, perk_config, state_mo
 
 
 
-def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, formula_ledger, ep_oracle: dict) -> dict:
-    states = [
-        ('farming__perks_off', 'Farming', 'off', None),
-        ('farming__perks_on', 'Farming', 'on', None),
-        ('tourney__perks_off', 'Tourney', 'off', None),
-        ('tourney__perks_on', 'Tourney', 'on', {'Tourney': 'on'}),
-    ]
+def _build_compare_situation_fit_matrix(compare_by_state_key: dict) -> dict:
     views = {}
     best_fit_by_destination = {}
-    for state_key, preset, perk_state, forced_preset_perk_states in states:
-        _default_state, rows_by_preset, _publishable_rows_by_preset, stage_context = _build_compare_rows_by_preset(
-            ids_raw,
-            loadout_config,
-            perk_config,
-            formula_ledger,
-            'max_progression',
-            preset,
-            ep_oracle,
-            perk_state,
-            forced_preset_perk_states,
-        )
-        compare = build_ep_compare(ep_oracle, rows_by_preset, formula_ledger, stage_context, ep_stage_context_for_destination=_ep_stage_context_for_destination, compare_state_key_for_destination=_compare_state_key_for_destination, contributor_snapshot=_contributor_snapshot, apply_projected_runtime_compare_assumptions=_apply_projected_runtime_compare_assumptions, formula_contract=_formula_contract, normalize_compare_values=_normalize_compare_values)
+    for state_key, payload in compare_by_state_key.items():
+        preset = payload.get('preset')
+        perk_state = payload.get('perk_state')
+        compare = payload.get('compare', {})
         views[state_key] = {
             'preset': preset,
             'perk_state': perk_state,
@@ -2483,119 +2465,13 @@ def _build_compare_situation_fit_matrix(ids_raw, loadout_config, perk_config, fo
         'best_fit_status_counts': dict(sorted(best_fit_status_counts.items())),
     }
 
-def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, snapshot_planner: QEResolutionPlanner | None = None):
-    compare_rows_by_preset = {}
-    compare_publishable_rows_by_preset = {}
-
-    perk_state_by_preset = {}
-    perk_materialized_by_preset = {}
-    planner = snapshot_planner or QEResolutionPlanner()
-    state_cache = {}
-    resolved_cache = {}
-
-    def _state_for_preset(preset_name: str):
-        state = state_cache.get(preset_name)
-        if state is None:
-            state = build_runtime_state(ids_raw, default_preset=preset_name, loadout_config=loadout_config, perk_config=perk_config)
-            state_cache[preset_name] = state
-        return state
-
-    def _materialize(preset_name: str, forced_perk_state: str | None = None):
-        state = _state_for_preset(preset_name)
-        preset_perk_state = _normalize_perk_state(forced_perk_state) if forced_perk_state is not None else _compare_perk_state_for_preset(preset_name, perk_state, forced_preset_perk_states)
-        perks_enabled = _perks_enabled_for_state(state.active_perk_preset, preset_perk_state)
-        state_key = f'{preset_name}__perks_{preset_perk_state}' if forced_perk_state is not None else preset_name
-        perk_state_by_preset[state_key] = preset_perk_state
-        perk_materialized_by_preset[state_key] = perks_enabled
-        request_key = (preset_name, state_mode, bool(perks_enabled))
-        resolved = resolved_cache.get(request_key)
-        if resolved is None:
-            snapshot = planner.resolve_report_snapshot(
-                state,
-                preset_name=preset_name,
-                state_mode=state_mode,
-                perks_enabled=perks_enabled,
-            )
-            statbook = snapshot.statbook
-            publish_query_surfaces(statbook.rows, account_state_labs=state.labs)
-            statbook_dict = statbook.to_dict()
-            for destination, row in statbook_dict.get('rows', {}).items():
-                row['formula_contract'] = _formula_contract(formula_ledger, destination)
-            _annotate_display_fields(statbook_dict)
-            publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
-            _annotate_display_fields(publishable)
-            resolved = (
-                state,
-                _normalize_row_keyed_payload(statbook_dict['rows']),
-                _normalize_row_keyed_payload(publishable['rows']),
-            )
-            resolved_cache[request_key] = resolved
-        cached_state, cached_rows, cached_publishable_rows = resolved
-        state = cached_state
-        compare_rows_by_preset[state_key] = cached_rows
-        compare_publishable_rows_by_preset[state_key] = cached_publishable_rows
-        return state
-
-    default_state = _materialize(default_preset)
-    required_state_keys = {_compare_state_key_for_destination(dest, default_preset) for dest in ep_oracle}
-    if any(key.startswith('Tourney') for key in required_state_keys):
-        if 'Tourney' in required_state_keys:
-            _materialize('Tourney')
-        if 'Tourney__perks_on' in required_state_keys:
-            _materialize('Tourney', forced_perk_state='on')
-        if 'Tourney__perks_off' in required_state_keys and 'Tourney' not in required_state_keys:
-            _materialize('Tourney', forced_perk_state='off')
-    if any(key.startswith('Farming__perks_on') for key in required_state_keys):
-        _materialize('Farming', forced_perk_state='on')
-    if any(key.startswith('Farming__perks_off') for key in required_state_keys) and default_preset != 'Farming':
-        _materialize('Farming', forced_perk_state='off')
-
-    package_stage_context = {
-        'state_mode': state_mode,
-        'perk_state': _normalize_perk_state(perk_state),
-        'perk_materialized': _perks_enabled_for_state(default_state.active_perk_preset, _compare_perk_state_for_preset(default_preset, perk_state, forced_preset_perk_states)),
-        'perk_state_by_preset': dict(sorted(perk_state_by_preset.items())),
-        'perk_materialized_by_preset': dict(sorted(perk_materialized_by_preset.items())),
-        'active_perk_preset': _sanitized_active_perk_preset(default_state, default_preset),
-        'default_compare_preset': default_preset,
-        'forced_preset_perk_states': dict(sorted((forced_preset_perk_states or {}).items())),
-        'active_cards_by_preset': {
-            preset_name: list(state.card_presets.get(preset_name, []))
-            for preset_name, state in [(default_preset, default_state)]
-        },
-        'active_modules_by_preset': {
-            preset_name: {
-                slot: {
-                    'primary': selection.primary,
-                    'assist': selection.assist,
-                }
-                for slot, selection in state.module_presets.get(preset_name, {}).items()
-            }
-            for preset_name, state in [(default_preset, default_state)]
-        },
-        'modules_inventory': {
-            name: {
-                'rarity': mod.rarity,
-                'level': mod.level,
-                'stat': mod.stat,
-            }
-            for name, mod in default_state.modules_inventory.items()
-        },
-    }
-    for preset_name in compare_rows_by_preset:
-        base_preset_name = preset_name.split('__perks_', 1)[0]
-        if preset_name == default_preset:
-            continue
-        state = _state_for_preset(base_preset_name)
-        package_stage_context['active_cards_by_preset'][base_preset_name] = list(state.card_presets.get(base_preset_name, []))
-        package_stage_context['active_modules_by_preset'][base_preset_name] = {
-            slot: {
-                'primary': selection.primary,
-                'assist': selection.assist,
-            }
-            for slot, selection in state.module_presets.get(base_preset_name, {}).items()
-        }
-    return default_state, compare_rows_by_preset, compare_publishable_rows_by_preset, package_stage_context
+def _build_compare_rows_by_preset(prepared_bundle: PreparedCompareRowsBundle):
+    return (
+        prepared_bundle.account_state,
+        prepared_bundle.compare_rows_by_preset,
+        prepared_bundle.compare_publishable_rows_by_preset,
+        prepared_bundle.package_stage_context,
+    )
 
 
 
@@ -2626,25 +2502,22 @@ def _perk_operation_supported(operation: str) -> bool:
     }
 
 
-def _build_perk_coverage_audit(ids_raw, account_state, canonical_stats, perks_input_path: Path):
-    from qe.stat_input_compiler import compile_stat_inputs
-    from qe.query_routing import compiler_routing_indexes
-    from input.state_types import PerkSelection
-    from dataclasses import replace
-
-    perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata()
-    _, canon_stats, alias_index, _, _ = compiler_routing_indexes()
-
-    audit_perk_presets = {
-        '__audit_all_perks__': [PerkSelection(perk_id=perk_id, picks=int(meta.get('max_picks') or 1)) for perk_id, meta in sorted(perk_entities.items())]
-    }
-    audit_state = replace(
-        account_state,
-        perk_presets=audit_perk_presets,
-        perk_preset_namespace_class='transient',
-        active_perk_preset='__audit_all_perks__',
+def _build_perk_coverage_audit(
+    perk_entities: dict,
+    perk_effects: dict,
+    perk_target_destination_overrides: dict,
+    audit_rows: list,
+    canonical_stats,
+    alias_index: dict,
+    perks_input_path: Path | None,
+):
+    _perk_entities, perk_effects, perk_target_destination_overrides, resolve_destination = _load_perk_compiler_metadata(
+        perk_entities,
+        perk_effects,
+        perk_target_destination_overrides,
     )
-    audit_rows = [row for row in compile_stat_inputs(audit_state, preset_name=account_state.default_preset, state_mode='start_of_run') if row.source_family == 'perk']
+
+    canon_stats = canonical_stats
     audit_row_index = Counter()
     sample_row_index = {}
     for row in audit_rows:
