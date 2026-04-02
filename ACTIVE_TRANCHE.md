@@ -2,7 +2,7 @@
 
 ## Role
 
-This file is the live tranche cursor for the current **repo hardening phase**.
+This file is a root governance source of truth for the active repository state.
 
 It identifies:
 - the current hardening sequence
@@ -11,7 +11,7 @@ It identifies:
 - what must happen next
 - stop conditions and closeout criteria
 
-Narrative contract truth now lives directly in:
+Governance truth for this repository lives directly in:
 - this `ACTIVE_TRANCHE.md` file
 - `BURNDOWN.yaml`
 
@@ -27,7 +27,7 @@ The repo is **not in broad rebuild territory**.
 The whitelist rebuild is largely complete.
 The repo is now in **concentrated hardening territory**, where small remaining ownership and governance seams are higher risk than broad structural migrations.
 
-### What is already materially true
+### Durable truths on the current baseline
 
 - high-signal architecture/app suites are green on the reviewed baseline
 - governance truth is now aligned to the hardening sequence
@@ -36,7 +36,7 @@ The repo is now in **concentrated hardening territory**, where small remaining o
 - runtime formula authority is explicitly bridge-tagged
 - simulator/QE runtime hardening remains a repo strength
 
-### What is still not true
+### Remaining constraints
 
 - Streamlit contract execution is not fully complete yet (test strategy remains mixed)
 - native QE execution is not fully separated from compat/report execution
@@ -57,9 +57,9 @@ The repo is now in **concentrated hardening territory**, where small remaining o
 
 ---
 
-## Active tranche: release hardening closeout — ✅ COMPLETE
+## Active tranche record: release hardening closeout — ✅ COMPLETE
 
-### Goal
+### Goal (completed)
 
 Finalize hardening closeout evidence and publish recertification artifacts.
 
