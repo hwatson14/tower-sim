@@ -108,7 +108,7 @@ def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_pa
         return _Bundle()
 
     monkeypatch.setattr(pipeline_mod, 'load_inputs', _fake_load_inputs)
-    monkeypatch.setattr(pipeline_mod, '_load_perk_entity_registry', lambda: [])
+    monkeypatch.setattr(pipeline_mod, 'load_perk_entities', lambda: {})
 
     ids_path = tmp_path / 'custom_ids.csv'
     ids_path.write_text('h1,h2\n', encoding='utf-8')

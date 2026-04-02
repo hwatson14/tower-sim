@@ -149,8 +149,7 @@ def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | 
     bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
     perk_policy = bundle.perk_policy or {}
     manual_banned_names = set(_resolve_manual_banned_perks(perk_policy))
-    perk_entity_rows = _load_perk_entity_registry()
-    perk_entity_map = {str(row.get('perk_id') or '').strip(): row for row in perk_entity_rows if str(row.get('perk_id') or '').strip()}
+    perk_entity_map = load_perk_entities()
     by_name = {str(row.get('perk_name') or '').strip(): perk_id for perk_id, row in perk_entity_map.items()}
     manual_banned_perk_ids = {by_name[name] for name in manual_banned_names if name in by_name}
 
@@ -159,7 +158,7 @@ def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | 
         'card_values': card_values,
         'card_mastery_values': load_card_mastery_values(),
         'perk_entity_map': perk_entity_map,
-        'perk_entities': load_perk_entities(),
+        'perk_entities': perk_entity_map,
         'perk_effects': load_perk_effects(),
         'manual_banned_perk_ids': manual_banned_perk_ids,
         'module_substat_lookup': module_substat_lookup,
