@@ -1196,20 +1196,32 @@ def _build_family_query_result(
 
 
 def _resolve_hybrid_statbook_from_bound_inputs(bound_inputs: BoundStatInputs) -> StatBook:
-    fallback_statbook = _fallback_resolve_stats(list(bound_inputs.stat_inputs))
     native_family_id = _infer_manifest_approved_family(bound_inputs.stat_inputs)
     if native_family_id is None:
-        return fallback_statbook
-    native_result = _build_family_query_result(
-        bound_inputs,
-        family_id=native_family_id,
-        requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
-        trace_mode='contributors',
-    )
-    return _merge_delegated_family_rows(
-        fallback_statbook=fallback_statbook,
-        delegated_response=native_result.response,
-        family_id=native_family_id,
+        fallback_statbook = _fallback_resolve_stats(list(bound_inputs.stat_inputs))
+        return _with_native_fallback_diagnostics(
+            fallback_statbook,
+            native_family_id=None,
+            fallback_reason='native_family_inference_unavailable',
+        )
+    try:
+        native_result = _build_family_query_result(
+            bound_inputs,
+            family_id=native_family_id,
+            requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
+            trace_mode='contributors',
+        )
+    except ValueError as exc:
+        fallback_statbook = _fallback_resolve_stats(list(bound_inputs.stat_inputs))
+        return _with_native_fallback_diagnostics(
+            fallback_statbook,
+            native_family_id=native_family_id,
+            fallback_reason='native_contract_check_failed',
+            fallback_error=str(exc),
+        )
+    return query_response_to_statbook(
+        native_result.response,
+        notes=f'Native family statbook for manifest-approved family {native_family_id}.',
     )
 
 
@@ -1218,22 +1230,51 @@ def _resolve_hybrid_statbook_from_rows(
     stat_inputs: tuple[StatInput, ...],
     identity: StateIdentity,
 ) -> StatBook:
-    fallback_statbook = _fallback_resolve_stats(list(stat_inputs))
     native_family_id = _infer_manifest_approved_family(stat_inputs)
     if native_family_id is None:
-        return fallback_statbook
-    native_result = _build_rows_family_query_result(
-        identity=identity,
-        stat_inputs=stat_inputs,
-        family_id=native_family_id,
-        requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
-        trace_mode='contributors',
+        fallback_statbook = _fallback_resolve_stats(list(stat_inputs))
+        return _with_native_fallback_diagnostics(
+            fallback_statbook,
+            native_family_id=None,
+            fallback_reason='native_family_inference_unavailable',
+        )
+    try:
+        native_result = _build_rows_family_query_result(
+            identity=identity,
+            stat_inputs=stat_inputs,
+            family_id=native_family_id,
+            requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
+            trace_mode='contributors',
+        )
+    except ValueError as exc:
+        fallback_statbook = _fallback_resolve_stats(list(stat_inputs))
+        return _with_native_fallback_diagnostics(
+            fallback_statbook,
+            native_family_id=native_family_id,
+            fallback_reason='native_contract_check_failed',
+            fallback_error=str(exc),
+        )
+    return query_response_to_statbook(
+        native_result.response,
+        notes=f'Native family statbook for manifest-approved family {native_family_id}.',
     )
-    return _merge_delegated_family_rows(
-        fallback_statbook=fallback_statbook,
-        delegated_response=native_result.response,
-        family_id=native_family_id,
-    )
+
+
+def _with_native_fallback_diagnostics(
+    statbook: StatBook,
+    *,
+    native_family_id: str | None,
+    fallback_reason: str,
+    fallback_error: str | None = None,
+) -> StatBook:
+    diagnostics = dict(statbook.diagnostics or {})
+    diagnostics['qe_native_family_fallback'] = {
+        'reason': fallback_reason,
+        'native_family_id': native_family_id,
+    }
+    if fallback_error:
+        diagnostics['qe_native_family_fallback']['error'] = fallback_error
+    return StatBook(rows=statbook.rows, diagnostics=diagnostics)
 
 
 def _build_rows_family_query_result(

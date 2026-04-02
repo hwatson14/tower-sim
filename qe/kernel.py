@@ -51,31 +51,6 @@ _MUTATION_METADATA_FIELDS = frozenset(
 _REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', 'factor'})
 
 
-def _resolve_bucket_value_via_bridge(
-    destination_object_type: str,
-    destination_id: str,
-    stat_inputs: list[StatInput],
-    *,
-    resolved_rows: Mapping[str, object] | None = None,
-) -> tuple[float | None, str, str, dict[str, object], dict[str, str]]:
-    """Transitional bridge for bucket resolution while T2 authority closure is active.
-
-    Keeps qe.kernel free of a module-level qe.stat_resolution import while native
-    resolver parity is being finalized.
-    """
-    from qe.stat_resolution import resolve_bucket_value
-
-    return resolve_bucket_value(
-        destination_object_type,
-        destination_id,
-        stat_inputs,
-        resolved_rows={
-            str(key): value
-            for key, value in (resolved_rows or {}).items()
-        },
-    )
-
-
 @lru_cache(maxsize=1)
 def _load_overlay_contract() -> Mapping[str, Any]:
     return MappingProxyType(yaml.safe_load(_OVERLAY_CONTRACT_PATH.read_text()) or {})
@@ -619,12 +594,25 @@ class StatQueryKernel:
                     'contributor_count': len(stat_inputs),
                     'active_contributor_count': sum(1 for row in stat_inputs if row.active),
                 })
-            final_value, status, notes, _schema, meta = _resolve_bucket_value_via_bridge(
+            from qe.routing import load_bounded_resolution_metadata, resolve_bounded_bucket
+
+            bounded_meta = dict(
+                load_bounded_resolution_metadata().get(
+                    destination_id,
+                    {'unit': 'unknown', 'resolver': stat_inputs[0].resolver_id or 'unknown'},
+                )
+            )
+            bounded_meta['_resolved_rows'] = {
+                str(key): value
+                for key, value in (resolved_rows or {}).items()
+            }
+            final_value, status, notes, _schema = resolve_bounded_bucket(
                 destination_object_type,
                 destination_id,
                 stat_inputs,
-                resolved_rows=resolved_rows,
+                bounded_meta,
             )
+            meta = {'unit': str(bounded_meta.get('unit') or ''), 'resolver': str(bounded_meta.get('resolver') or '')}
             if trace_steps is not None:
                 trace_steps.append({
                     'step_index': len(trace_steps) + 1,

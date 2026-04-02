@@ -20,7 +20,8 @@ def test_compiler_routing_policy_uses_split_classes() -> None:
 def test_kernel_no_longer_uses_module_level_qe_stat_resolution_import() -> None:
     src = Path('qe/kernel.py').read_text(encoding='utf-8')
     assert '\nfrom qe.stat_resolution import resolve_bucket_value\n' not in src
-    assert 'def _resolve_bucket_value_via_bridge(' in src
+    assert 'def _resolve_bucket_value_via_bridge(' not in src
+    assert 'from qe.routing import load_bounded_resolution_metadata, resolve_bounded_bucket' in src
 
 
 def test_resolve_stats_delta_uses_native_path_for_manifest_family(monkeypatch) -> None:
