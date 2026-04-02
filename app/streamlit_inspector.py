@@ -1,3 +1,23 @@
+"""
+Streamlit inspector contract freeze (T0).
+
+Dependency policy:
+- `streamlit` is optional for non-UI runtime paths.
+- This module must remain import-safe when streamlit is not installed.
+
+Import policy:
+- Allowed owner surfaces: app.*, input.*, qe.*, simulators.*
+- Forbidden direct imports: engine.*, root run_stats, and archived transitional roots.
+
+Artifact policy:
+- Inspector consumes pipeline/QE/input runtime artifacts as a read-only UI.
+
+UI policy:
+- Boss Waves is interactive in the inspector tab UI.
+
+Legacy policy:
+- Legacy standalone start/max statbook artifacts are permanently removed.
+"""
 from __future__ import annotations
 
 import csv

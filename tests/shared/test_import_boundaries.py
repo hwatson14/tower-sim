@@ -44,7 +44,8 @@ _IMPORT_PIPELINE_HELPERS = re.compile(
     r"evaluators\.pipeline_helpers|from evaluators import pipeline_helpers"
 )
 _IMPORT_RUN_STATS_FROM_EVALUATORS = re.compile(
-    r"from run_stats import|import run_stats"
+    r"^\s*(?:from\s+run_stats\s+import|import\s+run_stats\b)",
+    re.MULTILINE,
 )
 # Consolidated transitional-root boundary (post-T13)
 _IMPORT_TRANSITIONAL_ROOTS = re.compile(
@@ -86,6 +87,10 @@ _ACTIVE_OUTPUT_LEGACY_SURFACE_PREFIX = re.compile(
 _LEGACY_PREFIX_IN_ACTIVE_CODE = re.compile(
     r"(canonical_stat::|mechanic_param::|runtime_mechanic_param::|environment_param::|account_flag::|account_context::|meta_progression_param::|capability::|cosmetic_bonus::)"
 )
+_QE_OWNED_SYMBOL_DEFINITION = re.compile(
+    r"^\s*(?:def\s+(?:resolve_stats|publish_query_surfaces)\s*\(|class\s+(?:StatQueryKernel|DependencyRegistry|FamilyBaselineMaterializer)\b)",
+    re.MULTILINE,
+)
 
 _ROOT_FILE_ALLOWLIST = {
     ".gitignore",
@@ -122,7 +127,6 @@ _QE_FILE_ALLOWLIST = {
     "publication.py",
     "query_currency_income.py",
     "query_derived_composites.py",
-    "query_module_draw_policy.py",
     "query_module_policy.py",
     "query_perk_compiler.py",
     "query_routing.py",
@@ -520,6 +524,25 @@ def test_only_app_pipeline_and_compare_use_report_snapshot():
                 continue
             assert py in allowed, (
                 f"{py.relative_to(ROOT)} uses resolve_report_snapshot outside the report/orchestration boundary."
+            )
+
+
+def test_qe_owns_query_resolution_contract_routing_materialization_registry_and_surface_publication_symbols():
+    """
+    Deterministic stat/query resolution, value contracts, routing, materialisation,
+    dependency registry, and sanctioned-surface publication symbols must be defined in qe only.
+    """
+    qe_dir = ROOT / "qe"
+    for active_dir in _ACTIVE_DIRS:
+        if not active_dir.exists() or active_dir == qe_dir:
+            continue
+        for py in _py_sources(active_dir):
+            src = py.read_text(encoding="utf-8")
+            hits = _QE_OWNED_SYMBOL_DEFINITION.findall(src)
+            assert not hits, (
+                f"{py.relative_to(ROOT)} defines QE-owned symbol(s): {hits}. "
+                "Keep deterministic stat/query resolution, routing/materialisation, "
+                "dependency registry, and sanctioned publication definitions in qe/* only."
             )
 
 

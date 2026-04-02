@@ -44,17 +44,19 @@ def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
 def test_trace_input_load_manual_inputs_path_respects_override(tmp_path):
     from app.pipeline import PipelineRunRequest, execute_pipeline
 
+    manual_inputs_override = tmp_path / 'manual_inputs.partial.yaml'
+    manual_inputs_override.write_text('player:\\n  profile_name: fixture-partial\\n', encoding='utf-8')
     request = PipelineRunRequest(
         ids=ROOT / 'input' / 'imports' / 'ids.csv',
         out=tmp_path / 'out',
-        manual_inputs=ROOT / 'tests' / '_fixtures' / 'manual_inputs.partial.yaml',
+        manual_inputs=manual_inputs_override,
     )
     result = execute_pipeline(request)
 
     assert result.exit_code == 0
     trace = result.pipeline_trace.to_dict()
     input_load_stage = next(stage for stage in trace['stages'] if stage['stage_id'] == 'input_load')
-    assert input_load_stage['outputs_summary']['manual_inputs_path'] == 'tests/_fixtures/manual_inputs.partial.yaml'
+    assert input_load_stage['outputs_summary']['manual_inputs_path'] == str(manual_inputs_override)
 
 
 def test_trace_artifact_is_listed_in_generated_files(tmp_path):
@@ -68,6 +70,14 @@ def test_trace_artifact_is_listed_in_generated_files(tmp_path):
     )
     generated = {path.name for path in result.generated_files}
     assert 'pipeline_trace.json' in generated
+
+
+def test_streamlit_app_contract_is_frozen_in_repo() -> None:
+    contract_path = ROOT / 'app' / 'streamlit_inspector.py'
+    text = contract_path.read_text(encoding='utf-8')
+    assert '`streamlit` is optional' in text.lower()
+    assert 'boss waves is interactive' in text.lower()
+    assert 'permanently removed' in text.lower()
 
 
 def test_build_verification_snapshot_set_runs_default_matrix(tmp_path):
