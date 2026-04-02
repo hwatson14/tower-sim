@@ -106,9 +106,7 @@ _ALLOWED_EVALUATOR_INPUT_IMPORTS = {
     ("audit_engine.py", "from input.state_types import PerkSelection"),
     ("audit_engine.py", "from input.runtime_state import build_runtime_state"),
 }
-_ALLOWED_QE_SIMULATOR_IMPORTS = {
-    ("routing.py", "from simulators.incremental_recalc_runtime import IncrementalRecalcRuntime"),
-}
+_ALLOWED_QE_SIMULATOR_IMPORTS: set[tuple[str, str]] = set()
 _IMPORT_FORBIDDEN_INPUT_FROM_QE = re.compile(
     r"^\s*(?:from|import)\s+input\.(?:runtime_state|loader|state_builder)\b",
     re.MULTILINE,

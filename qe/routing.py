@@ -5,6 +5,7 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
+from typing import Protocol
 import yaml
 
 from input.state_types import AccountState, ScenarioProjectionState, ScenarioRuntimeInputs
@@ -23,7 +24,6 @@ from qe.consumer_registry import resolve_consumer_bundle
 from qe.dependency_registry import DependencyRegistry
 from qe.materializer import BaselineContributorRow
 from qe.kernel import QueryResponse, ResolvedSurfaceRow, StatQueryKernel, get_default_query_kernel
-from simulators.incremental_recalc_runtime import IncrementalRecalcRuntime
 from qe.stat_resolution import (
     resolve_stats as _fallback_resolve_stats,
     resolve_stats_delta as _fallback_resolve_stats_delta,
@@ -1545,6 +1545,54 @@ def _delta_statbook_from_response(
     )
 
 
+@dataclass(frozen=True)
+class QEOverlayMutationPlan:
+    dirty_nodes: tuple[str, ...]
+    fallback_required: bool
+    fallback_reason: str | None = None
+
+
+class QEOverlayMutationPlanner(Protocol):
+    def __call__(
+        self,
+        *,
+        family_id: str,
+        mutation_class: str,
+        trigger_keys: Sequence[str],
+        consumer_id: str,
+        bundle_id: str,
+    ) -> QEOverlayMutationPlan: ...
+
+
+def _plan_checkpoint_overlay_mutation(
+    *,
+    family_id: str,
+    mutation_class: str,
+    trigger_keys: Sequence[str],
+    consumer_id: str,
+    bundle_id: str,
+) -> QEOverlayMutationPlan:
+    registry = DependencyRegistry.load_default()
+    mutated: list[str] = []
+    missing: list[str] = []
+    for trigger_key in trigger_keys:
+        mapping = registry.mutation_mapping(mutation_class, str(trigger_key))
+        if mapping is None:
+            missing.append(str(trigger_key))
+            continue
+        mutated.append(mapping.source_node_id)
+    if missing:
+        return QEOverlayMutationPlan(
+            dirty_nodes=(),
+            fallback_required=True,
+            fallback_reason=f'Unsupported mutation keys for {mutation_class}: {sorted(missing)}',
+        )
+    return QEOverlayMutationPlan(
+        dirty_nodes=tuple(sorted(registry.closure_downstream(mutated))),
+        fallback_required=False,
+    )
+
+
 def resolve_checkpoint_consumer_bundle_delta(
     *,
     base_statbook: StatBook,
@@ -1566,6 +1614,7 @@ def resolve_checkpoint_consumer_bundle_delta(
     mutation_class: str = 'workshop_mutation',
     trigger_keys: Sequence[str] = (),
     kernel: StatQueryKernel | None = None,
+    overlay_mutation_planner: QEOverlayMutationPlanner | None = None,
 ) -> StatBook:
     resolved_bundle = resolve_consumer_bundle(
         consumer_id,
@@ -1574,8 +1623,8 @@ def resolve_checkpoint_consumer_bundle_delta(
         include_optional_surface_ids=include_optional_surface_ids,
         trace_mode=trace_mode,
     )
-    planner = IncrementalRecalcRuntime(DependencyRegistry.load_default())
-    plan = planner.plan_overlay_mutation(
+    mutation_plan = _plan_checkpoint_overlay_mutation if overlay_mutation_planner is None else overlay_mutation_planner
+    plan = mutation_plan(
         family_id=family_id,
         mutation_class=mutation_class,
         trigger_keys=trigger_keys,
