@@ -13,8 +13,9 @@ pytestmark = pytest.mark.live
 
 
 def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
-    from app.pipeline import PipelineRunRequest, execute_pipeline
+    from app.pipeline import PipelineRunRequest, execute_pipeline, get_default_run_stats_session
 
+    get_default_run_stats_session.cache_clear()
     request = PipelineRunRequest(
         ids=ROOT / 'input' / 'imports' / 'ids.csv',
         out=tmp_path / 'out',
@@ -36,6 +37,60 @@ def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
     stage_ids = [stage['stage_id'] for stage in trace['stages']]
     assert stage_ids[:4] == ['input_load', 'runtime_account_assembly', 'compare_materialization', 'stat_resolution']
     assert 'artifact_write' in stage_ids
+
+
+def test_trace_stage_cache_status_markers_for_miss_then_hit(tmp_path):
+    from app.pipeline import (
+        PipelineRunRequest,
+        _build_pipeline_trace_from_artifacts,
+        get_default_run_stats_session,
+    )
+
+    get_default_run_stats_session.cache_clear()
+    session = get_default_run_stats_session()
+    request = PipelineRunRequest(
+        ids=ROOT / 'input' / 'imports' / 'ids.csv',
+        out=tmp_path / 'out',
+    )
+    args = type('PipelineArgs', (), {})()
+    args.ids = request.ids
+    args.out = request.out
+    args.preset = request.preset
+    args.state_mode = request.state_mode
+    args.manual_inputs = request.manual_inputs
+    args.perk_mode = request.perk_mode
+    args.include_slow_audits = request.include_slow_audits
+    args.perk_state = request.perk_state
+
+    first_artifacts = session.build_run_stats_artifacts(args)
+    second_artifacts = session.build_run_stats_artifacts(args)
+    first_trace = _build_pipeline_trace_from_artifacts(
+        request=request,
+        total_elapsed_ms=0.0,
+        diagnostics=first_artifacts['diagnostics'],
+    ).to_dict()
+    second_trace = _build_pipeline_trace_from_artifacts(
+        request=request,
+        total_elapsed_ms=0.0,
+        diagnostics=second_artifacts['diagnostics'],
+    ).to_dict()
+
+    first_stages = {stage['stage_id']: stage for stage in first_trace['stages']}
+    second_stages = {stage['stage_id']: stage for stage in second_trace['stages']}
+
+    assert first_trace['execution_path']['cache_status'] == 'cold'
+    assert first_stages['input_load']['status'] == 'executed'
+    assert first_stages['runtime_account_assembly']['status'] == 'executed'
+    assert first_stages['input_load']['outputs_summary']['status'] == 'executed'
+    assert first_stages['runtime_account_assembly']['outputs_summary']['status'] == 'executed'
+
+    assert second_trace['execution_path']['cache_status'] == 'warm'
+    assert second_stages['input_load']['status'] == 'cache_hit'
+    assert second_stages['runtime_account_assembly']['status'] == 'cache_hit'
+    assert second_stages['input_load']['outputs_summary']['status'] == 'cache_hit'
+    assert second_stages['runtime_account_assembly']['outputs_summary']['status'] == 'cache_hit'
+    assert second_stages['input_load']['elapsed_ms'] == 0.0
+    assert second_stages['runtime_account_assembly']['elapsed_ms'] == 0.0
 
 
 def test_trace_artifact_is_listed_in_generated_files(tmp_path):

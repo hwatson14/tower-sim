@@ -760,7 +760,14 @@ class RunStatsSession:
         )
         cached = self._account_state_cache.get(cache_key)
         if cached is not None:
-            return (*cached, True)
+            cache_metadata = {
+                'account_state_cache_hit': True,
+                'input_load_status': 'cache_hit',
+                'runtime_state_status': 'cache_hit',
+                'input_load_elapsed_ms': 0.0,
+                'runtime_state_elapsed_ms': 0.0,
+            }
+            return (*cached, cache_metadata)
         input_bundle, account_state, perk_config_resolution = _build_account_state(
             ids_path=ids_path,
             manual_inputs_path=manual_inputs_path,
@@ -770,20 +777,29 @@ class RunStatsSession:
         )
         cached_value = (input_bundle, account_state, perk_config_resolution)
         self._account_state_cache[cache_key] = cached_value
-        return (*cached_value, False)
+        cache_metadata = {
+            'account_state_cache_hit': False,
+            'input_load_status': 'executed',
+            'runtime_state_status': 'executed',
+        }
+        return (*cached_value, cache_metadata)
 
     def build_run_stats_artifacts(self, args):
         args.perk_state = _normalize_perk_state(args.perk_state)
         args.perk_mode = _normalize_perk_mode(getattr(args, 'perk_mode', None))
 
         build_start = perf_counter()
-        input_bundle, account_state, perk_config_resolution, account_state_cache_hit = self.get_account_state_bundle(
+        input_bundle, account_state, perk_config_resolution, account_state_cache_metadata = self.get_account_state_bundle(
             ids_path=args.ids,
             manual_inputs_path=getattr(args, 'manual_inputs', None),
             perk_mode=args.perk_mode,
             diag_output_dir=args.out / 'diagnostics' / 'perks',
         )
-        account_state_build_ms = _elapsed_ms(build_start)
+        account_state_build_ms = 0.0 if account_state_cache_metadata.get('account_state_cache_hit') else _elapsed_ms(build_start)
+        account_state_stage_timings = {
+            'input_load_elapsed_ms': float(account_state_cache_metadata.get('input_load_elapsed_ms', account_state_build_ms)),
+            'runtime_state_elapsed_ms': float(account_state_cache_metadata.get('runtime_state_elapsed_ms', account_state_build_ms)),
+        }
 
         preset_names = ['Farming', 'Tourney']
         run_stats_payload = {'presets': {}, 'diagnostics': {}}
@@ -974,8 +990,11 @@ class RunStatsSession:
             'qe_shared_runtime_context': self.qe_shared_runtime_context.to_dict(),
             'session': {
                 'kind': 'run_stats_session',
-                'account_state_cache_hit': account_state_cache_hit,
+                'account_state_cache_hit': account_state_cache_metadata.get('account_state_cache_hit'),
                 'account_state_build_ms': account_state_build_ms,
+                'input_load_status': account_state_cache_metadata.get('input_load_status', 'ok'),
+                'runtime_state_status': account_state_cache_metadata.get('runtime_state_status', 'ok'),
+                **account_state_stage_timings,
             },
             'presets': preset_diagnostics,
             'query_plans': state_query_plans,
@@ -1759,10 +1778,13 @@ def _build_pipeline_trace_from_artifacts(
     total_elapsed_ms: float,
     diagnostics: dict[str, object],
 ) -> PipelineTrace:
+    session_diagnostics = diagnostics.get('session') or {}
+    input_load_status = str(session_diagnostics.get('input_load_status') or 'ok')
+    runtime_state_status = str(session_diagnostics.get('runtime_state_status') or 'ok')
     execution_path = {
         'recompute_mode': diagnostics.get('qe_resolution_backend') or diagnostics.get('query_backend') or 'analysis_pipeline',
         'execution_branch': diagnostics.get('qe_resolution_interface') or diagnostics.get('pipeline_kind') or 'analysis_pipeline',
-        'cache_status': 'warm' if ((diagnostics.get('session') or {}).get('account_state_cache_hit')) else 'cold',
+        'cache_status': 'warm' if (session_diagnostics.get('account_state_cache_hit')) else 'cold',
         'fallback_required': False,
         'fallback_reason': None,
         'bundle_used': None,
@@ -1783,18 +1805,26 @@ def _build_pipeline_trace_from_artifacts(
             title='Input load',
             owner_module='input.loader',
             entry_function='load_inputs',
-            status='ok',
-            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
-            outputs_summary={'section_names': diagnostics.get('section_names', []), 'section_row_counts': diagnostics.get('section_row_counts', {})},
+            status=input_load_status,
+            elapsed_ms=float(session_diagnostics.get('input_load_elapsed_ms', session_diagnostics.get('account_state_build_ms', 0.0)) or 0.0),
+            outputs_summary={
+                'status': input_load_status,
+                'section_names': diagnostics.get('section_names', []),
+                'section_row_counts': diagnostics.get('section_row_counts', {}),
+            },
         ),
         PipelineStageRecord(
             stage_id='runtime_account_assembly',
             title='Runtime/account assembly',
             owner_module='input.runtime_state',
             entry_function='build_runtime_state',
-            status='ok',
-            elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
-            outputs_summary={'perk_config_resolution': diagnostics.get('perk_config_resolution', {}), 'perk_support': diagnostics.get('perk_support', {})},
+            status=runtime_state_status,
+            elapsed_ms=float(session_diagnostics.get('runtime_state_elapsed_ms', session_diagnostics.get('account_state_build_ms', 0.0)) or 0.0),
+            outputs_summary={
+                'status': runtime_state_status,
+                'perk_config_resolution': diagnostics.get('perk_config_resolution', {}),
+                'perk_support': diagnostics.get('perk_support', {}),
+            },
         ),
         PipelineStageRecord(
             stage_id='compare_materialization',
