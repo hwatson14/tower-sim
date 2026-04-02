@@ -428,18 +428,30 @@ def dual_state_statbook_rows_frame(
     }
     rows = []
     for surface_id in sorted(surface_ids):
-        start_payload = next(
-            (payload for raw_surface_id, payload in start_rows.items() if normalize_surface_id_to_contract(raw_surface_id) == surface_id),
-            {},
+        start_raw_surface_id, start_payload = next(
+            (
+                (raw_surface_id, payload)
+                for raw_surface_id, payload in start_rows.items()
+                if normalize_surface_id_to_contract(raw_surface_id) == surface_id
+            ),
+            (None, {}),
         )
-        max_payload = next(
-            (payload for raw_surface_id, payload in max_rows.items() if normalize_surface_id_to_contract(raw_surface_id) == surface_id),
-            {},
+        max_raw_surface_id, max_payload = next(
+            (
+                (raw_surface_id, payload)
+                for raw_surface_id, payload in max_rows.items()
+                if normalize_surface_id_to_contract(raw_surface_id) == surface_id
+            ),
+            (None, {}),
         )
+        preferred_raw_surface_id = start_raw_surface_id or max_raw_surface_id or surface_id
         row = {
             'preset': preset,
             'surface_id': surface_id,
-            'raw_surface_id': surface_id,
+            'raw_surface_id': preferred_raw_surface_id,
+            'start_raw_surface_id': start_raw_surface_id,
+            'max_raw_surface_id': max_raw_surface_id,
+            'raw_surface_id_mismatch': bool(start_raw_surface_id and max_raw_surface_id and start_raw_surface_id != max_raw_surface_id),
             'group': _semantic_group(surface_id),
             'display_label': _display_label(surface_id),
             'changed_in_max_progression': (
@@ -462,6 +474,9 @@ def dual_state_statbook_rows_frame(
                 'preset',
                 'surface_id',
                 'raw_surface_id',
+                'start_raw_surface_id',
+                'max_raw_surface_id',
+                'raw_surface_id_mismatch',
                 'group',
                 'display_label',
                 'changed_in_max_progression',

@@ -24,7 +24,11 @@ if str(ROOT) not in sys.path:
 
 # Active layer imports
 from qe.stat_input_compiler import (
+    load_card_mastery_values,
+    load_perk_effects,
+    load_perk_entities,
     normalize_state_mode,
+    scaled_perk_value,
     SUPPORTED_STATE_MODES,
     state_mode_support,
 )
@@ -108,8 +112,6 @@ def _contract_json_payload(obj):
 
 
 def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | None) -> dict[str, object]:
-    from qe.stat_input_compiler import _load_card_mastery_values, _load_perk_effects, _load_perk_entities
-
     card_effects: dict[str, str] = {}
     with (ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv').open(newline='', encoding='utf-8') as handle:
         reader = csv.DictReader(handle)
@@ -155,10 +157,10 @@ def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | 
     return {
         'card_effects': card_effects,
         'card_values': card_values,
-        'card_mastery_values': _load_card_mastery_values(),
+        'card_mastery_values': load_card_mastery_values(),
         'perk_entity_map': perk_entity_map,
-        'perk_entities': _load_perk_entities(),
-        'perk_effects': _load_perk_effects(),
+        'perk_entities': load_perk_entities(),
+        'perk_effects': load_perk_effects(),
         'manual_banned_perk_ids': manual_banned_perk_ids,
         'module_substat_lookup': module_substat_lookup,
     }
@@ -170,10 +172,8 @@ def compute_perk_max_effect_displays(
     standard_bonus_pct: float | None,
     tradeoff_bonus_pct: float | None,
 ) -> list[tuple[object, object]]:
-    from qe.stat_input_compiler import _load_perk_effects, _load_perk_entities, _scaled_perk_value
-
-    perk_entities = _load_perk_entities()
-    perk_effects = _load_perk_effects()
+    perk_entities = load_perk_entities()
+    perk_effects = load_perk_effects()
     perk_meta = perk_entities.get(perk_id) or {}
     max_picks = int(perk_meta.get('max_picks') or 0)
     perk_lab_state = {
@@ -182,7 +182,7 @@ def compute_perk_max_effect_displays(
     }
     rows: list[tuple[object, object]] = []
     for effect in (perk_effects.get(perk_id) or []):
-        scaled = _scaled_perk_value(
+        scaled = scaled_perk_value(
             perk_meta=perk_meta,
             perk_effect_meta=effect,
             perk_id=perk_id,

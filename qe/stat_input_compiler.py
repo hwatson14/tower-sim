@@ -830,6 +830,35 @@ def load_perk_effects() -> Dict[str, List[Dict[str, str]]]:
     return _load_perk_effects()
 
 
+def load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
+    """Public app-facing surface for card mastery ladder values."""
+    return _load_card_mastery_values()
+
+
+def scaled_perk_value(
+    *,
+    perk_meta: Dict[str, object],
+    perk_effect_meta: Dict[str, object],
+    perk_id: str,
+    operation: str,
+    raw_value: str,
+    picks: int,
+    effect_index: str,
+    perk_lab_state: Dict[str, float],
+) -> float | None:
+    """Public app-facing wrapper for perk effect value scaling."""
+    return _scaled_perk_value(
+        perk_meta=perk_meta,
+        perk_effect_meta=perk_effect_meta,
+        perk_id=perk_id,
+        operation=operation,
+        raw_value=raw_value,
+        picks=picks,
+        effect_index=effect_index,
+        perk_lab_state=perk_lab_state,
+    )
+
+
 @lru_cache(maxsize=1)
 def _load_module_substat_units() -> Dict[str, str]:
     out: Dict[str, str] = {}

@@ -120,6 +120,36 @@ def test_run_stats_rows_frame_preserves_all_stats_and_normalizes_ids():
     assert row['max_progression_value'] == 20
 
 
+def test_dual_state_statbook_rows_frame_preserves_raw_surface_provenance():
+    from app.inspector_data import dual_state_statbook_rows_frame
+
+    frame = dual_state_statbook_rows_frame(
+        {
+            'Farming': {
+                'rows': {
+                    'canonical_stat::tower_damage': {'final_value': 10, 'display_value': '10', 'value_type': 'scalar', 'status': 'resolved'},
+                }
+            }
+        },
+        {
+            'Farming': {
+                'rows': {
+                    'state::tower.damage': {'final_value': 12, 'display_value': '12', 'value_type': 'scalar', 'status': 'resolved'},
+                }
+            }
+        },
+        preset='Farming',
+    )
+
+    assert len(frame) == 1
+    row = frame.iloc[0]
+    assert row['surface_id'] == 'state::tower.damage'
+    assert row['raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['start_raw_surface_id'] == 'canonical_stat::tower_damage'
+    assert row['max_raw_surface_id'] == 'state::tower.damage'
+    assert bool(row['raw_surface_id_mismatch']) is True
+
+
 def test_input_lineage_rows_frame_projects_source_and_resolved_columns():
     from app.inspector_data import input_lineage_rows_frame
 

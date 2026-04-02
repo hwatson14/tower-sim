@@ -21,14 +21,16 @@ Legacy policy:
 from __future__ import annotations
 
 import json
+import importlib
+import importlib.util
 from functools import lru_cache
 from pathlib import Path
 import sys
 
 import pandas as pd
-try:
-    import streamlit as st
-except ModuleNotFoundError:  # pragma: no cover - import-safe helper tests
+if importlib.util.find_spec('streamlit') is not None:
+    st = importlib.import_module('streamlit')
+else:  # pragma: no cover - import-safe helper tests
     class _MissingStreamlit:
         def __getattr__(self, name):
             raise ModuleNotFoundError('streamlit is required to run the inspector UI.')

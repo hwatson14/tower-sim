@@ -51,6 +51,10 @@ _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_EVALUATORS = re.compile(
     r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
     re.MULTILINE,
 )
+_IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_APP = re.compile(
+    r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
+    re.MULTILINE,
+)
 # Consolidated transitional-root boundary (post-T13)
 _IMPORT_TRANSITIONAL_ROOTS = re.compile(
     r"^\s*(?:from|import)\s+(?:compilers|models|optimizer|parsers|registry)\b",
@@ -214,6 +218,16 @@ def test_app_files_do_not_import_engine():
         violations = _violation_lines(src, _IMPORT_ENGINE)
         assert not violations, (
             f"app/{py.name} imports engine: {violations}"
+        )
+
+
+def test_app_files_do_not_import_private_qe_stat_input_compiler_symbols():
+    """App layer must use public qe.stat_input_compiler surfaces only."""
+    for py in _py_sources(APP_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_APP)
+        assert not violations, (
+            f"app/{py.name} imports private qe.stat_input_compiler symbols: {violations}"
         )
 
 
