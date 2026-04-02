@@ -36,6 +36,25 @@ def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
     stage_ids = [stage['stage_id'] for stage in trace['stages']]
     assert stage_ids[:4] == ['input_load', 'runtime_account_assembly', 'compare_materialization', 'stat_resolution']
     assert 'artifact_write' in stage_ids
+    input_load_stage = next(stage for stage in trace['stages'] if stage['stage_id'] == 'input_load')
+    assert input_load_stage['outputs_summary']['manual_inputs_path'] == 'input/manual_inputs.yaml'
+
+
+@pytest.mark.live
+def test_trace_input_load_manual_inputs_path_respects_override(tmp_path):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    request = PipelineRunRequest(
+        ids=ROOT / 'input' / 'imports' / 'ids.csv',
+        out=tmp_path / 'out',
+        manual_inputs=ROOT / 'tests' / '_fixtures' / 'manual_inputs.partial.yaml',
+    )
+    result = execute_pipeline(request)
+
+    assert result.exit_code == 0
+    trace = result.pipeline_trace.to_dict()
+    input_load_stage = next(stage for stage in trace['stages'] if stage['stage_id'] == 'input_load')
+    assert input_load_stage['outputs_summary']['manual_inputs_path'] == 'tests/_fixtures/manual_inputs.partial.yaml'
 
 
 def test_trace_artifact_is_listed_in_generated_files(tmp_path):

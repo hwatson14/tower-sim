@@ -1785,7 +1785,12 @@ def _build_pipeline_trace_from_artifacts(
             entry_function='load_inputs',
             status='ok',
             elapsed_ms=float(((diagnostics.get('session') or {}).get('account_state_build_ms')) or 0.0),
-            outputs_summary={'section_names': diagnostics.get('section_names', []), 'section_row_counts': diagnostics.get('section_row_counts', {})},
+            outputs_summary={
+                'ids_path': _relpath_str(request.ids),
+                'manual_inputs_path': _relpath_str(_effective_manual_inputs_path(request.manual_inputs)),
+                'section_names': diagnostics.get('section_names', []),
+                'section_row_counts': diagnostics.get('section_row_counts', {}),
+            },
         ),
         PipelineStageRecord(
             stage_id='runtime_account_assembly',
