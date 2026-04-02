@@ -142,3 +142,51 @@ def test_checkpoint_consumer_bundle_delta__parity_and_fallback():
     )
     assert fallback_statbook.diagnostics['delta_fallback_used'] is True
     assert 'Unsupported mutation keys' in fallback_statbook.diagnostics['delta_fallback_reason']
+
+
+def test_checkpoint_consumer_bundle_delta__supports_overlay_planner_seam():
+    from dataclasses import dataclass
+
+    from qe.routing import (
+        query_response_to_statbook,
+        resolve_checkpoint_consumer_bundle,
+        resolve_checkpoint_consumer_bundle_delta,
+    )
+
+    @dataclass(frozen=True)
+    class _StubPlan:
+        dirty_nodes: tuple[str, ...]
+        fallback_required: bool
+        fallback_reason: str | None = None
+
+    baseline_state, family_id = _build_patched_state_and_family(workshop_bumps={})
+    baseline_response = resolve_checkpoint_consumer_bundle(
+        baseline_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+    )
+    baseline_statbook = query_response_to_statbook(baseline_response, notes='baseline', diagnostics={})
+
+    delta_statbook = resolve_checkpoint_consumer_bundle_delta(
+        base_statbook=baseline_statbook,
+        account_state=baseline_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+        trigger_keys=('nonexistent-track',),
+        overlay_mutation_planner=lambda **_: _StubPlan(
+            dirty_nodes=(),
+            fallback_required=True,
+            fallback_reason='stubbed-planner-fallback',
+        ),
+    )
+
+    assert delta_statbook.diagnostics['delta_fallback_used'] is True
+    assert delta_statbook.diagnostics['delta_fallback_reason'] == 'stubbed-planner-fallback'
