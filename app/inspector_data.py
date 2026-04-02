@@ -14,6 +14,7 @@ CORE_ARTIFACTS = (
     'diagnostics.json',
     'module_card_payloads.json',
     'account_state.json',
+    'input_dashboard.json',
     'stat_inputs.json',
     'run_stats.json',
     'statbook.json',

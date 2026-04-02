@@ -94,6 +94,16 @@ def test_streamlit_stats_and_boss_waves_use_sanctioned_facades() -> None:
     assert '_module_unique_effect_map(' not in text
 
 
+def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    start = text.index("dashboard = active_artifacts.get('input_dashboard.json') or {}")
+    end = text.index("with st.expander('Legacy input debug views'", start)
+    production_block = text[start:end]
+    assert 'st.table(' not in production_block
+    assert 'st.dataframe(' not in production_block
+    assert 'st.data_editor(' not in production_block
+
+
 def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):
     from app import pipeline as pipeline_mod
 

@@ -21,6 +21,7 @@ Legacy policy:
 from __future__ import annotations
 
 import json
+import html
 import importlib
 import importlib.util
 from functools import lru_cache
@@ -1289,148 +1290,131 @@ def _render_checks(active_artifacts) -> None:
 
 
 def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
-    diagnostics = active_artifacts.get('diagnostics.json', {})
-    st.subheader('Input Visibility')
-    st.write(f'Active output dir: `{active_out_dir}`')
-    st.json(
-        {
-            'section_names': diagnostics.get('section_names', []),
-            'section_row_counts': diagnostics.get('section_row_counts', {}),
-            'perk_config_resolution': diagnostics.get('perk_config_resolution', {}),
-            'compare_policy': diagnostics.get('compare_situation_policy', {}),
-        }
+    st.markdown(
+        """
+        <style>
+        .dashboard-panel {background:#13161d;border:1px solid #2b3241;border-radius:8px;padding:10px 12px;margin:8px 0;}
+        .dashboard-panel h4 {margin:0 0 8px 0;color:#f4f7ff;font-size:0.95rem;}
+        .dashboard-panel table {width:100%;border-collapse:collapse;font-size:0.82rem;}
+        .dashboard-panel th,.dashboard-panel td {border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
+        .dashboard-panel th {color:#9db4ff;font-weight:600;}
+        .dashboard-kpi {display:inline-block;padding:3px 8px;border-radius:99px;background:#1c2230;color:#a5b6d6;font-size:0.72rem;margin-right:6px;}
+        </style>
+        """,
+        unsafe_allow_html=True,
     )
-    st.subheader('Manifest and Input Metadata')
-    st.json(
-        {
-            'default_preset': diagnostics.get('default_preset'),
-            'state_mode': diagnostics.get('state_mode'),
-            'perk_mode': diagnostics.get('perk_mode'),
-            'active_card_preset': diagnostics.get('active_card_preset'),
-            'active_module_preset': diagnostics.get('active_module_preset'),
-            'active_perk_preset': diagnostics.get('active_perk_preset'),
-        }
-    )
-    st.subheader('account_state.json')
-    account_state_payload = active_artifacts.get('account_state.json')
-    if isinstance(account_state_payload, dict) and account_state_payload:
-        top_level_keys = list(account_state_payload.keys())
-        st.caption(f'Top-level sections: {len(top_level_keys)}')
-        grouped_rows = []
-        for key in top_level_keys:
-            value = account_state_payload.get(key)
-            if isinstance(value, dict):
-                child_count = len(value)
-            elif isinstance(value, list):
-                child_count = len(value)
-            else:
-                child_count = 1
-            grouped_rows.append(
-                {
-                    'section': key,
-                    'value_type': type(value).__name__,
-                    'entries': child_count,
-                }
-            )
-        st.dataframe(pd.DataFrame(grouped_rows), width='stretch', hide_index=True)
-        with st.expander('Grouped section view', expanded=True):
-            for key in top_level_keys:
-                value = account_state_payload.get(key)
-                section_title = f"{key} ({type(value).__name__})"
-                with st.expander(section_title, expanded=False):
-                    st.json(value)
-        with st.expander('Raw account_state.json fallback', expanded=False):
-            st.json(account_state_payload)
-    else:
-        st.info('artifact missing: account_state.json')
 
-    st.subheader('stat_inputs.json')
-    stat_inputs_payload = active_artifacts.get('stat_inputs.json')
-    if isinstance(stat_inputs_payload, list) and stat_inputs_payload:
-        stat_inputs_frame = pd.DataFrame(stat_inputs_payload)
-        if 'surface_id' in stat_inputs_frame.columns:
-            search_value = st.text_input('Filter stat inputs by surface_id', value='').strip().lower()
-            filtered_stat_inputs = stat_inputs_frame.copy()
-            if search_value:
-                filtered_stat_inputs = filtered_stat_inputs[
-                    filtered_stat_inputs['surface_id'].astype(str).str.lower().str.contains(search_value, na=False)
-                ]
-            contributor_columns = [
-                column for column in filtered_stat_inputs.columns
-                if any(token in column.lower() for token in ('contributor', 'source'))
-            ]
-            base_columns = ['surface_id']
-            optional_columns = [
-                column for column in ['label', 'display_label', 'value', 'raw_value', 'status']
-                if column in filtered_stat_inputs.columns
-            ]
-            table_columns = base_columns + optional_columns + [column for column in contributor_columns if column not in base_columns and column not in optional_columns]
-            remaining_columns = [
-                column for column in filtered_stat_inputs.columns
-                if column not in table_columns
-            ]
-            st.dataframe(filtered_stat_inputs[table_columns + remaining_columns], width='stretch', hide_index=True)
-            st.caption(f'Rows shown: {len(filtered_stat_inputs)} / {len(stat_inputs_frame)}')
+    def _panel_html(title: str, headers: list[str], rows: list[list[object]]) -> str:
+        header_html = ''.join(f'<th>{html.escape(str(col))}</th>' for col in headers)
+        row_html = ''.join(
+            '<tr>' + ''.join(f'<td>{html.escape(str(value or ""))}</td>' for value in row) + '</tr>'
+            for row in rows
+        )
+        return (
+            f"<div class='dashboard-panel'><h4>{html.escape(title)}</h4>"
+            f"<table><thead><tr>{header_html}</tr></thead><tbody>{row_html}</tbody></table></div>"
+        )
+
+    def _render_simple_panel(title: str, rows: list[dict]) -> None:
+        table_rows = [[row.get('label', ''), row.get('value', ''), row.get('detail', '')] for row in rows]
+        st.markdown(_panel_html(title, ['Name', 'Value', 'Detail'], table_rows), unsafe_allow_html=True)
+
+    dashboard = active_artifacts.get('input_dashboard.json') or {}
+    if isinstance(dashboard, dict) and dashboard.get('panels'):
+        preset_cfg = dashboard.get('preset_selector') or {}
+        preset_options = list(preset_cfg.get('available') or ['Farming'])
+        default_preset = preset_cfg.get('active_from_account_state') or preset_cfg.get('default') or preset_options[0]
+        selected_preset = st.selectbox(
+            'Preset',
+            options=preset_options,
+            index=preset_options.index(default_preset) if default_preset in preset_options else 0,
+            key='input_dashboard_preset_selector',
+        )
+        st.caption(f"Active preset source: {preset_cfg.get('active_from_account_state') or 'n/a'}")
+
+        panel_map = {str(panel.get('panel_id')): panel for panel in (dashboard.get('panels') or []) if isinstance(panel, dict)}
+
+        labs_panel = panel_map.get('labs', {})
+        labs_payload = labs_panel.get('payload') or {}
+        st.subheader('Labs')
+        buckets = labs_payload.get('buckets') or []
+        cols = st.columns(max(1, min(4, len(buckets) or 1)))
+        for idx, bucket in enumerate(buckets or [{'title': 'Labs', 'rows': []}]):
+            with cols[idx % len(cols)]:
+                rows = [[r.get('name', ''), r.get('current', ''), r.get('max', '')] for r in (bucket.get('rows') or [])]
+                st.markdown(_panel_html(bucket.get('title', 'Labs'), ['Name', 'Current', 'Max'], rows), unsafe_allow_html=True)
+
+        ws_payload = (panel_map.get('workshop', {}).get('payload') or {})
+        ws_rows = [[r.get('name', ''), r.get('coin_level', ''), r.get('coin_value', ''), r.get('max_level', ''), r.get('max_value', '')] for r in (ws_payload.get('rows') or [])]
+        st.markdown(_panel_html('WORKSHOP', ['Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'], ws_rows), unsafe_allow_html=True)
+
+        ws_plus_payload = (panel_map.get('workshop_enhancements', {}).get('payload') or {})
+        ws_plus_rows = [[r.get('name', ''), r.get('level', ''), r.get('max', ''), r.get('value', '')] for r in (ws_plus_payload.get('rows') or [])]
+        st.markdown(_panel_html('WORKSHOP ENHANCEMENTS', ['Name', 'Level', 'Max', 'Value'], ws_plus_rows), unsafe_allow_html=True)
+
+        uw_payload = (panel_map.get('ultimate_weapons', {}).get('payload') or {})
+        uw_rows = [[r.get('uw_name', ''), r.get('track_name', ''), r.get('stone_level', ''), r.get('stone_value', ''), r.get('final_value', '')] for r in (uw_payload.get('rows') or [])]
+        st.markdown(_panel_html('ULTIMATE WEAPONS', ['UW', 'Track', 'Stone Lvl', 'Stone Value', 'Final'], uw_rows), unsafe_allow_html=True)
+
+        cards_payload = (panel_map.get('cards', {}).get('payload') or {})
+        preset_key = f'preset::{selected_preset}'
+        cards_rows = [[r.get('name', ''), r.get('level', ''), r.get('mastery', ''), r.get(preset_key, '')] for r in (cards_payload.get('rows') or [])]
+        st.markdown(_panel_html('CARDS', ['Name', 'Level', 'Mastery', selected_preset], cards_rows), unsafe_allow_html=True)
+
+        bots_payload = (panel_map.get('bots', {}).get('payload') or {})
+        bot_rows = [[r.get('name', ''), r.get('attribute', ''), r.get('value', ''), r.get('detail', '')] for r in (bots_payload.get('rows') or []) if any(r.values())]
+        st.markdown(_panel_html('BOTS', ['Bot', 'Track', 'Value', 'Detail'], bot_rows), unsafe_allow_html=True)
+
+        modules_payload = (panel_map.get('modules', {}).get('payload') or {})
+        module_rows = [list((r.get('tokens') or [])[:8]) for r in (modules_payload.get('rows') or [])]
+        st.markdown(_panel_html('MODULES', ['C1', 'C2', 'C3', 'C4', 'C5', 'A1', 'A2', 'A3'], module_rows), unsafe_allow_html=True)
+
+        guardians_payload = (panel_map.get('guardians', {}).get('payload') or {})
+        guardian_rows = [[r.get('name', ''), r.get('attribute', ''), r.get('value', ''), r.get('detail', '')] for r in (guardians_payload.get('rows') or []) if any(r.values())]
+        st.markdown(_panel_html('GUARDIANS', ['Guardian', 'Track', 'Value', 'Detail'], guardian_rows), unsafe_allow_html=True)
+
+        _render_simple_panel('RELICS', (panel_map.get('relics', {}).get('payload') or {}).get('rows') or [])
+        _render_simple_panel('VAULT', (panel_map.get('vault', {}).get('payload') or {}).get('rows') or [])
+        _render_simple_panel('Themes and Songs', (panel_map.get('themes_and_songs', {}).get('payload') or {}).get('rows') or [])
+
+        if dashboard.get('upstream_gaps'):
+            st.warning('Upstream publication gaps detected: ' + ', '.join(dashboard.get('upstream_gaps') or []))
+        with st.expander('Dashboard artifact debug (input_dashboard.json)', expanded=False):
+            st.json(dashboard)
+    else:
+        st.info('input_dashboard.json missing; showing legacy debug views only.')
+
+    with st.expander('Legacy input debug views', expanded=False):
+        diagnostics = active_artifacts.get('diagnostics.json', {})
+        account_state_payload = active_artifacts.get('account_state.json') or {}
+        st.json(
+            {
+                'active_output_dir': str(active_out_dir),
+                'diagnostics_summary': {
+                    'section_names': diagnostics.get('section_names', []),
+                    'section_row_counts': diagnostics.get('section_row_counts', {}),
+                    'perk_config_resolution': diagnostics.get('perk_config_resolution', {}),
+                },
+                'pipeline_compare_policy': diagnostics.get('compare_situation_policy', {}),
+            }
+        )
+        st.subheader('Raw artifacts')
+        st.json(
+            {
+                'account_state_keys': sorted(account_state_payload.keys()) if isinstance(account_state_payload, dict) else [],
+                'stat_inputs_count': len(active_artifacts.get('stat_inputs.json') or []),
+                'pipeline_trace_stage_count': len((active_artifacts.get('pipeline_trace.json') or {}).get('stages') or []),
+            }
+        )
+        st.subheader('Input lineage')
+        lineage_frame = input_lineage_rows_frame(
+            active_artifacts.get('stat_inputs.json'),
+            account_state_payload=account_state_payload if isinstance(account_state_payload, dict) else None,
+        )
+        if not lineage_frame.empty:
+            st.dataframe(lineage_frame, width='stretch', hide_index=True)
         else:
-            st.info('stat_inputs.json present, but no `surface_id` column found; showing raw rows.')
-            st.dataframe(stat_inputs_frame, width='stretch', hide_index=True)
-    elif isinstance(stat_inputs_payload, list):
-        st.info('artifact present: stat_inputs.json (0 rows)')
-    else:
-        st.info('artifact missing: stat_inputs.json')
-
-    st.subheader('Input lineage')
-    lineage_frame = input_lineage_rows_frame(
-        stat_inputs_payload,
-        account_state_payload=account_state_payload,
-    )
-    if not lineage_frame.empty:
-        lineage_search = st.text_input('Filter lineage by source_key or resolved_surface_id', value='').strip().lower()
-        mapping_options = sorted(lineage_frame['mapping_status'].dropna().unique().tolist())
-        selected_mapping_status = st.multiselect('Mapping status', options=mapping_options, default=mapping_options)
-        filtered_lineage = lineage_frame.copy()
-        filtered_lineage = filtered_lineage[filtered_lineage['mapping_status'].isin(selected_mapping_status)]
-        if lineage_search:
-            filtered_lineage = filtered_lineage[
-                filtered_lineage['source_key'].astype(str).str.lower().str.contains(lineage_search, na=False)
-                | filtered_lineage['resolved_surface_id'].astype(str).str.lower().str.contains(lineage_search, na=False)
-            ]
-        st.dataframe(filtered_lineage, width='stretch', hide_index=True)
-        st.caption(f'Lineage rows shown: {len(filtered_lineage)} / {len(lineage_frame)}')
-    elif isinstance(stat_inputs_payload, list):
-        st.info('No lineage rows available for stat_inputs.json.')
-    else:
-        st.info('Lineage requires stat_inputs.json rows.')
-
-    st.subheader('Input-related pipeline stages (pipeline_trace.json)')
-    pipeline_trace_payload = active_artifacts.get('pipeline_trace.json')
-    if isinstance(pipeline_trace_payload, dict):
-        stages = pipeline_trace_payload.get('stages') or []
-        if stages:
-            input_tokens = ('input', 'import', 'runtime_state', 'runtime_account')
-            input_related_rows = []
-            for stage in stages:
-                owner_module = str(stage.get('owner_module') or '').lower()
-                stage_id = str(stage.get('stage_id') or '').lower()
-                if any(token in owner_module for token in input_tokens) or any(token in stage_id for token in input_tokens):
-                    input_related_rows.append(
-                        {
-                            'stage_id': stage.get('stage_id'),
-                            'title': stage.get('title'),
-                            'owner_module': stage.get('owner_module'),
-                            'entry_function': stage.get('entry_function'),
-                            'status': stage.get('status'),
-                            'elapsed_ms': stage.get('elapsed_ms'),
-                        }
-                    )
-            if input_related_rows:
-                st.dataframe(pd.DataFrame(input_related_rows), width='stretch', hide_index=True)
-            else:
-                st.info('No input/import/runtime-state stages were found in pipeline_trace.json.')
-        else:
-            st.info('artifact present: pipeline_trace.json (no stage rows)')
-    else:
-        st.info('artifact missing: pipeline_trace.json')
+            st.info('No lineage rows available for this snapshot.')
 
 
 def _render_boss_waves(request: PipelineRunRequest) -> None:
