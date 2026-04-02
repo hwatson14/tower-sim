@@ -85,3 +85,46 @@ def test_run_stats_rows_frame_preserves_all_stats_and_normalizes_ids():
     assert row['surface_id'] == 'state::tower.damage'
     assert row['start_of_run_value'] == 10
     assert row['max_progression_value'] == 20
+
+
+def test_input_lineage_rows_frame_projects_source_and_resolved_columns():
+    from app.inspector_data import input_lineage_rows_frame
+
+    frame = input_lineage_rows_frame(
+        [
+            {
+                'stage': 'account_state',
+                'source_family': 'lab',
+                'source_name': 'Game Speed',
+                'value': 5.0,
+                'destination_object_type': 'runtime_mechanic_param',
+                'destination_id': 'game_runtime.speed_multiplier',
+                'kb_mapped': True,
+            },
+            {
+                'stage': 'account_state',
+                'source_family': 'lab',
+                'stat_name': 'Workshop Defense Discount',
+                'value': 28,
+                'kb_mapped': False,
+            },
+        ]
+    )
+
+    assert list(frame.columns) == [
+        'source_group',
+        'source_key',
+        'source_value',
+        'resolved_surface_id',
+        'resolved_value',
+        'mapping_status',
+    ]
+    mapped_row = frame.loc[frame['source_key'] == 'Game Speed'].iloc[0]
+    assert mapped_row['source_group'] == 'account_state:lab'
+    assert mapped_row['resolved_surface_id'] == 'state::meta.game_speed_multiplier'
+    assert mapped_row['resolved_value'] == 5.0
+    assert mapped_row['mapping_status'] == 'mapped'
+
+    unmapped_row = frame.loc[frame['source_key'] == 'Workshop Defense Discount'].iloc[0]
+    assert unmapped_row['resolved_surface_id'] is None
+    assert unmapped_row['mapping_status'] == 'unmapped'

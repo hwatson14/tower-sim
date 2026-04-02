@@ -383,3 +383,66 @@ def qe_plan_coverage_frame(query_plan_payload: dict[str, Any], *, preset: str, s
                 'surface_id': surface_id,
             })
     return pd.DataFrame(rows) if rows else pd.DataFrame(columns=['bundle_kind', 'bundle_id', 'family_id', 'surface_id'])
+
+
+def _lineage_source_group(row: dict[str, Any]) -> str:
+    stage = str(row.get('stage') or '').strip()
+    source_family = str(row.get('source_family') or '').strip()
+    if stage and source_family:
+        return f'{stage}:{source_family}'
+    if source_family:
+        return source_family
+    if stage:
+        return stage
+    return 'unknown'
+
+
+def _lineage_resolved_surface_id(row: dict[str, Any]) -> str | None:
+    surface_id = str(row.get('surface_id') or '').strip()
+    if surface_id:
+        return normalize_surface_id_to_contract(surface_id)
+    destination_object_type = str(row.get('destination_object_type') or '').strip()
+    destination_id = str(row.get('destination_id') or '').strip()
+    if destination_object_type and destination_id:
+        return normalize_surface_id_to_contract(f'{destination_object_type}::{destination_id}')
+    return None
+
+
+def input_lineage_rows_frame(stat_inputs_payload: Any) -> pd.DataFrame:
+    columns = ['source_group', 'source_key', 'source_value', 'resolved_surface_id', 'resolved_value', 'mapping_status']
+    if not isinstance(stat_inputs_payload, list):
+        return pd.DataFrame(columns=columns)
+    rows: list[dict[str, Any]] = []
+    for raw_row in stat_inputs_payload:
+        if not isinstance(raw_row, dict):
+            continue
+        source_key = (
+            str(raw_row.get('source_name') or '').strip()
+            or str(raw_row.get('stat_name') or '').strip()
+            or str(raw_row.get('destination_id') or '').strip()
+        )
+        resolved_surface_id = _lineage_resolved_surface_id(raw_row)
+        source_value = raw_row.get('value')
+        resolved_value = raw_row.get('resolved_value')
+        if resolved_value is None:
+            resolved_value = source_value
+        kb_mapped = bool(raw_row.get('kb_mapped'))
+        if resolved_surface_id:
+            mapping_status = 'mapped'
+        elif kb_mapped:
+            mapping_status = 'mapped_missing_surface'
+        else:
+            mapping_status = 'unmapped'
+        rows.append(
+            {
+                'source_group': _lineage_source_group(raw_row),
+                'source_key': source_key,
+                'source_value': source_value,
+                'resolved_surface_id': resolved_surface_id,
+                'resolved_value': resolved_value,
+                'mapping_status': mapping_status,
+            }
+        )
+    if not rows:
+        return pd.DataFrame(columns=columns)
+    return pd.DataFrame(rows, columns=columns)
