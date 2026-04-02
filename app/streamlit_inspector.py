@@ -45,6 +45,7 @@ from app.display import MODULE_CARD_CSS, render_module_card_html
 from app.inspector_data import (
     compare_rows_frame,
     dual_state_statbook_rows_frame,
+    input_lineage_rows_frame,
     load_artifacts,
     pipeline_stages_frame,
     qe_contributor_rows_frame,
@@ -1571,6 +1572,29 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
         st.info('artifact present: stat_inputs.json (0 rows)')
     else:
         st.info('artifact missing: stat_inputs.json')
+
+    st.subheader('Input lineage')
+    lineage_frame = input_lineage_rows_frame(
+        stat_inputs_payload,
+        account_state_payload=account_state_payload,
+    )
+    if not lineage_frame.empty:
+        lineage_search = st.text_input('Filter lineage by source_key or resolved_surface_id', value='').strip().lower()
+        mapping_options = sorted(lineage_frame['mapping_status'].dropna().unique().tolist())
+        selected_mapping_status = st.multiselect('Mapping status', options=mapping_options, default=mapping_options)
+        filtered_lineage = lineage_frame.copy()
+        filtered_lineage = filtered_lineage[filtered_lineage['mapping_status'].isin(selected_mapping_status)]
+        if lineage_search:
+            filtered_lineage = filtered_lineage[
+                filtered_lineage['source_key'].astype(str).str.lower().str.contains(lineage_search, na=False)
+                | filtered_lineage['resolved_surface_id'].astype(str).str.lower().str.contains(lineage_search, na=False)
+            ]
+        st.dataframe(filtered_lineage, width='stretch', hide_index=True)
+        st.caption(f'Lineage rows shown: {len(filtered_lineage)} / {len(lineage_frame)}')
+    elif isinstance(stat_inputs_payload, list):
+        st.info('No lineage rows available for stat_inputs.json.')
+    else:
+        st.info('Lineage requires stat_inputs.json rows.')
 
     st.subheader('Input-related pipeline stages (pipeline_trace.json)')
     pipeline_trace_payload = active_artifacts.get('pipeline_trace.json')
