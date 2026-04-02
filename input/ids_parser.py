@@ -11,6 +11,7 @@ from here. It will be demoted to archive/legacy/ in T8.
 from __future__ import annotations
 
 import csv
+import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List
@@ -45,6 +46,14 @@ SECTION_SPECS = [
     SectionSpec("Guardians", 72, 72, 76),
     SectionSpec("Player & Stuff", 77, 77, 82),
 ]
+
+
+IDS_HEADER_ALLOWLIST = {
+    "exact": {"?", "Cards Presets"},
+    "prefixes": ("http",),
+}
+
+_IDS_VERSION_TOKEN_RE = re.compile(r"^v\d+(\.\d+)*$")
 
 
 def _read_csv_rows(path: Path) -> List[List[str]]:
@@ -89,9 +98,11 @@ def _fail_unknown_sections(rows: List[List[str]]) -> None:
         value = cell.strip()
         if value == "" or value in known:
             continue
-        if value.startswith("http") or value == "?" or value.startswith("v"):
+        if value in IDS_HEADER_ALLOWLIST["exact"]:
             continue
-        if value == "Cards Presets":
+        if any(value.startswith(prefix) for prefix in IDS_HEADER_ALLOWLIST["prefixes"]):
+            continue
+        if _IDS_VERSION_TOKEN_RE.fullmatch(value):
             continue
         row_values = rows[1] if len(rows) > 1 else []
         offending = row_values[idx] if idx < len(row_values) else ""
