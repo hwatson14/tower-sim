@@ -1504,6 +1504,103 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
             'active_perk_preset': diagnostics.get('active_perk_preset'),
         }
     )
+    st.subheader('account_state.json')
+    account_state_payload = active_artifacts.get('account_state.json')
+    if isinstance(account_state_payload, dict) and account_state_payload:
+        top_level_keys = list(account_state_payload.keys())
+        st.caption(f'Top-level sections: {len(top_level_keys)}')
+        grouped_rows = []
+        for key in top_level_keys:
+            value = account_state_payload.get(key)
+            if isinstance(value, dict):
+                child_count = len(value)
+            elif isinstance(value, list):
+                child_count = len(value)
+            else:
+                child_count = 1
+            grouped_rows.append(
+                {
+                    'section': key,
+                    'value_type': type(value).__name__,
+                    'entries': child_count,
+                }
+            )
+        st.dataframe(pd.DataFrame(grouped_rows), width='stretch', hide_index=True)
+        with st.expander('Grouped section view', expanded=True):
+            for key in top_level_keys:
+                value = account_state_payload.get(key)
+                section_title = f"{key} ({type(value).__name__})"
+                with st.expander(section_title, expanded=False):
+                    st.json(value)
+        with st.expander('Raw account_state.json fallback', expanded=False):
+            st.json(account_state_payload)
+    else:
+        st.info('artifact missing: account_state.json')
+
+    st.subheader('stat_inputs.json')
+    stat_inputs_payload = active_artifacts.get('stat_inputs.json')
+    if isinstance(stat_inputs_payload, list) and stat_inputs_payload:
+        stat_inputs_frame = pd.DataFrame(stat_inputs_payload)
+        if 'surface_id' in stat_inputs_frame.columns:
+            search_value = st.text_input('Filter stat inputs by surface_id', value='').strip().lower()
+            filtered_stat_inputs = stat_inputs_frame.copy()
+            if search_value:
+                filtered_stat_inputs = filtered_stat_inputs[
+                    filtered_stat_inputs['surface_id'].astype(str).str.lower().str.contains(search_value, na=False)
+                ]
+            contributor_columns = [
+                column for column in filtered_stat_inputs.columns
+                if any(token in column.lower() for token in ('contributor', 'source'))
+            ]
+            base_columns = ['surface_id']
+            optional_columns = [
+                column for column in ['label', 'display_label', 'value', 'raw_value', 'status']
+                if column in filtered_stat_inputs.columns
+            ]
+            table_columns = base_columns + optional_columns + [column for column in contributor_columns if column not in base_columns and column not in optional_columns]
+            remaining_columns = [
+                column for column in filtered_stat_inputs.columns
+                if column not in table_columns
+            ]
+            st.dataframe(filtered_stat_inputs[table_columns + remaining_columns], width='stretch', hide_index=True)
+            st.caption(f'Rows shown: {len(filtered_stat_inputs)} / {len(stat_inputs_frame)}')
+        else:
+            st.info('stat_inputs.json present, but no `surface_id` column found; showing raw rows.')
+            st.dataframe(stat_inputs_frame, width='stretch', hide_index=True)
+    elif isinstance(stat_inputs_payload, list):
+        st.info('artifact present: stat_inputs.json (0 rows)')
+    else:
+        st.info('artifact missing: stat_inputs.json')
+
+    st.subheader('Input-related pipeline stages (pipeline_trace.json)')
+    pipeline_trace_payload = active_artifacts.get('pipeline_trace.json')
+    if isinstance(pipeline_trace_payload, dict):
+        stages = pipeline_trace_payload.get('stages') or []
+        if stages:
+            input_tokens = ('input', 'import', 'runtime_state', 'runtime_account')
+            input_related_rows = []
+            for stage in stages:
+                owner_module = str(stage.get('owner_module') or '').lower()
+                stage_id = str(stage.get('stage_id') or '').lower()
+                if any(token in owner_module for token in input_tokens) or any(token in stage_id for token in input_tokens):
+                    input_related_rows.append(
+                        {
+                            'stage_id': stage.get('stage_id'),
+                            'title': stage.get('title'),
+                            'owner_module': stage.get('owner_module'),
+                            'entry_function': stage.get('entry_function'),
+                            'status': stage.get('status'),
+                            'elapsed_ms': stage.get('elapsed_ms'),
+                        }
+                    )
+            if input_related_rows:
+                st.dataframe(pd.DataFrame(input_related_rows), width='stretch', hide_index=True)
+            else:
+                st.info('No input/import/runtime-state stages were found in pipeline_trace.json.')
+        else:
+            st.info('artifact present: pipeline_trace.json (no stage rows)')
+    else:
+        st.info('artifact missing: pipeline_trace.json')
 
 
 def _render_boss_waves(request: PipelineRunRequest) -> None:
