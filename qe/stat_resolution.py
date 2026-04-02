@@ -1518,6 +1518,8 @@ def _resolve_mapped_rows(
 
 def classify_input_routing(row: StatInput) -> str:
     note = str(row.notes or '')
+    if 'module_substat_parse_failed:' in note:
+        return 'unresolved_module_substat_parse'
     if note.startswith('parser_drop'):
         return 'parser_drop_junk'
     if note.startswith('account_metadata_'):
@@ -1539,12 +1541,21 @@ def summarize_input_routing(stat_inputs: List[StatInput]) -> dict[str, Any]:
     family_unrouted_counts = Counter(
         row.source_family for row in stat_inputs if classify_input_routing(row) == 'truly_unrouted_unknown'
     )
+    module_substat_parse_failed = [
+        row for row in stat_inputs
+        if 'module_substat_parse_failed:' in str(row.notes or '')
+    ]
+    parse_failed_by_substat = Counter(row.stat_name for row in module_substat_parse_failed)
     return {
         'class_counts': dict(sorted(class_counts.items())),
         'routed_input_count': sum(1 for row in stat_inputs if row.destination_id),
         'truly_unrouted_input_count': class_counts.get('truly_unrouted_unknown', 0),
         'routed_count_by_family': dict(sorted(family_routed_counts.items())),
         'truly_unrouted_count_by_family': dict(sorted(family_unrouted_counts.items())),
+        'unresolved_contributor_diagnostics': {
+            'module_substat_parse_failed_count': len(module_substat_parse_failed),
+            'module_substat_parse_failed_by_substat': dict(sorted(parse_failed_by_substat.items())),
+        },
     }
 
 
@@ -1635,6 +1646,7 @@ def _build_statbook_diagnostics(
         'mapped_count_by_family': dict(sorted(mapped_family_counts.items())),
         'input_routing_class_counts': routing_summary['class_counts'],
         'truly_unrouted_count_by_family': routing_summary['truly_unrouted_count_by_family'],
+        'unresolved_contributor_diagnostics': routing_summary['unresolved_contributor_diagnostics'],
         'resolved_stat_count': resolved_count,
         'partially_resolved_stat_count': partial_count,
         'mapped_unresolved_stat_count': unresolved_count,

@@ -1080,6 +1080,8 @@ def resolve_bounded_bucket(
 def classify_input_routing(row: StatInput) -> str:
     """Sanctioned QE diagnostic helper surface for active non-QE consumers."""
     note = str(row.notes or '')
+    if 'module_substat_parse_failed:' in note:
+        return 'unresolved_module_substat_parse'
     if note.startswith('parser_drop'):
         return 'parser_drop_junk'
     if note.startswith('account_metadata_'):
@@ -1104,12 +1106,21 @@ def summarize_input_routing(stat_inputs: list[StatInput]) -> dict[str, object]:
     family_unrouted_counts = Counter(
         row.source_family for row in stat_inputs if classify_input_routing(row) == 'truly_unrouted_unknown'
     )
+    module_substat_parse_failed = [
+        row for row in stat_inputs
+        if 'module_substat_parse_failed:' in str(row.notes or '')
+    ]
+    parse_failed_by_substat = Counter(row.stat_name for row in module_substat_parse_failed)
     return {
         'class_counts': dict(sorted(class_counts.items())),
         'routed_input_count': sum(1 for row in stat_inputs if row.destination_id),
         'truly_unrouted_input_count': class_counts.get('truly_unrouted_unknown', 0),
         'routed_count_by_family': dict(sorted(family_routed_counts.items())),
         'truly_unrouted_count_by_family': dict(sorted(family_unrouted_counts.items())),
+        'unresolved_contributor_diagnostics': {
+            'module_substat_parse_failed_count': len(module_substat_parse_failed),
+            'module_substat_parse_failed_by_substat': dict(sorted(parse_failed_by_substat.items())),
+        },
     }
 
 

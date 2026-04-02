@@ -1619,6 +1619,7 @@ def compile_stat_inputs(
                 value_type = 'raw_text'
                 display = str(sub.value or '').strip()
                 token = str(sub.raw_token or '').strip()
+                parse_failed = False
                 if not display and not token:
                     continue
                 try:
@@ -1647,13 +1648,22 @@ def compile_stat_inputs(
                         else:
                             value_type = 'resolved_value'
                 except ValueError:
-                    pass
-                row = StatInput(stat_name=sub.name, source_family='module_substat', source_name=mod_name, value=numeric if numeric is not None else sub.value, value_type=value_type if numeric is not None else 'raw_text', stage='loadout_resolved', preset_name=module_preset, provenance='IDS::Modules', notes=(f'module_{role}_substat' + (f':assist_substat_eff={assist_substat_eff}' if role == 'assist' and assist_substat_eff is not None else '')))
+                    parse_failed = True
+                notes = (f'module_{role}_substat' + (f':assist_substat_eff={assist_substat_eff}' if role == 'assist' and assist_substat_eff is not None else ''))
+                parse_failed_marker = None
+                if parse_failed and numeric is None:
+                    token_context = token or display
+                    sanitized_substat_name = slug_text(sub.name)
+                    parse_failed_marker = f'module_substat_parse_failed:{sanitized_substat_name}:token={token_context}'
+                    notes += f':{parse_failed_marker}'
+                row = StatInput(stat_name=sub.name, source_family='module_substat', source_name=mod_name, value=numeric if numeric is not None else sub.value, value_type=value_type if numeric is not None else 'raw_text', stage='loadout_resolved', preset_name=module_preset, provenance='IDS::Modules', notes=notes)
                 destination = MODULE_SUBSTAT_NAME_TO_DESTINATION.get(slug_text(sub.name))
                 if destination is not None:
                     bind_destination(row, destination, canonical_stats, note=f'kb_exact_routed_module_substat_{role}')
                 else:
                     bind_alias_destination(row, sub.name, alias_index, canonical_stats, note=f'kb_alias_routed_module_substat_{role}')
+                if parse_failed_marker:
+                    _set_row_field(row, 'notes', ((row.notes or '') + f':{parse_failed_marker}').strip(':'))
                 if row.contributor_id:
                     _set_row_field(row, 'contributor_id', _make_instance_contributor_id(row.contributor_id, source_name=mod_name, role=role, sub_name=sub.name))
                 _append(out, row)
