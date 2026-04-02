@@ -51,6 +51,10 @@ _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_EVALUATORS = re.compile(
     r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
     re.MULTILINE,
 )
+_IMPORT_APP_FROM_EVALUATORS = re.compile(
+    r"^\s*(?:from\s+app(?:\.[A-Za-z0-9_]+)*\s+import|import\s+app(?:\.[A-Za-z0-9_]+)*)\b",
+    re.MULTILINE,
+)
 _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_APP = re.compile(
     r"^\s*from\s+qe\.stat_input_compiler\s+import\s+.*\b_[A-Za-z0-9_]+",
     re.MULTILINE,
@@ -399,6 +403,16 @@ def test_evaluators_do_not_import_private_qe_compiler_symbols():
         violations = _violation_lines(src, _IMPORT_PRIVATE_QE_COMPILER_SYMBOLS_FROM_EVALUATORS)
         assert not violations, (
             f"evaluators/{py.name} imports private qe.stat_input_compiler symbols: {violations}"
+        )
+
+
+def test_evaluators_files_do_not_import_app_layer():
+    """No file under evaluators/ may import app.* surfaces."""
+    for py in _py_sources(EVALUATORS_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _IMPORT_APP_FROM_EVALUATORS)
+        assert not violations, (
+            f"evaluators/{py.name} imports app layer symbols: {violations}"
         )
 
 

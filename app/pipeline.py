@@ -254,6 +254,13 @@ def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_
     _annotate_display_fields(statbook_dict)
     return statbook_dict
 
+
+def _annotate_compare_row_payloads_by_preset(rows_by_preset: dict[str, dict]) -> None:
+    for rows in (rows_by_preset or {}).values():
+        payload = {'rows': rows}
+        _annotate_display_fields(payload)
+
+
 def _manual_input_numeric_value(
     manual_advisory_inputs: dict,
     input_id: str,
@@ -1467,6 +1474,8 @@ def run_analysis_pipeline(args) -> int:
         perk_state=args.perk_state,
         snapshot_planner=qe_planner,
     )
+    _annotate_compare_row_payloads_by_preset(compare_rows_by_preset)
+    _annotate_compare_row_payloads_by_preset(compare_publishable_rows_by_preset)
 
     perks_enabled = _perks_enabled_for_state(account_state.active_perk_preset, args.perk_state)
     main_snapshot = qe_planner.resolve_report_snapshot(
@@ -1571,6 +1580,8 @@ def run_analysis_pipeline(args) -> int:
             perk_state=args.perk_state,
             snapshot_planner=qe_planner,
         )
+        _annotate_compare_row_payloads_by_preset(projected_compare_rows_by_preset)
+        _annotate_compare_row_payloads_by_preset(projected_compare_publishable_rows_by_preset)
     projected_ep_compare_publishable = _build_ep_compare(
         ep_oracle, projected_compare_publishable_rows_by_preset, formula_ledger,
         projected_stage_context, **_ep_kwargs

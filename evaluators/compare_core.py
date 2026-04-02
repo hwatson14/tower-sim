@@ -185,8 +185,6 @@ def _normalize_compare_values(destination: str, compare_policy: str, package_val
 
 
 def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_ledger, state_mode: str, default_preset: str, ep_oracle: dict, perk_state: str, forced_preset_perk_states: dict | None = None, snapshot_planner: QEResolutionPlanner | None = None):
-    from app.display import annotate_display_fields as _annotate_display_fields
-
     compare_rows_by_preset = {}
     compare_publishable_rows_by_preset = {}
 
@@ -224,9 +222,7 @@ def _build_compare_rows_by_preset(ids_raw, loadout_config, perk_config, formula_
             statbook_dict = statbook.to_dict()
             for destination, row in statbook_dict.get('rows', {}).items():
                 row['formula_contract'] = _formula_contract(formula_ledger, destination)
-            _annotate_display_fields(statbook_dict)
             publishable = _build_publishable_statbook(statbook_dict, formula_ledger)
-            _annotate_display_fields(publishable)
             resolved = (
                 state,
                 _normalize_row_keyed_payload(statbook_dict['rows']),
