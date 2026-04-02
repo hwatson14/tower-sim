@@ -11,11 +11,9 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 from __future__ import annotations
 
 import csv
-import dataclasses
 import json
 import sys
 from collections import Counter
-from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
 from time import perf_counter
@@ -30,9 +28,25 @@ from qe.stat_input_compiler import (
     SUPPORTED_STATE_MODES,
     state_mode_support,
 )
+from app.models import (
+    PipelineRunRequest,
+    PipelineStageRecord,
+    PipelineTrace,
+    PipelineRunResult,
+    VerificationSnapshotSpec,
+    FastCheckpointRequest,
+    FastCheckpointResult,
+    _normalize_perk_state,
+)
 from app.publication import (
     _remove_legacy_outputs,
     _RUN_STATS_LEGACY_OUTPUTS,
+    _json_sanitize,
+    _relpath_str,
+    _load_json_artifact,
+    _generated_output_paths,
+    write_core_outputs,
+    write_pipeline_trace,
 )
 from app.display import (
     annotate_compare_display_fields as _annotate_compare_display_fields,
@@ -61,88 +75,7 @@ from simulators.timing import compile_timing_family_rows, resolve_timing_consume
 from simulators.scenario import publish_farming_throughput_support_surfaces
 
 
-# ---------------------------------------------------------------------------
-# T9 bounding: pipeline-local utilities inlined from run_stats.
-# These are orchestration-adjacent helpers; remaining * calls are domain
-# builders legitimately in run_stats pending T-post-9 extraction.
-# ---------------------------------------------------------------------------
 FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
-
-
-@dataclass(frozen=True)
-class PipelineRunRequest:
-    ids: Path
-    out: Path
-    preset: str = 'Farming'
-    state_mode: str = 'max_progression'
-    manual_inputs: Path | None = None
-    perk_mode: str = 'max_progression_policy'
-    include_slow_audits: bool = False
-    perk_state: str = 'auto'
-
-
-@dataclass(frozen=True)
-class PipelineStageRecord:
-    stage_id: str
-    title: str
-    owner_module: str
-    entry_function: str
-    status: str
-    elapsed_ms: float
-    outputs_summary: dict[str, object] = field(default_factory=dict)
-    notes: list[str] = field(default_factory=list)
-
-    def to_dict(self) -> dict[str, object]:
-        return dataclasses.asdict(self)
-
-
-@dataclass(frozen=True)
-class PipelineTrace:
-    request: dict[str, object]
-    execution_path: dict[str, object]
-    stages: list[PipelineStageRecord]
-    artifacts_written: list[str]
-
-    def to_dict(self) -> dict[str, object]:
-        payload = dataclasses.asdict(self)
-        payload['stages'] = [stage.to_dict() for stage in self.stages]
-        return payload
-
-
-@dataclass(frozen=True)
-class PipelineRunResult:
-    exit_code: int
-    request: PipelineRunRequest
-    out_dir: Path
-    diagnostics: dict[str, object]
-    generated_files: tuple[Path, ...]
-    pipeline_trace: PipelineTrace
-
-
-@dataclass(frozen=True)
-class VerificationSnapshotSpec:
-    preset: str
-    state_mode: str
-    perk_state: str = 'auto'
-    out_subdir: str | None = None
-
-
-@dataclass(frozen=True)
-class FastCheckpointRequest:
-    ids: Path
-    preset: str = 'Farming'
-    state_mode: str = 'start_of_run'
-    manual_inputs: Path | None = None
-    perk_mode: str = 'max_progression_policy'
-    perk_state: str = 'auto'
-    requested_surface_ids: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True)
-class FastCheckpointResult:
-    request: FastCheckpointRequest
-    statbook: dict[str, object]
-    diagnostics: dict[str, object]
 
 
 def request_from_args(args) -> PipelineRunRequest:
@@ -167,95 +100,9 @@ def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
 
 
-def _relpath_str(path_like) -> str:
-    p = Path(path_like)
-    try:
-        return str(p.resolve().relative_to(ROOT))
-    except Exception:
-        try:
-            return str(p.relative_to(ROOT))
-        except Exception:
-            return str(p)
-
-
-def _json_sanitize(obj):
-    if isinstance(obj, Path):
-        return _relpath_str(obj)
-    if isinstance(obj, dict):
-        return {k: _json_sanitize(v) for k, v in obj.items()}
-    if isinstance(obj, list):
-        return [_json_sanitize(v) for v in obj]
-    if isinstance(obj, tuple):
-        return [_json_sanitize(v) for v in obj]
-    if isinstance(obj, str) and obj.startswith('/'):
-        try:
-            return _relpath_str(obj)
-        except Exception:
-            return obj
-    return obj
-
-
 def _contract_json_payload(obj):
     return normalize_contract_payload(_json_sanitize(obj))
 
-
-def _write_core_outputs(
-    *,
-    out_dir: Path,
-    diagnostics: dict,
-    account_state,
-    canonical_output_preset: str,
-    stat_inputs,
-    statbook_dict: dict,
-    statbook_publishable_dict: dict,
-    ep_compare_publishable: dict,
-    line_verification: dict,
-    survivor_closure_report: dict,
-    state_matrix: dict,
-    optimizer_scores: dict,
-    audit_surface_manifest: dict,
-    artifact_contract_manifest: dict,
-    family_completeness_matrix: dict,
-) -> None:
-    import pandas as pd
-
-    js = _contract_json_payload
-    (out_dir / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
-    (out_dir / 'account_state.json').write_text(
-        json.dumps(js(_sanitized_account_state_for_output(account_state, canonical_output_preset)), indent=2, default=str)
-    )
-    (out_dir / 'module_card_payloads.json').write_text(
-        json.dumps(js(build_module_card_payloads(account_state)), indent=2, default=str)
-    )
-    (out_dir / 'stat_inputs.json').write_text(
-        json.dumps(js([row.to_dict() for row in stat_inputs]), indent=2, default=str)
-    )
-    (out_dir / 'statbook.json').write_text(json.dumps(js(statbook_dict), indent=2, default=str))
-    (out_dir / 'statbook_publishable.json').write_text(
-        json.dumps(js(statbook_publishable_dict), indent=2, default=str)
-    )
-    (out_dir / 'ep_oracle_compare.json').write_text(
-        json.dumps(js(ep_compare_publishable), indent=2, default=str)
-    )
-    (out_dir / 'line_by_line_verification.json').write_text(
-        json.dumps(js(line_verification), indent=2, default=str)
-    )
-    (out_dir / 'survivor_closure_report.json').write_text(
-        json.dumps(js(survivor_closure_report), indent=2, default=str)
-    )
-    (out_dir / 'state_matrix.json').write_text(json.dumps(js(state_matrix), indent=2, default=str))
-    (out_dir / 'audit_surface_manifest.json').write_text(
-        json.dumps(js(audit_surface_manifest), indent=2, default=str)
-    )
-    (out_dir / 'artifact_contract_manifest.json').write_text(
-        json.dumps(js(artifact_contract_manifest), indent=2, default=str)
-    )
-    (out_dir / 'family_completeness_matrix.json').write_text(
-        json.dumps(js(family_completeness_matrix), indent=2, default=str)
-    )
-    (out_dir / 'optimizer_scores.json').write_text(json.dumps(js(optimizer_scores), indent=2, default=str))
-    verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
-    pd.DataFrame(verification_rows).to_csv(out_dir / 'line_by_line_verification.csv', index=False)
 
 
 def _published_statbook_dict(statbook, *, manual_advisory_inputs: dict, account_state_labs: dict) -> dict:
@@ -333,13 +180,6 @@ def _merge_scenario_publication_rows(
     )
 def _elapsed_ms(start: float) -> float:
     return round((perf_counter() - start) * 1000.0, 3)
-
-
-def _normalize_perk_state(perk_state: str) -> str:
-    value = str(perk_state or 'auto').strip().lower()
-    if value not in {'auto', 'on', 'off'}:
-        raise ValueError(f'Unsupported perk state: {perk_state}')
-    return value
 
 
 def _perks_enabled_for_state(active_perk_preset: str | None, perk_state: str) -> bool:
@@ -1865,12 +1705,16 @@ def run_analysis_pipeline(args) -> int:
     family_completeness_matrix = _build_family_completeness_matrix(account_state, stat_inputs)
     optimizer_scores = compute_optimizer_scores(statbook_dict)
 
-    _write_core_outputs(
+    # Prepare payloads and delegate output writing to publication authority
+    account_state_payload = _sanitized_account_state_for_output(account_state, args.preset)
+    stat_inputs_payload = [row.to_dict() for row in stat_inputs]
+    module_card_payloads_data = build_module_card_payloads(account_state)
+
+    write_core_outputs(
         out_dir=args.out,
         diagnostics=diagnostics,
-        account_state=account_state,
-        canonical_output_preset=args.preset,
-        stat_inputs=stat_inputs,
+        account_state_payload=account_state_payload,
+        stat_inputs_payload=stat_inputs_payload,
         statbook_dict=statbook_dict,
         statbook_publishable_dict=statbook_publishable_dict,
         ep_compare_publishable=ep_compare_publishable,
@@ -1881,6 +1725,12 @@ def run_analysis_pipeline(args) -> int:
         audit_surface_manifest=audit_surface_manifest,
         artifact_contract_manifest=artifact_contract_manifest,
         family_completeness_matrix=family_completeness_matrix,
+        root_path=ROOT,
+    )
+
+    # Write module card payloads (QE-generated orchestration artifact, PR329)
+    (args.out / 'module_card_payloads.json').write_text(
+        json.dumps(_contract_json_payload(module_card_payloads_data), indent=2, default=str)
     )
 
     # Remove stale output files
@@ -1895,45 +1745,12 @@ def run_analysis_pipeline(args) -> int:
         if stale_path.exists():
             stale_path.unlink()
 
-    (args.out / 'tower_regen_closure_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_regen_closure_report']), indent=2, default=str)
-    )
-    (args.out / 'tower_hp_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_hp_semantic_gap_report']), indent=2, default=str)
-    )
-    (args.out / 'tower_regen_ep_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_regen_ep_semantic_gap_report']), indent=2, default=str)
-    )
-    (args.out / 'tower_defense_absolute_semantic_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_defense_absolute_semantic_gap_report']), indent=2, default=str)
-    )
-    (args.out / 'tower_damage_runtime_gap_report.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics['tower_damage_runtime_gap_report']), indent=2, default=str)
-    )
-    (args.out / 'diagnostics.json').write_text(
-        json.dumps(_contract_json_payload(diagnostics), indent=2, default=str)
-    )
-
     return 0
 
 
 def run_pipeline(args) -> int:
     """Compatibility alias for the heavy analysis pipeline."""
     return run_analysis_pipeline(args)
-
-
-def _load_json_artifact(path: Path) -> dict[str, object]:
-    if not path.exists():
-        return {}
-    try:
-        payload = json.loads(path.read_text(encoding='utf-8'))
-    except Exception:
-        return {}
-    return payload if isinstance(payload, dict) else {}
-
-
-def _generated_output_paths(out_dir: Path) -> list[Path]:
-    return sorted(path for path in out_dir.glob('*.json')) + sorted(path for path in out_dir.glob('*.csv'))
 
 
 def _build_pipeline_trace_from_artifacts(
@@ -2022,8 +1839,8 @@ def _build_pipeline_trace_from_artifacts(
         PipelineStageRecord(
             stage_id='artifact_write',
             title='Artifact write',
-            owner_module='app.pipeline',
-            entry_function='_write_core_outputs',
+            owner_module='app.publication',
+            entry_function='write_core_outputs',
             status='ok',
             elapsed_ms=float(timings.get('write_outputs_ms') or 0.0),
             outputs_summary={'out_dir': _relpath_str(request.out)},
@@ -2072,10 +1889,7 @@ def execute_pipeline(request: PipelineRunRequest) -> PipelineRunResult:
         stages=pipeline_trace.stages,
         artifacts_written=[_relpath_str(path) for path in generated_files],
     )
-    (request.out / 'pipeline_trace.json').write_text(
-        json.dumps(_json_sanitize(pipeline_trace.to_dict()), indent=2, default=str),
-        encoding='utf-8',
-    )
+    write_pipeline_trace(request.out, pipeline_trace, ROOT)
     generated_files = _generated_output_paths(request.out)
     return PipelineRunResult(
         exit_code=int(exit_code),
