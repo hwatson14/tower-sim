@@ -4,12 +4,12 @@ EP Base URL,https://docs.google.com/spreadsheets/d/1Q8RYXr9nQPxjuIEXtlTzvR63MRb0
 ,,,,
 ,,,,
 suite,key,label,value,import
-edmg,edmg,eDMG,2.71 N,2.71 N
+edmg,edmg,eDMG,2.78 N,2.78 N
 edmg,damage,Damage,850.38 B,850.38 B
 edmg,attack_speed,Attack Speed,42.239859375,42.239859375
 edmg,crit_chance,Critical Chance,0.9700000000000001,0.9700000000000001
-edmg,crit_factor,Critical Factor,170.5248,170.5248
-edmg,range,Range,109.48863512309427,109.48863512309427
+edmg,crit_factor,Critical Factor,174.024,174.024
+edmg,range,Range,121.46935313284439,121.46935313284439
 edmg,damage_per_meter,Damage / Meter,0.1355112,0.1355112
 edmg,multishot_chance,Multishot Chance,0.495,0.495
 edmg,multishot_targets,Multishot Targets,13,13
@@ -30,7 +30,7 @@ ehp,wall_health,Wall Health,132.07 T,132.07 T
 ehp,wall_fortification,Wall Fortification,1.37 q,1.37 q
 ehp,wall_regen,Wall Regen,234.35 T,234.35 T
 ehp,max_recovery,Max Recovery,,
-eecon,cpk_average,Average CpK,120.22 M,120.22 M
+eecon,cpk_average,Average CpK,124.13 M,124.13 M
 eecon,coins_per_kill_bonus,Coins / Kill Bonus,44.33744700000001,44.33744700000001
 eecon,free_attack_upgrade,Free Attack Upgrade,1.1062424999999998,1.1062424999999998
 eecon,free_defense_upgrade,Free Defense Upgrade,1.0749337499999998,1.0749337499999998
