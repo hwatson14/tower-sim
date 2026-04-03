@@ -7,7 +7,7 @@ KB-aligned deterministic simulator and calculator stack for The Tower.
 ```bash
 pip install -e .[dev]
 python -m app.run_stats
-pytest                # runs the live architecture gate (23 tests, ~3 min)
+pytest                # run current repo tests (scope/selection varies by tranche)
 ```
 
 ## Active architecture
@@ -41,7 +41,7 @@ Strict consumption rules:
 ## Default test gate
 
 ```bash
-pytest                                                          # live gate: 23 tests, ~3 min
+pytest                                                          # full repo suite
 pytest tests/ -m 'not slow and not expensive and not quarantine'  # legacy non-slow suite: ~416 tests
 pytest tests/ -m slow                                           # slow integration tests
 pytest tests/ -m expensive                                      # expensive parity tests

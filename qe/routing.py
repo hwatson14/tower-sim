@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import lru_cache
@@ -338,6 +339,31 @@ def _resolve_survivability_base_times_multipliers(destination_id: str, contribut
     return final, 'resolved', f'{note_label}: workshop x survivability multipliers.', schema
 
 
+def _resolve_exact_max_rend_value(contributors: list[StatInput]) -> float | None:
+    enhancement_multiplier = 1.0
+    has_enhancement = False
+    lab_bonus = 0.0
+    module_pct_bonus = 0.0
+    for row in contributors:
+        value = _as_float(row.value)
+        if value is None:
+            continue
+        if row.source_family == 'enhancement':
+            enhancement_multiplier *= value
+            has_enhancement = True
+        elif row.source_family == 'lab' and row.value_type == 'resolved_value':
+            lab_bonus += value
+        elif row.source_family == 'module_substat':
+            if row.value_type == 'percent_display':
+                module_pct_bonus += value / 100.0
+            else:
+                module_pct_bonus += value
+    if not has_enhancement:
+        return None
+    pre_enhancement_cap = 8.0 + lab_bonus + (8.0 * module_pct_bonus)
+    return pre_enhancement_cap * enhancement_multiplier
+
+
 BASE_FLAT_MULTIPLIED_STATS = {
     'tower_attack_speed',
     'tower_damage',
@@ -570,6 +596,11 @@ def _resolve_bucket(
         if tower_thorns is None:
             return wall_ratio * 100.0, 'resolved', 'Destination-specific wall thorns fallback: lab ratio preserved as percent because tower-thorns base is external to this bucket.', schema
         return tower_thorns * wall_ratio, 'resolved', 'Destination-specific wall thorns formula: tower thorns x wall-thorns ratio.', schema
+    if destination_id == 'max_rend_mult':
+        value = _resolve_exact_max_rend_value(contributors)
+        if value is None:
+            return None, 'mapped_not_resolved', 'Missing enhancement contributor for exact max-rend formula.', schema
+        return value, 'resolved', 'Destination-specific max-rend formula: (8 + lab + 8*module_substat_pct) x enhancement.', schema
 
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
@@ -1130,6 +1161,13 @@ def _build_report_snapshot(bound_inputs: BoundStatInputs) -> QEResolvedSnapshot:
     diagnostics = dict(statbook.diagnostics)
     routing_summary = summarize_input_routing(list(bound_inputs.stat_inputs))
     diagnostics.setdefault('input_routing_class_counts', routing_summary['class_counts'])
+    diagnostics.setdefault('mapped_input_count', routing_summary['routed_input_count'])
+    diagnostics.setdefault('unmapped_input_count', routing_summary['truly_unrouted_input_count'])
+    diagnostics.setdefault('mapped_count_by_family', routing_summary['routed_count_by_family'])
+    diagnostics.setdefault(
+        'input_count_by_family',
+        dict(sorted(Counter(row.source_family for row in bound_inputs.stat_inputs).items())),
+    )
     diagnostics.setdefault('unresolved_contributor_diagnostics', routing_summary['unresolved_contributor_diagnostics'])
     diagnostics['qe_resolution_interface'] = 'report_snapshot_planner'
     diagnostics['qe_resolution_backend'] = resolution_path
@@ -1171,27 +1209,30 @@ def _build_family_query_result(
 
 def _resolve_hybrid_statbook_from_bound_inputs(bound_inputs: BoundStatInputs) -> StatBook:
     native_family_id = _infer_manifest_approved_family(bound_inputs.stat_inputs)
-    if native_family_id is None:
-        fallback_statbook = _fallback_resolve_stats(list(bound_inputs.stat_inputs))
-        return _with_native_fallback_diagnostics(
-            fallback_statbook,
-            native_family_id=None,
-            fallback_reason='native_family_inference_unavailable',
-        )
+    fallback_reason: str | None = None
+    fallback_error: str | None = None
     try:
-        native_result = _build_family_query_result(
-            bound_inputs,
-            family_id=native_family_id,
-            requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
-            trace_mode='contributors',
-        )
+        if native_family_id is None:
+            fallback_reason = 'native_family_inference_unavailable'
+            native_result = None
+        else:
+            native_result = _build_family_query_result(
+                bound_inputs,
+                family_id=native_family_id,
+                requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
+                trace_mode='contributors',
+            )
     except ValueError as exc:
+        fallback_reason = 'native_contract_check_failed'
+        fallback_error = str(exc)
+        native_result = None
+    if native_result is None:
         fallback_statbook = _fallback_resolve_stats(list(bound_inputs.stat_inputs))
         return _with_native_fallback_diagnostics(
             fallback_statbook,
             native_family_id=native_family_id,
-            fallback_reason='native_contract_check_failed',
-            fallback_error=str(exc),
+            fallback_reason=fallback_reason or 'native_resolution_unavailable',
+            fallback_error=fallback_error,
         )
     return query_response_to_statbook(
         native_result.response,
@@ -1205,28 +1246,31 @@ def _resolve_hybrid_statbook_from_rows(
     identity: StateIdentity,
 ) -> StatBook:
     native_family_id = _infer_manifest_approved_family(stat_inputs)
-    if native_family_id is None:
-        fallback_statbook = _fallback_resolve_stats(list(stat_inputs))
-        return _with_native_fallback_diagnostics(
-            fallback_statbook,
-            native_family_id=None,
-            fallback_reason='native_family_inference_unavailable',
-        )
+    fallback_reason: str | None = None
+    fallback_error: str | None = None
     try:
-        native_result = _build_rows_family_query_result(
-            identity=identity,
-            stat_inputs=stat_inputs,
-            family_id=native_family_id,
-            requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
-            trace_mode='contributors',
-        )
+        if native_family_id is None:
+            fallback_reason = 'native_family_inference_unavailable'
+            native_result = None
+        else:
+            native_result = _build_rows_family_query_result(
+                identity=identity,
+                stat_inputs=stat_inputs,
+                family_id=native_family_id,
+                requested_surface_ids=_DELEGATED_FAMILY_SURFACE_IDS[native_family_id],
+                trace_mode='contributors',
+            )
     except ValueError as exc:
+        fallback_reason = 'native_contract_check_failed'
+        fallback_error = str(exc)
+        native_result = None
+    if native_result is None:
         fallback_statbook = _fallback_resolve_stats(list(stat_inputs))
         return _with_native_fallback_diagnostics(
             fallback_statbook,
             native_family_id=native_family_id,
-            fallback_reason='native_contract_check_failed',
-            fallback_error=str(exc),
+            fallback_reason=fallback_reason or 'native_resolution_unavailable',
+            fallback_error=fallback_error,
         )
     return query_response_to_statbook(
         native_result.response,

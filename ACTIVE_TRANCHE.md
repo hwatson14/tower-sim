@@ -23,23 +23,19 @@ Machine-readable state lives in:
 ## Current state
 
 The repo is **not in broad rebuild territory**.
-
-The whitelist rebuild is largely complete.
-The repo is now in **concentrated hardening territory**, where small remaining ownership and governance seams are higher risk than broad structural migrations.
+The repo is in **concentrated hardening territory** with active blockers that require small, scoped closure PRs.
 
 ### Durable truths on the current baseline
 
-- high-signal architecture/app suites are green on the reviewed baseline
-- governance truth is now aligned to the hardening sequence
-- Streamlit now contains an explicit contract freeze header
-- Streamlit imports and artifact flows have moved toward app-owned seams
-- runtime formula authority is explicitly bridge-tagged
-- simulator/QE runtime hardening remains a repo strength
+- ownership layering remains intact (`app -> advisors -> evaluators -> simulators -> qe -> input`)
+- runtime formula authority table is present and canonical coverage remains explicit
+- native family query path is present for progression/timing/report surfaces
 
 ### Remaining constraints
 
-- No open tranche blockers remain for T0-T4 closeout on this branch baseline.
-- Any new regressions should be tracked as maintain-only follow-up work, not reopened as tranche migration scope.
+- open blockers exist in workshop formula authority closure, native-report observability carry-through,
+  fallback-callsite dedupe, exact max-rend progression parity, and governance-state truth alignment.
+- do not expand scope into broad refactor or tranche reshaping while closing these blockers.
 
 ---
 
@@ -47,19 +43,17 @@ The repo is now in **concentrated hardening territory**, where small remaining o
 
 | # | Name | Status |
 |---|------|--------|
-| T0 | Governance truth | ✅ COMPLETE |
+| T0 | Governance truth | 🔄 IN PROGRESS |
 | T1 | Streamlit contract execution | ✅ COMPLETE |
-| T2 | QE authority closure | ✅ COMPLETE |
+| T2 | QE authority closure | 🔄 IN PROGRESS |
 | T3 | Evaluator cleanup | ✅ COMPLETE |
-| T4 | Thinning and polish | ✅ COMPLETE |
+| T4 | Thinning and polish | 🔄 IN PROGRESS |
 
----
+## Active tranche record: release hardening closeout — 🔄 IN PROGRESS
 
-## Active tranche record: release hardening closeout — ✅ COMPLETE
+### Goal
 
-### Goal (completed)
-
-Finalize hardening closeout evidence and publish recertification artifacts.
+Finalize hardening closeout evidence and publish recertification artifacts after blocker closure.
 
 ### T1 closeout status
 
@@ -81,11 +75,13 @@ T1 is now complete:
 1. ✅ replaced underscore-prefixed evaluator compiler imports with public surfaces
 2. ✅ added regression coverage preventing evaluator private-import reintroduction
 
-### Required T4 work
+### Required closure work
 
-1. ✅ thin `app/streamlit_inspector.py` while preserving boundary contracts
-2. ✅ thin large QE/evaluator files only where ownership remains unambiguous
-3. ✅ clean residue helpers/mapping duplication without behavior drift
+1. close workshop authority contract mismatch (approved-exception policy/data alignment)
+2. restore native report routing diagnostics in statbooks/snapshots
+3. dedupe report-fallback callsite boundaries in `qe/routing.py`
+4. close exact max-rend formula parity on progression/run-stats path
+5. rebuild/recertify artifacts only after targeted blockers are green
 
 ### Exit criteria
 
@@ -97,7 +93,7 @@ Release closeout is complete only when all of the following are true:
 
 ### Closeout verification artifact
 
-- `pytest -q` executed on **2026-04-02 (UTC)** with result: **187 passed**.
+- no valid full-suite recertification artifact is currently recorded for the active snapshot.
 
 ### Verification
 
@@ -126,7 +122,7 @@ Preserve invariants and prevent boundary regressions while the repo is in mainte
 
 ### Why next
 
-Because T0-T4 tranche items are complete, release closeout can rely on converged governance and seam ownership.
+Because several closeout blockers remain open, release closeout must stay in targeted hardening mode until those blockers are resolved and recertified.
 
 ---
 
