@@ -14,6 +14,7 @@ import pandas as pd
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
 from qe.contracts import contract_json_payload as js
 from app.models import _normalize_perk_state
+from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -109,17 +110,21 @@ def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, obj
     labs_rows = []
     for row in raw_rows:
         name, level, _target, max_level = _dashboard_token_row(row, 4)
-        if name:
+        if name and name != 'END OF ARRAY':
             labs_rows.append({'name': name, 'level': level, 'max': max_level})
 
     labs_layout = dict(section_layout.get('labs') or {})
     bucket_order = [str(name) for name in (labs_layout.get('bucket_order') or [])]
     bucket_labels = {str(k): str(v) for k, v in (labs_layout.get('bucket_labels') or {}).items()}
-    bucket_registry = {str(k): str(v) for k, v in (labs_layout.get('bucket_registry') or {}).items()}
+    lab_category_registry = load_lab_category_registry_by_raw_name()
 
     rows_by_bucket: dict[str, list[dict[str, str]]] = {}
+    gaps: list[dict[str, str]] = []
     for row in labs_rows:
-        bucket_id = bucket_registry.get(row['name'], 'misc')
+        taxonomy = lab_category_registry.get(row['name']) or {}
+        bucket_id = str(taxonomy.get('category_ui') or 'misc')
+        if bucket_id == 'misc':
+            gaps.append(_dashboard_gap('labs', 'lab_category_registry_missing', f'Lab category mapping missing for {row["name"]}'))
         rows_by_bucket.setdefault(bucket_id, []).append(row)
 
     buckets = []
@@ -138,7 +143,7 @@ def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, obj
             'title': 'Labs',
             'payload': {'column_headers': ['Name', 'Level', 'Max'], 'bucket_order': bucket_order, 'buckets': buckets},
         },
-        [],
+        gaps,
     )
 
 

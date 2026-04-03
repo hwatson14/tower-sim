@@ -133,3 +133,53 @@ def test_preset_options_includes_default_when_upstream_missing():
     }
 
     assert _preset_options(account_state_payload) == ['Milestone', 'Preset 4']
+
+
+def test_labs_panel_groups_rows_using_lab_category_registry(monkeypatch):
+    from app import publication as publication_mod
+
+    monkeypatch.setattr(
+        publication_mod,
+        'load_lab_category_registry_by_raw_name',
+        lambda: {'Game Speed': {'category_ui': 'attack'}},
+    )
+    panel, gaps = publication_mod._build_labs_panel(
+        {
+            'raw_sections': {
+                'Labs': [
+                    ['Game Speed', '7', '', '7'],
+                    ['END OF ARRAY', '', '', ''],
+                ]
+            }
+        },
+        {
+            'labs': {
+                'bucket_order': ['attack', 'misc'],
+                'bucket_labels': {'attack': 'Attack', 'misc': 'Misc'},
+            }
+        },
+    )
+
+    payload = panel.get('payload') or {}
+    buckets = {str(bucket.get('bucket_id')): bucket for bucket in (payload.get('buckets') or [])}
+    attack_rows = buckets['attack']['rows']
+    assert [row.get('name') for row in attack_rows] == ['Game Speed']
+    assert not gaps
+
+
+def test_labs_panel_emits_gap_when_registry_mapping_missing():
+    from app import publication as publication_mod
+
+    panel, gaps = publication_mod._build_labs_panel(
+        {'raw_sections': {'Labs': [['Unmapped Lab', '1', '', '99']]}},
+        {
+            'labs': {
+                'bucket_order': ['main', 'misc'],
+                'bucket_labels': {'main': 'Main', 'misc': 'Misc'},
+            }
+        },
+    )
+    payload = panel.get('payload') or {}
+    buckets = {str(bucket.get('bucket_id')): bucket for bucket in (payload.get('buckets') or [])}
+    assert [row.get('name') for row in buckets['misc']['rows']] == ['Unmapped Lab']
+    assert any(gap.get('gap_id') == 'lab_category_registry_missing' for gap in gaps)
