@@ -139,26 +139,46 @@ def _uw_track_surface_tokens(track_name: object) -> tuple[str, ...]:
 def _build_input_dashboard_qe_publications(
     *,
     account_state,
+    compare_rows_by_preset: dict[str, dict],
     projected_compare_rows_by_preset: dict[str, dict],
     stat_inputs: list,
     preset_name: str,
 ) -> dict[str, object]:
-    preset_rows = dict(projected_compare_rows_by_preset.get(preset_name) or {})
-    normalized_rows = {normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in preset_rows.items()}
+    current_preset_rows = dict(compare_rows_by_preset.get(preset_name) or {})
+    current_normalized_rows = {normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in current_preset_rows.items()}
+    projected_preset_rows = dict(projected_compare_rows_by_preset.get(preset_name) or {})
+    projected_normalized_rows = {
+        normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in projected_preset_rows.items()
+    }
+
+    def _surface_id_from_row(row: object) -> str:
+        destination_id = str(getattr(row, 'destination_id', '') or '').strip()
+        if destination_id:
+            normalized = normalize_surface_id_to_contract(destination_id)
+            if normalized in current_normalized_rows or normalized in projected_normalized_rows:
+                return normalized
+        contributor_id = str(getattr(row, 'contributor_id', '') or '').strip()
+        parts = contributor_id.split('__')
+        if len(parts) >= 3 and parts[1] and parts[2]:
+            return f"state::{parts[1]}.{parts[2]}"
+        return ''
 
     workshop_surface_map: dict[str, str] = {}
     for row in stat_inputs:
         if str(getattr(row, 'source_family', '')).strip() != 'workshop':
             continue
         source_name = str(getattr(row, 'source_name', '') or getattr(row, 'stat_name', '') or '').strip()
-        destination_id = str(getattr(row, 'destination_id', '') or '').strip()
-        if source_name and destination_id and source_name not in workshop_surface_map:
-            workshop_surface_map[source_name] = normalize_surface_id_to_contract(destination_id)
+        surface_id = _surface_id_from_row(row)
+        if source_name and surface_id and source_name not in workshop_surface_map:
+            workshop_surface_map[source_name] = surface_id
 
+    workshop_coin_values: dict[str, object] = {}
     workshop_max_values: dict[str, object] = {}
     for source_name, surface_id in workshop_surface_map.items():
-        row_payload = normalized_rows.get(surface_id) or {}
-        workshop_max_values[source_name] = row_payload.get('display_value') or row_payload.get('final_value')
+        current_row_payload = current_normalized_rows.get(surface_id) or {}
+        projected_row_payload = projected_normalized_rows.get(surface_id) or {}
+        workshop_coin_values[source_name] = current_row_payload.get('display_value') or current_row_payload.get('final_value')
+        workshop_max_values[source_name] = projected_row_payload.get('display_value') or projected_row_payload.get('final_value')
 
     uw_track_effects: dict[str, dict[str, object]] = {}
     for uw_name, tracks in (account_state.uw_tracks or {}).items():
@@ -171,13 +191,13 @@ def _build_input_dashboard_qe_publications(
                 continue
             tokens = _uw_track_surface_tokens(track_name)
             surface_id = None
-            for candidate_surface_id in normalized_rows:
+            for candidate_surface_id in projected_normalized_rows:
                 if f'state::uw.{uw_slug}.' not in candidate_surface_id:
                     continue
                 if any(token in candidate_surface_id for token in tokens):
                     surface_id = candidate_surface_id
                     break
-            row_payload = normalized_rows.get(surface_id or '') or {}
+            row_payload = projected_normalized_rows.get(surface_id or '') or {}
             contributors = row_payload.get('contributors') or []
             module_values = []
             perk_values = []
@@ -196,6 +216,7 @@ def _build_input_dashboard_qe_publications(
                 'final_value': row_payload.get('display_value') or row_payload.get('final_value'),
             }
     return {
+        'workshop_coin_values': workshop_coin_values,
         'workshop_max_values': workshop_max_values,
         'uw_track_effects': uw_track_effects,
     }
@@ -2022,6 +2043,7 @@ def run_analysis_pipeline(args) -> int:
     module_card_payloads_data = build_module_card_payloads(account_state)
     qe_dashboard_publications = _build_input_dashboard_qe_publications(
         account_state=account_state,
+        compare_rows_by_preset=compare_rows_by_preset,
         projected_compare_rows_by_preset=projected_compare_rows_by_preset,
         stat_inputs=stat_inputs,
         preset_name=args.preset,

@@ -106,6 +106,7 @@ def _build_input_dashboard_payload(
     qe_dashboard_publications: dict[str, object] | None = None,
 ) -> dict[str, object]:
     qe_published = qe_dashboard_publications or {}
+    workshop_coin_values = dict(qe_published.get('workshop_coin_values') or {})
     workshop_max_values = dict(qe_published.get('workshop_max_values') or {})
     uw_track_effects = dict(qe_published.get('uw_track_effects') or {})
     raw_sections = (account_state_payload.get('raw_sections') or {}) if isinstance(account_state_payload, dict) else {}
@@ -148,7 +149,7 @@ def _build_input_dashboard_payload(
                 {
                     'name': name,
                     'coin_level': tokens[1],
-                    'coin_value': tokens[2],
+                    'coin_value': workshop_coin_values.get(name, tokens[2]),
                     'max_level': tokens[-1],
                     'max_value': workshop_max_values.get(name, ''),
                     'max_value_source': 'qe_published' if name in workshop_max_values else 'qe_unavailable',
