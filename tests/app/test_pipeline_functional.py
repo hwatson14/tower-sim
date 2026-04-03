@@ -28,6 +28,32 @@ ROOT = Path(__file__).resolve().parents[2]
 IDS_PATH = ROOT / "input" / "imports" / "ids.csv"
 
 
+@pytest.fixture(scope="module")
+def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
+    out_dir = tmp_path_factory.mktemp("canonical_pipeline_out")
+    request = PipelineRunRequest(
+        ids=IDS_PATH,
+        out=out_dir,
+        preset='Farming',
+        state_mode='start_of_run',
+    )
+    result = execute_pipeline(request)
+    assert result.exit_code == 0
+
+    artifact_payloads = {
+        'diagnostics': json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8')),
+        'statbook_publishable': json.loads((out_dir / 'statbook_publishable.json').read_text(encoding='utf-8')),
+        'optimizer_scores': json.loads((out_dir / 'optimizer_scores.json').read_text(encoding='utf-8')),
+        'ep_oracle_compare': json.loads((out_dir / 'ep_oracle_compare.json').read_text(encoding='utf-8')),
+        'pipeline_trace': json.loads((out_dir / 'pipeline_trace.json').read_text(encoding='utf-8')),
+        'dashboards': {
+            'input_dashboard': json.loads((out_dir / 'input_dashboard.json').read_text(encoding='utf-8')),
+            'stats_dashboard': json.loads((out_dir / 'stats_dashboard.json').read_text(encoding='utf-8')),
+        },
+    }
+    return artifact_payloads
+
+
 def test_run_stats_start_of_run_forces_perks_off() -> None:
     account_state = SimpleNamespace(
         perk_presets={'Farming': {}},
@@ -76,13 +102,9 @@ def test_execute_pipeline_smoke_and_trace_contract(tmp_path):
 
 
 @pytest.mark.live
-def test_diagnostics_depth(tmp_path):
+def test_diagnostics_depth(canonical_pipeline_artifacts):
     """diagnostics.json must contain real populated content, not empty placeholders."""
-    out_dir = tmp_path / "out"
-    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
-    execute_pipeline(request)
-
-    diag = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    diag = canonical_pipeline_artifacts['diagnostics']
 
     assert diag.get('stat_input_count', 0) > 0, "stat_input_count must be non-zero"
     assert diag.get('statbook_row_count', 0) > 0, "statbook_row_count must be non-zero"
@@ -95,13 +117,9 @@ def test_diagnostics_depth(tmp_path):
 
 
 @pytest.mark.live
-def test_publishable_statbook_populated(tmp_path):
+def test_publishable_statbook_populated(canonical_pipeline_artifacts):
     """statbook_publishable.json must be non-empty and structurally valid."""
-    out_dir = tmp_path / "out"
-    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
-    execute_pipeline(request)
-
-    pub = json.loads((out_dir / 'statbook_publishable.json').read_text(encoding='utf-8'))
+    pub = canonical_pipeline_artifacts['statbook_publishable']
     assert 'rows' in pub and len(pub['rows']) > 0, "statbook_publishable.json rows must be non-empty"
 
 
@@ -302,13 +320,9 @@ def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
 
 
 @pytest.mark.live
-def test_optimizer_scores_populated(tmp_path):
+def test_optimizer_scores_populated(canonical_pipeline_artifacts):
     """optimizer_scores.json must be non-empty."""
-    out_dir = tmp_path / "out"
-    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
-    execute_pipeline(request)
-
-    scores = json.loads((out_dir / 'optimizer_scores.json').read_text(encoding='utf-8'))
+    scores = canonical_pipeline_artifacts['optimizer_scores']
     assert isinstance(scores, dict) and len(scores) > 0, "optimizer_scores.json must be non-empty"
 
 
@@ -425,24 +439,14 @@ def test_run_stats_diagnostics_contains_write_outputs_ms(tmp_path):
 
 
 @pytest.mark.live
-def test_ep_oracle_compare_populated(tmp_path):
+def test_ep_oracle_compare_populated(canonical_pipeline_artifacts):
     """ep_oracle_compare.json must be a non-empty dict."""
-    out_dir = tmp_path / "out"
-    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
-    execute_pipeline(request)
-
-    compare = json.loads((out_dir / 'ep_oracle_compare.json').read_text(encoding='utf-8'))
+    compare = canonical_pipeline_artifacts['ep_oracle_compare']
     assert isinstance(compare, dict) and len(compare) > 0
 
 
 @pytest.mark.live
-def test_sharded_evaluators_parity(tmp_path):
+def test_sharded_evaluators_parity(canonical_pipeline_artifacts):
     """Sharded evaluators produce non-empty comparison artifacts (from main's T12 contract)."""
-    out_dir = tmp_path / "out"
-    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
-    execute_pipeline(request)
-
-    compare_path = out_dir / "ep_oracle_compare.json"
-    assert compare_path.exists()
-    compare_data = json.loads(compare_path.read_text(encoding='utf-8'))
+    compare_data = canonical_pipeline_artifacts['ep_oracle_compare']
     assert isinstance(compare_data, dict) and len(compare_data) > 0

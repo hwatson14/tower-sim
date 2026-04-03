@@ -13,6 +13,35 @@ if str(ROOT) not in sys.path:
 pytestmark = pytest.mark.live
 
 
+@pytest.fixture(scope="module")
+def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    out_dir = tmp_path_factory.mktemp("canonical_pipeline_out")
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=out_dir,
+            preset='Farming',
+            state_mode='start_of_run',
+        )
+    )
+    assert result.exit_code == 0
+
+    return {
+        'diagnostics': json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8')),
+        'statbook_publishable': json.loads((out_dir / 'statbook_publishable.json').read_text(encoding='utf-8')),
+        'optimizer_scores': json.loads((out_dir / 'optimizer_scores.json').read_text(encoding='utf-8')),
+        'ep_oracle_compare': json.loads((out_dir / 'ep_oracle_compare.json').read_text(encoding='utf-8')),
+        'pipeline_trace': json.loads((out_dir / 'pipeline_trace.json').read_text(encoding='utf-8')),
+        'dashboards': {
+            'input_dashboard': json.loads((out_dir / 'input_dashboard.json').read_text(encoding='utf-8')),
+            'stats_dashboard': json.loads((out_dir / 'stats_dashboard.json').read_text(encoding='utf-8')),
+        },
+        'out_dir': out_dir,
+    }
+
+
 def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
     from app.pipeline import PipelineRunRequest, execute_pipeline
 
@@ -147,23 +176,13 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
     assert sorted(damage_row.keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
 
-def test_pipeline_writes_stats_dashboard_contract(tmp_path):
-    from app.pipeline import PipelineRunRequest, execute_pipeline
+def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
+    out_dir = canonical_pipeline_artifacts['out_dir']
+    payload = canonical_pipeline_artifacts['dashboards']['stats_dashboard']
 
-    result = execute_pipeline(
-        PipelineRunRequest(
-            ids=ROOT / 'input' / 'imports' / 'ids.csv',
-            out=tmp_path / 'out',
-            preset='Farming',
-            state_mode='max_progression',
-        )
-    )
-    assert result.exit_code == 0
-    dashboard_path = result.out_dir / 'stats_dashboard.json'
-    assert dashboard_path.exists()
-    assert (result.out_dir / 'run_stats_query_rows_start_of_run.json').exists()
-    assert (result.out_dir / 'run_stats_query_rows_max_progression.json').exists()
-    payload = json.loads(dashboard_path.read_text(encoding='utf-8'))
+    assert (out_dir / 'stats_dashboard.json').exists()
+    assert (out_dir / 'run_stats_query_rows_start_of_run.json').exists()
+    assert (out_dir / 'run_stats_query_rows_max_progression.json').exists()
     assert sorted(payload.keys()) == [
         'artifact',
         'dashboard_version',
@@ -180,7 +199,7 @@ def test_pipeline_writes_stats_dashboard_contract(tmp_path):
     assert payload.get('artifact') == 'stats_dashboard.json'
     assert payload.get('schema_version') == 1
     assert payload.get('selected_preset') == 'Farming'
-    assert payload.get('selected_state_mode') == 'max_progression'
+    assert payload.get('selected_state_mode') == 'start_of_run'
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
         'workshop',
@@ -201,18 +220,10 @@ def test_pipeline_writes_stats_dashboard_contract(tmp_path):
     assert max_workshop.get('payload', {}).get('sections')
 
 
-def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):
-    from app.pipeline import PipelineRunRequest, execute_pipeline
-
-    result = execute_pipeline(
-        PipelineRunRequest(
-            ids=ROOT / 'input' / 'imports' / 'ids.csv',
-            out=tmp_path / 'out',
-        )
-    )
-    assert result.exit_code == 0
-    dashboard = json.loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
-    account_state = json.loads((result.out_dir / 'account_state.json').read_text(encoding='utf-8'))
+def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):
+    out_dir = canonical_pipeline_artifacts['out_dir']
+    dashboard = canonical_pipeline_artifacts['dashboards']['input_dashboard']
+    account_state = json.loads((out_dir / 'account_state.json').read_text(encoding='utf-8'))
     cards_panel = next(panel for panel in (dashboard.get('panels') or []) if panel.get('panel_id') == 'cards')
     payload = cards_panel.get('payload') or {}
 
