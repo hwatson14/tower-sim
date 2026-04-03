@@ -125,7 +125,7 @@ MODULE_CARD_CSS = """
 .module-main{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:12px 0 10px 0;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:10px;}
 .module-main-value{font-size:28px;font-weight:900;color:#ffffff;line-height:1;}
 .module-main-label{font-size:12px;color:#b5c0cc;text-align:right;}
-.module-unique{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 11px;margin-bottom:10px;font-size:12px;line-height:1.35;color:#d7dee6;}
+.module-unique{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 11px;margin-top:10px;min-height:4.8em;font-size:12px;line-height:1.45;color:#d7dee6;box-sizing:border-box;}
 .module-unique-value{color:#87d7ff;font-weight:800;}
 .module-effects{display:flex;flex-direction:column;gap:7px;}
 .module-effect{display:grid;grid-template-columns:auto auto 1fr;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:7px 9px;}
@@ -216,8 +216,8 @@ def render_module_card_html(payload: dict) -> str:
         f'<div class="module-main-value">{main_value}</div>'
         f'<div class="module-main-label">{main_label}</div>'
         '</div>'
-        f'{unique_html}'
         f'<div class="module-effects">{effects}</div>'
+        f'{unique_html}'
         '</div>'
         '</div>'
     )
