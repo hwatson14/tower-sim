@@ -197,8 +197,8 @@ def test_pipeline_writes_stats_dashboard_contract(tmp_path):
     max_panels = farming_variants['max_progression']
     start_workshop = next(panel for panel in start_panels if panel.get('panel_id') == 'workshop')
     max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
-    assert start_workshop.get('payload', {}).get('rows')
-    assert max_workshop.get('payload', {}).get('rows')
+    assert start_workshop.get('payload', {}).get('sections')
+    assert max_workshop.get('payload', {}).get('sections')
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):

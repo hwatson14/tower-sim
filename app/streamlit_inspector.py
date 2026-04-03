@@ -1259,15 +1259,7 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             index=preset_options.index(default_preset) if default_preset in preset_options else 0,
             key='stats_dashboard_preset_selector',
         )
-        state_mode_options = [str(name) for name in (dashboard.get('state_mode_options') or ['start_of_run', 'max_progression'])]
-        default_state_mode = str(dashboard.get('selected_state_mode') or state_mode_options[0])
-        selected_state_mode = st.radio(
-            'State mode',
-            options=state_mode_options,
-            index=state_mode_options.index(default_state_mode) if default_state_mode in state_mode_options else 0,
-            horizontal=True,
-            key='stats_dashboard_state_mode_selector',
-        )
+        selected_state_mode = str(dashboard.get('selected_state_mode') or 'max_progression')
 
         variants = dashboard.get('variants') or {}
         panels = (

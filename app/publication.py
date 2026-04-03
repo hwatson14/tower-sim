@@ -447,6 +447,88 @@ def _sum_contributor_values(row: dict[str, object], source_classes: tuple[str, .
     return float(sum(values))
 
 
+def _sum_contributor_values_filtered(
+    row: dict[str, object],
+    *,
+    source_classes: tuple[str, ...],
+    contributor_prefixes: tuple[str, ...] = (),
+    invert_prefix_match: bool = False,
+) -> float | None:
+    values: list[float] = []
+    for contributor in (row.get('contributors') or []):
+        if str((contributor or {}).get('source_class') or '') not in source_classes:
+            continue
+        contributor_id = str((contributor or {}).get('contributor_id') or '')
+        prefix_match = any(contributor_id.startswith(prefix) for prefix in contributor_prefixes)
+        if contributor_prefixes and ((prefix_match and invert_prefix_match) or (not prefix_match and not invert_prefix_match)):
+            continue
+        value = (contributor or {}).get('value')
+        if isinstance(value, (int, float)):
+            values.append(float(value))
+    if not values:
+        return None
+    return float(sum(values))
+
+
+_DISPLAY_SUFFIXES: list[tuple[float, str]] = [(1e12, 'T'), (1e9, 'B'), (1e6, 'M'), (1e3, 'k')]
+
+
+def _format_compact_number(value: float | int | None) -> str:
+    if value is None:
+        return '0'
+    v = float(value)
+    sign = '-' if v < 0 else ''
+    av = abs(v)
+    for threshold, suffix in _DISPLAY_SUFFIXES:
+        if av >= threshold:
+            scaled = av / threshold
+            decimals = 2 if scaled < 10 else (1 if scaled < 100 else 0)
+            token = f'{scaled:.{decimals}f}'.rstrip('0').rstrip('.')
+            return f'{sign}{token}{suffix}'
+    if av >= 100:
+        return f'{sign}{av:.0f}'
+    if av >= 10:
+        return f'{sign}{av:.1f}'.rstrip('0').rstrip('.')
+    return f'{sign}{av:.2f}'.rstrip('0').rstrip('.')
+
+
+def _is_percent_surface(*, surface_id: str, value_type: str | None) -> bool:
+    value_type_text = str(value_type or '').strip().lower()
+    return value_type_text in {'pct', 'percent_display'} or surface_id.endswith('_pct') or 'chance' in surface_id
+
+
+def _is_multiplier_surface(*, surface_id: str, value_type: str | None) -> bool:
+    value_type_text = str(value_type or '').strip().lower()
+    return value_type_text in {'multiplier', 'multiplier_display'} or surface_id.endswith('_multiplier')
+
+
+def _format_effect_value(
+    value: float | None,
+    *,
+    surface_id: str,
+    value_type: str | None,
+    default_prefix: str = '+',
+) -> str:
+    prefix = 'x' if _is_multiplier_surface(surface_id=surface_id, value_type=value_type) else default_prefix
+    if value is None:
+        number = '0'
+    else:
+        number = _format_compact_number(value)
+    suffix = '%' if _is_percent_surface(surface_id=surface_id, value_type=value_type) else ''
+    return f'{prefix} {number}{suffix}'
+
+
+def _format_surface_value(value: float | int | None, *, surface_id: str, value_type: str | None) -> str:
+    if value is None:
+        return '—'
+    number = _format_compact_number(value)
+    if _is_multiplier_surface(surface_id=surface_id, value_type=value_type):
+        return f'x{number}'
+    if _is_percent_surface(surface_id=surface_id, value_type=value_type):
+        return f'{number}%'
+    return number
+
+
 _WORKSHOP_LABEL_ALIASES: dict[str, str] = {
     'Crit Chance': 'Critical Chance',
     'Crit Multiplier': 'Critical Factor',
@@ -477,13 +559,25 @@ def _build_workshop_rows(
     account_state_payload: dict[str, object],
     selected_preset: str,
 ) -> list[dict[str, object]]:
-    rows: list[dict[str, object]] = []
+    grouped_rows: dict[str, list[dict[str, object]]] = {'Offense': [], 'Defense': [], 'Utility': []}
     for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces'):
         for spec in _stats_surface_specs(stats_layout, section_key):
             surface_id = spec['surface_id']
             start_row = dict(rows_start.get(surface_id) or {})
             max_row = dict(rows_max.get(surface_id) or {})
-            rows.append(
+            value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
+            workshop_value = _sum_contributor_values_filtered(
+                start_row,
+                source_classes=('workshop',),
+                contributor_prefixes=('enhancement.',),
+                invert_prefix_match=True,
+            )
+            enhancement_value = _sum_contributor_values_filtered(
+                start_row,
+                source_classes=('workshop',),
+                contributor_prefixes=('enhancement.',),
+            )
+            row_payload = (
                 {
                     'name': spec['label'],
                     'workshop_level': _workshop_level_for_label(
@@ -491,17 +585,32 @@ def _build_workshop_rows(
                         label=spec['label'],
                         selected_preset=selected_preset,
                     ),
-                    'workshop_value': _sum_contributor_values(start_row, ('workshop',)),
-                    'lab_effects': _sum_contributor_values(start_row, ('labs',)),
-                    'module_effects': _sum_contributor_values(start_row, ('module_main', 'module_substat', 'module_unique')),
-                    'card_effects': _sum_contributor_values(start_row, ('cards',)),
-                    'start_of_run_value': start_row.get('final_value'),
-                    'perk_effects': _sum_contributor_values(start_row, ('perk',)),
-                    'other': _sum_contributor_values(start_row, ('base', 'relics', 'scenario_rules')),
-                    'max_progression_value': max_row.get('final_value'),
+                    'workshop_value': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
+                    'lab_effects': _format_effect_value(_sum_contributor_values(start_row, ('labs',)), surface_id=surface_id, value_type=value_type),
+                    'module_effects': _format_effect_value(
+                        _sum_contributor_values(start_row, ('module_main', 'module_substat', 'module_unique')),
+                        surface_id=surface_id,
+                        value_type=value_type,
+                    ),
+                    'card_effects': _format_effect_value(_sum_contributor_values(start_row, ('cards',)), surface_id=surface_id, value_type=value_type),
+                    'enhancement_effects': _format_effect_value(enhancement_value, surface_id=surface_id, value_type=value_type),
+                    'start_of_run_value': _format_surface_value(start_row.get('final_value'), surface_id=surface_id, value_type=value_type),
+                    'perk_effects': _format_effect_value(_sum_contributor_values(start_row, ('perk',)), surface_id=surface_id, value_type=value_type),
+                    'other': _format_effect_value(
+                        _sum_contributor_values(start_row, ('base', 'relics', 'scenario_rules')),
+                        surface_id=surface_id,
+                        value_type=value_type,
+                    ),
+                    'max_progression_value': _format_surface_value(max_row.get('final_value'), surface_id=surface_id, value_type=value_type),
                 }
             )
-    return rows
+            if section_key == 'offense_surfaces':
+                grouped_rows['Offense'].append(row_payload)
+            elif section_key == 'defense_surfaces':
+                grouped_rows['Defense'].append(row_payload)
+            else:
+                grouped_rows['Utility'].append(row_payload)
+    return [{'title': title, 'rows': rows} for title, rows in grouped_rows.items() if rows]
 
 
 def _build_stats_dashboard_payload(
@@ -567,7 +676,7 @@ def _build_stats_dashboard_payload(
                 account_state_payload=account_state_payload,
                 selected_preset=preset_name,
             )
-            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': {'rows': workshop_rows}})
+            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': {'sections': workshop_rows}})
 
             derived_rows = [
                 _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'])
