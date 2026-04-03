@@ -14,6 +14,23 @@ pytestmark = pytest.mark.live
 
 
 @pytest.fixture(scope="module")
+def start_of_run_pipeline_result(tmp_path_factory: pytest.TempPathFactory):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    out_dir = tmp_path_factory.mktemp("start_of_run_pipeline_out")
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=out_dir,
+            preset='Farming',
+            state_mode='start_of_run',
+        )
+    )
+    assert result.exit_code == 0
+    return result
+
+
+@pytest.fixture(scope="module")
 def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
     from app.pipeline import PipelineRunRequest, execute_pipeline
 
@@ -42,20 +59,8 @@ def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> di
     }
 
 
-def test_request_adapter_and_execute_pipeline_emit_trace(tmp_path):
-    from app.pipeline import PipelineRunRequest, execute_pipeline
-
-    request = PipelineRunRequest(
-        ids=ROOT / 'input' / 'imports' / 'ids.csv',
-        out=tmp_path / 'out',
-        preset='Farming',
-        state_mode='max_progression',
-        manual_inputs=None,
-        perk_mode='max_progression_policy',
-        include_slow_audits=False,
-        perk_state='auto',
-    )
-    result = execute_pipeline(request)
+def test_request_adapter_and_execute_pipeline_emit_trace(start_of_run_pipeline_result):
+    result = start_of_run_pipeline_result
 
     assert result.exit_code == 0
     assert (result.out_dir / 'pipeline_trace.json').exists()
@@ -89,15 +94,8 @@ def test_trace_input_load_manual_inputs_path_respects_override(tmp_path):
     assert input_load_stage['outputs_summary']['manual_inputs_path'] == str(manual_inputs_override)
 
 
-def test_trace_artifact_is_listed_in_generated_files(tmp_path):
-    from app.pipeline import PipelineRunRequest, execute_pipeline
-
-    result = execute_pipeline(
-        PipelineRunRequest(
-            ids=ROOT / 'input' / 'imports' / 'ids.csv',
-            out=tmp_path / 'out',
-        )
-    )
+def test_trace_artifact_is_listed_in_generated_files(start_of_run_pipeline_result):
+    result = start_of_run_pipeline_result
     generated = {path.name for path in result.generated_files}
     assert 'pipeline_trace.json' in generated
 
