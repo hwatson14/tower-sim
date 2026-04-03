@@ -15,6 +15,7 @@ from app.pipeline import (
     PipelineRunRequest,
     resolve_fast_checkpoint,
     FastCheckpointRequest,
+    _build_input_dashboard_qe_publications,
     _RUN_STATS_QUERY_OUTPUTS,
     _path_cache_token,
     _effective_manual_inputs_path,
@@ -162,6 +163,32 @@ def test_input_dashboard_payload_consumes_qe_publications():
     assert uw_damage_row.get('final_value') == 'x903'
     assert uw_damage_row.get('module_effect_source') == 'qe_published'
     assert uw_damage_row.get('perk_effect_source') == 'qe_published'
+
+
+def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
+    account_state = SimpleNamespace(
+        uw_tracks={
+            'Chain Lightning': [
+                SimpleNamespace(track_name='Damage', level=100, resolved_value=1.5),
+            ],
+        }
+    )
+    published = _build_input_dashboard_qe_publications(
+        account_state=account_state,
+        projected_compare_rows_by_preset={
+            'Farming': {
+                'state::uw.chain_lightning.damage_multiplier': {
+                    'display_value': 'x903',
+                    'contributors': [],
+                }
+            }
+        },
+        stat_inputs=[],
+        preset_name='Farming',
+    )
+    effects = published.get('uw_track_effects') or {}
+    assert 'Chain Lightning::Damage' in effects
+    assert effects['Chain Lightning::Damage']['final_value'] == 'x903'
 
 
 @pytest.mark.live

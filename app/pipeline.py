@@ -164,7 +164,9 @@ def _build_input_dashboard_qe_publications(
     for uw_name, tracks in (account_state.uw_tracks or {}).items():
         uw_slug = _uw_slug(uw_name)
         for track_row in tracks or []:
-            track_name = track_row.get('track_name')
+            track_name = getattr(track_row, 'track_name', None)
+            if track_name is None and isinstance(track_row, dict):
+                track_name = track_row.get('track_name')
             if not track_name:
                 continue
             tokens = _uw_track_surface_tokens(track_name)
