@@ -46,12 +46,16 @@ from app.display import (
     INPUT_DASHBOARD_CSS,
     MODULE_CARD_CSS,
     render_cards_inventory_and_preset_html,
+    render_gap_notice_html,
     render_grouped_enhancement_table_html,
     render_grouped_workshop_table_html,
     render_labs_bucket_grid_html,
     render_module_card_html,
+    render_overview_metric_strip_html,
+    render_resolved_stat_section_html,
     render_simple_bonus_table_html,
     render_simple_metric_panel_html,
+    render_stats_uw_section_html,
     render_track_table_html,
     render_uw_track_table_html,
 )
@@ -1008,7 +1012,7 @@ def _render_qe(active_artifacts, request: PipelineRunRequest) -> None:
     st.subheader('Active Query-Plan Coverage')
     st.dataframe(qe_plan_coverage_frame(query_plan_payload, preset=preset_name, surface_id=selected_surface), width='stretch', hide_index=True)
 
-def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
+def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
     st.subheader('Stats')
     run_stats_payload = active_artifacts.get('run_stats.json', {})
     available_presets = sorted(
@@ -1239,6 +1243,87 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
     if selected_row:
         st.subheader('Contributor Drilldown')
         st.json(selected_row)
+
+
+def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
+    st.subheader('Stats')
+    dashboard = active_artifacts.get('stats_dashboard.json') or {}
+    if isinstance(dashboard, dict) and dashboard.get('panels'):
+        st.markdown(INPUT_DASHBOARD_CSS, unsafe_allow_html=True)
+        preset_options = [str(name) for name in (dashboard.get('preset_options') or ['Farming'])]
+        default_preset = str(dashboard.get('selected_preset') or preset_options[0])
+        selected_preset = st.selectbox(
+            'Preset',
+            options=preset_options,
+            index=preset_options.index(default_preset) if default_preset in preset_options else 0,
+            key='stats_dashboard_preset_selector',
+        )
+        state_mode_options = [str(name) for name in (dashboard.get('state_mode_options') or ['start_of_run', 'max_progression'])]
+        default_state_mode = str(dashboard.get('selected_state_mode') or state_mode_options[0])
+        selected_state_mode = st.radio(
+            'State mode',
+            options=state_mode_options,
+            index=state_mode_options.index(default_state_mode) if default_state_mode in state_mode_options else 0,
+            horizontal=True,
+            key='stats_dashboard_state_mode_selector',
+        )
+
+        variants = dashboard.get('variants') or {}
+        panels = (
+            (((variants.get(selected_preset) or {}).get(selected_state_mode) or []))
+            if isinstance(variants, dict)
+            else (dashboard.get('panels') or [])
+        )
+        if not panels:
+            panels = dashboard.get('panels') or []
+
+        for panel in panels:
+            panel_type = str((panel or {}).get('panel_type') or '')
+            payload = dict((panel or {}).get('payload') or {})
+            title = str((panel or {}).get('title') or (panel or {}).get('panel_id') or 'Panel')
+            st.subheader(title)
+            if panel_type == 'overview_metrics':
+                st.markdown(render_overview_metric_strip_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'context_modules':
+                slots = payload.get('slots') or {}
+                if not slots:
+                    st.markdown(render_gap_notice_html({'message': payload.get('message') or 'Module card payload unavailable.'}), unsafe_allow_html=True)
+                    continue
+                st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
+                slot_columns = st.columns(4)
+                for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):
+                    with slot_columns[idx]:
+                        st.markdown(f'**{slot.title()}**')
+                        slot_payload = (slots.get(slot) or {})
+                        for role in ['primary', 'assist']:
+                            card_payload = slot_payload.get(role)
+                            if not card_payload:
+                                st.caption(f'{role.title()}: No module equipped')
+                                continue
+                            st.markdown(render_module_card_html(card_payload), unsafe_allow_html=True)
+            elif panel_type == 'context_cards':
+                st.markdown(render_cards_inventory_and_preset_html(payload), unsafe_allow_html=True)
+            elif panel_type in {'context_uw', 'resolved_uw_section'}:
+                st.markdown(render_stats_uw_section_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'context_bonus_table':
+                st.markdown(render_simple_bonus_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'resolved_stat_section':
+                st.markdown(render_resolved_stat_section_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'gap_notice':
+                st.markdown(render_gap_notice_html(payload), unsafe_allow_html=True)
+            else:
+                st.markdown(render_gap_notice_html({'message': f'Unsupported panel type: {panel_type}'}), unsafe_allow_html=True)
+
+        if dashboard.get('upstream_gaps'):
+            st.warning('Upstream publication gaps detected')
+            st.json(dashboard.get('upstream_gaps'))
+        with st.expander('Dashboard artifact debug (stats_dashboard.json)', expanded=False):
+            st.json(dashboard)
+    else:
+        st.info('stats_dashboard.json missing; showing legacy debug views only.')
+
+    with st.expander('Stats debug and verification', expanded=False):
+        _render_stats_debug_tools(active_artifacts, comparison_artifacts, request)
 
 
 def _render_checks(active_artifacts) -> None:

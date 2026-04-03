@@ -205,3 +205,108 @@ sections:
     truthy_name_tokens:
       - true
       - false
+  stats_dashboard:
+    panel_order:
+      - overview
+      - modules_context
+      - cards_context
+      - uw_context
+      - relics_context
+      - vault_context
+      - offense
+      - defense
+      - utility_economy
+      - uw_resolved
+    state_mode_options:
+      - start_of_run
+      - max_progression
+    overview_surfaces:
+      - label: Damage
+        surface_id: state::tower.damage
+      - label: Attack Speed
+        surface_id: state::tower.attack_speed
+      - label: Health
+        surface_id: state::tower.hp
+      - label: Regen
+        surface_id: state::tower.regen
+      - label: Defense %
+        surface_id: state::tower.defense_pct
+      - label: Coins / Kill
+        surface_id: state::economy.coins_per_kill_bonus
+      - label: EALS
+        surface_id: state::tower.enemy_attack_level_skip_pct
+      - label: EHLS
+        surface_id: state::tower.enemy_health_level_skip_pct
+    offense_surfaces:
+      - label: Damage
+        surface_id: state::tower.damage
+      - label: Attack Speed
+        surface_id: state::tower.attack_speed
+      - label: Crit Chance
+        surface_id: state::tower.crit_chance_pct
+      - label: Crit Multiplier
+        surface_id: state::tower.crit_multiplier
+      - label: Multishot Chance
+        surface_id: state::tower.multishot_chance_pct
+      - label: Multishot Targets
+        surface_id: state::tower.multishot_targets
+      - label: Bounce Shot Chance
+        surface_id: state::tower.bounce_shot_chance_pct
+      - label: Bounce Shot Targets
+        surface_id: state::tower.bounce_shot_targets
+      - label: Super Crit Chance
+        surface_id: state::tower.supercrit_chance_pct
+      - label: Super Crit Multiplier
+        surface_id: state::tower.supercrit_multiplier
+      - label: Rend Armor Chance
+        surface_id: state::tower.rend_armor_chance_pct
+      - label: Rend Armor Multiplier
+        surface_id: state::tower.rend_armor_multiplier
+      - label: Ultimate Damage
+        surface_id: state::tower.ultimate_damage_multiplier
+    defense_surfaces:
+      - label: Health
+        surface_id: state::tower.hp
+      - label: Regen
+        surface_id: state::tower.regen
+      - label: Defense %
+        surface_id: state::tower.defense_pct
+      - label: Thorns
+        surface_id: state::tower.thorns_damage_pct
+      - label: Knockback Chance
+        surface_id: state::tower.knockback_chance_pct
+      - label: Knockback Force
+        surface_id: state::tower.knockback_force
+      - label: Orb Count
+        surface_id: state::tower.orb_count
+      - label: Orb Speed
+        surface_id: state::tower.orb_speed_rpm
+      - label: Land Mine Chance
+        surface_id: state::tower.land_mine_chance_pct
+      - label: Land Mine Damage
+        surface_id: state::tower.land_mine_damage
+      - label: Shockwave Interval
+        surface_id: state::tower.shockwave_interval_seconds
+      - label: Shockwave Size
+        surface_id: state::tower.shockwave_size_m
+    utility_economy_surfaces:
+      - label: Free Attack Upgrade
+        surface_id: state::tower.free_attack_upgrade_chance_pct
+      - label: Free Defense Upgrade
+        surface_id: state::tower.free_defense_upgrade_chance_pct
+      - label: Free Utility Upgrade
+        surface_id: state::tower.free_utility_upgrade_chance_pct
+      - label: Enemy Attack Level Skip
+        surface_id: state::tower.enemy_attack_level_skip_pct
+      - label: Enemy Health Level Skip
+        surface_id: state::tower.enemy_health_level_skip_pct
+      - label: Package Chance
+        surface_id: state::tower.package_chance_pct
+      - label: Recovery Package Multiplier
+        surface_id: state::tower.recovery_package_multiplier
+      - label: Coins / Kill
+        surface_id: state::economy.coins_per_kill_bonus
+      - label: Coins / Wave
+        surface_id: state::economy.coins_per_wave
+      - label: Cash Bonus
+        surface_id: state::economy.cash_kill_multiplier

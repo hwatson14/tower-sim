@@ -1,0 +1,64 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+from app.publication import _build_input_dashboard_payload, _build_stats_dashboard_payload
+
+ROOT = Path(__file__).resolve().parents[2]
+
+
+def test_stats_dashboard_contract_and_panel_types():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    assert payload['artifact'] == 'stats_dashboard.json'
+    assert payload['schema_version'] == 1
+    assert payload['selected_state_mode'] == 'max_progression'
+    panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
+    assert panel_pairs == [
+        ('overview', 'overview_metrics'),
+        ('modules_context', 'context_modules'),
+        ('cards_context', 'context_cards'),
+        ('uw_context', 'context_uw'),
+        ('relics_context', 'context_bonus_table'),
+        ('vault_context', 'context_bonus_table'),
+        ('offense', 'resolved_stat_section'),
+        ('defense', 'resolved_stat_section'),
+        ('utility_economy', 'resolved_stat_section'),
+        ('uw_resolved', 'resolved_uw_section'),
+    ]
+
+
+def test_stats_dashboard_variants_include_state_modes():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={},
+        query_rows_max_progression={},
+        ep_compare_publishable={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    variants = payload.get('variants') or {}
+    farming_variant = variants.get('Farming') or {}
+    assert {'start_of_run', 'max_progression'}.issubset(set(farming_variant.keys()))

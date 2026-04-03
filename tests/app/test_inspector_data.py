@@ -19,6 +19,7 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
         'diagnostics.json': {'default_preset': 'Farming'},
         'account_state.json': {'card_presets': {}},
         'input_dashboard.json': {'schema_version': 2, 'panels': []},
+        'stats_dashboard.json': {'schema_version': 1, 'panels': []},
         'statbook.json': {'rows': {}, 'diagnostics': {}},
         'statbook_publishable.json': {'rows': {}, 'diagnostics': {}},
         'run_stats.json': {'presets': {}},
@@ -35,6 +36,7 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
     artifacts = load_artifacts(out_dir)
     assert artifacts.get('diagnostics.json', {})['default_preset'] == 'Farming'
     assert artifacts.get('input_dashboard.json', {})['schema_version'] == 2
+    assert artifacts.get('stats_dashboard.json', {})['schema_version'] == 1
     assert artifacts.get('tower_regen_closure_report.json', {}) == {}
 
 

@@ -1779,6 +1779,31 @@ def run_analysis_pipeline(args) -> int:
     _annotate_compare_display_fields(projected_ep_compare_publishable)
     projected_compare_summary = _build_compare_status_summary(projected_ep_compare_publishable)
 
+    run_stats_artifacts = get_default_run_stats_session().build_run_stats_artifacts(args)
+
+    def _query_rows_payload(books_by_preset: dict[str, dict], *, state_mode: str) -> dict[str, dict[str, object]]:
+        payload: dict[str, dict[str, object]] = {}
+        for preset_name, statbook_payload in (books_by_preset or {}).items():
+            payload[str(preset_name)] = {
+                'rows': {str(surface_id): dict(row or {}) for surface_id, row in dict((statbook_payload or {}).get('rows') or {}).items()},
+                'diagnostics': {
+                    'pipeline_kind': 'run_stats_bounded_query',
+                    'state_mode': state_mode,
+                    'family_ids': list(((statbook_payload or {}).get('diagnostics') or {}).get('family_ids') or []),
+                    'bundle_ids': list(((statbook_payload or {}).get('diagnostics') or {}).get('bundle_ids') or []),
+                },
+            }
+        return payload
+
+    dashboard_query_rows_start_payload = _query_rows_payload(
+        run_stats_artifacts.get('start_books_by_preset') or {},
+        state_mode='start_of_run',
+    )
+    dashboard_query_rows_max_payload = _query_rows_payload(
+        run_stats_artifacts.get('max_books_by_preset') or {},
+        state_mode='max_progression',
+    )
+
     routing_class_counts = statbook.diagnostics.get('input_routing_class_counts', {})
     routed_input_count = statbook.diagnostics.get('mapped_input_count', sum(1 for row in stat_inputs if row.destination_id))
     truly_unrouted_input_count = statbook.diagnostics.get('unmapped_input_count', sum(1 for row in stat_inputs if not row.destination_id))
@@ -2101,6 +2126,10 @@ def run_analysis_pipeline(args) -> int:
         root_path=ROOT,
         module_card_payloads=module_card_payloads_data,
         qe_dashboard_publications=qe_dashboard_publications,
+        query_rows_start_of_run=dashboard_query_rows_start_payload,
+        query_rows_max_progression=dashboard_query_rows_max_payload,
+        selected_preset=args.preset,
+        selected_state_mode=args.state_mode,
     )
 
     # Write module card payloads (QE-generated orchestration artifact, PR329)

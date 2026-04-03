@@ -147,6 +147,66 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
     assert sorted(damage_row.keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
 
+def test_pipeline_writes_stats_dashboard_contract(tmp_path):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=tmp_path / 'out',
+            preset='Farming',
+            state_mode='max_progression',
+        )
+    )
+    assert result.exit_code == 0
+    dashboard_path = result.out_dir / 'stats_dashboard.json'
+    assert dashboard_path.exists()
+    assert (result.out_dir / 'run_stats_query_rows_start_of_run.json').exists()
+    assert (result.out_dir / 'run_stats_query_rows_max_progression.json').exists()
+    payload = json.loads(dashboard_path.read_text(encoding='utf-8'))
+    assert sorted(payload.keys()) == [
+        'artifact',
+        'dashboard_version',
+        'debug_manifest',
+        'panels',
+        'preset_options',
+        'schema_version',
+        'selected_preset',
+        'selected_state_mode',
+        'state_mode_options',
+        'upstream_gaps',
+        'variants',
+    ]
+    assert payload.get('artifact') == 'stats_dashboard.json'
+    assert payload.get('schema_version') == 1
+    assert payload.get('selected_preset') == 'Farming'
+    assert payload.get('selected_state_mode') == 'max_progression'
+    panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
+    assert panel_ids == [
+        'overview',
+        'modules_context',
+        'cards_context',
+        'uw_context',
+        'relics_context',
+        'vault_context',
+        'offense',
+        'defense',
+        'utility_economy',
+        'uw_resolved',
+    ]
+    variants = payload.get('variants') or {}
+    farming_variants = variants.get('Farming') or {}
+    assert {'start_of_run', 'max_progression'}.issubset(set(farming_variants.keys()))
+    start_panels = farming_variants['start_of_run']
+    max_panels = farming_variants['max_progression']
+    start_offense = next(panel for panel in start_panels if panel.get('panel_id') == 'offense')
+    max_offense = next(panel for panel in max_panels if panel.get('panel_id') == 'offense')
+    assert start_offense.get('payload', {}).get('rows')
+    assert max_offense.get('payload', {}).get('rows')
+    surface_gap_ids = {gap.get('gap_id') for gap in (payload.get('upstream_gaps') or [])}
+    assert 'surface_not_published_for_state_mode' not in surface_gap_ids
+
+
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):
     from app.pipeline import PipelineRunRequest, execute_pipeline
 
@@ -218,6 +278,16 @@ def test_inputs_dashboard_cards_panel_uses_published_rows_without_account_state_
     assert "preset_rows_by_preset.get(selected_preset)" in cards_block
     assert "active_artifacts.get('account_state.json'" not in cards_block
     assert "st.error(" in cards_block
+
+
+def test_stats_dashboard_production_render_avoids_native_streamlit_tables() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    start = text.index("dashboard = active_artifacts.get('stats_dashboard.json') or {}")
+    end = text.index("with st.expander('Stats debug and verification'", start)
+    production_block = text[start:end]
+    assert 'st.table(' not in production_block
+    assert 'st.dataframe(' not in production_block
+    assert 'st.data_editor(' not in production_block
 
 
 def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):
