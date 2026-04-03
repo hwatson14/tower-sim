@@ -117,15 +117,15 @@ MODULE_CARD_CSS = """
 .module-rolebar.assist{background:linear-gradient(90deg,rgba(176,103,255,0.22),rgba(176,103,255,0.08));color:#d2b3ff;}
 .module-role-detail{font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;opacity:.95;text-align:right;}
 .module-card-body{padding:14px 14px 12px 14px;}
-.module-head{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;margin-bottom:10px;}
-.module-icon-shell{height:70px;border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:6px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;}
-.module-icon{height:58px;width:58px;border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#c9d6e5;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));text-transform:uppercase;text-align:center;line-height:1.05;padding:4px;}
-.module-icon-shell.rarity-common,.module-icon.rarity-common{border-color:#9da3ae;}
-.module-icon-shell.rarity-rare,.module-icon.rarity-rare{border-color:#63b3ff;}
-.module-icon-shell.rarity-epic,.module-icon.rarity-epic{border-color:#c084fc;}
-.module-icon-shell.rarity-legendary,.module-icon.rarity-legendary{border-color:#f59e0b;}
-.module-icon-shell.rarity-mythic,.module-icon.rarity-mythic{border-color:#ef4444;}
-.module-icon-shell.rarity-ancestral,.module-icon.rarity-ancestral{border-color:#4ade80;}
+.module-head{display:grid;grid-template-columns:74px 1fr;gap:12px;align-items:center;margin-bottom:10px;}
+.module-icon-shell{height:72px;border:2px solid rgba(255,255,255,0.2);border-radius:16px;padding:5px;background:rgba(255,255,255,0.02);display:flex;align-items:center;justify-content:center;box-shadow:inset 0 0 0 1px rgba(255,255,255,0.08);}
+.module-icon{height:58px;width:58px;border:1.5px solid rgba(255,255,255,0.22);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;letter-spacing:.08em;color:#d8e6f2;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));text-transform:uppercase;text-align:center;line-height:1.05;padding:4px;}
+.module-icon-shell.rarity-common,.module-icon.rarity-common{border-color:#b7bcc7;box-shadow:0 0 12px rgba(206,214,226,0.24),inset 0 0 0 1px rgba(206,214,226,0.12);}
+.module-icon-shell.rarity-rare,.module-icon.rarity-rare{border-color:#76c0ff;box-shadow:0 0 12px rgba(118,192,255,0.26),inset 0 0 0 1px rgba(118,192,255,0.14);}
+.module-icon-shell.rarity-epic,.module-icon.rarity-epic{border-color:#d09afe;box-shadow:0 0 12px rgba(208,154,254,0.28),inset 0 0 0 1px rgba(208,154,254,0.14);}
+.module-icon-shell.rarity-legendary,.module-icon.rarity-legendary{border-color:#fbb449;box-shadow:0 0 12px rgba(251,180,73,0.28),inset 0 0 0 1px rgba(251,180,73,0.14);}
+.module-icon-shell.rarity-mythic,.module-icon.rarity-mythic{border-color:#ff6a72;box-shadow:0 0 12px rgba(255,106,114,0.3),inset 0 0 0 1px rgba(255,106,114,0.15);}
+.module-icon-shell.rarity-ancestral,.module-icon.rarity-ancestral{border-color:#5dff99;box-shadow:0 0 14px rgba(93,255,153,0.32),inset 0 0 0 1px rgba(93,255,153,0.16);}
 .module-icon.slot-cannon{border-radius:50%;}
 .module-icon.slot-armor{border-radius:12px;}
 .module-icon.slot-generator{clip-path:polygon(50% 4%,95% 94%,5% 94%);padding:10px 8px 6px 8px;}
@@ -139,16 +139,16 @@ MODULE_CARD_CSS = """
 .module-main{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:12px 0 10px 0;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:10px;}
 .module-main-value{font-size:28px;font-weight:900;color:#ffffff;line-height:1;}
 .module-main-label{font-size:12px;color:#b5c0cc;text-align:right;}
-.module-unique{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 11px;margin-top:10px;min-height:4.8em;font-size:12px;line-height:1.45;color:#d7dee6;box-sizing:border-box;}
+.module-unique{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 11px;margin-top:10px;height:7.1em;max-height:7.1em;font-size:15px;line-height:1.32;color:#d7dee6;box-sizing:border-box;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;}
 .module-unique-value{color:#87d7ff;font-weight:800;}
 .module-effects{display:flex;flex-direction:column;gap:7px;}
-.module-effect{display:grid;grid-template-columns:80px 56px 1fr;gap:6px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:7px 9px;}
+.module-effect{display:grid;grid-template-columns:84px 62px 1fr;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:7px 10px;min-height:38px;}
 .module-effect.state-locked{opacity:.72;background:rgba(255,255,255,0.02);}
 .module-effect.state-empty{opacity:.86;}
 .module-effect-chip{display:flex;justify-content:center;}
-.module-effect-value{font-weight:800;color:#ffffff;font-size:12px;text-align:right;}
-.module-effect-label{font-size:12px;color:#d7dee6;text-align:left;}
-.module-chip{display:inline-flex;align-items:center;justify-content:center;width:74px;padding:2px 0;border-radius:999px;border:1px solid rgba(255,255,255,0.16);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#d7dee6;text-align:center;}
+.module-effect-value{font-weight:800;color:#ffffff;font-size:15px;text-align:right;line-height:1;}
+.module-effect-label{font-size:15px;font-weight:600;color:#d7dee6;text-align:left;line-height:1.05;}
+.module-chip{display:inline-flex;align-items:center;justify-content:center;width:76px;padding:2px 0;border-radius:999px;border:1px solid rgba(255,255,255,0.16);font-size:11px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#d7dee6;text-align:center;}
 .rarity-common{border-color:#9da3ae;color:#c9ced6;}
 .rarity-rare{border-color:#63b3ff;color:#8fcbff;}
 .rarity-epic{border-color:#c084fc;color:#d8b4fe;}
