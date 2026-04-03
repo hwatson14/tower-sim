@@ -33,10 +33,8 @@ The repo is in **concentrated hardening territory** with active blockers that re
 
 ### Remaining constraints
 
-- open blockers exist in workshop formula authority closure, native-report observability carry-through,
-  fallback-callsite dedupe, exact max-rend progression parity, and governance-state truth alignment.
-- current full-suite proof run is not green on this snapshot (`tests/app/test_stats_dashboard_contract.py::test_stats_dashboard_variants_use_rows_for_each_preset`).
-- do not expand scope into broad refactor or tranche reshaping while closing these blockers.
+- closeout governance text must stay synchronized with executable validation status and burndown state.
+- do not expand scope into broad refactor or tranche reshaping while preserving closeout evidence.
 
 ---
 
@@ -78,11 +76,11 @@ T1 is now complete:
 
 ### Required closure work
 
-1. close workshop authority contract mismatch (approved-exception policy/data alignment)
-2. restore native report routing diagnostics in statbooks/snapshots
-3. dedupe report-fallback callsite boundaries in `qe/routing.py`
-4. close exact max-rend formula parity on progression/run-stats path
-5. rebuild/recertify artifacts only after targeted blockers are green
+1. preserve workshop authority contract alignment (approved-exception policy/data alignment)
+2. preserve native report routing diagnostics in statbooks/snapshots
+3. preserve report-fallback callsite boundary discipline in `qe/routing.py`
+4. preserve exact max-rend formula parity on progression/run-stats path
+5. keep recertification artifacts current as implementation changes land
 
 ### Exit criteria
 
@@ -94,8 +92,8 @@ Release closeout is complete only when all of the following are true:
 
 ### Closeout verification artifact
 
-- no valid full-suite recertification artifact is currently recorded for the active snapshot.
-- latest full-suite validation attempt on **2026-04-03** failed with one app test failure, so closeout remains in progress.
+- full-suite recertification artifact recorded for the active snapshot via `pytest -q`.
+- latest full-suite validation attempt on **2026-04-03** passed (`275 passed`).
 
 ### Verification
 
