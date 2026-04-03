@@ -40,8 +40,6 @@ RUNTIME_APPROVED_EXCEPTION_WHITELIST = {
     "lab:Max Rend Armor Multiplier",
 }
 MAX_APPROVED_EXCEPTION_COUNT = 12
-
-
 def test_canonical_preset_names__include_primary_defaults():
     assert len(CANONICAL_PRESET_NAMES) >= 2
     assert "Farming" in CANONICAL_PRESET_NAMES
@@ -300,6 +298,63 @@ def test_runtime_formula_authority_has_1_to_1_runtime_coverage_and_valid_formula
             assert formula_id in canonical_formula_ids, f'{runtime_key} references unknown formula_id: {formula_id!r}'
         elif source == 'approved_exception':
             assert not formula_id, f'{runtime_key} approved_exception must not provide formula_id.'
+
+
+def test_runtime_formula_authority_canonical_entries_use_runtime_callable_generator_kinds() -> None:
+    canonical_registry_path = Path(__file__).resolve().parents[2] / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
+    with canonical_registry_path.open(newline='', encoding='utf-8') as handle:
+        formula_rows_by_id = {row['formula_id'].strip(): row for row in csv.DictReader(handle)}
+
+    for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
+        if (metadata.get('authority_source') or '').strip() != 'canonical_formula_registry':
+            continue
+        formula_id = (metadata.get('formula_id') or '').strip()
+        formula_row = formula_rows_by_id[formula_id]
+        generator_kind = (formula_row.get('generator_kind') or '').strip()
+        assert generator_kind in kb_surfaces.RUNTIME_CALLABLE_GENERATOR_KINDS, (
+            f'{runtime_key} references formula_id {formula_id!r} with unsupported generator_kind {generator_kind!r}.'
+        )
+
+
+def test_canonical_formula_callables_fails_with_runtime_key_and_formula_id_for_unsupported_generator_kind(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime_key = ('workshop', 'Damage')
+    formula_id = 'tower.damage.test'
+
+    monkeypatch.setattr(
+        kb_surfaces,
+        '_load_runtime_formula_authority_rows',
+        lambda: {
+            runtime_key: {
+                'authority_source': 'canonical_formula_registry',
+                'formula_id': formula_id,
+                'approved_exception_reason': '',
+            }
+        },
+    )
+    monkeypatch.setattr(
+        kb_surfaces,
+        '_read_csv',
+        lambda path: [
+            {
+                'formula_id': formula_id,
+                'generator_kind': 'exact_linear_generator_from_live_wiki',
+                'domain': 'workshop',
+                'start_level': '0',
+                'base_value': '1',
+                'delta_per_step': '1',
+            }
+        ]
+        if path == kb_surfaces._CANONICAL_FORMULA_REGISTRY_PATH
+        else [],
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=r"workshop:Damage uses unsupported generator_kind .* for formula_id 'tower\.damage\.test'",
+    ):
+        kb_surfaces._canonical_formula_callables()
 
 
 def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -> None:
