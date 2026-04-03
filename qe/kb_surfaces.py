@@ -20,6 +20,7 @@ _ROOT = Path(__file__).resolve().parents[1]
 _BOSS_SUMMARY_PATH = _ROOT / 'kb' / 'enemies' / 'tables' / 'wiki-verified-boss-summary.csv'
 _STAT_CAPS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'game-mechanic-stat-caps.csv'
 _WORKSHOP_FORMULAS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'workshop-formula-params-canonical.csv'
+_RUNTIME_FORMULA_AUTHORITY_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
 _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
 
 
@@ -83,32 +84,42 @@ def _build_linear_canonical_formula(start_level: float, base: float, delta: floa
     return lambda level, s=start_level, b=base, d=delta: b + (((level - s) / 1.0) * d)
 
 
+def _load_runtime_formula_authority_rows() -> dict[tuple[str, str], dict[str, str]]:
+    rows = _read_csv(_RUNTIME_FORMULA_AUTHORITY_PATH)
+    mapping: dict[tuple[str, str], dict[str, str]] = {}
+    for row in rows:
+        source_domain = row['source_domain'].strip()
+        stat_name = row['stat_name'].strip()
+        key = (source_domain, stat_name)
+        if key in mapping:
+            raise ValueError(f'Duplicate runtime formula authority mapping row: {source_domain}:{stat_name}')
+        mapping[key] = {
+            'authority_source': row['authority_source'].strip(),
+            'formula_id': (row.get('formula_id') or '').strip(),
+            'approved_exception_reason': (row.get('approved_exception_reason') or '').strip(),
+        }
+    return mapping
+
+
 def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
     rows = _read_csv(_CANONICAL_FORMULA_REGISTRY_PATH)
-    runtime_formula_to_formula_id = {
-        # workshop
-        ('workshop', 'Attack Speed'): 'workshop_attack_speed_value',
-        ('workshop', 'Cash Bonus'): 'workshop_cash_bonus_multiplier',
-        ('workshop', 'Coin / Kill Bonus'): 'workshop_coins_kill_bonus_multiplier',
-        ('workshop', 'Enemy Attack Level Skip'): 'workshop_enemy_skip_pct',
-        ('workshop', 'Enemy Health Level Skip'): 'workshop_enemy_skip_pct',
-        ('workshop', 'Package Chance'): 'workshop_package_chance_pct',
-        ('workshop', 'Max Amount'): 'workshop_max_recovery_x',
-        ('workshop', 'Max Recovery'): 'workshop_max_recovery_x',
-        ('workshop', 'Orb Speed'): 'workshop_orb_speed_rpm',
-        ('workshop', 'Shockwave Size'): 'workshop_shockwave_size',
-        ('workshop', 'Death Defy'): 'workshop_death_defy_pct',
-    }
+    runtime_authority_rows = _load_runtime_formula_authority_rows()
     formula_row_by_id = {row['formula_id'].strip(): row for row in rows}
     formulas: dict[str, Callable[[float], float]] = {}
-    for (domain, stat_name), formula_id in runtime_formula_to_formula_id.items():
+    for (domain, stat_name), metadata in runtime_authority_rows.items():
+        if metadata['authority_source'] != 'canonical_formula_registry':
+            continue
+        formula_id = metadata['formula_id']
         row = formula_row_by_id.get(formula_id)
         if not row:
-            continue
+            raise ValueError(f'Runtime formula mapping references unknown canonical formula_id: {formula_id!r}')
         if row.get('generator_kind') != 'exact_linear_generator_from_row_verified_summary':
             continue
         if row.get('domain') != domain:
-            continue
+            raise ValueError(
+                f'Runtime formula mapping domain mismatch for {domain}:{stat_name}: '
+                f'formula_id {formula_id!r} belongs to domain {row.get("domain")!r}'
+            )
         formulas[f'{domain}:{stat_name}'] = _build_linear_canonical_formula(
             float(row['start_level']),
             float(row['base_value']),
@@ -147,38 +158,44 @@ def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
 
 def load_runtime_formula_authority() -> dict[str, dict[str, str]]:
     """Return explicit authority metadata for each runtime workshop/lab formula key."""
-    canonical_formula_ids: dict[tuple[str, str], str] = {
-        ('workshop', 'Attack Speed'): 'workshop_attack_speed_value',
-        ('workshop', 'Cash Bonus'): 'workshop_cash_bonus_multiplier',
-        ('workshop', 'Coin / Kill Bonus'): 'workshop_coins_kill_bonus_multiplier',
-        ('workshop', 'Enemy Attack Level Skip'): 'workshop_enemy_skip_pct',
-        ('workshop', 'Enemy Health Level Skip'): 'workshop_enemy_skip_pct',
-        ('workshop', 'Package Chance'): 'workshop_package_chance_pct',
-        ('workshop', 'Max Amount'): 'workshop_max_recovery_x',
-        ('workshop', 'Max Recovery'): 'workshop_max_recovery_x',
-        ('workshop', 'Orb Speed'): 'workshop_orb_speed_rpm',
-        ('workshop', 'Shockwave Size'): 'workshop_shockwave_size',
-        ('workshop', 'Death Defy'): 'workshop_death_defy_pct',
-    }
+    runtime_authority_rows = _load_runtime_formula_authority_rows()
+    canonical_formula_ids = {row['formula_id'].strip() for row in _read_csv(_CANONICAL_FORMULA_REGISTRY_PATH)}
     workshop, lab = load_workshop_formulas()
+    runtime_keys = {(domain, key) for domain, bucket in (('workshop', workshop), ('lab', lab)) for key in bucket}
+    mapping_keys = set(runtime_authority_rows)
+    if runtime_keys != mapping_keys:
+        missing = sorted(runtime_keys - mapping_keys)
+        extra = sorted(mapping_keys - runtime_keys)
+        raise ValueError(
+            f'Runtime authority mapping coverage mismatch. missing={missing!r} extra={extra!r}'
+        )
+
     authority: dict[str, dict[str, str]] = {}
-    for key in workshop:
-        formula_id = canonical_formula_ids.get(('workshop', key))
-        if formula_id:
-            authority[f'workshop:{key}'] = {
-                'authority_source': 'canonical_formula_registry',
+    for domain, key in sorted(runtime_keys):
+        mapping = runtime_authority_rows[(domain, key)]
+        source = mapping['authority_source']
+        formula_id = mapping['formula_id']
+        exception_reason = mapping['approved_exception_reason']
+
+        if source == 'canonical_formula_registry':
+            if not formula_id:
+                raise ValueError(f'{domain}:{key} is canonical_formula_registry but formula_id is empty.')
+            if formula_id not in canonical_formula_ids:
+                raise ValueError(f'{domain}:{key} references unknown canonical formula_id {formula_id!r}.')
+            authority[f'{domain}:{key}'] = {
+                'authority_source': source,
                 'formula_id': formula_id,
             }
-        else:
-            authority[f'workshop:{key}'] = {
-                'authority_source': 'bridge_formula_params',
+        elif source == 'approved_exception':
+            if not exception_reason:
+                raise ValueError(f'{domain}:{key} approved_exception must include approved_exception_reason.')
+            authority[f'{domain}:{key}'] = {
+                'authority_source': source,
                 'formula_id': '',
+                'approved_exception_reason': exception_reason,
             }
-    for key in lab:
-        authority[f'lab:{key}'] = {
-            'authority_source': 'bridge_formula_params',
-            'formula_id': '',
-        }
+        else:
+            raise ValueError(f'{domain}:{key} has unsupported authority_source {source!r}.')
     return authority
 
 

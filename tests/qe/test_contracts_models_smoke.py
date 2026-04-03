@@ -1,5 +1,8 @@
 from __future__ import annotations
 
+import csv
+from pathlib import Path
+
 import pytest
 
 from input.state_types import ScenarioProjectionState
@@ -227,13 +230,16 @@ def test_runtime_formula_keys_have_explicit_authority() -> None:
 
 
 def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
-    allowed = {'canonical_formula_registry', 'bridge_formula_params'}
+    allowed = {'canonical_formula_registry', 'approved_exception'}
     for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
         source = metadata.get('authority_source')
         assert source in allowed, f'{runtime_key} has unsupported authority source: {source!r}'
         if source == 'canonical_formula_registry':
             formula_id = (metadata.get('formula_id') or '').strip()
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
+        if source == 'approved_exception':
+            reason = (metadata.get('approved_exception_reason') or '').strip()
+            assert reason, f'{runtime_key} approved_exception must include approved_exception_reason.'
 
 
 def test_workshop_defense_pct_formula_matches_expected_track() -> None:
@@ -241,13 +247,55 @@ def test_workshop_defense_pct_formula_matches_expected_track() -> None:
     assert defense_pct_formula(99) == pytest.approx(49.5)
 
 
-def test_formula_authority_bridge_retirement_threshold_not_met_while_bridge_entries_exist() -> None:
-    bridge_entries = [
+def test_runtime_formula_authority_migration_complete_or_exceptioned() -> None:
+    non_migrated_entries = [
         runtime_key
         for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items()
-        if (metadata.get('authority_source') or '').strip() == 'bridge_formula_params'
+        if (metadata.get('authority_source') or '').strip()
+        not in {'canonical_formula_registry', 'approved_exception'}
     ]
-    assert bridge_entries, 'Bridge retirement threshold requires zero bridge_formula_params entries before retirement.'
+    assert not non_migrated_entries, f'Found unsupported migration state entries: {non_migrated_entries}'
+
+
+def test_runtime_formula_authority_has_1_to_1_runtime_coverage_and_valid_formula_ids() -> None:
+    runtime_keys = {f'workshop:{key}' for key in WORKSHOP_FORMULA_VALUES} | {f'lab:{key}' for key in LAB_FORMULA_VALUES}
+    authority_keys = set(RUNTIME_FORMULA_AUTHORITY)
+    assert runtime_keys == authority_keys
+
+    canonical_registry_path = Path(__file__).resolve().parents[2] / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
+    with canonical_registry_path.open(newline='', encoding='utf-8') as handle:
+        canonical_formula_ids = {row['formula_id'].strip() for row in csv.DictReader(handle)}
+
+    for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
+        source = (metadata.get('authority_source') or '').strip()
+        formula_id = (metadata.get('formula_id') or '').strip()
+        if source == 'canonical_formula_registry':
+            assert formula_id in canonical_formula_ids, f'{runtime_key} references unknown formula_id: {formula_id!r}'
+        elif source == 'approved_exception':
+            assert not formula_id, f'{runtime_key} approved_exception must not provide formula_id.'
+
+
+def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -> None:
+    authority_table_path = Path(__file__).resolve().parents[2] / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
+    with authority_table_path.open(newline='', encoding='utf-8') as handle:
+        rows = list(csv.DictReader(handle))
+
+    expected: dict[str, dict[str, str]] = {}
+    for row in rows:
+        runtime_key = f"{row['source_domain'].strip()}:{row['stat_name'].strip()}"
+        source = row['authority_source'].strip()
+        formula_id = (row.get('formula_id') or '').strip()
+        reason = (row.get('approved_exception_reason') or '').strip()
+        if source == 'canonical_formula_registry':
+            expected[runtime_key] = {'authority_source': source, 'formula_id': formula_id}
+        elif source == 'approved_exception':
+            expected[runtime_key] = {
+                'authority_source': source,
+                'formula_id': '',
+                'approved_exception_reason': reason,
+            }
+
+    assert RUNTIME_FORMULA_AUTHORITY == expected
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():
