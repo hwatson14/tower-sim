@@ -472,14 +472,14 @@ def _build_stats_dashboard_payload(
         if isinstance(panel, dict)
     }
     ep_compare = dict(ep_compare_publishable or {})
-    row_map_by_mode = {
-        'start_of_run': _stats_rows_by_surface(query_rows_start_of_run, selected_preset),
-        'max_progression': _stats_rows_by_surface(query_rows_max_progression, selected_preset),
-    }
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
 
     for preset_name in preset_options:
+        row_map_by_mode = {
+            'start_of_run': _stats_rows_by_surface(query_rows_start_of_run, preset_name),
+            'max_progression': _stats_rows_by_surface(query_rows_max_progression, preset_name),
+        }
         variants[preset_name] = {}
         for state_mode in state_mode_options:
             rows = row_map_by_mode.get(state_mode) or _stats_rows_by_surface(
