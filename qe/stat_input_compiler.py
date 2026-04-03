@@ -80,6 +80,36 @@ KB_TABLES = KB / 'global-rules' / 'tables'
 def _set_row_field(row: StatInput, field_name: str, value) -> None:
     object.__setattr__(row, field_name, value)
 
+
+def _canonical_module_rarity_label(value: object) -> str | None:
+    rarity = str(value or '').strip().lower()
+    if not rarity:
+        return None
+    if rarity.startswith('ancestral'):
+        return 'Ancestral'
+    if rarity.startswith('mythic'):
+        return 'Mythic'
+    if rarity.startswith('legendary'):
+        return 'Legendary'
+    if rarity.startswith('epic'):
+        return 'Epic'
+    if rarity.startswith('rare'):
+        return 'Rare'
+    if rarity.startswith('common'):
+        return 'Common'
+    return str(value).strip().title()
+
+
+def _module_substat_lookup_name(value: object) -> str:
+    name = str(value or '').strip()
+    if name == 'Defense %':
+        return 'Defense'
+    if name == 'Critical Factor':
+        return 'Crit Factor'
+    if name == 'MultiShot Chance':
+        return 'Multishot Chance'
+    return name
+
 LAB_VALUES_PATH = KB / 'labs' / 'tables' / 'lab-values.csv'
 WORKSHOP_VALUES_PATH = KB / 'workshop' / 'tables' / 'workshop-values.csv'
 WORKSHOP_VALUES_DERIVED_PATH = KB / 'workshop' / 'derived' / 'materialized' / 'workshop-values.csv'
@@ -1657,10 +1687,25 @@ def compile_stat_inputs(
                     continue
                 try:
                     kb_unit = module_substat_units.get(sub.name, '')
-                    rarity_key = str(mod.rarity).strip()
-                    exact = module_substat_values.get((slot_type.lower(), sub.name, rarity_key))
+                    substat_lookup_name = _module_substat_lookup_name(sub.name)
+                    rarity_source = mod.rarity
+                    if role == 'assist' and slot_state and getattr(slot_state, 'rarity_cap', None):
+                        rarity_source = slot_state.rarity_cap
+                    rarity_key = _canonical_module_rarity_label(rarity_source)
+                    exact = module_substat_values.get((slot_type.lower(), substat_lookup_name, rarity_key))
                     exact_unit = exact[1] if exact is not None else ''
-                    if '%' in display:
+                    if role == 'assist' and exact is not None:
+                        numeric = float(exact[0])
+                        inferred_unit = kb_unit or exact_unit
+                        if assist_substat_eff is not None:
+                            numeric = numeric * assist_substat_eff
+                        if inferred_unit == 'percent':
+                            value_type = 'percent_display'
+                        elif inferred_unit == 'multiplier':
+                            value_type = 'multiplier_display'
+                        else:
+                            value_type = 'resolved_value'
+                    elif '%' in display:
                         numeric = float(display.replace('+', '').replace('%', '').replace('?', '').strip())
                         if role == 'assist' and assist_substat_eff is not None:
                             numeric = numeric * assist_substat_eff
