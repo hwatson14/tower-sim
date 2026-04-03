@@ -3,6 +3,8 @@ from __future__ import annotations
 from dataclasses import replace
 from functools import lru_cache
 
+import pytest
+
 from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.routing import QEResolutionPlanner
@@ -73,3 +75,22 @@ def test_module_substat_parse_failures_are_emitted_and_diagnosed() -> None:
     assert class_counts.get('unresolved_module_substat_parse', 0) >= 1
     assert unresolved_diagnostics.get('module_substat_parse_failed_count', 0) >= 1
     assert (unresolved_diagnostics.get('module_substat_parse_failed_by_substat') or {}).get(bad_substat.name, 0) >= 1
+
+
+def test_assist_substat_uses_rarity_cap_table_value() -> None:
+    state = _base_account_state()
+    rows = compile_stat_inputs(
+        state,
+        preset_name=state.default_preset,
+        state_mode='start_of_run',
+    )
+    defense_rows = [
+        row for row in rows
+        if row.source_family == 'module_substat'
+        and row.source_name == 'Orbital Augment'
+        and row.stat_name == 'Defense %'
+    ]
+    assert defense_rows
+    # Armor assist cap is Epic at 10%; Defense substat is 3% at Epic in KB module-substats table.
+    assert defense_rows[0].value_type == 'percent_display'
+    assert defense_rows[0].value == pytest.approx(0.3)
