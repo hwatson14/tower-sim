@@ -141,13 +141,14 @@ MODULE_CARD_CSS = """
 .module-main-label{font-size:12px;color:#b5c0cc;text-align:right;}
 .module-unique{background:rgba(255,255,255,0.035);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:10px 11px;margin-top:10px;min-height:4.8em;font-size:12px;line-height:1.45;color:#d7dee6;box-sizing:border-box;}
 .module-unique-value{color:#87d7ff;font-weight:800;}
-.module-effects{display:flex;flex-direction:column;gap:5px;}
-.module-effect{display:grid;grid-template-columns:auto auto 1fr;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:5px 9px;}
+.module-effects{display:flex;flex-direction:column;gap:7px;}
+.module-effect{display:grid;grid-template-columns:86px 64px 1fr;gap:8px;align-items:center;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.05);border-radius:11px;padding:7px 9px;}
 .module-effect.state-locked{opacity:.72;background:rgba(255,255,255,0.02);}
 .module-effect.state-empty{opacity:.86;}
-.module-effect-value{font-weight:800;color:#ffffff;font-size:12px;line-height:1.2;min-width:56px;}
-.module-effect-label{font-size:12px;line-height:1.2;color:#d7dee6;}
-.module-chip{display:inline-flex;align-items:center;justify-content:center;align-self:center;padding:1px 6px;border-radius:999px;border:1px solid rgba(255,255,255,0.16);font-size:10px;line-height:1.2;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#d7dee6;}
+.module-effect-chip{display:flex;justify-content:center;}
+.module-effect-value{font-weight:800;color:#ffffff;font-size:12px;text-align:right;}
+.module-effect-label{font-size:12px;color:#d7dee6;text-align:left;}
+.module-chip{display:inline-flex;align-items:center;justify-content:center;width:80px;padding:2px 0;border-radius:999px;border:1px solid rgba(255,255,255,0.16);font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#d7dee6;text-align:center;}
 .rarity-common{border-color:#9da3ae;color:#c9ced6;}
 .rarity-rare{border-color:#63b3ff;color:#8fcbff;}
 .rarity-epic{border-color:#c084fc;color:#d8b4fe;}
@@ -196,12 +197,15 @@ def _module_effect_html(effect: dict) -> str:
     rarity_text = html.escape(str(effect.get('rarity_text') or ''))
     value_text = html.escape(str(effect.get('value_text') or ''))
     label_text = html.escape(str(effect.get('label_text') or ''))
-    chip = '&nbsp;'
+    chip = '<span class="module-chip">&nbsp;</span>'
     if rarity_text:
         chip = f'<span class="module-chip rarity-{rarity_key}">{rarity_text}</span>'
     value_html = f'<div class="module-effect-value">{value_text}</div>' if value_text else '<div class="module-effect-value"></div>'
     label_class = f'module-effect-label text-{rarity_key}' if rarity_key else 'module-effect-label'
-    return f'<div class="module-effect state-{state}">{chip}{value_html}<div class="{label_class}">{label_text}</div></div>'
+    return (
+        f'<div class="module-effect state-{state}"><div class="module-effect-chip">{chip}</div>'
+        f'{value_html}<div class="{label_class}">{label_text}</div></div>'
+    )
 
 
 def _module_rarity_display_parts(payload: dict) -> tuple[str, str]:
