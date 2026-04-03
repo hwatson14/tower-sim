@@ -439,6 +439,15 @@ def test_run_stats_diagnostics_contains_write_outputs_ms(tmp_path):
 
 
 @pytest.mark.live
+def test_ep_oracle_compare_exists_and_nonempty_for_sharded_path(tmp_path):
+    """Protect the sharded evaluator output publication contract for ep_oracle_compare.json."""
+    out_dir = tmp_path / "out"
+    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
+    execute_pipeline(request)
+
+    compare_path = out_dir / "ep_oracle_compare.json"
+    assert compare_path.exists()
+    compare_data = json.loads(compare_path.read_text(encoding='utf-8'))
 def test_ep_oracle_compare_populated(canonical_pipeline_artifacts):
     """ep_oracle_compare.json must be a non-empty dict."""
     compare = canonical_pipeline_artifacts['ep_oracle_compare']
