@@ -45,6 +45,9 @@ def run_stats_single_execution(tmp_path_factory):
     }
     parsed_outputs['diagnostics.json'] = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
     return {"out_dir": out_dir, "parsed_outputs": parsed_outputs}
+
+
+@pytest.fixture(scope="module")
 def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
     out_dir = tmp_path_factory.mktemp("canonical_pipeline_out")
     request = PipelineRunRequest(
