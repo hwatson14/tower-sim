@@ -238,8 +238,6 @@ def _build_uw_panel(
             module_effect = published_effects.get('module_effect')
             perk_effect = published_effects.get('perk_effect')
             final_value = published_effects.get('final_value')
-            if final_value is None:
-                final_value = track.get('resolved_value')
             rows.append(
                 {
                     'unlock': unlock,
