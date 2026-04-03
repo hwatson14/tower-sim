@@ -207,16 +207,12 @@ sections:
       - false
   stats_dashboard:
     panel_order:
-      - overview
+      - workshop
+      - derived
+      - uw_resolved
       - modules_context
       - cards_context
-      - uw_context
-      - relics_context
-      - vault_context
-      - offense
-      - defense
-      - utility_economy
-      - uw_resolved
+      - bots_context
     state_mode_options:
       - start_of_run
       - max_progression
@@ -262,8 +258,6 @@ sections:
         surface_id: state::tower.rend_armor_chance_pct
       - label: Rend Armor Multiplier
         surface_id: state::tower.rend_armor_multiplier
-      - label: Ultimate Damage
-        surface_id: state::tower.ultimate_damage_multiplier
     defense_surfaces:
       - label: Health
         surface_id: state::tower.hp
@@ -304,6 +298,13 @@ sections:
         surface_id: state::tower.package_chance_pct
       - label: Recovery Package Multiplier
         surface_id: state::tower.recovery_package_multiplier
+    derived_wall_economy_surfaces:
+      - label: Ultimate Damage
+        surface_id: state::tower.ultimate_damage_multiplier
+      - label: Wall Health
+        surface_id: state::wall.health
+      - label: Wall Rebuild
+        surface_id: state::wall.rebuild_time_seconds
       - label: Coins / Kill
         surface_id: state::economy.coins_per_kill_bonus
       - label: Coins / Wave
