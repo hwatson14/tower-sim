@@ -56,6 +56,7 @@ from app.display import (
     render_simple_bonus_table_html,
     render_simple_metric_panel_html,
     render_stats_uw_section_html,
+    render_workshop_stat_table_html,
     render_track_table_html,
     render_uw_track_table_html,
 )
@@ -1309,6 +1310,10 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
                 st.markdown(render_simple_bonus_table_html(payload), unsafe_allow_html=True)
             elif panel_type == 'resolved_stat_section':
                 st.markdown(render_resolved_stat_section_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'workshop_stat_table':
+                st.markdown(render_workshop_stat_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'context_track_table':
+                st.markdown(render_track_table_html(payload), unsafe_allow_html=True)
             elif panel_type == 'gap_notice':
                 st.markdown(render_gap_notice_html(payload), unsafe_allow_html=True)
             else:
