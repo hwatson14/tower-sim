@@ -434,19 +434,6 @@ def _stats_row_payload(
     }
 
 
-def _sum_contributor_values(row: dict[str, object], source_classes: tuple[str, ...]) -> float | None:
-    values: list[float] = []
-    for contributor in (row.get('contributors') or []):
-        if str((contributor or {}).get('source_class') or '') not in source_classes:
-            continue
-        value = (contributor or {}).get('value')
-        if isinstance(value, (int, float)):
-            values.append(float(value))
-    if not values:
-        return None
-    return float(sum(values))
-
-
 def _sum_contributor_values_filtered(
     row: dict[str, object],
     *,
@@ -468,6 +455,20 @@ def _sum_contributor_values_filtered(
     if not values:
         return None
     return float(sum(values))
+
+
+def _contributor_display_kind(contributor: dict[str, object]) -> str:
+    preferred = str((contributor.get('input_value_type') or contributor.get('value_type') or '')).strip().lower()
+    if preferred in {'pct', 'percent_display'}:
+        return 'pct'
+    if preferred in {'multiplier', 'multiplier_display'}:
+        return 'multiplier'
+    contributor_id = str(contributor.get('contributor_id') or '').lower()
+    if '__pct' in contributor_id or 'chance' in contributor_id or 'percent' in contributor_id:
+        return 'pct'
+    if '__multiplier' in contributor_id or 'multiplier' in contributor_id:
+        return 'multiplier'
+    return 'scalar'
 
 
 _DISPLAY_SUFFIXES: list[tuple[float, str]] = [(1e12, 'T'), (1e9, 'B'), (1e6, 'M'), (1e3, 'k')]
@@ -505,17 +506,46 @@ def _is_multiplier_surface(*, surface_id: str, value_type: str | None) -> bool:
 def _format_effect_value(
     value: float | None,
     *,
-    surface_id: str,
-    value_type: str | None,
+    display_kind: str,
     default_prefix: str = '+',
 ) -> str:
-    prefix = 'x' if _is_multiplier_surface(surface_id=surface_id, value_type=value_type) else default_prefix
     if value is None:
-        number = '0'
-    else:
-        number = _format_compact_number(value)
-    suffix = '%' if _is_percent_surface(surface_id=surface_id, value_type=value_type) else ''
+        return '—'
+    prefix = 'x' if display_kind == 'multiplier' else default_prefix
+    number = _format_compact_number(value)
+    suffix = '%' if display_kind == 'pct' else ''
     return f'{prefix} {number}{suffix}'
+
+
+def _format_effect_from_contributors(
+    row: dict[str, object],
+    *,
+    source_classes: tuple[str, ...],
+    contributor_prefixes: tuple[str, ...] = (),
+    invert_prefix_match: bool = False,
+) -> str:
+    values: list[float] = []
+    display_kinds: list[str] = []
+    for contributor in (row.get('contributors') or []):
+        if str((contributor or {}).get('source_class') or '') not in source_classes:
+            continue
+        contributor_id = str((contributor or {}).get('contributor_id') or '')
+        prefix_match = any(contributor_id.startswith(prefix) for prefix in contributor_prefixes)
+        if contributor_prefixes and ((prefix_match and invert_prefix_match) or (not prefix_match and not invert_prefix_match)):
+            continue
+        value = (contributor or {}).get('value')
+        if not isinstance(value, (int, float)):
+            continue
+        values.append(float(value))
+        display_kinds.append(_contributor_display_kind(dict(contributor or {})))
+    if not values:
+        return '—'
+    display_kind = 'scalar'
+    if any(kind == 'multiplier' for kind in display_kinds):
+        display_kind = 'multiplier'
+    elif any(kind == 'pct' for kind in display_kinds):
+        display_kind = 'pct'
+    return _format_effect_value(sum(values), display_kind=display_kind)
 
 
 def _format_surface_value(value: float | int | None, *, surface_id: str, value_type: str | None) -> str:
@@ -572,11 +602,6 @@ def _build_workshop_rows(
                 contributor_prefixes=('enhancement.',),
                 invert_prefix_match=True,
             )
-            enhancement_value = _sum_contributor_values_filtered(
-                start_row,
-                source_classes=('workshop',),
-                contributor_prefixes=('enhancement.',),
-            )
             row_payload = (
                 {
                     'name': spec['label'],
@@ -586,20 +611,18 @@ def _build_workshop_rows(
                         selected_preset=selected_preset,
                     ),
                     'workshop_value': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
-                    'lab_effects': _format_effect_value(_sum_contributor_values(start_row, ('labs',)), surface_id=surface_id, value_type=value_type),
-                    'module_effects': _format_effect_value(
-                        _sum_contributor_values(start_row, ('module_main', 'module_substat', 'module_unique')),
-                        surface_id=surface_id,
-                        value_type=value_type,
+                    'lab_effects': _format_effect_from_contributors(start_row, source_classes=('labs',)),
+                    'module_effects': _format_effect_from_contributors(
+                        start_row,
+                        source_classes=('module_main', 'module_substat', 'module_unique'),
                     ),
-                    'card_effects': _format_effect_value(_sum_contributor_values(start_row, ('cards',)), surface_id=surface_id, value_type=value_type),
-                    'enhancement_effects': _format_effect_value(enhancement_value, surface_id=surface_id, value_type=value_type),
+                    'card_effects': _format_effect_from_contributors(start_row, source_classes=('cards',)),
+                    'enhancement_effects': _format_effect_from_contributors(start_row, source_classes=('workshop',), contributor_prefixes=('enhancement.',)),
                     'start_of_run_value': _format_surface_value(start_row.get('final_value'), surface_id=surface_id, value_type=value_type),
-                    'perk_effects': _format_effect_value(_sum_contributor_values(start_row, ('perk',)), surface_id=surface_id, value_type=value_type),
-                    'other': _format_effect_value(
-                        _sum_contributor_values(start_row, ('base', 'relics', 'scenario_rules')),
-                        surface_id=surface_id,
-                        value_type=value_type,
+                    'perk_effects': _format_effect_from_contributors(start_row, source_classes=('perk',)),
+                    'other': _format_effect_from_contributors(
+                        start_row,
+                        source_classes=('base', 'relics', 'scenario_rules'),
                     ),
                     'max_progression_value': _format_surface_value(max_row.get('final_value'), surface_id=surface_id, value_type=value_type),
                 }

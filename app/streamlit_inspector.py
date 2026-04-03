@@ -470,19 +470,16 @@ def _sidebar() -> PipelineRunRequest:
     manual_inputs_raw = st.sidebar.text_input('Manual inputs override', value='')
     manual_inputs = Path(manual_inputs_raw) if manual_inputs_raw.strip() else None
     preset = st.sidebar.selectbox('Preset', options=['Farming', 'Tourney', 'Milestone'], index=0)
-    state_mode = st.sidebar.selectbox('State mode', options=['start_of_run', 'max_progression', 'account_baseline', 'gem_respec'], index=1)
-    perk_mode = st.sidebar.selectbox('Perk mode', options=['max_progression_policy', 'none', 'runtime_timeline'], index=0)
-    perk_state = st.sidebar.selectbox('Perk state', options=['auto', 'on', 'off'], index=0)
     include_slow_audits = st.sidebar.checkbox('Include slow audits', value=False)
     request = PipelineRunRequest(
         ids=ids_path,
         out=out_dir,
         preset=preset,
-        state_mode=state_mode,
+        state_mode='start_of_run',
         manual_inputs=manual_inputs,
-        perk_mode=perk_mode,
+        perk_mode='max_progression_policy',
         include_slow_audits=include_slow_audits,
-        perk_state=perk_state,
+        perk_state='auto',
     )
     if st.sidebar.button('Run current request', width='stretch'):
         _run_request(request)
@@ -1253,12 +1250,7 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         st.markdown(INPUT_DASHBOARD_CSS, unsafe_allow_html=True)
         preset_options = [str(name) for name in (dashboard.get('preset_options') or ['Farming'])]
         default_preset = str(dashboard.get('selected_preset') or preset_options[0])
-        selected_preset = st.selectbox(
-            'Preset',
-            options=preset_options,
-            index=preset_options.index(default_preset) if default_preset in preset_options else 0,
-            key='stats_dashboard_preset_selector',
-        )
+        selected_preset = default_preset if default_preset in preset_options else preset_options[0]
         selected_state_mode = str(dashboard.get('selected_state_mode') or 'max_progression')
 
         variants = dashboard.get('variants') or {}
