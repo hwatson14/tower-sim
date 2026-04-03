@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from app.publication import _build_input_dashboard_payload, _preset_options
+from app.publication import _build_input_dashboard_payload, _build_labs_panel, _preset_options
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -12,7 +12,6 @@ def test_input_dashboard_panel_contract_and_no_placeholder_headers():
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     payload = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     assert payload.get('schema_version') == 2
-    assert payload.get('deprecations') == []
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('labs', 'labs_bucket_grid'),
@@ -40,7 +39,7 @@ def test_input_dashboard_panel_contract_and_no_placeholder_headers():
     for group_name in ['offense', 'defense', 'utility']:
         grouped_rows.extend(((workshop_panel.get('payload') or {}).get('groups') or {}).get(group_name) or [])
     if grouped_rows:
-        assert {'unlock', 'name', 'coin_level', 'coin_value', 'max_level', 'max_value'}.issubset(grouped_rows[0].keys())
+        assert sorted(grouped_rows[0].keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
     uw_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'ultimate_weapons')
     uw_rows = (uw_panel.get('payload') or {}).get('rows') or []

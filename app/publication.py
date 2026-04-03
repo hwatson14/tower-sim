@@ -96,12 +96,14 @@ def _preset_options(account_state_payload: dict) -> list[str]:
         for preset_name in dict((row or {}).get('preset_levels') or {}).keys():
             _add_option(preset_name)
 
-    if not source_options:
-        return ['Farming']
-
     _add_option(default_preset)
+    if not source_options and len(seen) == 1:
+        return [default_preset] if default_preset else ['Farming']
+
     options = [name for name in canonical_order if name in seen]
     options.extend(name for name in source_options if name not in canonical_order)
+    if not options:
+        return ['Farming']
     return options
 
 
@@ -118,6 +120,8 @@ def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, obj
     bucket_labels = {str(k): str(v) for k, v in (labs_layout.get('bucket_labels') or {}).items()}
     lab_category_registry = load_lab_category_registry_by_raw_name()
 
+    layout_bucket_ids = set(bucket_order) | set(bucket_labels.keys())
+    misc_bucket_id = 'misc' if 'misc' in layout_bucket_ids else None
     rows_by_bucket: dict[str, list[dict[str, str]]] = {}
     gaps: list[dict[str, str]] = []
     for row in labs_rows:
@@ -151,8 +155,6 @@ def _build_workshop_panel(
     account_state_payload: dict,
     selected_preset: str,
     qe_dashboard_publications: dict[str, object] | None = None,
-    *,
-    schema_version: int = 2,
 ) -> tuple[dict[str, object], list[dict[str, str]]]:
     groups: dict[str, list[dict[str, object]]] = {'offense': [], 'defense': [], 'utility': []}
     gaps: list[dict[str, str]] = []
@@ -166,7 +168,6 @@ def _build_workshop_panel(
         preset_values = dict((row or {}).get('preset_values') or {})
         coin_value = workshop_coin_values.get(name, preset_values.get(selected_preset))
         max_value = workshop_max_values.get(name, '')
-        max_value_source = 'qe_published' if name in workshop_max_values else 'qe_unavailable'
         if not max_value:
             gaps.append(_dashboard_gap('workshop', 'max_value_not_published_upstream', f'Max Value missing for {name}'))
         output_row = {
@@ -176,19 +177,12 @@ def _build_workshop_panel(
             'coin_value': '' if coin_value is None else str(coin_value),
             'max_level': '' if (row or {}).get('max_level') is None else str((row or {}).get('max_level')),
             'max_value': '' if max_value is None else str(max_value),
-            'max_value_source': max_value_source,
         }
         groups[category].append(output_row)
     payload: dict[str, object] = {
         'column_headers': ['Unlock', 'Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'],
         'groups': groups,
     }
-    if schema_version <= 1:
-        payload['rows'] = [
-            *((groups.get('offense') or [])),
-            *((groups.get('defense') or [])),
-            *((groups.get('utility') or [])),
-        ]
     return ({'panel_id': 'workshop', 'panel_type': 'grouped_workshop_table', 'title': 'Workshop', 'payload': payload}, gaps)
 
 
@@ -329,7 +323,6 @@ def _build_input_dashboard_payload(
     *,
     qe_dashboard_publications: dict[str, object] | None = None,
     module_card_payloads: dict[str, object] | None = None,
-    schema_version: int = 2,
 ) -> dict[str, object]:
     from input.state_builder import load_section_layout_contract
 
@@ -342,14 +335,12 @@ def _build_input_dashboard_payload(
     panels = []
     gaps: list[dict[str, str]] = []
 
-    normalized_schema_version = 2 if schema_version >= 2 else 1
     for builder in [
         lambda: _build_labs_panel(account_state_payload, section_layout),
         lambda: _build_workshop_panel(
             account_state_payload,
             selected_preset,
             qe_dashboard_publications=qe_dashboard_publications,
-            schema_version=normalized_schema_version,
         ),
         lambda: _build_workshop_enhancements_panel(account_state_payload, selected_preset),
         lambda: _build_uw_panel(account_state_payload, qe_dashboard_publications=qe_dashboard_publications),
@@ -365,24 +356,11 @@ def _build_input_dashboard_payload(
         panels.append(panel)
         gaps.extend(panel_gaps)
 
-    deprecations: list[dict[str, object]] = []
-    if normalized_schema_version == 1:
-        deprecations.append(
-            {
-                'id': 'workshop_payload_rows',
-                'status': 'deprecated',
-                'deprecated_in': 2,
-                'removal_target': 3,
-                'message': 'workshop.payload.rows is legacy. Migrate to workshop.payload.groups before schema_version 3.',
-            }
-        )
-
     return {
         'schema_version': 2,
         'selected_preset': selected_preset,
         'preset_options': preset_options,
         'upstream_gaps': gaps,
-        'deprecations': deprecations,
         'panels': panels,
         'debug_manifest': {
             'source_artifacts': ['account_state.json', 'module_card_payloads.json', 'diagnostics.json'],

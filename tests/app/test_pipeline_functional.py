@@ -155,19 +155,24 @@ def test_pipeline_computed_qe_publications_reach_input_dashboard(tmp_path, monke
     dashboard = json.loads((out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
 
-    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    workshop_groups = (panel_by_id['workshop'].get('payload') or {}).get('groups') or {}
+    workshop_rows = (
+        (workshop_groups.get('offense') or [])
+        + (workshop_groups.get('defense') or [])
+        + (workshop_groups.get('utility') or [])
+    )
     damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
     assert damage_row is not None
     assert damage_row.get('coin_value') == 'xSENTINEL_COIN'
     assert damage_row.get('max_value') == 'xSENTINEL_MAX'
-    assert damage_row.get('max_value_source') == 'qe_published'
+    assert sorted(damage_row.keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
     uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
-    uw_damage_row = next((row for row in uw_rows if row.get('uw_name') == 'Chain Lightning' and row.get('track_name') == 'Damage'), None)
+    uw_damage_row = next((row for row in uw_rows if row.get('uw') == 'Chain Lightning' and row.get('track') == 'Damage'), None)
     assert uw_damage_row is not None
-    assert uw_damage_row.get('module_effect') == 'xSENTINEL_MODULE'
-    assert uw_damage_row.get('perk_effect') == 'xSENTINEL_PERK'
-    assert uw_damage_row.get('final_value') == 'xSENTINEL_FINAL'
+    assert uw_damage_row.get('module') == 'xSENTINEL_MODULE'
+    assert uw_damage_row.get('perk') == 'xSENTINEL_PERK'
+    assert uw_damage_row.get('final') == 'xSENTINEL_FINAL'
 
 
 def test_input_dashboard_payload_consumes_qe_publications():
@@ -194,7 +199,7 @@ def test_input_dashboard_payload_consumes_qe_publications():
     assert damage_row is not None
     assert damage_row.get('coin_value') == 'x1234'
     assert damage_row.get('max_value') == 'x9000'
-    assert damage_row.get('max_value_source') == 'qe_published'
+    assert sorted(damage_row.keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
     uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
     uw_damage_row = next((row for row in uw_rows if row.get('uw') == 'Chain Lightning' and row.get('track') == 'Damage'), None)
