@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -90,7 +91,7 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
         )
     )
     assert result.exit_code == 0
-    payload = __import__('json').loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
+    payload = json.loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
     assert {'schema_version', 'selected_preset', 'preset_options', 'upstream_gaps', 'panels', 'debug_manifest'}.issubset(payload.keys())
     assert payload['selected_preset']
     assert {'Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5'}.issubset(set(payload.get('preset_options') or []))
@@ -115,6 +116,36 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
     assert damage_row.get('coin_value') == 'xUI_SENTINEL_COIN'
     assert damage_row.get('max_value') == 'xUI_SENTINEL_MAX'
     assert damage_row.get('max_value_source') == 'qe_published'
+
+
+def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=tmp_path / 'out',
+        )
+    )
+    assert result.exit_code == 0
+    dashboard = json.loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
+    account_state = json.loads((result.out_dir / 'account_state.json').read_text(encoding='utf-8'))
+    cards_panel = next(panel for panel in (dashboard.get('panels') or []) if panel.get('panel_id') == 'cards')
+    payload = cards_panel.get('payload') or {}
+
+    selected_preset = str(dashboard.get('selected_preset'))
+    preset_options = [str(name) for name in (dashboard.get('preset_options') or [])]
+    preset_rows_by_preset = payload.get('preset_rows_by_preset') or {}
+    assert isinstance(preset_rows_by_preset, dict)
+    assert selected_preset in preset_rows_by_preset
+    assert set(preset_options).issubset(set(preset_rows_by_preset))
+    selected_names_from_dashboard = {
+        str(row.get('name'))
+        for row in (preset_rows_by_preset.get(selected_preset) or [])
+        if str(row.get('selected') or '').strip() == 'Yes'
+    }
+    selected_names_from_state = set((account_state.get('card_presets') or {}).get(selected_preset) or [])
+    assert selected_names_from_dashboard == selected_names_from_state
 
 
 def test_streamlit_app_contract_is_frozen_in_repo() -> None:
@@ -147,6 +178,17 @@ def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> 
     assert 'st.table(' not in production_block
     assert 'st.dataframe(' not in production_block
     assert 'st.data_editor(' not in production_block
+
+
+def test_inputs_dashboard_cards_panel_uses_published_rows_without_account_state_mutation() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    start = text.index("elif panel_type == 'cards_inventory_and_preset':")
+    end = text.index("elif panel_type == 'track_table':", start)
+    cards_block = text[start:end]
+    assert "payload.get('preset_rows_by_preset')" in cards_block
+    assert "preset_rows_by_preset.get(selected_preset)" in cards_block
+    assert "active_artifacts.get('account_state.json'" not in cards_block
+    assert "st.error(" in cards_block
 
 
 def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):

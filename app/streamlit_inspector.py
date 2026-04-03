@@ -1341,13 +1341,17 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
             elif panel_type == 'uw_track_table':
                 st.markdown(render_uw_track_table_html(payload), unsafe_allow_html=True)
             elif panel_type == 'cards_inventory_and_preset':
-                selected_cards = set((active_artifacts.get('account_state.json', {}).get('card_presets', {}) or {}).get(selected_preset) or [])
-                mutable_payload = dict(payload)
-                mutable_payload['preset_rows'] = [
-                    {'name': row.get('name', ''), 'selected': 'Yes' if row.get('name') in selected_cards else ''}
-                    for row in (payload.get('preset_rows') or [])
-                ]
-                st.markdown(render_cards_inventory_and_preset_html(mutable_payload), unsafe_allow_html=True)
+                preset_rows_by_preset = payload.get('preset_rows_by_preset') or {}
+                selected_rows = preset_rows_by_preset.get(selected_preset)
+                if selected_rows is None:
+                    st.error(
+                        'Cards panel unavailable: selected preset is missing in publication output. '
+                        'Re-run pipeline to refresh input_dashboard.json.'
+                    )
+                    continue
+                render_payload = dict(payload)
+                render_payload['preset_rows'] = selected_rows
+                st.markdown(render_cards_inventory_and_preset_html(render_payload), unsafe_allow_html=True)
             elif panel_type == 'track_table':
                 st.markdown(render_track_table_html(payload), unsafe_allow_html=True)
             elif panel_type == 'simple_bonus_table':

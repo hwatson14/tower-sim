@@ -252,9 +252,31 @@ def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tup
     inventory_rows = []
     for card_name, card_payload in (account_state_payload.get('cards_inventory') or {}).items():
         inventory_rows.append({'name': card_name, 'level': card_payload.get('level') or '', 'mastery': card_payload.get('mastery_lab_level') or ''})
-    selected_cards = set((account_state_payload.get('card_presets') or {}).get(selected_preset) or [])
-    preset_rows = [{'name': card_name, 'selected': 'Yes' if card_name in selected_cards else ''} for card_name in sorted((account_state_payload.get('cards_inventory') or {}).keys())]
-    return ({'panel_id': 'cards', 'panel_type': 'cards_inventory_and_preset', 'title': 'Cards', 'payload': {'inventory_rows': inventory_rows, 'preset_rows': preset_rows, 'slot_count': account_state_payload.get('card_slots_unlocked') or ''}}, [])
+    card_names = sorted((account_state_payload.get('cards_inventory') or {}).keys())
+    preset_rows_by_preset: dict[str, list[dict[str, str]]] = {}
+    card_presets = dict(account_state_payload.get('card_presets') or {})
+    for preset_name in _preset_options(account_state_payload):
+        preset_cards = card_presets.get(preset_name) or []
+        selected_cards = set(preset_cards or [])
+        preset_rows_by_preset[str(preset_name)] = [
+            {'name': card_name, 'selected': 'Yes' if card_name in selected_cards else ''} for card_name in card_names
+        ]
+
+    selected_rows = preset_rows_by_preset.get(selected_preset, [{'name': card_name, 'selected': ''} for card_name in card_names])
+    return (
+        {
+            'panel_id': 'cards',
+            'panel_type': 'cards_inventory_and_preset',
+            'title': 'Cards',
+            'payload': {
+                'inventory_rows': inventory_rows,
+                'preset_rows': selected_rows,
+                'preset_rows_by_preset': preset_rows_by_preset,
+                'slot_count': account_state_payload.get('card_slots_unlocked') or '',
+            },
+        },
+        [],
+    )
 
 
 def _build_bots_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
