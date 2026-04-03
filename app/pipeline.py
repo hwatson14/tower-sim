@@ -211,7 +211,6 @@ def _build_input_dashboard_qe_publications(
         workshop_max_values[source_name] = projected_row_payload.get('display_value') or projected_row_payload.get('final_value')
 
     uw_track_effects: dict[str, dict[str, object]] = {}
-    account_state_labs = getattr(account_state, 'labs', None) or {}
     for uw_name, tracks in (account_state.uw_tracks or {}).items():
         uw_slug = _uw_slug(uw_name)
         for track_row in tracks or []:
@@ -230,19 +229,22 @@ def _build_input_dashboard_qe_publications(
                     break
             row_payload = projected_normalized_rows.get(surface_id or '') or {}
             contributors = row_payload.get('contributors') or []
+            lab_values = []
             module_values = []
             perk_values = []
             for contributor in contributors:
                 source_family = str((contributor or {}).get('source_family') or '').strip().lower()
                 display = (contributor or {}).get('display_value')
                 value = (contributor or {}).get('value')
+                if source_family == 'lab' and (display is not None or value is not None):
+                    lab_values.append(str(display if display is not None else value))
                 if 'module' in source_family and (display is not None or value is not None):
                     module_values.append(str(display if display is not None else value))
                 if source_family == 'perk' and (display is not None or value is not None):
                     perk_values.append(str(display if display is not None else value))
             uw_track_effects[f'{uw_name}::{track_name}'] = {
                 'surface_id': surface_id,
-                'lab_effect': account_state_labs.get(f'{uw_name} {track_name}'),
+                'lab_effect': '; '.join(lab_values) if lab_values else None,
                 'module_effect': '; '.join(module_values) if module_values else None,
                 'perk_effect': '; '.join(perk_values) if perk_values else None,
                 'final_value': row_payload.get('display_value') or row_payload.get('final_value'),
