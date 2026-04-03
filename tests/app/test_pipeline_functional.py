@@ -29,6 +29,22 @@ IDS_PATH = ROOT / "input" / "imports" / "ids.csv"
 
 
 @pytest.fixture(scope="module")
+def run_stats_single_execution(tmp_path_factory):
+    """Execute RunStatsSession once and return parsed canonical outputs plus output directory."""
+    out_dir = tmp_path_factory.mktemp("run_stats_out")
+    args = SimpleNamespace(
+        ids=IDS_PATH, out=out_dir, perk_mode='none', perk_state='auto', manual_inputs=None,
+    )
+    session = RunStatsSession()
+    rc = session.execute(args)
+    assert rc == 0
+
+    parsed_outputs = {
+        filename: json.loads((out_dir / filename).read_text(encoding='utf-8'))
+        for filename in _RUN_STATS_QUERY_OUTPUTS.values()
+    }
+    parsed_outputs['diagnostics.json'] = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    return {"out_dir": out_dir, "parsed_outputs": parsed_outputs}
 def canonical_pipeline_artifacts(tmp_path_factory: pytest.TempPathFactory) -> dict[str, object]:
     out_dir = tmp_path_factory.mktemp("canonical_pipeline_out")
     request = PipelineRunRequest(
@@ -327,16 +343,9 @@ def test_optimizer_scores_populated(canonical_pipeline_artifacts):
 
 
 @pytest.mark.live
-def test_run_stats_canonical_output_filenames(tmp_path):
+def test_run_stats_canonical_output_filenames(run_stats_single_execution):
     """RunStatsSession.execute() must write canonical run_stats_query_plan_* and run_stats_query_rows_* filenames."""
-    out_dir = tmp_path / "run_stats_out"
-    out_dir.mkdir()
-    args = SimpleNamespace(
-        ids=IDS_PATH, out=out_dir, perk_mode='none', perk_state='auto', manual_inputs=None,
-    )
-    session = RunStatsSession()
-    rc = session.execute(args)
-    assert rc == 0
+    out_dir = run_stats_single_execution["out_dir"]
 
     for key, filename in _RUN_STATS_QUERY_OUTPUTS.items():
         assert (out_dir / filename).exists(), f"Expected canonical output {filename} but it was not written"
@@ -421,18 +430,9 @@ def test_run_stats_session_cache_key_differs_by_perk_mode(tmp_path):
 
 
 @pytest.mark.live
-def test_run_stats_diagnostics_contains_write_outputs_ms(tmp_path):
+def test_run_stats_diagnostics_contains_write_outputs_ms(run_stats_single_execution):
     """diagnostics.json persisted by RunStatsSession.execute() must include write_outputs_ms."""
-    out_dir = tmp_path / "run_stats_out"
-    out_dir.mkdir()
-    args = SimpleNamespace(
-        ids=IDS_PATH, out=out_dir, perk_mode='none', perk_state='auto', manual_inputs=None,
-    )
-    session = RunStatsSession()
-    rc = session.execute(args)
-    assert rc == 0
-
-    diag = json.loads((out_dir / 'diagnostics.json').read_text(encoding='utf-8'))
+    diag = run_stats_single_execution["parsed_outputs"]["diagnostics.json"]
     timings = diag.get('timings_ms', {})
     assert 'write_outputs_ms' in timings, "diagnostics.json must contain write_outputs_ms from final write"
     assert isinstance(timings['write_outputs_ms'], (int, float)), "write_outputs_ms must be numeric"
