@@ -259,6 +259,7 @@ def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
         compare_rows_by_preset={
             'Farming': {
                 'state::tower.damage': {'display_value': 'x100'},
+                'state::tower.crit_chance_pct': {'display_value': '69%'},
                 'state::uw.chain_lightning.damage_multiplier': {
                     'display_value': 'x903',
                     'contributors': [],
@@ -268,6 +269,7 @@ def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
         projected_compare_rows_by_preset={
             'Farming': {
                 'state::tower.damage': {'display_value': 'x9000'},
+                'state::tower.crit_chance_pct': {'display_value': '99%'},
                 'state::uw.chain_lightning.damage_multiplier': {
                     'display_value': 'x903',
                     'contributors': [],
@@ -281,11 +283,19 @@ def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
                 destination_id='tower_damage',
                 contributor_id='workshop__tower__damage__flat',
             ),
+            SimpleNamespace(
+                source_family='workshop',
+                source_name='Critical Chance',
+                destination_id='tower_crit_chance_pct',
+                contributor_id='workshop__tower__crit_chance__pct',
+            ),
         ],
         preset_name='Farming',
     )
     assert published.get('workshop_coin_values', {}).get('Damage') == 'x100'
     assert published.get('workshop_max_values', {}).get('Damage') == 'x9000'
+    assert published.get('workshop_coin_values', {}).get('Critical Chance') == '69%'
+    assert published.get('workshop_max_values', {}).get('Critical Chance') == '99%'
     effects = published.get('uw_track_effects') or {}
     assert 'Chain Lightning::Damage' in effects
     assert effects['Chain Lightning::Damage']['final_value'] == 'x903'

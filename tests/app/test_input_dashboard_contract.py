@@ -84,6 +84,83 @@ def test_input_dashboard_uw_upstream_gaps_are_field_conditional():
     assert 'final_column_not_published_upstream' not in uw_damage_gap_ids
 
 
+def test_input_dashboard_preserves_false_unlock_tokens():
+    payload = _build_input_dashboard_payload(
+        {
+            'default_preset': 'Farming',
+            'workshop': {
+                'Damage': {
+                    'category': 'offense',
+                    'unlocked': False,
+                    'preset_levels': {'Farming': 1},
+                    'preset_values': {'Farming': 'x1'},
+                    'max_level': 2,
+                }
+            },
+            'workshop_enhancement_tracks': {},
+            'ultimate_weapons': {'Chain Lightning': {'unlocked': False}},
+            'uw_tracks': {'Chain Lightning': [{'track_name': 'Damage', 'level': 1, 'resolved_value': 10}]},
+            'uw_plus_tracks': {},
+            'card_presets': {},
+            'cards_inventory': {},
+            'card_slots_unlocked': 0,
+            'bots': {},
+            'relics': {},
+            'vault': {},
+            'guardians': {},
+            'themes_and_songs': {},
+            'raw_sections': {'Labs': []},
+            'module_presets': {},
+            'modules_inventory': {},
+        },
+        {},
+        module_card_payloads={},
+    )
+    panel_by_id = {panel.get('panel_id'): panel for panel in (payload.get('panels') or [])}
+    workshop_row = (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('offense') or [{}])[0]
+    uw_row = ((panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or [{}])[0]
+    assert workshop_row.get('unlock') == 'false'
+    assert uw_row.get('unlock') == 'false'
+
+
+def test_workshop_max_value_falls_back_to_coin_value_when_level_is_max():
+    payload = _build_input_dashboard_payload(
+        {
+            'default_preset': 'Farming',
+            'workshop': {
+                'Attack Speed': {
+                    'category': 'offense',
+                    'unlocked': True,
+                    'preset_levels': {'Farming': 99},
+                    'preset_values': {'Farming': 'x1.99'},
+                    'max_level': 99,
+                }
+            },
+            'workshop_enhancement_tracks': {},
+            'ultimate_weapons': {},
+            'uw_tracks': {},
+            'uw_plus_tracks': {},
+            'card_presets': {},
+            'cards_inventory': {},
+            'card_slots_unlocked': 0,
+            'bots': {},
+            'relics': {},
+            'vault': {},
+            'guardians': {},
+            'themes_and_songs': {},
+            'raw_sections': {'Labs': []},
+            'module_presets': {},
+            'modules_inventory': {},
+        },
+        {},
+        module_card_payloads={},
+        qe_dashboard_publications={'workshop_coin_values': {'Attack Speed': 'x1.99'}},
+    )
+    panel_by_id = {panel.get('panel_id'): panel for panel in (payload.get('panels') or [])}
+    workshop_row = (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('offense') or [{}])[0]
+    assert workshop_row.get('max_value') == 'x1.99'
+
+
 def test_modules_panel_uses_module_card_payload_shape_when_available():
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     module_payloads = {'presets': {'Farming': {'cannon': {'primary': {'module_name': 'ACP'}}}}}

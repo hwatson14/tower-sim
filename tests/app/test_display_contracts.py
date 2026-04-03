@@ -108,6 +108,8 @@ def test_workshop_renderer_contains_group_labels():
     assert 'Offense' in html
     assert 'Defense' in html
     assert 'Utility' in html
+    assert 'inputs-triple' in html
+    assert 'inputs-table-compact' in html
 
 
 def test_uw_renderer_contains_expected_columns():

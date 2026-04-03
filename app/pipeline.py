@@ -64,6 +64,7 @@ from input.runtime_state import build_runtime_state
 from qe.contracts import (
     normalize_surface_id_to_contract,
     normalize_contract_payload,
+    compat_surface_from_legacy_canonical,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
@@ -151,24 +152,53 @@ def _build_input_dashboard_qe_publications(
         normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in projected_preset_rows.items()
     }
 
-    def _surface_id_from_row(row: object) -> str:
+    def _surface_id_candidates_from_row(row: object) -> list[str]:
+        candidates: list[str] = []
+
+        def _add_candidate(value: object) -> None:
+            text = str(value or '').strip()
+            if text and text not in candidates:
+                candidates.append(text)
+
         destination_id = str(getattr(row, 'destination_id', '') or '').strip()
         if destination_id:
-            normalized = normalize_surface_id_to_contract(destination_id)
-            if normalized in current_normalized_rows or normalized in projected_normalized_rows:
-                return normalized
+            _add_candidate(destination_id)
+            _add_candidate(normalize_surface_id_to_contract(destination_id))
+            if not destination_id.startswith('state::'):
+                _add_candidate(f'state::{destination_id}')
+            if '_' in destination_id and not destination_id.startswith('state::'):
+                prefix, tail = destination_id.split('_', 1)
+                _add_candidate(f'state::{prefix}.{tail}')
+            if '_' in destination_id and not destination_id.startswith('state::'):
+                _add_candidate(f"state::{destination_id.replace('_', '.')}")
+            compat_surface = str(compat_surface_from_legacy_canonical(destination_id) or '').strip()
+            if compat_surface:
+                _add_candidate(compat_surface)
+
         contributor_id = str(getattr(row, 'contributor_id', '') or '').strip()
         parts = contributor_id.split('__')
         if len(parts) >= 3 and parts[1] and parts[2]:
-            return f"state::{parts[1]}.{parts[2]}"
-        return ''
+            _add_candidate(f"state::{parts[1]}.{parts[2]}")
+            if len(parts) >= 4 and parts[3]:
+                _add_candidate(f"state::{parts[1]}.{parts[2]}.{parts[3]}")
+            if parts[0] == 'uw_upgrade':
+                uw_prefix = parts[1].replace('_', '.')
+                _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}")
+                if len(parts) >= 4 and parts[3]:
+                    _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}_{parts[3]}")
+                    _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}.{parts[3]}")
+        return candidates
 
     workshop_surface_map: dict[str, str] = {}
     for row in stat_inputs:
         if str(getattr(row, 'source_family', '')).strip() != 'workshop':
             continue
         source_name = str(getattr(row, 'source_name', '') or getattr(row, 'stat_name', '') or '').strip()
-        surface_id = _surface_id_from_row(row)
+        surface_id = ''
+        for candidate_surface_id in _surface_id_candidates_from_row(row):
+            if candidate_surface_id in current_normalized_rows or candidate_surface_id in projected_normalized_rows:
+                surface_id = candidate_surface_id
+                break
         if source_name and surface_id and source_name not in workshop_surface_map:
             workshop_surface_map[source_name] = surface_id
 
@@ -181,6 +211,7 @@ def _build_input_dashboard_qe_publications(
         workshop_max_values[source_name] = projected_row_payload.get('display_value') or projected_row_payload.get('final_value')
 
     uw_track_effects: dict[str, dict[str, object]] = {}
+    account_state_labs = getattr(account_state, 'labs', None) or {}
     for uw_name, tracks in (account_state.uw_tracks or {}).items():
         uw_slug = _uw_slug(uw_name)
         for track_row in tracks or []:
@@ -211,6 +242,7 @@ def _build_input_dashboard_qe_publications(
                     perk_values.append(str(display if display is not None else value))
             uw_track_effects[f'{uw_name}::{track_name}'] = {
                 'surface_id': surface_id,
+                'lab_effect': account_state_labs.get(f'{uw_name} {track_name}'),
                 'module_effect': '; '.join(module_values) if module_values else None,
                 'perk_effect': '; '.join(perk_values) if perk_values else None,
                 'final_value': row_payload.get('display_value') or row_payload.get('final_value'),
