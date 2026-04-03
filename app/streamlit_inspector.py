@@ -893,7 +893,14 @@ def _render_sectioned_run_stats_table(frame: pd.DataFrame, *, show_raw_ids: bool
         ]
         if show_raw_ids:
             table_columns.insert(2, 'raw_surface_id')
-        st.dataframe(section_df[table_columns], width='stretch', hide_index=True)
+        st.dataframe(
+            _arrow_safe_frame(
+                section_df[table_columns],
+                columns=('start_of_run_value', 'max_progression_value', 'ep value', 'ep delta vs max'),
+            ),
+            width='stretch',
+            hide_index=True,
+        )
 
 
 def _max_progression_lookup(frame: pd.DataFrame) -> dict[str, dict]:

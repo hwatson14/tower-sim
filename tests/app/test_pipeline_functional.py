@@ -19,12 +19,29 @@ from app.pipeline import (
     _RUN_STATS_QUERY_OUTPUTS,
     _path_cache_token,
     _effective_manual_inputs_path,
+    _run_stats_perk_state,
 )
 from app.pipeline import RunStatsSession
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
 IDS_PATH = ROOT / "input" / "imports" / "ids.csv"
+
+
+def test_run_stats_start_of_run_forces_perks_off() -> None:
+    account_state = SimpleNamespace(
+        perk_presets={'Farming': {}},
+        active_perk_preset='Farming',
+    )
+    preset_name, perks_enabled = _run_stats_perk_state(
+        account_state,
+        preset_name='Farming',
+        perk_state='on',
+        perk_mode='max_progression_policy',
+        state_mode='start_of_run',
+    )
+    assert preset_name is None
+    assert perks_enabled is False
 
 
 @pytest.mark.live
