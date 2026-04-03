@@ -7,7 +7,67 @@ sections:
       Milestone: 5
       Preset 4: 7
       Preset 5: 9
+    preset_value_columns:
+      Farming: 2
+      Tourney: 4
+      Milestone: 6
+      Preset 4: 8
+      Preset 5: 10
     max_level_column: 11
+    category_registry:
+      offense:
+        - Damage
+        - Attack Speed
+        - Critical Chance
+        - Critical Factor
+        - Range
+        - Damage / Meter
+        - Super Crit Chance
+        - Super Crit Mult
+        - Rend Armor Chance
+        - Rend Armor Multi
+        - Bounce Shot Chance
+        - Bounce Shot Range
+        - Bounce Shot Targets
+        - Rapid Fire Chance
+        - Rapid Fire Duration
+        - Multishot Chance
+        - Multishot Targets
+      defense:
+        - Health
+        - Health Regen
+        - Defense %
+        - Defense Absolute
+        - Thorn Damage
+        - Lifesteal
+        - Knockback Chance
+        - Knockback Force
+        - Orbs
+        - Orb Speed
+        - Orb Size
+        - Shockwave Frequency
+        - Shockwave Size
+        - Land Mine Chance
+        - Land Mine Damage
+        - Land Mine Radius
+        - Death Defy
+      utility:
+        - Coin / Kill
+        - Cash Bonus
+        - Cash / Wave
+        - Free Attack Upgrade
+        - Free Defense Upgrade
+        - Free Utility Upgrade
+        - Interest / Wave
+        - Recovery Package Amount
+        - Recovery Package Max
+        - Recovery Package Chance
+        - Package After Boss
+        - Utility Discount
+        - Free Upgrade Chance
+        - Enemy Attack Level Skip
+        - Enemy Health Level Skip
+        - Rend Armor Mult
   ws_plus:
     name_column: 0
     multiplier_column: 1
@@ -19,6 +79,158 @@ sections:
       Preset 5: 6
     max_level_column: 7
     header_rows: 2
+    category_registry:
+      offense:
+        - Damage +
+        - Attack Speed +
+        - Crit Chance +
+        - Crit Factor +
+        - Range +
+        - Damage / Meter +
+        - Super Crit Chance +
+        - Super Crit Mult +
+        - Rend Armor Chance +
+        - Rend Armor Multi +
+        - Bounce Shot Chance +
+        - Bounce Shot Range +
+        - Bounce Shot Targets +
+        - Rapid Fire Chance +
+        - Rapid Fire Duration +
+        - Multishot Chance +
+        - Multishot Targets +
+      defense:
+        - Health +
+        - Health Regen +
+        - Defense % +
+        - Defense Absolute +
+        - Thorn Damage +
+        - Lifesteal +
+        - Knockback Chance +
+        - Knockback Force +
+        - Orbs +
+        - Orb Speed +
+        - Orb Size +
+        - Shockwave Frequency +
+        - Shockwave Size +
+        - Land Mine Chance +
+        - Land Mine Damage +
+        - Land Mine Radius +
+        - Death Defy +
+      utility:
+        - Coin / Kill +
+        - Cash Bonus +
+        - Cash / Wave +
+        - Free Attack Upgrade +
+        - Free Defense Upgrade +
+        - Free Utility Upgrade +
+        - Interest / Wave +
+        - Recovery Package Amount +
+        - Recovery Package Max +
+        - Recovery Package Chance +
+        - Package After Boss +
+        - Utility Discount +
+        - Free Upgrade Chance +
+        - Enemy Attack Level Skip +
+        - Enemy Health Level Skip +
+  labs:
+    bucket_order:
+      - main
+      - attack_defense
+      - utility_economy
+      - ultimate_weapons
+      - bots
+      - modules
+      - perks
+      - misc
+    bucket_labels:
+      main: Main
+      attack_defense: Attack / Defense
+      utility_economy: Utility / Economy
+      ultimate_weapons: Ultimate Weapons
+      bots: Bots
+      modules: Modules
+      perks: Perks
+      misc: Misc
+    bucket_registry:
+      Attack Speed Lab: attack_defense
+      Critical Factor Lab: attack_defense
+      Crit Chance Lab: attack_defense
+      Damage Lab: attack_defense
+      Damage / Meter Lab: attack_defense
+      Defense % Lab: attack_defense
+      Defense Absolute Lab: attack_defense
+      Health Lab: attack_defense
+      Health Regen Lab: attack_defense
+      Lifesteal Lab: attack_defense
+      Land Mine Damage Lab: attack_defense
+      Land Mine Radius Lab: attack_defense
+      Shockwave Size Lab: attack_defense
+      Shockwave Frequency Lab: attack_defense
+      Thorn Damage Lab: attack_defense
+      Range Lab: attack_defense
+      Orb Size Lab: attack_defense
+      Orb Speed Lab: attack_defense
+      Extra Orbs Lab: attack_defense
+      Death Defy Lab: attack_defense
+      Enemy Level Skip Lab: utility_economy
+      Attack Speed Perk Lab: utility_economy
+      Cash Bonus Lab: utility_economy
+      Coins / Kill Lab: utility_economy
+      Cash / Wave Lab: utility_economy
+      Interest Lab: utility_economy
+      Free Attack Upgrade Lab: utility_economy
+      Free Defense Upgrade Lab: utility_economy
+      Free Utility Upgrade Lab: utility_economy
+      Recovery Package Amount Lab: utility_economy
+      Recovery Package Chance Lab: utility_economy
+      Recovery Package Max Lab: utility_economy
+      Standard Perk Bonus: perks
+      Trade-Off Perk Bonus: perks
+      Rare Module Drop Chance: modules
+      Common Module Chance: modules
+      Rare Module Chance: modules
+      Epic Module Chance: modules
+      Module Shard Cost: modules
+      Golden Tower Duration Lab: ultimate_weapons
+      Golden Tower Bonus Lab: ultimate_weapons
+      Golden Tower Cooldown Lab: ultimate_weapons
+      Death Wave Damage Lab: ultimate_weapons
+      Death Wave Quantity Lab: ultimate_weapons
+      Chrono Field Duration Lab: ultimate_weapons
+      Chrono Field Reduction Lab: ultimate_weapons
+      Smart Missiles Damage Lab: ultimate_weapons
+      Smart Missiles Quantity Lab: ultimate_weapons
+      Smart Missiles Cooldown Lab: ultimate_weapons
+      Chain Lightning Damage Lab: ultimate_weapons
+      Chain Lightning Quantity Lab: ultimate_weapons
+      Chain Lightning Chance Lab: ultimate_weapons
+      Inner Land Mines Radius Lab: ultimate_weapons
+      Inner Land Mines Quantity Lab: ultimate_weapons
+      Inner Land Mines Rotation Lab: ultimate_weapons
+      Poison Swamp Radius Lab: ultimate_weapons
+      Poison Swamp Duration Lab: ultimate_weapons
+      Poison Swamp Chance Lab: ultimate_weapons
+      Spotlight Angle Lab: ultimate_weapons
+      Spotlight Bonus Lab: ultimate_weapons
+      Spotlight Missiles Lab: ultimate_weapons
+      Black Hole Size Lab: ultimate_weapons
+      Black Hole Duration Lab: ultimate_weapons
+      Black Hole Damage Lab: ultimate_weapons
+      Flame Bot Cooldown: bots
+      Flame Bot Duration: bots
+      Flame Bot Damage: bots
+      Golden Bot Cooldown: bots
+      Golden Bot Duration: bots
+      Golden Bot Bonus: bots
+      Golden Bot Range: bots
+      Amp Bot Cooldown: bots
+      Amp Bot Duration: bots
+      Amp Bot Bonus: bots
+      Amp Bot Range: bots
+      Coin Bot Cooldown: bots
+      Coin Bot Duration: bots
+      Coin Bot Bonus: bots
+      Coin Bot Range: bots
   cards:
     preset_assignment_columns:
       Farming: 3

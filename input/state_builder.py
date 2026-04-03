@@ -263,18 +263,23 @@ def _parse_labs(rows: List[List[str]]) -> Dict[str, Optional[int]]:
 def _parse_workshop(rows: List[List[str]]) -> Dict[str, WorkshopEntrySnapshot]:
     out = {}
     # IDS chunk layout: label, farming_level, farming_cost, tourney_level, tourney_cost, testing_level, ... max
-    level_cols = load_section_layout_contract()['workshop']['preset_level_columns']
+    workshop_layout = load_section_layout_contract()['workshop']
+    level_cols = workshop_layout['preset_level_columns']
+    value_cols = workshop_layout.get('preset_value_columns') or {}
+    category_by_name = _category_registry_by_name(workshop_layout.get('category_registry') or {})
     for row in rows:
         name = _safe_cell(row, 0).strip()
         if not name or name == 'Workshop Upgrade':
             continue
         preset_levels = {preset: _parse_optional_int(_safe_cell(row, col)) for preset, col in level_cols.items()}
+        preset_values = {preset: _parse_optional_float(_safe_cell(row, col)) for preset, col in value_cols.items()}
         out[name] = WorkshopEntrySnapshot(
             name=name,
             unlocked=None,
             preset_levels=preset_levels,
+            preset_values=preset_values,
             max_level=_parse_optional_int(_safe_cell(row, load_section_layout_contract()['workshop']['max_level_column'])),
-            category=None,
+            category=category_by_name.get(name),
         )
     return out
 
@@ -289,6 +294,7 @@ def _parse_workshop_enhancements(rows: List[List[str]]) -> Dict[str, WorkshopEnh
     preset_cols: Dict[str, int] = {
         str(preset): int(col_idx) for preset, col_idx in layout['preset_level_columns'].items()
     }
+    category_by_name = _category_registry_by_name(layout.get('category_registry') or {})
     for row in rows[header_rows:]:
         name = _safe_cell(row, name_col).strip()
         if not name:
@@ -299,8 +305,19 @@ def _parse_workshop_enhancements(rows: List[List[str]]) -> Dict[str, WorkshopEnh
             current_multiplier=_parse_optional_float(_safe_cell(row, multiplier_col)),
             preset_levels=preset_levels,
             max_level=_parse_optional_int(_safe_cell(row, max_col)),
+            category=category_by_name.get(name),
         )
     return out
+
+
+def _category_registry_by_name(category_registry: Dict[str, List[str]]) -> Dict[str, str]:
+    by_name: Dict[str, str] = {}
+    for category, names in (category_registry or {}).items():
+        for name in names or []:
+            text = str(name).strip()
+            if text:
+                by_name[text] = str(category).strip().lower()
+    return by_name
 
 
 def _parse_table(rows: List[List[str]]) -> TableSnapshot:

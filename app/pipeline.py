@@ -2018,13 +2018,6 @@ def run_analysis_pipeline(args) -> int:
     account_state_payload = _sanitized_account_state_for_output(account_state, args.preset)
     stat_inputs_payload = [row.to_dict() for row in stat_inputs]
     module_card_payloads_data = build_module_card_payloads(account_state)
-    qe_dashboard_publications = _build_input_dashboard_qe_publications(
-        account_state=account_state,
-        projected_compare_rows_by_preset=projected_compare_rows_by_preset,
-        stat_inputs=stat_inputs,
-        preset_name=args.preset,
-    )
-
     write_core_outputs(
         out_dir=args.out,
         diagnostics=diagnostics,
@@ -2041,7 +2034,7 @@ def run_analysis_pipeline(args) -> int:
         artifact_contract_manifest=artifact_contract_manifest,
         family_completeness_matrix=family_completeness_matrix,
         root_path=ROOT,
-        qe_dashboard_publications=qe_dashboard_publications,
+        module_card_payloads=module_card_payloads_data,
     )
 
     # Write module card payloads (QE-generated orchestration artifact, PR329)

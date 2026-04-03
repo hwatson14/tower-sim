@@ -42,7 +42,19 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from app.display import MODULE_CARD_CSS, render_module_card_html
+from app.display import (
+    INPUT_DASHBOARD_CSS,
+    MODULE_CARD_CSS,
+    render_cards_inventory_and_preset_html,
+    render_grouped_enhancement_table_html,
+    render_grouped_workshop_table_html,
+    render_labs_bucket_grid_html,
+    render_module_card_html,
+    render_simple_bonus_table_html,
+    render_simple_metric_panel_html,
+    render_track_table_html,
+    render_uw_track_table_html,
+)
 from app.inspector_data import (
     compare_rows_frame,
     input_lineage_rows_frame,
@@ -1290,95 +1302,80 @@ def _render_checks(active_artifacts) -> None:
 
 
 def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
-    st.markdown(
-        """
-        <style>
-        .dashboard-panel {background:#13161d;border:1px solid #2b3241;border-radius:8px;padding:10px 12px;margin:8px 0;}
-        .dashboard-panel h4 {margin:0 0 8px 0;color:#f4f7ff;font-size:0.95rem;}
-        .dashboard-panel table {width:100%;border-collapse:collapse;font-size:0.82rem;}
-        .dashboard-panel th,.dashboard-panel td {border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
-        .dashboard-panel th {color:#9db4ff;font-weight:600;}
-        .dashboard-kpi {display:inline-block;padding:3px 8px;border-radius:99px;background:#1c2230;color:#a5b6d6;font-size:0.72rem;margin-right:6px;}
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    def _panel_html(title: str, headers: list[str], rows: list[list[object]]) -> str:
-        header_html = ''.join(f'<th>{html.escape(str(col))}</th>' for col in headers)
-        row_html = ''.join(
-            '<tr>' + ''.join(f'<td>{html.escape(str(value or ""))}</td>' for value in row) + '</tr>'
-            for row in rows
-        )
-        return (
-            f"<div class='dashboard-panel'><h4>{html.escape(title)}</h4>"
-            f"<table><thead><tr>{header_html}</tr></thead><tbody>{row_html}</tbody></table></div>"
-        )
-
-    def _render_simple_panel(title: str, rows: list[dict]) -> None:
-        table_rows = [[row.get('label', ''), row.get('value', ''), row.get('detail', '')] for row in rows]
-        st.markdown(_panel_html(title, ['Name', 'Value', 'Detail'], table_rows), unsafe_allow_html=True)
-
     dashboard = active_artifacts.get('input_dashboard.json') or {}
     if isinstance(dashboard, dict) and dashboard.get('panels'):
-        preset_cfg = dashboard.get('preset_selector') or {}
-        preset_options = list(preset_cfg.get('available') or ['Farming'])
-        default_preset = preset_cfg.get('active_from_account_state') or preset_cfg.get('default') or preset_options[0]
+        st.markdown(INPUT_DASHBOARD_CSS, unsafe_allow_html=True)
+        preset_options = list(dashboard.get('preset_options') or ['Farming'])
+        default_preset = str(dashboard.get('selected_preset') or preset_options[0])
         selected_preset = st.selectbox(
             'Preset',
             options=preset_options,
             index=preset_options.index(default_preset) if default_preset in preset_options else 0,
             key='input_dashboard_preset_selector',
         )
-        st.caption(f"Active preset source: {preset_cfg.get('active_from_account_state') or 'n/a'}")
 
         panel_map = {str(panel.get('panel_id')): panel for panel in (dashboard.get('panels') or []) if isinstance(panel, dict)}
-
-        labs_panel = panel_map.get('labs', {})
-        labs_payload = labs_panel.get('payload') or {}
-        st.subheader('Labs')
-        buckets = labs_payload.get('buckets') or []
-        cols = st.columns(max(1, min(4, len(buckets) or 1)))
-        for idx, bucket in enumerate(buckets or [{'title': 'Labs', 'rows': []}]):
-            with cols[idx % len(cols)]:
-                rows = [[r.get('name', ''), r.get('current', ''), r.get('max', '')] for r in (bucket.get('rows') or [])]
-                st.markdown(_panel_html(bucket.get('title', 'Labs'), ['Name', 'Current', 'Max'], rows), unsafe_allow_html=True)
-
-        ws_payload = (panel_map.get('workshop', {}).get('payload') or {})
-        ws_rows = [[r.get('name', ''), r.get('coin_level', ''), r.get('coin_value', ''), r.get('max_level', ''), r.get('max_value', '')] for r in (ws_payload.get('rows') or [])]
-        st.markdown(_panel_html('WORKSHOP', ['Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'], ws_rows), unsafe_allow_html=True)
-
-        ws_plus_payload = (panel_map.get('workshop_enhancements', {}).get('payload') or {})
-        ws_plus_rows = [[r.get('name', ''), r.get('level', ''), r.get('max', ''), r.get('value', '')] for r in (ws_plus_payload.get('rows') or [])]
-        st.markdown(_panel_html('WORKSHOP ENHANCEMENTS', ['Name', 'Level', 'Max', 'Value'], ws_plus_rows), unsafe_allow_html=True)
-
-        uw_payload = (panel_map.get('ultimate_weapons', {}).get('payload') or {})
-        uw_rows = [[r.get('uw_name', ''), r.get('track_name', ''), r.get('stone_level', ''), r.get('stone_value', ''), r.get('final_value', '')] for r in (uw_payload.get('rows') or [])]
-        st.markdown(_panel_html('ULTIMATE WEAPONS', ['UW', 'Track', 'Stone Lvl', 'Stone Value', 'Final'], uw_rows), unsafe_allow_html=True)
-
-        cards_payload = (panel_map.get('cards', {}).get('payload') or {})
-        preset_key = f'preset::{selected_preset}'
-        cards_rows = [[r.get('name', ''), r.get('level', ''), r.get('mastery', ''), r.get(preset_key, '')] for r in (cards_payload.get('rows') or [])]
-        st.markdown(_panel_html('CARDS', ['Name', 'Level', 'Mastery', selected_preset], cards_rows), unsafe_allow_html=True)
-
-        bots_payload = (panel_map.get('bots', {}).get('payload') or {})
-        bot_rows = [[r.get('name', ''), r.get('attribute', ''), r.get('value', ''), r.get('detail', '')] for r in (bots_payload.get('rows') or []) if any(r.values())]
-        st.markdown(_panel_html('BOTS', ['Bot', 'Track', 'Value', 'Detail'], bot_rows), unsafe_allow_html=True)
-
-        modules_payload = (panel_map.get('modules', {}).get('payload') or {})
-        module_rows = [list((r.get('tokens') or [])[:8]) for r in (modules_payload.get('rows') or [])]
-        st.markdown(_panel_html('MODULES', ['C1', 'C2', 'C3', 'C4', 'C5', 'A1', 'A2', 'A3'], module_rows), unsafe_allow_html=True)
-
-        guardians_payload = (panel_map.get('guardians', {}).get('payload') or {})
-        guardian_rows = [[r.get('name', ''), r.get('attribute', ''), r.get('value', ''), r.get('detail', '')] for r in (guardians_payload.get('rows') or []) if any(r.values())]
-        st.markdown(_panel_html('GUARDIANS', ['Guardian', 'Track', 'Value', 'Detail'], guardian_rows), unsafe_allow_html=True)
-
-        _render_simple_panel('RELICS', (panel_map.get('relics', {}).get('payload') or {}).get('rows') or [])
-        _render_simple_panel('VAULT', (panel_map.get('vault', {}).get('payload') or {}).get('rows') or [])
-        _render_simple_panel('Themes and Songs', (panel_map.get('themes_and_songs', {}).get('payload') or {}).get('rows') or [])
+        for panel_id in [
+            'labs',
+            'workshop',
+            'workshop_enhancements',
+            'ultimate_weapons',
+            'cards',
+            'bots',
+            'relics',
+            'modules',
+            'vault',
+            'guardians',
+            'themes_and_songs',
+        ]:
+            panel = panel_map.get(panel_id) or {}
+            panel_type = panel.get('panel_type')
+            payload = panel.get('payload') or {}
+            st.subheader(str(panel.get('title') or panel_id.replace('_', ' ').title()))
+            if panel_type == 'labs_bucket_grid':
+                st.markdown(render_labs_bucket_grid_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'grouped_workshop_table':
+                st.markdown(render_grouped_workshop_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'grouped_enhancement_table':
+                st.markdown(render_grouped_enhancement_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'uw_track_table':
+                st.markdown(render_uw_track_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'cards_inventory_and_preset':
+                selected_cards = set((active_artifacts.get('account_state.json', {}).get('card_presets', {}) or {}).get(selected_preset) or [])
+                mutable_payload = dict(payload)
+                mutable_payload['preset_rows'] = [
+                    {'name': row.get('name', ''), 'selected': 'Yes' if row.get('name') in selected_cards else ''}
+                    for row in (payload.get('preset_rows') or [])
+                ]
+                st.markdown(render_cards_inventory_and_preset_html(mutable_payload), unsafe_allow_html=True)
+            elif panel_type == 'track_table':
+                st.markdown(render_track_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'simple_bonus_table':
+                st.markdown(render_simple_bonus_table_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'simple_metric_panel':
+                st.markdown(render_simple_metric_panel_html(payload), unsafe_allow_html=True)
+            elif panel_type == 'module_slot_stack':
+                module_payload_root = active_artifacts.get('module_card_payloads.json', {}) or {}
+                preset_payload = ((module_payload_root.get('presets') or {}).get(selected_preset) or {})
+                if not preset_payload:
+                    st.warning(payload.get('message') or 'module_card_payloads.json not present for this snapshot')
+                    continue
+                st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
+                slot_columns = st.columns(4)
+                for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):
+                    with slot_columns[idx]:
+                        st.markdown(f'**{slot.title()}**')
+                        slot_payload = preset_payload.get(slot) or {}
+                        for role in ['primary', 'assist']:
+                            card_payload = slot_payload.get(role)
+                            if not card_payload:
+                                st.caption(f'{role.title()}: No module equipped')
+                                continue
+                            st.markdown(render_module_card_html(card_payload), unsafe_allow_html=True)
 
         if dashboard.get('upstream_gaps'):
-            st.warning('Upstream publication gaps detected: ' + ', '.join(dashboard.get('upstream_gaps') or []))
+            st.warning('Upstream publication gaps detected')
+            st.json(dashboard.get('upstream_gaps'))
         with st.expander('Dashboard artifact debug (input_dashboard.json)', expanded=False):
             st.json(dashboard)
     else:
