@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import re
 
 DISPLAY_SUFFIXES = [
     (1e24, 'S'),
@@ -117,8 +118,20 @@ MODULE_CARD_CSS = """
 .module-role-detail{font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;opacity:.95;text-align:right;}
 .module-card-body{padding:14px 14px 12px 14px;}
 .module-head{display:grid;grid-template-columns:72px 1fr;gap:12px;align-items:center;margin-bottom:10px;}
-.module-icon-shell{border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:6px;background:rgba(255,255,255,0.03);}
-.module-icon{height:58px;border:1px solid rgba(255,255,255,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#c9d6e5;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));text-transform:uppercase;text-align:center;}
+.module-icon-shell{height:70px;border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:6px;background:rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:center;}
+.module-icon{height:58px;width:58px;border:1px solid rgba(255,255,255,0.18);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#c9d6e5;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));text-transform:uppercase;text-align:center;line-height:1.05;padding:4px;}
+.module-icon-shell.rarity-common,.module-icon.rarity-common{border-color:#9da3ae;}
+.module-icon-shell.rarity-rare,.module-icon.rarity-rare{border-color:#63b3ff;}
+.module-icon-shell.rarity-epic,.module-icon.rarity-epic{border-color:#c084fc;}
+.module-icon-shell.rarity-legendary,.module-icon.rarity-legendary{border-color:#f59e0b;}
+.module-icon-shell.rarity-mythic,.module-icon.rarity-mythic{border-color:#ef4444;}
+.module-icon-shell.rarity-ancestral,.module-icon.rarity-ancestral{border-color:#4ade80;}
+.module-icon.slot-cannon{border-radius:50%;}
+.module-icon.slot-armor{border-radius:12px;}
+.module-icon.slot-generator{clip-path:polygon(50% 4%,95% 94%,5% 94%);padding:10px 8px 6px 8px;}
+.module-icon.slot-core{border-radius:0;transform:rotate(45deg);}
+.module-icon.slot-core .module-icon-text{transform:rotate(-45deg);}
+.module-icon-text{display:flex;align-items:center;justify-content:center;text-align:center;width:100%;height:100%;}
 .module-rarity{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c7d2df;margin-bottom:2px;}
 .module-name{font-size:20px;font-weight:800;line-height:1.05;color:#ffffff;margin-bottom:3px;}
 .module-level{font-size:12px;color:#b5c0cc;}
@@ -160,6 +173,10 @@ def _module_card_icon_text(slot_type: str) -> str:
     return mapping.get(str(slot_type or '').strip().lower(), str(slot_type or '').strip().title())
 
 
+def _module_css_class_suffix(value: str) -> str:
+    return re.sub(r'[^a-z0-9-]+', '-', str(value or '').strip().lower()).strip('-')
+
+
 def _module_unique_html(unique_payload: dict | None) -> str:
     if not isinstance(unique_payload, dict):
         return ''
@@ -196,6 +213,10 @@ def render_module_card_html(payload: dict) -> str:
     level_text = html.escape(str(payload.get('level_text') or ''))
     main_value = html.escape(str(payload.get('main_value_text') or ''))
     main_label = html.escape(str(payload.get('main_label_text') or ''))
+    slot_key = _module_css_class_suffix(str(payload.get('slot_type') or ''))
+    rarity_key = _module_css_class_suffix(str(payload.get('rarity_key') or ''))
+    slot_class = f' slot-{slot_key}' if slot_key else ''
+    rarity_class = f' rarity-{rarity_key}' if rarity_key else ''
     icon_text = html.escape(_module_card_icon_text(str(payload.get('slot_type') or '')))
     unique_html = _module_unique_html(payload.get('unique_text'))
     effects = ''.join(_module_effect_html(effect) for effect in (payload.get('effect_slots') or []))
@@ -205,7 +226,7 @@ def render_module_card_html(payload: dict) -> str:
         f'<div class="module-rolebar {rolebar_class}"><div>{role_label}</div>{role_detail_html}</div>'
         '<div class="module-card-body">'
         '<div class="module-head">'
-        f'<div class="module-icon-shell"><div class="module-icon">{icon_text}</div></div>'
+        f'<div class="module-icon-shell{slot_class}{rarity_class}"><div class="module-icon{slot_class}{rarity_class}"><span class="module-icon-text">{icon_text}</span></div></div>'
         '<div>'
         f'<div class="module-rarity">{rarity_text}</div>'
         f'<div class="module-name">{name}</div>'
