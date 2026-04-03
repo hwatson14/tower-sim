@@ -123,7 +123,9 @@ def test_stats_dashboard_workshop_perk_effects_use_max_progression_rows():
                 'state::tower.damage': {
                     'display_value': '1',
                     'final_value': 1,
-                    'contributors': [],
+                    'contributors': [
+                        {'source_class': 'perks', 'contributor_id': 'perk.start', 'value': 99},
+                    ],
                 }
             }
         }
@@ -135,8 +137,8 @@ def test_stats_dashboard_workshop_perk_effects_use_max_progression_rows():
                     'display_value': '10',
                     'final_value': 10,
                     'contributors': [
-                        {'source_class': 'perk', 'contributor_id': 'perk.a', 'value': 2},
-                        {'source_class': 'perk', 'contributor_id': 'perk.b', 'value': 3},
+                        {'source_class': 'perks', 'contributor_id': 'perk.a', 'value': 2},
+                        {'source_class': 'perks', 'contributor_id': 'perk.b', 'value': 3},
                     ],
                 }
             }

@@ -617,7 +617,10 @@ def _build_workshop_rows(
                     'card_effects': _format_effect_from_contributors(start_row, source_classes=('cards',)),
                     'enhancement_effects': _format_effect_from_contributors(start_row, source_classes=('workshop',), contributor_prefixes=('enhancement.',)),
                     'start_of_run_value': _format_surface_value(start_row.get('final_value'), surface_id=surface_id, value_type=value_type),
-                    'perk_effects': _format_effect_from_contributors(max_row, source_classes=('perk',)),
+                    'perk_effects': _format_effect_from_contributors(
+                        max_row,
+                        source_classes=('perk', 'perks', 'perk_effect'),
+                    ),
                     'other': _format_effect_from_contributors(
                         start_row,
                         source_classes=('base', 'relics', 'scenario_rules'),
