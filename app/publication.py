@@ -69,32 +69,38 @@ def _dashboard_gap(panel_id: str, gap_id: str, detail: str) -> dict[str, str]:
     return {'panel_id': panel_id, 'gap_id': gap_id, 'detail': detail}
 
 
-def _preset_options(account_state_payload: dict) -> list[str]:
-    presets = list((account_state_payload.get('card_presets') or {}).keys())
-    canonical = ['Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5']
-    merged = canonical + [preset for preset in presets if preset not in canonical]
-    return merged or ['Farming']
+def _build_input_dashboard_payload(
+    account_state_payload: dict,
+    diagnostics: dict,
+    *,
+    qe_dashboard_publications: dict[str, object] | None = None,
+) -> dict[str, object]:
+    qe_published = qe_dashboard_publications or {}
+    workshop_coin_values = dict(qe_published.get('workshop_coin_values') or {})
+    workshop_max_values = dict(qe_published.get('workshop_max_values') or {})
+    uw_track_effects = dict(qe_published.get('uw_track_effects') or {})
+    raw_sections = (account_state_payload.get('raw_sections') or {}) if isinstance(account_state_payload, dict) else {}
+    preset_names = list((account_state_payload.get('card_presets') or {}).keys()) if isinstance(account_state_payload, dict) else []
+    active_preset = (account_state_payload.get('default_preset') or 'Farming') if isinstance(account_state_payload, dict) else 'Farming'
+    if active_preset and active_preset not in preset_names:
+        preset_names = [active_preset] + [name for name in preset_names if name != active_preset]
+    if not preset_names:
+        preset_names = [active_preset]
 
-
-def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, object]) -> tuple[dict[str, object], list[dict[str, str]]]:
-    layout = section_layout.get('labs') or {}
-    bucket_order = list(layout.get('bucket_order') or [])
-    bucket_labels = {str(k): str(v) for k, v in (layout.get('bucket_labels') or {}).items()}
-    bucket_registry = {str(k): str(v) for k, v in (layout.get('bucket_registry') or {}).items()}
-    rows_by_bucket: dict[str, list[dict[str, object]]] = {bucket_id: [] for bucket_id in bucket_order}
-    for lab_name, level in (account_state_payload.get('labs') or {}).items():
-        bucket_id = bucket_registry.get(str(lab_name), 'misc')
-        rows_by_bucket.setdefault(bucket_id, [])
-        rows_by_bucket[bucket_id].append(
-            {
-                'name': str(lab_name),
-                'level': '' if level is None else str(level),
-                'max': '',
-            }
-        )
-    buckets = []
-    for bucket_id in bucket_order:
-        rows = rows_by_bucket.get(bucket_id) or []
+    labs_rows = []
+    for row in raw_sections.get('Labs', []):
+        name, level, _target, max_level = _dashboard_token_row(row, 4)
+        if not name:
+            continue
+        labs_rows.append({'name': name, 'current': level, 'max': max_level})
+    lab_bucket_registry, buckets_meta = _load_lab_bucket_registry()
+    bucket_rows: dict[str, list[dict[str, str]]] = {}
+    for row in labs_rows:
+        bucket_key = lab_bucket_registry.get(row['name'], 'misc')
+        bucket_rows.setdefault(bucket_key, []).append(row)
+    labs_buckets = []
+    for item in buckets_meta:
+        rows = bucket_rows.get(item['bucket_key'], [])
         if rows:
             buckets.append(
                 {
@@ -107,9 +113,12 @@ def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, obj
         if rows and bucket_id not in bucket_order:
             buckets.append(
                 {
-                    'bucket_id': bucket_id,
-                    'bucket_label': bucket_labels.get(bucket_id, bucket_id.replace('_', ' ').title()),
-                    'rows': rows,
+                    'name': name,
+                    'coin_level': tokens[1],
+                    'coin_value': workshop_coin_values.get(name, tokens[2]),
+                    'max_level': tokens[-1],
+                    'max_value': workshop_max_values.get(name, ''),
+                    'max_value_source': 'qe_published' if name in workshop_max_values else 'qe_unavailable',
                 }
             )
     return (

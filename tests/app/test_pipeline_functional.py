@@ -133,12 +133,31 @@ def test_input_dashboard_payload_consumes_qe_publications():
     from app.publication import _build_input_dashboard_payload
 
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
-    module_payloads = {'presets': {'Farming': {'cannon': {'primary': {'module_name': 'A'}}}}}
-    dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads=module_payloads)
+    dashboard = _build_input_dashboard_payload(
+        account_state,
+        {},
+        qe_dashboard_publications={
+            'workshop_coin_values': {'Damage': 'x1234'},
+            'workshop_max_values': {'Damage': 'x9000'},
+            'uw_track_effects': {'Chain Lightning::Damage': {'module_effect': 'x2.25', 'perk_effect': '5', 'final_value': 'x903'}},
+        },
+    )
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
-    modules_payload = panel_by_id['modules']['payload']
-    assert modules_payload['selected_preset'] == 'Farming'
-    assert 'cannon' in modules_payload['slots']
+    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
+    assert damage_row is not None
+    assert damage_row.get('coin_value') == 'x1234'
+    assert damage_row.get('max_value') == 'x9000'
+    assert damage_row.get('max_value_source') == 'qe_published'
+
+    uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
+    uw_damage_row = next((row for row in uw_rows if row.get('uw_name') == 'Chain Lightning' and row.get('track_name') == 'Damage'), None)
+    assert uw_damage_row is not None
+    assert uw_damage_row.get('module_effect') == 'x2.25'
+    assert uw_damage_row.get('perk_effect') == '5'
+    assert uw_damage_row.get('final_value') == 'x903'
+    assert uw_damage_row.get('module_effect_source') == 'qe_published'
+    assert uw_damage_row.get('perk_effect_source') == 'qe_published'
 
 
 def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
@@ -151,17 +170,36 @@ def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():
     )
     published = _build_input_dashboard_qe_publications(
         account_state=account_state,
+        compare_rows_by_preset={
+            'Farming': {
+                'state::tower.damage': {'display_value': 'x100'},
+                'state::uw.chain_lightning.damage_multiplier': {
+                    'display_value': 'x903',
+                    'contributors': [],
+                },
+            }
+        },
         projected_compare_rows_by_preset={
             'Farming': {
+                'state::tower.damage': {'display_value': 'x9000'},
                 'state::uw.chain_lightning.damage_multiplier': {
                     'display_value': 'x903',
                     'contributors': [],
                 }
             }
         },
-        stat_inputs=[],
+        stat_inputs=[
+            SimpleNamespace(
+                source_family='workshop',
+                source_name='Damage',
+                destination_id='tower_damage',
+                contributor_id='workshop__tower__damage__flat',
+            ),
+        ],
         preset_name='Farming',
     )
+    assert published.get('workshop_coin_values', {}).get('Damage') == 'x100'
+    assert published.get('workshop_max_values', {}).get('Damage') == 'x9000'
     effects = published.get('uw_track_effects') or {}
     assert 'Chain Lightning::Damage' in effects
     assert effects['Chain Lightning::Damage']['final_value'] == 'x903'
