@@ -10,6 +10,7 @@ from qe.compat.legacy_surface_ids import (
     legacy_runtime_surface_id as _compat_runtime,
     surface_id_candidates,
 )
+from qe.contracts import normalize_surface_id_to_contract
 from qe.models import StatRow
 
 
