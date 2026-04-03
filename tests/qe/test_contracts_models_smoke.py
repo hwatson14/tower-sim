@@ -355,6 +355,79 @@ def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_
         assert runtime_callable(99) == pytest.approx(expected_callable(99)), f'{runtime_key} level-99 mismatch.'
 
 
+def test_load_workshop_formulas_canonical_rows_do_not_depend_on_fallback_columns(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    canonical_domain, canonical_stat_name = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    )
+
+    original_read_csv = kb_surfaces._read_csv
+
+    def _patched_read_csv(path: Path) -> list[dict]:
+        rows = original_read_csv(path)
+        if path != kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return rows
+        patched_rows: list[dict] = []
+        for row in rows:
+            patched = dict(row)
+            if (
+                patched.get('source_domain', '').strip() == canonical_domain
+                and patched.get('stat_name', '').strip().removesuffix(' (lab)') == canonical_stat_name
+            ):
+                patched['formula_type'] = ''
+                patched['base'] = ''
+                patched['per_level'] = ''
+                patched['floor'] = ''
+            patched_rows.append(patched)
+        return patched_rows
+
+    monkeypatch.setattr(kb_surfaces, '_read_csv', _patched_read_csv)
+
+    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+    runtime_key = f'{canonical_domain}:{canonical_stat_name}'
+    canonical_callable = kb_surfaces._canonical_formula_callables()[runtime_key]
+    runtime_callable = (
+        workshop_formulas[canonical_stat_name]
+        if canonical_domain == 'workshop'
+        else lab_formulas[canonical_stat_name]
+    )
+    assert runtime_callable(1) == pytest.approx(canonical_callable(1))
+    assert runtime_callable(99) == pytest.approx(canonical_callable(99))
+
+
+def test_load_workshop_formulas_approved_exception_rows_require_legacy_formula_columns(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    exception_domain, exception_stat_name = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'approved_exception'
+    )
+
+    original_read_csv = kb_surfaces._read_csv
+
+    def _patched_read_csv(path: Path) -> list[dict]:
+        rows = original_read_csv(path)
+        if path != kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return rows
+        patched_rows: list[dict] = []
+        for row in rows:
+            patched = dict(row)
+            if (
+                patched.get('source_domain', '').strip() == exception_domain
+                and patched.get('stat_name', '').strip().removesuffix(' (lab)') == exception_stat_name
+            ):
+                patched['formula_type'] = ''
+            patched_rows.append(patched)
+        return patched_rows
+
+    monkeypatch.setattr(kb_surfaces, '_read_csv', _patched_read_csv)
+
+    with pytest.raises(ValueError, match=f'{exception_domain}:{exception_stat_name}'):
+        kb_surfaces.load_workshop_formulas()
+
+
 def test_scenario_projection_state__debug_payload_is_explicit():
     projection = ScenarioProjectionState(
         max_workshop=True,
