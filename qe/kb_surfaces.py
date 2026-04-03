@@ -25,6 +25,10 @@ _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canon
 _CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
     'lab': {'labs'},
 }
+RUNTIME_CALLABLE_GENERATOR_KINDS: frozenset[str] = frozenset({
+    'exact_linear_generator_from_row_verified_summary',
+    'exact_linear_generator_from_row_verified_table',
+})
 
 
 def _read_csv(path: Path) -> list[dict]:
@@ -114,10 +118,6 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
     rows = _read_csv(_CANONICAL_FORMULA_REGISTRY_PATH)
     runtime_authority_rows = _load_runtime_formula_authority_rows()
     formula_row_by_id = {row['formula_id'].strip(): row for row in rows}
-    supported_generator_kinds = {
-        'exact_linear_generator_from_row_verified_summary',
-        'exact_linear_generator_from_row_verified_table',
-    }
     formulas: dict[str, Callable[[float], float]] = {}
     for (domain, stat_name), metadata in runtime_authority_rows.items():
         if metadata['authority_source'] != 'canonical_formula_registry':
@@ -127,7 +127,7 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
         if not row:
             raise ValueError(f'Runtime formula mapping references unknown canonical formula_id: {formula_id!r}')
         generator_kind = (row.get('generator_kind') or '').strip()
-        if generator_kind not in supported_generator_kinds:
+        if generator_kind not in RUNTIME_CALLABLE_GENERATOR_KINDS:
             raise ValueError(
                 f'Runtime formula mapping {domain}:{stat_name} uses unsupported generator_kind '
                 f'{generator_kind!r} for formula_id {formula_id!r}.'
