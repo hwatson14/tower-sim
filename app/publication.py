@@ -680,14 +680,14 @@ def _build_stats_dashboard_payload(
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
 
     for preset_name in preset_options:
-        row_map_by_mode = {
+        per_preset_row_map_by_mode = {
             'start_of_run': _stats_rows_by_surface(query_rows_start_of_run, preset_name),
             'max_progression': _stats_rows_by_surface(query_rows_max_progression, preset_name),
         }
         variants[preset_name] = {}
         for state_mode in state_mode_options:
-            rows_start = (row_map_by_mode.get('start_of_run') or {}).get(preset_name) or {}
-            rows_max = (row_map_by_mode.get('max_progression') or {}).get(preset_name) or {}
+            rows_start = per_preset_row_map_by_mode.get('start_of_run') or {}
+            rows_max = per_preset_row_map_by_mode.get('max_progression') or {}
             rows = rows_start if state_mode == 'start_of_run' else rows_max
             panels: list[dict[str, object]] = []
             workshop_rows = _build_workshop_rows(
