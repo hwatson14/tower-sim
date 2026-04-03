@@ -7,6 +7,7 @@ import pytest
 
 from input.state_types import ScenarioProjectionState
 from qe.consumer_registry import resolve_consumer_bundle
+import qe.kb_surfaces as kb_surfaces
 from qe.kb_surfaces import LAB_FORMULA_VALUES, RUNTIME_FORMULA_AUTHORITY, WORKSHOP_FORMULA_VALUES
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
@@ -22,6 +23,23 @@ from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 
 pytestmark = pytest.mark.live
+
+
+RUNTIME_APPROVED_EXCEPTION_WHITELIST = {
+    "workshop:Defense %",
+    "workshop:Wall Rebuild",
+    "workshop:Interest / Wave",
+    "workshop:Wall Fortification",
+    "workshop:Rapid Fire Duration",
+    "workshop:Cash / Wave",
+    "lab:Critical Factor",
+    "lab:Coins / Kill Bonus",
+    "lab:Defense Absolute",
+    "lab:Damage / Meter",
+    "lab:Wall Rebuild",
+    "lab:Max Rend Armor Multiplier",
+}
+MAX_APPROVED_EXCEPTION_COUNT = 12
 
 
 def test_canonical_preset_names__include_primary_defaults():
@@ -231,6 +249,8 @@ def test_runtime_formula_keys_have_explicit_authority() -> None:
 
 def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
     allowed = {'canonical_formula_registry', 'approved_exception'}
+    approved_exception_keys: set[str] = set()
+
     for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
         source = metadata.get('authority_source')
         assert source in allowed, f'{runtime_key} has unsupported authority source: {source!r}'
@@ -238,8 +258,15 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
             formula_id = (metadata.get('formula_id') or '').strip()
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
         if source == 'approved_exception':
+            approved_exception_keys.add(runtime_key)
             reason = (metadata.get('approved_exception_reason') or '').strip()
             assert reason, f'{runtime_key} approved_exception must include approved_exception_reason.'
+            assert '|retire_when=' in reason, (
+                f'{runtime_key} approved_exception must include explicit retirement condition in approved_exception_reason.'
+            )
+
+    assert approved_exception_keys == RUNTIME_APPROVED_EXCEPTION_WHITELIST
+    assert len(approved_exception_keys) <= MAX_APPROVED_EXCEPTION_COUNT
 
 
 def test_workshop_defense_pct_formula_matches_expected_track() -> None:
@@ -296,6 +323,36 @@ def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -
             }
 
     assert RUNTIME_FORMULA_AUTHORITY == expected
+
+
+def test_load_workshop_formulas_fails_closed_when_canonical_callable_is_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    canonical_runtime_key = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    )
+    canonical_runtime_key_text = f'{canonical_runtime_key[0]}:{canonical_runtime_key[1]}'
+
+    monkeypatch.setattr(kb_surfaces, '_canonical_formula_callables', lambda: {})
+
+    with pytest.raises(ValueError, match=canonical_runtime_key_text):
+        kb_surfaces.load_workshop_formulas()
+
+
+def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys() -> None:
+    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+    canonical_callables = kb_surfaces._canonical_formula_callables()
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+
+    for (domain, stat_name), metadata in runtime_authority_rows.items():
+        if metadata.get('authority_source') != 'canonical_formula_registry':
+            continue
+        runtime_key = f'{domain}:{stat_name}'
+        expected_callable = canonical_callables[runtime_key]
+        runtime_callable = workshop_formulas[stat_name] if domain == 'workshop' else lab_formulas[stat_name]
+        assert runtime_callable(1) == pytest.approx(expected_callable(1)), f'{runtime_key} level-1 mismatch.'
+        assert runtime_callable(99) == pytest.approx(expected_callable(99)), f'{runtime_key} level-99 mismatch.'
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():

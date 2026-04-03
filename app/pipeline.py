@@ -2065,7 +2065,7 @@ def run_analysis_pipeline(args) -> int:
         artifact_contract_manifest=artifact_contract_manifest,
         family_completeness_matrix=family_completeness_matrix,
         root_path=ROOT,
-        qe_dashboard_publications=qe_dashboard_publications,
+        module_card_payloads=module_card_payloads_data,
     )
 
     # Write module card payloads (QE-generated orchestration artifact, PR329)

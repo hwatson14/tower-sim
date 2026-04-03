@@ -4,6 +4,10 @@ from app.display import (
     _format_display_number,
     annotate_compare_display_fields,
     annotate_display_fields,
+    render_grouped_workshop_table_html,
+    render_labs_bucket_grid_html,
+    render_simple_metric_panel_html,
+    render_uw_track_table_html,
 )
 
 
@@ -81,3 +85,43 @@ def test_contributor_display_uses_input_value_type_when_available():
     assert contributors[0]['display_value'] == '69.3%'
     assert contributors[1]['display_value'] == 'x1.2'
     assert contributors[2]['display_value'] == '30%'
+
+
+def test_labs_renderer_contains_bucket_labels_and_rows():
+    html = render_labs_bucket_grid_html(
+        {
+            'column_headers': ['Name', 'Level', 'Max'],
+            'buckets': [{'bucket_label': 'Attack / Defense', 'rows': [{'name': 'Damage Lab', 'level': '50', 'max': ''}]}],
+        }
+    )
+    assert 'Attack / Defense' in html
+    assert 'Damage Lab' in html
+
+
+def test_workshop_renderer_contains_group_labels():
+    html = render_grouped_workshop_table_html(
+        {
+            'column_headers': ['Unlock', 'Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'],
+            'groups': {'offense': [{'unlock': '', 'name': 'Damage', 'coin_level': '10', 'coin_value': '100', 'max_level': '20', 'max_value': ''}], 'defense': [], 'utility': []},
+        }
+    )
+    assert 'Offense' in html
+    assert 'Defense' in html
+    assert 'Utility' in html
+
+
+def test_uw_renderer_contains_expected_columns():
+    html = render_uw_track_table_html(
+        {
+            'column_headers': ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'],
+            'rows': [],
+        }
+    )
+    assert 'Stone Level' in html
+    assert 'UW+' in html
+
+
+def test_simple_metric_panel_renders_theme_label():
+    html = render_simple_metric_panel_html({'metric_label': 'Coin Multiplier', 'metric_value': '1.23'})
+    assert 'Coin Multiplier' in html
+    assert '1.23' in html

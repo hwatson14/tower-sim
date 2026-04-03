@@ -18,6 +18,7 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
         'pipeline_trace.json': {'stages': [], 'execution_path': {}},
         'diagnostics.json': {'default_preset': 'Farming'},
         'account_state.json': {'card_presets': {}},
+        'input_dashboard.json': {'schema_version': 1, 'panels': []},
         'statbook.json': {'rows': {}, 'diagnostics': {}},
         'statbook_publishable.json': {'rows': {}, 'diagnostics': {}},
         'run_stats.json': {'presets': {}},
@@ -33,7 +34,33 @@ def test_load_artifacts_tolerates_missing_optional_reports(tmp_path):
 
     artifacts = load_artifacts(out_dir)
     assert artifacts.get('diagnostics.json', {})['default_preset'] == 'Farming'
+    assert artifacts.get('input_dashboard.json', {})['schema_version'] == 1
     assert artifacts.get('tower_regen_closure_report.json', {}) == {}
+
+
+def test_load_artifacts_missing_input_dashboard_returns_empty_dict(tmp_path):
+    from app.inspector_data import load_artifacts
+
+    out_dir = tmp_path / 'out'
+    out_dir.mkdir()
+    (out_dir / 'pipeline_trace.json').write_text(json.dumps({'stages': [], 'execution_path': {}}), encoding='utf-8')
+    (out_dir / 'diagnostics.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'account_state.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'statbook.json').write_text(json.dumps({'rows': {}, 'diagnostics': {}}), encoding='utf-8')
+    (out_dir / 'statbook_publishable.json').write_text(json.dumps({'rows': {}, 'diagnostics': {}}), encoding='utf-8')
+    (out_dir / 'run_stats.json').write_text(json.dumps({'presets': {}}), encoding='utf-8')
+    (out_dir / 'run_stats_query_rows_start_of_run.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'run_stats_query_rows_max_progression.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'run_stats_query_plan_start_of_run.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'run_stats_query_plan_max_progression.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'state_matrix.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'ep_oracle_compare.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'line_by_line_verification.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'audit_surface_manifest.json').write_text(json.dumps({}), encoding='utf-8')
+    (out_dir / 'family_completeness_matrix.json').write_text(json.dumps({}), encoding='utf-8')
+
+    artifacts = load_artifacts(out_dir)
+    assert artifacts.get('input_dashboard.json') == {}
 
 
 def test_query_rows_dual_state_frame_and_surface_detail_share_normalized_path():

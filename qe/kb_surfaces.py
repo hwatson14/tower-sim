@@ -22,6 +22,9 @@ _STAT_CAPS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'game-mechanic-stat
 _WORKSHOP_FORMULAS_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'workshop-formula-params-canonical.csv'
 _RUNTIME_FORMULA_AUTHORITY_PATH = _ROOT / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
 _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
+_CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
+    'lab': {'labs'},
+}
 
 
 def _read_csv(path: Path) -> list[dict]:
@@ -84,6 +87,12 @@ def _build_linear_canonical_formula(start_level: float, base: float, delta: floa
     return lambda level, s=start_level, b=base, d=delta: b + (((level - s) / 1.0) * d)
 
 
+def _canonical_domain_matches_runtime_domain(runtime_domain: str, canonical_domain: str) -> bool:
+    if canonical_domain == runtime_domain:
+        return True
+    return canonical_domain in _CANONICAL_DOMAIN_ALIASES.get(runtime_domain, set())
+
+
 def _load_runtime_formula_authority_rows() -> dict[tuple[str, str], dict[str, str]]:
     rows = _read_csv(_RUNTIME_FORMULA_AUTHORITY_PATH)
     mapping: dict[tuple[str, str], dict[str, str]] = {}
@@ -105,6 +114,10 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
     rows = _read_csv(_CANONICAL_FORMULA_REGISTRY_PATH)
     runtime_authority_rows = _load_runtime_formula_authority_rows()
     formula_row_by_id = {row['formula_id'].strip(): row for row in rows}
+    supported_generator_kinds = {
+        'exact_linear_generator_from_row_verified_summary',
+        'exact_linear_generator_from_row_verified_table',
+    }
     formulas: dict[str, Callable[[float], float]] = {}
     for (domain, stat_name), metadata in runtime_authority_rows.items():
         if metadata['authority_source'] != 'canonical_formula_registry':
@@ -113,12 +126,17 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
         row = formula_row_by_id.get(formula_id)
         if not row:
             raise ValueError(f'Runtime formula mapping references unknown canonical formula_id: {formula_id!r}')
-        if row.get('generator_kind') != 'exact_linear_generator_from_row_verified_summary':
-            continue
-        if row.get('domain') != domain:
+        generator_kind = (row.get('generator_kind') or '').strip()
+        if generator_kind not in supported_generator_kinds:
+            raise ValueError(
+                f'Runtime formula mapping {domain}:{stat_name} uses unsupported generator_kind '
+                f'{generator_kind!r} for formula_id {formula_id!r}.'
+            )
+        row_domain = (row.get('domain') or '').strip()
+        if not _canonical_domain_matches_runtime_domain(domain, row_domain):
             raise ValueError(
                 f'Runtime formula mapping domain mismatch for {domain}:{stat_name}: '
-                f'formula_id {formula_id!r} belongs to domain {row.get("domain")!r}'
+                f'formula_id {formula_id!r} belongs to domain {row_domain!r}'
             )
         formulas[f'{domain}:{stat_name}'] = _build_linear_canonical_formula(
             float(row['start_level']),
@@ -137,6 +155,7 @@ def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
     rows = _read_csv(_WORKSHOP_FORMULAS_PATH)
     workshop: dict[str, Callable] = {}
     lab: dict[str, Callable] = {}
+    runtime_authority_rows = _load_runtime_formula_authority_rows()
     canonical_formulas = _canonical_formula_callables()
     for row in rows:
         source_domain = row['source_domain'].strip()
@@ -147,7 +166,23 @@ def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
         floor_raw = row['floor'].strip() if row['floor'] else ''
         floor_val = float(floor_raw) if floor_raw else 0.0
         canonical_key = f'{source_domain}:{stat_name.removesuffix(" (lab)")}'
-        fn = canonical_formulas.get(canonical_key) or _build_formula(formula_type, base, per_level, floor_val)
+        authority = runtime_authority_rows.get((source_domain, stat_name.removesuffix(' (lab)')))
+        if not authority:
+            raise ValueError(f'Runtime formula key missing authority mapping: {canonical_key}')
+        authority_source = authority['authority_source']
+        if authority_source == 'canonical_formula_registry':
+            fn = canonical_formulas.get(canonical_key)
+            if fn is None:
+                raise ValueError(
+                    f'Runtime formula key {canonical_key} is canonical_formula_registry mapped but no canonical '
+                    f'callable was built for formula_id {authority["formula_id"]!r}.'
+                )
+        elif authority_source == 'approved_exception':
+            fn = _build_formula(formula_type, base, per_level, floor_val)
+        else:
+            raise ValueError(
+                f'Runtime formula key {canonical_key} has unsupported authority_source {authority_source!r}.'
+            )
         key = stat_name.removesuffix(' (lab)')
         if source_domain == 'workshop':
             workshop[key] = fn
