@@ -283,40 +283,41 @@ sections:
         surface_id: state::tower.shockwave_interval_seconds
       - label: Shockwave Size
         surface_id: state::tower.shockwave_size_m
+      - label: Wall Health
+        surface_id: state::wall.health
+      - label: Wall Rebuild
+        surface_id: state::wall.rebuild_time_seconds
     utility_economy_surfaces:
+      - label: Cash Bonus
+        surface_id: state::economy.cash_kill_multiplier
+      - label: Cash / Wave
+        surface_id: state::economy.cash_per_wave
+      - label: Coins / Kill Bonus
+        surface_id: state::economy.coins_per_kill_bonus
+      - label: Coins / Wave
+        surface_id: state::economy.coins_per_wave
       - label: Free Attack Upgrade
         surface_id: state::tower.free_attack_upgrade_chance_pct
       - label: Free Defense Upgrade
         surface_id: state::tower.free_defense_upgrade_chance_pct
       - label: Free Utility Upgrade
         surface_id: state::tower.free_utility_upgrade_chance_pct
+      - label: Interest / Wave
+        surface_id: state::tower.interest_per_wave_pct
+      - label: Recovery Amount
+        surface_id: state::tower.recovery_amount_pct
+      - label: Max Recovery
+        surface_id: state::tower.max_recovery_multiplier
+      - label: Package Chance
+        surface_id: state::tower.package_chance_pct
       - label: Enemy Attack Level Skip
         surface_id: state::tower.enemy_attack_level_skip_pct
       - label: Enemy Health Level Skip
         surface_id: state::tower.enemy_health_level_skip_pct
-      - label: Package Chance
-        surface_id: state::tower.package_chance_pct
-      - label: Recovery Package Multiplier
-        surface_id: state::tower.recovery_package_multiplier
     derived_wall_economy_surfaces:
-      - label: Ultimate Damage
-        surface_id: state::tower.ultimate_damage_multiplier
-      - label: Wall Health
-        surface_id: state::wall.health
-      - label: Wall Rebuild
-        surface_id: state::wall.rebuild_time_seconds
-      - label: Coins / Kill
-        surface_id: state::economy.coins_per_kill_bonus
-      - label: Coins / Wave
-        surface_id: state::economy.coins_per_wave
-      - label: Cash Bonus
-        surface_id: state::economy.cash_kill_multiplier
-    derived_wall_economy_surfaces:
-      - label: Wall Health
-        surface_id: state::wall.health
-      - label: Wall Rebuild
-        surface_id: state::wall.rebuild_time_seconds
-      - label: Coins / Wave
-        surface_id: state::economy.coins_per_wave
-      - label: Cash Bonus
-        surface_id: state::economy.cash_kill_multiplier
+      - label: Wall HP
+        surface_id: state::wall.hp
+      - label: Wall Regen
+        surface_id: state::wall.regen
+      - label: Wall Thorns
+        surface_id: state::wall.thorns_damage_pct
