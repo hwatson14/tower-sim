@@ -69,97 +69,88 @@ def _dashboard_gap(panel_id: str, gap_id: str, detail: str) -> dict[str, str]:
     return {'panel_id': panel_id, 'gap_id': gap_id, 'detail': detail}
 
 
-def _build_input_dashboard_payload(
-    account_state_payload: dict,
-    diagnostics: dict,
-    *,
-    qe_dashboard_publications: dict[str, object] | None = None,
-) -> dict[str, object]:
-    qe_published = qe_dashboard_publications or {}
-    workshop_coin_values = dict(qe_published.get('workshop_coin_values') or {})
-    workshop_max_values = dict(qe_published.get('workshop_max_values') or {})
-    uw_track_effects = dict(qe_published.get('uw_track_effects') or {})
-    raw_sections = (account_state_payload.get('raw_sections') or {}) if isinstance(account_state_payload, dict) else {}
-    preset_names = list((account_state_payload.get('card_presets') or {}).keys()) if isinstance(account_state_payload, dict) else []
-    active_preset = (account_state_payload.get('default_preset') or 'Farming') if isinstance(account_state_payload, dict) else 'Farming'
-    if active_preset and active_preset not in preset_names:
-        preset_names = [active_preset] + [name for name in preset_names if name != active_preset]
-    if not preset_names:
-        preset_names = [active_preset]
+def _preset_options(account_state_payload: dict) -> list[str]:
+    default_preset = str(account_state_payload.get('default_preset') or 'Farming')
+    options = [str(name) for name in (account_state_payload.get('card_presets') or {}).keys() if str(name)]
+    if default_preset not in options:
+        options.insert(0, default_preset)
+    return options or [default_preset]
 
+
+def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, object]) -> tuple[dict[str, object], list[dict[str, str]]]:
+    raw_rows = list(((account_state_payload.get('raw_sections') or {}).get('Labs') or []))
     labs_rows = []
-    for row in raw_sections.get('Labs', []):
+    for row in raw_rows:
         name, level, _target, max_level = _dashboard_token_row(row, 4)
-        if not name:
-            continue
-        labs_rows.append({'name': name, 'current': level, 'max': max_level})
-    lab_bucket_registry, buckets_meta = _load_lab_bucket_registry()
-    bucket_rows: dict[str, list[dict[str, str]]] = {}
+        if name:
+            labs_rows.append({'name': name, 'level': level, 'max': max_level})
+
+    labs_layout = dict(section_layout.get('labs') or {})
+    bucket_order = [str(name) for name in (labs_layout.get('bucket_order') or [])]
+    bucket_labels = {str(k): str(v) for k, v in (labs_layout.get('bucket_labels') or {}).items()}
+    bucket_registry = {str(k): str(v) for k, v in (labs_layout.get('bucket_registry') or {}).items()}
+
+    rows_by_bucket: dict[str, list[dict[str, str]]] = {}
     for row in labs_rows:
-        bucket_key = lab_bucket_registry.get(row['name'], 'misc')
-        bucket_rows.setdefault(bucket_key, []).append(row)
-    labs_buckets = []
-    for item in buckets_meta:
-        rows = bucket_rows.get(item['bucket_key'], [])
+        bucket_id = bucket_registry.get(row['name'], 'misc')
+        rows_by_bucket.setdefault(bucket_id, []).append(row)
+
+    buckets = []
+    for bucket_id in bucket_order:
+        rows = rows_by_bucket.get(bucket_id) or []
         if rows:
-            buckets.append(
-                {
-                    'bucket_id': bucket_id,
-                    'bucket_label': bucket_labels.get(bucket_id, bucket_id.replace('_', ' ').title()),
-                    'rows': rows,
-                }
-            )
+            buckets.append({'bucket_id': bucket_id, 'bucket_label': bucket_labels.get(bucket_id, bucket_id.replace('_', ' ').title()), 'rows': rows})
     for bucket_id, rows in rows_by_bucket.items():
         if rows and bucket_id not in bucket_order:
-            buckets.append(
-                {
-                    'name': name,
-                    'coin_level': tokens[1],
-                    'coin_value': workshop_coin_values.get(name, tokens[2]),
-                    'max_level': tokens[-1],
-                    'max_value': workshop_max_values.get(name, ''),
-                    'max_value_source': 'qe_published' if name in workshop_max_values else 'qe_unavailable',
-                }
-            )
+            buckets.append({'bucket_id': bucket_id, 'bucket_label': bucket_labels.get(bucket_id, bucket_id.replace('_', ' ').title()), 'rows': rows})
+
     return (
         {
             'panel_id': 'labs',
             'panel_type': 'labs_bucket_grid',
             'title': 'Labs',
-            'payload': {
-                'column_headers': ['Name', 'Level', 'Max'],
-                'bucket_order': bucket_order,
-                'buckets': buckets,
-            },
+            'payload': {'column_headers': ['Name', 'Level', 'Max'], 'bucket_order': bucket_order, 'buckets': buckets},
         },
         [],
     )
 
 
-def _build_workshop_panel(account_state_payload: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
+def _build_workshop_panel(
+    account_state_payload: dict,
+    selected_preset: str,
+    qe_dashboard_publications: dict[str, object] | None = None,
+) -> tuple[dict[str, object], list[dict[str, str]]]:
     groups: dict[str, list[dict[str, object]]] = {'offense': [], 'defense': [], 'utility': []}
+    rows: list[dict[str, object]] = []
     gaps: list[dict[str, str]] = []
+    qe_published = qe_dashboard_publications or {}
+    workshop_coin_values = dict(qe_published.get('workshop_coin_values') or {})
+    workshop_max_values = dict(qe_published.get('workshop_max_values') or {})
     for name, row in (account_state_payload.get('workshop') or {}).items():
         category = str((row or {}).get('category') or '').strip().lower()
         category = category if category in groups else 'utility'
         preset_levels = dict((row or {}).get('preset_levels') or {})
         preset_values = dict((row or {}).get('preset_values') or {})
-        max_value = ''
+        coin_value = workshop_coin_values.get(name, preset_values.get(selected_preset))
+        max_value = workshop_max_values.get(name, '')
+        max_value_source = 'qe_published' if name in workshop_max_values else 'qe_unavailable'
         if not max_value:
             gaps.append(_dashboard_gap('workshop', 'max_value_not_published_upstream', f'Max Value missing for {name}'))
-        groups[category].append(
-            {
-                'unlock': (row or {}).get('unlocked') or '',
-                'name': name,
-                'coin_level': '' if preset_levels.get(selected_preset) is None else str(preset_levels.get(selected_preset)),
-                'coin_value': '' if preset_values.get(selected_preset) is None else str(preset_values.get(selected_preset)),
-                'max_level': '' if (row or {}).get('max_level') is None else str((row or {}).get('max_level')),
-                'max_value': max_value,
-            }
-        )
+        output_row = {
+            'unlock': (row or {}).get('unlocked') or '',
+            'name': name,
+            'coin_level': '' if preset_levels.get(selected_preset) is None else str(preset_levels.get(selected_preset)),
+            'coin_value': '' if coin_value is None else str(coin_value),
+            'max_level': '' if (row or {}).get('max_level') is None else str((row or {}).get('max_level')),
+            'max_value': '' if max_value is None else str(max_value),
+            'max_value_source': max_value_source,
+        }
+        groups[category].append(output_row)
+        rows.append(output_row)
     payload = {
         'column_headers': ['Unlock', 'Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'],
         'groups': groups,
+        'rows': rows,
     }
     return ({'panel_id': 'workshop', 'panel_type': 'grouped_workshop_table', 'title': 'Workshop', 'payload': payload}, gaps)
 
@@ -181,25 +172,41 @@ def _build_workshop_enhancements_panel(account_state_payload: dict, selected_pre
     return ({'panel_id': 'workshop_enhancements', 'panel_type': 'grouped_enhancement_table', 'title': 'Workshop Enhancements', 'payload': {'column_headers': ['Name', 'Level', 'Max', 'Value'], 'groups': groups}}, [])
 
 
-def _build_uw_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
+def _build_uw_panel(
+    account_state_payload: dict,
+    qe_dashboard_publications: dict[str, object] | None = None,
+) -> tuple[dict[str, object], list[dict[str, str]]]:
     uw_plus_tracks = account_state_payload.get('uw_plus_tracks') or {}
+    qe_published = qe_dashboard_publications or {}
+    uw_track_effects = dict(qe_published.get('uw_track_effects') or {})
     rows: list[dict[str, object]] = []
     gaps: list[dict[str, str]] = []
     for uw_name, tracks in (account_state_payload.get('uw_tracks') or {}).items():
         unlock = (account_state_payload.get('ultimate_weapons') or {}).get(uw_name, {}).get('unlocked') or ''
         for track in tracks or []:
             plus_key = f"{uw_name}::{track.get('track_name') or ''}"
+            published_effects = dict(uw_track_effects.get(plus_key) or {})
+            module_effect = published_effects.get('module_effect')
+            perk_effect = published_effects.get('perk_effect')
+            final_value = published_effects.get('final_value', track.get('resolved_value'))
             rows.append(
                 {
                     'unlock': unlock,
                     'uw': uw_name,
                     'track': track.get('track_name') or '',
+                    'uw_name': uw_name,
+                    'track_name': track.get('track_name') or '',
                     'stone_level': '' if track.get('level') is None else str(track.get('level')),
                     'stone_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
                     'lab': '',
-                    'module': '',
-                    'perk': '',
-                    'final': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
+                    'module': '' if module_effect is None else str(module_effect),
+                    'perk': '' if perk_effect is None else str(perk_effect),
+                    'final': '' if final_value is None else str(final_value),
+                    'module_effect': '' if module_effect is None else str(module_effect),
+                    'perk_effect': '' if perk_effect is None else str(perk_effect),
+                    'final_value': '' if final_value is None else str(final_value),
+                    'module_effect_source': 'qe_published' if module_effect is not None else 'qe_unavailable',
+                    'perk_effect_source': 'qe_published' if perk_effect is not None else 'qe_unavailable',
                     'uw_plus': ((uw_plus_tracks.get(plus_key) or {}).get('display_token') or ''),
                 }
             )
@@ -221,15 +228,6 @@ def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tup
     selected_cards = set((account_state_payload.get('card_presets') or {}).get(selected_preset) or [])
     preset_rows = [{'name': card_name, 'selected': 'Yes' if card_name in selected_cards else ''} for card_name in sorted((account_state_payload.get('cards_inventory') or {}).keys())]
     return ({'panel_id': 'cards', 'panel_type': 'cards_inventory_and_preset', 'title': 'Cards', 'payload': {'inventory_rows': inventory_rows, 'preset_rows': preset_rows, 'slot_count': account_state_payload.get('card_slots_unlocked') or ''}}, [])
-
-
-def _build_track_rows(rows: list[dict[str, object]], owner_label: str) -> list[dict[str, object]]:
-    out = []
-    current_name = ''
-    for row in rows:
-        current_name = str(row.get(owner_label) or current_name)
-        out.append({'unlock': row.get('unlock') or '', owner_label: current_name, 'track': row.get('track') or '', 'level': row.get('level') or '', 'value': row.get('value') or ''})
-    return out
 
 
 def _build_bots_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
@@ -276,6 +274,7 @@ def _build_input_dashboard_payload(
     account_state_payload: dict,
     diagnostics: dict,
     *,
+    qe_dashboard_publications: dict[str, object] | None = None,
     module_card_payloads: dict[str, object] | None = None,
 ) -> dict[str, object]:
     from input.state_builder import load_section_layout_contract
@@ -291,9 +290,9 @@ def _build_input_dashboard_payload(
 
     for builder in [
         lambda: _build_labs_panel(account_state_payload, section_layout),
-        lambda: _build_workshop_panel(account_state_payload, selected_preset),
+        lambda: _build_workshop_panel(account_state_payload, selected_preset, qe_dashboard_publications=qe_dashboard_publications),
         lambda: _build_workshop_enhancements_panel(account_state_payload, selected_preset),
-        lambda: _build_uw_panel(account_state_payload),
+        lambda: _build_uw_panel(account_state_payload, qe_dashboard_publications=qe_dashboard_publications),
         lambda: _build_cards_panel(account_state_payload, selected_preset),
         lambda: _build_bots_panel(account_state_payload),
         lambda: (_build_simple_bonus_panel('relics', 'Relics', (account_state_payload.get('raw_sections') or {}).get('Relics', [])), []),
