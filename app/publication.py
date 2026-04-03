@@ -119,9 +119,10 @@ def _build_workshop_panel(
     account_state_payload: dict,
     selected_preset: str,
     qe_dashboard_publications: dict[str, object] | None = None,
+    *,
+    schema_version: int = 2,
 ) -> tuple[dict[str, object], list[dict[str, str]]]:
     groups: dict[str, list[dict[str, object]]] = {'offense': [], 'defense': [], 'utility': []}
-    rows: list[dict[str, object]] = []
     gaps: list[dict[str, str]] = []
     qe_published = qe_dashboard_publications or {}
     workshop_coin_values = dict(qe_published.get('workshop_coin_values') or {})
@@ -146,12 +147,16 @@ def _build_workshop_panel(
             'max_value_source': max_value_source,
         }
         groups[category].append(output_row)
-        rows.append(output_row)
-    payload = {
+    payload: dict[str, object] = {
         'column_headers': ['Unlock', 'Name', 'Coin Level', 'Coin Value', 'Max Level', 'Max Value'],
         'groups': groups,
-        'rows': rows,
     }
+    if schema_version <= 1:
+        payload['rows'] = [
+            *((groups.get('offense') or [])),
+            *((groups.get('defense') or [])),
+            *((groups.get('utility') or [])),
+        ]
     return ({'panel_id': 'workshop', 'panel_type': 'grouped_workshop_table', 'title': 'Workshop', 'payload': payload}, gaps)
 
 
@@ -276,6 +281,7 @@ def _build_input_dashboard_payload(
     *,
     qe_dashboard_publications: dict[str, object] | None = None,
     module_card_payloads: dict[str, object] | None = None,
+    schema_version: int = 2,
 ) -> dict[str, object]:
     from input.state_builder import load_section_layout_contract
 
@@ -288,9 +294,15 @@ def _build_input_dashboard_payload(
     panels = []
     gaps: list[dict[str, str]] = []
 
+    normalized_schema_version = 2 if schema_version >= 2 else 1
     for builder in [
         lambda: _build_labs_panel(account_state_payload, section_layout),
-        lambda: _build_workshop_panel(account_state_payload, selected_preset, qe_dashboard_publications=qe_dashboard_publications),
+        lambda: _build_workshop_panel(
+            account_state_payload,
+            selected_preset,
+            qe_dashboard_publications=qe_dashboard_publications,
+            schema_version=normalized_schema_version,
+        ),
         lambda: _build_workshop_enhancements_panel(account_state_payload, selected_preset),
         lambda: _build_uw_panel(account_state_payload, qe_dashboard_publications=qe_dashboard_publications),
         lambda: _build_cards_panel(account_state_payload, selected_preset),
@@ -305,11 +317,24 @@ def _build_input_dashboard_payload(
         panels.append(panel)
         gaps.extend(panel_gaps)
 
+    deprecations: list[dict[str, object]] = []
+    if normalized_schema_version == 1:
+        deprecations.append(
+            {
+                'id': 'workshop_payload_rows',
+                'status': 'deprecated',
+                'deprecated_in': 2,
+                'removal_target': 3,
+                'message': 'workshop.payload.rows is legacy. Migrate to workshop.payload.groups before schema_version 3.',
+            }
+        )
+
     return {
-        'schema_version': 1,
+        'schema_version': normalized_schema_version,
         'selected_preset': selected_preset,
         'preset_options': preset_options,
         'upstream_gaps': gaps,
+        'deprecations': deprecations,
         'panels': panels,
         'debug_manifest': {
             'source_artifacts': ['account_state.json', 'module_card_payloads.json', 'diagnostics.json'],

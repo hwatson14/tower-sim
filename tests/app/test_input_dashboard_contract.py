@@ -11,6 +11,8 @@ ROOT = Path(__file__).resolve().parents[2]
 def test_input_dashboard_panel_contract_and_no_placeholder_headers():
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     payload = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    assert payload.get('schema_version') == 2
+    assert payload.get('deprecations') == []
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('labs', 'labs_bucket_grid'),
@@ -32,6 +34,8 @@ def test_input_dashboard_panel_contract_and_no_placeholder_headers():
     assert 'column_1' not in serialized
 
     workshop_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'workshop')
+    assert 'groups' in (workshop_panel.get('payload') or {})
+    assert 'rows' not in (workshop_panel.get('payload') or {})
     grouped_rows = []
     for group_name in ['offense', 'defense', 'utility']:
         grouped_rows.extend(((workshop_panel.get('payload') or {}).get('groups') or {}).get(group_name) or [])
@@ -50,3 +54,16 @@ def test_modules_panel_uses_module_card_payload_shape_when_available():
     payload = _build_input_dashboard_payload(account_state, {}, module_card_payloads=module_payloads)
     modules_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'modules')
     assert 'cannon' in (modules_panel.get('payload') or {}).get('slots', {})
+
+
+def test_input_dashboard_schema_v1_retains_legacy_workshop_rows_with_deprecation():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    payload = _build_input_dashboard_payload(account_state, {}, module_card_payloads={}, schema_version=1)
+    workshop_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'workshop')
+    workshop_payload = workshop_panel.get('payload') or {}
+    assert payload.get('schema_version') == 1
+    assert isinstance(workshop_payload.get('rows'), list)
+    assert payload.get('deprecations')
+    dep = payload['deprecations'][0]
+    assert dep.get('id') == 'workshop_payload_rows'
+    assert dep.get('status') == 'deprecated'

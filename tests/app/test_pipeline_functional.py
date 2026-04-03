@@ -95,7 +95,7 @@ def test_input_dashboard_artifact_is_published(tmp_path):
 
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
-    assert dashboard.get('schema_version') == 1
+    assert dashboard.get('schema_version') == 2
     assert isinstance(dashboard.get('preset_options'), list)
     expected_panel_ids = [
         'labs',
@@ -114,6 +114,7 @@ def test_input_dashboard_artifact_is_published(tmp_path):
     assert panel_ids == expected_panel_ids
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
     assert panel_by_id['themes_and_songs']['panel_type'] == 'simple_metric_panel'
+    assert 'rows' not in ((panel_by_id['workshop'].get('payload') or {}))
 
     labs_rows = (((panel_by_id['labs'].get('payload') or {}).get('buckets') or [{}])[0].get('rows') or [])
     if labs_rows:
@@ -143,7 +144,12 @@ def test_input_dashboard_payload_consumes_qe_publications():
         },
     )
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
-    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    workshop_groups = (panel_by_id['workshop'].get('payload') or {}).get('groups') or {}
+    workshop_rows = (
+        (workshop_groups.get('offense') or [])
+        + (workshop_groups.get('defense') or [])
+        + (workshop_groups.get('utility') or [])
+    )
     damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
     assert damage_row is not None
     assert damage_row.get('coin_value') == 'x1234'
