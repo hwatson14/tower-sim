@@ -1128,6 +1128,9 @@ def _build_report_snapshot(bound_inputs: BoundStatInputs) -> QEResolvedSnapshot:
     if native_family_id is not None:
         resolution_path = 'report_snapshot_hybrid'
     diagnostics = dict(statbook.diagnostics)
+    routing_summary = summarize_input_routing(list(bound_inputs.stat_inputs))
+    diagnostics.setdefault('input_routing_class_counts', routing_summary['class_counts'])
+    diagnostics.setdefault('unresolved_contributor_diagnostics', routing_summary['unresolved_contributor_diagnostics'])
     diagnostics['qe_resolution_interface'] = 'report_snapshot_planner'
     diagnostics['qe_resolution_backend'] = resolution_path
     diagnostics['qe_native_family_available'] = native_family_id is not None

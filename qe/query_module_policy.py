@@ -745,6 +745,13 @@ def module_level_cap(rarity: str | None) -> int | None:
     return caps.get(base_rarity)
 
 
+def _normalize_substat_suffix(suffix: str) -> str:
+    text = str(suffix or '').strip()
+    if text in {'?', '°'}:
+        return '°'
+    return text
+
+
 def _parse_token_value(display: object, raw_token: object = None) -> tuple[float | None, str]:
     raw_text = str(raw_token or '').strip()
     if raw_text:
@@ -762,10 +769,11 @@ def _parse_token_value(display: object, raw_token: object = None) -> tuple[float
             return float(cleaned), ''
         except ValueError:
             return None, ''
+    suffix = _normalize_substat_suffix(match.group(2))
     try:
-        return float(match.group(1)), match.group(2).strip()
+        return float(match.group(1)), suffix
     except ValueError:
-        return None, match.group(2).strip()
+        return None, suffix
 
 
 def _format_token_value(value: float | None, suffix: str, *, signed_default: bool = True, fixed_decimals: int | None = None) -> str:
@@ -781,7 +789,8 @@ def _format_token_value(value: float | None, suffix: str, *, signed_default: boo
     if suffix == 'x':
         sign = '+' if value >= 0 else ''
         return f'{sign}{number}x'
-    if suffix in {'s', 'm', '?'}:
+    suffix = _normalize_substat_suffix(suffix)
+    if suffix in {'s', 'm', '°'}:
         sign = '+' if value >= 0 else ''
         return f'{sign}{number}{suffix}'
     if signed_default:
@@ -936,6 +945,9 @@ def _scaled_unique_value(module_name: str, module: ModuleSnapshot, *, role: str,
 def _scaled_substat_value(sub: ModuleSubstat, *, role: str, slot_state: ModuleSystemState | None) -> str:
     display = str(sub.value or '').strip()
     if role != 'assist':
+        value, suffix = _parse_token_value(display, sub.raw_token)
+        if value is not None and _normalize_substat_suffix(suffix) == '°':
+            return _format_token_value(value, suffix)
         return display
     assist_level = slot_state.assist_level if slot_state else None
     lookup_eff = load_assist_efficiency_lookup().get(int(assist_level or -1))

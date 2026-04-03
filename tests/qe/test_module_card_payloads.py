@@ -44,6 +44,15 @@ def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():
     assert armor_assist['effect_slots'][3]['label_text'] == 'Unlocks at Lv. 101'
 
 
+
+
+def test_module_card_payloads_assist_angle_substat_uses_degree_symbol():
+    payload = build_module_card_payloads(_account_state())
+    core_assist = payload['presets']['Farming']['core']['assist']
+    angle_slot = core_assist['effect_slots'][0]
+    assert angle_slot['label_text'] == 'Spotlight - Angle'
+    assert angle_slot['value_text'] == '+2.25°'
+
 def test_module_card_payloads_primary_card_uses_module_level_and_cap():
     account_state = _account_state()
     payload = build_module_card_payloads(account_state)
