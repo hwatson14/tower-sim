@@ -1020,18 +1020,27 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
     )
     active_preset = request.preset if request.preset in available_presets else (available_presets[0] if available_presets else request.preset)
     preset = st.selectbox('Preset', options=available_presets or [active_preset], index=(available_presets.index(active_preset) if active_preset in available_presets else 0))
-    view_mode = st.radio('Stat source', options=['Analysis statbook (all stats)', 'Run stats (fast subset)', 'Analysis statbook (advanced)'], horizontal=True)
+    view_mode = st.radio(
+        'Artifact view',
+        options=[
+            'Resolved ledger (query rows)',
+            'Run-stats payload (fast subset)',
+            'Published statbook artifact (advanced)',
+        ],
+        horizontal=True,
+    )
+    st.caption('One stat authority (QE-resolved ledger); this selector switches derived artifact views.')
     show_changed_only = st.toggle('Changed in max progression only', value=False)
     show_raw_ids = st.toggle('Show raw artifact IDs', value=False)
     search_text = st.text_input('Search stats', value='').strip().lower()
 
-    if view_mode == 'Analysis statbook (all stats)':
+    if view_mode == 'Resolved ledger (query rows)':
         active_df = query_rows_dual_state_frame(
             active_artifacts.get('run_stats_query_rows_start_of_run.json', {}),
             active_artifacts.get('run_stats_query_rows_max_progression.json', {}),
             preset=preset,
         )
-    elif view_mode == 'Run stats (fast subset)':
+    elif view_mode == 'Run-stats payload (fast subset)':
         active_df = run_stats_rows_frame(run_stats_payload, preset=preset)
     else:
         use_publishable = st.toggle('Use publishable statbook', value=True)
@@ -1071,7 +1080,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         st.info('No stats match the current filters.')
         return
 
-    if view_mode in {'Analysis statbook (all stats)', 'Run stats (fast subset)'}:
+    if view_mode in {'Resolved ledger (query rows)', 'Run-stats payload (fast subset)'}:
         _render_loadout_panel(
             active_artifacts,
             preset=preset,
@@ -1171,7 +1180,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         fast_df = statbook_rows_frame(fast_payload.get('statbook') or {})
         st.json(fast_payload.get('diagnostics') or {})
         if not fast_df.empty:
-            if view_mode in {'Analysis statbook (all stats)', 'Run stats (fast subset)'}:
+            if view_mode in {'Resolved ledger (query rows)', 'Run-stats payload (fast subset)'}:
                 source_prefix = 'start_of_run' if fast_payload.get('request', {}).get('state_mode') == 'start_of_run' else 'max_progression'
                 fast_compare = filtered_active[['surface_id', 'display_label', f'{source_prefix}_display', f'{source_prefix}_value', f'{source_prefix}_status']].copy()
                 fast_compare = fast_compare.rename(

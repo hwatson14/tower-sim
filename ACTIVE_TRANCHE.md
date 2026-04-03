@@ -35,6 +35,7 @@ The repo is in **concentrated hardening territory** with active blockers that re
 
 - open blockers exist in workshop formula authority closure, native-report observability carry-through,
   fallback-callsite dedupe, exact max-rend progression parity, and governance-state truth alignment.
+- current full-suite proof run is not green on this snapshot (`tests/app/test_stats_dashboard_contract.py::test_stats_dashboard_variants_use_rows_for_each_preset`).
 - do not expand scope into broad refactor or tranche reshaping while closing these blockers.
 
 ---
@@ -94,6 +95,7 @@ Release closeout is complete only when all of the following are true:
 ### Closeout verification artifact
 
 - no valid full-suite recertification artifact is currently recorded for the active snapshot.
+- latest full-suite validation attempt on **2026-04-03** failed with one app test failure, so closeout remains in progress.
 
 ### Verification
 

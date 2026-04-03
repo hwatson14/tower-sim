@@ -9,6 +9,7 @@ status:
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: false
+    full_suite_latest_result: failed
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
   high_signal_result:
@@ -118,6 +119,7 @@ known_verified_issues:
 - native report statbooks missing routing diagnostics carry-through
 - report fallback callsite duplication in hybrid statbook builders
 - exact max-rend formula parity failure on progression run-stats path
+- stats dashboard variant payload omission in `max_progression` view (`tests/app/test_stats_dashboard_contract.py::test_stats_dashboard_variants_use_rows_for_each_preset`)
 stop_conditions:
 - Do not start file splitting before T1-T3 are complete
 - Do not widen tranche scope into broad refactors
@@ -128,8 +130,8 @@ definition_of_done:
   - BURNDOWN and ACTIVE_TRANCHE remain aligned
   release_closeout:
   - full_pytest_command: pytest -q
-  - full_pytest_result: pending_current_snapshot
-  - full_pytest_date_utc: pending
+  - full_pytest_result: failed_current_snapshot
+  - full_pytest_date_utc: '2026-04-03'
   repo_rock_solid_threshold:
   - Governance truth aligned
   - Streamlit ownership cleaned in implementation and tests
