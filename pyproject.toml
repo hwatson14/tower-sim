@@ -33,6 +33,7 @@ include = ["qe*", "simulators*", "evaluators*", "advisors*", "app*", "input*"]
 # Default gate: live architecture spine only.
 # Fast, trustworthy, proves the active layer contracts.
 # Run manually for broader coverage -- see docs below.
+# CI wall-clock budget enforcement for this default gate lives in .github/workflows/ci.yml.
 testpaths = ["tests"]
 addopts = "--import-mode=importlib -m 'not quarantine'"
 markers = [
