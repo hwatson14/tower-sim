@@ -41,8 +41,8 @@ Strict consumption rules:
 ## Default test gate
 
 ```bash
-pytest                                                          # full repo suite
-pytest tests/ -m 'not slow and not expensive and not quarantine'  # legacy non-slow suite: ~416 tests
+pytest                                                          # default gate from pyproject.toml: all tests except -m quarantine
+pytest tests/ -m 'not slow and not expensive and not quarantine'  # optional fast lane when slow/expensive suites are intentionally excluded
 pytest tests/ -m slow                                           # slow integration tests
 pytest tests/ -m expensive                                      # expensive parity tests
 ```
