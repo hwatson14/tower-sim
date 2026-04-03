@@ -644,6 +644,8 @@ def _run_stats_scenario_config(account_state, *, preset_name: str):
 
 
 def _run_stats_perk_state(account_state, *, preset_name: str, perk_state: str, perk_mode: str, state_mode: str) -> tuple[str | None, bool]:
+    if state_mode == 'start_of_run':
+        return None, False
     if preset_name == 'Tourney':
         return None, False
     current_perk_preset_name = preset_name if preset_name in account_state.perk_presets else None
