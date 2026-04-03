@@ -72,6 +72,36 @@ def test_trace_artifact_is_listed_in_generated_files(tmp_path):
     assert 'pipeline_trace.json' in generated
 
 
+def test_pipeline_writes_input_dashboard_contract(tmp_path):
+    from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    result = execute_pipeline(
+        PipelineRunRequest(
+            ids=ROOT / 'input' / 'imports' / 'ids.csv',
+            out=tmp_path / 'out',
+        )
+    )
+    assert result.exit_code == 0
+    payload = __import__('json').loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
+    assert {'schema_version', 'selected_preset', 'preset_options', 'upstream_gaps', 'panels', 'debug_manifest'}.issubset(payload.keys())
+    assert payload['selected_preset']
+    assert {'Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5'}.issubset(set(payload.get('preset_options') or []))
+    panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
+    assert panel_ids == [
+        'labs',
+        'workshop',
+        'workshop_enhancements',
+        'ultimate_weapons',
+        'cards',
+        'bots',
+        'relics',
+        'modules',
+        'vault',
+        'guardians',
+        'themes_and_songs',
+    ]
+
+
 def test_streamlit_app_contract_is_frozen_in_repo() -> None:
     contract_path = ROOT / 'app' / 'streamlit_inspector.py'
     text = contract_path.read_text(encoding='utf-8')

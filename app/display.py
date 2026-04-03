@@ -221,3 +221,82 @@ def render_module_card_html(payload: dict) -> str:
         '</div>'
         '</div>'
     )
+
+INPUT_DASHBOARD_CSS = """
+<style>
+.inputs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin-bottom:12px;}
+.inputs-panel{background:#13161d;border:1px solid #2b3241;border-radius:8px;padding:10px 12px;margin:8px 0;}
+.inputs-panel h4{margin:0 0 8px 0;color:#f4f7ff;font-size:0.95rem;}
+.inputs-panel h5{margin:8px 0 6px 0;color:#d6def2;font-size:0.85rem;}
+.inputs-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+.inputs-table th,.inputs-table td{border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
+.inputs-table th{color:#9db4ff;font-weight:600;}
+.inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+"""
+
+
+def _render_table(headers: list[str], rows: list[list[object]]) -> str:
+    head = ''.join(f'<th>{html.escape(str(col))}</th>' for col in headers)
+    body = ''.join('<tr>' + ''.join(f'<td>{html.escape(str(value or ""))}</td>' for value in row) + '</tr>' for row in rows)
+    return f'<table class="inputs-table"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>'
+
+
+def render_labs_bucket_grid_html(payload: dict) -> str:
+    cards = []
+    for bucket in payload.get('buckets') or []:
+        rows = [[r.get('name', ''), r.get('level', ''), r.get('max', '')] for r in (bucket.get('rows') or [])]
+        cards.append(f"<div class='inputs-panel'><h5>{html.escape(str(bucket.get('bucket_label') or ''))}</h5>{_render_table(payload.get('column_headers') or [], rows)}</div>")
+    return f"<div class='inputs-grid'>{''.join(cards)}</div>"
+
+
+def render_grouped_workshop_table_html(payload: dict) -> str:
+    chunks = []
+    headers = payload.get('column_headers') or []
+    for key in ['offense', 'defense', 'utility']:
+        rows = payload.get('groups', {}).get(key) or []
+        table_rows = [[r.get('unlock', ''), r.get('name', ''), r.get('coin_level', ''), r.get('coin_value', ''), r.get('max_level', ''), r.get('max_value', '')] for r in rows]
+        chunks.append(f"<h5>{key.title()}</h5>{_render_table(headers, table_rows)}")
+    return f"<div class='inputs-panel'>{''.join(chunks)}</div>"
+
+
+def render_grouped_enhancement_table_html(payload: dict) -> str:
+    chunks = []
+    headers = payload.get('column_headers') or []
+    for key in ['offense', 'defense', 'utility']:
+        rows = payload.get('groups', {}).get(key) or []
+        table_rows = [[r.get('name', ''), r.get('level', ''), r.get('max', ''), r.get('value', '')] for r in rows]
+        chunks.append(f"<h5>{key.title()}</h5>{_render_table(headers, table_rows)}")
+    return f"<div class='inputs-panel'>{''.join(chunks)}</div>"
+
+
+def render_uw_track_table_html(payload: dict) -> str:
+    rows = [[r.get('unlock', ''), r.get('uw', ''), r.get('track', ''), r.get('stone_level', ''), r.get('stone_value', ''), r.get('lab', ''), r.get('module', ''), r.get('perk', ''), r.get('final', ''), r.get('uw_plus', '')] for r in (payload.get('rows') or [])]
+    return f"<div class='inputs-panel'>{_render_table(payload.get('column_headers') or [], rows)}</div>"
+
+
+def render_cards_inventory_and_preset_html(payload: dict) -> str:
+    inv_rows = [[r.get('name', ''), r.get('level', ''), r.get('mastery', '')] for r in (payload.get('inventory_rows') or [])]
+    preset_rows = [[r.get('name', ''), r.get('selected', '')] for r in (payload.get('preset_rows') or [])]
+    split = (
+        f"<div><h5>Inventory</h5>{_render_table(['Name', 'Level', 'Mastery'], inv_rows)}</div>"
+        f"<div><h5>Selected Preset (slots: {html.escape(str(payload.get('slot_count') or ''))})</h5>{_render_table(['Name', 'Selected'], preset_rows)}</div>"
+    )
+    return f"<div class='inputs-panel'><div class='inputs-split'>{split}</div></div>"
+
+
+def render_track_table_html(payload: dict) -> str:
+    entity = payload.get('entity_key') or 'entity'
+    rows = [[r.get('unlock', ''), r.get(entity, ''), r.get('track', ''), r.get('level', ''), r.get('value', '')] for r in (payload.get('rows') or [])]
+    return f"<div class='inputs-panel'>{_render_table(payload.get('column_headers') or [], rows)}</div>"
+
+
+def render_simple_bonus_table_html(payload: dict) -> str:
+    rows = [[r.get('name', ''), r.get('bonus', '')] for r in (payload.get('rows') or [])]
+    return f"<div class='inputs-panel'>{_render_table(payload.get('column_headers') or [], rows)}</div>"
+
+
+def render_simple_metric_panel_html(payload: dict) -> str:
+    label = html.escape(str(payload.get('metric_label') or 'Metric'))
+    value = html.escape(str(payload.get('metric_value') or ''))
+    return f"<div class='inputs-panel'><h5>{label}</h5><div>{value}</div></div>"

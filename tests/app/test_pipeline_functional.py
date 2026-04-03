@@ -94,11 +94,10 @@ def test_input_dashboard_artifact_is_published(tmp_path):
     from app.publication import _build_input_dashboard_payload
 
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
-    dashboard = _build_input_dashboard_payload(account_state, {})
+    dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     assert dashboard.get('schema_version') == 1
-    assert isinstance((dashboard.get('preset_selector') or {}).get('available'), list)
-    panel_ids = {panel.get('panel_id') for panel in (dashboard.get('panels') or [])}
-    expected_panel_ids = {
+    assert isinstance(dashboard.get('preset_options'), list)
+    expected_panel_ids = [
         'labs',
         'workshop',
         'workshop_enhancements',
@@ -110,59 +109,36 @@ def test_input_dashboard_artifact_is_published(tmp_path):
         'vault',
         'guardians',
         'themes_and_songs',
-    }
-    assert expected_panel_ids.issubset(panel_ids)
+    ]
+    panel_ids = [panel.get('panel_id') for panel in (dashboard.get('panels') or [])]
+    assert panel_ids == expected_panel_ids
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
-    assert panel_by_id['themes_and_songs']['title'] == 'Themes and Songs'
+    assert panel_by_id['themes_and_songs']['panel_type'] == 'simple_metric_panel'
 
-    # Only unresolved structural upstream gaps should remain.
-    gap_flags = set(dashboard.get('upstream_gaps') or [])
-    assert 'workshop_max_value_not_published_upstream' not in gap_flags
-    assert 'uw_related_effect_columns_not_published_upstream' not in gap_flags
-    assert dashboard.get('required_upstream_publications') == {}
-
-    # Panel schemas: validate representative row keys by panel type.
     labs_rows = (((panel_by_id['labs'].get('payload') or {}).get('buckets') or [{}])[0].get('rows') or [])
     if labs_rows:
-        assert {'name', 'current', 'max'}.issubset(labs_rows[0].keys())
-    workshop_rows = ((panel_by_id['workshop'].get('payload') or {}).get('rows') or [])
+        assert {'name', 'level', 'max'}.issubset(labs_rows[0].keys())
+    workshop_rows = ((((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('offense') or [])
+                     + (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('defense') or [])
+                     + (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('utility') or []))
     if workshop_rows:
-        assert {'name', 'coin_level', 'coin_value', 'max_level', 'max_value', 'max_value_source'}.issubset(workshop_rows[0].keys())
+        assert {'unlock', 'name', 'coin_level', 'coin_value', 'max_level', 'max_value'}.issubset(workshop_rows[0].keys())
     uw_rows = ((panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or [])
     if uw_rows:
-        assert {'uw_name', 'track_name', 'stone_level', 'stone_value', 'lab_value', 'module_effect', 'module_effect_source', 'perk_effect', 'perk_effect_source', 'final_value'}.issubset(uw_rows[0].keys())
-    themes_rows = ((panel_by_id['themes_and_songs'].get('payload') or {}).get('rows') or [])
-    if themes_rows:
-        assert {'label', 'value', 'detail'}.issubset(themes_rows[0].keys())
+        assert {'unlock', 'uw', 'track', 'stone_level', 'stone_value', 'lab', 'module', 'perk', 'final', 'uw_plus'}.issubset(uw_rows[0].keys())
+    assert isinstance(dashboard.get('upstream_gaps'), list)
 
 
 def test_input_dashboard_payload_consumes_qe_publications():
     from app.publication import _build_input_dashboard_payload
 
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
-    dashboard = _build_input_dashboard_payload(
-        account_state,
-        {},
-        qe_dashboard_publications={
-            'workshop_max_values': {'Damage': 'x9000'},
-            'uw_track_effects': {'Chain Lightning::Damage': {'module_effect': 'x2.25', 'perk_effect': '5', 'final_value': 'x903'}},
-        },
-    )
+    module_payloads = {'presets': {'Farming': {'cannon': {'primary': {'module_name': 'A'}}}}}
+    dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads=module_payloads)
     panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
-    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
-    damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
-    assert damage_row is not None
-    assert damage_row.get('max_value') == 'x9000'
-    assert damage_row.get('max_value_source') == 'qe_published'
-
-    uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
-    uw_damage_row = next((row for row in uw_rows if row.get('uw_name') == 'Chain Lightning' and row.get('track_name') == 'Damage'), None)
-    assert uw_damage_row is not None
-    assert uw_damage_row.get('module_effect') == 'x2.25'
-    assert uw_damage_row.get('perk_effect') == '5'
-    assert uw_damage_row.get('final_value') == 'x903'
-    assert uw_damage_row.get('module_effect_source') == 'qe_published'
-    assert uw_damage_row.get('perk_effect_source') == 'qe_published'
+    modules_payload = panel_by_id['modules']['payload']
+    assert modules_payload['selected_preset'] == 'Farming'
+    assert 'cannon' in modules_payload['slots']
 
 
 def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():

@@ -23,6 +23,7 @@ class WorkshopEntrySnapshot:
     name: str
     unlocked: Optional[str]
     preset_levels: Dict[str, Optional[int]]
+    preset_values: Dict[str, Optional[float]]
     max_level: Optional[int]
     category: Optional[str]
 
@@ -84,6 +85,7 @@ class WorkshopEnhancementSnapshot:
     current_multiplier: Optional[float]
     preset_levels: Dict[str, Optional[int]]
     max_level: Optional[int]
+    category: Optional[str]
 
 
 @dataclass(frozen=True)
