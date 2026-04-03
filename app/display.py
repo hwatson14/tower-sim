@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import html
+import re
 
 DISPLAY_SUFFIXES = [
     (1e24, 'S'),
@@ -120,6 +121,7 @@ MODULE_CARD_CSS = """
 .module-icon-shell{border:1px solid rgba(255,255,255,0.14);border-radius:16px;padding:6px;background:rgba(255,255,255,0.03);}
 .module-icon{height:58px;border:1px solid rgba(255,255,255,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.08em;color:#c9d6e5;background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));text-transform:uppercase;text-align:center;}
 .module-rarity{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#c7d2df;margin-bottom:2px;}
+.module-rarity-stars{margin-left:6px;letter-spacing:.14em;}
 .module-name{font-size:20px;font-weight:800;line-height:1.05;color:#ffffff;margin-bottom:3px;}
 .module-level{font-size:12px;color:#b5c0cc;}
 .module-main{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;padding:12px 0 10px 0;border-top:1px solid rgba(255,255,255,0.06);border-bottom:1px solid rgba(255,255,255,0.06);margin-bottom:10px;}
@@ -186,12 +188,21 @@ def _module_effect_html(effect: dict) -> str:
     return f'<div class="module-effect state-{state}">{chip}{value_html}<div class="{label_class}">{label_text}</div></div>'
 
 
+def _module_rarity_display_parts(payload: dict) -> tuple[str, str]:
+    raw_rarity_text = str(payload.get('rarity_text') or '').strip()
+    base_rarity = re.sub(r'\s+\d+\*$', '', raw_rarity_text).strip()
+    stars = int(payload.get('stars') or 0)
+    stars_text = '*' * stars if stars > 0 else ''
+    return html.escape(base_rarity), html.escape(stars_text)
+
+
 def render_module_card_html(payload: dict) -> str:
     role = str(payload.get('role') or '').strip().lower()
     rolebar_class = 'primary' if role == 'primary' else 'assist'
     role_label = html.escape(str(payload.get('role_bar_label_text') or role.title()))
     role_detail = html.escape(str(payload.get('role_bar_detail_text') or ''))
-    rarity_text = html.escape(str(payload.get('rarity_text') or ''))
+    rarity_text, stars_text = _module_rarity_display_parts(payload)
+    rarity_stars_html = f'<span class="module-rarity-stars">{stars_text}</span>' if stars_text else ''
     name = html.escape(str(payload.get('module_name') or ''))
     level_text = html.escape(str(payload.get('level_text') or ''))
     main_value = html.escape(str(payload.get('main_value_text') or ''))
@@ -207,7 +218,7 @@ def render_module_card_html(payload: dict) -> str:
         '<div class="module-head">'
         f'<div class="module-icon-shell"><div class="module-icon">{icon_text}</div></div>'
         '<div>'
-        f'<div class="module-rarity">{rarity_text}</div>'
+        f'<div class="module-rarity">{rarity_text}{rarity_stars_html}</div>'
         f'<div class="module-name">{name}</div>'
         f'<div class="module-level">{level_text}</div>'
         '</div>'
