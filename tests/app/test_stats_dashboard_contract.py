@@ -102,3 +102,66 @@ def test_stats_dashboard_variants_use_rows_for_each_preset():
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
     assert damage_row['max_progression_value'] == '20'
+
+
+def test_stats_dashboard_workshop_perk_effects_use_max_progression_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {
+                    'display_value': '1',
+                    'final_value': 1,
+                    'contributors': [
+                        {'source_class': 'perks', 'contributor_id': 'perk.start', 'value': 99},
+                    ],
+                }
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {
+                    'display_value': '10',
+                    'final_value': 10,
+                    'contributors': [
+                        {'source_class': 'perks', 'contributor_id': 'perk.a', 'value': 2},
+                        {'source_class': 'perks', 'contributor_id': 'perk.b', 'value': 3},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = (
+        (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
+    )
+    damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
+    assert damage_row['perk_effects'] == '+ 5'
