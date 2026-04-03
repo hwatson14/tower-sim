@@ -600,6 +600,12 @@ def _build_workshop_rows(
                 contributor_prefixes=('enhancement.',),
                 invert_prefix_match=True,
             )
+            max_workshop_value = _sum_contributor_values_filtered(
+                max_row,
+                source_classes=('workshop',),
+                contributor_prefixes=('enhancement.',),
+                invert_prefix_match=True,
+            )
             row_payload = (
                 {
                     'name': spec['label'],
@@ -616,14 +622,16 @@ def _build_workshop_rows(
                     ),
                     'card_effects': _format_effect_from_contributors(start_row, source_classes=('cards',)),
                     'enhancement_effects': _format_effect_from_contributors(start_row, source_classes=('workshop',), contributor_prefixes=('enhancement.',)),
+                    'relics': _format_effect_from_contributors(start_row, source_classes=('relics',)),
                     'start_of_run_value': _format_surface_value(start_row.get('final_value'), surface_id=surface_id, value_type=value_type),
+                    'max_workshop_value': _format_surface_value(max_workshop_value, surface_id=surface_id, value_type=value_type),
                     'perk_effects': _format_effect_from_contributors(
                         max_row,
                         source_classes=('perk', 'perks', 'perk_effect'),
                     ),
                     'other': _format_effect_from_contributors(
                         start_row,
-                        source_classes=('base', 'relics', 'scenario_rules'),
+                        source_classes=('base', 'scenario_rules'),
                     ),
                     'max_progression_value': _format_surface_value(max_row.get('final_value'), surface_id=surface_id, value_type=value_type),
                 }
