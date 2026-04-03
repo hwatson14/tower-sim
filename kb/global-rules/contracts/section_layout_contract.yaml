@@ -311,3 +311,12 @@ sections:
         surface_id: state::economy.coins_per_wave
       - label: Cash Bonus
         surface_id: state::economy.cash_kill_multiplier
+    derived_wall_economy_surfaces:
+      - label: Wall Health
+        surface_id: state::wall.health
+      - label: Wall Rebuild
+        surface_id: state::wall.rebuild_time_seconds
+      - label: Coins / Wave
+        surface_id: state::economy.coins_per_wave
+      - label: Cash Bonus
+        surface_id: state::economy.cash_kill_multiplier

@@ -58,3 +58,47 @@ def test_stats_dashboard_variants_include_state_modes():
     variants = payload.get('variants') or {}
     farming_variant = variants.get('Farming') or {}
     assert {'start_of_run', 'max_progression'}.issubset(set(farming_variant.keys()))
+
+
+def test_stats_dashboard_variants_use_rows_for_each_preset():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': [], 'Tourney': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {'rows': {'state::tower.damage': {'display_value': '1'}}},
+        'Tourney': {'rows': {'state::tower.damage': {'display_value': '2'}}},
+    }
+    query_rows_max = {
+        'Farming': {'rows': {'state::tower.damage': {'display_value': '10'}}},
+        'Tourney': {'rows': {'state::tower.damage': {'display_value': '20'}}},
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    tourney_overview = next(
+        panel for panel in payload['variants']['Tourney']['max_progression']
+        if panel.get('panel_id') == 'overview'
+    )
+    damage_metric = next(
+        metric for metric in (tourney_overview.get('payload', {}).get('metrics') or [])
+        if metric.get('surface_id') == 'state::tower.damage'
+    )
+    assert damage_metric['display_value'] == '20'
