@@ -1,0 +1,171 @@
+mechanic_id,mechanic_type,domain,authority_classification,authority_source,authority_reason_code,notes
+ep_lambda_bullet_per_second,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_cl_dps,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_dw_dps,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_sl_final_bonus,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_slm_dps,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_sm_dps,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_uw_sl_coverage,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_ep_uw_total_damage,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_aspd,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_bounceshot,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_bsc,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_bst,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_known_definition_defect,Defined name text references vault without lambda parameter; fail closed or patch only with explicit evidence.
+ep_lambda_epd_crit_chance,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_critical,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_dpm,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_maxrend,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_msc,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_mst,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_multishot,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_range,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_rangedpm,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_rapidfire,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_rfc,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_rfd,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epd_uwcritical,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_epg_assist_sub_cap,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_eph_armor,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt).
+ep_lambda_eph_dabs,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.15 Defense Absolute).
+ep_lambda_eph_def_pct,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt). Perk constants map to perk table entries in tables/inputs/perks/perks_v1.csv (Defense Percent +4.00).
+ep_lambda_eph_health,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,"From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.20 Max Health, x1.80 coins but Tower Max Health -70%, Tower Health Regen x8.00 but Tower Max Max Health -60%)."
+ep_lambda_eph_max_rcvr,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt).
+ep_lambda_eph_regen,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,"From workbook defined name (user-provided wiki/sheet extract in prompt). Perk/trade-off constants map to perk table entries in tables/inputs/perks/perks_v1.csv (x1.75 Health Regen, Enemies Have -50% Health but Tower Health Regen and Lifesteal -90%, Tower Health Regen x8.00 but Tower Max Max Health -60%)."
+ep_lambda_eph_wall_health,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt).
+ep_lambda_eph_wall_regen,effective_paths_formula_id,survivability,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name (user-provided wiki/sheet extract in prompt).
+ep_lambda_stat_uw_cl_final_ch,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_cl_final_dmg,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_cl_final_qty,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_dw_final_cd,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_dw_final_dmg,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_dw_final_qty,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sl_final_angle,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sl_final_dmg,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sl_final_lr,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sm_final_cd,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sm_final_cf,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sm_final_dmg,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+ep_lambda_stat_uw_sm_final_qty,effective_paths_formula_id,damage,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,From workbook defined name.
+assist_upgrade_costs,formula_area,modules,canonical_in_non_formula_table_by_design,kb/modules/tables/assist-efficiency-upgrade-costs.csv,non_formula_table_is_canonical_design,Assist costs and level ladders are bundled as canonical tables.
+battle_condition_curves,formula_area,tournaments,canonical_in_non_formula_table_by_design,kb/tournaments/tables/battle-condition-curves-canonical.csv,non_formula_table_is_canonical_design,Resolved for intended scope; 17 exact normal-tier rows are explicitly accepted unknown-to-community boundaries.
+battle_condition_heat_application,formula_area,tournaments,canonical_in_non_formula_table_by_design,kb/tournaments/tables/tournament-heat-battle-condition-values-long.csv,non_formula_table_is_canonical_design,"Heat registry, scale ladder, and expanded long table are bundled."
+boss_hit_interval,formula_area,enemies/combat,canonical_in_non_formula_table_by_design,kb/enemies/tables/boss-hit-interval.csv,non_formula_table_is_canonical_design,Modeled as accepted 2.0s constant for active KB use.
+bot_track_ladders,formula_area,bots,canonical_in_non_formula_table_by_design,kb/bots/tables/bot-track-registry.csv,non_formula_table_is_canonical_design,All four bot families have normalized track registries and routing surfaces for intended-scope use.
+bot_upgrade_ladders,formula_area,bots,canonical_in_non_formula_table_by_design,kb/bots/tables/bot-upgrade-tracks-long.csv,non_formula_table_is_canonical_design,All four event bot families have normalized active ladder surfaces; remaining exact micro-precedence is intentionally out of scope.
+card_values,formula_area,cards,canonical_in_non_formula_table_by_design,kb/cards/tables/card-base-ladders.csv,non_formula_table_is_canonical_design,"Base card values, card masteries, and slot costs are surfaced; remaining card-side edge is explicitly out of scope tick precedence."
+economy_currency_flow,formula_area,economy,canonical_in_non_formula_table_by_design,kb/economy/tables/currency-summary.csv,non_formula_table_is_canonical_design,"Resource flow and vault overview exist, but economy remains more summary-oriented than fully normalized."
+effective_paths_named_formulas,formula_area,cross_domain,intentionally_de_scoped,kb/ledgers/tables/effective-paths-formula-registry.csv,ep_source_audit_blocked,Named EP formulas remain intentionally de-scoped from active canon pending source-audit closure and explicit promotion approvals.
+enemy_damage_scaling,formula_area,enemies,canonical_in_non_formula_table_by_design,kb/enemies/tables/enemy-damage-scaling-long.csv,non_formula_table_is_canonical_design,Canonical long scaling and base table are both bundled.
+enemy_health_scaling,formula_area,enemies,canonical_in_non_formula_table_by_design,kb/enemies/tables/enemy-health-scaling-long.csv,non_formula_table_is_canonical_design,Canonical long scaling and base table are both bundled.
+enhancement_values,formula_area,workshop,canonical_in_non_formula_table_by_design,kb/workshop/tables/enhancements-values.csv,non_formula_table_is_canonical_design,Enhancements are the preferred canonical name and are surfaced as a dedicated table.
+guardian_upgrade_ladders,formula_area,guardians,canonical_in_non_formula_table_by_design,kb/guardians/tables/guardian-upgrades.csv,non_formula_table_is_canonical_design,"Guardian upgrades, chip baselines, and bonus scaling are surfaced."
+lab_value_ladders,formula_area,labs,canonical_in_non_formula_table_by_design,kb/labs/tables/lab-values.csv,non_formula_table_is_canonical_design,Active lab ladders and registries are sufficient for the intended scope; accepted exactness boundaries do not block package use, and Wall Fortification unlock is resolved in-package.
+module_main_effects,formula_area,modules,canonical_in_non_formula_table_by_design,kb/modules/tables/module-main-effect-bases.csv,non_formula_table_is_canonical_design,"Main effects, bands, substats, and unique effects are surfaced; EP-backed total multipliers are accepted package canon for the intended scope."
+named_uw_ladders,formula_area,ultimate-weapons,canonical_in_non_formula_table_by_design,kb/ultimate-weapons/tables/black-hole-basic-upgrades.csv,non_formula_table_is_canonical_design,"Several named UWs are strongly surfaced, but named per-UW ladder coverage is uneven across the full UW roster."
+perk_pool_and_weights,formula_area,perks,canonical_in_non_formula_table_by_design,kb/perks/tables/perks.csv,non_formula_table_is_canonical_design,Perk pool and selection weights are both surfaced.
+runtime_damage_pipeline,formula_area,combat,canonical_in_non_formula_table_by_design,kb/combat/contracts/runtime-damage-pipeline.csv,non_formula_table_is_canonical_design,Material runtime ordering is closed for practical KB use; same-tick micro-precedence remains intentionally de-scoped.
+ultimate_weapon_track_ladders,formula_area,ultimate-weapons,canonical_in_non_formula_table_by_design,kb/ultimate-weapons/tables/uw-track-registry.csv,non_formula_table_is_canonical_design,Bundled ladders are normalized into per-UW entity and track registries for intended-scope use.
+uw_purchase_and_track_ladders,formula_area,ultimate-weapons,canonical_in_non_formula_table_by_design,kb/ultimate-weapons/tables/ultimate-weapon-purchase-costs.csv,non_formula_table_is_canonical_design,"Global purchase, track, cooldown, and UW+ ladders are surfaced for intended-scope use."
+workshop_base_values,formula_area,workshop,canonical_in_non_formula_table_by_design,kb/workshop/tables/workshop-values.csv,non_formula_table_is_canonical_design,Canonical workshop values table is present.
+black_hole_basic_upgrades_duration_s,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+chrono_field_basic_upgrades_duration_s,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_attack_speed_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_cash_bonus_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_cells_kill_bonus_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_coin_bonus_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_damage_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_def_abs_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_enemy_level_skips_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_free_upgrades_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_health_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_health_regen_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_land_mine_damage_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_orb_size_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_packages_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+enh_wall_health_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+golden_tower_basic_upgrades_duration_s,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+spotlight_basic_upgrades_extended_angle_deg,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wall_lab_wall_fortification_value_multiplier,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wall_lab_wall_fortification_value_percent,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_death_wave_cell_bonus_levels_full_value_multiplier,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_death_wave_coin_bonus_levels_full_value_multiplier,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_death_wave_health_levels_full_value_pct_of_base_health,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_attack_speed_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_cash_bonus_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_chrono_field_duration_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_coins_wave_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_damage_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_defense_percent_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_enemy_attack_level_skip_value_percent_points,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_enemy_health_level_skip_value_percent_points,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_health_regen_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_health_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_labs_speed_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_range_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_recovery_package_chance_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_waves_required_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_bonus_multiplier,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_cooldown_lab_reduction_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_cooldown_seconds,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_duration_lab_bonus_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_duration_seconds,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_amplify_bot_range_m,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_bc_group_1_reduction_pct_lab,formula_id,tournaments,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_bc_group_3_reduction_pct_lab,formula_id,tournaments,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_bc_group_4_reduction_pct_lab,formula_id,tournaments,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_black_hole_coin_bonus_levels_full_value_multiplier,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_black_hole_damage_lab_pct_enemy_hp_per_second,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_chain_lightning_shock_chance_pct,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_chain_lightning_shock_multiplier,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_chain_thunder_lab_max_reduction_pct,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_chrono_field_damage_reduction_unlock,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_chrono_field_reduction_pct_lab,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_death_wave_damage_amplifier_lab_multiplier_per_effect_wave,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_double_death_ray_lab_activation_chance_pct,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_burn_stack_lab_bonus_stacks,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_cooldown_lab_reduction_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_cooldown_seconds,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_damage_multiplier,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_damage_reduction_pct,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_flame_bot_range_m,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_golden_bot_cooldown_lab_reduction_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_golden_bot_duration_lab_bonus_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_golden_tower_bonus_lab,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_golden_tower_duration_lab_seconds,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_ally_upgrades_cooldown_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_attack_upgrades_cooldown_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_bounty_upgrades_multiplier,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_fetch_upgrades_cooldown_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_scout_cooldown_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_scout_duration_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_scout_range_bonus_multiplier,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_guardian_summon_upgrades_cooldown_seconds,formula_id,guardians,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_spotlight_missiles_lab_full_frequency_seconds,formula_id,ultimate-weapons,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_super_tower_bonus_lab_multiplier,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_swamp_rend_basic_enemies_pct_of_current_rend,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_cooldown_lab_reduction_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_cooldown_seconds,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_duration_seconds,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_linger_pct,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_linger_time_lab_bonus_seconds,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_verified_thunder_bot_range_m,formula_id,bots,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_wall_lab_wall_health_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_wall_lab_wall_regen_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_attack_speed_value,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_cash_bonus_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_coins_kill_bonus_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_coins_wave_value,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_death_defy_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_enemy_skip_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_land_mine_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_land_mine_damage_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_land_mine_radius,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_max_recovery_x,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_orb_speed_rpm,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_package_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_range_m,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_recovery_amount_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_shockwave_frequency_s,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_shockwave_size,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_thorns_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_wall_health_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
