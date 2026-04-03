@@ -94,6 +94,7 @@ Release closeout is complete only when all of the following are true:
 
 - full-suite recertification artifact recorded for the active snapshot via `pytest -q`.
 - latest full-suite validation attempt on **2026-04-03** passed (`275 passed`).
+- CI fast-lane invariant: `.github/workflows/ci.yml` enforces `pytest -q` wall-clock budget at **10 seconds** on `ubuntu-latest`; over-budget runs fail closed and publish `pytest-durations` artifact (`pytest-durations.log`).
 
 ### Verification
 

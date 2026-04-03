@@ -47,6 +47,12 @@ pytest tests/ -m slow                                           # slow integrati
 pytest tests/ -m expensive                                      # expensive parity tests
 ```
 
+### CI pytest budget invariant (mandatory)
+
+- CI enforces the default fast-lane command as `pytest -q --durations=25` on the designated runner class `ubuntu-latest` in `.github/workflows/ci.yml`.
+- The run is fail-closed if wall-clock exceeds **10 seconds** (`PYTEST_TIME_BUDGET_SECONDS`), even when tests otherwise pass.
+- Top test-time offenders are persisted as the `pytest-durations` artifact (`pytest-durations.log`) for every CI run.
+
 ## Key files
 
 - `app/run_stats.py` — CLI entrypoint (argparse)
