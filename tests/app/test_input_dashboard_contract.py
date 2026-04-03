@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from app.publication import _build_input_dashboard_payload
+from app.publication import _build_input_dashboard_payload, _preset_options
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -50,3 +50,45 @@ def test_modules_panel_uses_module_card_payload_shape_when_available():
     payload = _build_input_dashboard_payload(account_state, {}, module_card_payloads=module_payloads)
     modules_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'modules')
     assert 'cannon' in (modules_panel.get('payload') or {}).get('slots', {})
+
+
+def test_preset_options_canonical_order_with_stable_extras():
+    account_state_payload = {
+        'default_preset': 'Tourney',
+        'card_presets': {'Preset X': [], 'Farming': []},
+        'module_presets': {'Milestone': {}, 'Preset Y': {}},
+        'workshop': {
+            'Damage': {
+                'preset_levels': {'Preset Z': 1, 'Tourney': 2},
+                'preset_values': {'Preset Q': 3},
+            }
+        },
+        'workshop_enhancement_tracks': {
+            'Enhancement': {
+                'preset_levels': {'Preset R': 4},
+            }
+        },
+    }
+
+    assert _preset_options(account_state_payload) == [
+        'Farming',
+        'Tourney',
+        'Milestone',
+        'Preset X',
+        'Preset Y',
+        'Preset Z',
+        'Preset Q',
+        'Preset R',
+    ]
+
+
+def test_preset_options_includes_default_when_upstream_missing():
+    account_state_payload = {
+        'default_preset': 'Preset 4',
+        'card_presets': {'Milestone': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+    }
+
+    assert _preset_options(account_state_payload) == ['Milestone', 'Preset 4']

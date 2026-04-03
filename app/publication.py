@@ -71,10 +71,37 @@ def _dashboard_gap(panel_id: str, gap_id: str, detail: str) -> dict[str, str]:
 
 def _preset_options(account_state_payload: dict) -> list[str]:
     default_preset = str(account_state_payload.get('default_preset') or 'Farming')
-    options = [str(name) for name in (account_state_payload.get('card_presets') or {}).keys() if str(name)]
-    if default_preset not in options:
-        options.insert(0, default_preset)
-    return options or [default_preset]
+    canonical_order = ['Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5']
+
+    source_options: list[str] = []
+    seen: set[str] = set()
+
+    def _add_option(name: object) -> None:
+        value = str(name).strip()
+        if value and value not in seen:
+            seen.add(value)
+            source_options.append(value)
+
+    for preset_name in (account_state_payload.get('card_presets') or {}).keys():
+        _add_option(preset_name)
+    for preset_name in (account_state_payload.get('module_presets') or {}).keys():
+        _add_option(preset_name)
+    for row in (account_state_payload.get('workshop') or {}).values():
+        for preset_name in dict((row or {}).get('preset_levels') or {}).keys():
+            _add_option(preset_name)
+        for preset_name in dict((row or {}).get('preset_values') or {}).keys():
+            _add_option(preset_name)
+    for row in (account_state_payload.get('workshop_enhancement_tracks') or {}).values():
+        for preset_name in dict((row or {}).get('preset_levels') or {}).keys():
+            _add_option(preset_name)
+
+    if not source_options:
+        return ['Farming']
+
+    _add_option(default_preset)
+    options = [name for name in canonical_order if name in seen]
+    options.extend(name for name in source_options if name not in canonical_order)
+    return options
 
 
 def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, object]) -> tuple[dict[str, object], list[dict[str, str]]]:
