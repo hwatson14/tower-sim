@@ -7,6 +7,7 @@ from app.display import (
     render_grouped_workshop_table_html,
     render_labs_bucket_grid_html,
     render_simple_metric_panel_html,
+    render_workshop_stat_table_html,
     render_uw_track_table_html,
 )
 
@@ -127,3 +128,40 @@ def test_simple_metric_panel_renders_theme_label():
     html = render_simple_metric_panel_html({'metric_label': 'Coin Multiplier', 'metric_value': '1.23'})
     assert 'Coin Multiplier' in html
     assert '1.23' in html
+
+
+def test_workshop_stats_renderer_places_max_workshop_between_start_and_perk():
+    html = render_workshop_stat_table_html(
+        {
+            'sections': [
+                {
+                    'title': 'Offense',
+                    'rows': [
+                        {
+                            'name': 'Damage',
+                            'workshop_level': '100',
+                            'workshop_value': '100',
+                            'lab_effects': '+ 5',
+                            'module_effects': '+ 2',
+                            'card_effects': '+ 3',
+                            'enhancement_effects': '+ 4',
+                            'relics': '+ 6',
+                            'start_of_run_value': '200',
+                            'max_workshop_value': '250',
+                            'perk_effects': '+ 10',
+                            'other': '—',
+                            'max_progression_value': '260',
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+    assert html.index('Enhancement') < html.index('Relics') < html.index('Start of Run Value')
+    assert html.index('Start of Run Value') < html.index('Max Workshop Value') < html.index('Perk')
+    assert 'Lab Effects' not in html
+    assert 'Module Effects' not in html
+    assert 'Card Effects' not in html
+    assert 'Enhancement Effects' not in html
+    assert 'Perk Effects' not in html
+    assert '250' in html
