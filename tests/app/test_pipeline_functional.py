@@ -95,7 +95,7 @@ def test_input_dashboard_artifact_is_published(tmp_path):
 
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
-    assert dashboard.get('schema_version') == 1
+    assert dashboard.get('schema_version') == 2
     assert isinstance(dashboard.get('preset_options'), list)
     expected_panel_ids = [
         'labs',
@@ -151,13 +151,31 @@ def test_input_dashboard_payload_consumes_qe_publications():
     assert damage_row.get('max_value_source') == 'qe_published'
 
     uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
-    uw_damage_row = next((row for row in uw_rows if row.get('uw_name') == 'Chain Lightning' and row.get('track_name') == 'Damage'), None)
+    uw_damage_row = next((row for row in uw_rows if row.get('uw') == 'Chain Lightning' and row.get('track') == 'Damage'), None)
     assert uw_damage_row is not None
-    assert uw_damage_row.get('module_effect') == 'x2.25'
-    assert uw_damage_row.get('perk_effect') == '5'
-    assert uw_damage_row.get('final_value') == 'x903'
-    assert uw_damage_row.get('module_effect_source') == 'qe_published'
-    assert uw_damage_row.get('perk_effect_source') == 'qe_published'
+    assert uw_damage_row.get('module') == 'x2.25'
+    assert uw_damage_row.get('perk') == '5'
+    assert uw_damage_row.get('final') == 'x903'
+    assert sorted(uw_damage_row.keys()) == [
+        'final',
+        'lab',
+        'module',
+        'perk',
+        'stone_level',
+        'stone_value',
+        'track',
+        'unlock',
+        'uw',
+        'uw_plus',
+    ]
+    uw_damage_gaps = [
+        gap for gap in (dashboard.get('upstream_gaps') or [])
+        if gap.get('panel_id') == 'ultimate_weapons' and 'Chain Lightning::Damage' in str(gap.get('detail') or '')
+    ]
+    uw_damage_gap_ids = [gap.get('gap_id') for gap in uw_damage_gaps]
+    assert 'module_column_not_published_upstream' not in uw_damage_gap_ids
+    assert 'perk_column_not_published_upstream' not in uw_damage_gap_ids
+    assert 'final_column_not_published_upstream' not in uw_damage_gap_ids
 
 
 def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():

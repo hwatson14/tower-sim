@@ -41,7 +41,44 @@ def test_input_dashboard_panel_contract_and_no_placeholder_headers():
     uw_panel = next(panel for panel in payload['panels'] if panel['panel_id'] == 'ultimate_weapons')
     uw_rows = (uw_panel.get('payload') or {}).get('rows') or []
     if uw_rows:
-        assert {'lab', 'module', 'perk', 'final'}.issubset(uw_rows[0].keys())
+        assert sorted(uw_rows[0].keys()) == [
+            'final',
+            'lab',
+            'module',
+            'perk',
+            'stone_level',
+            'stone_value',
+            'track',
+            'unlock',
+            'uw',
+            'uw_plus',
+        ]
+
+
+def test_input_dashboard_uw_upstream_gaps_are_field_conditional():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    payload = _build_input_dashboard_payload(
+        account_state,
+        {},
+        module_card_payloads={},
+        qe_dashboard_publications={
+            'uw_track_effects': {
+                'Chain Lightning::Damage': {
+                    'module_effect': 'x2.25',
+                    'perk_effect': '5',
+                    'final_value': 'x903',
+                }
+            }
+        },
+    )
+    uw_damage_gaps = [
+        gap for gap in (payload.get('upstream_gaps') or [])
+        if gap.get('panel_id') == 'ultimate_weapons' and 'Chain Lightning::Damage' in str(gap.get('detail') or '')
+    ]
+    uw_damage_gap_ids = [gap.get('gap_id') for gap in uw_damage_gaps]
+    assert 'module_column_not_published_upstream' not in uw_damage_gap_ids
+    assert 'perk_column_not_published_upstream' not in uw_damage_gap_ids
+    assert 'final_column_not_published_upstream' not in uw_damage_gap_ids
 
 
 def test_modules_panel_uses_module_card_payload_shape_when_available():

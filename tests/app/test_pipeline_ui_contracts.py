@@ -84,6 +84,7 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path):
     assert result.exit_code == 0
     payload = __import__('json').loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
     assert {'schema_version', 'selected_preset', 'preset_options', 'upstream_gaps', 'panels', 'debug_manifest'}.issubset(payload.keys())
+    assert payload.get('schema_version') == 2
     assert payload['selected_preset']
     assert {'Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5'}.issubset(set(payload.get('preset_options') or []))
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]

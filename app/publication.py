@@ -186,6 +186,7 @@ def _build_uw_panel(
         for track in tracks or []:
             plus_key = f"{uw_name}::{track.get('track_name') or ''}"
             published_effects = dict(uw_track_effects.get(plus_key) or {})
+            lab_effect = published_effects.get('lab_effect')
             module_effect = published_effects.get('module_effect')
             perk_effect = published_effects.get('perk_effect')
             final_value = published_effects.get('final_value', track.get('resolved_value'))
@@ -194,30 +195,23 @@ def _build_uw_panel(
                     'unlock': unlock,
                     'uw': uw_name,
                     'track': track.get('track_name') or '',
-                    'uw_name': uw_name,
-                    'track_name': track.get('track_name') or '',
                     'stone_level': '' if track.get('level') is None else str(track.get('level')),
                     'stone_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
-                    'lab': '',
+                    'lab': '' if lab_effect is None else str(lab_effect),
                     'module': '' if module_effect is None else str(module_effect),
                     'perk': '' if perk_effect is None else str(perk_effect),
                     'final': '' if final_value is None else str(final_value),
-                    'module_effect': '' if module_effect is None else str(module_effect),
-                    'perk_effect': '' if perk_effect is None else str(perk_effect),
-                    'final_value': '' if final_value is None else str(final_value),
-                    'module_effect_source': 'qe_published' if module_effect is not None else 'qe_unavailable',
-                    'perk_effect_source': 'qe_published' if perk_effect is not None else 'qe_unavailable',
                     'uw_plus': ((uw_plus_tracks.get(plus_key) or {}).get('display_token') or ''),
                 }
             )
-            gaps.extend(
-                [
-                    _dashboard_gap('ultimate_weapons', 'lab_column_not_published_upstream', f'Lab column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'module_column_not_published_upstream', f'Module column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'perk_column_not_published_upstream', f'Perk column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'final_column_not_published_upstream', f'Final column defaults to stone value for {plus_key}'),
-                ]
-            )
+            if lab_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'lab_column_not_published_upstream', f'Lab column missing for {plus_key}'))
+            if module_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'module_column_not_published_upstream', f'Module column missing for {plus_key}'))
+            if perk_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'perk_column_not_published_upstream', f'Perk column missing for {plus_key}'))
+            if final_value is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'final_column_not_published_upstream', f'Final column missing for {plus_key}'))
     return ({'panel_id': 'ultimate_weapons', 'panel_type': 'uw_track_table', 'title': 'Ultimate Weapons', 'payload': {'column_headers': ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': rows}}, gaps)
 
 
@@ -306,7 +300,7 @@ def _build_input_dashboard_payload(
         gaps.extend(panel_gaps)
 
     return {
-        'schema_version': 1,
+        'schema_version': 2,
         'selected_preset': selected_preset,
         'preset_options': preset_options,
         'upstream_gaps': gaps,
