@@ -7,7 +7,11 @@ on:
 
 jobs:
   validate:
+    # Designated fast-lane CI runner class for enforcing pytest wall-clock budget.
     runs-on: ubuntu-latest
+    env:
+      PYTEST_TIME_BUDGET_SECONDS: "10"
+      PYTEST_DURATIONS_REPORT: "pytest-durations.log"
 
     steps:
       - name: Checkout
@@ -23,9 +27,44 @@ jobs:
           python -m pip install --upgrade pip
           pip install -e .[dev]
 
-      - name: Run tests
+      - name: Run tests (budget-enforced)
         run: |
-          pytest
+          python - <<'PY'
+          import os
+          import subprocess
+          import time
+
+          budget_seconds = int(os.environ["PYTEST_TIME_BUDGET_SECONDS"])
+          report_path = os.environ["PYTEST_DURATIONS_REPORT"]
+          command = ["pytest", "-q", "--durations=25"]
+
+          start = time.monotonic()
+          with open(report_path, "w", encoding="utf-8") as report:
+              report.write(f"command: {' '.join(command)}\n")
+              report.write(f"budget_seconds: {budget_seconds}\n")
+              report.write("----- pytest output -----\n")
+              report.flush()
+              completed = subprocess.run(command, stdout=report, stderr=subprocess.STDOUT)
+          elapsed_seconds = time.monotonic() - start
+
+          print(f"pytest_wall_clock_seconds={elapsed_seconds:.3f}")
+          if completed.returncode != 0:
+              raise SystemExit(completed.returncode)
+          if elapsed_seconds > budget_seconds:
+              print(
+                  "CI invariant violated: "
+                  f"pytest wall clock {elapsed_seconds:.3f}s exceeded {budget_seconds}s budget."
+              )
+              raise SystemExit(1)
+          PY
+
+      - name: Upload pytest durations artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pytest-durations
+          path: ${{ env.PYTEST_DURATIONS_REPORT }}
+          if-no-files-found: error
 
       - name: Run main rebuild
         run: |
