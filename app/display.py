@@ -273,14 +273,24 @@ INPUT_DASHBOARD_CSS = """
 .inputs-table th,.inputs-table td{border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
 .inputs-table th{color:#9db4ff;font-weight:600;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.inputs-subpanel{background:#10141d;border:1px solid #2b3241;border-radius:8px;padding:6px 8px;}
+.inputs-table-compact{table-layout:fixed;font-size:0.74rem;}
+.inputs-table-compact th,.inputs-table-compact td{padding:3px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.inputs-table-compact th:nth-child(1),.inputs-table-compact td:nth-child(1){width:10%;}
+.inputs-table-compact th:nth-child(2),.inputs-table-compact td:nth-child(2){width:30%;}
+.inputs-table-compact th:nth-child(3),.inputs-table-compact td:nth-child(3){width:15%;}
+.inputs-table-compact th:nth-child(4),.inputs-table-compact td:nth-child(4){width:15%;}
+.inputs-table-compact th:nth-child(5),.inputs-table-compact td:nth-child(5){width:15%;}
+.inputs-table-compact th:nth-child(6),.inputs-table-compact td:nth-child(6){width:15%;}
 </style>
 """
 
 
-def _render_table(headers: list[str], rows: list[list[object]]) -> str:
+def _render_table(headers: list[str], rows: list[list[object]], *, class_name: str = 'inputs-table') -> str:
     head = ''.join(f'<th>{html.escape(str(col))}</th>' for col in headers)
     body = ''.join('<tr>' + ''.join(f'<td>{html.escape(str(value or ""))}</td>' for value in row) + '</tr>' for row in rows)
-    return f'<table class="inputs-table"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>'
+    return f'<table class="{class_name}"><thead><tr>{head}</tr></thead><tbody>{body}</tbody></table>'
 
 
 def render_labs_bucket_grid_html(payload: dict) -> str:
@@ -297,8 +307,8 @@ def render_grouped_workshop_table_html(payload: dict) -> str:
     for key in ['offense', 'defense', 'utility']:
         rows = payload.get('groups', {}).get(key) or []
         table_rows = [[r.get('unlock', ''), r.get('name', ''), r.get('coin_level', ''), r.get('coin_value', ''), r.get('max_level', ''), r.get('max_value', '')] for r in rows]
-        chunks.append(f"<h5>{key.title()}</h5>{_render_table(headers, table_rows)}")
-    return f"<div class='inputs-panel'>{''.join(chunks)}</div>"
+        chunks.append(f"<div class='inputs-subpanel'><h5>{key.title()}</h5>{_render_table(headers, table_rows, class_name='inputs-table inputs-table-compact')}</div>")
+    return f"<div class='inputs-panel'><div class='inputs-triple'>{''.join(chunks)}</div></div>"
 
 
 def render_grouped_enhancement_table_html(payload: dict) -> str:
@@ -307,8 +317,8 @@ def render_grouped_enhancement_table_html(payload: dict) -> str:
     for key in ['offense', 'defense', 'utility']:
         rows = payload.get('groups', {}).get(key) or []
         table_rows = [[r.get('name', ''), r.get('level', ''), r.get('max', ''), r.get('value', '')] for r in rows]
-        chunks.append(f"<h5>{key.title()}</h5>{_render_table(headers, table_rows)}")
-    return f"<div class='inputs-panel'>{''.join(chunks)}</div>"
+        chunks.append(f"<div class='inputs-subpanel'><h5>{key.title()}</h5>{_render_table(headers, table_rows, class_name='inputs-table inputs-table-compact')}</div>")
+    return f"<div class='inputs-panel'><div class='inputs-triple'>{''.join(chunks)}</div></div>"
 
 
 def render_uw_track_table_html(payload: dict) -> str:

@@ -70,6 +70,14 @@ def _dashboard_gap(panel_id: str, gap_id: str, detail: str) -> dict[str, str]:
     return {'panel_id': panel_id, 'gap_id': gap_id, 'detail': detail}
 
 
+def _dashboard_display_token(value: object) -> str:
+    if value is None:
+        return ''
+    if isinstance(value, bool):
+        return 'true' if value else 'false'
+    return str(value)
+
+
 def _preset_options(account_state_payload: dict) -> list[str]:
     default_preset = str(account_state_payload.get('default_preset') or 'Farming')
     canonical_order = ['Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5']
@@ -166,12 +174,21 @@ def _build_workshop_panel(
         category = category if category in groups else 'utility'
         preset_levels = dict((row or {}).get('preset_levels') or {})
         preset_values = dict((row or {}).get('preset_values') or {})
+        unlock_value = (row or {}).get('unlocked')
+        if unlock_value is None:
+            level_value = preset_levels.get(selected_preset)
+            unlock_value = bool(level_value) if level_value is not None else None
+        coin_level_value = preset_levels.get(selected_preset)
+        max_level_value = (row or {}).get('max_level')
         coin_value = workshop_coin_values.get(name, preset_values.get(selected_preset))
         max_value = workshop_max_values.get(name, '')
-        if not max_value:
+        if max_value in (None, '') and coin_value not in (None, '') and coin_level_value is not None and max_level_value is not None:
+            if str(coin_level_value) == str(max_level_value):
+                max_value = coin_value
+        if max_value in (None, ''):
             gaps.append(_dashboard_gap('workshop', 'max_value_not_published_upstream', f'Max Value missing for {name}'))
         output_row = {
-            'unlock': (row or {}).get('unlocked') or '',
+            'unlock': _dashboard_display_token(unlock_value),
             'name': name,
             'coin_level': '' if preset_levels.get(selected_preset) is None else str(preset_levels.get(selected_preset)),
             'coin_value': '' if coin_value is None else str(coin_value),
@@ -213,14 +230,16 @@ def _build_uw_panel(
     rows: list[dict[str, object]] = []
     gaps: list[dict[str, str]] = []
     for uw_name, tracks in (account_state_payload.get('uw_tracks') or {}).items():
-        unlock = (account_state_payload.get('ultimate_weapons') or {}).get(uw_name, {}).get('unlocked') or ''
+        unlock = _dashboard_display_token((account_state_payload.get('ultimate_weapons') or {}).get(uw_name, {}).get('unlocked'))
         for track in tracks or []:
             plus_key = f"{uw_name}::{track.get('track_name') or ''}"
             published_effects = dict(uw_track_effects.get(plus_key) or {})
             lab_effect = published_effects.get('lab_effect')
             module_effect = published_effects.get('module_effect')
             perk_effect = published_effects.get('perk_effect')
-            final_value = published_effects.get('final_value', track.get('resolved_value'))
+            final_value = published_effects.get('final_value')
+            if final_value is None:
+                final_value = track.get('resolved_value')
             rows.append(
                 {
                     'unlock': unlock,
