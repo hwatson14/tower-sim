@@ -24,6 +24,23 @@ from input.runtime_state import build_runtime_state
 pytestmark = pytest.mark.live
 
 
+RUNTIME_APPROVED_EXCEPTION_WHITELIST = {
+    "workshop:Defense %",
+    "workshop:Wall Rebuild",
+    "workshop:Interest / Wave",
+    "workshop:Wall Fortification",
+    "workshop:Rapid Fire Duration",
+    "workshop:Cash / Wave",
+    "lab:Critical Factor",
+    "lab:Coins / Kill Bonus",
+    "lab:Defense Absolute",
+    "lab:Damage / Meter",
+    "lab:Wall Rebuild",
+    "lab:Max Rend Armor Multiplier",
+}
+MAX_APPROVED_EXCEPTION_COUNT = 12
+
+
 def test_canonical_preset_names__include_primary_defaults():
     assert len(CANONICAL_PRESET_NAMES) >= 2
     assert "Farming" in CANONICAL_PRESET_NAMES
@@ -231,6 +248,8 @@ def test_runtime_formula_keys_have_explicit_authority() -> None:
 
 def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
     allowed = {'canonical_formula_registry', 'approved_exception'}
+    approved_exception_keys: set[str] = set()
+
     for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
         source = metadata.get('authority_source')
         assert source in allowed, f'{runtime_key} has unsupported authority source: {source!r}'
@@ -238,8 +257,15 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
             formula_id = (metadata.get('formula_id') or '').strip()
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
         if source == 'approved_exception':
+            approved_exception_keys.add(runtime_key)
             reason = (metadata.get('approved_exception_reason') or '').strip()
             assert reason, f'{runtime_key} approved_exception must include approved_exception_reason.'
+            assert '|retire_when=' in reason, (
+                f'{runtime_key} approved_exception must include explicit retirement condition in approved_exception_reason.'
+            )
+
+    assert approved_exception_keys == RUNTIME_APPROVED_EXCEPTION_WHITELIST
+    assert len(approved_exception_keys) <= MAX_APPROVED_EXCEPTION_COUNT
 
 
 def test_workshop_defense_pct_formula_matches_expected_track() -> None:
