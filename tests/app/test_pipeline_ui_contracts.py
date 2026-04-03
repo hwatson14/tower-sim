@@ -91,12 +91,22 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
         )
     )
     assert result.exit_code == 0
-    payload = json.loads((result.out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
-    assert {'schema_version', 'selected_preset', 'preset_options', 'upstream_gaps', 'panels', 'debug_manifest'}.issubset(payload.keys())
+    dashboard_path = result.out_dir / 'input_dashboard.json'
+    assert dashboard_path.exists()
+    payload = json.loads(dashboard_path.read_text(encoding='utf-8'))
+    assert sorted(payload.keys()) == [
+        'debug_manifest',
+        'panels',
+        'preset_options',
+        'schema_version',
+        'selected_preset',
+        'upstream_gaps',
+    ]
     assert payload.get('schema_version') == 2
     assert payload['selected_preset']
     assert {'Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5'}.issubset(set(payload.get('preset_options') or []))
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
+    panel_types = [panel.get('panel_type') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
         'labs',
         'workshop',
@@ -110,13 +120,31 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
         'guardians',
         'themes_and_songs',
     ]
+    assert panel_types == [
+        'labs_bucket_grid',
+        'grouped_workshop_table',
+        'grouped_enhancement_table',
+        'uw_track_table',
+        'cards_inventory_and_preset',
+        'track_table',
+        'simple_bonus_table',
+        'module_slot_stack',
+        'simple_bonus_table',
+        'track_table',
+        'simple_metric_panel',
+    ]
     panel_by_id = {panel.get('panel_id'): panel for panel in (payload.get('panels') or [])}
-    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    workshop_groups = (panel_by_id['workshop'].get('payload') or {}).get('groups') or {}
+    workshop_rows = (
+        (workshop_groups.get('offense') or [])
+        + (workshop_groups.get('defense') or [])
+        + (workshop_groups.get('utility') or [])
+    )
     damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
     assert damage_row is not None
     assert damage_row.get('coin_value') == 'xUI_SENTINEL_COIN'
     assert damage_row.get('max_value') == 'xUI_SENTINEL_MAX'
-    assert damage_row.get('max_value_source') == 'qe_published'
+    assert sorted(damage_row.keys()) == ['coin_level', 'coin_value', 'max_level', 'max_value', 'name', 'unlock']
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):
