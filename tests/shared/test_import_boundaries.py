@@ -158,6 +158,7 @@ _ROOT_FILE_ALLOWLIST = {
 _TESTS_ROOT_FILE_ALLOWLIST = {"conftest.py"}
 _INPUT_FILE_ALLOWLIST = {
     "ids_parser.py",
+    "lab_category_registry.py",
     "loader.py",
     "manual_inputs.contract.yaml",
     "manual_inputs.yaml",

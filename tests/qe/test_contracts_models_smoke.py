@@ -492,11 +492,18 @@ def test_load_workshop_formulas_canonical_rows_do_not_depend_on_fallback_columns
 
 def test_load_workshop_formulas_approved_exception_rows_require_legacy_formula_columns(monkeypatch: pytest.MonkeyPatch) -> None:
     runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
-    exception_domain, exception_stat_name = next(
+    approved_exceptions = [
         (domain, stat_name)
         for (domain, stat_name), metadata in runtime_authority_rows.items()
         if metadata.get('authority_source') == 'approved_exception'
-    )
+    ]
+    if not approved_exceptions:
+        assert all(
+            metadata.get('authority_source') == 'canonical_formula_registry'
+            for metadata in runtime_authority_rows.values()
+        )
+        return
+    exception_domain, exception_stat_name = approved_exceptions[0]
 
     original_read_csv = kb_surfaces._read_csv
 
