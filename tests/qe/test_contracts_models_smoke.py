@@ -7,6 +7,7 @@ import pytest
 
 from input.state_types import ScenarioProjectionState
 from qe.consumer_registry import resolve_consumer_bundle
+import qe.kb_surfaces as kb_surfaces
 from qe.kb_surfaces import LAB_FORMULA_VALUES, RUNTIME_FORMULA_AUTHORITY, WORKSHOP_FORMULA_VALUES
 from qe.contracts import (
     CANONICAL_PRESET_NAMES,
@@ -296,6 +297,36 @@ def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -
             }
 
     assert RUNTIME_FORMULA_AUTHORITY == expected
+
+
+def test_load_workshop_formulas_fails_closed_when_canonical_callable_is_missing(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    canonical_runtime_key = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    )
+    canonical_runtime_key_text = f'{canonical_runtime_key[0]}:{canonical_runtime_key[1]}'
+
+    monkeypatch.setattr(kb_surfaces, '_canonical_formula_callables', lambda: {})
+
+    with pytest.raises(ValueError, match=canonical_runtime_key_text):
+        kb_surfaces.load_workshop_formulas()
+
+
+def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys() -> None:
+    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+    canonical_callables = kb_surfaces._canonical_formula_callables()
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+
+    for (domain, stat_name), metadata in runtime_authority_rows.items():
+        if metadata.get('authority_source') != 'canonical_formula_registry':
+            continue
+        runtime_key = f'{domain}:{stat_name}'
+        expected_callable = canonical_callables[runtime_key]
+        runtime_callable = workshop_formulas[stat_name] if domain == 'workshop' else lab_formulas[stat_name]
+        assert runtime_callable(1) == pytest.approx(expected_callable(1)), f'{runtime_key} level-1 mismatch.'
+        assert runtime_callable(99) == pytest.approx(expected_callable(99)), f'{runtime_key} level-99 mismatch.'
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():
