@@ -25,6 +25,10 @@ _CANONICAL_FORMULA_REGISTRY_PATH = _ROOT / 'kb' / 'formulas' / 'tables' / 'canon
 _CANONICAL_DOMAIN_ALIASES: dict[str, set[str]] = {
     'lab': {'labs'},
 }
+RUNTIME_CALLABLE_GENERATOR_KINDS: frozenset[str] = frozenset({
+    'exact_linear_generator_from_row_verified_summary',
+    'exact_linear_generator_from_row_verified_table',
+})
 
 
 def _read_csv(path: Path) -> list[dict]:
@@ -114,10 +118,6 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
     rows = _read_csv(_CANONICAL_FORMULA_REGISTRY_PATH)
     runtime_authority_rows = _load_runtime_formula_authority_rows()
     formula_row_by_id = {row['formula_id'].strip(): row for row in rows}
-    supported_generator_kinds = {
-        'exact_linear_generator_from_row_verified_summary',
-        'exact_linear_generator_from_row_verified_table',
-    }
     formulas: dict[str, Callable[[float], float]] = {}
     for (domain, stat_name), metadata in runtime_authority_rows.items():
         if metadata['authority_source'] != 'canonical_formula_registry':
@@ -127,7 +127,7 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
         if not row:
             raise ValueError(f'Runtime formula mapping references unknown canonical formula_id: {formula_id!r}')
         generator_kind = (row.get('generator_kind') or '').strip()
-        if generator_kind not in supported_generator_kinds:
+        if generator_kind not in RUNTIME_CALLABLE_GENERATOR_KINDS:
             raise ValueError(
                 f'Runtime formula mapping {domain}:{stat_name} uses unsupported generator_kind '
                 f'{generator_kind!r} for formula_id {formula_id!r}.'
@@ -146,6 +146,23 @@ def _canonical_formula_callables() -> dict[str, Callable[[float], float]]:
     return formulas
 
 
+def _build_approved_exception_formula_from_row(row: dict[str, str], runtime_key: str) -> Callable[[float], float]:
+    formula_type = (row.get('formula_type') or '').strip()
+    if not formula_type:
+        raise ValueError(f'Runtime formula key {runtime_key} is approved_exception but formula_type is empty.')
+
+    base_raw = (row.get('base') or '').strip()
+    per_level_raw = (row.get('per_level') or '').strip()
+    if not base_raw or not per_level_raw:
+        raise ValueError(
+            f'Runtime formula key {runtime_key} is approved_exception but base/per_level are incomplete.'
+        )
+
+    floor_raw = (row.get('floor') or '').strip()
+    floor_val = float(floor_raw) if floor_raw else 0.0
+    return _build_formula(formula_type, float(base_raw), float(per_level_raw), floor_val)
+
+
 def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
     """
     Return (workshop_formulas, lab_formulas) where each is {stat_name: callable(level) -> float}.
@@ -160,11 +177,6 @@ def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
     for row in rows:
         source_domain = row['source_domain'].strip()
         stat_name = row['stat_name'].strip()
-        formula_type = row['formula_type'].strip()
-        base = float(row['base'] or 0)
-        per_level = float(row['per_level'] or 0)
-        floor_raw = row['floor'].strip() if row['floor'] else ''
-        floor_val = float(floor_raw) if floor_raw else 0.0
         canonical_key = f'{source_domain}:{stat_name.removesuffix(" (lab)")}'
         authority = runtime_authority_rows.get((source_domain, stat_name.removesuffix(' (lab)')))
         if not authority:
@@ -178,7 +190,7 @@ def load_workshop_formulas() -> tuple[dict[str, Callable], dict[str, Callable]]:
                     f'callable was built for formula_id {authority["formula_id"]!r}.'
                 )
         elif authority_source == 'approved_exception':
-            fn = _build_formula(formula_type, base, per_level, floor_val)
+            fn = _build_approved_exception_formula_from_row(row, canonical_key)
         else:
             raise ValueError(
                 f'Runtime formula key {canonical_key} has unsupported authority_source {authority_source!r}.'

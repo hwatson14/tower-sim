@@ -296,6 +296,63 @@ def test_runtime_formula_authority_has_1_to_1_runtime_coverage_and_valid_formula
             pytest.fail(f'{runtime_key} has unexpected authority source {source!r}.')
 
 
+def test_runtime_formula_authority_canonical_entries_use_runtime_callable_generator_kinds() -> None:
+    canonical_registry_path = Path(__file__).resolve().parents[2] / 'kb' / 'formulas' / 'tables' / 'canonical-formula-registry.csv'
+    with canonical_registry_path.open(newline='', encoding='utf-8') as handle:
+        formula_rows_by_id = {row['formula_id'].strip(): row for row in csv.DictReader(handle)}
+
+    for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
+        if (metadata.get('authority_source') or '').strip() != 'canonical_formula_registry':
+            continue
+        formula_id = (metadata.get('formula_id') or '').strip()
+        formula_row = formula_rows_by_id[formula_id]
+        generator_kind = (formula_row.get('generator_kind') or '').strip()
+        assert generator_kind in kb_surfaces.RUNTIME_CALLABLE_GENERATOR_KINDS, (
+            f'{runtime_key} references formula_id {formula_id!r} with unsupported generator_kind {generator_kind!r}.'
+        )
+
+
+def test_canonical_formula_callables_fails_with_runtime_key_and_formula_id_for_unsupported_generator_kind(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime_key = ('workshop', 'Damage')
+    formula_id = 'tower.damage.test'
+
+    monkeypatch.setattr(
+        kb_surfaces,
+        '_load_runtime_formula_authority_rows',
+        lambda: {
+            runtime_key: {
+                'authority_source': 'canonical_formula_registry',
+                'formula_id': formula_id,
+                'approved_exception_reason': '',
+            }
+        },
+    )
+    monkeypatch.setattr(
+        kb_surfaces,
+        '_read_csv',
+        lambda path: [
+            {
+                'formula_id': formula_id,
+                'generator_kind': 'exact_linear_generator_from_live_wiki',
+                'domain': 'workshop',
+                'start_level': '0',
+                'base_value': '1',
+                'delta_per_step': '1',
+            }
+        ]
+        if path == kb_surfaces._CANONICAL_FORMULA_REGISTRY_PATH
+        else [],
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=r"workshop:Damage uses unsupported generator_kind .* for formula_id 'tower\.damage\.test'",
+    ):
+        kb_surfaces._canonical_formula_callables()
+
+
 def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -> None:
     authority_table_path = Path(__file__).resolve().parents[2] / 'kb' / 'global-rules' / 'tables' / 'runtime-formula-authority.csv'
     with authority_table_path.open(newline='', encoding='utf-8') as handle:
@@ -329,19 +386,139 @@ def test_load_workshop_formulas_fails_closed_when_canonical_callable_is_missing(
         kb_surfaces.load_workshop_formulas()
 
 
-def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys() -> None:
-    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
-    canonical_callables = kb_surfaces._canonical_formula_callables()
+def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    approved_exception_keys = {
+        f'{domain}:{stat_name}'
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'approved_exception'
+    }
+    canonical_keys = {
+        f'{domain}:{stat_name}'
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    }
+    rows = kb_surfaces._read_csv(kb_surfaces._WORKSHOP_FORMULAS_PATH)
+    canonical_only_rows = [
+        row
+        for row in rows
+        if f"{row['source_domain'].strip()}:{row['stat_name'].strip().removesuffix(' (lab)')}" in canonical_keys
+    ]
 
-    for (domain, stat_name), metadata in runtime_authority_rows.items():
-        if metadata.get('authority_source') != 'canonical_formula_registry':
-            continue
-        runtime_key = f'{domain}:{stat_name}'
-        expected_callable = canonical_callables[runtime_key]
+    canonical_callables = kb_surfaces._canonical_formula_callables()
+    original_read_csv = kb_surfaces._read_csv
+
+    def _read_csv_canonical_only(path: Path) -> list[dict]:
+        if path == kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return canonical_only_rows
+        return original_read_csv(path)
+
+    with monkeypatch.context() as canonical_context:
+        canonical_context.setattr(
+            kb_surfaces,
+            '_build_formula',
+            lambda formula_type, base, per_level, floor: (_ for _ in ()).throw(
+                AssertionError('_build_formula should not be called for canonical runtime keys.')
+            ),
+        )
+        canonical_context.setattr(kb_surfaces, '_read_csv', _read_csv_canonical_only)
+        canonical_context.setattr(kb_surfaces, '_canonical_formula_callables', lambda: canonical_callables)
+
+        workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+
+    for runtime_key in canonical_keys:
+        domain, stat_name = runtime_key.split(':', 1)
         runtime_callable = workshop_formulas[stat_name] if domain == 'workshop' else lab_formulas[stat_name]
-        assert runtime_callable(1) == pytest.approx(expected_callable(1)), f'{runtime_key} level-1 mismatch.'
-        assert runtime_callable(99) == pytest.approx(expected_callable(99)), f'{runtime_key} level-99 mismatch.'
+        assert runtime_callable is canonical_callables[runtime_key]
+
+    original_build_formula = kb_surfaces._build_formula
+    approved_call_count = 0
+
+    def _approved_only_build_formula(formula_type: str, base: float, per_level: float, floor: float):
+        nonlocal approved_call_count
+        approved_call_count += 1
+        return original_build_formula(formula_type, base, per_level, floor)
+
+    with monkeypatch.context() as approved_context:
+        approved_context.setattr(kb_surfaces, '_build_formula', _approved_only_build_formula)
+        kb_surfaces.load_workshop_formulas()
+
+    assert approved_call_count == len(approved_exception_keys)
+
+
+def test_load_workshop_formulas_canonical_rows_do_not_depend_on_fallback_columns(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    canonical_domain, canonical_stat_name = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    )
+
+    original_read_csv = kb_surfaces._read_csv
+
+    def _patched_read_csv(path: Path) -> list[dict]:
+        rows = original_read_csv(path)
+        if path != kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return rows
+        patched_rows: list[dict] = []
+        for row in rows:
+            patched = dict(row)
+            if (
+                patched.get('source_domain', '').strip() == canonical_domain
+                and patched.get('stat_name', '').strip().removesuffix(' (lab)') == canonical_stat_name
+            ):
+                patched['formula_type'] = ''
+                patched['base'] = ''
+                patched['per_level'] = ''
+                patched['floor'] = ''
+            patched_rows.append(patched)
+        return patched_rows
+
+    monkeypatch.setattr(kb_surfaces, '_read_csv', _patched_read_csv)
+
+    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+    runtime_key = f'{canonical_domain}:{canonical_stat_name}'
+    canonical_callable = kb_surfaces._canonical_formula_callables()[runtime_key]
+    runtime_callable = (
+        workshop_formulas[canonical_stat_name]
+        if canonical_domain == 'workshop'
+        else lab_formulas[canonical_stat_name]
+    )
+    assert runtime_callable(1) == pytest.approx(canonical_callable(1))
+    assert runtime_callable(99) == pytest.approx(canonical_callable(99))
+
+
+def test_load_workshop_formulas_approved_exception_rows_require_legacy_formula_columns(monkeypatch: pytest.MonkeyPatch) -> None:
+    runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    exception_domain, exception_stat_name = next(
+        (domain, stat_name)
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'approved_exception'
+    )
+
+    original_read_csv = kb_surfaces._read_csv
+
+    def _patched_read_csv(path: Path) -> list[dict]:
+        rows = original_read_csv(path)
+        if path != kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return rows
+        patched_rows: list[dict] = []
+        for row in rows:
+            patched = dict(row)
+            if (
+                patched.get('source_domain', '').strip() == exception_domain
+                and patched.get('stat_name', '').strip().removesuffix(' (lab)') == exception_stat_name
+            ):
+                patched['formula_type'] = ''
+            patched_rows.append(patched)
+        return patched_rows
+
+    monkeypatch.setattr(kb_surfaces, '_read_csv', _patched_read_csv)
+
+    with pytest.raises(ValueError, match=f'{exception_domain}:{exception_stat_name}'):
+        kb_surfaces.load_workshop_formulas()
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():
