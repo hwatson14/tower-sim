@@ -340,19 +340,66 @@ def test_load_workshop_formulas_fails_closed_when_canonical_callable_is_missing(
         kb_surfaces.load_workshop_formulas()
 
 
-def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys() -> None:
-    workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
-    canonical_callables = kb_surfaces._canonical_formula_callables()
+def test_load_workshop_formulas_uses_canonical_registry_callables_for_canonical_runtime_keys(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     runtime_authority_rows = kb_surfaces._load_runtime_formula_authority_rows()
+    approved_exception_keys = {
+        f'{domain}:{stat_name}'
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'approved_exception'
+    }
+    canonical_keys = {
+        f'{domain}:{stat_name}'
+        for (domain, stat_name), metadata in runtime_authority_rows.items()
+        if metadata.get('authority_source') == 'canonical_formula_registry'
+    }
+    rows = kb_surfaces._read_csv(kb_surfaces._WORKSHOP_FORMULAS_PATH)
+    canonical_only_rows = [
+        row
+        for row in rows
+        if f"{row['source_domain'].strip()}:{row['stat_name'].strip().removesuffix(' (lab)')}" in canonical_keys
+    ]
 
-    for (domain, stat_name), metadata in runtime_authority_rows.items():
-        if metadata.get('authority_source') != 'canonical_formula_registry':
-            continue
-        runtime_key = f'{domain}:{stat_name}'
-        expected_callable = canonical_callables[runtime_key]
+    canonical_callables = kb_surfaces._canonical_formula_callables()
+    original_read_csv = kb_surfaces._read_csv
+
+    def _read_csv_canonical_only(path: Path) -> list[dict]:
+        if path == kb_surfaces._WORKSHOP_FORMULAS_PATH:
+            return canonical_only_rows
+        return original_read_csv(path)
+
+    with monkeypatch.context() as canonical_context:
+        canonical_context.setattr(
+            kb_surfaces,
+            '_build_formula',
+            lambda formula_type, base, per_level, floor: (_ for _ in ()).throw(
+                AssertionError('_build_formula should not be called for canonical runtime keys.')
+            ),
+        )
+        canonical_context.setattr(kb_surfaces, '_read_csv', _read_csv_canonical_only)
+        canonical_context.setattr(kb_surfaces, '_canonical_formula_callables', lambda: canonical_callables)
+
+        workshop_formulas, lab_formulas = kb_surfaces.load_workshop_formulas()
+
+    for runtime_key in canonical_keys:
+        domain, stat_name = runtime_key.split(':', 1)
         runtime_callable = workshop_formulas[stat_name] if domain == 'workshop' else lab_formulas[stat_name]
-        assert runtime_callable(1) == pytest.approx(expected_callable(1)), f'{runtime_key} level-1 mismatch.'
-        assert runtime_callable(99) == pytest.approx(expected_callable(99)), f'{runtime_key} level-99 mismatch.'
+        assert runtime_callable is canonical_callables[runtime_key]
+
+    original_build_formula = kb_surfaces._build_formula
+    approved_call_count = 0
+
+    def _approved_only_build_formula(formula_type: str, base: float, per_level: float, floor: float):
+        nonlocal approved_call_count
+        approved_call_count += 1
+        return original_build_formula(formula_type, base, per_level, floor)
+
+    with monkeypatch.context() as approved_context:
+        approved_context.setattr(kb_surfaces, '_build_formula', _approved_only_build_formula)
+        kb_surfaces.load_workshop_formulas()
+
+    assert approved_call_count == len(approved_exception_keys)
 
 
 def test_scenario_projection_state__debug_payload_is_explicit():
