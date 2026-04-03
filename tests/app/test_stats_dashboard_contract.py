@@ -74,12 +74,12 @@ def test_stats_dashboard_variants_use_rows_for_each_preset():
     }
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     query_rows_start = {
-        'Farming': {'rows': {'state::tower.damage': {'display_value': '1'}}},
-        'Tourney': {'rows': {'state::tower.damage': {'display_value': '2'}}},
+        'Farming': {'rows': {'state::tower.damage': {'display_value': '1', 'final_value': 1}}},
+        'Tourney': {'rows': {'state::tower.damage': {'display_value': '2', 'final_value': 2}}},
     }
     query_rows_max = {
-        'Farming': {'rows': {'state::tower.damage': {'display_value': '10'}}},
-        'Tourney': {'rows': {'state::tower.damage': {'display_value': '20'}}},
+        'Farming': {'rows': {'state::tower.damage': {'display_value': '10', 'final_value': 10}}},
+        'Tourney': {'rows': {'state::tower.damage': {'display_value': '20', 'final_value': 20}}},
     }
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
@@ -93,12 +93,12 @@ def test_stats_dashboard_variants_use_rows_for_each_preset():
         selected_state_mode='max_progression',
     )
 
-    tourney_overview = next(
+    tourney_workshop = next(
         panel for panel in payload['variants']['Tourney']['max_progression']
-        if panel.get('panel_id') == 'overview'
+        if panel.get('panel_id') == 'workshop'
     )
-    damage_metric = next(
-        metric for metric in (tourney_overview.get('payload', {}).get('metrics') or [])
-        if metric.get('surface_id') == 'state::tower.damage'
+    offense_rows = (
+        (tourney_workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
     )
-    assert damage_metric['display_value'] == '20'
+    damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
+    assert damage_row['max_progression_value'] == '20'
