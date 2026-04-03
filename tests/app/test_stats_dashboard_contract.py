@@ -31,16 +31,12 @@ def test_stats_dashboard_contract_and_panel_types():
     assert payload['selected_state_mode'] == 'max_progression'
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
-        ('overview', 'overview_metrics'),
+        ('workshop', 'workshop_stat_table'),
+        ('derived', 'resolved_stat_section'),
+        ('uw_resolved', 'resolved_uw_section'),
         ('modules_context', 'context_modules'),
         ('cards_context', 'context_cards'),
-        ('uw_context', 'context_uw'),
-        ('relics_context', 'context_bonus_table'),
-        ('vault_context', 'context_bonus_table'),
-        ('offense', 'resolved_stat_section'),
-        ('defense', 'resolved_stat_section'),
-        ('utility_economy', 'resolved_stat_section'),
-        ('uw_resolved', 'resolved_uw_section'),
+        ('bots_context', 'context_track_table'),
     ]
 
 

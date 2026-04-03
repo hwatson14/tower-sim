@@ -377,6 +377,43 @@ def render_resolved_stat_section_html(payload: dict) -> str:
     return f"<div class='inputs-panel'>{_render_table(headers, rows)}</div>"
 
 
+def render_workshop_stat_table_html(payload: dict) -> str:
+    headers = [
+        'Name',
+        'Workshop Level',
+        'Workshop Value',
+        'Lab Effects',
+        'Module Effects',
+        'Card Effects',
+        'Enhancement Effects',
+        'Start of Run Value',
+        'Perk Effects',
+        'Other',
+        'Max Progression Value',
+    ]
+    sections = []
+    for section in (payload.get('sections') or []):
+        rows = [
+            [
+                row.get('name', ''),
+                row.get('workshop_level', ''),
+                row.get('workshop_value', ''),
+                row.get('lab_effects', ''),
+                row.get('module_effects', ''),
+                row.get('card_effects', ''),
+                row.get('enhancement_effects', ''),
+                row.get('start_of_run_value', ''),
+                row.get('perk_effects', ''),
+                row.get('other', ''),
+                row.get('max_progression_value', ''),
+            ]
+            for row in ((section or {}).get('rows') or [])
+        ]
+        title = html.escape(str((section or {}).get('title') or ''))
+        sections.append(f"<div class='inputs-subpanel'><h5>{title}</h5>{_render_table(headers, rows)}</div>")
+    return f"<div class='inputs-panel'>{''.join(sections)}</div>"
+
+
 def render_stats_uw_section_html(payload: dict) -> str:
     rows = [
         [
