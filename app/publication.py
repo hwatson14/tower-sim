@@ -397,6 +397,7 @@ def write_core_outputs(
     family_completeness_matrix: dict,
     root_path: Path,
     module_card_payloads: dict[str, object] | None = None,
+    qe_dashboard_publications: dict[str, object] | None = None,
 ) -> list[str]:
 
     _remove_legacy_outputs(out_dir, _ANALYSIS_PIPELINE_LEGACY_OUTPUTS)
@@ -404,6 +405,7 @@ def write_core_outputs(
     input_dashboard_payload = _build_input_dashboard_payload(
         account_state_payload,
         diagnostics,
+        qe_dashboard_publications=qe_dashboard_publications,
         module_card_payloads=module_card_payloads,
     )
     artifacts = [

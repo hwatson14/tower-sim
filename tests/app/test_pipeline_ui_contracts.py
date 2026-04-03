@@ -72,8 +72,16 @@ def test_trace_artifact_is_listed_in_generated_files(tmp_path):
     assert 'pipeline_trace.json' in generated
 
 
-def test_pipeline_writes_input_dashboard_contract(tmp_path):
+def test_pipeline_writes_input_dashboard_contract(tmp_path, monkeypatch):
     from app.pipeline import PipelineRunRequest, execute_pipeline
+
+    monkeypatch.setattr(
+        'app.pipeline._build_input_dashboard_qe_publications',
+        lambda **_kwargs: {
+            'workshop_coin_values': {'Damage': 'xUI_SENTINEL_COIN'},
+            'workshop_max_values': {'Damage': 'xUI_SENTINEL_MAX'},
+        },
+    )
 
     result = execute_pipeline(
         PipelineRunRequest(
@@ -100,6 +108,13 @@ def test_pipeline_writes_input_dashboard_contract(tmp_path):
         'guardians',
         'themes_and_songs',
     ]
+    panel_by_id = {panel.get('panel_id'): panel for panel in (payload.get('panels') or [])}
+    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
+    assert damage_row is not None
+    assert damage_row.get('coin_value') == 'xUI_SENTINEL_COIN'
+    assert damage_row.get('max_value') == 'xUI_SENTINEL_MAX'
+    assert damage_row.get('max_value_source') == 'qe_published'
 
 
 def test_streamlit_app_contract_is_frozen_in_repo() -> None:

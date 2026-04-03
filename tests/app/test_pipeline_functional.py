@@ -129,6 +129,46 @@ def test_input_dashboard_artifact_is_published(tmp_path):
     assert isinstance(dashboard.get('upstream_gaps'), list)
 
 
+@pytest.mark.live
+def test_pipeline_computed_qe_publications_reach_input_dashboard(tmp_path, monkeypatch):
+    def _fake_qe_dashboard_publications(**_kwargs):
+        return {
+            'workshop_coin_values': {'Damage': 'xSENTINEL_COIN'},
+            'workshop_max_values': {'Damage': 'xSENTINEL_MAX'},
+            'uw_track_effects': {
+                'Chain Lightning::Damage': {
+                    'module_effect': 'xSENTINEL_MODULE',
+                    'perk_effect': 'xSENTINEL_PERK',
+                    'final_value': 'xSENTINEL_FINAL',
+                },
+            },
+        }
+
+    monkeypatch.setattr('app.pipeline._build_input_dashboard_qe_publications', _fake_qe_dashboard_publications)
+
+    out_dir = tmp_path / "out"
+    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
+    result = execute_pipeline(request)
+
+    assert result.exit_code == 0
+    dashboard = json.loads((out_dir / 'input_dashboard.json').read_text(encoding='utf-8'))
+    panel_by_id = {panel.get('panel_id'): panel for panel in (dashboard.get('panels') or [])}
+
+    workshop_rows = (panel_by_id['workshop'].get('payload') or {}).get('rows') or []
+    damage_row = next((row for row in workshop_rows if row.get('name') == 'Damage'), None)
+    assert damage_row is not None
+    assert damage_row.get('coin_value') == 'xSENTINEL_COIN'
+    assert damage_row.get('max_value') == 'xSENTINEL_MAX'
+    assert damage_row.get('max_value_source') == 'qe_published'
+
+    uw_rows = (panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or []
+    uw_damage_row = next((row for row in uw_rows if row.get('uw_name') == 'Chain Lightning' and row.get('track_name') == 'Damage'), None)
+    assert uw_damage_row is not None
+    assert uw_damage_row.get('module_effect') == 'xSENTINEL_MODULE'
+    assert uw_damage_row.get('perk_effect') == 'xSENTINEL_PERK'
+    assert uw_damage_row.get('final_value') == 'xSENTINEL_FINAL'
+
+
 def test_input_dashboard_payload_consumes_qe_publications():
     from app.publication import _build_input_dashboard_payload
 
