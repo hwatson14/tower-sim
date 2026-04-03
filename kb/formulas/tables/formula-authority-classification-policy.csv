@@ -59,7 +59,7 @@ enemy_damage_scaling,formula_area,enemies,canonical_in_non_formula_table_by_desi
 enemy_health_scaling,formula_area,enemies,canonical_in_non_formula_table_by_design,kb/enemies/tables/enemy-health-scaling-long.csv,non_formula_table_is_canonical_design,Canonical long scaling and base table are both bundled.
 enhancement_values,formula_area,workshop,canonical_in_non_formula_table_by_design,kb/workshop/tables/enhancements-values.csv,non_formula_table_is_canonical_design,Enhancements are the preferred canonical name and are surfaced as a dedicated table.
 guardian_upgrade_ladders,formula_area,guardians,canonical_in_non_formula_table_by_design,kb/guardians/tables/guardian-upgrades.csv,non_formula_table_is_canonical_design,"Guardian upgrades, chip baselines, and bonus scaling are surfaced."
-lab_value_ladders,formula_area,labs,canonical_in_non_formula_table_by_design,kb/labs/tables/lab-values.csv,non_formula_table_is_canonical_design,Active lab ladders and registries are sufficient for the intended scope; accepted exactness boundaries do not block package use, and Wall Fortification unlock is resolved in-package.
+lab_value_ladders,formula_area,labs,canonical_in_non_formula_table_by_design,kb/labs/tables/lab-values.csv,non_formula_table_is_canonical_design,Active lab ladders and registries are sufficient for the intended scope; accepted exactness boundaries do not block package use
 module_main_effects,formula_area,modules,canonical_in_non_formula_table_by_design,kb/modules/tables/module-main-effect-bases.csv,non_formula_table_is_canonical_design,"Main effects, bands, substats, and unique effects are surfaced; EP-backed total multipliers are accepted package canon for the intended scope."
 named_uw_ladders,formula_area,ultimate-weapons,canonical_in_non_formula_table_by_design,kb/ultimate-weapons/tables/black-hole-basic-upgrades.csv,non_formula_table_is_canonical_design,"Several named UWs are strongly surfaced, but named per-UW ladder coverage is uneven across the full UW roster."
 perk_pool_and_weights,formula_area,perks,canonical_in_non_formula_table_by_design,kb/perks/tables/perks.csv,non_formula_table_is_canonical_design,Perk pool and selection weights are both surfaced.
@@ -169,3 +169,33 @@ workshop_shockwave_frequency_s,formula_id,workshop,canonical_in_canonical_formul
 workshop_shockwave_size,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
 workshop_thorns_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
 workshop_wall_health_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_critical_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_critical_factor_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_free_attack_upgrade_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_free_defense_upgrade_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_free_utility_upgrade_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_multishot_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_multishot_targets,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_rapid_fire_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_bounce_shot_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_bounce_shot_targets,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_bounce_shot_range_m,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_super_critical_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_super_critical_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_rend_armor_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_rend_armor_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_knockback_chance_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_knockback_force,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_orb_count,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_defense_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_wall_rebuild_seconds,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_interest_per_wave_pct,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_rapid_fire_duration_seconds,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_cash_per_wave_value,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_critical_factor_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_coins_kill_bonus_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_defense_absolute_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_damage_per_meter_value,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_wall_lab_wall_rebuild_seconds_reduction,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+wiki_lab_rend_armor_max_bonus_multiplier,formula_id,labs,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,
+workshop_wall_fortification_value_multiplier,formula_id,workshop,canonical_in_canonical_formula_registry,kb/formulas/tables/canonical-formula-registry.csv,,

@@ -25,21 +25,9 @@ from input.runtime_state import build_runtime_state
 pytestmark = pytest.mark.live
 
 
-RUNTIME_APPROVED_EXCEPTION_WHITELIST = {
-    "workshop:Defense %",
-    "workshop:Wall Rebuild",
-    "workshop:Interest / Wave",
-    "workshop:Wall Fortification",
-    "workshop:Rapid Fire Duration",
-    "workshop:Cash / Wave",
-    "lab:Critical Factor",
-    "lab:Coins / Kill Bonus",
-    "lab:Defense Absolute",
-    "lab:Damage / Meter",
-    "lab:Wall Rebuild",
-    "lab:Max Rend Armor Multiplier",
-}
-MAX_APPROVED_EXCEPTION_COUNT = 12
+RUNTIME_NON_FORMULA_OWNED_WHITELIST: set[str] = set()
+MAX_APPROVED_EXCEPTION_COUNT = 0
+MAX_NON_FORMULA_OWNED_COUNT = 0
 
 
 def test_canonical_preset_names__include_primary_defaults():
@@ -248,8 +236,9 @@ def test_runtime_formula_keys_have_explicit_authority() -> None:
 
 
 def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
-    allowed = {'canonical_formula_registry', 'approved_exception'}
+    allowed = {'canonical_formula_registry'}
     approved_exception_keys: set[str] = set()
+    non_formula_owned_keys: set[str] = set()
 
     for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items():
         source = metadata.get('authority_source')
@@ -257,16 +246,10 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
         if source == 'canonical_formula_registry':
             formula_id = (metadata.get('formula_id') or '').strip()
             assert formula_id, f'{runtime_key} is canonical but formula_id is empty.'
-        if source == 'approved_exception':
-            approved_exception_keys.add(runtime_key)
-            reason = (metadata.get('approved_exception_reason') or '').strip()
-            assert reason, f'{runtime_key} approved_exception must include approved_exception_reason.'
-            assert '|retire_when=' in reason, (
-                f'{runtime_key} approved_exception must include explicit retirement condition in approved_exception_reason.'
-            )
-
-    assert approved_exception_keys == RUNTIME_APPROVED_EXCEPTION_WHITELIST
+    assert approved_exception_keys == set()
     assert len(approved_exception_keys) <= MAX_APPROVED_EXCEPTION_COUNT
+    assert non_formula_owned_keys == RUNTIME_NON_FORMULA_OWNED_WHITELIST
+    assert len(non_formula_owned_keys) <= MAX_NON_FORMULA_OWNED_COUNT
 
 
 def test_workshop_defense_pct_formula_matches_expected_track() -> None:
@@ -274,12 +257,23 @@ def test_workshop_defense_pct_formula_matches_expected_track() -> None:
     assert defense_pct_formula(99) == pytest.approx(49.5)
 
 
+def test_workshop_interest_per_wave_formula_matches_corrected_track() -> None:
+    interest_formula = WORKSHOP_FORMULA_VALUES['Interest / Wave']
+    assert interest_formula(99) == pytest.approx(5.94)
+
+
+def test_workshop_wall_rebuild_formula_matches_corrected_track() -> None:
+    wall_rebuild_formula = WORKSHOP_FORMULA_VALUES['Wall Rebuild']
+    assert wall_rebuild_formula(1) == pytest.approx(1198.0)
+    assert wall_rebuild_formula(300) == pytest.approx(600.0)
+
+
 def test_runtime_formula_authority_migration_complete_or_exceptioned() -> None:
     non_migrated_entries = [
         runtime_key
         for runtime_key, metadata in RUNTIME_FORMULA_AUTHORITY.items()
         if (metadata.get('authority_source') or '').strip()
-        not in {'canonical_formula_registry', 'approved_exception'}
+        not in {'canonical_formula_registry'}
     ]
     assert not non_migrated_entries, f'Found unsupported migration state entries: {non_migrated_entries}'
 
@@ -298,8 +292,8 @@ def test_runtime_formula_authority_has_1_to_1_runtime_coverage_and_valid_formula
         formula_id = (metadata.get('formula_id') or '').strip()
         if source == 'canonical_formula_registry':
             assert formula_id in canonical_formula_ids, f'{runtime_key} references unknown formula_id: {formula_id!r}'
-        elif source == 'approved_exception':
-            assert not formula_id, f'{runtime_key} approved_exception must not provide formula_id.'
+        else:
+            pytest.fail(f'{runtime_key} has unexpected authority source {source!r}.')
 
 
 def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -> None:
@@ -312,15 +306,10 @@ def test_runtime_formula_authority_is_sourced_directly_from_kb_mapping_table() -
         runtime_key = f"{row['source_domain'].strip()}:{row['stat_name'].strip()}"
         source = row['authority_source'].strip()
         formula_id = (row.get('formula_id') or '').strip()
-        reason = (row.get('approved_exception_reason') or '').strip()
         if source == 'canonical_formula_registry':
             expected[runtime_key] = {'authority_source': source, 'formula_id': formula_id}
-        elif source == 'approved_exception':
-            expected[runtime_key] = {
-                'authority_source': source,
-                'formula_id': '',
-                'approved_exception_reason': reason,
-            }
+        else:
+            pytest.fail(f'{runtime_key} has unexpected authority source {source!r} in KB mapping table.')
 
     assert RUNTIME_FORMULA_AUTHORITY == expected
 
