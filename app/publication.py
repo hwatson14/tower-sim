@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pandas as pd
 
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
-from qe.contracts import contract_json_payload as js
+from qe.contracts import contract_json_payload as js, normalize_surface_id_to_contract
 from app.models import _normalize_perk_state
 from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
@@ -368,6 +368,215 @@ def _build_input_dashboard_payload(
         },
     }
 
+
+def _stats_rows_by_surface(rows_payload: dict[str, object] | None, preset: str) -> dict[str, dict[str, object]]:
+    preset_payload = dict((rows_payload or {}).get(preset) or {})
+    raw_rows = preset_payload.get('rows')
+    if isinstance(raw_rows, dict):
+        rows = dict(raw_rows)
+    else:
+        rows = dict(preset_payload)
+    normalized: dict[str, dict[str, object]] = {}
+    for raw_surface_id, payload in rows.items():
+        normalized[normalize_surface_id_to_contract(str(raw_surface_id))] = dict(payload or {})
+    return normalized
+
+
+def _stats_surface_specs(layout: dict[str, object], key: str) -> list[dict[str, str]]:
+    specs: list[dict[str, str]] = []
+    for entry in (layout.get(key) or []):
+        if not isinstance(entry, dict):
+            continue
+        surface_id = normalize_surface_id_to_contract(str(entry.get('surface_id') or '').strip())
+        label = str(entry.get('label') or '').strip()
+        if surface_id and label:
+            specs.append({'surface_id': surface_id, 'label': label})
+    return specs
+
+
+def _stats_row_payload(
+    *,
+    row_map: dict[str, dict[str, object]],
+    ep_compare: dict[str, object],
+    surface_id: str,
+    label: str,
+) -> dict[str, object]:
+    row = dict(row_map.get(surface_id) or {})
+    ep = dict(ep_compare.get(surface_id) or {})
+    return {
+        'label': label,
+        'surface_id': surface_id,
+        'display_value': row.get('display_value'),
+        'value': row.get('final_value'),
+        'status': row.get('status'),
+        'ep_display': ep.get('ep_value_display') or ep.get('ep_value_raw'),
+        'ep_delta': ep.get('delta_display'),
+        'contributors_available': bool(row.get('contributors')),
+    }
+
+
+def _build_stats_dashboard_payload(
+    *,
+    account_state_payload: dict[str, object],
+    diagnostics: dict[str, object],
+    input_dashboard_payload: dict[str, object],
+    module_card_payloads: dict[str, object] | None,
+    query_rows_start_of_run: dict[str, object] | None,
+    query_rows_max_progression: dict[str, object] | None,
+    ep_compare_publishable: dict[str, object] | None,
+    selected_preset: str,
+    selected_state_mode: str,
+) -> dict[str, object]:
+    from input.state_builder import load_section_layout_contract
+
+    section_layout = load_section_layout_contract()
+    stats_layout = dict(section_layout.get('stats_dashboard') or {})
+    panel_order = [str(name) for name in (stats_layout.get('panel_order') or [])]
+    state_mode_options = [str(name) for name in (stats_layout.get('state_mode_options') or ['start_of_run', 'max_progression'])]
+    if selected_state_mode not in state_mode_options:
+        selected_state_mode = state_mode_options[0]
+
+    configured_preset_options = _preset_options(account_state_payload)
+    available_query_presets = sorted(
+        set((query_rows_start_of_run or {}).keys()) | set((query_rows_max_progression or {}).keys())
+    )
+    preset_options = [name for name in configured_preset_options if name in available_query_presets]
+    preset_options.extend(name for name in available_query_presets if name not in preset_options)
+    if not preset_options:
+        preset_options = configured_preset_options
+    if selected_preset not in preset_options:
+        selected_preset = preset_options[0]
+
+    input_panels_by_id = {
+        str(panel.get('panel_id')): dict(panel or {})
+        for panel in (input_dashboard_payload.get('panels') or [])
+        if isinstance(panel, dict)
+    }
+    ep_compare = dict(ep_compare_publishable or {})
+    row_map_by_mode = {
+        'start_of_run': _stats_rows_by_surface(query_rows_start_of_run, selected_preset),
+        'max_progression': _stats_rows_by_surface(query_rows_max_progression, selected_preset),
+    }
+    upstream_gaps: list[dict[str, str]] = []
+    variants: dict[str, dict[str, list[dict[str, object]]]] = {}
+
+    for preset_name in preset_options:
+        variants[preset_name] = {}
+        for state_mode in state_mode_options:
+            rows = row_map_by_mode.get(state_mode) or _stats_rows_by_surface(
+                query_rows_start_of_run if state_mode == 'start_of_run' else query_rows_max_progression,
+                preset_name,
+            )
+            panels: list[dict[str, object]] = []
+            overview_metrics = [
+                {
+                    'label': spec['label'],
+                    'surface_id': spec['surface_id'],
+                    'display_value': (rows.get(spec['surface_id']) or {}).get('display_value'),
+                }
+                for spec in _stats_surface_specs(stats_layout, 'overview_surfaces')
+            ]
+            for metric in overview_metrics:
+                if metric.get('display_value') in (None, ''):
+                    upstream_gaps.append(
+                        _dashboard_gap(
+                            'overview',
+                            'surface_not_published_for_state_mode',
+                            f"{preset_name}/{state_mode} missing {metric.get('surface_id')}",
+                        )
+                    )
+            panels.append({'panel_id': 'overview', 'panel_type': 'overview_metrics', 'title': 'Overview', 'payload': {'metrics': overview_metrics}})
+
+            modules_panel, module_gaps = _build_modules_panel(module_card_payloads or {}, preset_name)
+            panels.append({'panel_id': 'modules_context', 'panel_type': 'context_modules', 'title': 'Modules', 'payload': modules_panel.get('payload') or {}})
+            upstream_gaps.extend(module_gaps)
+
+            cards_payload = dict((input_panels_by_id.get('cards') or {}).get('payload') or {})
+            if cards_payload:
+                selected_rows = (cards_payload.get('preset_rows_by_preset') or {}).get(preset_name)
+                if selected_rows is None:
+                    upstream_gaps.append(_dashboard_gap('cards_context', 'cards_preset_rows_missing', f'Cards rows missing for preset {preset_name}'))
+                else:
+                    cards_payload['preset_rows'] = selected_rows
+                panels.append({'panel_id': 'cards_context', 'panel_type': 'context_cards', 'title': 'Cards', 'payload': cards_payload})
+            else:
+                panels.append({'panel_id': 'cards_context', 'panel_type': 'gap_notice', 'title': 'Cards', 'payload': {'message': 'Cards context unavailable.'}})
+                upstream_gaps.append(_dashboard_gap('cards_context', 'input_dashboard_cards_missing', 'Cards panel missing from input_dashboard.json'))
+
+            uw_payload = dict((input_panels_by_id.get('ultimate_weapons') or {}).get('payload') or {})
+            if uw_payload:
+                panels.append({'panel_id': 'uw_context', 'panel_type': 'context_uw', 'title': 'Ultimate Weapons (Context)', 'payload': uw_payload})
+            else:
+                panels.append({'panel_id': 'uw_context', 'panel_type': 'gap_notice', 'title': 'Ultimate Weapons (Context)', 'payload': {'message': 'UW context unavailable.'}})
+                upstream_gaps.append(_dashboard_gap('uw_context', 'input_dashboard_uw_missing', 'Ultimate weapons panel missing from input_dashboard.json'))
+
+            for source_panel_id, target_panel_id, title in [('relics', 'relics_context', 'Relics'), ('vault', 'vault_context', 'Vault')]:
+                bonus_payload = dict((input_panels_by_id.get(source_panel_id) or {}).get('payload') or {})
+                if bonus_payload:
+                    panels.append({'panel_id': target_panel_id, 'panel_type': 'context_bonus_table', 'title': title, 'payload': bonus_payload})
+                else:
+                    panels.append({'panel_id': target_panel_id, 'panel_type': 'gap_notice', 'title': title, 'payload': {'message': f'{title} context unavailable.'}})
+                    upstream_gaps.append(_dashboard_gap(target_panel_id, 'input_dashboard_panel_missing', f'{source_panel_id} panel missing from input_dashboard.json'))
+
+            for section_key, panel_id, title in [
+                ('offense_surfaces', 'offense', 'Resolved Offense'),
+                ('defense_surfaces', 'defense', 'Resolved Defense'),
+                ('utility_economy_surfaces', 'utility_economy', 'Resolved Utility / Economy'),
+            ]:
+                section_rows = [
+                    _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'])
+                    for spec in _stats_surface_specs(stats_layout, section_key)
+                ]
+                for row in section_rows:
+                    if row.get('status') in (None, '') and row.get('display_value') in (None, ''):
+                        upstream_gaps.append(
+                            _dashboard_gap(
+                                panel_id,
+                                'surface_not_published_for_state_mode',
+                                f"{preset_name}/{state_mode} missing {row.get('surface_id')}",
+                            )
+                        )
+                panels.append({'panel_id': panel_id, 'panel_type': 'resolved_stat_section', 'title': title, 'payload': {'rows': section_rows}})
+
+            uw_rows = list((uw_payload.get('rows') or []))
+            panels.append(
+                {
+                    'panel_id': 'uw_resolved',
+                    'panel_type': 'resolved_uw_section',
+                    'title': 'Resolved Ultimate Weapons',
+                    'payload': {'column_headers': uw_payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': uw_rows},
+                }
+            )
+            variants[preset_name][state_mode] = panels
+
+    active_panels = (variants.get(selected_preset) or {}).get(selected_state_mode) or []
+    panel_map = {str(panel.get('panel_id')): panel for panel in active_panels}
+    ordered_panels = [panel_map[panel_id] for panel_id in panel_order if panel_id in panel_map]
+    ordered_panels.extend(panel for panel in active_panels if str(panel.get('panel_id')) not in set(panel_order))
+
+    return {
+        'artifact': 'stats_dashboard.json',
+        'schema_version': 1,
+        'dashboard_version': 1,
+        'selected_preset': selected_preset,
+        'preset_options': preset_options,
+        'selected_state_mode': selected_state_mode,
+        'state_mode_options': state_mode_options,
+        'upstream_gaps': upstream_gaps,
+        'panels': ordered_panels,
+        'variants': variants,
+        'debug_manifest': {
+            'source_artifacts': [
+                'input_dashboard.json',
+                'module_card_payloads.json',
+                'run_stats_query_rows_start_of_run.json',
+                'run_stats_query_rows_max_progression.json',
+                'ep_oracle_compare.json',
+            ],
+            'generated_from': list((diagnostics.get('section_names') or [])),
+        },
+    }
+
 # --- Core Output and Trace Writing ---
 
 def write_pipeline_trace(out_dir: Path, trace: PipelineTrace, root_path: Path) -> Path:
@@ -422,6 +631,10 @@ def write_core_outputs(
     root_path: Path,
     module_card_payloads: dict[str, object] | None = None,
     qe_dashboard_publications: dict[str, object] | None = None,
+    query_rows_start_of_run: dict[str, object] | None = None,
+    query_rows_max_progression: dict[str, object] | None = None,
+    selected_preset: str = 'Farming',
+    selected_state_mode: str = 'max_progression',
 ) -> list[str]:
 
     _remove_legacy_outputs(out_dir, _ANALYSIS_PIPELINE_LEGACY_OUTPUTS)
@@ -432,13 +645,27 @@ def write_core_outputs(
         qe_dashboard_publications=qe_dashboard_publications,
         module_card_payloads=module_card_payloads,
     )
+    stats_dashboard_payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state_payload,
+        diagnostics=diagnostics,
+        input_dashboard_payload=input_dashboard_payload,
+        module_card_payloads=module_card_payloads,
+        query_rows_start_of_run=query_rows_start_of_run,
+        query_rows_max_progression=query_rows_max_progression,
+        ep_compare_publishable=ep_compare_publishable,
+        selected_preset=selected_preset,
+        selected_state_mode=selected_state_mode,
+    )
     artifacts = [
         ('diagnostics.json', diagnostics),
         ('account_state.json', account_state_payload),
         ('input_dashboard.json', input_dashboard_payload),
+        ('stats_dashboard.json', stats_dashboard_payload),
         ('stat_inputs.json', stat_inputs_payload),
         ('statbook.json', statbook_dict),
         ('statbook_publishable.json', statbook_publishable_dict),
+        ('run_stats_query_rows_start_of_run.json', query_rows_start_of_run or {}),
+        ('run_stats_query_rows_max_progression.json', query_rows_max_progression or {}),
         ('ep_oracle_compare.json', ep_compare_publishable),
         ('line_by_line_verification.json', line_verification),
         ('survivor_closure_report.json', survivor_closure_report),

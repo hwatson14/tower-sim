@@ -341,3 +341,51 @@ def render_simple_metric_panel_html(payload: dict) -> str:
     label = html.escape(str(payload.get('metric_label') or 'Metric'))
     value = html.escape(str(payload.get('metric_value') or ''))
     return f"<div class='inputs-panel'><h5>{label}</h5><div>{value}</div></div>"
+
+
+def render_overview_metric_strip_html(payload: dict) -> str:
+    tiles = []
+    for metric in (payload.get('metrics') or []):
+        label = html.escape(str((metric or {}).get('label') or ''))
+        value = html.escape(str((metric or {}).get('display_value') or '—'))
+        tiles.append(f"<div class='inputs-panel'><h5>{label}</h5><div>{value}</div></div>")
+    return f"<div class='inputs-grid'>{''.join(tiles)}</div>"
+
+
+def render_resolved_stat_section_html(payload: dict) -> str:
+    headers = ['Label', 'Resolved', 'Status', 'EP', 'Δ']
+    rows = [
+        [
+            row.get('label', ''),
+            row.get('display_value', ''),
+            row.get('status', ''),
+            row.get('ep_display', ''),
+            row.get('ep_delta', ''),
+        ]
+        for row in (payload.get('rows') or [])
+    ]
+    return f"<div class='inputs-panel'>{_render_table(headers, rows)}</div>"
+
+
+def render_stats_uw_section_html(payload: dict) -> str:
+    rows = [
+        [
+            row.get('unlock', ''),
+            row.get('uw', ''),
+            row.get('track', ''),
+            row.get('stone_level', ''),
+            row.get('stone_value', ''),
+            row.get('lab', ''),
+            row.get('module', ''),
+            row.get('perk', ''),
+            row.get('final', ''),
+            row.get('uw_plus', ''),
+        ]
+        for row in (payload.get('rows') or [])
+    ]
+    return f"<div class='inputs-panel'>{_render_table(payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], rows)}</div>"
+
+
+def render_gap_notice_html(payload: dict) -> str:
+    message = html.escape(str(payload.get('message') or 'Upstream publication gap.'))
+    return f"<div class='inputs-panel'><div>{message}</div></div>"
