@@ -329,21 +329,57 @@ def test_load_streamlit_reference_data_exposes_module_lookup_contract():
     assert {'rarity', 'unit', 'value'}.issubset(rows[0].keys())
 
 
-def test_build_verification_snapshot_set_runs_default_matrix(tmp_path):
-    from app.pipeline import PipelineRunRequest, build_verification_snapshot_set
+def test_default_verification_matrix_requests_returns_expected_pairs(tmp_path):
+    from app.pipeline import PipelineRunRequest, _default_verification_matrix_requests
 
-    results = build_verification_snapshot_set(
+    requests = _default_verification_matrix_requests(
         PipelineRunRequest(
             ids=ROOT / 'input' / 'imports' / 'ids.csv',
             out=tmp_path / 'matrix',
         )
     )
-    assert len(results) == 4
-    labels = {(result.request.preset, result.request.state_mode) for result in results}
-    assert ('Farming', 'start_of_run') in labels
-    assert ('Farming', 'max_progression') in labels
-    assert ('Tourney', 'start_of_run') in labels
-    assert ('Tourney', 'max_progression') in labels
+
+    assert len(requests) == 4
+    assert [(request.preset, request.state_mode) for request in requests] == [
+        ('Farming', 'start_of_run'),
+        ('Farming', 'max_progression'),
+        ('Tourney', 'start_of_run'),
+        ('Tourney', 'max_progression'),
+    ]
+    assert [request.perk_state for request in requests] == ['auto', 'auto', 'off', 'off']
+
+
+def test_build_verification_snapshot_set_orchestrates_execution(monkeypatch, tmp_path):
+    from app.models import PipelineRunResult, PipelineTrace
+    from app.pipeline import PipelineRunRequest, build_verification_snapshot_set, _default_verification_matrix_requests
+
+    captured_requests = []
+
+    def _fake_execute_pipeline(request):
+        captured_requests.append(request)
+        return PipelineRunResult(
+            exit_code=0,
+            request=request,
+            out_dir=request.out,
+            diagnostics={},
+            generated_files=(),
+            pipeline_trace=PipelineTrace(request={}, execution_path={}, stages=[], artifacts_written=[]),
+        )
+
+    import app.pipeline as pipeline_mod
+
+    monkeypatch.setattr(pipeline_mod, 'execute_pipeline', _fake_execute_pipeline)
+    base_request = PipelineRunRequest(
+        ids=ROOT / 'input' / 'imports' / 'ids.csv',
+        out=tmp_path / 'matrix',
+    )
+    expected_requests = _default_verification_matrix_requests(base_request)
+
+    results = build_verification_snapshot_set(base_request)
+
+    assert len(results) == len(expected_requests)
+    assert captured_requests == list(expected_requests)
+    assert [result.request for result in results] == list(expected_requests)
 
 
 def test_resolve_fast_checkpoint_returns_requested_surfaces():

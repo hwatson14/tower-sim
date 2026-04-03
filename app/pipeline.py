@@ -2316,31 +2316,45 @@ def build_verification_snapshot_set(
     base_request: PipelineRunRequest,
     specs: tuple[VerificationSnapshotSpec, ...] | list[VerificationSnapshotSpec] | None = None,
 ) -> list[PipelineRunResult]:
-    if specs is None:
-        specs = (
-            VerificationSnapshotSpec('Farming', 'start_of_run'),
-            VerificationSnapshotSpec('Farming', 'max_progression'),
-            VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
-            VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
+    requests = _default_verification_matrix_requests(base_request) if specs is None else tuple(
+        PipelineRunRequest(
+            ids=base_request.ids,
+            out=base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}'),
+            preset=spec.preset,
+            state_mode=spec.state_mode,
+            manual_inputs=base_request.manual_inputs,
+            perk_mode=base_request.perk_mode,
+            include_slow_audits=base_request.include_slow_audits,
+            perk_state=spec.perk_state,
         )
+        for spec in specs
+    )
     results: list[PipelineRunResult] = []
-    for spec in specs:
-        out_dir = base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}')
-        results.append(
-            execute_pipeline(
-                PipelineRunRequest(
-                    ids=base_request.ids,
-                    out=out_dir,
-                    preset=spec.preset,
-                    state_mode=spec.state_mode,
-                    manual_inputs=base_request.manual_inputs,
-                    perk_mode=base_request.perk_mode,
-                    include_slow_audits=base_request.include_slow_audits,
-                    perk_state=spec.perk_state,
-                )
-            )
-        )
+    for request in requests:
+        results.append(execute_pipeline(request))
     return results
+
+
+def _default_verification_matrix_requests(base_request: PipelineRunRequest) -> tuple[PipelineRunRequest, ...]:
+    specs = (
+        VerificationSnapshotSpec('Farming', 'start_of_run'),
+        VerificationSnapshotSpec('Farming', 'max_progression'),
+        VerificationSnapshotSpec('Tourney', 'start_of_run', perk_state='off'),
+        VerificationSnapshotSpec('Tourney', 'max_progression', perk_state='off'),
+    )
+    return tuple(
+        PipelineRunRequest(
+            ids=base_request.ids,
+            out=base_request.out / (spec.out_subdir or f'{spec.preset.lower()}_{spec.state_mode}'),
+            preset=spec.preset,
+            state_mode=spec.state_mode,
+            manual_inputs=base_request.manual_inputs,
+            perk_mode=base_request.perk_mode,
+            include_slow_audits=base_request.include_slow_audits,
+            perk_state=spec.perk_state,
+        )
+        for spec in specs
+    )
 
 
 def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
