@@ -71,10 +71,37 @@ def _dashboard_gap(panel_id: str, gap_id: str, detail: str) -> dict[str, str]:
 
 def _preset_options(account_state_payload: dict) -> list[str]:
     default_preset = str(account_state_payload.get('default_preset') or 'Farming')
-    options = [str(name) for name in (account_state_payload.get('card_presets') or {}).keys() if str(name)]
-    if default_preset not in options:
-        options.insert(0, default_preset)
-    return options or [default_preset]
+    canonical_order = ['Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5']
+
+    source_options: list[str] = []
+    seen: set[str] = set()
+
+    def _add_option(name: object) -> None:
+        value = str(name).strip()
+        if value and value not in seen:
+            seen.add(value)
+            source_options.append(value)
+
+    for preset_name in (account_state_payload.get('card_presets') or {}).keys():
+        _add_option(preset_name)
+    for preset_name in (account_state_payload.get('module_presets') or {}).keys():
+        _add_option(preset_name)
+    for row in (account_state_payload.get('workshop') or {}).values():
+        for preset_name in dict((row or {}).get('preset_levels') or {}).keys():
+            _add_option(preset_name)
+        for preset_name in dict((row or {}).get('preset_values') or {}).keys():
+            _add_option(preset_name)
+    for row in (account_state_payload.get('workshop_enhancement_tracks') or {}).values():
+        for preset_name in dict((row or {}).get('preset_levels') or {}).keys():
+            _add_option(preset_name)
+
+    if not source_options:
+        return ['Farming']
+
+    _add_option(default_preset)
+    options = [name for name in canonical_order if name in seen]
+    options.extend(name for name in source_options if name not in canonical_order)
+    return options
 
 
 def _build_labs_panel(account_state_payload: dict, section_layout: dict[str, object]) -> tuple[dict[str, object], list[dict[str, str]]]:
@@ -191,6 +218,7 @@ def _build_uw_panel(
         for track in tracks or []:
             plus_key = f"{uw_name}::{track.get('track_name') or ''}"
             published_effects = dict(uw_track_effects.get(plus_key) or {})
+            lab_effect = published_effects.get('lab_effect')
             module_effect = published_effects.get('module_effect')
             perk_effect = published_effects.get('perk_effect')
             final_value = published_effects.get('final_value', track.get('resolved_value'))
@@ -199,30 +227,23 @@ def _build_uw_panel(
                     'unlock': unlock,
                     'uw': uw_name,
                     'track': track.get('track_name') or '',
-                    'uw_name': uw_name,
-                    'track_name': track.get('track_name') or '',
                     'stone_level': '' if track.get('level') is None else str(track.get('level')),
                     'stone_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
-                    'lab': '',
+                    'lab': '' if lab_effect is None else str(lab_effect),
                     'module': '' if module_effect is None else str(module_effect),
                     'perk': '' if perk_effect is None else str(perk_effect),
                     'final': '' if final_value is None else str(final_value),
-                    'module_effect': '' if module_effect is None else str(module_effect),
-                    'perk_effect': '' if perk_effect is None else str(perk_effect),
-                    'final_value': '' if final_value is None else str(final_value),
-                    'module_effect_source': 'qe_published' if module_effect is not None else 'qe_unavailable',
-                    'perk_effect_source': 'qe_published' if perk_effect is not None else 'qe_unavailable',
                     'uw_plus': ((uw_plus_tracks.get(plus_key) or {}).get('display_token') or ''),
                 }
             )
-            gaps.extend(
-                [
-                    _dashboard_gap('ultimate_weapons', 'lab_column_not_published_upstream', f'Lab column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'module_column_not_published_upstream', f'Module column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'perk_column_not_published_upstream', f'Perk column missing for {plus_key}'),
-                    _dashboard_gap('ultimate_weapons', 'final_column_not_published_upstream', f'Final column defaults to stone value for {plus_key}'),
-                ]
-            )
+            if lab_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'lab_column_not_published_upstream', f'Lab column missing for {plus_key}'))
+            if module_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'module_column_not_published_upstream', f'Module column missing for {plus_key}'))
+            if perk_effect is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'perk_column_not_published_upstream', f'Perk column missing for {plus_key}'))
+            if final_value is None:
+                gaps.append(_dashboard_gap('ultimate_weapons', 'final_column_not_published_upstream', f'Final column missing for {plus_key}'))
     return ({'panel_id': 'ultimate_weapons', 'panel_type': 'uw_track_table', 'title': 'Ultimate Weapons', 'payload': {'column_headers': ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': rows}}, gaps)
 
 
@@ -230,9 +251,31 @@ def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tup
     inventory_rows = []
     for card_name, card_payload in (account_state_payload.get('cards_inventory') or {}).items():
         inventory_rows.append({'name': card_name, 'level': card_payload.get('level') or '', 'mastery': card_payload.get('mastery_lab_level') or ''})
-    selected_cards = set((account_state_payload.get('card_presets') or {}).get(selected_preset) or [])
-    preset_rows = [{'name': card_name, 'selected': 'Yes' if card_name in selected_cards else ''} for card_name in sorted((account_state_payload.get('cards_inventory') or {}).keys())]
-    return ({'panel_id': 'cards', 'panel_type': 'cards_inventory_and_preset', 'title': 'Cards', 'payload': {'inventory_rows': inventory_rows, 'preset_rows': preset_rows, 'slot_count': account_state_payload.get('card_slots_unlocked') or ''}}, [])
+    card_names = sorted((account_state_payload.get('cards_inventory') or {}).keys())
+    preset_rows_by_preset: dict[str, list[dict[str, str]]] = {}
+    card_presets = dict(account_state_payload.get('card_presets') or {})
+    for preset_name in _preset_options(account_state_payload):
+        preset_cards = card_presets.get(preset_name) or []
+        selected_cards = set(preset_cards or [])
+        preset_rows_by_preset[str(preset_name)] = [
+            {'name': card_name, 'selected': 'Yes' if card_name in selected_cards else ''} for card_name in card_names
+        ]
+
+    selected_rows = preset_rows_by_preset.get(selected_preset, [{'name': card_name, 'selected': ''} for card_name in card_names])
+    return (
+        {
+            'panel_id': 'cards',
+            'panel_type': 'cards_inventory_and_preset',
+            'title': 'Cards',
+            'payload': {
+                'inventory_rows': inventory_rows,
+                'preset_rows': selected_rows,
+                'preset_rows_by_preset': preset_rows_by_preset,
+                'slot_count': account_state_payload.get('card_slots_unlocked') or '',
+            },
+        },
+        [],
+    )
 
 
 def _build_bots_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
@@ -330,7 +373,7 @@ def _build_input_dashboard_payload(
         )
 
     return {
-        'schema_version': normalized_schema_version,
+        'schema_version': 2,
         'selected_preset': selected_preset,
         'preset_options': preset_options,
         'upstream_gaps': gaps,
@@ -395,6 +438,7 @@ def write_core_outputs(
     family_completeness_matrix: dict,
     root_path: Path,
     module_card_payloads: dict[str, object] | None = None,
+    qe_dashboard_publications: dict[str, object] | None = None,
 ) -> list[str]:
 
     _remove_legacy_outputs(out_dir, _ANALYSIS_PIPELINE_LEGACY_OUTPUTS)
@@ -402,6 +446,7 @@ def write_core_outputs(
     input_dashboard_payload = _build_input_dashboard_payload(
         account_state_payload,
         diagnostics,
+        qe_dashboard_publications=qe_dashboard_publications,
         module_card_payloads=module_card_payloads,
     )
     artifacts = [
