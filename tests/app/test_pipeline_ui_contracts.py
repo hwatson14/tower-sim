@@ -183,28 +183,22 @@ def test_pipeline_writes_stats_dashboard_contract(tmp_path):
     assert payload.get('selected_state_mode') == 'max_progression'
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
-        'overview',
+        'workshop',
+        'derived',
+        'uw_resolved',
         'modules_context',
         'cards_context',
-        'uw_context',
-        'relics_context',
-        'vault_context',
-        'offense',
-        'defense',
-        'utility_economy',
-        'uw_resolved',
+        'bots_context',
     ]
     variants = payload.get('variants') or {}
     farming_variants = variants.get('Farming') or {}
     assert {'start_of_run', 'max_progression'}.issubset(set(farming_variants.keys()))
     start_panels = farming_variants['start_of_run']
     max_panels = farming_variants['max_progression']
-    start_offense = next(panel for panel in start_panels if panel.get('panel_id') == 'offense')
-    max_offense = next(panel for panel in max_panels if panel.get('panel_id') == 'offense')
-    assert start_offense.get('payload', {}).get('rows')
-    assert max_offense.get('payload', {}).get('rows')
-    surface_gap_ids = {gap.get('gap_id') for gap in (payload.get('upstream_gaps') or [])}
-    assert 'surface_not_published_for_state_mode' not in surface_gap_ids
+    start_workshop = next(panel for panel in start_panels if panel.get('panel_id') == 'workshop')
+    max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
+    assert start_workshop.get('payload', {}).get('rows')
+    assert max_workshop.get('payload', {}).get('rows')
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(tmp_path):

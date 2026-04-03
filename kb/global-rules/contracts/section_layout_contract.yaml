@@ -207,16 +207,12 @@ sections:
       - false
   stats_dashboard:
     panel_order:
-      - overview
+      - workshop
+      - derived
+      - uw_resolved
       - modules_context
       - cards_context
-      - uw_context
-      - relics_context
-      - vault_context
-      - offense
-      - defense
-      - utility_economy
-      - uw_resolved
+      - bots_context
     state_mode_options:
       - start_of_run
       - max_progression
@@ -306,6 +302,15 @@ sections:
         surface_id: state::tower.recovery_package_multiplier
       - label: Coins / Kill
         surface_id: state::economy.coins_per_kill_bonus
+      - label: Coins / Wave
+        surface_id: state::economy.coins_per_wave
+      - label: Cash Bonus
+        surface_id: state::economy.cash_kill_multiplier
+    derived_wall_economy_surfaces:
+      - label: Wall Health
+        surface_id: state::wall.health
+      - label: Wall Rebuild
+        surface_id: state::wall.rebuild_time_seconds
       - label: Coins / Wave
         surface_id: state::economy.coins_per_wave
       - label: Cash Bonus

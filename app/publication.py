@@ -434,6 +434,76 @@ def _stats_row_payload(
     }
 
 
+def _sum_contributor_values(row: dict[str, object], source_classes: tuple[str, ...]) -> float | None:
+    values: list[float] = []
+    for contributor in (row.get('contributors') or []):
+        if str((contributor or {}).get('source_class') or '') not in source_classes:
+            continue
+        value = (contributor or {}).get('value')
+        if isinstance(value, (int, float)):
+            values.append(float(value))
+    if not values:
+        return None
+    return float(sum(values))
+
+
+_WORKSHOP_LABEL_ALIASES: dict[str, str] = {
+    'Crit Chance': 'Critical Chance',
+    'Crit Multiplier': 'Critical Factor',
+    'Super Crit Chance': 'Super Critical Chance',
+    'Super Crit Multiplier': 'Super Critical Mult',
+    'Rend Armor Multiplier': 'Rend Armor Mult',
+    'Rend Armor Chance': 'Rend Armor Chance',
+    'Thorns': 'Thorn Damage',
+    'Orb Count': 'Orbs',
+    'Shockwave Interval': 'Shockwave Frequency',
+}
+
+
+def _workshop_level_for_label(*, account_state_payload: dict[str, object], label: str, selected_preset: str) -> int | None:
+    workshop_entries = dict(account_state_payload.get('workshop') or {})
+    workshop_name = _WORKSHOP_LABEL_ALIASES.get(label, label)
+    entry = dict(workshop_entries.get(workshop_name) or {})
+    preset_levels = dict(entry.get('preset_levels') or {})
+    level = preset_levels.get(selected_preset)
+    return int(level) if isinstance(level, int) else None
+
+
+def _build_workshop_rows(
+    *,
+    stats_layout: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    account_state_payload: dict[str, object],
+    selected_preset: str,
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces'):
+        for spec in _stats_surface_specs(stats_layout, section_key):
+            surface_id = spec['surface_id']
+            start_row = dict(rows_start.get(surface_id) or {})
+            max_row = dict(rows_max.get(surface_id) or {})
+            rows.append(
+                {
+                    'name': spec['label'],
+                    'workshop_level': _workshop_level_for_label(
+                        account_state_payload=account_state_payload,
+                        label=spec['label'],
+                        selected_preset=selected_preset,
+                    ),
+                    'workshop_value': _sum_contributor_values(start_row, ('workshop',)),
+                    'lab_effects': _sum_contributor_values(start_row, ('labs',)),
+                    'module_effects': _sum_contributor_values(start_row, ('module_main', 'module_substat', 'module_unique')),
+                    'card_effects': _sum_contributor_values(start_row, ('cards',)),
+                    'start_of_run_value': start_row.get('final_value'),
+                    'perk_effects': _sum_contributor_values(start_row, ('perk',)),
+                    'other': _sum_contributor_values(start_row, ('base', 'relics', 'scenario_rules')),
+                    'max_progression_value': max_row.get('final_value'),
+                }
+            )
+    return rows
+
+
 def _build_stats_dashboard_payload(
     *,
     account_state_payload: dict[str, object],
@@ -472,6 +542,10 @@ def _build_stats_dashboard_payload(
         if isinstance(panel, dict)
     }
     ep_compare = dict(ep_compare_publishable or {})
+    row_map_by_mode = {
+        'start_of_run': {preset_name: _stats_rows_by_surface(query_rows_start_of_run, preset_name) for preset_name in preset_options},
+        'max_progression': {preset_name: _stats_rows_by_surface(query_rows_max_progression, preset_name) for preset_name in preset_options},
+    }
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
 
@@ -482,29 +556,39 @@ def _build_stats_dashboard_payload(
         }
         variants[preset_name] = {}
         for state_mode in state_mode_options:
-            rows = row_map_by_mode.get(state_mode) or _stats_rows_by_surface(
-                query_rows_start_of_run if state_mode == 'start_of_run' else query_rows_max_progression,
-                preset_name,
-            )
+            rows_start = (row_map_by_mode.get('start_of_run') or {}).get(preset_name) or {}
+            rows_max = (row_map_by_mode.get('max_progression') or {}).get(preset_name) or {}
+            rows = rows_start if state_mode == 'start_of_run' else rows_max
             panels: list[dict[str, object]] = []
-            overview_metrics = [
-                {
-                    'label': spec['label'],
-                    'surface_id': spec['surface_id'],
-                    'display_value': (rows.get(spec['surface_id']) or {}).get('display_value'),
-                }
-                for spec in _stats_surface_specs(stats_layout, 'overview_surfaces')
+            workshop_rows = _build_workshop_rows(
+                stats_layout=stats_layout,
+                rows_start=rows_start,
+                rows_max=rows_max,
+                account_state_payload=account_state_payload,
+                selected_preset=preset_name,
+            )
+            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': {'rows': workshop_rows}})
+
+            derived_rows = [
+                _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'])
+                for spec in _stats_surface_specs(stats_layout, 'derived_wall_economy_surfaces')
             ]
-            for metric in overview_metrics:
-                if metric.get('display_value') in (None, ''):
-                    upstream_gaps.append(
-                        _dashboard_gap(
-                            'overview',
-                            'surface_not_published_for_state_mode',
-                            f"{preset_name}/{state_mode} missing {metric.get('surface_id')}",
-                        )
-                    )
-            panels.append({'panel_id': 'overview', 'panel_type': 'overview_metrics', 'title': 'Overview', 'payload': {'metrics': overview_metrics}})
+            panels.append({'panel_id': 'derived', 'panel_type': 'resolved_stat_section', 'title': 'Derived (Wall, economy)', 'payload': {'rows': derived_rows}})
+
+            uw_payload = dict((input_panels_by_id.get('ultimate_weapons') or {}).get('payload') or {})
+            if uw_payload:
+                uw_rows = list((uw_payload.get('rows') or []))
+                panels.append(
+                    {
+                        'panel_id': 'uw_resolved',
+                        'panel_type': 'resolved_uw_section',
+                        'title': 'UW',
+                        'payload': {'column_headers': uw_payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': uw_rows},
+                    }
+                )
+            else:
+                panels.append({'panel_id': 'uw_resolved', 'panel_type': 'gap_notice', 'title': 'UW', 'payload': {'message': 'UW context unavailable.'}})
+                upstream_gaps.append(_dashboard_gap('uw_resolved', 'input_dashboard_uw_missing', 'Ultimate weapons panel missing from input_dashboard.json'))
 
             modules_panel, module_gaps = _build_modules_panel(module_card_payloads or {}, preset_name)
             panels.append({'panel_id': 'modules_context', 'panel_type': 'context_modules', 'title': 'Modules', 'payload': modules_panel.get('payload') or {}})
@@ -522,50 +606,12 @@ def _build_stats_dashboard_payload(
                 panels.append({'panel_id': 'cards_context', 'panel_type': 'gap_notice', 'title': 'Cards', 'payload': {'message': 'Cards context unavailable.'}})
                 upstream_gaps.append(_dashboard_gap('cards_context', 'input_dashboard_cards_missing', 'Cards panel missing from input_dashboard.json'))
 
-            uw_payload = dict((input_panels_by_id.get('ultimate_weapons') or {}).get('payload') or {})
-            if uw_payload:
-                panels.append({'panel_id': 'uw_context', 'panel_type': 'context_uw', 'title': 'Ultimate Weapons (Context)', 'payload': uw_payload})
+            bots_payload = dict((input_panels_by_id.get('bots') or {}).get('payload') or {})
+            if bots_payload:
+                panels.append({'panel_id': 'bots_context', 'panel_type': 'context_track_table', 'title': 'Bots', 'payload': bots_payload})
             else:
-                panels.append({'panel_id': 'uw_context', 'panel_type': 'gap_notice', 'title': 'Ultimate Weapons (Context)', 'payload': {'message': 'UW context unavailable.'}})
-                upstream_gaps.append(_dashboard_gap('uw_context', 'input_dashboard_uw_missing', 'Ultimate weapons panel missing from input_dashboard.json'))
-
-            for source_panel_id, target_panel_id, title in [('relics', 'relics_context', 'Relics'), ('vault', 'vault_context', 'Vault')]:
-                bonus_payload = dict((input_panels_by_id.get(source_panel_id) or {}).get('payload') or {})
-                if bonus_payload:
-                    panels.append({'panel_id': target_panel_id, 'panel_type': 'context_bonus_table', 'title': title, 'payload': bonus_payload})
-                else:
-                    panels.append({'panel_id': target_panel_id, 'panel_type': 'gap_notice', 'title': title, 'payload': {'message': f'{title} context unavailable.'}})
-                    upstream_gaps.append(_dashboard_gap(target_panel_id, 'input_dashboard_panel_missing', f'{source_panel_id} panel missing from input_dashboard.json'))
-
-            for section_key, panel_id, title in [
-                ('offense_surfaces', 'offense', 'Resolved Offense'),
-                ('defense_surfaces', 'defense', 'Resolved Defense'),
-                ('utility_economy_surfaces', 'utility_economy', 'Resolved Utility / Economy'),
-            ]:
-                section_rows = [
-                    _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'])
-                    for spec in _stats_surface_specs(stats_layout, section_key)
-                ]
-                for row in section_rows:
-                    if row.get('status') in (None, '') and row.get('display_value') in (None, ''):
-                        upstream_gaps.append(
-                            _dashboard_gap(
-                                panel_id,
-                                'surface_not_published_for_state_mode',
-                                f"{preset_name}/{state_mode} missing {row.get('surface_id')}",
-                            )
-                        )
-                panels.append({'panel_id': panel_id, 'panel_type': 'resolved_stat_section', 'title': title, 'payload': {'rows': section_rows}})
-
-            uw_rows = list((uw_payload.get('rows') or []))
-            panels.append(
-                {
-                    'panel_id': 'uw_resolved',
-                    'panel_type': 'resolved_uw_section',
-                    'title': 'Resolved Ultimate Weapons',
-                    'payload': {'column_headers': uw_payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': uw_rows},
-                }
-            )
+                panels.append({'panel_id': 'bots_context', 'panel_type': 'gap_notice', 'title': 'Bots', 'payload': {'message': 'Bots context unavailable.'}})
+                upstream_gaps.append(_dashboard_gap('bots_context', 'input_dashboard_bots_missing', 'Bots panel missing from input_dashboard.json'))
             variants[preset_name][state_mode] = panels
 
     active_panels = (variants.get(selected_preset) or {}).get(selected_state_mode) or []
