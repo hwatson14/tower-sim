@@ -144,6 +144,55 @@ def test_checkpoint_consumer_bundle_delta__parity_and_fallback():
     assert 'Unsupported mutation keys' in fallback_statbook.diagnostics['delta_fallback_reason']
 
 
+def test_checkpoint_consumer_bundle_delta__health_trigger_impacts_tower_and_wall_hp():
+    from qe.routing import (
+        query_response_to_statbook,
+        resolve_checkpoint_consumer_bundle,
+        resolve_checkpoint_consumer_bundle_delta,
+    )
+
+    baseline_state, family_id = _build_patched_state_and_family(workshop_bumps={})
+    baseline_response = resolve_checkpoint_consumer_bundle(
+        baseline_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+    )
+    baseline_statbook = query_response_to_statbook(baseline_response, notes='baseline', diagnostics={})
+
+    target_state, _ = _build_patched_state_and_family(workshop_bumps={'Health': 1})
+    full_target_response = resolve_checkpoint_consumer_bundle(
+        target_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+    )
+    full_target_statbook = query_response_to_statbook(full_target_response, notes='full target', diagnostics={})
+    delta_statbook = resolve_checkpoint_consumer_bundle_delta(
+        base_statbook=baseline_statbook,
+        account_state=target_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+        trigger_keys=('Health',),
+    )
+
+    assert delta_statbook.diagnostics['delta_fallback_used'] is False
+    for surface_id in ('state::tower.hp', 'state::wall.hp'):
+        assert surface_id in delta_statbook.diagnostics['delta_impacted_surface_ids']
+        assert delta_statbook.rows[surface_id].final_value == full_target_statbook.rows[surface_id].final_value
+    assert full_target_statbook.rows['state::tower.hp'].final_value != baseline_statbook.rows['state::tower.hp'].final_value
+
+
 def test_checkpoint_consumer_bundle_delta__supports_overlay_planner_seam():
     from dataclasses import dataclass
 

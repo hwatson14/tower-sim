@@ -511,6 +511,56 @@ def test_resolve_snapshot_for_projected_state__falls_back_for_unsupported_tracks
         assert delta_snapshot.resolved_statbook.rows[surface_id].final_value == full_snapshot.resolved_statbook.rows[surface_id].final_value
 
 
+def test_resolve_snapshot_for_projected_state__health_change_keeps_delta_path_and_updates_hp_surfaces():
+    from simulators.contracts import DirtyLedger, ProjectedRunState, WaveCheckpoint
+    from simulators.run_executor import RunToMaxConfig, _normalized_checkpoint_state_for_projected_state, _resolve_snapshot_for_projected_state
+    from simulators.snapshot_resolver import resolve_wave_row_snapshot
+
+    state, projected = _build_state_and_projected()
+    config = RunToMaxConfig(perks_enabled=False, state_mode='start_of_run')
+    baseline_snapshot = resolve_wave_row_snapshot(
+        _normalized_checkpoint_state_for_projected_state(
+            account_state=state,
+            config=config,
+            projected_state=projected,
+        )
+    )
+    workshop = _safe_mutated_workshop_levels(state, projected, {'Health': 1})
+    target_projected = ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=10),
+        workshop_levels_current=workshop,
+        perk_state=projected.perk_state,
+        wave_progression_state=dict(projected.wave_progression_state),
+        free_upgrade_state=dict(projected.free_upgrade_state),
+        counters=dict(projected.counters),
+        dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
+        notes=projected.notes,
+    )
+
+    delta_snapshot, fallback_used = _resolve_snapshot_for_projected_state(
+        account_state=state,
+        config=config,
+        projected_state=target_projected,
+        current_snapshot=baseline_snapshot,
+        row_resolver=resolve_wave_row_snapshot,
+        changed_tracks=('Health',),
+    )
+    full_snapshot = resolve_wave_row_snapshot(
+        _normalized_checkpoint_state_for_projected_state(
+            account_state=state,
+            config=config,
+            projected_state=target_projected,
+        )
+    )
+
+    assert fallback_used is False
+    assert delta_snapshot.resolved_statbook.diagnostics['delta_fallback_used'] is False
+    for surface_id in ('state::tower.hp', 'state::wall.hp'):
+        assert surface_id in delta_snapshot.resolved_statbook.diagnostics['delta_impacted_surface_ids']
+        assert delta_snapshot.resolved_statbook.rows[surface_id].final_value == full_snapshot.resolved_statbook.rows[surface_id].final_value
+    assert full_snapshot.resolved_statbook.rows['state::tower.hp'].final_value != baseline_snapshot.resolved_statbook.rows['state::tower.hp'].final_value
+
+
 def test_run_to_max__table_sweep_uses_delta_path_not_overlay(monkeypatch):
     from input.loader import load_inputs
     from input.runtime_state import build_runtime_state
