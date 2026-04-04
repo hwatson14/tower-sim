@@ -242,7 +242,7 @@ _ALLOWED_SURFACE_CLASSES = frozenset({'surface', 'capability', 'environment', 'c
 _SOURCE_CLASS_BY_FAMILY = {
     'lab': 'labs',
     'workshop': 'workshop',
-    'enhancement': 'workshop',
+    'enhancement': 'enhancement',
     'relic': 'relics',
     'perk': 'perks',
     'card': 'cards',

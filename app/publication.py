@@ -13,7 +13,11 @@ import pandas as pd
 
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
 from qe.contracts import contract_json_payload as js, normalize_surface_id_to_contract
+from qe.models import StatRow
+from qe.publication import publish_query_surfaces as qe_publish_query_surfaces
+from qe.workshop_stat_rows import build_workshop_rows
 from app.models import _normalize_perk_state
+from app.display import annotate_display_fields
 from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -432,217 +436,95 @@ def _stats_row_payload(
     }
 
 
-def _sum_contributor_values_filtered(
-    row: dict[str, object],
-    *,
-    source_classes: tuple[str, ...],
-    contributor_prefixes: tuple[str, ...] = (),
-    invert_prefix_match: bool = False,
-) -> float | None:
-    values: list[float] = []
-    for contributor in (row.get('contributors') or []):
-        if str((contributor or {}).get('source_class') or '') not in source_classes:
-            continue
-        contributor_id = str((contributor or {}).get('contributor_id') or '')
-        prefix_match = any(contributor_id.startswith(prefix) for prefix in contributor_prefixes)
-        if contributor_prefixes and ((prefix_match and invert_prefix_match) or (not prefix_match and not invert_prefix_match)):
-            continue
-        value = (contributor or {}).get('value')
-        if isinstance(value, (int, float)):
-            values.append(float(value))
-    if not values:
-        return None
-    return float(sum(values))
-
-
-def _contributor_display_kind(contributor: dict[str, object]) -> str:
-    preferred = str((contributor.get('input_value_type') or contributor.get('value_type') or '')).strip().lower()
-    if preferred in {'pct', 'percent_display'}:
-        return 'pct'
-    if preferred in {'multiplier', 'multiplier_display'}:
-        return 'multiplier'
-    contributor_id = str(contributor.get('contributor_id') or '').lower()
-    if '__pct' in contributor_id or 'chance' in contributor_id or 'percent' in contributor_id:
-        return 'pct'
-    if '__multiplier' in contributor_id or 'multiplier' in contributor_id:
-        return 'multiplier'
-    return 'scalar'
-
-
-_DISPLAY_SUFFIXES: list[tuple[float, str]] = [(1e12, 'T'), (1e9, 'B'), (1e6, 'M'), (1e3, 'k')]
-
-
-def _format_compact_number(value: float | int | None) -> str:
-    if value is None:
-        return '0'
-    v = float(value)
-    sign = '-' if v < 0 else ''
-    av = abs(v)
-    for threshold, suffix in _DISPLAY_SUFFIXES:
-        if av >= threshold:
-            scaled = av / threshold
-            decimals = 2 if scaled < 10 else (1 if scaled < 100 else 0)
-            token = f'{scaled:.{decimals}f}'.rstrip('0').rstrip('.')
-            return f'{sign}{token}{suffix}'
-    if av >= 100:
-        return f'{sign}{av:.0f}'
-    if av >= 10:
-        return f'{sign}{av:.1f}'.rstrip('0').rstrip('.')
-    return f'{sign}{av:.2f}'.rstrip('0').rstrip('.')
-
-
-def _is_percent_surface(*, surface_id: str, value_type: str | None) -> bool:
-    value_type_text = str(value_type or '').strip().lower()
-    return value_type_text in {'pct', 'percent_display'} or surface_id.endswith('_pct') or 'chance' in surface_id
-
-
-def _is_multiplier_surface(*, surface_id: str, value_type: str | None) -> bool:
-    value_type_text = str(value_type or '').strip().lower()
-    return value_type_text in {'multiplier', 'multiplier_display'} or surface_id.endswith('_multiplier')
-
-
-def _format_effect_value(
-    value: float | None,
-    *,
-    display_kind: str,
-    default_prefix: str = '+',
-) -> str:
-    if value is None:
-        return '—'
-    prefix = 'x' if display_kind == 'multiplier' else default_prefix
-    number = _format_compact_number(value)
-    suffix = '%' if display_kind == 'pct' else ''
-    return f'{prefix} {number}{suffix}'
-
-
-def _format_effect_from_contributors(
-    row: dict[str, object],
-    *,
-    source_classes: tuple[str, ...],
-    contributor_prefixes: tuple[str, ...] = (),
-    invert_prefix_match: bool = False,
-) -> str:
-    values: list[float] = []
-    display_kinds: list[str] = []
-    for contributor in (row.get('contributors') or []):
-        if str((contributor or {}).get('source_class') or '') not in source_classes:
-            continue
-        contributor_id = str((contributor or {}).get('contributor_id') or '')
-        prefix_match = any(contributor_id.startswith(prefix) for prefix in contributor_prefixes)
-        if contributor_prefixes and ((prefix_match and invert_prefix_match) or (not prefix_match and not invert_prefix_match)):
-            continue
-        value = (contributor or {}).get('value')
-        if not isinstance(value, (int, float)):
-            continue
-        values.append(float(value))
-        display_kinds.append(_contributor_display_kind(dict(contributor or {})))
-    if not values:
-        return '—'
-    display_kind = 'scalar'
-    if any(kind == 'multiplier' for kind in display_kinds):
-        display_kind = 'multiplier'
-    elif any(kind == 'pct' for kind in display_kinds):
-        display_kind = 'pct'
-    return _format_effect_value(sum(values), display_kind=display_kind)
-
-
-def _format_surface_value(value: float | int | None, *, surface_id: str, value_type: str | None) -> str:
-    if value is None:
-        return '—'
-    number = _format_compact_number(value)
-    if _is_multiplier_surface(surface_id=surface_id, value_type=value_type):
-        return f'x{number}'
-    if _is_percent_surface(surface_id=surface_id, value_type=value_type):
-        return f'{number}%'
-    return number
-
-
-_WORKSHOP_LABEL_ALIASES: dict[str, str] = {
-    'Crit Chance': 'Critical Chance',
-    'Crit Multiplier': 'Critical Factor',
-    'Super Crit Chance': 'Super Critical Chance',
-    'Super Crit Multiplier': 'Super Critical Mult',
-    'Rend Armor Multiplier': 'Rend Armor Mult',
-    'Rend Armor Chance': 'Rend Armor Chance',
-    'Thorns': 'Thorn Damage',
-    'Orb Count': 'Orbs',
-    'Shockwave Interval': 'Shockwave Frequency',
-}
-
-
-def _workshop_level_for_label(*, account_state_payload: dict[str, object], label: str, selected_preset: str) -> int | None:
-    workshop_entries = dict(account_state_payload.get('workshop') or {})
-    workshop_name = _WORKSHOP_LABEL_ALIASES.get(label, label)
-    entry = dict(workshop_entries.get(workshop_name) or {})
-    preset_levels = dict(entry.get('preset_levels') or {})
-    level = preset_levels.get(selected_preset)
-    return int(level) if isinstance(level, int) else None
-
-
 def _build_workshop_rows(
     *,
     stats_layout: dict[str, object],
     rows_start: dict[str, dict[str, object]],
     rows_max: dict[str, dict[str, object]],
     account_state_payload: dict[str, object],
+    input_dashboard_payload: dict[str, object],
     selected_preset: str,
 ) -> list[dict[str, object]]:
-    grouped_rows: dict[str, list[dict[str, object]]] = {'Offense': [], 'Defense': [], 'Utility': []}
-    for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces'):
-        for spec in _stats_surface_specs(stats_layout, section_key):
-            surface_id = spec['surface_id']
-            start_row = dict(rows_start.get(surface_id) or {})
-            max_row = dict(rows_max.get(surface_id) or {})
-            value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
-            workshop_value = _sum_contributor_values_filtered(
-                start_row,
-                source_classes=('workshop',),
-                contributor_prefixes=('enhancement.',),
-                invert_prefix_match=True,
-            )
-            max_workshop_value = _sum_contributor_values_filtered(
-                max_row,
-                source_classes=('workshop',),
-                contributor_prefixes=('enhancement.',),
-                invert_prefix_match=True,
-            )
-            row_payload = (
-                {
-                    'name': spec['label'],
-                    'workshop_level': _workshop_level_for_label(
-                        account_state_payload=account_state_payload,
-                        label=spec['label'],
-                        selected_preset=selected_preset,
-                    ),
-                    'workshop_value': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
-                    'lab_effects': _format_effect_from_contributors(start_row, source_classes=('labs',)),
-                    'module_effects': _format_effect_from_contributors(
-                        start_row,
-                        source_classes=('module_main', 'module_substat', 'module_unique'),
-                    ),
-                    'card_effects': _format_effect_from_contributors(start_row, source_classes=('cards',)),
-                    'enhancement_effects': _format_effect_from_contributors(start_row, source_classes=('workshop',), contributor_prefixes=('enhancement.',)),
-                    'relics': _format_effect_from_contributors(start_row, source_classes=('relics',)),
-                    'start_of_run_value': _format_surface_value(start_row.get('final_value'), surface_id=surface_id, value_type=value_type),
-                    'max_workshop_value': _format_surface_value(max_workshop_value, surface_id=surface_id, value_type=value_type),
-                    'perk_effects': _format_effect_from_contributors(
-                        max_row,
-                        source_classes=('perk', 'perks', 'perk_effect'),
-                    ),
-                    'other': _format_effect_from_contributors(
-                        start_row,
-                        source_classes=('base', 'scenario_rules'),
-                    ),
-                    'max_progression_value': _format_surface_value(max_row.get('final_value'), surface_id=surface_id, value_type=value_type),
-                }
-            )
-            if section_key == 'offense_surfaces':
-                grouped_rows['Offense'].append(row_payload)
-            elif section_key == 'defense_surfaces':
-                grouped_rows['Defense'].append(row_payload)
-            else:
-                grouped_rows['Utility'].append(row_payload)
-    return [{'title': title, 'rows': rows} for title, rows in grouped_rows.items() if rows]
+    return build_workshop_rows(
+        stats_layout=stats_layout,
+        rows_start=rows_start,
+        rows_max=rows_max,
+        account_state_payload=account_state_payload,
+        input_dashboard_payload=input_dashboard_payload,
+        selected_preset=selected_preset,
+        surface_specs=_stats_surface_specs,
+    )
+
+
+def _rows_with_qe_derived_values(rows: dict[str, dict[str, object]]) -> dict[str, dict[str, object]]:
+    preserved_derived_rows: dict[str, dict[str, object]] = {}
+    for surface_id, row in (rows or {}).items():
+        if str(surface_id).startswith('derived::'):
+            preserved_derived_rows[str(surface_id)] = dict(row or {})
+
+    stat_rows: dict[str, StatRow] = {}
+    for surface_id, row in (rows or {}).items():
+        if str(surface_id).startswith('derived::'):
+            continue
+        payload = dict(row or {})
+        stat_rows[str(surface_id)] = StatRow(
+            stat_name=str(surface_id),
+            final_value=payload.get('final_value'),
+            value_type=str(payload.get('value_type') or 'scalar'),
+            source_count=len(payload.get('contributors') or []),
+            status=str(payload.get('status') or 'resolved'),
+            notes=str(payload.get('notes') or ''),
+            contributors=[dict(contributor or {}) for contributor in (payload.get('contributors') or [])],
+            schema={},
+        )
+    qe_publish_query_surfaces(stat_rows)
+    hydrated = {
+        surface_id: {
+            'stat_name': row.stat_name,
+            'final_value': row.final_value,
+            'value_type': row.value_type,
+            'status': row.status,
+            'contributors': [dict(contributor or {}) for contributor in (row.contributors or [])],
+        }
+        for surface_id, row in stat_rows.items()
+    }
+    hydrated.update(preserved_derived_rows)
+    annotate_display_fields({'rows': hydrated})
+    return hydrated
+
+
+def _inject_line_verification_rows(
+    *,
+    rows: dict[str, dict[str, object]],
+    required_surface_ids: set[str],
+    line_verification: dict[str, object] | None,
+) -> dict[str, dict[str, object]]:
+    hydrated = dict(rows or {})
+    verification = dict(line_verification or {})
+    for surface_id in sorted(required_surface_ids):
+        existing = dict(hydrated.get(surface_id) or {})
+        has_numeric_final = isinstance(existing.get('final_value'), (int, float))
+        if existing and has_numeric_final:
+            continue
+        entry = dict(verification.get(surface_id) or {})
+        final_value = entry.get('final_value')
+        if not isinstance(final_value, (int, float)):
+            continue
+        unit = str(entry.get('unit') or '').strip().lower()
+        value_type = 'scalar'
+        if unit == 'multiplier':
+            value_type = 'multiplier'
+        elif unit in {'pct', '%', 'percent'}:
+            value_type = 'pct'
+        hydrated[surface_id] = {
+            'stat_name': surface_id,
+            'final_value': float(final_value),
+            'value_type': value_type,
+            'status': str(entry.get('status') or 'resolved'),
+            'contributors': list(existing.get('contributors') or []),
+        }
+    annotate_display_fields({'rows': hydrated})
+    return hydrated
 
 
 def _build_stats_dashboard_payload(
@@ -654,6 +536,7 @@ def _build_stats_dashboard_payload(
     query_rows_start_of_run: dict[str, object] | None,
     query_rows_max_progression: dict[str, object] | None,
     ep_compare_publishable: dict[str, object] | None,
+    line_verification: dict[str, object] | None,
     selected_preset: str,
     selected_state_mode: str,
 ) -> dict[str, object]:
@@ -689,11 +572,28 @@ def _build_stats_dashboard_payload(
     }
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
+    required_surface_ids = {
+        spec['surface_id']
+        for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces', 'derived_wall_economy_surfaces')
+        for spec in _stats_surface_specs(stats_layout, section_key)
+    }
 
     for preset_name in preset_options:
+        start_rows_raw = _stats_rows_by_surface(query_rows_start_of_run, preset_name)
+        max_rows_raw = _stats_rows_by_surface(query_rows_max_progression, preset_name)
+        start_rows_hydrated = _inject_line_verification_rows(
+            rows=_rows_with_qe_derived_values(start_rows_raw),
+            required_surface_ids=required_surface_ids,
+            line_verification=line_verification,
+        )
+        max_rows_hydrated = _inject_line_verification_rows(
+            rows=_rows_with_qe_derived_values(max_rows_raw),
+            required_surface_ids=required_surface_ids,
+            line_verification=line_verification,
+        )
         per_preset_row_map_by_mode = {
-            'start_of_run': _stats_rows_by_surface(query_rows_start_of_run, preset_name),
-            'max_progression': _stats_rows_by_surface(query_rows_max_progression, preset_name),
+            'start_of_run': start_rows_hydrated,
+            'max_progression': max_rows_hydrated,
         }
         variants[preset_name] = {}
         for state_mode in state_mode_options:
@@ -706,6 +606,7 @@ def _build_stats_dashboard_payload(
                 rows_start=rows_start,
                 rows_max=rows_max,
                 account_state_payload=account_state_payload,
+                input_dashboard_payload=input_dashboard_payload,
                 selected_preset=preset_name,
             )
             panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': {'sections': workshop_rows}})
@@ -859,6 +760,7 @@ def write_core_outputs(
         query_rows_start_of_run=query_rows_start_of_run,
         query_rows_max_progression=query_rows_max_progression,
         ep_compare_publishable=ep_compare_publishable,
+        line_verification=line_verification,
         selected_preset=selected_preset,
         selected_state_mode=selected_state_mode,
     )

@@ -284,9 +284,9 @@ sections:
       - label: Shockwave Size
         surface_id: state::tower.shockwave_size_m
       - label: Wall Health
-        surface_id: state::wall.health
+        surface_id: state::wall.hp
       - label: Wall Rebuild
-        surface_id: state::wall.rebuild_time_seconds
+        surface_id: state::wall.rebuild_seconds
     utility_economy_surfaces:
       - label: Cash Bonus
         surface_id: state::economy.cash_kill_multiplier
@@ -303,7 +303,7 @@ sections:
       - label: Free Utility Upgrade
         surface_id: state::tower.free_utility_upgrade_chance_pct
       - label: Interest / Wave
-        surface_id: state::tower.interest_per_wave_pct
+        surface_id: state::economy.interest_per_wave_pct
       - label: Recovery Amount
         surface_id: state::tower.recovery_amount_pct
       - label: Max Recovery
@@ -321,3 +321,11 @@ sections:
         surface_id: state::wall.regen
       - label: Wall Thorns
         surface_id: state::wall.thorns_damage_pct
+      - label: Ultimate Weapon Damage
+        surface_id: state::tower.ultimate_damage_multiplier
+      - label: eHP
+        surface_id: derived::ehp
+      - label: eEcon
+        surface_id: derived::eecon
+      - label: eDamage
+        surface_id: derived::edamage

@@ -198,6 +198,7 @@ _QE_FILE_ALLOWLIST = {
     "routing.py",
     "stat_input_compiler.py",
     "stat_resolution.py",
+    "workshop_stat_rows.py",
 }
 _SIMULATORS_FILE_ALLOWLIST = {
     "__init__.py",
