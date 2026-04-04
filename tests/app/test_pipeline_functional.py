@@ -89,6 +89,35 @@ def test_run_stats_start_of_run_forces_perks_off() -> None:
     assert perks_enabled is False
 
 
+def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) -> None:
+    from evaluators.compare import _load_ep_oracle
+
+    ep_csv = tmp_path / 'ep_export.csv'
+    ep_csv.write_text(
+        '\n'.join(
+            [
+                'suite,key,label,value,import',
+                'ehp,wall_health,Wall Health,132.07 T,132.07 T',
+                'ehp,wall_fortification,Wall Fortification,1.37 q,1.37 q',
+                'edmg,crit_factor,Critical Factor,170.5248,170.5248',
+                'edmg,recovery_package_chance,Recovery Package Chance,0.788,0.788',
+            ]
+        ),
+        encoding='utf-8',
+    )
+
+    oracle = _load_ep_oracle(ep_csv)
+
+    # Wall rows follow label routing in the compare mapping table.
+    assert oracle['state::wall.hp']['ep_value_raw'] == '132.07 T'
+    assert oracle['state::wall.hp']['label'] == 'Wall Health'
+    assert oracle['state::wall.fortification_multiplier']['ep_value_raw'] == '1.37 q'
+    assert oracle['state::wall.fortification_multiplier']['label'] == 'Wall Fortification'
+    # Existing ambiguity aliases remain key-driven.
+    assert oracle['state::tower.crit_multiplier']['ep_value_raw'] == '170.5248'
+    assert oracle['state::tower.package_chance_pct']['ep_value_raw'] == '0.788'
+
+
 @pytest.mark.live
 def test_execute_pipeline_smoke_and_trace_contract(tmp_path):
     """execute_pipeline runs and produces a valid pipeline_trace.json with all expected fields."""

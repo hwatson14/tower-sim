@@ -1778,6 +1778,13 @@ EP_LABEL_TO_DESTINATION = {
         'Damage': _state('tower_damage'),
 }
 
+# EP export key-level overrides for known label ambiguities.
+# These are compare-policy mappings only (not calculator truth).
+EP_KEY_TO_DESTINATION = {
+        'crit_factor': _state('tower_crit_multiplier'),
+        'recovery_package_chance': _state('package_chance_pct'),
+}
+
 def _parse_ep_value(raw):
     if raw is None:
         return None, None
@@ -1806,17 +1813,20 @@ def _load_ep_oracle(ep_path: Path):
     for _, row in df.iterrows():
         if len(row) < 4:
             continue
+        key = str(row.iloc[1]).strip() if len(row) > 1 else ''
         label = str(row.iloc[2]).strip()
         value_raw = row.iloc[3] if len(row) > 3 else None
-        if label in EP_LABEL_TO_DESTINATION:
-            parsed, kind = _parse_ep_value(value_raw)
-            if parsed is not None:
-                out[EP_LABEL_TO_DESTINATION[label]] = {
-                    'label': label,
-                    'ep_value_raw': value_raw,
-                    'ep_value_parsed': parsed,
-                    'ep_value_type': kind,
-                }
+        destination = EP_KEY_TO_DESTINATION.get(key) or EP_LABEL_TO_DESTINATION.get(label)
+        if destination is None:
+            continue
+        parsed, kind = _parse_ep_value(value_raw)
+        if parsed is not None:
+            out[destination] = {
+                'label': label,
+                'ep_value_raw': value_raw,
+                'ep_value_parsed': parsed,
+                'ep_value_type': kind,
+            }
     return out
 
 

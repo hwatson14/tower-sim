@@ -182,6 +182,7 @@ Explicit report/compat boundary:
    - `query_currency_income.py`
    - `query_derived_composites.py`
    - `query_module_policy.py`
+   - `workshop_stat_rows.py`
 
 The bounded publisher modules are allowed as active files today, but they are the first
 consolidation candidates if `qe/` needs to shrink further. No new direct files may be added

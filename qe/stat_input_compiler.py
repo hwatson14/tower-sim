@@ -1159,7 +1159,9 @@ def compile_stat_inputs(
     if enhancement_tracks:
         typed_enhancement_rows = []
         for track in enhancement_tracks.values():
-            level = track.max_level if resolved_projection_state.max_workshop and track.max_level is not None else track.preset_levels.get(preset)
+            # For max_workshop projections, keep WS+ at the selected preset lane.
+            # Workshop-max semantics should not implicitly promote enhancement tracks.
+            level = track.preset_levels.get(preset)
             value = (1.0 + float(level) / 100.0) if level is not None else track.current_multiplier
             typed_enhancement_rows.append((track.name, level, value, track.max_level))
     else:

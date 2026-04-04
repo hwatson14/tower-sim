@@ -81,6 +81,43 @@ def _resolve_additive_base_plus_bonuses_pct(
     return final, 'resolved', f'{note_label}: workshop base plus additive percent-point bonuses, uncapped.', schema
 
 
+_FREE_UPGRADE_CHANCE_DESTINATIONS: frozenset[str] = frozenset({
+    'free_attack_upgrade_chance_pct',
+    'free_defense_upgrade_chance_pct',
+    'free_utility_upgrade_chance_pct',
+})
+
+
+def _resolve_free_upgrade_chance_pct(
+    destination_id: str,
+    contributors: list[StatInput],
+    schema: dict[str, object],
+) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop_base = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop_base is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    enhancement_multiplier = 1.0
+    additive_bonus_pp = 0.0
+    for row in contributors:
+        if row.source_family == 'workshop':
+            continue
+        value = _as_float(row.value)
+        if value is None:
+            continue
+        if row.source_family == 'enhancement':
+            enhancement_multiplier *= _canonical_source_multiplier(destination_id, row, value)
+            continue
+        if row.source_family in {'relic', 'vault'} and 0.0 <= value <= 1.0:
+            additive_bonus_pp += value * 100.0
+            continue
+        additive_bonus_pp += value
+    final = (workshop_base * enhancement_multiplier) + additive_bonus_pp
+    cap = CANONICAL_PCT_CAPS.get(destination_id)
+    if cap is not None:
+        final = max(0.0, min(cap, final))
+    return final, 'resolved', 'Destination-specific free-upgrade formula: workshop base x enhancement plus additive non-enhancement bonuses.', schema
+
+
 def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[str, object]:
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
@@ -250,9 +287,8 @@ def _resolve_base_times_post_multipliers(destination_id: str, contributors: list
     workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
     if workshop is None:
         return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
-    lab_mult = next((_as_float(row.value) for row in [row for row in contributors if row.source_family == 'lab']), 1.0) or 1.0
-    final = workshop * lab_mult
-    for family in ('enhancement', 'card', 'module', 'module_substat', 'perk'):
+    final = workshop
+    for family in ('lab', 'enhancement', 'card', 'module', 'module_substat', 'perk'):
         for row in [row for row in contributors if row.source_family == family]:
             value = _as_float(row.value)
             if value is None:
@@ -275,9 +311,7 @@ def _resolve_decimal_base_times_post_multipliers(destination_id: str, contributo
     if workshop is None:
         return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
     final = workshop / divisor
-    lab_mult = next((_as_float(row.value) for row in contributors if row.source_family == 'lab'), 1.0) or 1.0
-    final *= lab_mult
-    for family in ('enhancement', 'card', 'module', 'module_substat', 'perk'):
+    for family in ('lab', 'enhancement', 'card', 'module', 'module_substat', 'perk'):
         for row in [row for row in contributors if row.source_family == family]:
             value = _as_float(row.value)
             if value is None:
@@ -601,6 +635,8 @@ def _resolve_bucket(
         if value is None:
             return None, 'mapped_not_resolved', 'Missing enhancement contributor for exact max-rend formula.', schema
         return value, 'resolved', 'Destination-specific max-rend formula: (8 + lab + 8*module_substat_pct) x enhancement.', schema
+    if destination_id in _FREE_UPGRADE_CHANCE_DESTINATIONS:
+        return _resolve_free_upgrade_chance_pct(destination_id, contributors, schema)
 
     unit = meta.get('unit', 'unknown')
     resolver = meta.get('resolver', 'unknown')
@@ -643,6 +679,14 @@ def _resolve_bucket(
         if unit == 'pct':
             if measure == 'level':
                 unsupported.append(f'{row.source_family}:{row.source_name}:unresolved_level_token')
+                continue
+            if row.source_family == 'enhancement':
+                multiplier_product *= _canonical_source_multiplier(destination_id, row, value)
+                consumed += 1
+                continue
+            if getattr(row, 'composition_stage', '') == 'multiplicative':
+                multiplier_product *= _canonical_source_multiplier(destination_id, row, value)
+                consumed += 1
                 continue
             if measure == 'multiplier':
                 multiplier_product *= _canonical_source_multiplier(destination_id, row, value)

@@ -216,6 +216,10 @@ qe:
     status: active_candidate
     layer: qe/
 
+  qe/workshop_stat_rows.py:
+    status: active_candidate
+    layer: qe/
+
 # ─── simulators/ ─────────────────────────────────────────────────────────────
 
 simulators:
