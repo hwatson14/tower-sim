@@ -1023,7 +1023,7 @@ def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_to
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
     assert damage_row['start_of_run_modifier_total'] == 'x 126'
-    assert damage_row['other'] == 'x 1'
+    assert damage_row['other'] == '—'
     assert damage_row['max_progression_modifier_total'] == 'x 1.8'
 
 
@@ -1099,7 +1099,7 @@ def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_su
     )
     defense_row = next(row for row in offense_rows if row.get('name') == 'Defense %')
     assert defense_row['start_of_run_modifier_total'] == '+ 24.9%'
-    assert defense_row['other'] == '+ 0%'
+    assert defense_row['other'] == '—'
     assert defense_row['max_progression_modifier_total'] == '+ 25%'
 
 

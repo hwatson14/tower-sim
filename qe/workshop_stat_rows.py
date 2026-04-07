@@ -128,6 +128,10 @@ def _neutral_effect_value(*, display_kind: str) -> str:
     return '+ 0'
 
 
+def _is_neutral_effect_display(value: str, *, display_kind: str) -> bool:
+    return value == _neutral_effect_value(display_kind=display_kind)
+
+
 def _aggregate_effect_total(
     row: dict[str, object],
     *,
@@ -210,9 +214,23 @@ def _format_effect_from_contributors(
 
     multiplier_surface_types = {'damage', 'hp', 'hp_per_second', 'attacks_per_second', 'multiplier'}
     if source_classes == ('relics',) and surface_value_type in multiplier_surface_types:
-        relic_total = sum(values)
-        if relic_total >= 0:
-            return _format_effect_value(1.0 + relic_total, display_kind='multiplier')
+        relic_pct_values: list[float] = []
+        relic_non_pct_values: list[float] = []
+        for contributor in (row.get('contributors') or []):
+            if str((contributor or {}).get('source_class') or '') != 'relics':
+                continue
+            contributor_value = (contributor or {}).get('value')
+            if not isinstance(contributor_value, (int, float)):
+                continue
+            contributor_id = str((contributor or {}).get('contributor_id') or '').lower()
+            if '__pct' in contributor_id or 'percent' in contributor_id:
+                relic_pct_values.append(float(contributor_value))
+            else:
+                relic_non_pct_values.append(float(contributor_value))
+        if relic_pct_values and not relic_non_pct_values:
+            relic_total = sum(relic_pct_values)
+            if relic_total >= 0:
+                return _format_effect_value(1.0 + relic_total, display_kind='multiplier')
 
     display_kind = 'scalar'
     if any(kind == 'multiplier' for kind in display_kinds):
@@ -442,6 +460,7 @@ def build_workshop_reconciliation_row(
         if isinstance(max_display_value, str)
         else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
     )
+    other_display_kind = _modifier_total_display_kind(surface_id=surface_id, value_type=value_type)
     other_display = _format_effect_delta_between_rows(
         start_row=start_row,
         max_row=max_row,
@@ -449,6 +468,7 @@ def build_workshop_reconciliation_row(
         surface_id=surface_id,
         surface_value_type=value_type,
     )
+    other_display_for_cell = '—' if _is_neutral_effect_display(other_display, display_kind=other_display_kind) else other_display
     decomposition = {
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
         'lab': _format_effect_from_contributors(start_row, source_classes=('labs',), surface_value_type=value_type),
@@ -470,7 +490,7 @@ def build_workshop_reconciliation_row(
             source_classes=('perk', 'perks', 'perk_effect'),
             surface_value_type=value_type,
         ),
-        'other': other_display,
+        'other': other_display_for_cell,
     }
     start_of_run_modifier_total = _format_total_effect_from_row(
         start_row,
