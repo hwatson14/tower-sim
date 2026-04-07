@@ -286,12 +286,13 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16){background:#d8eef0;}
 .workshop-stats-table tbody td:nth-child(17),.workshop-stats-table tbody td:nth-child(18){background:#efe3c8;}
 .workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
+.workshop-stats-table tbody td:nth-child(19){background:#f3f3f3;width:34px;min-width:34px;text-align:center;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
-.workshop-name-cell{display:flex;align-items:center;gap:6px;}
 .recon-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 9px;border:1px solid rgba(0,0,0,0.35);}
 .recon-dot.green{background:#3ccf6e;box-shadow:0 0 5px rgba(60,207,110,0.55);}
 .recon-dot.red{background:#e25252;box-shadow:0 0 5px rgba(226,82,82,0.55);}
 .recon-dot.amber{background:#d7a33a;box-shadow:0 0 5px rgba(215,163,58,0.55);}
+.workshop-stats-table td.recon-fail{color:#7d1010;font-weight:700;box-shadow:inset 0 0 0 9999px rgba(212,86,86,0.16);}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
 .inputs-subpanel{background:#10141d;border:1px solid #2b3241;border-radius:8px;padding:6px 8px;}
@@ -417,7 +418,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
             return '—'
         return text
 
-    def _name_cell(row: dict) -> str:
+    def _recon_cell(row: dict) -> str:
         status = str((row or {}).get('reconciliation_status') or 'amber')
         status_class = status if status in {'green', 'red', 'amber'} else 'amber'
         title = {
@@ -425,8 +426,13 @@ def render_workshop_stat_table_html(payload: dict) -> str:
             'red': 'Row does not visibly reconcile',
             'amber': 'Row reconciliation could not be fully evaluated',
         }[status_class]
-        label = html.escape(str(_cell_value(row, 'name') or ''))
-        return f"<div class='workshop-name-cell'><span class='recon-dot {status_class}' title='{html.escape(title)}'></span><span>{label}</span></div>"
+        return f"<span class='recon-dot {status_class}' title='{html.escape(title)}'></span>"
+
+    def _cell_html(*, row: dict, key: str) -> str:
+        value = html.escape(str(_cell_value(row, key) or ''))
+        flag = str(((row or {}).get('reconciliation_cell_flags') or {}).get(key) or 'na')
+        class_attr = " class='recon-fail'" if flag == 'fail' else ''
+        return f"<td{class_attr}>{value}</td>"
 
     header_html = (
         "<thead>"
@@ -456,35 +462,37 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th><strong>Value</strong></th>"
         "<th>Modifier</th>"
         "<th>Value</th>"
+        "<th rowspan='2'>Recon</th>"
         "</tr>"
         "</thead>"
     )
     body_chunks = []
     for section in (payload.get('sections') or []):
         title = html.escape(str((section or {}).get('title') or ''))
-        body_chunks.append(f"<tr class='section-row'><td colspan='18'>{title}</td></tr>")
+        body_chunks.append(f"<tr class='section-row'><td colspan='19'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
-            values = [
-                _cell_value(row, 'workshop_level'),
-                _cell_value(row, 'lab_effects'),
-                _cell_value(row, 'relics'),
-                _cell_value(row, 'base_subtotal'),
-                _cell_value(row, 'module_effects'),
-                _cell_value(row, 'card_effects'),
-                _cell_value(row, 'base_loadout_subtotal'),
-                _cell_value(row, 'enhancement_effects'),
-                _cell_value(row, 'start_of_run_modifier_total'),
-                _cell_value(row, 'workshop_value'),
-                _cell_value(row, 'start_of_run_value'),
-                _cell_value(row, 'other'),
-                _cell_value(row, 'max_workshop_modifier_total'),
-                _cell_value(row, 'max_workshop_value'),
-                _cell_value(row, 'max_workshop_resolved_value'),
-                _cell_value(row, 'perk_effects'),
-                _cell_value(row, 'max_progression_value'),
+            value_keys = [
+                'workshop_level',
+                'lab_effects',
+                'relics',
+                'base_subtotal',
+                'module_effects',
+                'card_effects',
+                'base_loadout_subtotal',
+                'enhancement_effects',
+                'start_of_run_modifier_total',
+                'workshop_value',
+                'start_of_run_value',
+                'other',
+                'max_workshop_modifier_total',
+                'max_workshop_value',
+                'max_workshop_resolved_value',
+                'perk_effects',
+                'max_progression_value',
             ]
-            cells = [f"<td>{_name_cell(row)}</td>"]
-            cells.extend(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
+            cells = [f"<td>{html.escape(str(_cell_value(row, 'name') or ''))}</td>"]
+            cells.extend(_cell_html(row=row, key=key) for key in value_keys)
+            cells.append(f"<td>{_recon_cell(row)}</td>")
             cells = ''.join(cells)
             body_chunks.append(f"<tr>{cells}</tr>")
     return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"

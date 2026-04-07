@@ -140,6 +140,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
                             {
                                 'name': 'Damage',
                                 'reconciliation_status': 'green',
+                                'reconciliation_cell_flags': {},
                                 'workshop_level': '100',
                                 'workshop_value': '100',
                                 'lab_effects': '+ 5',
@@ -167,6 +168,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Start of Run' in html
     assert 'Max Workshop' in html
     assert 'Perks' in html
+    assert '>Recon<' in html
     assert html.count('>Total<') == 2
     assert 'recon-dot green' in html
     assert 'Lab Effects' not in html
@@ -176,11 +178,12 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Perk Effects' not in html
     assert 'Base Modifiers' in html
     assert 'Base &amp; Loadout' in html
-    assert "colspan='18'" in html
+    assert "colspan='19'" in html
     assert '250' in html
     assert '300' in html
     assert html.index('>Relics<') < html.index('>Subtotal<') < html.index('>Module<')
     assert html.index('>Start of Run<') < html.index('>Max Workshop<') < html.index('>Perks<')
+    assert html.index('>Perks<') < html.index('>Recon<')
 
 
 def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
@@ -192,6 +195,7 @@ def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
                     'rows': [
                         {
                             'name': 'Damage',
+                            'reconciliation_cell_flags': {},
                             'workshop_level': '100',
                             'workshop_value': '100',
                             'lab_effects': '—',
@@ -215,3 +219,44 @@ def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
     assert 'x 1' not in html
     assert '+ 0%' not in html
     assert '+ 0<' not in html
+
+
+def test_workshop_stats_renderer_marks_failed_cells_and_keeps_recon_on_right():
+    html = render_workshop_stat_table_html(
+        {
+            'sections': [
+                {
+                    'title': 'Offense',
+                    'rows': [
+                        {
+                            'name': 'Damage',
+                            'reconciliation_status': 'red',
+                            'reconciliation_cell_flags': {
+                                'base_subtotal': 'fail',
+                                'max_progression_value': 'fail',
+                            },
+                            'workshop_level': '100',
+                            'workshop_value': '100',
+                            'lab_effects': '+ 5',
+                            'relics': '+ 6',
+                            'base_subtotal': '+ 10',
+                            'module_effects': '+ 2',
+                            'card_effects': '+ 3',
+                            'base_loadout_subtotal': '+ 13',
+                            'enhancement_effects': '+ 4',
+                            'start_of_run_modifier_total': '+ 17',
+                            'start_of_run_value': '117',
+                            'other': '—',
+                            'max_workshop_modifier_total': '+ 20',
+                            'max_workshop_value': '120',
+                            'max_workshop_resolved_value': '140',
+                            'perk_effects': '+ 10',
+                            'max_progression_value': '150',
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+    assert html.count("class='recon-fail'") == 2
+    assert 'recon-dot red' in html

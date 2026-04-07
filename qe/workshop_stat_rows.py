@@ -392,62 +392,223 @@ def _apply_effect_to_workshop_value(
     return (workshop_value + additive_total) * factor_total
 
 
-def _visible_reconciliation_status(
+def _cell_flag(value: bool | None) -> str:
+    if value is True:
+        return 'pass'
+    if value is False:
+        return 'fail'
+    return 'na'
+
+
+def _display_matches(*, expected_text: str | None, actual_text: str | None) -> bool | None:
+    if expected_text is None:
+        return None
+    if actual_text is None:
+        return None
+    return expected_text == actual_text
+
+
+def _is_surface_text_semantically_valid(*, expected_text: str, actual_text: str) -> bool:
+    if actual_text == '—':
+        return expected_text == '—'
+    if '·' in actual_text:
+        return False
+    if expected_text == '—':
+        return False
+    if expected_text.startswith('x'):
+        return actual_text.startswith('x')
+    if expected_text.endswith('%'):
+        return actual_text.endswith('%') and not actual_text.startswith('x')
+    return not actual_text.startswith('x') and not actual_text.endswith('%')
+
+
+def _strict_reconciliation_audit(
     *,
     row_status: str,
+    family: str,
     surface_id: str,
     value_type: str,
     workshop_value: float | None,
-    start_total_effect: tuple[float, float, bool],
-    start_of_run_value_text: str,
-    max_workshop_modifier_effect: tuple[float, float, bool],
     max_workshop_value: float | None,
-    max_workshop_resolved_value_text: str,
+    base_subtotal_effect: tuple[float, float, bool],
+    base_loadout_subtotal_effect: tuple[float, float, bool],
+    start_total_effect: tuple[float, float, bool],
+    other_effect: tuple[float, float, bool],
+    max_workshop_modifier_effect: tuple[float, float, bool],
     perk_effect: tuple[float, float, bool],
+    base_subtotal_text: str,
+    base_loadout_subtotal_text: str,
+    start_modifier_total_text: str,
+    start_of_run_value_text: str,
+    other_text: str,
+    max_workshop_total_text: str,
+    max_workshop_resolved_value_text: str,
+    perk_text: str,
     max_progression_value_text: str,
-    family: str,
-) -> str:
+) -> tuple[dict[str, bool | None], dict[str, str], list[str], str]:
+    check_names = [
+        'base_subtotal_ok',
+        'base_loadout_subtotal_ok',
+        'start_modifier_total_ok',
+        'start_value_ok',
+        'other_ok',
+        'max_workshop_total_ok',
+        'max_workshop_value_ok',
+        'perk_ok',
+        'max_progression_value_ok',
+        'semantic_format_ok',
+        'forbidden_cells_ok',
+    ]
     if row_status == 'missing':
-        return 'amber'
+        checks = {name: None for name in check_names}
+        cell_flags = {
+            'base_subtotal': 'na',
+            'base_loadout_subtotal': 'na',
+            'start_of_run_modifier_total': 'na',
+            'start_of_run_value': 'na',
+            'other': 'na',
+            'max_workshop_modifier_total': 'na',
+            'max_workshop_resolved_value': 'na',
+            'perk_effects': 'na',
+            'max_progression_value': 'na',
+        }
+        return checks, cell_flags, [], 'amber'
 
-    def _matches(expected_value: float | None, actual_text: str) -> bool | None:
-        if expected_value is None or not isinstance(actual_text, str) or actual_text == '—':
-            return None
-        return _format_surface_value(expected_value, surface_id=surface_id, value_type=value_type) == actual_text
-
-    checks: list[bool] = []
-    start_expected = _apply_effect_to_workshop_value(
+    expected_base_subtotal = _format_component_effect_display(base_subtotal_effect, family=family)
+    expected_base_loadout_subtotal = _format_component_effect_display(base_loadout_subtotal_effect, family=family)
+    expected_start_modifier_total = _format_effective_total_display(
+        effect=start_total_effect,
+        family=family,
+        workshop_value=workshop_value,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    expected_start_value_numeric = _apply_effect_to_workshop_value(
         effect=start_total_effect,
         family=family,
         workshop_value=workshop_value,
     )
-    start_match = _matches(start_expected, start_of_run_value_text)
-    if start_match is not None:
-        checks.append(start_match)
-
-    max_workshop_expected = _apply_effect_to_workshop_value(
+    expected_start_value = (
+        None
+        if expected_start_value_numeric is None
+        else _format_surface_value(expected_start_value_numeric, surface_id=surface_id, value_type=value_type)
+    )
+    expected_other = _format_component_effect_display(other_effect, family=family)
+    expected_max_workshop_total = _format_effective_total_display(
+        effect=max_workshop_modifier_effect,
+        family=family,
+        workshop_value=max_workshop_value,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    expected_max_workshop_numeric = _apply_effect_to_workshop_value(
         effect=max_workshop_modifier_effect,
         family=family,
         workshop_value=max_workshop_value,
     )
-    max_workshop_match = _matches(max_workshop_expected, max_workshop_resolved_value_text)
-    if max_workshop_match is not None:
-        checks.append(max_workshop_match)
-
-    max_progression_expected = _apply_effect_to_workshop_value(
+    expected_max_workshop_value = (
+        None
+        if expected_max_workshop_numeric is None
+        else _format_surface_value(expected_max_workshop_numeric, surface_id=surface_id, value_type=value_type)
+    )
+    expected_perk = _format_component_effect_display(perk_effect, family=family)
+    expected_max_progression_numeric = _apply_effect_to_workshop_value(
         effect=perk_effect,
         family=family,
-        workshop_value=max_workshop_expected,
+        workshop_value=expected_max_workshop_numeric,
     )
-    max_progression_match = _matches(max_progression_expected, max_progression_value_text)
-    if max_progression_match is not None:
-        checks.append(max_progression_match)
+    expected_max_progression_value = (
+        None
+        if expected_max_progression_numeric is None
+        else _format_surface_value(expected_max_progression_numeric, surface_id=surface_id, value_type=value_type)
+    )
 
-    if not checks:
-        return 'amber'
-    if all(checks):
-        return 'green'
-    return 'red'
+    checks: dict[str, bool | None] = {
+        'base_subtotal_ok': _display_matches(expected_text=expected_base_subtotal, actual_text=base_subtotal_text),
+        'base_loadout_subtotal_ok': _display_matches(
+            expected_text=expected_base_loadout_subtotal,
+            actual_text=base_loadout_subtotal_text,
+        ),
+        'start_modifier_total_ok': _display_matches(
+            expected_text=expected_start_modifier_total,
+            actual_text=start_modifier_total_text,
+        ),
+        'start_value_ok': _display_matches(expected_text=expected_start_value, actual_text=start_of_run_value_text),
+        'other_ok': _display_matches(expected_text=expected_other, actual_text=other_text),
+        'max_workshop_total_ok': _display_matches(
+            expected_text=expected_max_workshop_total,
+            actual_text=max_workshop_total_text,
+        ),
+        'max_workshop_value_ok': _display_matches(
+            expected_text=expected_max_workshop_value,
+            actual_text=max_workshop_resolved_value_text,
+        ),
+        'perk_ok': _display_matches(expected_text=expected_perk, actual_text=perk_text),
+        'max_progression_value_ok': _display_matches(
+            expected_text=expected_max_progression_value,
+            actual_text=max_progression_value_text,
+        ),
+    }
+
+    semantic_pairs = [
+        (expected_base_subtotal, base_subtotal_text),
+        (expected_base_loadout_subtotal, base_loadout_subtotal_text),
+        (expected_start_modifier_total, start_modifier_total_text),
+        (expected_other, other_text),
+        (expected_max_workshop_total, max_workshop_total_text),
+        (expected_perk, perk_text),
+    ]
+    semantic_checks: list[bool | None] = []
+    for expected_text, actual_text in semantic_pairs:
+        if expected_text is None or actual_text is None:
+            semantic_checks.append(None)
+            continue
+        semantic_checks.append(
+            _is_surface_text_semantically_valid(expected_text=expected_text, actual_text=actual_text)
+        )
+    checks['semantic_format_ok'] = (
+        None
+        if all(value is None for value in semantic_checks)
+        else all(value is True for value in semantic_checks if value is not None)
+    )
+
+    forbidden_effect_tokens = {'x 1', 'x1', '+ 0', '+0', '+ 0%', '+0%', '0%'}
+    forbidden_effect_cells = [
+        base_subtotal_text,
+        base_loadout_subtotal_text,
+        start_modifier_total_text,
+        other_text,
+        max_workshop_total_text,
+        perk_text,
+    ]
+    checks['forbidden_cells_ok'] = not any(
+        isinstance(text, str) and text.strip() in forbidden_effect_tokens
+        for text in forbidden_effect_cells
+    )
+
+    cell_check_map = {
+        'base_subtotal': 'base_subtotal_ok',
+        'base_loadout_subtotal': 'base_loadout_subtotal_ok',
+        'start_of_run_modifier_total': 'start_modifier_total_ok',
+        'start_of_run_value': 'start_value_ok',
+        'other': 'other_ok',
+        'max_workshop_modifier_total': 'max_workshop_total_ok',
+        'max_workshop_resolved_value': 'max_workshop_value_ok',
+        'perk_effects': 'perk_ok',
+        'max_progression_value': 'max_progression_value_ok',
+    }
+    cell_flags = {key: _cell_flag(checks[check_name]) for key, check_name in cell_check_map.items()}
+    failures = [name for name, value in checks.items() if value is False]
+    applicable = [value for value in checks.values() if value is not None]
+    if failures:
+        status = 'red'
+    elif any(value is None for value in checks.values()):
+        status = 'amber'
+    elif applicable and all(applicable):
+        status = 'green'
+    else:
+        status = 'amber'
+    return checks, cell_flags, failures, status
 
 
 def _aggregate_effect_total(
@@ -759,6 +920,30 @@ def _build_wall_health_workshop_percent_row(
     value_text = _format_percent_value(current_value if isinstance(current_value, (int, float)) else None)
     max_text = _format_percent_value(max_value if isinstance(max_value, (int, float)) else None)
     row_note = 'Workshop wall-health percentage. Actual Wall HP is shown in the Derived section.'
+    reconciliation_checks = {
+        'base_subtotal_ok': True,
+        'base_loadout_subtotal_ok': True,
+        'start_modifier_total_ok': True,
+        'start_value_ok': True,
+        'other_ok': True,
+        'max_workshop_total_ok': True,
+        'max_workshop_value_ok': True,
+        'perk_ok': True,
+        'max_progression_value_ok': True,
+        'semantic_format_ok': True,
+        'forbidden_cells_ok': True,
+    }
+    reconciliation_cell_flags = {
+        'base_subtotal': 'pass',
+        'base_loadout_subtotal': 'pass',
+        'start_of_run_modifier_total': 'pass',
+        'start_of_run_value': 'pass',
+        'other': 'pass',
+        'max_workshop_modifier_total': 'pass',
+        'max_workshop_resolved_value': 'pass',
+        'perk_effects': 'pass',
+        'max_progression_value': 'pass',
+    }
     return {
         'canonical_row_id': str(spec.get('canonical_row_id') or spec['surface_id']),
         'display_label': spec['label'],
@@ -783,6 +968,9 @@ def _build_wall_health_workshop_percent_row(
         'row_status': 'resolved',
         'row_notes': row_note,
         'reconciliation_status': 'green',
+        'reconciliation_checks': reconciliation_checks,
+        'reconciliation_cell_flags': reconciliation_cell_flags,
+        'reconciliation_failures': [],
         'name': spec['label'],
         'workshop_level': _workshop_level_for_label(
             account_state_payload=account_state_payload,
@@ -962,19 +1150,28 @@ def build_workshop_reconciliation_row(
         row_notes = '; '.join(part for part in [row_notes, 'Includes Death Wave Health lab contribution.'] if part)
     if row_status == 'missing' and not row_notes:
         row_notes = 'Missing QE query row.'
-    reconciliation_status = _visible_reconciliation_status(
+    reconciliation_checks, reconciliation_cell_flags, reconciliation_failures, reconciliation_status = _strict_reconciliation_audit(
         row_status=row_status,
+        family=family,
         surface_id=surface_id,
         value_type=value_type,
         workshop_value=workshop_value,
-        start_total_effect=start_total_effect,
-        start_of_run_value_text=start_of_run_value,
-        max_workshop_modifier_effect=max_workshop_modifier_effect,
         max_workshop_value=max_workshop_contribution,
-        max_workshop_resolved_value_text=max_workshop_resolved_value,
+        base_subtotal_effect=base_subtotal_effect,
+        base_loadout_subtotal_effect=base_loadout_subtotal_effect,
+        start_total_effect=start_total_effect,
+        max_workshop_modifier_effect=max_workshop_modifier_effect,
+        other_effect=other_effect,
         perk_effect=perk_effect,
+        base_subtotal_text=decomposition['base_subtotal'],
+        base_loadout_subtotal_text=decomposition['base_loadout_subtotal'],
+        start_modifier_total_text=start_of_run_modifier_total,
+        start_of_run_value_text=start_of_run_value,
+        other_text=decomposition['other'],
+        max_workshop_total_text=max_workshop_modifier_total,
+        max_workshop_resolved_value_text=max_workshop_resolved_value,
+        perk_text=decomposition['perk'],
         max_progression_value_text=max_progression_value,
-        family=family,
     )
     return {
         'canonical_row_id': canonical_row_id,
@@ -989,6 +1186,9 @@ def build_workshop_reconciliation_row(
         'row_status': row_status,
         'row_notes': row_notes,
         'reconciliation_status': reconciliation_status,
+        'reconciliation_checks': reconciliation_checks,
+        'reconciliation_cell_flags': reconciliation_cell_flags,
+        'reconciliation_failures': reconciliation_failures,
         'name': spec['label'],
         'workshop_level': _workshop_level_for_label(
             account_state_payload=account_state_payload,

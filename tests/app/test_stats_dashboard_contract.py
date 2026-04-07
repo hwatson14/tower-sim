@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from app.publication import _build_input_dashboard_payload, _build_stats_dashboard_payload
+from qe.workshop_stat_rows import build_workshop_reconciliation_row, _strict_reconciliation_audit
 
 ROOT = Path(__file__).resolve().parents[2]
 
@@ -1232,6 +1233,129 @@ def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_to
     assert damage_row['max_progression_modifier_total'] == 'x 1.8'
 
 
+def test_workshop_reconciliation_row_populates_strict_green_audit():
+    row = build_workshop_reconciliation_row(
+        spec={'label': 'Damage', 'surface_id': 'state::tower.damage', 'canonical_row_id': 'state::tower.damage'},
+        start_row={
+            'status': 'resolved',
+            'final_value': 300.0,
+            'value_type': 'damage',
+            'contributors': [
+                {'source_class': 'workshop', 'contributor_id': 'workshop__tower__damage__flat', 'value': 100.0},
+                {'source_class': 'labs', 'contributor_id': 'lab.damage', 'value': 2.0},
+                {'source_class': 'relics', 'contributor_id': 'relic.damage', 'value': 0.5},
+            ],
+        },
+        max_row={
+            'status': 'resolved',
+            'final_value': 720.0,
+            'value_type': 'damage',
+            'contributors': [
+                {'source_class': 'workshop', 'contributor_id': 'workshop__tower__damage__flat', 'value': 120.0},
+                {'source_class': 'labs', 'contributor_id': 'lab.damage', 'value': 2.0},
+                {'source_class': 'relics', 'contributor_id': 'relic.damage', 'value': 0.5},
+                {'source_class': 'perks', 'contributor_id': 'perk.damage', 'value': 2.0, 'input_value_type': 'multiplier'},
+            ],
+        },
+        account_state_payload={'workshop': {'Damage': {'preset_levels': {'Farming': 1}}}},
+        selected_preset='Farming',
+    )
+    assert row['reconciliation_status'] == 'green'
+    assert row['reconciliation_failures'] == []
+    assert all(value is True for value in row['reconciliation_checks'].values())
+    assert all(flag == 'pass' for flag in row['reconciliation_cell_flags'].values())
+
+
+def test_workshop_reconciliation_audit_marks_bad_base_subtotal_red():
+    checks, cell_flags, failures, status = _strict_reconciliation_audit(
+        row_status='resolved',
+        family='multiplicative',
+        surface_id='state::tower.damage',
+        value_type='damage',
+        workshop_value=100.0,
+        max_workshop_value=120.0,
+        base_subtotal_effect=(0.0, 3.0, True),
+        base_loadout_subtotal_effect=(0.0, 3.0, True),
+        start_total_effect=(0.0, 3.0, True),
+        other_effect=(0.0, 1.0, False),
+        max_workshop_modifier_effect=(0.0, 3.0, True),
+        perk_effect=(0.0, 2.0, True),
+        base_subtotal_text='x 2.9',
+        base_loadout_subtotal_text='x 3',
+        start_modifier_total_text='x 3',
+        start_of_run_value_text='300',
+        other_text='—',
+        max_workshop_total_text='x 3',
+        max_workshop_resolved_value_text='360',
+        perk_text='x 2',
+        max_progression_value_text='720',
+    )
+    assert status == 'red'
+    assert checks['base_subtotal_ok'] is False
+    assert cell_flags['base_subtotal'] == 'fail'
+    assert 'base_subtotal_ok' in failures
+
+
+def test_workshop_reconciliation_audit_marks_bad_final_value_red():
+    checks, cell_flags, failures, status = _strict_reconciliation_audit(
+        row_status='resolved',
+        family='multiplicative',
+        surface_id='state::tower.damage',
+        value_type='damage',
+        workshop_value=100.0,
+        max_workshop_value=120.0,
+        base_subtotal_effect=(0.0, 3.0, True),
+        base_loadout_subtotal_effect=(0.0, 3.0, True),
+        start_total_effect=(0.0, 3.0, True),
+        other_effect=(0.0, 1.0, False),
+        max_workshop_modifier_effect=(0.0, 3.0, True),
+        perk_effect=(0.0, 2.0, True),
+        base_subtotal_text='x 3',
+        base_loadout_subtotal_text='x 3',
+        start_modifier_total_text='x 3',
+        start_of_run_value_text='300',
+        other_text='—',
+        max_workshop_total_text='x 3',
+        max_workshop_resolved_value_text='360',
+        perk_text='x 2',
+        max_progression_value_text='700',
+    )
+    assert status == 'red'
+    assert checks['max_progression_value_ok'] is False
+    assert cell_flags['max_progression_value'] == 'fail'
+    assert 'max_progression_value_ok' in failures
+
+
+def test_workshop_reconciliation_audit_marks_missing_row_amber():
+    checks, cell_flags, failures, status = _strict_reconciliation_audit(
+        row_status='missing',
+        family='multiplicative',
+        surface_id='state::tower.damage',
+        value_type='damage',
+        workshop_value=None,
+        max_workshop_value=None,
+        base_subtotal_effect=(0.0, 1.0, False),
+        base_loadout_subtotal_effect=(0.0, 1.0, False),
+        start_total_effect=(0.0, 1.0, False),
+        other_effect=(0.0, 1.0, False),
+        max_workshop_modifier_effect=(0.0, 1.0, False),
+        perk_effect=(0.0, 1.0, False),
+        base_subtotal_text='—',
+        base_loadout_subtotal_text='—',
+        start_modifier_total_text='—',
+        start_of_run_value_text='—',
+        other_text='—',
+        max_workshop_total_text='—',
+        max_workshop_resolved_value_text='—',
+        perk_text='—',
+        max_progression_value_text='—',
+    )
+    assert status == 'amber'
+    assert failures == []
+    assert all(value is None for value in checks.values())
+    assert all(flag == 'na' for flag in cell_flags.values())
+
+
 def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_surfaces():
     account_state = {
         'default_preset': 'Farming',
@@ -1744,13 +1868,30 @@ def test_stats_dashboard_thorns_scales_fractional_module_substat_to_percentage_p
             }
         }
     }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::tower.thorns_damage_pct': {
+                    'display_value': '140%',
+                    'final_value': 140.0,
+                    'value_type': 'pct',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__thorns_damage__pct', 'value': 99.0},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.orbital_augment.loadout_resolved', 'value': 0.2},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.sharp_fortitude.loadout_resolved', 'value': 10.0, 'input_value_type': 'percent_display'},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__thorns__pct', 'value': 11.0},
+                    ],
+                }
+            }
+        }
+    }
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
         diagnostics={},
         input_dashboard_payload=input_dashboard,
         module_card_payloads={},
         query_rows_start_of_run=query_rows_start,
-        query_rows_max_progression={'Farming': {'rows': {}}},
+        query_rows_max_progression=query_rows_max,
         ep_compare_publishable={},
         line_verification={},
         selected_preset='Farming',
@@ -1764,6 +1905,8 @@ def test_stats_dashboard_thorns_scales_fractional_module_substat_to_percentage_p
     row = next(item for item in defense_rows if item.get('name') == 'Thorns')
     assert row['module_effects'] == '+ 30%'
     assert row['start_of_run_modifier_total'] == '+ 41%'
+    assert row['reconciliation_status'] == 'green'
+    assert row['reconciliation_checks']['semantic_format_ok'] is True
 
 
 def test_stats_dashboard_cash_and_coin_wave_rows_use_multiplicative_family():
