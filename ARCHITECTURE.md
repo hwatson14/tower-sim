@@ -313,6 +313,7 @@ Committed bounded `out/` baseline:
   - `run_stats_query_rows_start_of_run.json`
   - `run_stats_query_rows_max_progression.json`
 - These files are the committed review baseline for `app/run_stats.py`.
+- `run_stats.json` is the deterministic product artifact in that baseline; volatile build/write timing telemetry belongs in `diagnostics.json`, not in the committed product payload.
 - Do not assume the committed `out/` baseline also contains the richer analysis/debug/publication artifact set.
 
 Local bounded `run_stats` support artifacts:

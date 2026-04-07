@@ -463,6 +463,18 @@ def test_run_stats_output_contract_distinguishes_committed_and_local_support(run
 
 
 @pytest.mark.live
+def test_run_stats_committed_payload_excludes_volatile_timing_telemetry(run_stats_single_execution):
+    run_stats = json.loads((run_stats_single_execution["out_dir"] / "run_stats.json").read_text(encoding='utf-8'))
+    diagnostics = run_stats.get('diagnostics') or {}
+
+    assert 'timings_ms' not in diagnostics
+    assert 'account_state_build_ms' not in (diagnostics.get('session') or {})
+    for preset_payload in (diagnostics.get('presets') or {}).values():
+        assert 'timings_ms' not in ((preset_payload.get('start_of_run') or {}))
+        assert 'timings_ms' not in ((preset_payload.get('max_progression') or {}))
+
+
+@pytest.mark.live
 def test_run_stats_bounded_outputs_do_not_masquerade_as_full_pipeline_outputs(run_stats_single_execution):
     out_dir = run_stats_single_execution["out_dir"]
     written_names = {path.name for path in out_dir.glob("*.json")}

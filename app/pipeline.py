@@ -10,6 +10,7 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 """
 from __future__ import annotations
 
+import copy
 import csv
 import json
 import shutil
@@ -754,6 +755,30 @@ def _build_dual_state_stats_view(start_statbook_dict: dict, max_statbook_dict: d
     }
 
 
+def _stable_run_stats_payload_for_commit(run_stats_payload: dict) -> dict:
+    """Strip local timing telemetry from the committed run_stats baseline."""
+    stable_payload = copy.deepcopy(run_stats_payload)
+    diagnostics = dict(stable_payload.get('diagnostics') or {})
+    diagnostics.pop('timings_ms', None)
+    session = dict(diagnostics.get('session') or {})
+    session.pop('account_state_build_ms', None)
+    if session:
+        diagnostics['session'] = session
+    else:
+        diagnostics.pop('session', None)
+    preset_diagnostics = diagnostics.get('presets') or {}
+    for preset_payload in preset_diagnostics.values():
+        if not isinstance(preset_payload, dict):
+            continue
+        for state_mode in ('start_of_run', 'max_progression'):
+            state_payload = dict(preset_payload.get(state_mode) or {})
+            state_payload.pop('timings_ms', None)
+            if state_payload:
+                preset_payload[state_mode] = state_payload
+    stable_payload['diagnostics'] = diagnostics
+    return stable_payload
+
+
 def _perk_config_has_active_preset(config: dict) -> bool:
     if not isinstance(config, dict):
         return False
@@ -1318,7 +1343,6 @@ class RunStatsSession:
         diagnostics = artifacts['diagnostics']
         js = _json_sanitize
         write_start = perf_counter()
-        (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         (args.out / 'account_state.json').write_text(
             json.dumps(js(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
         )
@@ -1345,7 +1369,6 @@ class RunStatsSession:
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(
             json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str)
         )
-        (args.out / 'run_stats.json').write_text(json.dumps(js(artifacts['run_stats_payload']), indent=2, default=str))
         diagnostics['output_contract'] = {
             'contract_kind': 'run_stats_bounded',
             'committed_baseline_artifacts': list(RUN_STATS_COMMITTED_BASELINE_ARTIFACTS),
@@ -1357,6 +1380,8 @@ class RunStatsSession:
             'removed_legacy_fast_path_artifacts': list(_RUN_STATS_LEGACY_OUTPUTS),
             'ui_payload_artifacts': ['module_card_payloads.json'],
         }
+        stable_run_stats_payload = _stable_run_stats_payload_for_commit(artifacts['run_stats_payload'])
+        (args.out / 'run_stats.json').write_text(json.dumps(js(stable_run_stats_payload), indent=2, default=str))
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
         (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         return 0

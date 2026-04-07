@@ -23,7 +23,7 @@ Machine-readable state lives in:
 ## Current state
 
 The repo is **not in broad rebuild territory**.
-The repo has completed the prior hardening closeout sequence, but the current worktree now needs a **maintenance stabilization / hygiene tranche** before any new mechanic-facing work is considered honest.
+The repo has completed the prior hardening closeout sequence and the maintenance stabilization / hygiene tranche; freeze-candidate work must now certify that exact governed baseline rather than widen scope.
 
 ### Durable truths on the current baseline
 
@@ -121,12 +121,13 @@ Maintenance stabilization is complete only when all of the following are true:
 
 ### Verification record
 
-- targeted tranche-alignment suite passed on **2026-04-07** (`101 passed`)
-- refreshed full suite passed on **2026-04-07** (`346 passed`) in **44.40s**
+- targeted tranche-alignment suite passed on **2026-04-07** (`102 passed`)
+- refreshed full suite passed on **2026-04-07** (`347 passed`) in **45.29s**
 - refreshed `out/` inspection confirmed:
   - query-row artifacts remain bounded by state mode
   - query-plan artifacts remain bounded by state mode
   - `diagnostics.json` now publishes the explicit bounded run_stats output contract
+  - committed `run_stats.json` excludes volatile timing telemetry; rebuild-stable review content remains separated from local diagnostics timing data
   - `account_state.json` refreshed through the sanctioned `run_stats` path
 - ad hoc tracked output directories were removed and moved under ignore policy
 - unrelated user-owned local edits outside this tranche were intentionally left untouched rather than folded into hygiene work

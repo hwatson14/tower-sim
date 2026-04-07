@@ -5,7 +5,7 @@ status:
   baseline: active snapshot freshly recertified green on the actual current worktree, with maintenance stabilization completed for artifact governance and hygiene
   active_tranche: maintenance_stabilization_hygiene
   active_tranche_name: Maintenance stabilization / hygiene
-  overall_state: maintenance_baseline_stabilized_with_unrelated_local_dirt_left_explicitly_out_of_scope
+  overall_state: maintenance_baseline_stabilized_with_freeze_blocker_closure_reflected_in_current_governance
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -218,16 +218,17 @@ definition_of_done:
   maintenance_stabilization_validation:
   - targeted_pytest_command: pytest -q tests/app/test_pipeline_functional.py tests/app/test_pipeline_ui_contracts.py tests/app/test_inspector_data.py tests/shared/test_import_boundaries.py
   - targeted_pytest_result: passed
-  - targeted_pytest_pass_count: 101
+  - targeted_pytest_pass_count: 102
   - full_pytest_command: pytest -q
   - full_pytest_result: passed
   - full_pytest_date_utc: '2026-04-07'
-  - full_pytest_pass_count: 346
-  - full_pytest_duration_seconds: 44.40
+  - full_pytest_pass_count: 347
+  - full_pytest_duration_seconds: 45.29
   maintenance_stabilization_done:
   - active governance files explicitly define the maintenance stabilization / hygiene tranche
   - sanctioned committed out subset is explicit
   - temp/full pipeline artifact universe is explicitly separate
   - ad hoc out_* directories are removed or otherwise explicitly governed
   - tests, inspector, and publication assumptions match the sanctioned contract split
+  - committed run_stats product payload excludes volatile timing telemetry that belongs only in diagnostics.json
   - governance truth is refreshed to the cleaned maintenance baseline
