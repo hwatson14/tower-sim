@@ -1922,9 +1922,12 @@ def compile_stat_inputs(
                         role == 'assist'
                         and slot_type == 'generator'
                         and sub.name in {'Enemy Attack Level Skip', 'Enemy Health Level Skip'}
-                        and token
+                        and (display or token)
                     ):
-                        numeric = float(token.replace('+', '').replace('%', '').replace('?', '').strip())
+                        source_text = display or token
+                        numeric = float(source_text.replace('+', '').replace('%', '').replace('?', '').strip())
+                        if '%' not in source_text and 0.0 <= numeric <= 1.0:
+                            numeric *= 100.0
                         if assist_substat_eff is not None:
                             numeric = numeric * assist_substat_eff
                         value_type = 'percent_display'

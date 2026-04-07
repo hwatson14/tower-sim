@@ -1462,7 +1462,6 @@ def test_stats_dashboard_workshop_enemy_attack_skip_keeps_enhancement_multiplica
                         {'source_class': 'module_substat', 'contributor_id': 'module_substat.black_hole_digestor.loadout_resolved', 'value': 0.2, 'input_value_type': 'percent_display'},
                         {'source_class': 'module_substat', 'contributor_id': 'module_substat.singularity_harness.loadout_resolved', 'value': 8.0, 'input_value_type': 'percent_display'},
                         {'source_class': 'relics', 'contributor_id': 'relic__tower__enemy_attack_level_skip__pct', 'value': 2.0},
-                        {'source_class': 'enhancement', 'contributor_id': 'enhancement.enemy_level_skips_+.account_state', 'value': 1.16},
                         {'source_class': 'enhancement', 'contributor_id': 'enhancements__tower__enemy_attack_level_skip__multiplier', 'value': 1.16},
                     ],
                 }
@@ -1487,8 +1486,8 @@ def test_stats_dashboard_workshop_enemy_attack_skip_keeps_enhancement_multiplica
     )
     utility_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}, {}])[2].get('rows') or [])
     row = next(item for item in utility_rows if item.get('name') == 'Enemy Attack Level Skip')
-    assert row['enhancement_effects'] == 'x 1.35'
-    assert row['start_of_run_modifier_total'] == '+ 12.2% · x 1.35'
+    assert row['enhancement_effects'] == 'x 1.16'
+    assert row['start_of_run_modifier_total'] == '+ 12.2% · x 1.16'
 
 
 def test_stats_dashboard_workshop_pct_rows_scale_relic_fractions_to_percentage_points():

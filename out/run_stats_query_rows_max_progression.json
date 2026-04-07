@@ -6858,9 +6858,9 @@
       },
       "state::tower.enemy_attack_level_skip_pct": {
         "stat_name": "state::tower.enemy_attack_level_skip_pct",
-        "final_value": 63.51232,
+        "final_value": 55.216,
         "value_type": "pct",
-        "source_count": 8,
+        "source_count": 7,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -6878,21 +6878,6 @@
             "gate_reason": null,
             "provenance_ref": "IDS::Vault",
             "display_value": "0%"
-          },
-          {
-            "surface_id": "state::tower.enemy_attack_level_skip_pct",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "enhancement",
-            "composition_stage": "multiplicative",
-            "contributor_id": "enhancement.enemy_level_skips_+.account_state",
-            "value": 1.16,
-            "value_type": "scalar",
-            "input_value_type": "resolved_value",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "IDS::WS+",
-            "display_value": "1.16"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -6931,13 +6916,13 @@
             "source_class": "module_substat",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module_substat.black_hole_digestor.loadout_resolved",
-            "value": 0.2,
+            "value": 0.6000000000000001,
             "value_type": "scalar",
             "input_value_type": "percent_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "0.2%"
+            "display_value": "0.6%"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -6989,11 +6974,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "63.512%"
+        "display_value": "55.216%"
       },
       "state::tower.enemy_health_level_skip_pct": {
         "stat_name": "state::tower.enemy_health_level_skip_pct",
-        "final_value": 52.432,
+        "final_value": 52.896,
         "value_type": "pct",
         "source_count": 7,
         "status": "resolved",
@@ -7051,13 +7036,13 @@
             "source_class": "module_substat",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module_substat.black_hole_digestor.loadout_resolved",
-            "value": 0.2,
+            "value": 0.6000000000000001,
             "value_type": "scalar",
             "input_value_type": "percent_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "0.2%"
+            "display_value": "0.6%"
           },
           {
             "surface_id": "state::tower.enemy_health_level_skip_pct",
@@ -7109,7 +7094,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_with_perks",
         "trace_mode": "full_trace",
-        "display_value": "52.432%"
+        "display_value": "52.896%"
       },
       "state::tower.free_attack_upgrade_chance_pct": {
         "stat_name": "state::tower.free_attack_upgrade_chance_pct",
@@ -10214,7 +10199,7 @@
         "timing_farm_with_perks"
       ],
       "resolved_surface_count": 264,
-      "contributor_row_count": 277
+      "contributor_row_count": 276
     }
   },
   "Tourney": {
@@ -16881,9 +16866,9 @@
       },
       "state::tower.enemy_attack_level_skip_pct": {
         "stat_name": "state::tower.enemy_attack_level_skip_pct",
-        "final_value": 60.82112,
+        "final_value": 52.663999999999994,
         "value_type": "pct",
-        "source_count": 8,
+        "source_count": 7,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -16901,21 +16886,6 @@
             "gate_reason": null,
             "provenance_ref": "IDS::Vault",
             "display_value": "0%"
-          },
-          {
-            "surface_id": "state::tower.enemy_attack_level_skip_pct",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "enhancement",
-            "composition_stage": "multiplicative",
-            "contributor_id": "enhancement.enemy_level_skips_+.account_state",
-            "value": 1.16,
-            "value_type": "scalar",
-            "input_value_type": "resolved_value",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "IDS::WS+",
-            "display_value": "1.16"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -16954,13 +16924,13 @@
             "source_class": "module_substat",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module_substat.galaxy_compressor.loadout_resolved",
-            "value": 0.2,
+            "value": 0.4,
             "value_type": "scalar",
             "input_value_type": "percent_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "0.2%"
+            "display_value": "0.4%"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -17012,7 +16982,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "60.821%"
+        "display_value": "52.664%"
       },
       "state::tower.enemy_health_level_skip_pct": {
         "stat_name": "state::tower.enemy_health_level_skip_pct",
@@ -19847,7 +19817,7 @@
         "timing_tournament_no_perks"
       ],
       "resolved_surface_count": 264,
-      "contributor_row_count": 238
+      "contributor_row_count": 237
     }
   }
 }

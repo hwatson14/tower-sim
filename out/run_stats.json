@@ -3608,14 +3608,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 38.686,
-              "display_value": "38.686%",
+              "final_value": 33.81399999999999,
+              "display_value": "33.814%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 63.51232,
-              "display_value": "63.512%",
+              "final_value": 55.216,
+              "display_value": "55.216%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3624,14 +3624,14 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 30.45,
-              "display_value": "30.45%",
+              "final_value": 30.913999999999998,
+              "display_value": "30.914%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 52.432,
-              "display_value": "52.432%",
+              "final_value": 52.896,
+              "display_value": "52.896%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -8002,14 +8002,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 35.9948,
-              "display_value": "35.995%",
+              "final_value": 31.262,
+              "display_value": "31.262%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 60.82112,
-              "display_value": "60.821%",
+              "final_value": 52.663999999999994,
+              "display_value": "52.664%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -8970,7 +8970,7 @@
             "timing_scenario_probe"
           ],
           "resolved_surface_count": 264,
-          "contributor_row_count": 254
+          "contributor_row_count": 253
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
@@ -8986,7 +8986,7 @@
             "timing_farm_with_perks"
           ],
           "resolved_surface_count": 264,
-          "contributor_row_count": 277
+          "contributor_row_count": 276
         },
         "dual_state_stats": {
           "row_count": 264,
@@ -9008,7 +9008,7 @@
             "timing_tournament_no_perks"
           ],
           "resolved_surface_count": 264,
-          "contributor_row_count": 237
+          "contributor_row_count": 236
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
@@ -9024,7 +9024,7 @@
             "timing_tournament_no_perks"
           ],
           "resolved_surface_count": 264,
-          "contributor_row_count": 238
+          "contributor_row_count": 237
         },
         "dual_state_stats": {
           "row_count": 264,
