@@ -173,6 +173,37 @@ def _format_effect_from_contributors(
     return _format_effect_value(sum(values), display_kind=display_kind)
 
 
+def _format_total_effect_from_row(
+    row: dict[str, object],
+    *,
+    include_contributor,
+    surface_value_type: str,
+) -> str:
+    values: list[float] = []
+    display_kinds: list[str] = []
+    for contributor in (row.get('contributors') or []):
+        contributor_dict = dict(contributor or {})
+        if not include_contributor(contributor_dict):
+            continue
+        value = contributor_dict.get('value')
+        if not isinstance(value, (int, float)):
+            continue
+        values.append(float(value))
+        display_kinds.append(
+            _contributor_display_kind(contributor_dict, surface_value_type=surface_value_type)
+        )
+    if not values:
+        return 'â€”'
+    if any(kind == 'multiplier' for kind in display_kinds):
+        product = 1.0
+        for value in values:
+            product *= float(value)
+        return _format_effect_value(product, display_kind='multiplier')
+    if any(kind == 'pct' for kind in display_kinds):
+        return _format_effect_value(sum(values), display_kind='pct')
+    return _format_effect_value(sum(values), display_kind='scalar')
+
+
 def _lab_effects_delta_display(
     *,
     start_row: dict[str, object],
@@ -298,7 +329,7 @@ def build_workshop_reconciliation_row(
         if isinstance(start_display_value, str)
         else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
     )
-    max_workshop_value = (
+    max_progression_value = (
         max_display_value
         if isinstance(max_display_value, str)
         else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
@@ -329,11 +360,27 @@ def build_workshop_reconciliation_row(
             surface_value_type=value_type,
         ),
         'other': _format_effect_from_contributors(
-            start_row,
+            max_row,
             source_classes=('base', 'scenario_rules'),
             surface_value_type=value_type,
         ),
     }
+    start_of_run_modifier_total = _format_total_effect_from_row(
+        start_row,
+        include_contributor=lambda contributor: (
+            str(contributor.get('source_class') or '') in {'labs', 'module_main', 'module_substat', 'module_unique', 'cards', 'relics', 'enhancement'}
+            or (
+                str(contributor.get('source_class') or '') == 'workshop'
+                and str(contributor.get('contributor_id') or '').startswith('enhancement.')
+            )
+        ),
+        surface_value_type=value_type,
+    )
+    max_progression_modifier_total = _format_total_effect_from_row(
+        max_row,
+        include_contributor=lambda contributor: str(contributor.get('source_class') or '') in {'perk', 'perks', 'perk_effect', 'base', 'scenario_rules'},
+        surface_value_type=value_type,
+    )
     row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
     row_notes = str(start_row.get('notes') or max_row.get('notes') or '')
     if _has_death_wave_health_contributor(start_row, max_row):
@@ -348,7 +395,7 @@ def build_workshop_reconciliation_row(
             'display_kind': _surface_display_kind(surface_id=surface_id, value_type=value_type),
         },
         'start_of_run': start_of_run_value,
-        'max_workshop': max_workshop_value,
+        'max_workshop': max_progression_value,
         'decomposition': decomposition,
         'row_status': row_status,
         'row_notes': row_notes,
@@ -364,9 +411,11 @@ def build_workshop_reconciliation_row(
         'card_effects': decomposition['card'],
         'enhancement_effects': decomposition['enhancement'],
         'relics': decomposition['relic'],
+        'start_of_run_modifier_total': start_of_run_modifier_total,
         'start_of_run_value': start_of_run_value,
         'max_workshop_value': _format_surface_value(max_workshop_contribution, surface_id=surface_id, value_type=value_type),
         'perk_effects': decomposition['perk'],
         'other': decomposition['other'],
-        'max_progression_value': max_workshop_value,
+        'max_progression_modifier_total': max_progression_modifier_total,
+        'max_progression_value': max_progression_value,
     }

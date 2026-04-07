@@ -947,3 +947,76 @@ def test_stats_dashboard_workshop_does_not_backfill_from_input_dashboard_when_qe
     assert by_name['Wall Rebuild']['max_progression_value'] == '—'
     assert by_name['Interest / Wave']['start_of_run_value'] == '—'
     assert by_name['Interest / Wave']['max_progression_value'] == '—'
+
+
+def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_totals():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Damage': {'preset_levels': {'Farming': 5750}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {
+                    'display_value': '3.43B',
+                    'final_value': 3.43e9,
+                    'value_type': 'damage',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__damage__flat', 'value': 58_300_000.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.damage', 'value': 2.44},
+                        {'source_class': 'module_main', 'contributor_id': 'module.damage', 'value': 10.0},
+                        {'source_class': 'cards', 'contributor_id': 'card.damage', 'value': 2.15},
+                        {'source_class': 'workshop', 'contributor_id': 'enhancement.damage', 'value': 1.56},
+                        {'source_class': 'relics', 'contributor_id': 'relic.damage', 'value': 0.54},
+                    ],
+                }
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {
+                    'display_value': '4.19B',
+                    'final_value': 4.19e9,
+                    'value_type': 'damage',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__damage__flat', 'value': 71_100_000.0},
+                        {'source_class': 'perk_effect', 'contributor_id': 'perk.damage', 'value': 1.8},
+                        {'source_class': 'scenario_rules', 'contributor_id': 'scenario.damage', 'value': 1.1},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = (
+        (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
+    )
+    damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
+    assert damage_row['start_of_run_modifier_total'] == 'x 44.2'
+    assert damage_row['max_progression_modifier_total'] == 'x 1.98'

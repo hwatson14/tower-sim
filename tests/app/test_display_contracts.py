@@ -130,7 +130,7 @@ def test_simple_metric_panel_renders_theme_label():
     assert '1.23' in html
 
 
-def test_workshop_stats_renderer_places_max_workshop_between_start_and_perk():
+def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     html = render_workshop_stat_table_html(
         {
             'sections': [
@@ -146,10 +146,12 @@ def test_workshop_stats_renderer_places_max_workshop_between_start_and_perk():
                             'card_effects': '+ 3',
                             'enhancement_effects': '+ 4',
                             'relics': '+ 6',
+                            'start_of_run_modifier_total': '+ 20',
                             'start_of_run_value': '200',
                             'max_workshop_value': '250',
                             'perk_effects': '+ 10',
-                            'other': '—',
+                            'other': '0%',
+                            'max_progression_modifier_total': '+ 10',
                             'max_progression_value': '260',
                         }
                     ],
@@ -157,11 +159,14 @@ def test_workshop_stats_renderer_places_max_workshop_between_start_and_perk():
             ]
         }
     )
-    assert html.index('Enhancement') < html.index('Relics') < html.index('Start of Run Value')
-    assert html.index('Start of Run Value') < html.index('Max Workshop Value') < html.index('Perk')
+    assert 'Workshop<br>Start Level' in html
+    assert 'Start of Run' in html
+    assert 'Max Progression Modifiers' in html
+    assert html.count('>Total<') == 2
     assert 'Lab Effects' not in html
     assert 'Module Effects' not in html
     assert 'Card Effects' not in html
     assert 'Enhancement Effects' not in html
     assert 'Perk Effects' not in html
+    assert "colspan='15'" in html
     assert '250' in html

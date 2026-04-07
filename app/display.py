@@ -280,7 +280,8 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table thead tr:nth-child(2) th{font-size:0.78rem;line-height:1.15;padding:2px 6px;}
 .workshop-stats-table tbody td{background:#f3f3f3;}
 .workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;}
-.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(13){background:#d8efc8;}
+.workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(9),.workshop-stats-table tbody td:nth-child(10){background:#d8efc8;}
+.workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15){background:#b9def0;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
@@ -392,44 +393,49 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<thead>"
         "<tr>"
         "<th rowspan='2'>Name</th>"
-        "<th colspan='3'>Workshop</th>"
-        "<th colspan='5'>Modifiers</th>"
-        "<th rowspan='2'>Start of Run<br>Value</th>"
+        "<th rowspan='2'>Workshop<br>Start Level</th>"
+        "<th colspan='6'>Modifiers</th>"
+        "<th colspan='2'>Start of Run</th>"
+        "<th colspan='3'>Max Progression Modifiers</th>"
         "<th colspan='2'>Max Progression</th>"
-        "<th rowspan='2'>Max Progression<br>Value</th>"
         "</tr>"
         "<tr>"
-        "<th>Start Level</th>"
-        "<th>Start Value</th>"
-        "<th>Max Value</th>"
         "<th>Lab</th>"
         "<th>Module</th>"
         "<th>Card</th>"
         "<th>Enhancement</th>"
         "<th>Relics</th>"
+        "<th>Total</th>"
+        "<th>Workshop</th>"
+        "<th>Value</th>"
         "<th>Perk</th>"
         "<th>Other</th>"
+        "<th>Total</th>"
+        "<th>Workshop</th>"
+        "<th>Value</th>"
         "</tr>"
         "</thead>"
     )
     body_chunks = []
     for section in (payload.get('sections') or []):
         title = html.escape(str((section or {}).get('title') or ''))
-        body_chunks.append(f"<tr class='section-row'><td colspan='13'>{title}</td></tr>")
+        body_chunks.append(f"<tr class='section-row'><td colspan='15'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
             values = [
                 row.get('name', ''),
                 row.get('workshop_level', ''),
-                row.get('workshop_value', ''),
-                row.get('max_workshop_value', ''),
                 row.get('lab_effects', ''),
                 row.get('module_effects', ''),
                 row.get('card_effects', ''),
                 row.get('enhancement_effects', ''),
                 row.get('relics', ''),
+                row.get('start_of_run_modifier_total', ''),
+                row.get('workshop_value', ''),
                 row.get('start_of_run_value', ''),
                 row.get('perk_effects', ''),
                 row.get('other', ''),
+                row.get('max_progression_modifier_total', ''),
+                row.get('max_workshop_value', ''),
                 row.get('max_progression_value', ''),
             ]
             cells = ''.join(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
