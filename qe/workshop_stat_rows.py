@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 _DISPLAY_SUFFIXES: list[tuple[float, str]] = [(1e12, 'T'), (1e9, 'B'), (1e6, 'M'), (1e3, 'k')]
 
 _WORKSHOP_LABEL_ALIASES: dict[str, str] = {
@@ -105,6 +103,14 @@ def _is_percent_surface(*, surface_id: str, value_type: str | None) -> bool:
 def _is_multiplier_surface(*, surface_id: str, value_type: str | None) -> bool:
     value_type_text = str(value_type or '').strip().lower()
     return value_type_text in {'multiplier', 'multiplier_display'} or surface_id.endswith('_multiplier')
+
+
+def _surface_display_kind(*, surface_id: str, value_type: str | None) -> str:
+    if _is_multiplier_surface(surface_id=surface_id, value_type=value_type):
+        return 'multiplier'
+    if _is_percent_surface(surface_id=surface_id, value_type=value_type):
+        return 'pct'
+    return 'scalar'
 
 
 def _format_effect_value(
@@ -216,6 +222,17 @@ def _lab_effects_delta_display(
     return _format_effect_from_contributors(start_row, source_classes=('labs',), surface_value_type=surface_value_type)
 
 
+def _has_death_wave_health_contributor(*rows: dict[str, object]) -> bool:
+    for row in rows:
+        for contributor in (row.get('contributors') or []):
+            if str((contributor or {}).get('source_class') or '') != 'labs':
+                continue
+            contributor_id = str((contributor or {}).get('contributor_id') or '').lower()
+            if 'death_wave_health' in contributor_id:
+                return True
+    return False
+
+
 def _row_display_value(
     row: dict[str, object],
     *,
@@ -229,51 +246,6 @@ def _row_display_value(
     if isinstance(final_value, (int, float)):
         return _format_surface_value(final_value, surface_id=surface_id, value_type=value_type)
     return None
-
-
-def _parse_float_token(value: object) -> float | None:
-    if isinstance(value, (int, float)):
-        return float(value)
-    if not isinstance(value, str):
-        return None
-    text = value.strip()
-    if not text:
-        return None
-    try:
-        return float(text)
-    except ValueError:
-        return None
-
-
-def _workshop_input_row_fallback(
-    *,
-    input_dashboard_payload: dict[str, object] | None,
-    label: str,
-) -> tuple[float | None, float | None]:
-    payload = dict(input_dashboard_payload or {})
-    workshop_panel = next(
-        (panel for panel in (payload.get('panels') or []) if isinstance(panel, dict) and panel.get('panel_id') == 'workshop'),
-        None,
-    )
-    if not isinstance(workshop_panel, dict):
-        return None, None
-    workshop_payload = dict(workshop_panel.get('payload') or {})
-    groups = dict(workshop_payload.get('groups') or {})
-    workshop_name = _WORKSHOP_LABEL_ALIASES.get(label, label)
-    for rows in groups.values():
-        if not isinstance(rows, list):
-            continue
-        for row in rows:
-            if not isinstance(row, dict):
-                continue
-            if str(row.get('name') or '').strip() != workshop_name:
-                continue
-            start_value = _parse_float_token(row.get('coin_value'))
-            max_value = _parse_float_token(row.get('max_value'))
-            if max_value is None:
-                max_value = start_value
-            return start_value, max_value
-    return None, None
 
 
 def _format_surface_value(value: float | int | None, *, surface_id: str, value_type: str | None) -> str:
@@ -296,93 +268,105 @@ def _workshop_level_for_label(*, account_state_payload: dict[str, object], label
     return int(level) if isinstance(level, int) else None
 
 
-def build_workshop_rows(
+def build_workshop_reconciliation_row(
     *,
-    stats_layout: dict[str, Any],
-    rows_start: dict[str, dict[str, object]],
-    rows_max: dict[str, dict[str, object]],
+    spec: dict[str, str],
+    start_row: dict[str, object],
+    max_row: dict[str, object],
     account_state_payload: dict[str, object],
-    input_dashboard_payload: dict[str, object] | None,
     selected_preset: str,
-    surface_specs: callable,
-) -> list[dict[str, object]]:
-    grouped_rows: dict[str, list[dict[str, object]]] = {'Offense': [], 'Defense': [], 'Utility': []}
-    for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces'):
-        for spec in surface_specs(stats_layout, section_key):
-            surface_id = spec['surface_id']
-            start_row = dict(rows_start.get(surface_id) or {})
-            max_row = dict(rows_max.get(surface_id) or {})
-            value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
-            workshop_value = _sum_contributor_values_filtered(
-                start_row,
-                source_classes=('workshop',),
-                contributor_prefixes=('enhancement.',),
-                invert_prefix_match=True,
-            )
-            max_workshop_value = _sum_contributor_values_filtered(
-                max_row,
-                source_classes=('workshop',),
-                contributor_prefixes=('enhancement.',),
-                invert_prefix_match=True,
-            )
-            fallback_start_value, fallback_max_value = _workshop_input_row_fallback(
-                input_dashboard_payload=input_dashboard_payload,
-                label=spec['label'],
-            )
-            start_display_value = _row_display_value(start_row, surface_id=surface_id, value_type=value_type)
-            max_display_value = _row_display_value(max_row, surface_id=surface_id, value_type=value_type)
-            row_payload = {
-                'name': spec['label'],
-                'workshop_level': _workshop_level_for_label(
-                    account_state_payload=account_state_payload,
-                    label=spec['label'],
-                    selected_preset=selected_preset,
-                ),
-                'workshop_value': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
-                'lab_effects': _lab_effects_delta_display(
-                    start_row=start_row,
-                    max_row=max_row,
-                    surface_value_type=value_type,
-                ),
-                'module_effects': _format_effect_from_contributors(
-                    start_row,
-                    source_classes=('module_main', 'module_substat', 'module_unique'),
-                    surface_value_type=value_type,
-                ),
-                'card_effects': _format_effect_from_contributors(start_row, source_classes=('cards',), surface_value_type=value_type),
-                'enhancement_effects': _format_effect_from_contributors(
-                    start_row,
-                    source_classes=('workshop', 'enhancement'),
-                    contributor_prefixes=('enhancement.',),
-                    surface_value_type=value_type,
-                ),
-                'relics': _format_effect_from_contributors(start_row, source_classes=('relics',), surface_value_type=value_type),
-                'start_of_run_value': (
-                    start_display_value
-                    if isinstance(start_display_value, str)
-                    else _format_surface_value(fallback_start_value, surface_id=surface_id, value_type=value_type)
-                ),
-                'max_workshop_value': _format_surface_value(max_workshop_value, surface_id=surface_id, value_type=value_type),
-                'perk_effects': _format_effect_from_contributors(
-                    max_row,
-                    source_classes=('perk', 'perks', 'perk_effect'),
-                    surface_value_type=value_type,
-                ),
-                'other': _format_effect_from_contributors(
-                    start_row,
-                    source_classes=('base', 'scenario_rules'),
-                    surface_value_type=value_type,
-                ),
-                'max_progression_value': (
-                    max_display_value
-                    if isinstance(max_display_value, str)
-                    else _format_surface_value(fallback_max_value, surface_id=surface_id, value_type=value_type)
-                ),
-            }
-            if section_key == 'offense_surfaces':
-                grouped_rows['Offense'].append(row_payload)
-            elif section_key == 'defense_surfaces':
-                grouped_rows['Defense'].append(row_payload)
-            else:
-                grouped_rows['Utility'].append(row_payload)
-    return [{'title': title, 'rows': rows} for title, rows in grouped_rows.items() if rows]
+) -> dict[str, object]:
+    surface_id = spec['surface_id']
+    canonical_row_id = str(spec.get('canonical_row_id') or surface_id)
+    value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
+    workshop_value = _sum_contributor_values_filtered(
+        start_row,
+        source_classes=('workshop',),
+        contributor_prefixes=('enhancement.',),
+        invert_prefix_match=True,
+    )
+    max_workshop_contribution = _sum_contributor_values_filtered(
+        max_row,
+        source_classes=('workshop',),
+        contributor_prefixes=('enhancement.',),
+        invert_prefix_match=True,
+    )
+    start_display_value = _row_display_value(start_row, surface_id=surface_id, value_type=value_type)
+    max_display_value = _row_display_value(max_row, surface_id=surface_id, value_type=value_type)
+    start_of_run_value = (
+        start_display_value
+        if isinstance(start_display_value, str)
+        else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
+    )
+    max_workshop_value = (
+        max_display_value
+        if isinstance(max_display_value, str)
+        else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
+    )
+    decomposition = {
+        'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
+        'lab': _lab_effects_delta_display(
+            start_row=start_row,
+            max_row=max_row,
+            surface_value_type=value_type,
+        ),
+        'module': _format_effect_from_contributors(
+            start_row,
+            source_classes=('module_main', 'module_substat', 'module_unique'),
+            surface_value_type=value_type,
+        ),
+        'card': _format_effect_from_contributors(start_row, source_classes=('cards',), surface_value_type=value_type),
+        'enhancement': _format_effect_from_contributors(
+            start_row,
+            source_classes=('workshop', 'enhancement'),
+            contributor_prefixes=('enhancement.',),
+            surface_value_type=value_type,
+        ),
+        'relic': _format_effect_from_contributors(start_row, source_classes=('relics',), surface_value_type=value_type),
+        'perk': _format_effect_from_contributors(
+            max_row,
+            source_classes=('perk', 'perks', 'perk_effect'),
+            surface_value_type=value_type,
+        ),
+        'other': _format_effect_from_contributors(
+            start_row,
+            source_classes=('base', 'scenario_rules'),
+            surface_value_type=value_type,
+        ),
+    }
+    row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
+    row_notes = str(start_row.get('notes') or max_row.get('notes') or '')
+    if _has_death_wave_health_contributor(start_row, max_row):
+        row_notes = '; '.join(part for part in [row_notes, 'Includes Death Wave Health lab contribution.'] if part)
+    if row_status == 'missing' and not row_notes:
+        row_notes = 'Missing QE query row.'
+    return {
+        'canonical_row_id': canonical_row_id,
+        'display_label': spec['label'],
+        'value_format': {
+            'value_type': value_type or 'scalar',
+            'display_kind': _surface_display_kind(surface_id=surface_id, value_type=value_type),
+        },
+        'start_of_run': start_of_run_value,
+        'max_workshop': max_workshop_value,
+        'decomposition': decomposition,
+        'row_status': row_status,
+        'row_notes': row_notes,
+        'name': spec['label'],
+        'workshop_level': _workshop_level_for_label(
+            account_state_payload=account_state_payload,
+            label=spec['label'],
+            selected_preset=selected_preset,
+        ),
+        'workshop_value': decomposition['workshop'],
+        'lab_effects': decomposition['lab'],
+        'module_effects': decomposition['module'],
+        'card_effects': decomposition['card'],
+        'enhancement_effects': decomposition['enhancement'],
+        'relics': decomposition['relic'],
+        'start_of_run_value': start_of_run_value,
+        'max_workshop_value': _format_surface_value(max_workshop_contribution, surface_id=surface_id, value_type=value_type),
+        'perk_effects': decomposition['perk'],
+        'other': decomposition['other'],
+        'max_progression_value': max_workshop_value,
+    }

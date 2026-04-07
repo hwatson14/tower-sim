@@ -147,6 +147,7 @@ class ScenarioProjectionState:
 class AccountState:
     ids_path: Path
     labs: Dict[str, Optional[int]]
+    lab_adjusters: Dict[str, Dict[str, int]]
     workshop: Dict[str, WorkshopEntrySnapshot]
     workshop_enhancements: TableSnapshot
     workshop_enhancement_tracks: Dict[str, WorkshopEnhancementSnapshot]

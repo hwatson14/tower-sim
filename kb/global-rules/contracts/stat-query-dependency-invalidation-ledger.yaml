@@ -656,6 +656,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Plasma Cannon card assertion source for the bounded run_stats progression surface set.
+  - node_id: source_input::card:Berserker
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Berserker card assertion source for the explicit projected full-stack assumption surface.
   - node_id: state::cards.plasma_cannon.effect_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -664,6 +672,30 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned Plasma Cannon effect percent surface.
+  - node_id: state::cards.berserker.assumed_bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: debug_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Explicit projected full-stack x8 Berserker runtime assumption surface.
+  - node_id: source_input::card:Ultimate Crit
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Ultimate Crit card assertion source for the bounded run_stats progression surface set.
+  - node_id: state::cards.ultimate_crit.chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_optional
+    verification_status: verified
+    blocker_reason: ''
+    notes: Query-owned Ultimate Crit chance surface consumed by UW critical damage helpers.
   - node_id: source_input::module:Black Hole Digestor
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -691,11 +723,11 @@ nodes:
   - node_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
-    is_publishable: false
-    publication_relevance: debug_only
+    is_publishable: true
+    publication_relevance: publish_optional
     verification_status: verified
     blocker_reason: ''
-    notes: Draft optimizer-prep Black Hole Digestor surface.
+    notes: Optimizer-optional Black Hole Digestor surface available when explicitly requested.
   - node_id: state::module.orbital_augment.electron_count
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -744,6 +776,78 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Shared query-owned free-upgrade support multiplier.
+  - node_id: support_surface::ehp.black_hole_duration_seconds
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped Black Hole duration helper surfaced for Primordial Collapse eHP publication.
+  - node_id: support_surface::ehp.black_hole_cooldown_seconds
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped Black Hole cooldown helper surfaced for Primordial Collapse eHP publication.
+  - node_id: support_surface::ehp.health_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic health support surface consumed by eHP publication.
+  - node_id: support_surface::ehp.dabs_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic defense-absolute support surface consumed by eHP publication.
+  - node_id: support_surface::ehp.def_pct_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic defense-percent support surface consumed by eHP publication.
+  - node_id: support_surface::eecon.adstarter_theme_relic_factor
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic economy/meta factor consumed by eEcon publication.
+  - node_id: support_surface::eecon.freeup_attack_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic attack free-upgrade support surface consumed by eEcon publication.
+  - node_id: support_surface::eecon.freeup_defense_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic defense free-upgrade support surface consumed by eEcon publication.
+  - node_id: support_surface::eecon.freeup_utility_relic_pct
+    node_kind: support_surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: support_publishable
+    verification_status: verified
+    blocker_reason: ''
+    notes: Progression-scoped relic utility free-upgrade support surface consumed by eEcon publication.
   - node_id: state::tower.free_attack_upgrade_chance_pct
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1088,6 +1192,62 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Shared Bot Range vault source.
+  - node_id: source_input::relic:Health
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Health source feeding progression support publication.
+  - node_id: source_input::relic:Defense Absolute
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Defense Absolute source feeding progression support publication.
+  - node_id: source_input::relic:Defense %
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Defense % source feeding progression support publication.
+  - node_id: source_input::relic:Coins
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Coins source feeding progression economy support publication.
+  - node_id: source_input::relic:Free Attack Upgrade
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Free Attack Upgrade source feeding progression eEcon support publication.
+  - node_id: source_input::relic:Free Defense Upgrade
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Free Defense Upgrade source feeding progression eEcon support publication.
+  - node_id: source_input::relic:Free Utility Upgrade
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Relic Free Utility Upgrade source feeding progression eEcon support publication.
   - node_id: runtime_consumer::wave_progression.attack_wave
     node_kind: runtime_consumer
     family_ids: [progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1168,6 +1328,70 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Scenario-adjusted GT duration.
+  - node_id: state::uw.black_hole.base_cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_optional
+    verification_status: verified
+    blocker_reason: ''
+    notes: Raw owned-state BH cooldown before deterministic timing adjustment.
+  - node_id: state::uw.black_hole.base_duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_optional
+    verification_status: verified
+    blocker_reason: ''
+    notes: Raw owned-state BH duration before deterministic timing adjustment.
+  - node_id: state::uw.golden_tower.base_cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_optional
+    verification_status: verified
+    blocker_reason: ''
+    notes: Raw owned-state GT cooldown before deterministic timing adjustment.
+  - node_id: state::uw.golden_tower.base_duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_optional
+    verification_status: verified
+    blocker_reason: ''
+    notes: Raw owned-state GT duration before deterministic timing adjustment.
+  - node_id: source_input::uw:Black Hole Duration
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Owned-state Black Hole duration input source.
+  - node_id: source_input::uw:Black Hole Cooldown
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Owned-state Black Hole cooldown input source.
+  - node_id: source_input::uw:Golden Tower Duration
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Owned-state Golden Tower duration input source.
+  - node_id: source_input::uw:Golden Tower Cooldown
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    blocker_reason: ''
+    notes: Owned-state Golden Tower cooldown input source.
 
   - node_id: source_input::scenario:Black Hole Timing
     node_kind: source_input
@@ -1685,9 +1909,9 @@ edges:
     downstream_node_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
     invalidation_semantics: recompute_downstream
     mutation_classes: [module_assertions, assist_slot_choice]
-    publication_relevance: support_only
+    publication_relevance: publish_optional
     verification_status: verified
-    notes: Module assertions govern the draft Black Hole Digestor optimizer surface.
+    notes: Module assertions govern the optimizer-optional Black Hole Digestor surface.
   - upstream_node_id: source_input::module:Orbital Augment
     downstream_node_id: state::module.orbital_augment.electron_count
     invalidation_semantics: recompute_downstream
@@ -1702,6 +1926,20 @@ edges:
     publication_relevance: support_only
     verification_status: verified
     notes: Module assertions govern the draft Primordial Collapse optimizer surface.
+  - upstream_node_id: source_input::card:Berserker
+    downstream_node_id: state::cards.berserker.assumed_bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: support_only
+    verification_status: verified
+    notes: Berserker card assertion governs the explicit projected full-stack assumption surface.
+  - upstream_node_id: source_input::card:Ultimate Crit
+    downstream_node_id: state::cards.ultimate_crit.chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [card_assertions]
+    publication_relevance: publish_optional
+    verification_status: verified
+    notes: Ultimate Crit card assertion governs the UW critical-chance state surface.
   - upstream_node_id: source_input::workshop:Free Attack Upgrade
     downstream_node_id: state::tower.free_attack_upgrade_chance_pct
     invalidation_semantics: recompute_downstream
@@ -1744,6 +1982,97 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Shared multiplier composes into free utility chance.
+  - upstream_node_id: state::uw.black_hole.base_duration_seconds
+    downstream_node_id: support_surface::ehp.black_hole_duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, package_event_model, module_assertions, assist_slot_choice]
+    publication_relevance: support_publishable
+    verification_status: verified
+    notes: Raw owned-state Black Hole duration feeds the progression-scoped Primordial Collapse eHP helper surface.
+  - upstream_node_id: state::uw.black_hole.base_cooldown_seconds
+    downstream_node_id: support_surface::ehp.black_hole_cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [runtime_target_display_wave, package_event_model, module_assertions, assist_slot_choice]
+    publication_relevance: support_publishable
+    verification_status: verified
+    notes: Raw owned-state Black Hole cooldown feeds the progression-scoped Primordial Collapse eHP helper surface.
+  - upstream_node_id: source_input::uw:Black Hole Duration
+    downstream_node_id: state::uw.black_hole.base_duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Owned-state Black Hole duration input publishes the raw progression duration row.
+  - upstream_node_id: source_input::uw:Black Hole Cooldown
+    downstream_node_id: state::uw.black_hole.base_cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Owned-state Black Hole cooldown input publishes the raw progression cooldown row.
+  - upstream_node_id: source_input::relic:Health
+    downstream_node_id: support_surface::ehp.health_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Health input publishes the progression eHP relic support surface.
+  - upstream_node_id: source_input::relic:Defense Absolute
+    downstream_node_id: support_surface::ehp.dabs_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Defense Absolute input publishes the progression eHP relic support surface.
+  - upstream_node_id: source_input::relic:Defense %
+    downstream_node_id: support_surface::ehp.def_pct_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Defense % input publishes the progression eHP relic support surface.
+  - upstream_node_id: source_input::relic:Coins
+    downstream_node_id: support_surface::eecon.adstarter_theme_relic_factor
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Coins input publishes the progression eEcon relic factor support surface.
+  - upstream_node_id: source_input::relic:Free Attack Upgrade
+    downstream_node_id: support_surface::eecon.freeup_attack_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Free Attack Upgrade input publishes the progression eEcon free-up attack support surface.
+  - upstream_node_id: source_input::relic:Free Defense Upgrade
+    downstream_node_id: support_surface::eecon.freeup_defense_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Free Defense Upgrade input publishes the progression eEcon free-up defense support surface.
+  - upstream_node_id: source_input::relic:Free Utility Upgrade
+    downstream_node_id: support_surface::eecon.freeup_utility_relic_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [relic_mutation]
+    publication_relevance: support_publishable
+    verification_status: analysis_provisional
+    notes: Relic Free Utility Upgrade input publishes the progression eEcon free-up utility support surface.
+  - upstream_node_id: source_input::uw:Golden Tower Duration
+    downstream_node_id: state::uw.golden_tower.base_duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Owned-state Golden Tower duration input publishes the raw progression duration row.
+  - upstream_node_id: source_input::uw:Golden Tower Cooldown
+    downstream_node_id: state::uw.golden_tower.base_cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [module_assertions, assist_slot_choice]
+    publication_relevance: publishable_path
+    verification_status: verified
+    notes: Owned-state Golden Tower cooldown input publishes the raw progression cooldown row.
   - upstream_node_id: source_input::workshop:Enemy Attack Level Skip
     downstream_node_id: state::tower.enemy_attack_level_skip_pct
     invalidation_semantics: recompute_downstream
@@ -2267,6 +2596,13 @@ mutation_triggers:
   - mutation_class: card_assertions
     trigger_key: Plasma Cannon
     source_node_id: source_input::card:Plasma Cannon
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: verified
+    notes: Card assertion trigger.
+  - mutation_class: card_assertions
+    trigger_key: Berserker
+    source_node_id: source_input::card:Berserker
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified

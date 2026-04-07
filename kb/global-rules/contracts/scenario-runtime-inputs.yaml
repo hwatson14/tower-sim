@@ -14,6 +14,9 @@ fields:
       - electron_hits_per_second
       - state::combat.electron_hits_per_second
     min_exclusive: 0.0
+    ownership_class: scenario_runtime_input
+    owned_by: manual_or_explicit_runtime_input
+    rationale: Orbital Augment cadence is externally supplied runtime input until a sanctioned intrinsic cadence formula exists.
   boss_contact_time_seconds:
     aliases:
       - boss_contact_time_seconds

@@ -1,11 +1,11 @@
 version: 1
-prepared: '2026-04-03'
+prepared: '2026-04-07'
 status:
   mode: repo_hardening
-  baseline: active snapshot with targeted hardening blockers under closure
+  baseline: active snapshot with release hardening closeout recertified and governance synchronized
   active_tranche: closeout
   active_tranche_name: Release hardening closeout
-  overall_state: concentrated_hardening
+  overall_state: maintenance_mode_after_closeout
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -24,7 +24,7 @@ verified_baseline:
 hardening_sequence:
 - id: T0
   name: Governance truth
-  status: in_progress
+  status: complete
   goal: Make repo governance reflect the current hardening reality before wider implementation continues.
   tasks:
   - id: T0.1
@@ -60,7 +60,7 @@ hardening_sequence:
   - T0
 - id: T2
   name: QE authority closure
-  status: in_progress
+  status: complete
   goal: Finish separating native QE execution from compat/report execution while keeping formula bridge truth explicit.
   tasks:
   - id: T2.1
@@ -89,7 +89,7 @@ hardening_sequence:
   - T2
 - id: T4
   name: Thinning and polish
-  status: in_progress
+  status: complete
   goal: Reduce file size and residue only after ownership seams are closed.
   tasks:
   - id: T4.1
@@ -107,17 +107,15 @@ decision_freeze:
   boss_waves_mode: interactive_via_sanctioned_facade
   streamlit_dependency_policy: optional_import_safe
   legacy_start_max_statbooks: permanently_removed
-  formula_authority_bridge: active_until_explicit_retirement_threshold_met
+  formula_authority_bridge: publish_block_residue_retired_formula_surface_policy_remains_active
   formula_authority_bridge_retirement_threshold:
     canonical_formula_registry_coverage_pct_required: 100
     bridge_formula_params_entry_count_required: 0
-    current_status: not_met_bridge_entries_present
+    current_status: met_no_publish_block_entries_present
   streamlit_test_strategy: rewrite_helper_local_tests_to_boundary_contract_tests
   full_suite_certification_wording: do_not_claim_fully_recertified_green_without_durable_artifact
 known_verified_issues:
-- preserve workshop authority contract alignment under approved-exception policy/data closure
-- preserve native report statbook routing diagnostics carry-through
-- preserve report fallback callsite boundaries in hybrid statbook builders
+- formula-authority bridge publish-block residue has been retired; formula surface policy remains active for compare/publication semantics
 stop_conditions:
 - Do not start file splitting before T1-T3 are complete
 - Do not widen tranche scope into broad refactors
@@ -129,7 +127,9 @@ definition_of_done:
   release_closeout:
   - full_pytest_command: pytest -q
   - full_pytest_result: passed
-  - full_pytest_date_utc: '2026-04-03'
+  - full_pytest_date_utc: '2026-04-07'
+  - full_pytest_pass_count: 342
+  - full_pytest_duration_seconds: 43.29
   repo_rock_solid_threshold:
   - Governance truth aligned
   - Streamlit ownership cleaned in implementation and tests

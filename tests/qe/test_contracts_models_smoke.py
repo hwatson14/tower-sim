@@ -4,6 +4,7 @@ import csv
 from pathlib import Path
 
 import pytest
+import yaml
 
 from input.state_types import ScenarioProjectionState
 from qe.consumer_registry import resolve_consumer_bundle
@@ -23,6 +24,8 @@ from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 
 pytestmark = pytest.mark.live
+
+ROOT = Path(__file__).resolve().parents[2]
 
 
 RUNTIME_NON_FORMULA_OWNED_WHITELIST: set[str] = set()
@@ -71,14 +74,20 @@ def test_normalize_contract_payload__rewrites_legacy_surface_tokens_recursively(
     assert normalized["rows"]["state::tower.damage"]["contributors"][0]["source_surface"] == (
         "state::uw.black_hole.coin_bonus_multiplier"
     )
-    assert normalized["requested_surface_ids"] == ["state::uw.black_hole.cooldown_seconds"]
+    assert normalized["requested_surface_ids"] == ["state::uw.black_hole.base_cooldown_seconds"]
     assert "canonical_stat::tower_damage" not in normalized["note"]
 
 
-def test_surface_id_roundtrip__legacy_timing_uws_publish_under_v2_state_ids():
+def test_surface_id_roundtrip__legacy_owned_uw_tracks_publish_under_distinct_base_state_ids():
     v2 = to_v2_surface_id("mechanic_param::uw.black_hole.cooldown_seconds")
-    assert v2 == "state::uw.black_hole.cooldown_seconds"
+    assert v2 == "state::uw.black_hole.base_cooldown_seconds"
     assert to_legacy_surface_id(v2) == "mechanic_param::uw.black_hole.cooldown_seconds"
+
+
+def test_surface_id_roundtrip__runtime_timing_uws_publish_under_effective_state_ids():
+    v2 = to_v2_surface_id("runtime_mechanic_param::uw.black_hole.cooldown_seconds")
+    assert v2 == "state::uw.black_hole.cooldown_seconds"
+    assert to_legacy_surface_id(v2) == "runtime_mechanic_param::uw.black_hole.cooldown_seconds"
 
 
 def test_model_construction__creates_valid_instances():
@@ -250,6 +259,44 @@ def test_runtime_formula_keys_have_single_valid_authority_source() -> None:
     assert len(approved_exception_keys) <= MAX_APPROVED_EXCEPTION_COUNT
     assert non_formula_owned_keys == RUNTIME_NON_FORMULA_OWNED_WHITELIST
     assert len(non_formula_owned_keys) <= MAX_NON_FORMULA_OWNED_COUNT
+
+
+def test_bot_effective_range_formula_policy__exists_for_all_tower_range_amplified_bots() -> None:
+    policy_path = ROOT / "kb" / "ledgers" / "formula_surface_policy.yaml"
+    payload = yaml.safe_load(policy_path.read_text(encoding="utf-8"))
+    surfaces = payload["surfaces"]
+    expected = {
+        "state::bot.golden.effective_range_m": "state::bot.golden.range_m",
+        "state::bot.amplify.effective_range_m": "state::bot.amplify.range_m",
+        "state::bot.flame.effective_range_m": "state::bot.flame.range_m",
+        "state::bot.thunder.effective_range_m": "state::bot.thunder.range_m",
+    }
+
+    for surface_id, raw_surface_id in expected.items():
+        assert surface_id in surfaces, f"Missing sanctioned formula policy for {surface_id}"
+        entry = surfaces[surface_id]
+        rationale = str(entry.get("rationale") or "")
+        assert entry.get("publish_policy") == "allow_if_resolved"
+        assert "state::bot.global.range_bonus_m" in rationale
+        assert "1.33 * (state::tower.range_m / 69.5)" in rationale
+        assert raw_surface_id in rationale
+
+
+def test_bot_runtime_contract__declares_raw_and_effective_range_split() -> None:
+    contract_path = ROOT / "kb" / "bots" / "contracts" / "bot-runtime-contract.md"
+    text = contract_path.read_text(encoding="utf-8")
+
+    assert "## Bot Range Ownership" in text
+    assert "### Raw range owners" in text
+    assert "### Shared flat bonus owner" in text
+    assert "### Effective range family" in text
+    assert "### Effective range formula" in text
+    assert "state::bot.global.range_bonus_m" in text
+    assert "state::bot.golden.effective_range_m" in text
+    assert "state::bot.amplify.effective_range_m" in text
+    assert "state::bot.flame.effective_range_m" in text
+    assert "state::bot.thunder.effective_range_m" in text
+    assert "(raw_bot_range_m + state::bot.global.range_bonus_m) * 1.33 * (state::tower.range_m / 69.5)" in text
 
 
 def test_workshop_defense_pct_formula_matches_expected_track() -> None:

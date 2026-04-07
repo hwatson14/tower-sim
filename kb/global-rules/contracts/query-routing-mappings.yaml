@@ -57,8 +57,8 @@ uw_lab_direct_destination:
   - mechanic_param
   - lab.land_mine_decay_seconds
   Orb Boss Hit:
-  - mechanic_param
-  - lab.orb_boss_hit_enabled
+  - runtime_mechanic_param
+  - combat.orb_boss_hit_pct
   Shockwave Size:
   - mechanic_param
   - lab.shockwave_size_bonus
@@ -81,8 +81,8 @@ uw_lab_direct_destination:
   - environment_param
   - bc.energy_shields_down_pct
   Energy Shield Extra Hit:
-  - environment_param
-  - bc.energy_shield_extra_hit
+  - mechanic_param
+  - energy_shield_charge_count
   Knockback Resistance:
   - environment_param
   - bc.knockback_resistance_pct
@@ -301,6 +301,48 @@ card_target_surface_to_destination:
   tower.defense_pct_bonus:
   - canonical_stat
   - tower_defense_pct
+  cards.slow_aura.enemy_speed_pct:
+  - runtime_mechanic_param
+  - cards.slow_aura.enemy_speed_pct
+  cards.death_ray.duration_seconds:
+  - runtime_mechanic_param
+  - cards.death_ray.duration_seconds
+  cards.energy_net.duration_seconds:
+  - runtime_mechanic_param
+  - cards.energy_net.duration_seconds
+  cards.energy_shield.recharge_cooldown_seconds:
+  - runtime_mechanic_param
+  - cards.energy_shield.recharge_cooldown_seconds
+  cards.berserker.absorbed_damage_pct:
+  - runtime_mechanic_param
+  - cards.berserker.absorbed_damage_pct
+  cards.demon_mode.duration_seconds:
+  - runtime_mechanic_param
+  - cards.demon_mode.duration_seconds
+  cards.aoe.level:
+  - runtime_mechanic_param
+  - cards.aoe.level
+  cards.super_tower.bonus_multiplier:
+  - runtime_mechanic_param
+  - cards.super_tower.bonus_multiplier
+  cards.ultimate_crit.chance_pct:
+  - runtime_mechanic_param
+  - cards.ultimate_crit.chance_pct
+  cards.nuke.enemy_fraction_pct:
+  - runtime_mechanic_param
+  - cards.nuke.enemy_fraction_pct
+  cards.second_wind.shield_duration_seconds:
+  - runtime_mechanic_param
+  - cards.second_wind.shield_duration_seconds
+  cards.land_mine_stun.duration_seconds:
+  - runtime_mechanic_param
+  - cards.land_mine_stun.duration_seconds
+  tower.defense_absolute_multiplier:
+  - canonical_stat
+  - tower_defense_absolute
+  tower.range_multiplier:
+  - canonical_stat
+  - tower_range_m
   tower.crit_chance_percent_points:
   - canonical_stat
   - tower_crit_chance_pct
@@ -310,9 +352,15 @@ card_target_surface_to_destination:
   economy.cash_multiplier:
   - canonical_stat
   - cash_kill_multiplier
+  tower.recovery_package_chance_percent_points:
+  - canonical_stat
+  - package_chance_pct
   orbs.count_bonus:
   - canonical_stat
   - tower_orb_count
+  waves.spawn_rate_acceleration:
+  - runtime_mechanic_param
+  - cards.wave_accelerator.spawn_rate_acceleration
   waves.skip_chance:
   - runtime_mechanic_param
   - cards.wave_skip.chance_pct

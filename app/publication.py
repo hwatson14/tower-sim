@@ -14,8 +14,7 @@ import pandas as pd
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
 from qe.contracts import contract_json_payload as js, normalize_surface_id_to_contract
 from qe.models import StatRow
-from qe.publication import publish_query_surfaces as qe_publish_query_surfaces
-from qe.workshop_stat_rows import build_workshop_rows
+from qe.publication import publish_query_surfaces as qe_publish_query_surfaces, publish_workshop_reconciliation_payload
 from app.models import _normalize_perk_state
 from app.display import annotate_display_fields
 from input.lab_category_registry import load_lab_category_registry_by_raw_name
@@ -30,9 +29,9 @@ def _relpath_str(path: Path | str | None, root_path: Path | None = None) -> str 
     p = Path(path)
     base = root_path or ROOT
     try:
-        return str(p.relative_to(base))
+        return Path(p.relative_to(base)).as_posix()
     except (ValueError, RuntimeError):
-        return str(p)
+        return p.as_posix()
 
 def _json_sanitize(obj, root_path: Path | None = None):
     if isinstance(obj, Path):
@@ -410,8 +409,9 @@ def _stats_surface_specs(layout: dict[str, object], key: str) -> list[dict[str, 
             continue
         surface_id = normalize_surface_id_to_contract(str(entry.get('surface_id') or '').strip())
         label = str(entry.get('label') or '').strip()
+        canonical_row_id = str(entry.get('canonical_row_id') or surface_id).strip()
         if surface_id and label:
-            specs.append({'surface_id': surface_id, 'label': label})
+            specs.append({'surface_id': surface_id, 'label': label, 'canonical_row_id': canonical_row_id})
     return specs
 
 
@@ -421,10 +421,13 @@ def _stats_row_payload(
     ep_compare: dict[str, object],
     surface_id: str,
     label: str,
+    canonical_row_id: str,
 ) -> dict[str, object]:
     row = dict(row_map.get(surface_id) or {})
     ep = dict(ep_compare.get(surface_id) or {})
     return {
+        'canonical_row_id': canonical_row_id,
+        'display_label': label,
         'label': label,
         'surface_id': surface_id,
         'display_value': row.get('display_value'),
@@ -434,26 +437,6 @@ def _stats_row_payload(
         'ep_delta': ep.get('delta_display'),
         'contributors_available': bool(row.get('contributors')),
     }
-
-
-def _build_workshop_rows(
-    *,
-    stats_layout: dict[str, object],
-    rows_start: dict[str, dict[str, object]],
-    rows_max: dict[str, dict[str, object]],
-    account_state_payload: dict[str, object],
-    input_dashboard_payload: dict[str, object],
-    selected_preset: str,
-) -> list[dict[str, object]]:
-    return build_workshop_rows(
-        stats_layout=stats_layout,
-        rows_start=rows_start,
-        rows_max=rows_max,
-        account_state_payload=account_state_payload,
-        input_dashboard_payload=input_dashboard_payload,
-        selected_preset=selected_preset,
-        surface_specs=_stats_surface_specs,
-    )
 
 
 def _rows_with_qe_derived_values(rows: dict[str, dict[str, object]]) -> dict[str, dict[str, object]]:
@@ -489,40 +472,6 @@ def _rows_with_qe_derived_values(rows: dict[str, dict[str, object]]) -> dict[str
         for surface_id, row in stat_rows.items()
     }
     hydrated.update(preserved_derived_rows)
-    annotate_display_fields({'rows': hydrated})
-    return hydrated
-
-
-def _inject_line_verification_rows(
-    *,
-    rows: dict[str, dict[str, object]],
-    required_surface_ids: set[str],
-    line_verification: dict[str, object] | None,
-) -> dict[str, dict[str, object]]:
-    hydrated = dict(rows or {})
-    verification = dict(line_verification or {})
-    for surface_id in sorted(required_surface_ids):
-        existing = dict(hydrated.get(surface_id) or {})
-        has_numeric_final = isinstance(existing.get('final_value'), (int, float))
-        if existing and has_numeric_final:
-            continue
-        entry = dict(verification.get(surface_id) or {})
-        final_value = entry.get('final_value')
-        if not isinstance(final_value, (int, float)):
-            continue
-        unit = str(entry.get('unit') or '').strip().lower()
-        value_type = 'scalar'
-        if unit == 'multiplier':
-            value_type = 'multiplier'
-        elif unit in {'pct', '%', 'percent'}:
-            value_type = 'pct'
-        hydrated[surface_id] = {
-            'stat_name': surface_id,
-            'final_value': float(final_value),
-            'value_type': value_type,
-            'status': str(entry.get('status') or 'resolved'),
-            'contributors': list(existing.get('contributors') or []),
-        }
     annotate_display_fields({'rows': hydrated})
     return hydrated
 
@@ -572,25 +521,11 @@ def _build_stats_dashboard_payload(
     }
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
-    required_surface_ids = {
-        spec['surface_id']
-        for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces', 'derived_wall_economy_surfaces')
-        for spec in _stats_surface_specs(stats_layout, section_key)
-    }
-
     for preset_name in preset_options:
         start_rows_raw = _stats_rows_by_surface(query_rows_start_of_run, preset_name)
         max_rows_raw = _stats_rows_by_surface(query_rows_max_progression, preset_name)
-        start_rows_hydrated = _inject_line_verification_rows(
-            rows=_rows_with_qe_derived_values(start_rows_raw),
-            required_surface_ids=required_surface_ids,
-            line_verification=line_verification,
-        )
-        max_rows_hydrated = _inject_line_verification_rows(
-            rows=_rows_with_qe_derived_values(max_rows_raw),
-            required_surface_ids=required_surface_ids,
-            line_verification=line_verification,
-        )
+        start_rows_hydrated = _rows_with_qe_derived_values(start_rows_raw)
+        max_rows_hydrated = _rows_with_qe_derived_values(max_rows_raw)
         per_preset_row_map_by_mode = {
             'start_of_run': start_rows_hydrated,
             'max_progression': max_rows_hydrated,
@@ -601,18 +536,24 @@ def _build_stats_dashboard_payload(
             rows_max = per_preset_row_map_by_mode.get('max_progression') or {}
             rows = rows_start if state_mode == 'start_of_run' else rows_max
             panels: list[dict[str, object]] = []
-            workshop_rows = _build_workshop_rows(
+            workshop_payload = publish_workshop_reconciliation_payload(
                 stats_layout=stats_layout,
                 rows_start=rows_start,
                 rows_max=rows_max,
                 account_state_payload=account_state_payload,
-                input_dashboard_payload=input_dashboard_payload,
                 selected_preset=preset_name,
+                surface_specs=_stats_surface_specs,
             )
-            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': {'sections': workshop_rows}})
+            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
 
             derived_rows = [
-                _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'])
+                _stats_row_payload(
+                    row_map=rows,
+                    ep_compare=ep_compare,
+                    surface_id=spec['surface_id'],
+                    label=spec['label'],
+                    canonical_row_id=spec['canonical_row_id'],
+                )
                 for spec in _stats_surface_specs(stats_layout, 'derived_wall_economy_surfaces')
             ]
             panels.append({'panel_id': 'derived', 'panel_type': 'resolved_stat_section', 'title': 'Derived (Wall, economy)', 'payload': {'rows': derived_rows}})

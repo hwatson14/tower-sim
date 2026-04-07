@@ -25,12 +25,37 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.black_hole.base_cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.black_hole.base_duration_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.golden_tower.base_cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::uw.golden_tower.base_duration_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::cards.wave_accelerator.spawn_rate_acceleration
+  ownership_class: environment
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.wave_skip.chance_pct
   ownership_class: environment
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -290,6 +315,16 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.berserker.assumed_bonus_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::cards.ultimate_crit.chance_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::tower.free_attack_upgrade_chance_pct
   ownership_class: surface
   ownership_status: query_owned
@@ -360,6 +395,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.amplify.effective_range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.flame.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
@@ -376,6 +416,11 @@ surface_nodes:
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.flame.range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.flame.effective_range_m
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine
@@ -410,6 +455,11 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.golden.effective_range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: state::bot.thunder.cooldown_seconds
   ownership_class: surface
   ownership_status: query_owned
@@ -435,7 +485,57 @@ surface_nodes:
   ownership_status: query_owned
   governed_by: canonical_query_engine
   downstream_policy: consume_only_no_rederivation
+- node_id: state::bot.thunder.effective_range_m
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
 - node_id: support_surface::free_upgrade_multiplier
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::ehp.black_hole_duration_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::ehp.black_hole_cooldown_seconds
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::ehp.health_relic_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::ehp.dabs_relic_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::ehp.def_pct_relic_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::eecon.adstarter_theme_relic_factor
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::eecon.freeup_attack_relic_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::eecon.freeup_defense_relic_pct
+  ownership_class: surface
+  ownership_status: query_owned
+  governed_by: canonical_query_engine
+  downstream_policy: consume_only_no_rederivation
+- node_id: support_surface::eecon.freeup_utility_relic_pct
   ownership_class: surface
   ownership_status: query_owned
   governed_by: canonical_query_engine

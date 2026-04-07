@@ -464,7 +464,7 @@ def test_incremental_subset_executor_resolves_timing_family_surfaces_natively():
     )
 
     assert resolved["state::uw.black_hole.cooldown_seconds"].status == "resolved"
-    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == 0.0
+    assert resolved["state::uw.black_hole.cooldown_seconds"].final_value == pytest.approx(46.0)
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].status == "resolved"
     assert resolved["support_surface::timing.wave_duration_seconds_effective"].final_value is not None
 

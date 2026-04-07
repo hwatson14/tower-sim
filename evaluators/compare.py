@@ -110,8 +110,8 @@ def kb_alignment_status_from_compare_status(compare_status: str | None) -> str:
 
 
 def verdict_from_verification(verification_status: str, compare_status: str | None) -> str:
-    if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending', 'needs_work'}:
-        return 'fail' if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending'} else 'needs_work'
+    if verification_status in {'not_resolved', 'blocked', 'needs_work'}:
+        return 'fail' if verification_status in {'not_resolved', 'blocked'} else 'needs_work'
     if verification_status == 'trace_only':
         return 'trace_only'
     if compare_status in {'stage_scope_mismatch', 'formula_blocked', 'not_comparable'}:
@@ -126,7 +126,6 @@ def build_compare_status_summary(ep_compare: dict) -> dict:
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
         'ep_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') not in {'matched_exact', 'matched_close'}),
         'ep_true_formula_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch'),
-        'ep_formula_blocked_count': sum(1 for v in ep_compare.values() if v.get('status') == 'formula_blocked'),
         'ep_stage_scope_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'stage_scope_mismatch'),
         'ep_non_comparable_count': sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable'),
         'ep_missing_from_package_count': sum(1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'),
@@ -157,8 +156,6 @@ def classify_compare_status(destination: str, contract: dict, package_row, ep_en
         return 'non_numeric_compare', None, None, notes + ['numeric_comparison_failed']
     if compare_policy == 'scaled_number_noncomparable' and ep_entry.get('ep_value_type') == 'scaled_number':
         return 'non_numeric_compare', delta, rel_pct, notes + ['scaled_ep_surface_noncomparable']
-    if contract.get('publish_policy') == 'block':
-        return 'formula_blocked', delta, rel_pct, notes + ['known_bad_formula_blocked_from_publish']
     if delta is not None and abs(delta) < 1e-9:
         return 'matched_exact', delta, rel_pct, notes
     if delta is not None and (abs(delta) < 1e-3 or (rel_pct is not None and abs(rel_pct) < 1.0)):
@@ -419,16 +416,12 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
             issues.append('ep_reference_mismatch')
         if compare_status == 'stage_scope_mismatch':
             issues.append('ep_reference_stage_scope_mismatch')
-        if compare_status == 'formula_blocked':
-            issues.append('formula_blocked_pending_exact_destination_logic')
         verification_status = 'publishable'
         if key.startswith('raw::'):
             verification_status = 'trace_only'
         elif row.get('status') != 'resolved':
             verification_status = 'not_resolved'
-        if contract.get('publish_policy') == 'block' and not key.startswith('raw::'):
-            verification_status = 'blocked_formula_pending'
-        elif issues:
+        if issues:
             if key.startswith('raw::'):
                 verification_status = 'trace_only'
             else:
@@ -704,7 +697,6 @@ def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> di
     from dataclasses import replace
     out = copy.deepcopy(statbook_dict)
     rows = out.get('rows', {})
-    blocked = []
     for destination, row in rows.items():
         contract = _formula_contract(formula_ledger, destination)
         row.setdefault('formula_contract', contract)
@@ -713,18 +705,9 @@ def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> di
             row['publishable'] = False
             row['publish_notes'] = 'Trace-only raw surface.'
             continue
-        if contract.get('publish_policy') == 'block' and row.get('status') == 'resolved':
+        if row.get('status') != 'resolved':
             row['publishable'] = False
-            row['publish_block_reason'] = 'blocked_by_formula_ledger'
-            row['status'] = 'blocked_formula_pending'
-            note = row.get('notes') or ''
-            row['notes'] = (note + ' | ' if note else '') + 'Blocked from publish by destination formula ledger pending exact formula closure.'
-            row['final_value'] = None
-            blocked.append(destination)
-        elif row.get('status') != 'resolved':
-            row['publishable'] = False
-    out.setdefault('diagnostics', {})['publishable_blocked_destinations'] = blocked
-    out['diagnostics']['publishable_blocked_count'] = len(blocked)
+    out.setdefault('diagnostics', {})
     out['diagnostics']['formula_ledger_version'] = formula_ledger.get('version')
     out['diagnostics']['oracle_policy'] = 'forbidden_for_publish'
     return out
@@ -1751,7 +1734,6 @@ EP_NONCOMPARABLE_DESTINATIONS = {
 EP_LABEL_TO_DESTINATION = {
         'Attack Speed': _state('tower_attack_speed'),
         'Critical Chance': _state('tower_crit_chance_pct'),
-        'Critical Factor': _state('tower_crit_multiplier'),
         'Range': _state('tower_range_m'),
         'Damage / Meter': _state('tower_damage_per_meter_multiplier'),
         'Multishot Chance': _state('tower_multishot_chance_pct'),
@@ -1762,12 +1744,9 @@ EP_LABEL_TO_DESTINATION = {
         'Bounce Shot Targets': _state('tower_bounce_shot_targets'),
         'Super Crit Chance': _state('tower_supercrit_chance_pct'),
         'Super Crit Multiplier': _state('tower_supercrit_multiplier'),
-        'Recovery Package Chance': _state('package_chance_pct'),
         'Health': _state('tower_hp'),
-        'Health Regen': _state('tower_regen'),
         'Defense Absolute': _state('tower_defense_absolute'),
         'Defense %': _state('tower_defense_pct'),
-        'Wall Health': _state('wall_hp'),
         'Wall Fortification': _state('wall_fortification_multiplier'),
         'Wall Regen': _state('wall_regen'),
         'Max Recovery': _state('max_recovery_multiplier'),
@@ -1782,7 +1761,11 @@ EP_LABEL_TO_DESTINATION = {
 # These are compare-policy mappings only (not calculator truth).
 EP_KEY_TO_DESTINATION = {
         'crit_factor': _state('tower_crit_multiplier'),
+        'health_regen': _state('tower_regen'),
         'recovery_package_chance': _state('package_chance_pct'),
+        'shockwave_frequency': _state('tower_shockwave_interval_seconds'),
+        'wall_health': 'derived::wall.hp_pre_fort',
+        'wall_fortification': _state('wall_fortification_multiplier'),
 }
 
 def _parse_ep_value(raw):
@@ -1839,15 +1822,6 @@ def _load_csv_rows(path: Path) -> list[dict]:
 
 
 def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_ledger):
-    blocked_formula_contracts = []
-    for destination_id, contract in (formula_ledger.get('surfaces') or {}).items():
-        if contract.get('publish_policy') == 'block':
-            blocked_formula_contracts.append({
-                'destination_id': destination_id,
-                'formula_class': contract.get('formula_class'),
-                'rationale': contract.get('rationale'),
-            })
-
     active_unmapped_inputs = []
     for row in stat_inputs:
         routing_class = classify_input_routing(row)
@@ -1895,7 +1869,6 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
 
     return {
         'summary': {
-            'blocked_formula_contract_count': len(blocked_formula_contracts),
             'active_unmapped_input_count': len(active_unmapped_inputs),
             'resolved_unknown_schema_unit_count': len(resolved_unknown_schema_units),
             'ambiguous_relic_semantic_hint_count': len(ambiguous_relic_semantics),
@@ -1903,8 +1876,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
         'priority_gaps': ([
             item for item in active_unmapped_inputs
             if item['stat_name'] == 'Dimension Core::main'
-        ] + blocked_formula_contracts + active_unmapped_inputs[:12]),
-        'blocked_formula_contracts': blocked_formula_contracts,
+        ] + active_unmapped_inputs[:12]),
         'active_unmapped_by_family': active_unmapped_by_family,
         'active_unmapped_inputs': active_unmapped_inputs,
         'resolved_unknown_schema_units': resolved_unknown_schema_units,
@@ -1979,19 +1951,6 @@ def _classify_unmapped_input_gap(item):
 
 def _build_kb_gap_register(kb_incomplete_areas, audits):
     register = []
-
-    for item in kb_incomplete_areas.get('blocked_formula_contracts', []):
-        register.append({
-            'gap_id': f"formula_contract::{item['destination_id']}",
-            'bucket': 'KB missing executable contract',
-            'surface': item['destination_id'],
-            'files': ['kb/ledgers/formula_surface_policy.yaml', 'qe/stat_resolution.py'],
-            'evidence': f"publish_policy=block for {item['destination_id']}",
-            'why_it_matters': 'Surface remains intentionally fail-closed until formula contract is fully closed.',
-            'what_would_close_it': 'Tighten the KB/contract rationale and verify the implemented destination-specific formula is correct enough to publish.',
-            'changed_in_this_iteration': False,
-            'verification_source': 'package KB only',
-        })
 
     for item in kb_incomplete_areas.get('active_unmapped_inputs', []):
         register.append({

@@ -81,7 +81,21 @@
           "state::tower.free_utility_upgrade_chance_pct",
           "state::tower.enemy_attack_level_skip_pct",
           "state::tower.enemy_health_level_skip_pct",
-          "support_surface::free_upgrade_multiplier"
+          "support_surface::free_upgrade_multiplier",
+          "state::cards.berserker.assumed_bonus_multiplier",
+          "state::uw.black_hole.base_duration_seconds",
+          "state::uw.black_hole.base_cooldown_seconds",
+          "state::uw.golden_tower.base_duration_seconds",
+          "state::uw.golden_tower.base_cooldown_seconds",
+          "support_surface::ehp.health_relic_pct",
+          "support_surface::ehp.dabs_relic_pct",
+          "support_surface::ehp.def_pct_relic_pct",
+          "support_surface::eecon.adstarter_theme_relic_factor",
+          "support_surface::eecon.freeup_attack_relic_pct",
+          "support_surface::eecon.freeup_defense_relic_pct",
+          "support_surface::eecon.freeup_utility_relic_pct",
+          "support_surface::ehp.black_hole_duration_seconds",
+          "support_surface::ehp.black_hole_cooldown_seconds"
         ]
       },
       "timing": [
@@ -186,7 +200,21 @@
           "state::tower.free_utility_upgrade_chance_pct",
           "state::tower.enemy_attack_level_skip_pct",
           "state::tower.enemy_health_level_skip_pct",
-          "support_surface::free_upgrade_multiplier"
+          "support_surface::free_upgrade_multiplier",
+          "state::cards.berserker.assumed_bonus_multiplier",
+          "state::uw.black_hole.base_duration_seconds",
+          "state::uw.black_hole.base_cooldown_seconds",
+          "state::uw.golden_tower.base_duration_seconds",
+          "state::uw.golden_tower.base_cooldown_seconds",
+          "support_surface::ehp.health_relic_pct",
+          "support_surface::ehp.dabs_relic_pct",
+          "support_surface::ehp.def_pct_relic_pct",
+          "support_surface::eecon.adstarter_theme_relic_factor",
+          "support_surface::eecon.freeup_attack_relic_pct",
+          "support_surface::eecon.freeup_defense_relic_pct",
+          "support_surface::eecon.freeup_utility_relic_pct",
+          "support_surface::ehp.black_hole_duration_seconds",
+          "support_surface::ehp.black_hole_cooldown_seconds"
         ]
       },
       "timing": [

@@ -258,10 +258,20 @@ def test_stats_dashboard_workshop_max_workshop_value_uses_max_progression_worksh
         panel for panel in payload['variants']['Farming']['max_progression']
         if panel.get('panel_id') == 'workshop'
     )
+    assert workshop.get('payload', {}).get('artifact') == 'qe_workshop_reconciliation_rows'
+    assert workshop.get('payload', {}).get('owner') == 'qe'
     offense_rows = (
         (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
+    assert damage_row['canonical_row_id'] == 'state::tower.damage'
+    assert damage_row['display_label'] == 'Damage'
+    assert damage_row['value_format'] == {'value_type': 'scalar', 'display_kind': 'scalar'}
+    assert damage_row['start_of_run'] == '1'
+    assert damage_row['max_workshop'] == '10'
+    assert damage_row['decomposition']['workshop'] == '1'
+    assert damage_row['row_status'] == 'resolved'
+    assert damage_row['row_notes'] == ''
     assert damage_row['max_workshop_value'] == '7'
 
 
@@ -592,6 +602,7 @@ def test_stats_dashboard_workshop_lab_effects_use_start_to_max_delta_for_multipl
     )
     health_row = next(item for item in defense_rows if item.get('name') == 'Health')
     assert health_row['lab_effects'] == 'x 12.5'
+    assert 'Death Wave Health' in health_row['row_notes']
 
 
 def test_stats_dashboard_workshop_level_aliases_cover_regen_coin_and_max_recovery():
@@ -692,13 +703,69 @@ def test_stats_dashboard_derived_panel_includes_uw_damage_and_e_metrics():
         if panel.get('panel_id') == 'derived'
     )
     labels = [row.get('label') for row in (derived_panel.get('payload', {}).get('rows') or [])]
+    canonical_row_ids = [row.get('canonical_row_id') for row in (derived_panel.get('payload', {}).get('rows') or [])]
+    assert 'Wall HP (Pre-Fort)' in labels
     assert 'Ultimate Weapon Damage' in labels
     assert 'eHP' in labels
     assert 'eEcon' in labels
     assert 'eDamage' in labels
+    assert 'derived::wall.hp_pre_fort' in canonical_row_ids
+    assert 'derived::wall.hp_final' in canonical_row_ids
 
 
-def test_stats_dashboard_uses_line_verification_fallback_for_missing_rows():
+def test_stats_dashboard_canonical_row_ids_disambiguate_workshop_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::tower.crit_multiplier': {'display_value': 'x174', 'final_value': 174, 'value_type': 'multiplier'},
+                    'state::tower.regen': {'display_value': '44T', 'final_value': 44, 'value_type': 'scalar'},
+                    'state::tower.package_chance_pct': {'display_value': '79%', 'final_value': 79, 'value_type': 'pct'},
+                    'state::tower.shockwave_interval_seconds': {'display_value': '14', 'final_value': 14, 'value_type': 'seconds'},
+                    'state::wall.hp': {'display_value': '132T', 'final_value': 132, 'value_type': 'hp'},
+                }
+            }
+        },
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'workshop'
+    )
+    rows = [
+        row
+        for section in workshop.get('payload', {}).get('sections') or []
+        for row in section.get('rows') or []
+    ]
+    by_label = {row.get('display_label'): row for row in rows}
+    assert by_label['Crit Multiplier']['canonical_row_id'] == 'workshop::tower.crit_multiplier'
+    assert by_label['Regen']['canonical_row_id'] == 'workshop::tower.regen'
+    assert by_label['Package Chance']['canonical_row_id'] == 'workshop::tower.package_chance_pct'
+    assert by_label['Shockwave Interval']['canonical_row_id'] == 'workshop::tower.shockwave_interval_seconds'
+    assert by_label['Wall Health']['canonical_row_id'] == 'workshop::wall.health'
+
+
+def test_stats_dashboard_does_not_backfill_missing_rows_from_line_verification():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -737,18 +804,19 @@ def test_stats_dashboard_uses_line_verification_fallback_for_missing_rows():
         for row in section.get('rows') or []
     ]
     by_name = {row.get('name'): row for row in rows}
-    assert by_name['Wall Rebuild']['start_of_run_value'] == '150'
-    assert by_name['Interest / Wave']['start_of_run_value'] == '132%'
+    assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
+    assert by_name['Interest / Wave']['start_of_run_value'] == '—'
 
     derived_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
         if panel.get('panel_id') == 'derived'
     )
     derived_rows = {row.get('label'): row for row in (derived_panel.get('payload', {}).get('rows') or [])}
-    assert derived_rows['Wall Thorns']['display_value'] == '15%'
+    assert derived_rows['Wall Thorns']['display_value'] is None
+    assert derived_rows['Wall Thorns']['status'] is None
 
 
-def test_stats_dashboard_uses_line_verification_when_query_row_exists_without_numeric_value():
+def test_stats_dashboard_preserves_unresolved_query_rows_without_line_verification_backfill():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -805,11 +873,13 @@ def test_stats_dashboard_uses_line_verification_when_query_row_exists_without_nu
         for row in section.get('rows') or []
     ]
     by_name = {row.get('name'): row for row in rows}
-    assert by_name['Wall Rebuild']['start_of_run_value'] == '150'
-    assert by_name['Interest / Wave']['start_of_run_value'] == '132%'
+    assert by_name['Wall Rebuild']['row_status'] == 'mapped_not_resolved'
+    assert by_name['Interest / Wave']['row_status'] == 'mapped_not_resolved'
+    assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
+    assert by_name['Interest / Wave']['start_of_run_value'] == '—'
 
 
-def test_stats_dashboard_workshop_uses_input_workshop_fallback_when_query_and_line_verification_missing():
+def test_stats_dashboard_workshop_does_not_backfill_from_input_dashboard_when_qe_rows_are_missing():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -871,7 +941,9 @@ def test_stats_dashboard_workshop_uses_input_workshop_fallback_when_query_and_li
         for row in section.get('rows') or []
     ]
     by_name = {row.get('name'): row for row in rows}
-    assert by_name['Wall Rebuild']['start_of_run_value'] == '300'
-    assert by_name['Wall Rebuild']['max_progression_value'] == '300'
-    assert by_name['Interest / Wave']['start_of_run_value'] == '99%'
-    assert by_name['Interest / Wave']['max_progression_value'] == '99%'
+    assert by_name['Wall Rebuild']['row_status'] == 'missing'
+    assert by_name['Wall Rebuild']['row_notes'] == 'Missing QE query row.'
+    assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
+    assert by_name['Wall Rebuild']['max_progression_value'] == '—'
+    assert by_name['Interest / Wave']['start_of_run_value'] == '—'
+    assert by_name['Interest / Wave']['max_progression_value'] == '—'

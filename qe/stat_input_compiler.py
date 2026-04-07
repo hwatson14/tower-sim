@@ -81,6 +81,40 @@ def _set_row_field(row: StatInput, field_name: str, value) -> None:
     object.__setattr__(row, field_name, value)
 
 
+def _module_unique_effect_key(name: str) -> str:
+    return slug_text(name).replace(' ', '_')
+
+
+_UW_PRIMORDIAL_PROGRESS_SUPPORT_DESTINATIONS: Dict[Tuple[str, str], Tuple[str, str]] = {
+    ('Black Hole', 'Duration'): ('support_surface', 'ehp.black_hole_duration_seconds'),
+    ('Black Hole', 'Cooldown'): ('support_surface', 'ehp.black_hole_cooldown_seconds'),
+}
+
+_RELIC_PROGRESS_SUPPORT_DESTINATIONS: Dict[str, List[Tuple[Tuple[str, str], str]]] = {
+    'health': [
+        (('support_surface', 'ehp.health_relic_pct'), 'identity'),
+    ],
+    'defense absolute': [
+        (('support_surface', 'ehp.dabs_relic_pct'), 'identity'),
+    ],
+    'defense pct': [
+        (('support_surface', 'ehp.def_pct_relic_pct'), 'identity'),
+    ],
+    'coins': [
+        (('support_surface', 'eecon.adstarter_theme_relic_factor'), 'plus_one_factor'),
+    ],
+    'free attack upgrade': [
+        (('support_surface', 'eecon.freeup_attack_relic_pct'), 'identity'),
+    ],
+    'free defense upgrade': [
+        (('support_surface', 'eecon.freeup_defense_relic_pct'), 'identity'),
+    ],
+    'free utility upgrade': [
+        (('support_surface', 'eecon.freeup_utility_relic_pct'), 'identity'),
+    ],
+}
+
+
 def _canonical_module_rarity_label(value: object) -> str | None:
     rarity = str(value or '').strip().lower()
     if not rarity:
@@ -173,15 +207,23 @@ def _load_lab_summary_lookup() -> Dict[str, Dict[str, float | str]]:
     if not path.exists():
         return {}
     out: Dict[str, Dict[str, float | str]] = {}
+
+    def _optional_float(row: dict[str, str], key: str, default: float) -> float:
+        raw = row.get(key, '')
+        if raw in (None, ''):
+            return default
+        return float(raw)
+
     with path.open(newline='', encoding='utf-8') as f:
         for row in csv.DictReader(f):
             name = str(row.get('lab_primary_name', '')).strip()
             try:
                 payload = {
-                    'level_min': float(row.get('level_min', 0)),
-                    'level_max': float(row.get('level_max', 0)),
-                    'value_min': float(row.get('value_min', 0)),
-                    'linear_step': float(row.get('linear_step', 0)),
+                    'level_min': _optional_float(row, 'level_min', 0.0),
+                    'level_max': _optional_float(row, 'level_max', 0.0),
+                    'value_min': _optional_float(row, 'value_min', 0.0),
+                    'value_max': _optional_float(row, 'value_max', 0.0),
+                    'linear_step': _optional_float(row, 'linear_step', 0.0),
                     'formula_family': str(row.get('formula_family', '')).strip().lower(),
                 }
             except (TypeError, ValueError):
@@ -540,6 +582,7 @@ CAPABILITY_POLICY_DESTINATIONS: Dict[str, Tuple[str, str]] = {
     'Cannon Effect Bans': ('capability', 'capability.modules.effect_bans.cannon'),
     'Core Effect Bans': ('capability', 'capability.modules.effect_bans.core'),
     'Generator Effect Bans': ('capability', 'capability.modules.effect_bans.generator'),
+    'Workshop Enhancements': ('capability', 'capability.workshop.enhancements_unlock'),
 }
 
 _BOOLEAN_ACCOUNT_METADATA_ROWS = {
@@ -553,6 +596,7 @@ _BOOLEAN_CAPABILITY_POLICY_ROWS = {
     'Unlock Perks',
     'Auto Pick Perks',
     'Unmerge Module',
+    'Workshop Enhancements',
 }
 
 _TEXT_CAPABILITY_POLICY_ROWS = {
@@ -596,6 +640,13 @@ _GOVERNED_NUMERIC_DESTINATIONS: Dict[str, Tuple[str, str]] = {
     'Module Shards Cost': ('meta_progression_param', 'module.lab.shard_cost_reduction_pct'),
     'Starting Cash': ('meta_progression_param', 'economy.starting_cash_bonus'),
     'Max Interest': ('meta_progression_param', 'economy.max_interest_bonus'),
+    'Workshop Attack Discount': ('meta_progression_param', 'workshop_attack_cost_reduction_pct'),
+    'Workshop Defense Discount': ('meta_progression_param', 'workshop_defense_cost_reduction_pct'),
+    'Workshop Utility Discount': ('meta_progression_param', 'workshop_utility_cost_reduction_pct'),
+    'Labs Coin Discount': ('meta_progression_param', 'lab_coin_cost_reduction_pct'),
+    'Enhancement Attack - Coin Discount': ('meta_progression_param', 'enhancement_attack_cost_reduction_pct'),
+    'Enhancement Defense - Coin Discount': ('meta_progression_param', 'enhancement_defense_cost_reduction_pct'),
+    'Enhancement Utility - Coin Discount': ('meta_progression_param', 'enhancement_utility_cost_reduction_pct'),
 }
 _GOVERNED_NUMERIC_DESTINATIONS.update(_ULTIMATE_DESTINATIONS)
 
@@ -975,6 +1026,7 @@ def compile_stat_inputs(
     uw_track_values = _load_uw_track_values()
     uw_plus_values = _load_uw_plus_values()
     guardian_scout_values = _load_guardian_scout_values()
+    active_lab_adjusters = account_state.lab_adjusters.get(preset, {})
     out: List[StatInput] = []
 
     # Labs: exact KB ladders where available; otherwise use the bundled lab application registry.
@@ -1006,6 +1058,22 @@ def compile_stat_inputs(
                         if lab_value is not None:
                             _set_row_field(row, 'value', lab_value)
                             _set_row_field(row, 'value_type', 'resolved_value')
+                    if name == 'Range':
+                        selected_level = active_lab_adjusters.get('Range')
+                        if selected_level is not None:
+                            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                            _set_row_field(split_row, 'stat_name', 'Range::Selected Level')
+                            _set_row_field(split_row, 'source_family', 'lab')
+                            _set_row_field(split_row, 'source_name', 'Range')
+                            _set_row_field(split_row, 'value', float(selected_level))
+                            _set_row_field(split_row, 'value_type', 'level')
+                            bind_destination(
+                                split_row,
+                                ('runtime_mechanic_param', 'tower.range_lab_level'),
+                                canonical_stats,
+                                note='loadout_lab_adjuster_routed:Range',
+                            )
+                            _append(out, split_row)
                     if name == 'Missiles Explosion' and bool(level and float(level) > 0):
                         split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
                         _set_row_field(split_row, 'stat_name', 'Missiles Explosion::Base Radius')
@@ -1082,6 +1150,27 @@ def compile_stat_inputs(
                     dest = _UW_LAB_DIRECT_DESTINATION.get(name)
                     if dest is not None:
                         bind_destination(row, dest, canonical_stats, note=f'kb_uw_lab_direct_routed:{name}')
+                        if name in {'Shockwave Size', 'Range'}:
+                            selected_level = active_lab_adjusters.get(name)
+                            if selected_level is not None:
+                                split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                                _set_row_field(split_row, 'stat_name', f'{name}::Selected Level')
+                                _set_row_field(split_row, 'source_family', 'lab')
+                                _set_row_field(split_row, 'source_name', name)
+                                _set_row_field(split_row, 'value', float(selected_level))
+                                _set_row_field(split_row, 'value_type', 'level')
+                                selected_level_dest = (
+                                    ('runtime_mechanic_param', 'shockwave.size_lab_level')
+                                    if name == 'Shockwave Size'
+                                    else ('runtime_mechanic_param', 'tower.range_lab_level')
+                                )
+                                bind_destination(
+                                    split_row,
+                                    selected_level_dest,
+                                    canonical_stats,
+                                    note=f'loadout_lab_adjuster_routed:{name}',
+                                )
+                                _append(out, split_row)
                         if dest[0] == 'capability':
                             _set_row_field(row, 'value', bool(level and float(level) > 0))
                             _set_row_field(row, 'value_type', 'bool')
@@ -1100,8 +1189,13 @@ def compile_stat_inputs(
                             _set_row_field(row, 'value_type', 'resolved_value')
                             _set_row_field(row, 'notes', f'kb_bot_lab_formula_verified:{name}')
                         else:
+                            lab_value = _lab_value_with_fallback(name, level if isinstance(level, int) else None, lab_values, lab_summary)
                             wiki_val = uw_lab_wiki_values.get((name, level)) if level is not None else None
-                            if wiki_val is not None:
+                            if lab_value is not None:
+                                _set_row_field(row, 'value', lab_value)
+                                _set_row_field(row, 'value_type', 'resolved_value')
+                                _set_row_field(row, 'notes', f'kb_lab_value_table_resolved:{name}')
+                            elif wiki_val is not None:
                                 _set_row_field(row, 'value', wiki_val)
                                 _set_row_field(row, 'value_type', 'resolved_value')
                                 _set_row_field(row, 'notes', f'kb_uw_lab_wiki_verified:{name}')
@@ -1267,6 +1361,24 @@ def compile_stat_inputs(
             else:
                 bind_alias_destination(row, name, alias_index, canonical_stats, note='kb_alias_routed_relic')
         _append(out, row)
+        support_destinations = _RELIC_PROGRESS_SUPPORT_DESTINATIONS.get(slug_text(name), ())
+        for support_dest, transform in support_destinations:
+            support_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            support_value = float(value)
+            support_value_type = row.value_type
+            if transform == 'plus_one_factor':
+                support_value = 1.0 + support_value
+                support_value_type = 'multiplier'
+            _set_row_field(support_row, 'stat_name', f'{name}::Derived Support')
+            _set_row_field(support_row, 'value', support_value)
+            _set_row_field(support_row, 'value_type', support_value_type)
+            bind_destination(
+                support_row,
+                support_dest,
+                canonical_stats,
+                note=f'kb_relic_support_surface_routed:{slug_text(name)}',
+            )
+            _append(out, support_row)
 
     # Vault: preserve exact scalar values and unlock booleans.
     for name, value in account_state.vault.items():
@@ -1478,6 +1590,17 @@ def compile_stat_inputs(
                     _set_row_field(row, 'value', float(row.value) * 100.0)
                     _set_row_field(row, 'notes', f"{row.notes or 'ids_uw_current_value_preserved'}; normalized_fraction_to_pct_points")
             _append(out, row)
+            support_dest = _UW_PRIMORDIAL_PROGRESS_SUPPORT_DESTINATIONS.get((uw_name, track_name))
+            if support_dest is not None and isinstance(row.value, (int, float)):
+                support_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                _set_row_field(support_row, 'stat_name', f'{uw_name}::{track_name}::Primordial Collapse Support')
+                bind_destination(
+                    support_row,
+                    support_dest,
+                    canonical_stats,
+                    note=f'kb_manual_primordial_collapse_support_surface_routed:{track_name.lower()}',
+                )
+                _append(out, support_row)
     for track_name, track in account_state.uw_plus_tracks.items():
         level = None
         token = track.display_token.split('|',1)[0].strip() if track.display_token else ''
@@ -1502,8 +1625,6 @@ def compile_stat_inputs(
     # Cards: only active preset cards contribute. Use exact base ladder rows and alias routing.
     active_cards = account_state.card_presets.get(card_preset, [])
     for card_name in active_cards:
-        if card_name == 'Berserker' and not resolved_projection_state.berserker_damage_bonus:
-            continue
         snap = account_state.cards_inventory.get(card_name)
         if snap is None or snap.level is None:
             continue
@@ -1517,12 +1638,53 @@ def compile_stat_inputs(
         row = StatInput(stat_name=card_name, source_family='card', source_name=card_name, value=value if value is not None else snap.level, value_type='resolved_value' if value is not None else 'level', stage='loadout_resolved', preset_name=card_preset, provenance='IDS::Cards')
         card_id = (ladder or {}).get('card_id') if ladder else None
         destination = card_effect_targets.get(card_id or '')
+        if card_id == 'AREA_OF_EFFECT':
+            active_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(active_row, ('runtime_mechanic_param', 'cards.aoe.active'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:active')
+            _set_row_field(active_row, 'value', True)
+            _set_row_field(active_row, 'value_type', 'bool')
+            _append(out, active_row)
+            _set_row_field(row, 'value', float(snap.level))
+            _set_row_field(row, 'value_type', 'level')
+        if card_id == 'DEATH_RAY':
+            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(split_row, ('capability', 'capability.death_ray.enabled'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:enabled')
+            _set_row_field(split_row, 'value', True)
+            _set_row_field(split_row, 'value_type', 'bool')
+            _append(out, split_row)
+        if card_id == 'ENEMY_BALANCE':
+            for destination_tuple in (
+                ('environment_param', 'bc.more_enemies_pct'),
+                ('canonical_stat', 'cash_kill_multiplier'),
+            ):
+                split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                bind_destination(split_row, destination_tuple, canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}')
+                _append(out, split_row)
+            continue
+        if card_id == 'ENERGY_SHIELD':
+            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(split_row, ('capability', 'capability.energy_shield.enabled'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:enabled')
+            _set_row_field(split_row, 'value', True)
+            _set_row_field(split_row, 'value_type', 'bool')
+            _append(out, split_row)
         if card_id == 'FREE_UPGRADES':
             for target_id in ('free_attack_upgrade_chance_pct', 'free_defense_upgrade_chance_pct', 'free_utility_upgrade_chance_pct'):
                 split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
                 bind_destination(split_row, ('canonical_stat', target_id), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}')
                 _append(out, split_row)
             continue
+        if card_id == 'SECOND_WIND':
+            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(split_row, ('capability', 'capability.second_wind.enabled'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:enabled')
+            _set_row_field(split_row, 'value', True)
+            _set_row_field(split_row, 'value_type', 'bool')
+            _append(out, split_row)
+        if card_id == 'SUPER_TOWER':
+            split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+            bind_destination(split_row, ('runtime_mechanic_param', 'cards.super_tower.active'), canonical_stats, note=f'kb_card_effect_registry_split_routed:{card_id}:active')
+            _set_row_field(split_row, 'value', True)
+            _set_row_field(split_row, 'value_type', 'bool')
+            _append(out, split_row)
         if destination is not None:
             bind_destination(row, destination, canonical_stats, note=f'kb_card_effect_registry_routed:{card_id}')
         else:
@@ -1539,6 +1701,25 @@ def compile_stat_inputs(
             _set_row_field(row, 'value_type', 'resolved_value')
             _set_row_field(row, 'notes', (row.notes or '') + ':extra_orb_card_count_bonus')
         _append(out, row)
+        if card_id == 'BERSERKER' and resolved_projection_state.berserker_damage_bonus:
+            projected_row = StatInput(
+                stat_name='Berserker::Assumed Full Stack Bonus',
+                source_family='card',
+                source_name=card_name,
+                value=8.0,
+                value_type='multiplier',
+                stage='loadout_resolved',
+                preset_name=card_preset,
+                provenance='ScenarioProjection::Cards',
+                notes='projection_state=berserker_damage_bonus:assumed_full_stack_x8',
+            )
+            bind_destination(
+                projected_row,
+                ('runtime_mechanic_param', 'cards.berserker.assumed_bonus_multiplier'),
+                canonical_stats,
+                note='projection_state=berserker_damage_bonus:assumed_full_stack_x8',
+            )
+            _append(out, projected_row)
 
 
     # Perks: run-scoped selected modifiers owned by KB perk registries.
@@ -1621,7 +1802,7 @@ def compile_stat_inputs(
                 unique_rarity = normalize_module_unique_rarity(str(mod.rarity))
                 if role == 'assist' and slot_state and getattr(slot_state, 'rarity_cap', None):
                     unique_rarity = normalize_module_unique_rarity(str(slot_state.rarity_cap))
-                unique_lookup = module_unique_effect_values.get((slug_text(mod_name), unique_rarity))
+                unique_lookup = module_unique_effect_values.get((_module_unique_effect_key(mod_name), unique_rarity))
                 unique_value = unique_lookup[0] if unique_lookup is not None else main_value
                 unique_measure = unique_lookup[1] if unique_lookup is not None else ''
                 if role == 'assist' and unique_value is not None and assist_multiplier_eff is not None:
@@ -1671,7 +1852,10 @@ def compile_stat_inputs(
                         _append(out, sf_row)
                 if unique_contributor and main_value is not None and base_contributor and unique_contributor != base_contributor:
                     unique_row = StatInput(stat_name=f'{mod_name}::unique', source_family='module', source_name=mod_name, value=unique_value, value_type=unique_value_type, stage='loadout_resolved', preset_name=module_preset, provenance='IDS::Modules', notes=f'module_{role}_unique_effect')
-                    bind_kb_fields(unique_row, unique_contributor, mapping_index, canonical_stats)
+                    if mod_name == 'Primordial Collapse':
+                        bind_destination(unique_row, ('mechanic_param', 'module.primordial_collapse.bh_damage_reduction_pct'), canonical_stats, note='kb_manual_primordial_collapse_bh_damage_reduction_routed')
+                    else:
+                        bind_kb_fields(unique_row, unique_contributor, mapping_index, canonical_stats)
                     _set_row_field(unique_row, 'contributor_id', _make_instance_contributor_id(unique_row.contributor_id, source_name=mod_name, role=role, sub_name='unique'))
                     _append(out, unique_row)
                 if mod_name == 'Singularity Harness' and unique_value is not None:

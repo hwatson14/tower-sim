@@ -25,6 +25,7 @@ capability_policy_rows:
   - Cannon Effect Bans
   - Core Effect Bans
   - Generator Effect Bans
+  - Workshop Enhancements
 governed_numeric_rows:
   - Area of Effect Mastery
   - Attack Speed Mastery
@@ -74,6 +75,13 @@ governed_numeric_rows:
   - Daily Mission Shards
   - Starting Cash
   - Max Interest
+  - Workshop Attack Discount
+  - Workshop Defense Discount
+  - Workshop Utility Discount
+  - Labs Coin Discount
+  - Enhancement Attack - Coin Discount
+  - Enhancement Defense - Coin Discount
+  - Enhancement Utility - Coin Discount
   - Common Drop Chance
   - Rare Drop Chance
   - Basic's Ultimate

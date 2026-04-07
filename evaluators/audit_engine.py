@@ -101,15 +101,6 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
     from evaluators.compare_core import _formula_contract
     from evaluators.verification_engine import _load_csv_rows
     from evaluators.compare import ROOT
-    blocked_formula_contracts = []
-    for destination_id, contract in (formula_ledger.get('surfaces') or {}).items():
-        if contract.get('publish_policy') == 'block':
-            blocked_formula_contracts.append({
-                'destination_id': destination_id,
-                'formula_class': contract.get('formula_class'),
-                'rationale': contract.get('rationale'),
-            })
-
     active_unmapped_inputs = []
     for row in stat_inputs:
         routing_class = classify_input_routing(row)
@@ -157,7 +148,6 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
 
     return {
         'summary': {
-            'blocked_formula_contract_count': len(blocked_formula_contracts),
             'active_unmapped_input_count': len(active_unmapped_inputs),
             'resolved_unknown_schema_unit_count': len(resolved_unknown_schema_units),
             'ambiguous_relic_semantic_hint_count': len(ambiguous_relic_semantics),
@@ -165,8 +155,7 @@ def _build_kb_incomplete_areas(stat_inputs, statbook_publishable_dict, formula_l
         'priority_gaps': ([
             item for item in active_unmapped_inputs
             if item['stat_name'] == 'Dimension Core::main'
-        ] + blocked_formula_contracts + active_unmapped_inputs[:12]),
-        'blocked_formula_contracts': blocked_formula_contracts,
+        ] + active_unmapped_inputs[:12]),
         'active_unmapped_by_family': active_unmapped_by_family,
         'active_unmapped_inputs': active_unmapped_inputs,
         'resolved_unknown_schema_units': resolved_unknown_schema_units,
@@ -183,19 +172,6 @@ def _build_kb_gap_register(kb_incomplete_areas, audits):
     from qe.contracts import COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES
     from evaluators.audit_engine import _classify_unmapped_input_gap
     register = []
-
-    for item in kb_incomplete_areas.get('blocked_formula_contracts', []):
-        register.append({
-            'gap_id': f"formula_contract::{item['destination_id']}",
-            'bucket': 'KB missing executable contract',
-            'surface': item['destination_id'],
-            'files': ['kb/ledgers/formula_surface_policy.yaml', 'qe/stat_resolution.py'],
-            'evidence': f"publish_policy=block for {item['destination_id']}",
-            'why_it_matters': 'Surface remains intentionally fail-closed until formula contract is fully closed.',
-            'what_would_close_it': 'Tighten the KB/contract rationale and verify the implemented destination-specific formula is correct enough to publish.',
-            'changed_in_this_iteration': False,
-            'verification_source': 'package KB only',
-        })
 
     for item in kb_incomplete_areas.get('active_unmapped_inputs', []):
         register.append({

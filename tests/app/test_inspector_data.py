@@ -116,7 +116,7 @@ def test_statbook_rows_frame_groups_mixed_surface_ids():
     assert 'Context' in groups
     assert 'raw_surface_id' in frame.columns
     uw_row = frame.loc[frame['raw_surface_id'] == 'mechanic_param::uw.black_hole.cooldown_seconds'].iloc[0]
-    assert uw_row['surface_id'] == 'state::uw.black_hole.cooldown_seconds'
+    assert uw_row['surface_id'] == 'state::uw.black_hole.base_cooldown_seconds'
 
 
 def test_run_stats_rows_frame_preserves_all_stats_and_normalizes_ids():

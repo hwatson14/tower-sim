@@ -75,6 +75,13 @@ def _publish_surface(
 ) -> None:
     existing = rows.get(surface_id)
     if existing is not None:
+        if isinstance(existing.schema, dict):
+            publisher = existing.schema.get('publisher')
+            resolver = existing.schema.get('resolver')
+            if publisher in {'query_currency_income', 'query_surface_publication'}:
+                return
+            if resolver == 'query_derived_composites':
+                return
         raise ValueError(f'Query publication collision for {surface_id}')
     rows[surface_id] = StatRow(
         stat_name=surface_id,

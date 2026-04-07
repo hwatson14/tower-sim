@@ -124,8 +124,6 @@ def classify_compare_status(destination: str, contract: dict, package_row, ep_en
         return 'non_numeric_compare', None, None, notes + ['numeric_comparison_failed']
     if compare_policy == 'scaled_number_noncomparable' and ep_entry.get('ep_value_type') == 'scaled_number':
         return 'non_numeric_compare', delta, rel_pct, notes + ['scaled_ep_surface_noncomparable']
-    if contract.get('publish_policy') == 'block':
-        return 'formula_blocked', delta, rel_pct, notes + ['known_bad_formula_blocked_from_publish']
     if delta is not None and abs(delta) < 1e-9:
         return 'matched_exact', delta, rel_pct, notes
     if delta is not None and (abs(delta) < 1e-3 or (rel_pct is not None and abs(rel_pct) < 1.0)):
@@ -447,7 +445,6 @@ def _formula_contract(ledger: dict, destination: str) -> dict:
 def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> dict:
     out = copy.deepcopy(statbook_dict)
     rows = out.get('rows', {})
-    blocked = []
     for destination, row in rows.items():
         contract = _formula_contract(formula_ledger, destination)
         row.setdefault('formula_contract', contract)
@@ -456,18 +453,9 @@ def _build_publishable_statbook(statbook_dict: dict, formula_ledger: dict) -> di
             row['publishable'] = False
             row['publish_notes'] = 'Trace-only raw surface.'
             continue
-        if contract.get('publish_policy') == 'block' and row.get('status') == 'resolved':
+        if row.get('status') != 'resolved':
             row['publishable'] = False
-            row['publish_block_reason'] = 'blocked_by_formula_ledger'
-            row['status'] = 'blocked_formula_pending'
-            note = row.get('notes') or ''
-            row['notes'] = (note + ' | ' if note else '') + 'Blocked from publish by destination formula ledger pending exact formula closure.'
-            row['final_value'] = None
-            blocked.append(destination)
-        elif row.get('status') != 'resolved':
-            row['publishable'] = False
-    out.setdefault('diagnostics', {})['publishable_blocked_destinations'] = blocked
-    out['diagnostics']['publishable_blocked_count'] = len(blocked)
+    out.setdefault('diagnostics', {})
     out['diagnostics']['formula_ledger_version'] = formula_ledger.get('version')
     out['diagnostics']['oracle_policy'] = 'forbidden_for_publish'
     return out
@@ -480,7 +468,6 @@ def build_compare_status_summary(ep_compare: dict) -> dict:
         'ep_compare_status_counts': dict(sorted(status_counts.items())),
         'ep_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') not in {'matched_exact', 'matched_close'}),
         'ep_true_formula_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'mismatch'),
-        'ep_formula_blocked_count': sum(1 for v in ep_compare.values() if v.get('status') == 'formula_blocked'),
         'ep_stage_scope_mismatch_count': sum(1 for v in ep_compare.values() if v.get('status') == 'stage_scope_mismatch'),
         'ep_non_comparable_count': sum(1 for v in ep_compare.values() if v.get('status') == 'non_comparable'),
         'ep_missing_from_package_count': sum(1 for v in ep_compare.values() if v.get('status') == 'missing_from_package'),

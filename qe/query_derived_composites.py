@@ -66,6 +66,37 @@ def _bool(rows: Dict[str, StatRow], keys: Iterable[str], default: bool = False) 
     return default
 
 
+def _contributors(rows: Dict[str, StatRow], keys: Iterable[str]) -> list[dict[str, Any]]:
+    for key in keys:
+        row = _row(rows, key)
+        if row is None:
+            continue
+        contributors = list(row.contributors or [])
+        if contributors:
+            return contributors
+    return []
+
+
+def _contributor_value_by_token(
+    rows: Dict[str, StatRow],
+    *,
+    row_keys: Iterable[str],
+    token: str,
+    default: float = 0.0,
+) -> float:
+    token_normalized = str(token).strip().lower()
+    for contributor in _contributors(rows, row_keys):
+        contributor_id = str((contributor or {}).get('contributor_id') or '').strip().lower()
+        if token_normalized not in contributor_id:
+            continue
+        value = (contributor or {}).get('value')
+        try:
+            return float(value)
+        except Exception:
+            continue
+    return default
+
+
 def _tp(rows: Dict[str, StatRow], a: str, b: str) -> float:
     return _get(rows, a) + _get(rows, b)
 
@@ -615,6 +646,8 @@ def _contributor(rows: Dict[str, StatRow], key: str, destination: str) -> Dict[s
 def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str, contributors: list[Dict[str, Any]], notes: str) -> None:
     existing = rows.get(name)
     if existing is not None:
+        if isinstance(existing.schema, dict) and existing.schema.get('resolver') == 'query_derived_composites':
+            return
         raise ValueError(f'Query publication collision for {name}')
     rows[name] = StatRow(
         stat_name=name,
@@ -628,7 +661,37 @@ def _publish(rows: Dict[str, StatRow], name: str, value: float, value_type: str,
     )
 
 
+def _publish_effective_bot_ranges(rows: Dict[str, StatRow]) -> None:
+    tower_range_m = _get(rows, 'state::tower.range_m')
+    global_range_bonus_m = _get(rows, 'state::bot.global.range_bonus_m')
+    tower_amplification = 1.33 * (tower_range_m / 69.5) if tower_range_m > 0.0 else 0.0
+
+    for bot_name in ('golden', 'amplify', 'flame', 'thunder'):
+        raw_surface = f'state::bot.{bot_name}.range_m'
+        effective_surface = f'state::bot.{bot_name}.effective_range_m'
+        existing = rows.get(effective_surface)
+        if existing is not None and existing.status == 'resolved':
+            continue
+        if existing is not None:
+            rows.pop(effective_surface, None)
+        raw_range_m = _get(rows, raw_surface)
+        effective_range_m = (raw_range_m + global_range_bonus_m) * tower_amplification if tower_amplification > 0.0 else 0.0
+        _publish(
+            rows,
+            effective_surface,
+            effective_range_m,
+            'distance',
+            [
+                _contributor(rows, raw_surface, effective_surface),
+                _contributor(rows, 'state::bot.global.range_bonus_m', effective_surface),
+                _contributor(rows, 'state::tower.range_m', effective_surface),
+            ],
+            'QE-published effective bot range from raw bot range + shared flat bonus, amplified by tower range per sanctioned KB formula.',
+        )
+
+
 def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
+    _publish_effective_bot_ranges(rows)
     # eHP: closer to EP CN5 structure
     health_factor = _get_first(rows, ['support_surface::ehp.health_factor', _compat_runtime('ehp.health_factor')], 0.0)
     health_ws = _get_first(rows, [_compat_canon('tower_hp'), 'support_surface::ehp.health_ws'], 0.0)
@@ -647,6 +710,13 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     health_relic_factor = 1.0 + _get_first(rows, ['support_surface::ehp.health_relic_pct'], 0.0)
     health_vault_factor = 1.0 + _get_first(rows, ['support_surface::ehp.health_vault_pct'], 0.0)
     health_dwhp_factor = (5.0 + 0.25 * _get_first(rows, ['support_surface::ehp.death_wave_hp_level'], 0.0)) if _bool(rows, ['support_surface::ehp.death_wave_hp_active'], False) else 1.0
+    if health_dwhp_factor <= 1.0:
+        health_dwhp_factor = _contributor_value_by_token(
+            rows,
+            row_keys=(_compat_canon('tower_hp'), 'state::tower.hp'),
+            token='death_wave_health',
+            default=1.0,
+        )
     health_factor_fallback = health_ws * health_lab_factor * health_card_factor * health_wse_factor * health_perk_factor * health_cto_factor * health_rto_factor * health_relic_factor * health_vault_factor * health_dwhp_factor
     if health_factor <= 0.0:
         health_factor = health_factor_fallback
@@ -674,7 +744,8 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     if armor_factor <= 0.0:
         armor_factor = armor_primary_factor * armor_assist_factor
 
-    wall_health_ws = _get_first(rows, [_compat_canon('wall_hp'), 'support_surface::ehp.wall_hp_ws'], 0.0)
+    wall_health_final = _get_first(rows, ['state::wall.hp', _compat_canon('wall_hp')], 0.0)
+    wall_health_ws = _get_first(rows, ['support_surface::ehp.wall_hp_ws'], 0.0)
     wall_health_lab_term = 0.02 * _get_first(rows, ['support_surface::ehp.wall_hp_lab_level'], 0.0)
     ehp_sac_factor = (1.0 + _get_first(rows, ['support_surface::ehp.stone_sac_pct'], 0.0) + _get_first(rows, ['support_surface::ehp.lab_sac_pct'], 0.0)) * 0.01
     wall_health_substat_term = _get_first(rows, ['support_surface::ehp.wall_hp_prim_sub'], 0.0) + _get_first(rows, ['support_surface::ehp.wall_hp_ass_sub'], 0.0) * ehp_sac_factor
@@ -682,9 +753,13 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     wall_health_module_factor = (_get_first(rows, ['support_surface::ehp.wall_module_primary_effect'], 0.0) + _get_first(rows, ['support_surface::ehp.wall_module_assist_effect'], 0.0)) or 1.0
     wall_health_pre_fort = (wall_health_ws + wall_health_lab_term + wall_health_substat_term) * wall_health_wse_factor * wall_health_module_factor
     wall_health_fort_factor = 1.0 + 0.2 * _get_first(rows, ['support_surface::ehp.wall_fortification_level'], 0.0)
+    if wall_health_fort_factor <= 1.0:
+        wall_health_fort_factor = _get_first(rows, ['state::wall.fortification_multiplier'], wall_health_fort_factor)
+    if wall_health_pre_fort <= 0.0 and wall_health_final > 0.0 and wall_health_fort_factor > 0.0:
+        wall_health_pre_fort = wall_health_final / wall_health_fort_factor
     wall_health_factor = _get_first(rows, ['support_surface::ehp.wall_health_factor'], 0.0)
     if wall_health_factor <= 0.0:
-        wall_health_factor = wall_health_pre_fort * wall_health_fort_factor
+        wall_health_factor = wall_health_final if wall_health_final > 0.0 else (wall_health_pre_fort * wall_health_fort_factor)
 
     recovery_ws = _get_first(rows, [_compat_canon('max_recovery_multiplier'), 'support_surface::ehp.max_recovery_ws'], 0.0)
     recovery_lab_term = 0.01 * _get_first(rows, ['support_surface::ehp.max_recovery_lab_level'], 0.0)
@@ -736,11 +811,28 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     wall_invuln_factor = 1.0 / max(1.0 - wall_invuln_reduction_pct, 0.05)
     chain_thunder_reduction_pct = _get_first(rows, ['support_surface::ehp.chain_thunder_reduction_pct', _compat_runtime('uw.chain_thunder.reduction_pct'), _compat_mech('uw.chain_thunder.reduction_pct')], 0.0)
     chain_thunder_factor = _ep_chain_thunder_factor(rows)
+    primordial_bh_reduction_pct = _get_first(rows, [
+        'state::module.primordial_collapse.bh_damage_reduction_pct',
+        _compat_mech('module.primordial_collapse.bh_damage_reduction_pct'),
+        _compat_mech('module.primordial_collapse.in_bh_enemy_damage_reduction_pct'),
+    ], 0.0)
+    primordial_bh_duration = _get_first(rows, [
+        'support_surface::ehp.black_hole_duration_seconds',
+        'state::uw.black_hole.base_duration_seconds',
+        _compat_mech('uw.black_hole.duration_seconds'),
+    ], 0.0)
+    primordial_bh_cooldown = _get_first(rows, [
+        'support_surface::ehp.black_hole_cooldown_seconds',
+        'state::uw.black_hole.base_cooldown_seconds',
+        _compat_mech('uw.black_hole.cooldown_seconds'),
+    ], 0.0)
+    primordial_bh_uptime = _uptime(primordial_bh_duration, primordial_bh_cooldown)
+    primordial_bh_factor = 1.0 / max(1.0 - min(0.95, primordial_bh_uptime * primordial_bh_reduction_pct / 100.0), 0.05)
     tradeoff_defense_factor = _ep_tradeoff_defense_factor(rows)
     tradeoff_defense_reduction_pct = max(0.0, 1.0 - (1.0 / tradeoff_defense_factor)) * 100.0 if tradeoff_defense_factor > 0 else 0.0
 
     base_pool = health_factor * armor_factor * wall_or_recovery_factor
-    pre_defense_pool = base_pool * cf_factor * chain_thunder_factor
+    pre_defense_pool = base_pool * cf_factor * chain_thunder_factor * primordial_bh_factor
     dabs_effective = dabs * wall_invuln_factor
     pre_tradeoff_ehp = (pre_defense_pool + dabs_effective) * defense_taken_factor
     ehp = pre_tradeoff_ehp * tradeoff_defense_factor
@@ -763,6 +855,19 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::ehp.wall_health_wse_factor', wall_health_wse_factor, 'multiplier', [], 'EPH_WALL_HEALTH workshop enhancement factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.wall_health_module_factor', wall_health_module_factor, 'multiplier', [], 'EPH_WALL_HEALTH module factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.wall_health_fort_factor', wall_health_fort_factor, 'multiplier', [], 'EPH_WALL_HEALTH fortification factor [EP helper support surface]')
+    _publish(
+        rows,
+        'derived::wall.hp_pre_fort',
+        wall_health_pre_fort,
+        'hp',
+        [
+            _contributor(rows, 'derived::ehp.wall_health_wse_factor', 'wall.hp_pre_fort'),
+            _contributor(rows, 'derived::ehp.wall_health_module_factor', 'wall.hp_pre_fort'),
+            _contributor(rows, 'state::wall.hp', 'wall.hp_pre_fort'),
+            _contributor(rows, 'state::wall.fortification_multiplier', 'wall.hp_pre_fort'),
+        ],
+        'QE-published wall HP before fortification.',
+    )
     _publish(rows, 'derived::ehp.wall_factor', wall_health_factor, 'scalar', ehp_contrib, 'EPH_WALL_HEALTH-like factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.max_recovery_lab_term', recovery_lab_term, 'scalar', [], 'EPH_MAX_RCVR lab term [EP helper support surface]')
     _publish(rows, 'derived::ehp.max_recovery_substat_term', recovery_substat_term, 'scalar', [], 'EPH_MAX_RCVR substat term [EP helper support surface]')
@@ -799,6 +904,15 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::ehp.wall_invuln_factor', wall_invuln_factor, 'multiplier', [_contributor(rows, 'support_surface::ehp.wall_invuln_reduction_pct', 'ehp.wall_invuln_factor')], 'wall invulnerability factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.chain_thunder_reduction_pct', chain_thunder_reduction_pct, 'ratio', [], 'Chain Thunder reduction pct [EP helper support surface]')
     _publish(rows, 'derived::ehp.chain_thunder_factor', chain_thunder_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chain_thunder.reduction_pct'), 'ehp.chain_thunder_factor')], 'EP CN5 chain thunder factor [EP helper support surface]')
+    _publish(rows, 'derived::ehp.primordial_black_hole_uptime', primordial_bh_uptime, 'ratio', [
+        _contributor(rows, 'support_surface::ehp.black_hole_duration_seconds', 'ehp.primordial_black_hole_uptime'),
+        _contributor(rows, 'support_surface::ehp.black_hole_cooldown_seconds', 'ehp.primordial_black_hole_uptime'),
+    ], 'Primordial Collapse black-hole uptime [EP helper support surface]')
+    _publish(rows, 'derived::ehp.primordial_black_hole_damage_reduction_factor', primordial_bh_factor, 'multiplier', [
+        _contributor(rows, 'state::module.primordial_collapse.bh_damage_reduction_pct', 'ehp.primordial_black_hole_damage_reduction_factor'),
+        _contributor(rows, 'support_surface::ehp.black_hole_duration_seconds', 'ehp.primordial_black_hole_damage_reduction_factor'),
+        _contributor(rows, 'support_surface::ehp.black_hole_cooldown_seconds', 'ehp.primordial_black_hole_damage_reduction_factor'),
+    ], 'Primordial Collapse black-hole damage reduction factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.tradeoff_defense_reduction_pct', tradeoff_defense_reduction_pct, 'ratio', [], 'Tradeoff defense reduction pct [EP helper support surface]')
     _publish(rows, 'derived::ehp.tradeoff_defense_factor', tradeoff_defense_factor, 'multiplier', [_contributor(rows, _compat_mech('perk.tradeoff_defense_factor'), 'ehp.tradeoff_defense_factor')], 'improve trade-off defense factor [EP helper support surface]')
     _publish(rows, 'derived::ehp.pre_defense_pool', pre_defense_pool, 'scalar', ehp_contrib, 'EP CN5 pre-defense multiplicative pool [EP helper support surface]')
@@ -826,6 +940,16 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     tradeoff_damage_factor = _get_first(rows, ['support_surface::perk.tradeoff_damage_multiplier', _compat_runtime('perk.tradeoff_damage_multiplier'), _compat_mech('perk.tradeoff_damage_multiplier')], 1.0)
     shock_factor = _ep_shock_factor(rows)
     card_damage_mastery_factor = _get_first(rows, [_compat_runtime('cards.damage.mastery_multiplier'), _compat_mech('cards.damage.mastery_multiplier')], 1.0)
+    berserker_bonus_multiplier = _get_first(
+        rows,
+        [
+            'state::cards.berserker.assumed_bonus_multiplier',
+            _compat_runtime('cards.berserker.assumed_bonus_multiplier'),
+            _compat_mech('cards.berserker.assumed_bonus_multiplier'),
+        ],
+        0.0,
+    )
+    berserker_factor = 1.0 + max(0.0, berserker_bonus_multiplier)
 
     cannon_module_factor = _get_first(rows, [_compat_mech('module.cannon.primary_damage_multiplier'), _compat_mech('module.cannon.damage_multiplier'), _compat_mech('module.cannon.multiplier')], 1.0)
     cannon_assist_enabled = _bool(rows, [_compat_mech('module.cannon.assist_enabled'), _compat_mech('module.cannon.has_assist')], False)
@@ -849,15 +973,25 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     )
     amp_strike_factor = _get_first(rows, ['support_surface::amp_strike.damage_multiplier', _compat_mech('amp_strike.damage_multiplier')], 1.0)
 
-    base_damage_stack = td * perk_damage_factor * tradeoff_damage_factor * shock_factor * card_damage_mastery_factor * cannon_assist_factor * acp_factor * amp_strike_factor
+    base_damage_stack = td * perk_damage_factor * tradeoff_damage_factor * shock_factor * card_damage_mastery_factor * berserker_factor * cannon_assist_factor * acp_factor * amp_strike_factor
 
     cc = _get(rows, _compat_canon('tower_crit_chance_pct'))
     cf = _get(rows, _compat_canon('tower_crit_multiplier'))
     scc = _get(rows, _compat_canon('tower_supercrit_chance_pct'))
     scm = _get(rows, _compat_canon('tower_supercrit_multiplier'))
+    ultimate_crit_card_chance_pct = _get_first(
+        rows,
+        [
+            'state::cards.ultimate_crit.chance_pct',
+            _compat_runtime('cards.ultimate_crit.chance_pct'),
+            _compat_mech('cards.ultimate_crit.chance_pct'),
+        ],
+        0.0,
+    )
     being_annihilator = _get_first(rows, [_compat_mech('module.being_annihilator.streak_count'), _compat_runtime('module.being_annihilator.streak_count')], 0.0)
     bullet_crit_factor = _ep_critical(cc, cf, scc, scm, being_annihilator)
     uw_crit_factor = _ep_uwcritical(cc, cf, scc, scm)
+    uw_crit_card_factor = _ev(ultimate_crit_card_chance_pct, cf)
 
     bps = _ep_bullet_per_second(asp)
     multishot_factor = _ep_multishot(_get(rows, _compat_canon('tower_multishot_chance_pct')), _get(rows, _compat_canon('tower_multishot_targets')))
@@ -987,8 +1121,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
         ],
         1.0,
     )
-    uw_crit_card = _get_first(rows, [_compat_runtime('cards.ultimate_weapon_crit.multiplier'), _compat_mech('cards.ultimate_weapon_crit.multiplier')], 1.0)
-    uw_total_damage = _ep_uw_total_damage(dw, cl, sm, slm, spotlight_factor, ps, ilm, uw_damage_boost, st_uw_mastery, uw_crit_card)
+    uw_total_damage = _ep_uw_total_damage(dw, cl, sm, slm, spotlight_factor, ps, ilm, uw_damage_boost, st_uw_mastery, uw_crit_card_factor)
 
     slow_factor = _get_first(rows, ['support_surface::chrono_field.exposure_multiplier'], 0.0)
     if slow_factor <= 0.0:
@@ -1001,8 +1134,11 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     edamage = base_damage_stack * (bullet_crit_factor * bullet_pipeline_factor * spotlight_factor + uw_total_damage * uw_crit_factor) * slow_factor
 
     _publish(rows, 'derived::edamage.base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage.base_damage_stack')], 'EP EM5 DC5-like base damage stack [EP helper support surface]')
+    _publish(rows, 'derived::edamage.berserker_bonus_multiplier', berserker_bonus_multiplier, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_bonus_multiplier')], 'Explicit Berserker full-stack bonus multiplier assumption [EP helper support surface]')
+    _publish(rows, 'derived::edamage.berserker_factor', berserker_factor, 'multiplier', [_contributor(rows, 'state::cards.berserker.assumed_bonus_multiplier', 'edamage.berserker_factor')], 'Explicit Berserker full-stack factor applied to projected eDamage [EP helper support surface]')
     _publish(rows, 'derived::edamage.acp_factor', acp_factor, 'multiplier', [_contributor(rows, _compat_mech('module.anti_cube_portal.damage_multiplier'), 'edamage.acp_factor')], 'EP EPD_SHOCKWAVE_DAMAGE-aligned ACP factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage.bullet_crit_factor'), _contributor(rows, _compat_canon('tower_supercrit_chance_pct'), 'edamage.bullet_crit_factor')], 'EPD_CRITICAL-aligned bullet crit factor [EP helper support surface]')
+    _publish(rows, 'derived::edamage.uw_crit_card_factor', uw_crit_card_factor, 'multiplier', [_contributor(rows, 'state::cards.ultimate_crit.chance_pct', 'edamage.uw_crit_card_factor'), _contributor(rows, _compat_canon('tower_crit_multiplier'), 'edamage.uw_crit_card_factor')], 'Ultimate Crit card factor applied to aggregate UW damage [EP helper support surface]')
     _publish(rows, 'derived::edamage.bullet_per_second', bps, 'rate', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage.bullet_per_second')], 'EP BULLET_PER_SECOND from mechanics lineage [EP helper support surface]')
     _publish(rows, 'derived::edamage.multishot_factor', multishot_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_multishot_chance_pct'), 'edamage.multishot_factor'), _contributor(rows, _compat_canon('tower_multishot_targets'), 'edamage.multishot_factor')], 'EPD_MULTISHOT-aligned multishot factor [EP helper support surface]')
     _publish(rows, 'derived::edamage.bounce_factor', bounce_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_bounce_shot_chance_pct'), 'edamage.bounce_factor'), _contributor(rows, _compat_canon('tower_bounce_shot_targets'), 'edamage.bounce_factor')], 'EPD_BOUNCESHOT-aligned bounce factor [EP helper support surface]')
@@ -1030,6 +1166,7 @@ def publish_derived_composites(rows: Dict[str, StatRow]) -> None:
     _publish(rows, 'derived::edamage_ep_helper.dc_base_damage_stack', base_damage_stack, 'scalar', [_contributor(rows, _compat_canon('tower_damage'), 'edamage_ep_helper.dc_base_damage_stack')], 'EP eDamage DC5 base damage stack alias [EP helper surface]')
     _publish(rows, 'derived::edamage_ep_helper.di_bullet_crit_factor', bullet_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage_ep_helper.di_bullet_crit_factor')], 'EP eDamage DI5 bullet crit factor alias [EP helper surface]')
     _publish(rows, 'derived::edamage_ep_helper.dj_uw_crit_factor', uw_crit_factor, 'multiplier', [_contributor(rows, _compat_canon('tower_crit_chance_pct'), 'edamage_ep_helper.dj_uw_crit_factor')], 'EP eDamage DJ5 UW crit factor alias [EP helper surface]')
+    _publish(rows, 'derived::edamage_ep_helper.dj1_uw_crit_card_factor', uw_crit_card_factor, 'multiplier', [_contributor(rows, 'state::cards.ultimate_crit.chance_pct', 'edamage_ep_helper.dj1_uw_crit_card_factor')], 'EP eDamage DJ1 Ultimate Crit card factor alias [EP helper surface]')
     _publish(rows, 'derived::edamage_ep_helper.dv_bullet_pipeline_factor', bullet_pipeline_factor, 'scalar', [_contributor(rows, _compat_canon('tower_attack_speed'), 'edamage_ep_helper.dv_bullet_pipeline_factor')], 'EP eDamage DV5 bullet pipeline factor alias [EP helper surface]')
     _publish(rows, 'derived::edamage_ep_helper.ei_uw_total_damage', uw_total_damage, 'scalar', [_contributor(rows, _compat_mech('uw.chain_lightning.damage_multiplier'), 'edamage_ep_helper.ei_uw_total_damage')], 'EP eDamage EI5 total UW damage alias [EP helper surface]')
     _publish(rows, 'derived::edamage_ep_helper.el_slow_factor', slow_factor, 'multiplier', [_contributor(rows, _compat_mech('uw.chrono_field.slow_pct'), 'edamage_ep_helper.el_slow_factor')], 'EP eDamage EL5 slow factor alias [EP helper surface]')

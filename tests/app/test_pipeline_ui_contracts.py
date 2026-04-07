@@ -91,7 +91,7 @@ def test_trace_input_load_manual_inputs_path_respects_override(tmp_path):
     assert result.exit_code == 0
     trace = result.pipeline_trace.to_dict()
     input_load_stage = next(stage for stage in trace['stages'] if stage['stage_id'] == 'input_load')
-    assert input_load_stage['outputs_summary']['manual_inputs_path'] == str(manual_inputs_override)
+    assert input_load_stage['outputs_summary']['manual_inputs_path'] == manual_inputs_override.as_posix()
 
 
 def test_trace_artifact_is_listed_in_generated_files(start_of_run_pipeline_result):
@@ -216,6 +216,44 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
+
+
+def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonical_pipeline_artifacts):
+    out_dir = canonical_pipeline_artifacts['out_dir']
+    start_rows = json.loads((out_dir / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    max_rows = json.loads((out_dir / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+
+    start_farming = (start_rows.get('Farming') or {}).get('rows') or {}
+    max_farming = (max_rows.get('Farming') or {}).get('rows') or {}
+
+    assert start_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(75.9)
+    assert max_farming['state::tower.free_attack_upgrade_chance_pct']['final_value'] == pytest.approx(111.8375)
+    assert 'derived::wall.hp_pre_fort' in start_farming
+    assert start_farming['derived::wall.hp_pre_fort']['final_value'] > 0
+    assert max_farming['derived::wall.hp_pre_fort']['final_value'] > start_farming['derived::wall.hp_pre_fort']['final_value']
+    assert start_farming['support_surface::ehp.black_hole_duration_seconds']['final_value'] == pytest.approx(32.0)
+    assert start_farming['support_surface::ehp.black_hole_cooldown_seconds']['final_value'] == pytest.approx(50.0)
+    assert start_farming['support_surface::ehp.health_relic_pct']['final_value'] == pytest.approx(0.51)
+    assert start_farming['support_surface::ehp.dabs_relic_pct']['final_value'] == pytest.approx(0.28)
+    assert start_farming['support_surface::ehp.def_pct_relic_pct']['final_value'] == pytest.approx(0.04)
+    assert start_farming['support_surface::eecon.adstarter_theme_relic_factor']['final_value'] == pytest.approx(1.48)
+    assert start_farming['support_surface::eecon.freeup_attack_relic_pct']['final_value'] == pytest.approx(0.06)
+    assert start_farming['support_surface::eecon.freeup_defense_relic_pct']['final_value'] == pytest.approx(0.03)
+    assert start_farming['support_surface::eecon.freeup_utility_relic_pct']['final_value'] == pytest.approx(0.05)
+    assert start_farming['state::uw.black_hole.base_duration_seconds']['final_value'] == pytest.approx(36.0)
+    assert start_farming['state::uw.black_hole.base_cooldown_seconds']['final_value'] == pytest.approx(46.0)
+    assert start_farming['state::uw.black_hole.duration_seconds']['final_value'] == pytest.approx(36.0)
+    assert start_farming['state::uw.black_hole.cooldown_seconds']['final_value'] == pytest.approx(46.0)
+    assert start_farming['state::uw.golden_tower.base_duration_seconds']['final_value'] == pytest.approx(42.0)
+    assert start_farming['state::uw.golden_tower.base_cooldown_seconds']['final_value'] == pytest.approx(180.0)
+    assert start_farming['state::uw.golden_tower.duration_seconds']['final_value'] == pytest.approx(42.0)
+    assert start_farming['state::uw.golden_tower.cooldown_seconds']['final_value'] == pytest.approx(180.0)
+    assert start_farming['derived::ehp.primordial_black_hole_uptime']['final_value'] == pytest.approx(32.0 / 82.0)
+    assert start_farming['derived::ehp.primordial_black_hole_damage_reduction_factor']['final_value'] == pytest.approx(1.4539007092198584)
+    assert start_farming['derived::ehp.health_relic_factor']['final_value'] == pytest.approx(1.51)
+    assert start_farming['derived::ehp.dabs_relic_factor']['final_value'] == pytest.approx(1.28)
+    assert start_farming['derived::ehp.def_pct_relic_term']['final_value'] == pytest.approx(0.04)
+    assert start_farming['derived::eecon.base_meta_factor']['final_value'] == pytest.approx(1.48)
 
 
 def test_pipeline_cards_payload_publishes_selected_rows_by_preset(canonical_pipeline_artifacts):

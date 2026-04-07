@@ -1,0 +1,4860 @@
+{
+  "section_names": [
+    "Labs",
+    "WS",
+    "WS+",
+    "UWs",
+    "Cards",
+    "Relics",
+    "Vault",
+    "Bots",
+    "Themes & Songs",
+    "Modules",
+    "Guardians",
+    "Player & Stuff"
+  ],
+  "section_row_counts": {
+    "Labs": 212,
+    "WS": 50,
+    "WS+": 20,
+    "UWs": 36,
+    "Cards": 31,
+    "Relics": 37,
+    "Vault": 67,
+    "Bots": 16,
+    "Themes & Songs": 1,
+    "Modules": 80,
+    "Guardians": 18,
+    "Player & Stuff": 22
+  },
+  "default_preset": "Farming",
+  "state_mode": "start_of_run",
+  "perk_mode": "max_progression_policy",
+  "perk_config_resolution": {
+    "requested_perks_path": "manual_inputs.yaml:perk_policy",
+    "resolved_perks_path": "manual_inputs.yaml:perk_policy",
+    "fallback_applied": false,
+    "fallback_reason": null,
+    "perk_mode": "max_progression_policy",
+    "manual_banned_perk_count": 2
+  },
+  "state_mode_support": {
+    "state_mode": "start_of_run",
+    "supported": true,
+    "projection_facets_applied": [],
+    "projection_facets_missing": [],
+    "notes": [
+      "Current IDS preset with active loadout applied."
+    ]
+  },
+  "supported_state_modes": [
+    "account_baseline",
+    "gem_respec",
+    "start_of_run",
+    "max_progression"
+  ],
+  "state_matrix": {
+    "account_baseline": {
+      "support": {
+        "state_mode": "account_baseline",
+        "supported": true,
+        "projection_facets_applied": [],
+        "projection_facets_missing": [],
+        "notes": [
+          "Permanent account-owned systems only; excludes workshop, bots, and loadout surfaces."
+        ]
+      },
+      "input_count": 406,
+      "mapped_input_count": 397,
+      "resolved_stat_count": 264,
+      "partially_resolved_stat_count": 0
+    },
+    "gem_respec": {
+      "support": {
+        "state_mode": "gem_respec",
+        "supported": true,
+        "projection_facets_applied": [],
+        "projection_facets_missing": [],
+        "notes": [
+          "Adds gem-respeccable systems on top of account baseline; excludes loadout-only cards/modules."
+        ]
+      },
+      "input_count": 470,
+      "mapped_input_count": 461,
+      "resolved_stat_count": 0,
+      "partially_resolved_stat_count": 0
+    },
+    "start_of_run": {
+      "support": {
+        "state_mode": "start_of_run",
+        "supported": true,
+        "projection_facets_applied": [],
+        "projection_facets_missing": [],
+        "notes": [
+          "Current IDS preset with active loadout applied."
+        ]
+      },
+      "input_count": 542,
+      "mapped_input_count": 533,
+      "resolved_stat_count": 0,
+      "partially_resolved_stat_count": 0
+    },
+    "max_progression": {
+      "support": {
+        "state_mode": "max_progression",
+        "supported": true,
+        "projection_facets_applied": [
+          "max_workshop",
+          "projected_perks",
+          "death_wave_health",
+          "berserker_damage_bonus"
+        ],
+        "projection_facets_missing": [],
+        "notes": [
+          "Max progression projects workshop rows to max_level while preserving current permanent state and preset loadout.",
+          "Projected perk materialization is a first-class max-progression facet and must not be inferred solely from active_perk_preset presence.",
+          "Death Wave health behavior that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit side effect of workshop projection.",
+          "Berserker damage bonus state that differs from start_of_run must be modeled as an explicit scenario facet, not as an implicit runtime-only assumption."
+        ]
+      },
+      "input_count": 586,
+      "mapped_input_count": 576,
+      "resolved_stat_count": 0,
+      "partially_resolved_stat_count": 0
+    }
+  },
+  "stat_input_count": 542,
+  "statbook_row_count": 181,
+  "engine_status": null,
+  "qe_resolution_interface": "report_snapshot_planner",
+  "qe_resolution_backend": "report_snapshot_hybrid",
+  "qe_native_family_available": true,
+  "qe_native_family_id": "progression_start_of_run",
+  "qe_native_family_merge": null,
+  "publish_status": "forbidden_for_publish",
+  "formula_ledger_version": 2,
+  "ep_compare_stage_rules": {
+    "default_compare_preset": "Farming",
+    "preset_overrides": {
+      "state::tower.attack_speed": "Tourney",
+      "state::tower.crit_chance_pct": "Tourney",
+      "state::tower.crit_multiplier": "Tourney",
+      "state::tower.range_m": "Tourney",
+      "state::tower.damage_per_meter_multiplier": "Tourney",
+      "state::tower.multishot_chance_pct": "Tourney",
+      "state::tower.multishot_targets": "Tourney",
+      "state::tower.rapid_fire_chance_pct": "Tourney",
+      "state::tower.rapid_fire_duration_seconds": "Tourney",
+      "state::tower.bounce_shot_chance_pct": "Tourney",
+      "state::tower.bounce_shot_targets": "Tourney",
+      "state::tower.supercrit_chance_pct": "Tourney",
+      "state::tower.supercrit_multiplier": "Tourney",
+      "state::tower.damage": "Tourney",
+      "state::tower.package_chance_pct": "Tourney"
+    },
+    "ep_progression_state": "max_progression",
+    "ep_workshop_state": "derived_from_max_progression",
+    "ep_run_state_default": "farming",
+    "ep_run_state_tourney_offense": "tourney_present",
+    "package_compare_capability": {
+      "progression_state": "dynamic_current_or_projected_max_by_state_mode",
+      "workshop_state": "dynamic_current_or_projected_max_by_state_mode",
+      "perk_state": "auto",
+      "perk_mode": "max_progression_policy",
+      "perk_materialization": true,
+      "perk_ids_parser_support": false,
+      "perk_external_config_support": true,
+      "perk_account_state_support": true,
+      "perk_stat_input_support": true,
+      "perk_resolver_support": true,
+      "active_perk_preset": "Farming",
+      "state_mode": "start_of_run"
+    },
+    "notes": [
+      "EP export compare uses run-situation policy: offense surfaces use Tourney loadout with perks off; non-offense surfaces use Farming by default and follow the selected perk state/mode.",
+      "EP export max progression implies max workshop and farming-side perk application beyond the current IDS/loadout-present package state.",
+      "Perk policy is input-owned; pipeline selects explicit perk mode none|max_progression_policy|runtime_timeline.",
+      "Perk selections are not parsed from IDS itself; they must be supplied explicitly when a run state needs them.",
+      "Perk application is controlled at pipeline scope via --perk-mode plus --perk-state auto|on|off.",
+      "When values do not match and EP uses unsupported stage facets, compare status is stage_scope_mismatch rather than a hard formula mismatch.",
+      "Max Recovery EP export is treated as a non-comparable health-at-cap surface, not a multiplier."
+    ]
+  },
+  "destination_type_schema": {},
+  "mapped_stat_input_count": 533,
+  "unmapped_stat_input_count": 9,
+  "input_routing_class_counts": {
+    "account_metadata": 10,
+    "capability_policy": 13,
+    "intentionally_non_publish_runtime_only": 221,
+    "resolved": 289,
+    "truly_unrouted_unknown": 9
+  },
+  "resolved_stat_count": 0,
+  "partially_resolved_stat_count": 0,
+  "burn_down": {
+    "input_mapping_pct": 98.34,
+    "fully_resolved_surface_pct_of_inputs": 0.0,
+    "resolved_or_partial_surface_pct_of_inputs": 0.0,
+    "family_mapping_pct": {
+      "bot": {
+        "routed": 16,
+        "total": 16,
+        "pct": 100.0
+      },
+      "bot_unlock": {
+        "routed": 6,
+        "total": 6,
+        "pct": 100.0
+      },
+      "card": {
+        "routed": 20,
+        "total": 20,
+        "pct": 100.0
+      },
+      "enhancement": {
+        "routed": 20,
+        "total": 21,
+        "pct": 95.24
+      },
+      "guardian": {
+        "routed": 18,
+        "total": 18,
+        "pct": 100.0
+      },
+      "lab": {
+        "routed": 202,
+        "total": 210,
+        "pct": 96.19
+      },
+      "module": {
+        "routed": 17,
+        "total": 17,
+        "pct": 100.0
+      },
+      "module_substat": {
+        "routed": 35,
+        "total": 35,
+        "pct": 100.0
+      },
+      "player_stuff": {
+        "routed": 5,
+        "total": 5,
+        "pct": 100.0
+      },
+      "relic": {
+        "routed": 35,
+        "total": 35,
+        "pct": 100.0
+      },
+      "theme_song": {
+        "routed": 1,
+        "total": 1,
+        "pct": 100.0
+      },
+      "uw": {
+        "routed": 27,
+        "total": 27,
+        "pct": 100.0
+      },
+      "uw_plus": {
+        "routed": 9,
+        "total": 9,
+        "pct": 100.0
+      },
+      "uw_unlock": {
+        "routed": 9,
+        "total": 9,
+        "pct": 100.0
+      },
+      "vault": {
+        "routed": 65,
+        "total": 65,
+        "pct": 100.0
+      },
+      "workshop": {
+        "routed": 48,
+        "total": 48,
+        "pct": 100.0
+      }
+    },
+    "calculator_scope_total_inputs": 322,
+    "calculator_scope_mapped_inputs": 321,
+    "calculator_scope_mapping_pct": 99.69,
+    "calculator_scope_excluded_inputs": 220,
+    "calculator_scope_excluded_examples": [
+      "Amp Bot - Cooldown",
+      "Amp Bot - Duration",
+      "Amp Bot::Unlocked",
+      "Amplify Bot::Unlocked",
+      "Area of Effect Mastery",
+      "Armor Effect Bans",
+      "Armored Enemies",
+      "Assist Module Bonus - Armor",
+      "Assist Module Bonus - Cannon",
+      "Assist Module Bonus - Core",
+      "Assist Module Bonus - Generator",
+      "Assist Module Substats - Armor",
+      "Assist Module Substats - Cannon",
+      "Assist Module Substats - Core",
+      "Assist Module Substats - Generator",
+      "Attack Speed Mastery",
+      "Auto Pick Perks",
+      "Auto Pick Ranking",
+      "Ban Perks",
+      "Basic's Ultimate"
+    ],
+    "calculator_scope_family_totals": {
+      "bot": 16,
+      "card": 20,
+      "enhancement": 21,
+      "guardian": 18,
+      "lab": 16,
+      "module": 17,
+      "module_substat": 35,
+      "relic": 35,
+      "uw": 27,
+      "uw_plus": 9,
+      "vault": 60,
+      "workshop": 48
+    },
+    "calculator_scope_unmapped_examples": [
+      "Orb Size +"
+    ],
+    "note": "calculator_scope tracks true unrouted inputs only; routed metadata/capability/runtime-only classes no longer inflate unmapped counts."
+  },
+  "tests_passed": "not_run_by_run_stats",
+  "calculator_scope_mapping_pct": 99.69,
+  "calculator_scope_excluded_inputs": 220,
+  "calculator_scope_unmapped_examples": [
+    "Orb Size +"
+  ],
+  "card_slots_unlocked": 18,
+  "active_perk_preset": "Farming",
+  "configured_perk_presets": {
+    "Farming": [
+      "PERK_X1_20_MAX_HEALTH",
+      "PERK_X1_15_DAMAGE",
+      "PERK_X1_15_ALL_COIN_BONUSES",
+      "PERK_X1_15_DEFENSE_ABSOLUTE",
+      "PERK_X1_15_CASH_BONUS",
+      "PERK_X1_75_HEALTH_REGEN",
+      "PERK_INTEREST_X1_50",
+      "PERK_LAND_MINE_DAMAGE_X3_50",
+      "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+      "PERK_DEFENSE_PERCENT_4_00",
+      "PERK_BOUNCE_SHOT_2",
+      "PERK_PERK_WAVE_REQUIREMENT_20_00",
+      "PERK_ORBS_1",
+      "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+      "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+      "PERK_4_MORE_SMART_MISSILES",
+      "PERK_SWAMP_RADIUS_X1_5",
+      "PERK_1_WAVE_ON_DEATH_WAVE",
+      "PERK_EXTRA_SET_OF_INNER_MINES",
+      "PERK_GOLDEN_TOWER_BONUS_X1_5",
+      "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+      "PERK_CHRONO_FIELD_DURATION_5S",
+      "PERK_BLACK_HOLE_DURATION_12_0S",
+      "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+      "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+      "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+      "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+      "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+      "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+      "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+      "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+      "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70"
+    ]
+  },
+  "active_card_preset": "Farming",
+  "active_module_preset": "Farming",
+  "perk_input_file": "manual_inputs.yaml",
+  "compare_package_value_provenance": {
+    "statbook_default_output_preset": "Farming",
+    "ep_compare_uses_rows_by_preset": true,
+    "preset_overrides": {
+      "state::tower.attack_speed": "Tourney",
+      "state::tower.crit_chance_pct": "Tourney",
+      "state::tower.crit_multiplier": "Tourney",
+      "state::tower.range_m": "Tourney",
+      "state::tower.damage_per_meter_multiplier": "Tourney",
+      "state::tower.multishot_chance_pct": "Tourney",
+      "state::tower.multishot_targets": "Tourney",
+      "state::tower.rapid_fire_chance_pct": "Tourney",
+      "state::tower.rapid_fire_duration_seconds": "Tourney",
+      "state::tower.bounce_shot_chance_pct": "Tourney",
+      "state::tower.bounce_shot_targets": "Tourney",
+      "state::tower.supercrit_chance_pct": "Tourney",
+      "state::tower.supercrit_multiplier": "Tourney",
+      "state::tower.damage": "Tourney",
+      "state::tower.package_chance_pct": "Tourney"
+    },
+    "note": "ep_oracle_compare package_value may differ from statbook.json when compare_preset differs from the default output preset."
+  },
+  "kb_incomplete_areas": {
+    "summary": {
+      "blocked_formula_contract_count": 0,
+      "active_unmapped_input_count": 9,
+      "resolved_unknown_schema_unit_count": 0,
+      "ambiguous_relic_semantic_hint_count": 21
+    },
+    "priority_gaps": [
+      {
+        "source_family": "enhancement",
+        "stat_name": "Orb Size +",
+        "value_type": "resolved_value",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Attack - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Defense - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Utility - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Labs Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Attack Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Defense Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Enhancements",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Utility Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      }
+    ],
+    "blocked_formula_contracts": [],
+    "active_unmapped_by_family": {
+      "enhancement": 1,
+      "lab": 8
+    },
+    "active_unmapped_inputs": [
+      {
+        "source_family": "enhancement",
+        "stat_name": "Orb Size +",
+        "value_type": "resolved_value",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Attack - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Defense - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Enhancement Utility - Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Labs Coin Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Attack Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Defense Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Enhancements",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      },
+      {
+        "source_family": "lab",
+        "stat_name": "Workshop Utility Discount",
+        "value_type": "level",
+        "contributor_id": null,
+        "routing_class": "truly_unrouted_unknown"
+      }
+    ],
+    "resolved_unknown_schema_units": [],
+    "ambiguous_relic_semantic_hints": [
+      {
+        "registry_key": null,
+        "destination_id": "state::meta.lab_speed_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.ultimate_damage_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.attack_speed"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.crit_chance_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.crit_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.damage_per_meter_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.supercrit_chance_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.supercrit_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.rend_armor_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.defense_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.thorns_damage_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.knockback_force"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.orb_speed_rpm"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::economy.cash_kill_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::economy.coin_kill_multiplier"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.free_attack_upgrade_chance_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.free_defense_upgrade_chance_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.free_utility_upgrade_chance_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.recovery_amount_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.enemy_attack_level_skip_pct"
+      },
+      {
+        "registry_key": null,
+        "destination_id": "state::tower.enemy_health_level_skip_pct"
+      }
+    ],
+    "notes": [
+      "Active unmapped inputs are true unknown/unrouted calculator inputs without a destination contract in the current package.",
+      "Resolved rows with schema.unit=unknown are publishable bridges, but not convergence-grade clean contracts.",
+      "ambiguous_relic_semantic_hints lists KB registry rows that still admit multiple semantic interpretations and may need future wiki-backed tightening."
+    ]
+  },
+  "kb_gap_register": {
+    "summary": {
+      "Intentional non-goal / runtime-only surface": 7,
+      "KB contract ambiguous": 1,
+      "KB missing executable contract": 1,
+      "KB missing fact": 1
+    },
+    "entries": [
+      {
+        "gap_id": "unmapped::enhancement::Orb Size +",
+        "bucket": "KB missing fact",
+        "surface": "Orb Size +",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active enhancement input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Enhancement Attack - Coin Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Enhancement Attack - Coin Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Enhancement Defense - Coin Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Enhancement Defense - Coin Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Enhancement Utility - Coin Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Enhancement Utility - Coin Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Labs Coin Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Labs Coin Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Workshop Attack Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Workshop Attack Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Workshop Defense Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Workshop Defense Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Workshop Enhancements",
+        "bucket": "KB missing executable contract",
+        "surface": "Workshop Enhancements",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "unmapped::lab::Workshop Utility Discount",
+        "bucket": "Intentional non-goal / runtime-only surface",
+        "surface": "Workshop Utility Discount",
+        "files": [
+          "qe/stat_input_compiler.py",
+          "kb/global-rules/contracts/contributor-mappings-full.yaml",
+          "kb/labs/tables/lab-application-registry.csv",
+          "kb/cards/tables/card-effect-registry.csv",
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "Active lab input remains unmapped in current package.",
+        "why_it_matters": "Live calculator input is preserved but not yet closed into a governed destination contract.",
+        "what_would_close_it": "Either add the missing KB destination/contract coverage or route the input through existing KB contracts in the compiler.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      },
+      {
+        "gap_id": "ambiguous_relic::None",
+        "bucket": "KB contract ambiguous",
+        "surface": "state::meta.lab_speed_multiplier",
+        "files": [
+          "kb/global-rules/tables/relic-input-registry.csv"
+        ],
+        "evidence": "semantic_unit_hint remains percent_points_or_pct_bonus for None",
+        "why_it_matters": "Ambiguous relic semantics can block strict fail-closed destination formulas.",
+        "what_would_close_it": "Resolve the relic semantic hint to a single contract form using KB evidence and wiki verification where needed.",
+        "changed_in_this_iteration": false,
+        "verification_source": "package KB only"
+      }
+    ]
+  },
+  "blocked_formula_contract_count": 0,
+  "active_unmapped_input_count": 9,
+  "resolved_unknown_schema_unit_count": 0,
+  "ambiguous_relic_semantic_hint_count": 21,
+  "perk_support": {
+    "progression_state": "dynamic_current_or_projected_max_by_state_mode",
+    "workshop_state": "dynamic_current_or_projected_max_by_state_mode",
+    "perk_state": "auto",
+    "perk_mode": "max_progression_policy",
+    "perk_materialization": true,
+    "perk_ids_parser_support": false,
+    "perk_external_config_support": true,
+    "perk_account_state_support": true,
+    "perk_stat_input_support": true,
+    "perk_resolver_support": true,
+    "active_perk_preset": "Farming",
+    "state_mode": "start_of_run"
+  },
+  "card_preset_sizes": {
+    "Tourney": 18,
+    "Farming": 18,
+    "Milestone": 0,
+    "Preset 4": 0,
+    "Preset 5": 0
+  },
+  "card_slot_limit_exceeded": {},
+  "mapped_count_by_family": {
+    "bot": 16,
+    "bot_unlock": 6,
+    "card": 20,
+    "enhancement": 20,
+    "guardian": 18,
+    "lab": 202,
+    "module": 17,
+    "module_substat": 35,
+    "player_stuff": 5,
+    "relic": 35,
+    "theme_song": 1,
+    "uw": 27,
+    "uw_plus": 9,
+    "uw_unlock": 9,
+    "vault": 65,
+    "workshop": 48
+  },
+  "total_count_by_family": {
+    "bot": 16,
+    "bot_unlock": 6,
+    "card": 20,
+    "enhancement": 21,
+    "guardian": 18,
+    "lab": 210,
+    "module": 17,
+    "module_substat": 35,
+    "player_stuff": 5,
+    "relic": 35,
+    "theme_song": 1,
+    "uw": 27,
+    "uw_plus": 9,
+    "uw_unlock": 9,
+    "vault": 65,
+    "workshop": 48
+  },
+  "unmapped_example_by_family": {
+    "lab": "Workshop Attack Discount",
+    "enhancement": "Orb Size +"
+  },
+  "ep_compare_summary": {
+    "ep_compare_count": 26,
+    "ep_compare_status_counts": {
+      "missing_from_package": 18,
+      "non_comparable": 3,
+      "non_numeric_compare": 1,
+      "stage_scope_mismatch": 4
+    },
+    "ep_mismatch_count": 26,
+    "ep_true_formula_mismatch_count": 0,
+    "ep_formula_blocked_count": 0,
+    "ep_stage_scope_mismatch_count": 4,
+    "ep_non_comparable_count": 3,
+    "ep_missing_from_package_count": 18
+  },
+  "ep_compare_count": 26,
+  "ep_compare_status_counts": {
+    "missing_from_package": 18,
+    "non_comparable": 3,
+    "non_numeric_compare": 1,
+    "stage_scope_mismatch": 4
+  },
+  "ep_mismatch_count": 26,
+  "ep_true_formula_mismatch_count": 0,
+  "ep_formula_blocked_count": 0,
+  "ep_stage_scope_mismatch_count": 4,
+  "ep_non_comparable_count": 3,
+  "ep_missing_from_package_count": 18,
+  "ep_compare_projection_views": {
+    "current_state_mode": {
+      "state_mode": "start_of_run",
+      "perk_state": "auto",
+      "active_perk_preset": "Farming",
+      "ep_compare_count": 26,
+      "ep_compare_status_counts": {
+        "missing_from_package": 18,
+        "non_comparable": 3,
+        "non_numeric_compare": 1,
+        "stage_scope_mismatch": 4
+      },
+      "ep_mismatch_count": 26,
+      "ep_true_formula_mismatch_count": 0,
+      "ep_formula_blocked_count": 0,
+      "ep_stage_scope_mismatch_count": 4,
+      "ep_non_comparable_count": 3,
+      "ep_missing_from_package_count": 18
+    },
+    "projected_max_progression": {
+      "state_mode": "max_progression",
+      "perk_state": "auto",
+      "active_perk_preset": "Farming",
+      "ep_compare_count": 26,
+      "ep_compare_status_counts": {
+        "matched_exact": 1,
+        "mismatch": 3,
+        "missing_from_package": 18,
+        "non_comparable": 3,
+        "non_numeric_compare": 1
+      },
+      "ep_mismatch_count": 25,
+      "ep_true_formula_mismatch_count": 3,
+      "ep_formula_blocked_count": 0,
+      "ep_stage_scope_mismatch_count": 0,
+      "ep_non_comparable_count": 3,
+      "ep_missing_from_package_count": 18
+    }
+  },
+  "lineage_backed_run_perk_destinations": [],
+  "compare_layer_destination_unit_inconsistencies": [
+    {
+      "destination": "state::tower.damage",
+      "issue": "missing_from_package",
+      "ep_label": "Damage"
+    },
+    {
+      "destination": "state::tower.attack_speed",
+      "issue": "missing_from_package",
+      "ep_label": "Attack Speed"
+    },
+    {
+      "destination": "state::tower.crit_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Critical Chance"
+    },
+    {
+      "destination": "state::tower.crit_multiplier",
+      "issue": "missing_from_package",
+      "ep_label": "Critical Factor"
+    },
+    {
+      "destination": "state::tower.range_m",
+      "issue": "missing_from_package",
+      "ep_label": "Range"
+    },
+    {
+      "destination": "state::tower.damage_per_meter_multiplier",
+      "issue": "missing_from_package",
+      "ep_label": "Damage / Meter"
+    },
+    {
+      "destination": "state::tower.multishot_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Multishot Chance"
+    },
+    {
+      "destination": "state::tower.multishot_targets",
+      "issue": "missing_from_package",
+      "ep_label": "Multishot Targets"
+    },
+    {
+      "destination": "state::tower.rapid_fire_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Rapid Fire Chance"
+    },
+    {
+      "destination": "state::tower.rapid_fire_duration_seconds",
+      "issue": "missing_from_package",
+      "ep_label": "Rapid Fire Duration"
+    },
+    {
+      "destination": "state::tower.bounce_shot_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Bounce Shot Chance"
+    },
+    {
+      "destination": "state::tower.bounce_shot_targets",
+      "issue": "missing_from_package",
+      "ep_label": "Bounce Shot Targets"
+    },
+    {
+      "destination": "state::tower.supercrit_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Super Crit Chance"
+    },
+    {
+      "destination": "state::tower.supercrit_multiplier",
+      "issue": "missing_from_package",
+      "ep_label": "Super Crit Multiplier"
+    },
+    {
+      "destination": "state::tower.package_chance_pct",
+      "issue": "missing_from_package",
+      "ep_label": "Recovery Package Chance"
+    },
+    {
+      "destination": "state::tower.hp",
+      "issue": "stage_scope_gap",
+      "unsupported_facets": [
+        "max_progression",
+        "max_workshop"
+      ],
+      "compare_preset": "Farming",
+      "status": "stage_scope_mismatch"
+    },
+    {
+      "destination": "state::tower.regen",
+      "issue": "missing_from_package",
+      "ep_label": "Health Regen"
+    },
+    {
+      "destination": "state::tower.defense_absolute",
+      "issue": "missing_from_package",
+      "ep_label": "Defense Absolute"
+    },
+    {
+      "destination": "state::tower.defense_pct",
+      "issue": "ep_decimal_fraction_percent_surface",
+      "package_unit": "pct",
+      "ep_type": "number",
+      "normalized_ep_percent_points": 98.0,
+      "package_value": 78.4,
+      "status": "stage_scope_mismatch"
+    },
+    {
+      "destination": "state::tower.defense_pct",
+      "issue": "stage_scope_gap",
+      "unsupported_facets": [
+        "max_progression",
+        "max_workshop"
+      ],
+      "compare_preset": "Farming",
+      "status": "stage_scope_mismatch"
+    },
+    {
+      "destination": "derived::wall.hp_pre_fort",
+      "issue": "stage_scope_gap",
+      "unsupported_facets": [
+        "max_progression",
+        "max_workshop"
+      ],
+      "compare_preset": "Farming",
+      "status": "stage_scope_mismatch"
+    },
+    {
+      "destination": "state::wall.fortification_multiplier",
+      "issue": "non_numeric_compare",
+      "compare_preset": "Farming"
+    },
+    {
+      "destination": "state::wall.regen",
+      "issue": "stage_scope_gap",
+      "unsupported_facets": [
+        "max_progression",
+        "max_workshop"
+      ],
+      "compare_preset": "Farming",
+      "status": "stage_scope_mismatch"
+    },
+    {
+      "destination": "state::economy.coins_per_kill_bonus",
+      "issue": "missing_from_package",
+      "ep_label": "Coins / Kill Bonus"
+    },
+    {
+      "destination": "state::tower.free_attack_upgrade_chance_pct",
+      "issue": "non_comparable",
+      "compare_preset": "Farming"
+    },
+    {
+      "destination": "state::tower.free_defense_upgrade_chance_pct",
+      "issue": "non_comparable",
+      "compare_preset": "Farming"
+    },
+    {
+      "destination": "state::tower.free_utility_upgrade_chance_pct",
+      "issue": "non_comparable",
+      "compare_preset": "Farming"
+    }
+  ],
+  "audits": {
+    "mapped_rows_still_level": [
+      {
+        "source_family": "lab",
+        "source_name": "Orbs Speed",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.orb_speed_bonus",
+        "value": 20.0,
+        "notes": "kb_lab_routed_level_pending_value:Orbs Speed"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Land Mine Damage",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.land_mine_damage_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Land Mine Damage"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Land Mine Decay",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.land_mine_decay_seconds",
+        "value": 13.0,
+        "notes": "kb_lab_routed_level_pending_value:Land Mine Decay"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Shockwave Size",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.shockwave_size_bonus",
+        "value": 20.0,
+        "notes": "kb_lab_routed_level_pending_value:Shockwave Size"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Orb Boss Hit",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.orb_boss_hit_enabled",
+        "value": 10.0,
+        "notes": "kb_lab_routed_level_pending_value:Orb Boss Hit"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Second Wind Blast",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.second_wind_blast_pct",
+        "value": 4.0,
+        "notes": "kb_lab_routed_level_pending_value:Second Wind Blast"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Energy Shield Extra Hit",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.energy_shield_extra_hit",
+        "value": 2.0,
+        "notes": "kb_lab_routed_level_pending_value:Energy Shield Extra Hit"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Super Tower Bonus",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.super_tower_bonus_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Super Tower Bonus"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Recharge Second Wind",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.recharge_second_wind_waves",
+        "value": 7.0,
+        "notes": "kb_lab_routed_level_pending_value:Recharge Second Wind"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Recharge Demon Mode",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.recharge_demon_mode_waves",
+        "value": 4.0,
+        "notes": "kb_lab_routed_level_pending_value:Recharge Demon Mode"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Recharge Nuke",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "lab.recharge_nuke_waves",
+        "value": 2.0,
+        "notes": "kb_lab_routed_level_pending_value:Recharge Nuke"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Flame Bot - Burn Stack",
+        "destination_object_type": "runtime_mechanic_param",
+        "destination_id": "bot.flame_bot.lab_burn_stack",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Flame Bot - Burn Stack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Common Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.common.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Common Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Common Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.common.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Common Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Fast Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.fast.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Fast Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Fast Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.fast.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Fast Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Fast Enemy Speed",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.fast.speed_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Fast Enemy Speed"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Tank Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.tank.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Tank Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Tank Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.tank.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Tank Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ranged Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.ranged.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ranged Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ranged Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.ranged.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ranged Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Boss Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.boss.health_multiplier_lab",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Boss Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Boss Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.boss.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Boss Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Protector Health",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "enemy.protector.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Protector Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Protector Radius",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "enemy.protector.radius_m",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Protector Radius"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Protector Damage Reduction",
+        "destination_object_type": "mechanic_param",
+        "destination_id": "enemy.protector.damage_reduction_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Protector Damage Reduction"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ray Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.ray.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ray Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ray Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.ray.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ray Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Vampire Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.vampire.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Vampire Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Vampire Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.vampire.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Vampire Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Scatter Enemy Attack",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.scatter.attack_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Scatter Enemy Attack"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Scatter Enemy Health",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.scatter.health_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Scatter Enemy Health"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ranged Enemy Range",
+        "destination_object_type": "environment_param",
+        "destination_id": "enemy.ranged.range_multiplier",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ranged Enemy Range"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Knockback Resistance",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.knockback_resistance_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Knockback Resistance"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Thorns Resistance",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.thorns_resistance_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Thorns Resistance"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Orb Resistance",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.orb_resistance_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Orb Resistance"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Plasma Cannon Resistance",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.plasma_cannon_resistance_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Plasma Cannon Resistance"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Death Ray Resistance",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.death_ray_resistance_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Death Ray Resistance"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Armored Enemies",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.armored_enemies_blocked_hits",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Armored Enemies"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Enemy Speed",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.enemy_speed_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Enemy Speed"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "More Enemies",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.more_enemies_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:More Enemies"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Enemy Attack Speed",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.enemy_attack_speed_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Enemy Attack Speed"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Ultimate Weapon Durations",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.uw_duration_reduction_seconds",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Ultimate Weapon Durations"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Death Defy Down",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.death_defy_down_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Death Defy Down"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Energy Shields Down",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.energy_shields_down_pct",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Energy Shields Down"
+      },
+      {
+        "source_family": "lab",
+        "source_name": "Enemy Level Skip Reduction",
+        "destination_object_type": "environment_param",
+        "destination_id": "bc.enemy_level_skip_reduction_pp",
+        "value": 0,
+        "notes": "kb_uw_lab_direct_routed:Enemy Level Skip Reduction"
+      },
+      {
+        "source_family": "workshop",
+        "source_name": "Defense Absolute",
+        "destination_object_type": "canonical_stat",
+        "destination_id": "tower_defense_absolute",
+        "value": 5000,
+        "notes": "unresolved_workshop_level_no_value_formula"
+      }
+    ],
+    "resolved_stats_with_unresolved_contributors": [
+      {
+        "destination": "derived::ehp.armor_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.armor_factor",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.armor_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.armor_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.dabs_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.defense_absolute",
+            "source_family": "published_surface",
+            "source_name": "state::tower.defense_absolute",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.dabs_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.chrono_field_uptime",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chrono_field.duration_seconds",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chrono_field.duration_seconds",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.chrono_field_uptime",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.chrono_field_damage_reduction_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chrono_field.damage_reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.chrono_field_damage_reduction_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.wall_invuln_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.wall_invuln_reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.wall_invuln_reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.wall_invuln_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.chain_thunder_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chain_thunder.reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chain_thunder.reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.chain_thunder_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp.tradeoff_defense_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::perk.tradeoff_defense_factor",
+            "source_family": "published_surface",
+            "source_name": "state::perk.tradeoff_defense_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.tradeoff_defense_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cf_armor_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::ehp.armor_factor",
+            "source_family": "published_surface",
+            "source_name": "support_surface::ehp.armor_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cf_armor_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cg_dabs_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.defense_absolute",
+            "source_family": "published_surface",
+            "source_name": "state::tower.defense_absolute",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cg_dabs_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.ck_tradeoff_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::perk.tradeoff_defense_factor",
+            "source_family": "published_surface",
+            "source_name": "state::perk.tradeoff_defense_factor",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_ck_tradeoff_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cl_cfdr_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chrono_field.damage_reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chrono_field.damage_reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cl_cfdr_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::ehp_ep_helper.cm_chain_thunder_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chain_thunder.reduction_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chain_thunder.reduction_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "ehp.ep_cm_chain_thunder_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.base_damage_stack",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.damage",
+            "source_family": "published_surface",
+            "source_name": "state::tower.damage",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.base_damage_stack",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.acp_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::module.anti_cube_portal.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::module.anti_cube_portal.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.acp_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.bullet_crit_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.crit_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.crit_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bullet_crit_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::tower.supercrit_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.supercrit_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bullet_crit_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.bullet_per_second",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.attack_speed",
+            "source_family": "published_surface",
+            "source_name": "state::tower.attack_speed",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bullet_per_second",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.multishot_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.multishot_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.multishot_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.multishot_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::tower.multishot_targets",
+            "source_family": "published_surface",
+            "source_name": "state::tower.multishot_targets",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.multishot_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.bounce_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.bounce_shot_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.bounce_shot_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bounce_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::tower.bounce_shot_targets",
+            "source_family": "published_surface",
+            "source_name": "state::tower.bounce_shot_targets",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bounce_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.rapidfire_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.rapid_fire_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.rapid_fire_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.rapidfire_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::tower.rapid_fire_duration_seconds",
+            "source_family": "published_surface",
+            "source_name": "state::tower.rapid_fire_duration_seconds",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.rapidfire_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.range_dpm_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.damage_per_meter_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::tower.damage_per_meter_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.range_dpm_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::tower.range_m",
+            "source_family": "published_surface",
+            "source_name": "state::tower.range_m",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.range_dpm_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_light_range_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.light_range",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.light_range",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_light_range_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.quantity",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::uw.spotlight.angle_degrees",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.angle_degrees",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.super_tower_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::cards.super_tower.bonus_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::cards.super_tower.bonus_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.super_tower_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.rend_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::rend.lab_level",
+            "source_family": "published_surface",
+            "source_name": "state::rend.lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.rend_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.bullet_pipeline_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.attack_speed",
+            "source_family": "published_surface",
+            "source_name": "state::tower.attack_speed",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.bullet_pipeline_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.spotlight_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.spotlight_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.death_wave_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.death_wave.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.death_wave.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.death_wave_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.chain_lightning_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chain_lightning.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chain_lightning.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.chain_lightning_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.smart_missiles_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.smart_missiles.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.smart_missiles.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.smart_missiles_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.spotlight_missiles_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight_missiles.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight_missiles.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.spotlight_missiles_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.poison_swamp_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.poison_swamp.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.poison_swamp.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.poison_swamp_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw.ilm_dps",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.inner_land_mines.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.inner_land_mines.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw.ilm_dps",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw_total_damage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chain_lightning.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chain_lightning.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw_total_damage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.uw_crit_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.crit_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.crit_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.uw_crit_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage.slow_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chrono_field.slow_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chrono_field.slow_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.slow_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_light_range_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.light_range",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.light_range",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_light_range_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dx_spotlight_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.quantity",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "state::uw.spotlight.angle_degrees",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.angle_degrees",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage.ep_dx_spotlight_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dc_base_damage_stack",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.damage",
+            "source_family": "published_surface",
+            "source_name": "state::tower.damage",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.dc_base_damage_stack",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.di_bullet_crit_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.crit_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.crit_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.di_bullet_crit_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dj_uw_crit_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.crit_chance_pct",
+            "source_family": "published_surface",
+            "source_name": "state::tower.crit_chance_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.dj_uw_crit_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.attack_speed",
+            "source_family": "published_surface",
+            "source_name": "state::tower.attack_speed",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.dv_bullet_pipeline_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.ei_uw_total_damage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chain_lightning.damage_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chain_lightning.damage_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.ei_uw_total_damage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep_helper.el_slow_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.chrono_field.slow_pct",
+            "source_family": "published_surface",
+            "source_name": "state::uw.chrono_field.slow_pct",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep_helper.el_slow_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.damage",
+            "source_family": "published_surface",
+            "source_name": "state::tower.damage",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::edamage_ep",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::tower.damage",
+            "source_family": "published_surface",
+            "source_name": "state::tower.damage",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "edamage_ep",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.cpk_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::economy.coin_kill_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::economy.coin_kill_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.cpk_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.coin_card_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::cards.coins.multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::cards.coins.multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.coin_card_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.spotlight_coin_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.spotlight_coin_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_quantity",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "support_surface::eecon.sl_angle",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_angle",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.spotlight_coin_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.coin_bonus_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.coin_bonus_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.spotlight_coin_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep_helper.dg_spotlight_coin_bonus_term",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_coin_bonus_lab_level",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_bonus_term",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep_helper.dg_spotlight_coin_coverage",
+        "unresolved_contributors": [
+          {
+            "stat_name": "support_surface::eecon.sl_quantity",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_quantity",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          },
+          {
+            "stat_name": "support_surface::eecon.sl_angle",
+            "source_family": "published_surface",
+            "source_name": "support_surface::eecon.sl_angle",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_coverage",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep_helper.dg_spotlight_coin_factor",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::uw.spotlight.coin_bonus_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::uw.spotlight.coin_bonus_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep_helper.dg_spotlight_coin_factor",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon.base_coin_income",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::economy.coin_kill_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::economy.coin_kill_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon.base_coin_income",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::economy.coin_kill_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::economy.coin_kill_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      },
+      {
+        "destination": "derived::eecon_ep",
+        "unresolved_contributors": [
+          {
+            "stat_name": "state::economy.coin_kill_multiplier",
+            "source_family": "published_surface",
+            "source_name": "state::economy.coin_kill_multiplier",
+            "value": null,
+            "value_type": null,
+            "stage": "derived_surface_publication",
+            "destination_object_type": "derived",
+            "destination_id": "eecon_ep",
+            "resolver_id": "query_derived_composites",
+            "kb_mapped": false,
+            "display_value": null
+          }
+        ]
+      }
+    ],
+    "capability_destinations_non_boolean": [],
+    "blocked_boolean_type_mismatches": [],
+    "compare_layer_destination_unit_inconsistencies": [
+      {
+        "destination": "state::tower.damage",
+        "issue": "missing_from_package",
+        "ep_label": "Damage"
+      },
+      {
+        "destination": "state::tower.attack_speed",
+        "issue": "missing_from_package",
+        "ep_label": "Attack Speed"
+      },
+      {
+        "destination": "state::tower.crit_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Critical Chance"
+      },
+      {
+        "destination": "state::tower.crit_multiplier",
+        "issue": "missing_from_package",
+        "ep_label": "Critical Factor"
+      },
+      {
+        "destination": "state::tower.range_m",
+        "issue": "missing_from_package",
+        "ep_label": "Range"
+      },
+      {
+        "destination": "state::tower.damage_per_meter_multiplier",
+        "issue": "missing_from_package",
+        "ep_label": "Damage / Meter"
+      },
+      {
+        "destination": "state::tower.multishot_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Multishot Chance"
+      },
+      {
+        "destination": "state::tower.multishot_targets",
+        "issue": "missing_from_package",
+        "ep_label": "Multishot Targets"
+      },
+      {
+        "destination": "state::tower.rapid_fire_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Rapid Fire Chance"
+      },
+      {
+        "destination": "state::tower.rapid_fire_duration_seconds",
+        "issue": "missing_from_package",
+        "ep_label": "Rapid Fire Duration"
+      },
+      {
+        "destination": "state::tower.bounce_shot_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Bounce Shot Chance"
+      },
+      {
+        "destination": "state::tower.bounce_shot_targets",
+        "issue": "missing_from_package",
+        "ep_label": "Bounce Shot Targets"
+      },
+      {
+        "destination": "state::tower.supercrit_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Super Crit Chance"
+      },
+      {
+        "destination": "state::tower.supercrit_multiplier",
+        "issue": "missing_from_package",
+        "ep_label": "Super Crit Multiplier"
+      },
+      {
+        "destination": "state::tower.package_chance_pct",
+        "issue": "missing_from_package",
+        "ep_label": "Recovery Package Chance"
+      },
+      {
+        "destination": "state::tower.hp",
+        "issue": "stage_scope_gap",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "compare_preset": "Farming",
+        "status": "stage_scope_mismatch"
+      },
+      {
+        "destination": "state::tower.regen",
+        "issue": "missing_from_package",
+        "ep_label": "Health Regen"
+      },
+      {
+        "destination": "state::tower.defense_absolute",
+        "issue": "missing_from_package",
+        "ep_label": "Defense Absolute"
+      },
+      {
+        "destination": "state::tower.defense_pct",
+        "issue": "ep_decimal_fraction_percent_surface",
+        "package_unit": "pct",
+        "ep_type": "number",
+        "normalized_ep_percent_points": 98.0,
+        "package_value": 78.4,
+        "status": "stage_scope_mismatch"
+      },
+      {
+        "destination": "state::tower.defense_pct",
+        "issue": "stage_scope_gap",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "compare_preset": "Farming",
+        "status": "stage_scope_mismatch"
+      },
+      {
+        "destination": "derived::wall.hp_pre_fort",
+        "issue": "stage_scope_gap",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "compare_preset": "Farming",
+        "status": "stage_scope_mismatch"
+      },
+      {
+        "destination": "state::wall.fortification_multiplier",
+        "issue": "non_numeric_compare",
+        "compare_preset": "Farming"
+      },
+      {
+        "destination": "state::wall.regen",
+        "issue": "stage_scope_gap",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "compare_preset": "Farming",
+        "status": "stage_scope_mismatch"
+      },
+      {
+        "destination": "state::economy.coins_per_kill_bonus",
+        "issue": "missing_from_package",
+        "ep_label": "Coins / Kill Bonus"
+      },
+      {
+        "destination": "state::tower.free_attack_upgrade_chance_pct",
+        "issue": "non_comparable",
+        "compare_preset": "Farming"
+      },
+      {
+        "destination": "state::tower.free_defense_upgrade_chance_pct",
+        "issue": "non_comparable",
+        "compare_preset": "Farming"
+      },
+      {
+        "destination": "state::tower.free_utility_upgrade_chance_pct",
+        "issue": "non_comparable",
+        "compare_preset": "Farming"
+      }
+    ]
+  },
+  "line_verification_summary": {
+    "blocked": 62,
+    "not_resolved": 3,
+    "publishable": 116
+  },
+  "slow_audits": {
+    "include_slow_audits": false,
+    "compare_situation_fit_matrix": "skipped_by_default"
+  },
+  "presentation": {
+    "scope": "display_fields_only",
+    "raw_value_policy": "preserve_full_precision_raw_numeric_values",
+    "abbreviations": [
+      "k",
+      "M",
+      "B",
+      "T",
+      "q",
+      "Q",
+      "s",
+      "S"
+    ],
+    "percent_policy": "pct_and_percent_display_render_with_percent_sign",
+    "multiplier_policy": "multiplier_and_multiplier_display_render_with_leading_x"
+  },
+  "kb_only_health_family_audit": {
+    "scope": "kb_only_health_family_audit",
+    "display_rule": "rendered/exported display fields use k, M, B, T, q, Q, s, S abbreviations; raw numeric values remain unchanged",
+    "strict_kb_publish_recommendation": {
+      "block_destinations": [],
+      "allow_destinations": [
+        "package_chance_pct",
+        "tower_hp",
+        "tower_regen",
+        "wall_hp",
+        "wall_regen"
+      ],
+      "reason": "Strict KB-only governance now allows the health family to publish because the specific KB contract ambiguities were repaired with wiki-verified semantics."
+    },
+    "surfaces": {
+      "tower_hp": {
+        "status": "resolved",
+        "final_value": 1116758532848.2915,
+        "display_value": "1.12T",
+        "contributor_families": [],
+        "contributors": [
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 1.0,
+            "display_value": "1%",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 4.0,
+            "display_value": "4",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 1.62,
+            "display_value": "1.62",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 3.04,
+            "display_value": "3.04",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 1.00466,
+            "display_value": "x1.005",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 10.04,
+            "display_value": "x10.04",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 1.51,
+            "display_value": "1.51%",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 3722038992.18371,
+            "display_value": "3.72B",
+            "value_type": "scalar",
+            "notes": null
+          }
+        ]
+      },
+      "wall_hp": {
+        "status": "resolved",
+        "final_value": 528348105.33120006,
+        "display_value": "528M",
+        "contributor_families": [],
+        "contributors": [
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 1.62,
+            "display_value": "1.62",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 100.0,
+            "display_value": "100%",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 10.4,
+            "display_value": "x10.4",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 2.0,
+            "display_value": "2%",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 120.0,
+            "display_value": "120%",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 10.04,
+            "display_value": "x10.04",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 154.0,
+            "display_value": "154",
+            "value_type": "scalar",
+            "notes": null
+          }
+        ]
+      },
+      "wall_regen": {
+        "status": "resolved",
+        "final_value": 2108.3999999999996,
+        "display_value": "2.11k",
+        "contributor_families": [],
+        "contributors": [
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 210.0,
+            "display_value": "210",
+            "value_type": "scalar",
+            "notes": null
+          },
+          {
+            "source_family": null,
+            "source_name": null,
+            "value": 10.04,
+            "display_value": "x10.04",
+            "value_type": "scalar",
+            "notes": null
+          }
+        ]
+      }
+    },
+    "unmapped_relevant_rows": [],
+    "findings": [
+      {
+        "severity": "high",
+        "surface": "package_chance_pct",
+        "finding": "Workshop package-chance formula was inconsistent with KB and corrected in this iteration.",
+        "kb_basis": "KB workshop summary states 6% base and +0.40 percentage points per level, max 30% workshop-only.",
+        "fix_applied": "WORKSHOP_FORMULA_VALUES['Package Chance'] changed from 10 + 0.5*level to 6 + 0.4*level."
+      },
+      {
+        "severity": "high",
+        "surface": "tower_hp",
+        "finding": "tower_hp relic semantics were previously too vague in the KB. They are now repaired to explicit pct_bonus semantics, consistent with live-wiki guidance that relic bonuses are additive with similar relics and multiplicative with other bonuses.",
+        "kb_basis": "kb/global-rules/tables/relic-input-registry.csv now uses semantic_unit_hint pct_bonus for relic__tower__health__pct.",
+        "fix_applied": "Publish policy re-enabled in the destination formula ledger."
+      },
+      {
+        "severity": "high",
+        "surface": "tower_regen",
+        "finding": "tower_regen relic semantics were previously too vague in the KB. They are now repaired to explicit pct_bonus semantics, consistent with live-wiki guidance that relic bonuses are additive with similar relics and multiplicative with other bonuses.",
+        "kb_basis": "kb/global-rules/tables/relic-input-registry.csv now uses semantic_unit_hint pct_bonus for relic__tower__health_regen__pct.",
+        "fix_applied": "Publish policy re-enabled in the destination formula ledger."
+      },
+      {
+        "severity": "high",
+        "surface": "wall_hp",
+        "finding": "wall_hp KB semantics were repaired by aligning Wall Health lab application metadata to the wiki-verified percent ladder.",
+        "kb_basis": "kb/labs/tables/lab-application-registry.csv now classifies LAB_WALL_HEALTH as additive_percent_points / percent_points and points to the dedicated wall-health table.",
+        "fix_applied": "Publish policy re-enabled in the destination formula ledger."
+      },
+      {
+        "severity": "high",
+        "surface": "wall_regen",
+        "finding": "wall_regen can publish again because upstream tower_regen contract ambiguity was repaired and the wall-regen lab was already represented as a percent ladder in the KB.",
+        "kb_basis": "Current phase-3 override derives wall_regen from tower_regen multiplied by wall-only contributors; wall regen lab table remains wiki-verified percent values.",
+        "fix_applied": "Publish policy re-enabled in the destination formula ledger."
+      }
+    ]
+  },
+  "kb_only_damage_defense_absolute_scope_audit": {
+    "scope": "kb_only_damage_defense_absolute_scope_audit",
+    "active_preset": "Farming",
+    "surfaces": {
+      "tower_damage": {
+        "status": null,
+        "final_value": null,
+        "display_value": null,
+        "admissible_families": [
+          "workshop",
+          "lab",
+          "card",
+          "module",
+          "enhancement",
+          "relic",
+          "vault"
+        ],
+        "active_contributor_families": [],
+        "active_contributor_names": [],
+        "missing_admissible_families_in_active_preset": [
+          "workshop",
+          "lab",
+          "card",
+          "module",
+          "enhancement",
+          "relic",
+          "vault"
+        ],
+        "unmapped_rows_bound_to_surface": [],
+        "inactive_admissible_contributors": {
+          "damage_card": {
+            "owned_in_inventory": true,
+            "inventory_level": 7,
+            "active_in_current_preset": false,
+            "other_presets_with_card_active": [
+              "Tourney"
+            ]
+          }
+        }
+      },
+      "tower_defense_absolute": {
+        "status": null,
+        "final_value": null,
+        "display_value": null,
+        "admissible_families": [
+          "workshop",
+          "lab",
+          "module_substat",
+          "enhancement",
+          "relic",
+          "vault"
+        ],
+        "active_contributor_families": [],
+        "active_contributor_names": [],
+        "missing_admissible_families_in_active_preset": [
+          "workshop",
+          "lab",
+          "module_substat",
+          "enhancement",
+          "relic",
+          "vault"
+        ],
+        "unmapped_rows_bound_to_surface": [],
+        "inactive_admissible_contributors": {
+          "active_armor_module_defense_absolute_substats": []
+        }
+      }
+    },
+    "findings": [
+      {
+        "severity": "medium",
+        "surface": "tower_damage",
+        "finding": "Damage card is owned but not active in the current preset, so card-family damage contribution is legitimately absent from this stat path.",
+        "kb_basis": "kb/cards/tables/card-effect-registry.csv routes DAMAGE base-card effect to tower.damage_multiplier and kb/cards/tables/card-base-ladders.csv provides the ladder.",
+        "evidence_in_account": {
+          "active_preset": "Farming",
+          "damage_card_inventory_level": 7,
+          "other_presets_with_card_active": [
+            "Tourney"
+          ]
+        },
+        "fix_applied": "No formula patch applied; audit surfaced preset-scoped contributor absence only."
+      },
+      {
+        "severity": "info",
+        "surface": "tower_defense_absolute",
+        "finding": "No active armor-module Defense Absolute substat exists in the current preset, so module-substat contribution is legitimately absent from tower_defense_absolute.",
+        "kb_basis": "kb/modules/tables/module-substats.csv defines Armor -> Defense Absolute as an admissible routed family when present.",
+        "evidence_in_account": {
+          "active_preset": "Farming",
+          "active_armor_modules": [
+            {
+              "role": "primary",
+              "module_name": "Sharp Fortitude"
+            },
+            {
+              "role": "assist",
+              "module_name": "Orbital Augment"
+            }
+          ]
+        },
+        "fix_applied": "No formula patch applied; audit surfaced current-preset contributor absence only."
+      }
+    ]
+  },
+  "perk_coverage_audit": {
+    "entity_count": 34,
+    "effect_count": 45,
+    "input_file": null,
+    "active_perk_state_source": "input_owned_perk_surface",
+    "summary_by_coverage": {
+      "compile_gap": 45
+    },
+    "summary_by_destination_object_type": {
+      "canonical_stat": 22,
+      "capability": 1,
+      "environment_param": 9,
+      "mechanic_param": 6,
+      "runtime_mechanic_param": 7
+    },
+    "all_perks_compile_audit_row_count": 0,
+    "perks": [
+      {
+        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
+        "perk_name": "+1 Wave on Death Wave",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_death_wave_waves",
+            "operation": "count_add",
+            "effect_value": "1",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.death_wave.effect_wave_count",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_4_MORE_SMART_MISSILES",
+        "perk_name": "4 More Smart Missiles",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_smart_missiles",
+            "operation": "count_add",
+            "effect_value": "4",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "uw.smart_missiles.extra_missiles",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
+        "perk_name": "Black Hole Duration +12.0s",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_black_hole_duration_seconds",
+            "operation": "seconds_add",
+            "effect_value": "12",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.black_hole.duration_seconds",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+        "perk_name": "Boss Health -70%, But Boss Speed +50%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "boss_health",
+            "operation": "remaining_fraction",
+            "effect_value": "0.30",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.boss.health_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "boss_speed",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.boss.speed_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_BOUNCE_SHOT_2",
+        "perk_name": "Bounce Shot +2",
+        "category": "standard",
+        "max_picks": 3,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "bounce_shot_count",
+            "operation": "count_add",
+            "effect_value": "2",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_bounce_shot_targets",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 3,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+        "perk_name": "Chain Lightning Damage x2",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_chain_lightning_damage",
+            "operation": "multiplier",
+            "effect_value": "2.00",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.chain_lightning.damage_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
+        "perk_name": "Chrono Field Duration +5s",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_chrono_field_duration_seconds",
+            "operation": "seconds_add",
+            "effect_value": "5",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.chrono_field.duration_seconds",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+        "perk_name": "Defense Percent +4.00",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "additive",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "def_pct",
+            "operation": "percentage_points_add",
+            "effect_value": "4.00",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_defense_pct",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+        "perk_name": "Enemies Damage -50%, but Tower Damage -50%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "enemy_damage",
+            "operation": "remaining_fraction",
+            "effect_value": "0.50",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.damage_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "tower_damage",
+            "operation": "remaining_fraction",
+            "effect_value": "0.50",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_damage",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_ENEMIES_HAVE_50_HEALTH_BUT_TOWER_HEALTH_REGEN_AND_LIFESTEAL_90",
+        "perk_name": "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 3,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "enemy_health",
+            "operation": "remaining_fraction",
+            "effect_value": "0.50",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.health_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "tower_regen",
+            "operation": "remaining_fraction",
+            "effect_value": "0.10",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_regen",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "3",
+            "target_stat_id": "lifesteal",
+            "operation": "remaining_fraction",
+            "effect_value": "0.10",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_lifesteal_pct",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_ENEMIES_SPEED_40_BUT_ENEMIES_DAMAGE_X2_5",
+        "perk_name": "Enemies Speed -40%, But Enemies Damage x2.5",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "enemy_speed",
+            "operation": "remaining_fraction",
+            "effect_value": "0.60",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.speed_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "enemy_damage",
+            "operation": "multiplier",
+            "effect_value": "2.50",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.damage_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
+        "perk_name": "Extra Set of Inner Mines",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_inner_land_mines_sets",
+            "operation": "count_add",
+            "effect_value": "1",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "uw.inner_land_mines.extra_sets",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+        "perk_name": "Free Upgrade Chance for All +5.0%",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "free_upgrade_chance_all",
+            "operation": "percentage_points_add",
+            "effect_value": "5.0",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "perk.free_upgrade_chance_all_pct",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
+        "perk_name": "Golden Tower Bonus x1.5",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_golden_tower_bonus",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.golden_tower.bonus_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+        "perk_name": "Increase Max Game Speed by +1.00",
+        "category": "standard",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "max_game_speed",
+            "operation": "raw_add",
+            "effect_value": "1.00",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "perk.max_game_speed",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_INTEREST_X1_50",
+        "perk_name": "Interest x1.50",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "interest",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "interest_per_wave_pct",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
+        "perk_name": "Land Mine Damage x3.50",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "land_mine_damage",
+            "operation": "multiplier",
+            "effect_value": "3.50",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_land_mine_damage",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
+        "perk_name": "Lifesteal x2.50, But Knockback force -70%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "lifesteal",
+            "operation": "multiplier",
+            "effect_value": "2.50",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_lifesteal_pct",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "knockback_force",
+            "operation": "remaining_fraction",
+            "effect_value": "0.30",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_knockback_force",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_ORBS_1",
+        "perk_name": "Orbs +1",
+        "category": "standard",
+        "max_picks": 2,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "orb_count",
+            "operation": "count_add",
+            "effect_value": "1",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_orb_count",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 2,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
+        "perk_name": "Perk Wave Requirement -20.00%",
+        "category": "standard",
+        "max_picks": 3,
+        "stacking_type": "additive",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "perk_wave_requirement",
+            "operation": "remaining_fraction",
+            "effect_value": "0.80",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "perk.wave_requirement_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 3,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "perk_name": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "ranged_enemy_attack_distance",
+            "operation": "special_reduction",
+            "effect_value": "wiki_named_effect",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.ranged.attack_distance_rule",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "ranged_enemy_damage",
+            "operation": "multiplier",
+            "effect_value": "3.00",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.ranged.damage_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+        "perk_name": "Spotlight Damage Bonus x1.5",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_spotlight_damage_bonus",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::mechanic_param",
+            "destination_object_type": "mechanic_param",
+            "destination_id": "uw.spotlight.bonus_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_SWAMP_RADIUS_X1_5",
+        "perk_name": "Swamp Radius x1.5",
+        "category": "ultimate_weapon",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "uw_poison_swamp_radius",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "uw.poison_swamp.radius_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "perk_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "tower_regen",
+            "operation": "multiplier",
+            "effect_value": "8.00",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_regen",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "tower_hp",
+            "operation": "remaining_fraction",
+            "effect_value": "0.40",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_hp",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+        "perk_name": "Unlock a Random Ultimate Weapon",
+        "category": "standard",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "random_uw_unlock",
+            "operation": "special_unlock",
+            "effect_value": "1",
+            "scope": "run",
+            "route_category": "routed::capability",
+            "destination_object_type": "capability",
+            "destination_id": "capability.random_uw_unlock.enabled",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+        "perk_name": "x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "cash_per_wave",
+            "operation": "multiplier",
+            "effect_value": "12.00",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "cash_per_wave",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "enemy_kill_cash",
+            "operation": "set_to",
+            "effect_value": "0",
+            "scope": "run",
+            "route_category": "routed::runtime_mechanic_param",
+            "destination_object_type": "runtime_mechanic_param",
+            "destination_id": "perk.enemy_kill_cash_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
+        "perk_name": "x1.15 All Coin Bonuses",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "multiplicative",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "coins_per_kill_bonus",
+            "operation": "multiplier",
+            "effect_value": "1.15",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "coins_per_kill_bonus",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_15_CASH_BONUS",
+        "perk_name": "x1.15 Cash Bonus",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "cash_bonus",
+            "operation": "multiplier",
+            "effect_value": "1.15",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "cash_kill_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_15_DAMAGE",
+        "perk_name": "x1.15 Damage",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "multiplicative",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "tower_damage",
+            "operation": "multiplier",
+            "effect_value": "1.15",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_damage",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
+        "perk_name": "x1.15 Defense Absolute",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "absolute_defense",
+            "operation": "multiplier",
+            "effect_value": "1.15",
+            "scope": "run",
+            "route_category": "routed::canonical_stat",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_defense_absolute",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_20_MAX_HEALTH",
+        "perk_name": "x1.20 Max Health",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "multiplicative",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "tower_hp",
+            "operation": "multiplier",
+            "effect_value": "1.20",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_hp",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+        "perk_name": "x1.50 Tower Damage, but Bosses Have 8x Health",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "tower_damage",
+            "operation": "multiplier",
+            "effect_value": "1.50",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_damage",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "boss_health",
+            "operation": "multiplier",
+            "effect_value": "8.00",
+            "scope": "run",
+            "route_category": "routed::environment_param",
+            "destination_object_type": "environment_param",
+            "destination_id": "enemy.boss.health_multiplier",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_75_HEALTH_REGEN",
+        "perk_name": "x1.75 Health Regen",
+        "category": "standard",
+        "max_picks": 5,
+        "stacking_type": "named_rule",
+        "effect_count": 1,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "tower_regen",
+            "operation": "multiplier",
+            "effect_value": "1.75",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_regen",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 5,
+            "sample_compiled_row": null
+          }
+        ]
+      },
+      {
+        "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+        "perk_name": "x1.80 coins, but Tower Max Health -70%",
+        "category": "trade_off",
+        "max_picks": 1,
+        "stacking_type": "named_rule",
+        "effect_count": 2,
+        "coverage_categories": [
+          "compile_gap"
+        ],
+        "effects": [
+          {
+            "effect_index": "1",
+            "target_stat_id": "coins_per_kill_bonus",
+            "operation": "multiplier",
+            "effect_value": "1.80",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "coins_per_kill_bonus",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          },
+          {
+            "effect_index": "2",
+            "target_stat_id": "tower_hp",
+            "operation": "remaining_fraction",
+            "effect_value": "0.30",
+            "scope": "run",
+            "route_category": "routed::canonical_stat_direct",
+            "destination_object_type": "canonical_stat",
+            "destination_id": "tower_hp",
+            "operation_supported": true,
+            "compile_status": "missing_compiled_row",
+            "coverage": "compile_gap",
+            "compiled_row_count": 0,
+            "expected_row_count_from_max_picks": 1,
+            "sample_compiled_row": null
+          }
+        ]
+      }
+    ]
+  },
+  "tower_damage_residue_analysis": {
+    "destination": "state::tower.damage",
+    "package_value_before_runtime_assumptions": null,
+    "package_value_after_runtime_assumptions": null,
+    "ep_value": 850380000000.0,
+    "runtime_compare_assumptions": [],
+    "applied_runtime_multiplier": null,
+    "required_total_runtime_multiplier_to_match_ep": null,
+    "required_project_funding_multiplier_at_berserker_x8_to_match_ep": null,
+    "required_project_funding_coefficient_at_cash_50b_if_berserker_x8_to_match_ep": null,
+    "residue_after_current_assumptions": null,
+    "residue_relative_pct_after_current_assumptions": null
+  },
+  "run_perk_residue_analysis": {
+    "lineage_backed_destinations": [],
+    "stage_scope_rows": [],
+    "stage_scope_row_count": 0
+  },
+  "tradeoff_routing_audit": {
+    "perk_state": "auto",
+    "preset": "Farming",
+    "state_mode": "start_of_run",
+    "active_tradeoff_count": 0,
+    "compile_error_count": 0,
+    "banned_tradeoffs_present_count": 0,
+    "banned_tradeoffs_present": [],
+    "rows": [
+      {
+        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+        "perk_name": "Boss Health -70%, But Boss Speed +50%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+        "perk_name": "Enemies Damage -50%, but Tower Damage -50%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_ENEMIES_HAVE_50_HEALTH_BUT_TOWER_HEALTH_REGEN_AND_LIFESTEAL_90",
+        "perk_name": "Enemies Have -50% Health, but Tower Health Regen and Lifesteal -90%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_ENEMIES_SPEED_40_BUT_ENEMIES_DAMAGE_X2_5",
+        "perk_name": "Enemies Speed -40%, But Enemies Damage x2.5",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
+        "perk_name": "Lifesteal x2.50, But Knockback force -70%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "perk_name": "Ranged Enemies Attack Distance Reduced, But Tower Ranged Enemies Damage x3",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "perk_name": "Tower Health Regen x8.00, But Tower Max Max Health -60%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+        "perk_name": "x12.00 Cash Per Wave, But Enemy Kill Don't Give Cash",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+        "perk_name": "x1.50 Tower Damage, but Bosses Have 8x Health",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      },
+      {
+        "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+        "perk_name": "x1.80 coins, but Tower Max Health -70%",
+        "active": false,
+        "banned": false,
+        "compiled_effect_indexes": [],
+        "benefit_effect_indexes": [
+          "1"
+        ],
+        "benefit_rows": 0,
+        "drawback_rows": 0,
+        "both_sides_materialized": false,
+        "compile_error": false,
+        "destinations": []
+      }
+    ]
+  },
+  "perk_contributor_audit": {},
+  "compare_situation_fit_matrix": {
+    "status": "skipped",
+    "reason": "disabled_by_default_use_include_slow_audits",
+    "destination_count": 0,
+    "best_fit_by_destination": {},
+    "best_fit_state_counts": {},
+    "best_fit_status_counts": {},
+    "states": {}
+  },
+  "survivability_residue_analysis": {
+    "state::tower.hp": {
+      "status": "stage_scope_mismatch",
+      "package_value": 1116758532848.2915,
+      "ep_value": 7550000000000.0,
+      "relative_delta_pct": -85.20849625366502,
+      "package_to_ep_ratio": 0.14791503746334986,
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
+      "compare_state_key": "Farming__perks_on",
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "contributors": [
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 1.0,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 4.0,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 1.62,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 3.04,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 1.00466,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 10.04,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 1.51,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 3722038992.18371,
+          "value_type": "scalar"
+        }
+      ]
+    },
+    "state::tower.regen": {
+      "status": "missing_from_package",
+      "package_value": null,
+      "ep_value": 44640000000000.0,
+      "relative_delta_pct": null,
+      "package_to_ep_ratio": null,
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
+      "compare_state_key": "Farming__perks_on",
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "contributors": []
+    },
+    "state::tower.defense_absolute": {
+      "status": "missing_from_package",
+      "package_value": null,
+      "ep_value": 318930000.0,
+      "relative_delta_pct": null,
+      "package_to_ep_ratio": null,
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
+      "compare_state_key": "Farming__perks_on",
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "contributors": []
+    },
+    "state::wall.hp": {
+      "status": null,
+      "package_value": null,
+      "ep_value": null,
+      "relative_delta_pct": null,
+      "package_to_ep_ratio": null,
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
+      "compare_state_key": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "contributors": []
+    },
+    "state::wall.regen": {
+      "status": "stage_scope_mismatch",
+      "package_value": 2108.3999999999996,
+      "ep_value": 234350000000000.0,
+      "relative_delta_pct": -99.99999999910032,
+      "package_to_ep_ratio": 8.996799658630252e-12,
+      "best_fit_state_key": null,
+      "best_fit_preset": null,
+      "best_fit_perk_state": null,
+      "compare_state_key": "Farming__perks_on",
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "contributors": [
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 210.0,
+          "value_type": "scalar"
+        },
+        {
+          "source_family": null,
+          "source_name": null,
+          "preset_name": null,
+          "value": 10.04,
+          "value_type": "scalar"
+        }
+      ]
+    },
+    "_shared_residue_summary": {
+      "tower_hp_ratio": 0.14791503746334986,
+      "wall_hp_ratio": null,
+      "tower_regen_ratio": null,
+      "wall_regen_ratio": 8.996799658630252e-12,
+      "tower_hp_vs_wall_hp_ratio_gap": null,
+      "tower_regen_vs_wall_regen_ratio_gap": null
+    }
+  },
+  "tower_regen_closure_report": {
+    "destination": "state::tower.regen",
+    "compare_state_key": "Farming__perks_on",
+    "compare_preset": "Farming",
+    "compare_perk_state": "on",
+    "package_value": null,
+    "ep_value": 44640000000000.0,
+    "relative_delta_pct": null,
+    "workshop_base": null,
+    "multiplier_product": 1.0,
+    "recomputed_package_value": null,
+    "required_missing_multiplier_to_match_ep": null,
+    "contributors": []
+  },
+  "tower_hp_semantic_gap_report": {
+    "destination": "state::tower.hp",
+    "compare_state_key": "Farming__perks_on",
+    "compare_preset": "Farming",
+    "compare_perk_state": "on",
+    "package_value": 1116758532848.2915,
+    "ep_value": 7550000000000.0,
+    "package_value_recomputed_from_current_factors": null,
+    "current_factors": {
+      "standard_perk_factor": null,
+      "coin_health_tradeoff_factor": null,
+      "regen_health_tradeoff_factor": null,
+      "death_wave_health_factor": null,
+      "armor_primary_factor": null,
+      "armor_assist_factor": null
+    },
+    "ep_formula_hypotheses": {
+      "ep_standard_perk_factor": null,
+      "account_death_wave_health_level": null,
+      "account_death_wave_health_multiplier_if_applied": null
+    },
+    "assessment": {
+      "remaining_fraction_bug_present_in_live_compare_row": null,
+      "death_wave_health_wired_in_live_compare_row": null,
+      "reason": "Current compare row carries the two HP trade-off drawbacks correctly and now also includes the Death Wave Health multiplier plus the EP-style armor assist factor. The remaining gap is primarily the EP workbook Standard Perk Bonus semantic drift.",
+      "calculator_change_recommended": false
+    },
+    "scenarios": [
+      {
+        "scenario": "current_package_semantics",
+        "package_value": null,
+        "relative_delta_pct": null,
+        "required_residual_multiplier_to_match_ep": null,
+        "note": "Current calculator semantics and compare-row inputs as emitted."
+      }
+    ]
+  },
+  "tower_regen_ep_semantic_gap_report": {
+    "destination": "state::tower.regen",
+    "compare_state_key": "Farming__perks_on",
+    "compare_preset": "Farming",
+    "compare_perk_state": "on",
+    "package_value": null,
+    "ep_value": 44640000000000.0,
+    "package_value_recomputed_from_current_factors": null,
+    "current_factors": {
+      "standard_perk_factor": null,
+      "tradeoff_regen_factor": null,
+      "enhancement_factor": null
+    },
+    "ep_formula_hypotheses": {
+      "ep_standard_perk_factor": null,
+      "ep_tradeoff_regen_factor": null,
+      "residual_multiplier_after_ep_perk_semantics": null,
+      "inferred_wse_level_after_ep_perk_semantics": null,
+      "nearest_integer_wse_level_candidate": null,
+      "nearest_integer_wse_multiplier": null
+    },
+    "scenarios": [
+      {
+        "scenario": "current_package_semantics",
+        "package_value": null,
+        "relative_delta_pct": null,
+        "required_residual_multiplier_to_match_ep": null,
+        "note": "Current calculator semantics: standard perk and trade-off perk improve the delta only; enhancement handled as direct multiplier row."
+      }
+    ],
+    "assessment": {
+      "best_fit_hypothesis": "EP regen delta is largely explained by EP-specific semantics: full-result standard perk scaling, full-result trade-off scaling, and an unresolved WSE multiplier near +8%.",
+      "calculator_change_recommended": false,
+      "reason": "These semantics appear to be EP workbook behavior and are not yet KB-backed as true in-game calculator rules."
+    }
+  },
+  "tower_defense_absolute_semantic_gap_report": {
+    "destination": "state::tower.defense_absolute",
+    "compare_state_key": "Farming__perks_on",
+    "compare_preset": "Farming",
+    "compare_perk_state": "on",
+    "package_value": null,
+    "ep_value": 318930000.0,
+    "package_value_recomputed_from_current_factors": null,
+    "current_factors": {
+      "standard_perk_factor": null
+    },
+    "ep_formula_hypotheses": {
+      "ep_standard_perk_factor": null,
+      "residual_multiplier_after_ep_standard_perk_semantics": null
+    },
+    "scenarios": [
+      {
+        "scenario": "current_package_semantics",
+        "package_value": null,
+        "relative_delta_pct": null,
+        "required_residual_multiplier_to_match_ep": null,
+        "note": "Current calculator semantics and compare-row inputs as emitted."
+      }
+    ],
+    "assessment": {
+      "best_fit_hypothesis": "tower_defense_absolute EP delta is almost exactly explained by EP-style full-result Standard Perk Bonus scaling on the Defense Absolute standard perk.",
+      "calculator_change_recommended": false,
+      "reason": "The package row is internally consistent and the EP value is matched almost exactly by swapping only the standard-perk semantic to the workbook-style full-result scaling."
+    }
+  },
+  "tower_damage_runtime_gap_report": {
+    "destination": "state::tower.damage",
+    "compare_state_key": "Tourney__perks_off",
+    "compare_preset": "Tourney",
+    "compare_perk_state": "off",
+    "package_value_before_runtime_assumptions": null,
+    "package_value_after_runtime_assumptions": null,
+    "ep_value": 850380000000.0,
+    "runtime_compare_assumptions": [],
+    "ep_evidence": {
+      "assumed_cash": 50000000000.0,
+      "evidence_strength": "user_provided_for_current_ep_compare_basis",
+      "note": "User clarified that EP uses 50b cash for Project Funding compare. This is treated as an explicit compare-policy input rather than a calculator truth claim."
+    },
+    "current_assumption_parameters": {
+      "project_funding_cash_assumption": 50000000000.0,
+      "project_funding_rarity_family": "Mythic",
+      "project_funding_multiplier_at_assumed_cash": 6.349485002168009,
+      "berserker_assumption_multiplier": 8.0
+    },
+    "derived_fit": {
+      "applied_runtime_multiplier": null,
+      "required_total_runtime_multiplier_to_match_ep": null,
+      "required_berserker_multiplier_if_project_funding_cash_assumption_fixed": null
+    },
+    "assessment": {
+      "calculator_change_recommended": false,
+      "compare_assumption_change_recommended": true,
+      "reason": "tower_damage residue sits in the compare-only runtime normalization layer, not the base damage resolver. With EP cash assumption fixed at 50b, the current x8 Berserker assumption nearly exactly closes the EP row."
+    },
+    "scenarios": [
+      {
+        "scenario": "current_package_runtime_assumptions",
+        "runtime_multiplier": null,
+        "package_value": null,
+        "relative_delta_pct": null,
+        "required_residual_multiplier_to_match_ep": null,
+        "note": "Current compare-only runtime assumptions as emitted by the package."
+      },
+      {
+        "scenario": "ep_cash_50b_with_berserker_x8",
+        "runtime_multiplier": 50.795880017344075,
+        "package_value": null,
+        "relative_delta_pct": null,
+        "required_residual_multiplier_to_match_ep": null,
+        "note": "EP compare uses Project Funding cash assumption of 50b; this scenario keeps Berserker at x8 and swaps only the PF cash assumption."
+      }
+    ]
+  },
+  "compare_situation_policy": {
+    "tournament": {
+      "preset": "Tourney",
+      "perk_state": "off"
+    },
+    "farming": {
+      "preset": "Farming",
+      "perk_state": "auto"
+    },
+    "milestone_engine": {
+      "preset": "Farming",
+      "perk_state": "auto"
+    },
+    "milestone_compare_policy": {
+      "preset": "Milestone",
+      "perk_state": "on",
+      "note": "Milestone is a real preset with perks on, but EP compare excludes milestone loadout."
+    },
+    "policy_note": "Perks are controlled by run situation. Tournament compare uses Tourney loadout with perks off; farming follows the selected perk state/mode; milestone is a real preset with perks on, but EP compare excludes milestone loadout."
+  }
+}

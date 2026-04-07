@@ -14,6 +14,7 @@ from qe.query_module_policy import (
     publish_module_runtime_policy_surfaces,
 )
 from qe.models import StatRow
+from qe.workshop_stat_rows import build_workshop_reconciliation_row
 
 
 def _sid(surface_id: str) -> str:
@@ -93,6 +94,43 @@ def publish_query_surfaces(
     if 'derived::module.runtime_profile.highest_tier_unlocked' in rows:
         publish_module_mission_economy_surfaces(rows)
     publish_currency_income_surfaces(rows, manual_advisory_inputs=manual_advisory_inputs)
+
+
+def publish_workshop_reconciliation_payload(
+    *,
+    stats_layout: dict[str, Any],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    account_state_payload: dict[str, object],
+    selected_preset: str,
+    surface_specs: callable,
+) -> dict[str, object]:
+    section_titles = {
+        'offense_surfaces': 'Offense',
+        'defense_surfaces': 'Defense',
+        'utility_economy_surfaces': 'Utility',
+    }
+    sections: list[dict[str, object]] = []
+    for section_key in ('offense_surfaces', 'defense_surfaces', 'utility_economy_surfaces'):
+        rows: list[dict[str, object]] = []
+        for spec in surface_specs(stats_layout, section_key):
+            surface_id = spec['surface_id']
+            rows.append(
+                build_workshop_reconciliation_row(
+                    spec=spec,
+                    start_row=dict(rows_start.get(surface_id) or {}),
+                    max_row=dict(rows_max.get(surface_id) or {}),
+                    account_state_payload=account_state_payload,
+                    selected_preset=selected_preset,
+                )
+            )
+        if rows:
+            sections.append({'section_id': section_key, 'title': section_titles[section_key], 'rows': rows})
+    return {
+        'artifact': 'qe_workshop_reconciliation_rows',
+        'owner': 'qe',
+        'sections': sections,
+    }
 
 
 def publication_contract_snapshot() -> dict:

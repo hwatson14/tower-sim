@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 from pathlib import Path
+import yaml
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -10,6 +11,7 @@ CANONICAL_FORMULA_REGISTRY = REPO_ROOT / 'kb/formulas/tables/canonical-formula-r
 FORMULA_AUTHORITY_POLICY = REPO_ROOT / 'kb/formulas/tables/formula-authority-classification-policy.csv'
 FORMULA_COVERAGE_LEDGER = REPO_ROOT / 'kb/ledgers/tables/formula-coverage-ledger.csv'
 EFFECTIVE_PATHS_REGISTRY = REPO_ROOT / 'kb/ledgers/tables/effective-paths-formula-registry.csv'
+FORMULA_SURFACE_POLICY = REPO_ROOT / 'kb/ledgers/formula_surface_policy.yaml'
 
 APPROVED_AUTHORITY_CLASSIFICATIONS = {
     'canonical_in_canonical_formula_registry',
@@ -30,6 +32,10 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
             clean = {k: v for k, v in row.items() if k is not None}
             rows.append(clean)
     return rows
+
+
+def _read_yaml(path: Path) -> dict:
+    return yaml.safe_load(path.read_text(encoding='utf-8')) or {}
 
 
 def test_formula_authority_policy_classifies_every_surface() -> None:
@@ -80,3 +86,13 @@ def test_intentional_de_scope_rows_require_reason_code() -> None:
     for row in _read_csv(EFFECTIVE_PATHS_REGISTRY):
         if row.get('authority_classification') == 'intentionally_de_scoped':
             assert row.get('authority_reason_code')
+
+
+def test_formula_surface_policy_has_no_publish_block_entries() -> None:
+    policy = _read_yaml(FORMULA_SURFACE_POLICY)
+    blocked = {
+        surface_id: contract
+        for surface_id, contract in (policy.get('surfaces') or {}).items()
+        if (contract or {}).get('publish_policy') == 'block'
+    }
+    assert blocked == {}

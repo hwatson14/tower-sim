@@ -5,6 +5,7 @@ from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
 from functools import lru_cache
+import importlib
 from pathlib import Path
 from typing import Protocol
 import yaml
@@ -32,6 +33,7 @@ from qe.stat_resolution import (
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
 from qe.kb_surfaces import CANONICAL_PCT_CAPS
+from qe.publication import publish_query_surfaces
 
 _TIMING_TOURNAMENT_NO_PERKS = 'timing_tournament_no_perks'
 _TIMING_FARM_WITH_PERKS = 'timing_farm_with_perks'
@@ -48,6 +50,16 @@ _CONTRACT_PATHS = (
 
 def _state(destination_id: str) -> str:
     return normalize_surface_id_to_contract(f'state::{destination_id}')
+
+
+def _extract_tier_number(value: object) -> int | None:
+    digits = ''.join(ch for ch in str(value or '') if ch.isdigit())
+    if not digits:
+        return None
+    try:
+        return int(digits)
+    except ValueError:
+        return None
 
 
 def _as_float(value) -> float | None:
@@ -111,11 +123,11 @@ def _resolve_free_upgrade_chance_pct(
             additive_bonus_pp += value * 100.0
             continue
         additive_bonus_pp += value
-    final = (workshop_base * enhancement_multiplier) + additive_bonus_pp
+    final = (workshop_base + additive_bonus_pp) * enhancement_multiplier
     cap = CANONICAL_PCT_CAPS.get(destination_id)
     if cap is not None:
         final = max(0.0, min(cap, final))
-    return final, 'resolved', 'Destination-specific free-upgrade formula: workshop base x enhancement plus additive non-enhancement bonuses.', schema
+    return final, 'resolved', 'Destination-specific free-upgrade formula: additive percent-point bucket x enhancement multiplier.', schema
 
 
 def _destination_type_schema(destination_id: str, meta: dict[str, str]) -> dict[str, object]:
@@ -589,6 +601,23 @@ def _resolve_bucket(
         value, status, notes = _safe_single_or_uniform_resolution(destination_object_type, destination_id, contributors)
         return value, status, notes, schema
 
+    if destination_object_type == 'mechanic_param' and destination_id.startswith('bot.'):
+        numeric_values = [_as_float(row.value) for row in contributors]
+        numeric_values = [value for value in numeric_values if value is not None]
+        if not numeric_values:
+            return None, 'mapped_not_resolved', 'Missing numeric bot mechanic contributors.', schema
+
+        unit = meta.get('unit', 'unknown')
+        resolver = meta.get('resolver', 'unknown')
+        final = sum(numeric_values)
+        if unit == 'pct' and resolver in {'pct_capped_param', 'pct_capped_scalar_stat'}:
+            cap = CANONICAL_PCT_CAPS.get(destination_id)
+            if cap is not None:
+                final = max(0.0, min(cap, final))
+        if unit == 'count' or resolver == 'integer_count_stat':
+            final = float(int(round(final)))
+        return final, 'resolved', 'Bot additive mechanic composition resolved from unified mechanic bucket.', schema
+
     if destination_object_type != 'canonical_stat' and not (destination_object_type == 'mechanic_param' and destination_id.startswith('bot.')):
         value, status, notes = _safe_single_or_uniform_resolution(destination_object_type, destination_id, contributors)
         return value, status, notes, schema
@@ -804,6 +833,7 @@ _TIMING_V1_SURFACE_IDS: tuple[str, ...] = (
     'support_surface::timing.gcomp_cooldown_reduction_seconds',
     'support_surface::timing.wave_duration_seconds_effective',
     'state::cards.wave_accelerator.spawn_rate_acceleration',
+    'state::cards.wave_skip.chance_pct',
 )
 
 # Declared progression-family surface set. All three declared progression families share the
@@ -819,9 +849,28 @@ _PROGRESSION_V1_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.orb_count',
     'state::tower.orb_speed_rpm',
     'state::cards.plasma_cannon.effect_pct',
+    'state::cards.berserker.assumed_bonus_multiplier',
+    'state::uw.black_hole.base_duration_seconds',
+    'state::uw.black_hole.base_cooldown_seconds',
+    'state::uw.golden_tower.base_duration_seconds',
+    'state::uw.golden_tower.base_cooldown_seconds',
     _state('module.orbital_augment.electron_count'),
     _state('module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct'),
     _state('module.primordial_collapse.bh_damage_reduction_pct'),
+    'state::bot.thunder.cooldown_seconds',
+    'state::bot.thunder.duration_seconds',
+    'state::bot.thunder.linger_duration_seconds',
+    'state::bot.thunder.linger_slow_pct',
+    'state::bot.thunder.range_m',
+    'support_surface::ehp.health_relic_pct',
+    'support_surface::ehp.dabs_relic_pct',
+    'support_surface::ehp.def_pct_relic_pct',
+    'support_surface::eecon.adstarter_theme_relic_factor',
+    'support_surface::eecon.freeup_attack_relic_pct',
+    'support_surface::eecon.freeup_defense_relic_pct',
+    'support_surface::eecon.freeup_utility_relic_pct',
+    'support_surface::ehp.black_hole_duration_seconds',
+    'support_surface::ehp.black_hole_cooldown_seconds',
     'state::tower.free_attack_upgrade_chance_pct',
     'state::tower.free_defense_upgrade_chance_pct',
     'state::tower.free_utility_upgrade_chance_pct',
@@ -1002,6 +1051,86 @@ class QEResolutionPlanner:
         perks_enabled: bool | None = None,
         trace_mode: str = 'contributors',
     ) -> QEFamilyQueryResult:
+        if family_id in {_TIMING_TOURNAMENT_NO_PERKS, _TIMING_FARM_WITH_PERKS, 'timing_scenario_probe'}:
+            config_from_statbook = importlib.import_module('simulators.scenario').config_from_statbook
+            resolve_timing_family_query = importlib.import_module('simulators.timing').resolve_timing_family_query
+
+            resolved_perks_enabled = (
+                False if family_id in {_TIMING_TOURNAMENT_NO_PERKS, 'timing_scenario_probe'}
+                else True if family_id == _TIMING_FARM_WITH_PERKS
+                else bool(perks_enabled)
+            ) if perks_enabled is None else bool(perks_enabled)
+            snapshot = self.resolve_report_snapshot(
+                account_state,
+                preset_name=preset_name,
+                state_mode=state_mode,
+                card_preset_name=card_preset_name,
+                module_preset_name=module_preset_name,
+                perk_preset_name=perk_preset_name,
+                perks_enabled=resolved_perks_enabled,
+            )
+            preset = str(preset_name or getattr(account_state, 'default_preset', '') or 'Farming')
+            if family_id == _TIMING_TOURNAMENT_NO_PERKS:
+                mode_id = 'tournament'
+                league = (
+                    getattr(account_state, 'player_meta', {}).get('Tourney League')
+                    or getattr(account_state, 'player_meta', {}).get('Tournament League')
+                    or getattr(account_state, 'player_meta', {}).get('League')
+                )
+                tier = 14
+            else:
+                mode_id = 'farming'
+                league = None
+                tier = (
+                    _extract_tier_number(getattr(account_state, 'player_meta', {}).get('Farming Tier'))
+                    or _extract_tier_number(getattr(account_state, 'highest_tier_unlocked_label', None))
+                    or getattr(account_state, 'highest_tier_unlocked_number', None)
+                    or 14
+                )
+            scenario_config = config_from_statbook(
+                {
+                    key: {'final_value': row.final_value}
+                    for key, row in snapshot.statbook.rows.items()
+                },
+                mode_id=mode_id,
+                tier=int(tier),
+                league=league,
+            )
+            normalized_requested = tuple(str(surface_id) for surface_id in requested_surface_ids)
+            key = (
+                snapshot.binding.identity.account_snapshot_id,
+                snapshot.binding.identity.loadout_id,
+                snapshot.binding.identity.scenario_id,
+                snapshot.binding.identity.runtime_branch_id,
+                family_id,
+                normalized_requested,
+                str(trace_mode),
+            )
+            cached = self._family_query_cache.get(key)
+            if cached is None:
+                response = resolve_timing_family_query(
+                    account_state=account_state,
+                    family_id=family_id,
+                    preset_name=preset,
+                    scenario_config=scenario_config,
+                    requested_surface_ids=normalized_requested,
+                    state_mode=state_mode,
+                    perks_enabled=resolved_perks_enabled,
+                    card_preset_name=card_preset_name,
+                    module_preset_name=module_preset_name,
+                    perk_preset_name=perk_preset_name,
+                    trace_mode=trace_mode,
+                )
+                cached = QEFamilyQueryResult(
+                    binding=snapshot.binding,
+                    stat_inputs=snapshot.stat_inputs,
+                    family_id=family_id,
+                    requested_surface_ids=normalized_requested,
+                    response=response,
+                    resolution_path='declared_timing_family_simulator_bridge',
+                )
+                self._family_query_cache[key] = cached
+            return copy.deepcopy(cached)
         bound_inputs = compile_stat_inputs_with_identity(
             account_state,
             preset_name=preset_name,
@@ -1046,11 +1175,13 @@ class QEResolutionPlanner:
             perks_enabled=perks_enabled,
             trace_mode=trace_mode,
         )
-        return query_response_to_statbook(
+        statbook = query_response_to_statbook(
             result.response,
             notes=notes,
             diagnostics=diagnostics,
         )
+        publish_query_surfaces(statbook.rows)
+        return statbook
 
     def resolve_rows_declared_family_query(
         self,
@@ -1101,11 +1232,13 @@ class QEResolutionPlanner:
             requested_surface_ids=requested_surface_ids,
             trace_mode=trace_mode,
         )
-        return query_response_to_statbook(
+        statbook = query_response_to_statbook(
             result.response,
             notes=notes,
             diagnostics=diagnostics,
         )
+        publish_query_surfaces(statbook.rows)
+        return statbook
 
 
 def load_bounded_resolution_metadata() -> dict[str, dict[str, str]]:

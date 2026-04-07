@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import csv
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from fractions import Fraction
 from math import gcd
 from functools import lru_cache
@@ -165,6 +165,18 @@ def _lookup_row_value(row_map: Mapping[str, object], keys: List[str]) -> Optiona
     return None
 
 
+def _sum_input_values(rows: Sequence[StatInput], *, destination_object_type: str, destination_id: str) -> float:
+    total = 0.0
+    for row in rows:
+        if row.destination_object_type != destination_object_type or row.destination_id != destination_id or not row.active:
+            continue
+        try:
+            total += float(row.value)
+        except (TypeError, ValueError):
+            continue
+    return total
+
+
 def resolve_combat_runtime_surfaces(
     *,
     config: ScenarioConfig,
@@ -245,12 +257,12 @@ def resolve_combat_runtime_surfaces(
         notes.append(f'Electron cadence consumed from governed surface: {electron_hz} Hz.')
     elif scenario_runtime_inputs is not None and getattr(scenario_runtime_inputs, 'electron_hits_per_second', None) is not None:
         electron_hz = float(scenario_runtime_inputs.electron_hits_per_second)
-        notes.append(f'Electron cadence using scenario runtime input fallback: {electron_hz} Hz.')
+        notes.append(f'Electron cadence using scenario runtime input owner seam: {electron_hz} Hz.')
     elif electron_hits_per_second_override is not None:
         electron_hz = float(electron_hits_per_second_override)
         notes.append(f'Electron cadence using explicit override fallback: {electron_hz} Hz.')
     else:
-        notes.append('Electron cadence remains open: Orbital Augment speed is not governed in current KB/package.')
+        notes.append('Electron cadence remains open: no governed surface or scenario runtime input was supplied for Orbital Augment cadence.')
 
     contact_t = _lookup_row_value(row_map, [
         _runtime('combat.boss_contact_time_seconds'),
@@ -521,6 +533,13 @@ def compile_timing_family_rows(
             'tournament_wave': scenario_config.tournament_wave,
         },
     )
+    scenario_config = replace(
+        scenario_config,
+        bh_base_duration_s=_sum_input_values(bound.stat_inputs, destination_object_type='mechanic_param', destination_id='uw.black_hole.duration_seconds'),
+        bh_base_cooldown_s=_sum_input_values(bound.stat_inputs, destination_object_type='mechanic_param', destination_id='uw.black_hole.cooldown_seconds'),
+        gt_base_duration_s=_sum_input_values(bound.stat_inputs, destination_object_type='mechanic_param', destination_id='uw.golden_tower.duration_seconds'),
+        gt_base_cooldown_s=_sum_input_values(bound.stat_inputs, destination_object_type='mechanic_param', destination_id='uw.golden_tower.cooldown_seconds'),
+    )
     scenario = compute_scenario_surfaces(scenario_config)
     timing = compute_timing_surfaces(scenario_config, scenario)
     wave_acceleration_pct = _wave_acceleration_pct_from_rows(bound.stat_inputs)
@@ -673,7 +692,7 @@ def _timing_family_derived_rows(
             stage='scenario_runtime',
             contributor_id='timing.black_hole.effective_duration',
             provenance='engine.timing_engine.compute_timing_surfaces',
-            destination_object_type='mechanic_param',
+            destination_object_type='runtime_mechanic_param',
             destination_id='uw.black_hole.duration_seconds',
             kb_mapped=True,
         ),
@@ -686,7 +705,7 @@ def _timing_family_derived_rows(
             stage='scenario_runtime',
             contributor_id='timing.black_hole.effective_cooldown',
             provenance='engine.timing_engine.compute_timing_surfaces',
-            destination_object_type='mechanic_param',
+            destination_object_type='runtime_mechanic_param',
             destination_id='uw.black_hole.cooldown_seconds',
             kb_mapped=True,
         ),
@@ -699,7 +718,7 @@ def _timing_family_derived_rows(
             stage='scenario_runtime',
             contributor_id='timing.golden_tower.effective_duration',
             provenance='engine.timing_engine.compute_timing_surfaces',
-            destination_object_type='mechanic_param',
+            destination_object_type='runtime_mechanic_param',
             destination_id='uw.golden_tower.duration_seconds',
             kb_mapped=True,
         ),
@@ -712,7 +731,7 @@ def _timing_family_derived_rows(
             stage='scenario_runtime',
             contributor_id='timing.golden_tower.effective_cooldown',
             provenance='engine.timing_engine.compute_timing_surfaces',
-            destination_object_type='mechanic_param',
+            destination_object_type='runtime_mechanic_param',
             destination_id='uw.golden_tower.cooldown_seconds',
             kb_mapped=True,
         ),

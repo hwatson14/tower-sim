@@ -82,6 +82,7 @@ _SURVIVABILITY_WORKSHOP_MULTIPLIER_SURFACE_IDS: frozenset[str] = frozenset({
 # Legacy: 1.0 + (lab_pct / 100.0).  The materializer stores raw lab_pct; the QE multiplicative
 # stage needs 1 + lab_pct/100 so the kernel returns the correct final multiplier.
 _WALL_FORTIFICATION_SURFACE_ID = 'state::wall.fortification_multiplier'
+_WALL_HP_SURFACE_ID = 'state::wall.hp'
 
 
 def _inject_free_upgrade_cross_surface_multipliers(
@@ -222,6 +223,41 @@ def _scale_wall_fortification_lab_value(
     return out
 
 
+def _inject_wall_hp_fortification_multiplier(
+    rows: list['BaselineContributorRow'],
+    allowed_surfaces: frozenset[str],
+) -> list['BaselineContributorRow']:
+    """Inject the resolved wall-fortification multiplier into final wall HP composition.
+
+    KB/formula policy treats `state::wall.hp` as the published final wall HP surface, while
+    `state::wall.fortification_multiplier` is an explicit QE-owned multiplier surface. The
+    wall HP bucket already carries the pre-fort workshop/lab/module composition; this bridges
+    the sanctioned QE cross-surface dependency so final wall HP resolves as pre-fort x fort.
+    """
+    if _WALL_HP_SURFACE_ID not in allowed_surfaces or _WALL_FORTIFICATION_SURFACE_ID not in allowed_surfaces:
+        return rows
+    fort_rows = [
+        row for row in rows
+        if row.surface_id == _WALL_FORTIFICATION_SURFACE_ID
+        and row.composition_stage == 'multiplicative'
+        and row.active
+    ]
+    if not fort_rows:
+        return rows
+    has_active_wall_hp_base = any(
+        row.surface_id == _WALL_HP_SURFACE_ID
+        and row.composition_stage == 'additive_pre_cap'
+        and row.active
+        for row in rows
+    )
+    if not has_active_wall_hp_base:
+        return rows
+    injected = list(rows)
+    for fort_row in fort_rows:
+        injected.append(replace(fort_row, surface_id=_WALL_HP_SURFACE_ID))
+    return injected
+
+
 _REQUIRED_SURFACE_ENTRY_FIELDS = {
     'surface_id',
     'surface_kind',
@@ -329,6 +365,7 @@ class FamilyBaselineMaterializer:
         normalized_rows = _scale_enemy_skip_thorns_relic_values(normalized_rows)
         normalized_rows = _scale_survivability_relic_vault_values(normalized_rows)
         normalized_rows = _scale_wall_fortification_lab_value(normalized_rows)
+        normalized_rows = _inject_wall_hp_fortification_multiplier(normalized_rows, allowed_surfaces)
         rows = tuple(
             sorted(
                 self._with_declared_surface_placeholders(normalized_rows, allowed_surfaces),
@@ -358,6 +395,7 @@ class FamilyBaselineMaterializer:
         normalized_rows = _scale_enemy_skip_thorns_relic_values(normalized_rows)
         normalized_rows = _scale_survivability_relic_vault_values(normalized_rows)
         normalized_rows = _scale_wall_fortification_lab_value(normalized_rows)
+        normalized_rows = _inject_wall_hp_fortification_multiplier(normalized_rows, allowed_surfaces)
         rows = tuple(
             sorted(
                 self._with_declared_surface_placeholders(normalized_rows, allowed_surfaces),

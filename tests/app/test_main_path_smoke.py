@@ -149,15 +149,11 @@ def test_residue_artifact_contract_is_internally_consistent():
     assert "_build_tower_damage_runtime_gap_report" in pipeline_src
 
 
-def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
+def test_run_stats_main_defaults_to_in_process_pipeline(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
 
-    called = {"ensure": 0, "client": 0, "pipeline": 0}
-
-    def _ensure(args):
-        called["ensure"] += 1
-        return True
+    called = {"client": 0, "pipeline": 0}
 
     def _client(args):
         called["client"] += 1
@@ -167,24 +163,19 @@ def test_run_stats_main_prefers_local_server_when_available(monkeypatch):
         called["pipeline"] += 1
         return 0
 
-    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
     monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
     monkeypatch.setattr(sys, "argv", ["app.run_stats"])
 
     assert run_stats_mod.main() == 0
-    assert called == {"ensure": 1, "client": 1, "pipeline": 0}
+    assert called == {"client": 0, "pipeline": 1}
 
 
-def test_run_stats_main_falls_back_to_pipeline_when_local_server_cannot_be_ensured(monkeypatch):
+def test_run_stats_main_uses_local_server_only_when_requested(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
 
-    called = {"ensure": 0, "client": 0, "pipeline": 0}
-
-    def _ensure(args):
-        called["ensure"] += 1
-        return False
+    called = {"client": 0, "pipeline": 0}
 
     def _client(args):
         called["client"] += 1
@@ -194,13 +185,12 @@ def test_run_stats_main_falls_back_to_pipeline_when_local_server_cannot_be_ensur
         called["pipeline"] += 1
         return 0
 
-    monkeypatch.setattr(pipeline_mod, "run_stats_ensure_local_server", _ensure)
     monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
-    monkeypatch.setattr(sys, "argv", ["app.run_stats"])
+    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--use-server"])
 
     assert run_stats_mod.main() == 0
-    assert called == {"ensure": 1, "client": 0, "pipeline": 1}
+    assert called == {"client": 1, "pipeline": 0}
 
 
 def test_run_stats_ensure_local_server_forwards_host_and_port_to_spawned_command(monkeypatch):

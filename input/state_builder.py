@@ -95,6 +95,7 @@ def require_canonical_preset_name(value: str | None, *, field_name: str) -> str:
 def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loadout_config: Optional[dict] = None, perk_config: Optional[dict] = None) -> AccountState:
     raw_sections = ids_raw.raw_sections
     labs = _parse_labs(raw_sections.get("Labs", []))
+    lab_adjusters = _parse_lab_adjusters(loadout_config or {})
     workshop = _parse_workshop(raw_sections.get("WS", []))
     workshop_enhancements = _parse_table(raw_sections.get("WS+", []))
     workshop_enhancement_tracks = _parse_workshop_enhancements(raw_sections.get("WS+", []))
@@ -115,6 +116,7 @@ def build_runtime_state(ids_raw: IdsRaw, *, default_preset: str = "Farming", loa
     return AccountState(
         ids_path=ids_raw.ids_path,
         labs=labs,
+        lab_adjusters=lab_adjusters,
         workshop=workshop,
         workshop_enhancements=workshop_enhancements,
         workshop_enhancement_tracks=workshop_enhancement_tracks,
@@ -186,6 +188,33 @@ def _apply_loadout_overrides(loadout_config: Dict[str, object], card_presets: Di
                     primary=str(primary).strip() if primary is not None and str(primary).strip() else current.primary,
                     assist=str(assist).strip() if assist is not None and str(assist).strip() else current.assist,
                 )
+
+
+def _parse_lab_adjusters(loadout_config: Dict[str, object]) -> Dict[str, Dict[str, int]]:
+    out: Dict[str, Dict[str, int]] = {}
+    raw_adjusters = loadout_config.get('lab_adjusters')
+    if not isinstance(raw_adjusters, dict):
+        return out
+    for preset_name, payload in raw_adjusters.items():
+        if not isinstance(preset_name, str) or not isinstance(payload, dict):
+            continue
+        normalized = _normalize_preset_name(preset_name)
+        if normalized is None:
+            raise ValueError(f"loadout_config.lab_adjusters contains invalid preset name {preset_name!r}.")
+        preset_adjusters: Dict[str, int] = {}
+        for lab_name, level in payload.items():
+            if not isinstance(lab_name, str):
+                continue
+            try:
+                parsed_level = int(level)
+            except (TypeError, ValueError):
+                continue
+            if parsed_level < 0:
+                continue
+            preset_adjusters[str(lab_name).strip()] = parsed_level
+        if preset_adjusters:
+            out[normalized] = preset_adjusters
+    return out
 
 
 

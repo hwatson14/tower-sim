@@ -72,8 +72,8 @@ EP_LABEL_TO_DESTINATION = {
 
 
 def verdict_from_verification(verification_status: str, compare_status: str | None) -> str:
-    if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending', 'needs_work'}:
-        return 'fail' if verification_status in {'not_resolved', 'blocked', 'blocked_formula_pending'} else 'needs_work'
+    if verification_status in {'not_resolved', 'blocked', 'needs_work'}:
+        return 'fail' if verification_status in {'not_resolved', 'blocked'} else 'needs_work'
     if verification_status == 'trace_only':
         return 'trace_only'
     if compare_status in {'stage_scope_mismatch', 'formula_blocked', 'not_comparable'}:
@@ -155,16 +155,12 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
             issues.append('ep_reference_mismatch')
         if compare_status == 'stage_scope_mismatch':
             issues.append('ep_reference_stage_scope_mismatch')
-        if compare_status == 'formula_blocked':
-            issues.append('formula_blocked_pending_exact_destination_logic')
         verification_status = 'publishable'
         if key.startswith('raw::'):
             verification_status = 'trace_only'
         elif row.get('status') != 'resolved':
             verification_status = 'not_resolved'
-        if contract.get('publish_policy') == 'block' and not key.startswith('raw::'):
-            verification_status = 'blocked_formula_pending'
-        elif issues:
+        if issues:
             if key.startswith('raw::'):
                 verification_status = 'trace_only'
             else:

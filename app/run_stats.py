@@ -13,6 +13,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
 
 def main() -> int:
@@ -58,9 +60,7 @@ def main() -> int:
     if args.watch:
         from app.pipeline import run_stats_watch_loop
         return run_stats_watch_loop(args)
-    from app.pipeline import run_stats_client, run_stats_ensure_local_server, run_stats_pipeline
-    if run_stats_ensure_local_server(args):
-        return run_stats_client(args)
+    from app.pipeline import run_stats_pipeline
     return run_stats_pipeline(args)
 
 

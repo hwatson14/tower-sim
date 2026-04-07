@@ -242,6 +242,7 @@ sections:
         surface_id: state::tower.crit_chance_pct
       - label: Crit Multiplier
         surface_id: state::tower.crit_multiplier
+        canonical_row_id: workshop::tower.crit_multiplier
       - label: Multishot Chance
         surface_id: state::tower.multishot_chance_pct
       - label: Multishot Targets
@@ -263,6 +264,7 @@ sections:
         surface_id: state::tower.hp
       - label: Regen
         surface_id: state::tower.regen
+        canonical_row_id: workshop::tower.regen
       - label: Defense %
         surface_id: state::tower.defense_pct
       - label: Thorns
@@ -281,10 +283,12 @@ sections:
         surface_id: state::tower.land_mine_damage
       - label: Shockwave Interval
         surface_id: state::tower.shockwave_interval_seconds
+        canonical_row_id: workshop::tower.shockwave_interval_seconds
       - label: Shockwave Size
         surface_id: state::tower.shockwave_size_m
       - label: Wall Health
         surface_id: state::wall.hp
+        canonical_row_id: workshop::wall.health
       - label: Wall Rebuild
         surface_id: state::wall.rebuild_seconds
     utility_economy_surfaces:
@@ -310,13 +314,18 @@ sections:
         surface_id: state::tower.max_recovery_multiplier
       - label: Package Chance
         surface_id: state::tower.package_chance_pct
+        canonical_row_id: workshop::tower.package_chance_pct
       - label: Enemy Attack Level Skip
         surface_id: state::tower.enemy_attack_level_skip_pct
       - label: Enemy Health Level Skip
         surface_id: state::tower.enemy_health_level_skip_pct
     derived_wall_economy_surfaces:
+      - label: Wall HP (Pre-Fort)
+        surface_id: derived::wall.hp_pre_fort
+        canonical_row_id: derived::wall.hp_pre_fort
       - label: Wall HP
         surface_id: state::wall.hp
+        canonical_row_id: derived::wall.hp_final
       - label: Wall Regen
         surface_id: state::wall.regen
       - label: Wall Thorns

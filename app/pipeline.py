@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import csv
 import json
+import shutil
 import sys
 from collections import Counter
 from functools import lru_cache
@@ -550,42 +551,44 @@ def _preset_loadout_summary(account_state, *, preset_name: str, perk_preset_name
     }
 
 
-def _query_response_to_statbook_dict(response, *, bundle_id: str, trace_mode: str) -> dict:
-    contributor_rows_by_surface: dict[str, list[dict]] = {}
-    for contributor in response.contributor_rows:
-        contributor_rows_by_surface.setdefault(contributor.surface_id, []).append({
-            'contributor_id': contributor.contributor_id,
-            'value': contributor.value,
-            'value_type': contributor.value_type,
-            'input_value_type': contributor.input_value_type,
-            'active': contributor.active,
-            'gate_reason': contributor.gate_reason,
-            'composition_stage': contributor.composition_stage,
-            'source_class': contributor.source_class,
-            'provenance_ref': contributor.provenance_ref,
-        })
-    rows = {}
-    for resolved in sorted(response.resolved_surface_rows, key=lambda row: row.surface_id):
-        rows[resolved.surface_id] = {
-            'stat_name': resolved.surface_id,
-            'final_value': resolved.final_value,
-            'value_type': resolved.value_type,
-            'status': resolved.status,
-            'contributors': contributor_rows_by_surface.get(resolved.surface_id, []),
-            'dependency_trace': dict(response.dependency_trace.get(resolved.surface_id, {})),
+def _query_response_to_statbook_dict(
+    response,
+    *,
+    bundle_id: str,
+    trace_mode: str,
+    manual_advisory_inputs: dict | None = None,
+    account_state_labs: dict | None = None,
+    publish_qe_surfaces: bool = False,
+) -> dict:
+    statbook = query_response_to_statbook(
+        response,
+        notes='Resolved through run_stats bounded query bundle.',
+        diagnostics={
             'bundle_id': bundle_id,
-            'family_id': response.family_id,
-            'trace_mode': trace_mode,
-        }
-    statbook_dict = {
-        'rows': rows,
-        'diagnostics': {
-            'family_id': response.family_id,
-            'bundle_id': bundle_id,
-            'resolved_surface_count': len(rows),
+            'resolved_surface_count': len(response.resolved_surface_rows),
             'contributor_row_count': len(response.contributor_rows),
             'trace_mode': trace_mode,
         },
+    )
+    if publish_qe_surfaces:
+        publish_query_surfaces(
+            statbook.rows,
+            manual_advisory_inputs=manual_advisory_inputs,
+            account_state_labs=account_state_labs,
+        )
+    statbook_dict = statbook.to_dict()
+    for surface_id, row in (statbook_dict.get('rows') or {}).items():
+        row['stat_name'] = surface_id
+        row['bundle_id'] = bundle_id
+        row['family_id'] = response.family_id
+        row['trace_mode'] = trace_mode
+    statbook_dict['diagnostics'] = {
+        **dict(statbook_dict.get('diagnostics') or {}),
+        'family_id': response.family_id,
+        'bundle_id': bundle_id,
+        'resolved_surface_count': len(statbook_dict.get('rows') or {}),
+        'contributor_row_count': len(response.contributor_rows),
+        'trace_mode': trace_mode,
     }
     _annotate_display_fields(statbook_dict)
     return statbook_dict
@@ -600,6 +603,25 @@ _RUN_STATS_QUERY_OUTPUTS = {
 
 def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
     _remove_legacy_outputs(out_dir, _RUN_STATS_LEGACY_OUTPUTS)
+
+
+def _remove_run_stats_current_outputs(out_dir: Path) -> None:
+    for filename in (
+        'diagnostics.json',
+        'account_state.json',
+        'module_card_payloads.json',
+        'run_stats.json',
+        _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'],
+        _RUN_STATS_QUERY_OUTPUTS['max_progression_plan'],
+        _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'],
+        _RUN_STATS_QUERY_OUTPUTS['max_progression_rows'],
+    ):
+        path = out_dir / filename
+        if path.exists():
+            path.unlink()
+    perk_diag_dir = out_dir / 'diagnostics' / 'perks'
+    if perk_diag_dir.exists():
+        shutil.rmtree(perk_diag_dir, ignore_errors=True)
 
 
 def _merge_query_statbooks(*statbook_dicts: dict) -> dict:
@@ -1171,16 +1193,23 @@ class RunStatsSession:
                         progression_response,
                         bundle_id='progression_core_stats',
                         trace_mode='full_trace',
+                        manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+                        account_state_labs=account_state.labs,
+                        publish_qe_surfaces=True,
                     ),
                     _query_response_to_statbook_dict(
                         timing_core_response,
                         bundle_id='timing_core_cycle',
                         trace_mode='full_trace',
+                        manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+                        account_state_labs=account_state.labs,
                     ),
                     _query_response_to_statbook_dict(
                         timing_wave_response,
                         bundle_id='timing_wave_duration',
                         trace_mode='full_trace',
+                        manual_advisory_inputs=input_bundle.manual_advisory_inputs,
+                        account_state_labs=account_state.labs,
                     ),
                 )
                 formatting_ms = _elapsed_ms(t)
@@ -1289,11 +1318,12 @@ class RunStatsSession:
 
     def execute(self, args) -> int:
         args.out.mkdir(parents=True, exist_ok=True)
+        _remove_run_stats_current_outputs(args.out)
+        _remove_run_stats_legacy_outputs(args.out)
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
         js = _json_sanitize
         write_start = perf_counter()
-        _remove_run_stats_legacy_outputs(args.out)
         (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
         (args.out / 'account_state.json').write_text(
             json.dumps(js(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
@@ -1965,7 +1995,6 @@ def run_analysis_pipeline(args) -> int:
         },
         'kb_incomplete_areas': kb_incomplete_areas,
         'kb_gap_register': kb_gap_register,
-        'blocked_formula_contract_count': kb_incomplete_areas['summary']['blocked_formula_contract_count'],
         'active_unmapped_input_count': kb_incomplete_areas['summary']['active_unmapped_input_count'],
         'resolved_unknown_schema_unit_count': kb_incomplete_areas['summary']['resolved_unknown_schema_unit_count'],
         'ambiguous_relic_semantic_hint_count': kb_incomplete_areas['summary']['ambiguous_relic_semantic_hint_count'],

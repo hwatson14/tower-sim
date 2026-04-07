@@ -29,3 +29,147 @@ def test_publish_derived_composites_normalizes_contributor_surface_key(source_ke
     assert tower_hp_contributor['stat_name'] == normalized_key
     assert tower_hp_contributor['source_name'] == normalized_key
     assert tower_hp_contributor['kb_mapped'] is True
+
+
+def test_publish_derived_composites_publishes_wall_hp_pre_fort_surface() -> None:
+    rows = {
+        'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::wall.hp': StatRow(stat_name='state::wall.hp', final_value=520.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_hp_ws': StatRow(stat_name='support_surface::ehp.wall_hp_ws', final_value=100.0, value_type='hp', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_hp_lab_level': StatRow(stat_name='support_surface::ehp.wall_hp_lab_level', final_value=50.0, value_type='scalar', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_hp_prim_sub': StatRow(stat_name='support_surface::ehp.wall_hp_prim_sub', final_value=10.0, value_type='scalar', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_hp_ass_sub': StatRow(stat_name='support_surface::ehp.wall_hp_ass_sub', final_value=0.0, value_type='scalar', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.workshop_enhancement_level': StatRow(stat_name='support_surface::ehp.workshop_enhancement_level', final_value=50.0, value_type='scalar', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_module_primary_effect': StatRow(stat_name='support_surface::ehp.wall_module_primary_effect', final_value=2.0, value_type='multiplier', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_module_assist_effect': StatRow(stat_name='support_surface::ehp.wall_module_assist_effect', final_value=0.0, value_type='multiplier', source_count=0, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.wall_fortification_level': StatRow(stat_name='support_surface::ehp.wall_fortification_level', final_value=3.0, value_type='scalar', source_count=0, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    pre_fort = rows['derived::wall.hp_pre_fort']
+    assert pre_fort.final_value == pytest.approx((100.0 + 1.0 + 10.0) * 1.5 * 2.0)
+    assert pre_fort.value_type == 'hp'
+
+
+def test_publish_derived_composites_falls_back_to_final_wall_hp_divided_by_fortification() -> None:
+    rows = {
+        'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::wall.hp': StatRow(stat_name='state::wall.hp', final_value=520.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::wall.fortification_multiplier': StatRow(stat_name='state::wall.fortification_multiplier', final_value=10.4, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    pre_fort = rows['derived::wall.hp_pre_fort']
+    assert pre_fort.final_value == pytest.approx(50.0)
+    assert any(c['stat_name'] == 'state::wall.fortification_multiplier' for c in pre_fort.contributors)
+
+
+def test_publish_derived_composites_derives_health_dwhp_factor_from_tower_hp_contributor() -> None:
+    rows = {
+        'state::tower.hp': StatRow(
+            stat_name='state::tower.hp',
+            final_value=1000.0,
+            value_type='hp',
+            source_count=1,
+            status='resolved',
+            contributors=[{'contributor_id': 'lab.death_wave_health.account_state', 'value': 12.5}],
+            schema=None,
+        ),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::ehp.health_dwhp_factor'].final_value == pytest.approx(12.5)
+
+
+def test_publish_derived_composites_publishes_primordial_black_hole_damage_reduction_factor() -> None:
+    rows = {
+        'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::module.primordial_collapse.bh_damage_reduction_pct': StatRow(stat_name='state::module.primordial_collapse.bh_damage_reduction_pct', final_value=80.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.black_hole_duration_seconds': StatRow(stat_name='support_surface::ehp.black_hole_duration_seconds', final_value=20.0, value_type='seconds', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.black_hole_cooldown_seconds': StatRow(stat_name='support_surface::ehp.black_hole_cooldown_seconds', final_value=50.0, value_type='seconds', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::ehp.primordial_black_hole_uptime'].final_value == pytest.approx(20.0 / 70.0)
+    assert rows['derived::ehp.primordial_black_hole_damage_reduction_factor'].final_value == pytest.approx(1.2962962962962963)
+
+
+def test_publish_derived_composites_publishes_berserker_projection_helper_factor() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=1.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=1.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::cards.berserker.assumed_bonus_multiplier': StatRow(stat_name='state::cards.berserker.assumed_bonus_multiplier', final_value=8.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::edamage.berserker_bonus_multiplier'].final_value == pytest.approx(8.0)
+    assert rows['derived::edamage.berserker_factor'].final_value == pytest.approx(9.0)
+
+
+def test_publish_derived_composites_consumes_relic_support_surfaces_for_ehp_and_eecon() -> None:
+    rows = {
+        'state::tower.hp': StatRow(stat_name='state::tower.hp', final_value=100.0, value_type='hp', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.defense_absolute': StatRow(stat_name='state::tower.defense_absolute', final_value=10.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.defense_pct': StatRow(stat_name='state::tower.defense_pct', final_value=0.5, value_type='ratio', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.health_relic_pct': StatRow(stat_name='support_surface::ehp.health_relic_pct', final_value=0.51, value_type='ratio', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.dabs_relic_pct': StatRow(stat_name='support_surface::ehp.dabs_relic_pct', final_value=0.28, value_type='ratio', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::ehp.def_pct_relic_pct': StatRow(stat_name='support_surface::ehp.def_pct_relic_pct', final_value=0.04, value_type='ratio', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::eecon.adstarter_theme_relic_factor': StatRow(stat_name='support_surface::eecon.adstarter_theme_relic_factor', final_value=1.48, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::ehp.health_relic_factor'].final_value == pytest.approx(1.51)
+    assert rows['derived::ehp.dabs_relic_factor'].final_value == pytest.approx(1.28)
+    assert rows['derived::ehp.def_pct_relic_term'].final_value == pytest.approx(0.04)
+    assert rows['derived::eecon.base_meta_factor'].final_value == pytest.approx(1.48)
+
+
+def test_publish_derived_composites_publishes_effective_bot_range_surfaces() -> None:
+    rows = {
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=130.66, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.global.range_bonus_m': StatRow(stat_name='state::bot.global.range_bonus_m', final_value=24.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.golden.range_m': StatRow(stat_name='state::bot.golden.range_m', final_value=50.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.amplify.range_m': StatRow(stat_name='state::bot.amplify.range_m', final_value=25.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.flame.range_m': StatRow(stat_name='state::bot.flame.range_m', final_value=46.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::bot.thunder.range_m': StatRow(stat_name='state::bot.thunder.range_m', final_value=25.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    amplification = 1.33 * (130.66 / 69.5)
+    assert rows['state::bot.golden.effective_range_m'].final_value == pytest.approx((50.0 + 24.0) * amplification)
+    assert rows['state::bot.amplify.effective_range_m'].final_value == pytest.approx((25.0 + 24.0) * amplification)
+    assert rows['state::bot.flame.effective_range_m'].final_value == pytest.approx((46.0 + 24.0) * amplification)
+    assert rows['state::bot.thunder.effective_range_m'].final_value == pytest.approx((25.0 + 24.0) * amplification)
+
+
+def test_publish_derived_composites_consumes_ultimate_crit_card_for_uw_damage_helpers() -> None:
+    rows = {
+        'state::tower.damage': StatRow(stat_name='state::tower.damage', final_value=100.0, value_type='damage', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.attack_speed': StatRow(stat_name='state::tower.attack_speed', final_value=1.0, value_type='rate', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.damage_per_meter_multiplier': StatRow(stat_name='state::tower.damage_per_meter_multiplier', final_value=1.0, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.range_m': StatRow(stat_name='state::tower.range_m', final_value=1.0, value_type='distance', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_chance_pct': StatRow(stat_name='state::tower.crit_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.crit_multiplier': StatRow(stat_name='state::tower.crit_multiplier', final_value=16.2, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_chance_pct': StatRow(stat_name='state::tower.supercrit_chance_pct', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::tower.supercrit_multiplier': StatRow(stat_name='state::tower.supercrit_multiplier', final_value=1.2, value_type='multiplier', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::cards.ultimate_crit.chance_pct': StatRow(stat_name='state::cards.ultimate_crit.chance_pct', final_value=3.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+        'state::uw.death_wave.active': StatRow(stat_name='state::uw.death_wave.active', final_value=True, value_type='bool', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::uw.death_wave.final_damage': StatRow(stat_name='support_surface::uw.death_wave.final_damage', final_value=10.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::uw.death_wave.final_quantity': StatRow(stat_name='support_surface::uw.death_wave.final_quantity', final_value=1.0, value_type='scalar', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::uw.death_wave.final_cooldown_seconds': StatRow(stat_name='support_surface::uw.death_wave.final_cooldown_seconds', final_value=1.0, value_type='seconds', source_count=1, status='resolved', contributors=[], schema=None),
+        'support_surface::uw.death_wave.damage_amp': StatRow(stat_name='support_surface::uw.death_wave.damage_amp', final_value=0.0, value_type='pct', source_count=1, status='resolved', contributors=[], schema=None),
+    }
+
+    derived.publish_derived_composites(rows)
+
+    assert rows['derived::edamage.uw_crit_card_factor'].final_value == pytest.approx(1.456)
+    assert rows['derived::edamage.uw_total_damage'].final_value == pytest.approx(72.8)

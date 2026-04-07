@@ -1,5 +1,5 @@
 {
-  "ids_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\.claude\\worktrees\\fervent-meitner\\input\\imports\\ids.csv",
+  "ids_path": "input/imports/ids.csv",
   "labs": {
     "Game Speed": 7,
     "Starting Cash": 6,
@@ -7,7 +7,7 @@
     "Workshop Defense Discount": 28,
     "Workshop Utility Discount": 41,
     "Labs Coin Discount": 68,
-    "Labs Speed": 93,
+    "Labs Speed": 94,
     "Buy Multiplier": 4,
     "More Round Stats": 1,
     "Target Priority": 2,
@@ -20,8 +20,8 @@
     "Enhancement Utility - Coin Discount": 0,
     "Damage": 72,
     "Attack Speed": 75,
-    "Critical Factor": 82,
-    "Range": 33,
+    "Critical Factor": 85,
+    "Range": 44,
     "Damage / Meter": 16,
     "Super Crit Chance": 9,
     "Super Crit Multi": 13,
@@ -34,7 +34,7 @@
     "Orbs Speed": 20,
     "Land Mine Damage": 0,
     "Land Mine Decay": 13,
-    "Shockwave Size": 15,
+    "Shockwave Size": 20,
     "Orb Boss Hit": 10,
     "Wall Health": 50,
     "Wall Rebuild": 9,
@@ -178,7 +178,7 @@
     "Plasma Cannon Mastery": 0,
     "Critical Coin Mastery": 0,
     "Wave Skip Mastery": 0,
-    "Intro Sprint Mastery": 2,
+    "Intro Sprint Mastery": 3,
     "Land Mine Stun Mastery": 0,
     "Recovery Package Chance Mastery": 3,
     "Death Ray Mastery": 0,
@@ -214,6 +214,7 @@
     "Enemy Level Skip Reduction": 0,
     "END OF ARRAY": 0
   },
+  "lab_adjusters": {},
   "workshop": {
     "Damage": {
       "name": "Damage",
@@ -225,8 +226,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 6000.0,
+        "Tourney": 6000.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 6000,
-      "category": null
+      "category": "offense"
     },
     "Attack Speed": {
       "name": "Attack Speed",
@@ -238,8 +246,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "offense"
     },
     "Critical Chance": {
       "name": "Critical Chance",
@@ -251,8 +266,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 79.0,
+        "Tourney": 79.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 79,
-      "category": null
+      "category": "offense"
     },
     "Critical Factor": {
       "name": "Critical Factor",
@@ -264,8 +286,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 150.0,
+        "Tourney": 150.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 150,
-      "category": null
+      "category": "offense"
     },
     "Range": {
       "name": "Range",
@@ -277,8 +306,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 79.0,
+        "Tourney": 79.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 79,
-      "category": null
+      "category": "offense"
     },
     "Damage / Meter": {
       "name": "Damage / Meter",
@@ -290,8 +326,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 200.0,
+        "Tourney": 200.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 200,
-      "category": null
+      "category": "offense"
     },
     "Multishot Chance": {
       "name": "Multishot Chance",
@@ -303,8 +346,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "offense"
     },
     "Multishot Targets": {
       "name": "Multishot Targets",
@@ -316,8 +366,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 7.0,
+        "Tourney": 7.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 7,
-      "category": null
+      "category": "offense"
     },
     "Rapid Fire Chance": {
       "name": "Rapid Fire Chance",
@@ -329,8 +386,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 85.0,
+        "Tourney": 85.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 85,
-      "category": null
+      "category": "offense"
     },
     "Rapid Fire Duration": {
       "name": "Rapid Fire Duration",
@@ -342,8 +406,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "offense"
     },
     "Bounce Shot Chance": {
       "name": "Bounce Shot Chance",
@@ -355,8 +426,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 85.0,
+        "Tourney": 85.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 85,
-      "category": null
+      "category": "offense"
     },
     "Bounce Shot Targets": {
       "name": "Bounce Shot Targets",
@@ -368,8 +446,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 7.0,
+        "Tourney": 7.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 7,
-      "category": null
+      "category": "offense"
     },
     "Bounce Shot Range": {
       "name": "Bounce Shot Range",
@@ -381,8 +466,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 60.0,
+        "Tourney": 60.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 60,
-      "category": null
+      "category": "offense"
     },
     "Super Critical Chance": {
       "name": "Super Critical Chance",
@@ -390,6 +482,13 @@
       "preset_levels": {
         "Farming": 100,
         "Tourney": 100,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "preset_values": {
+        "Farming": 100.0,
+        "Tourney": 100.0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -407,6 +506,13 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 120.0,
+        "Tourney": 120.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 120,
       "category": null
     },
@@ -420,8 +526,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 299.0,
+        "Tourney": 299.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 299,
-      "category": null
+      "category": "offense"
     },
     "Rend Armor Mult": {
       "name": "Rend Armor Mult",
@@ -433,8 +546,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 299.0,
+        "Tourney": 299.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 299,
-      "category": null
+      "category": "utility"
     },
     "Health": {
       "name": "Health",
@@ -446,8 +566,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 6000.0,
+        "Tourney": 6000.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 6000,
-      "category": null
+      "category": "defense"
     },
     "Health Regen": {
       "name": "Health Regen",
@@ -459,8 +586,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 6000.0,
+        "Tourney": 6000.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 6000,
-      "category": null
+      "category": "defense"
     },
     "Defense %": {
       "name": "Defense %",
@@ -472,8 +606,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "defense"
     },
     "Defense Absolute": {
       "name": "Defense Absolute",
@@ -485,8 +626,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 5000.0,
+        "Tourney": 5000.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 5000,
-      "category": null
+      "category": "defense"
     },
     "Thorn Damage": {
       "name": "Thorn Damage",
@@ -498,8 +646,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "defense"
     },
     "Lifesteal": {
       "name": "Lifesteal",
@@ -511,8 +666,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 80.0,
+        "Tourney": 80.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 80,
-      "category": null
+      "category": "defense"
     },
     "Knockback Chance": {
       "name": "Knockback Chance",
@@ -524,8 +686,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 80.0,
+        "Tourney": 80.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 80,
-      "category": null
+      "category": "defense"
     },
     "Knockback Force": {
       "name": "Knockback Force",
@@ -537,8 +706,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 40.0,
+        "Tourney": 40.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 40,
-      "category": null
+      "category": "defense"
     },
     "Orb Speed": {
       "name": "Orb Speed",
@@ -550,8 +726,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 38.0,
+        "Tourney": 38.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 38,
-      "category": null
+      "category": "defense"
     },
     "Orbs": {
       "name": "Orbs",
@@ -563,8 +746,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 4.0,
+        "Tourney": 4.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 4,
-      "category": null
+      "category": "defense"
     },
     "Shockwave Size": {
       "name": "Shockwave Size",
@@ -576,8 +766,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 35.0,
+        "Tourney": 35.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 35,
-      "category": null
+      "category": "defense"
     },
     "Shockwave Frequency": {
       "name": "Shockwave Frequency",
@@ -589,8 +786,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 40.0,
+        "Tourney": 40.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 40,
-      "category": null
+      "category": "defense"
     },
     "Land Mine Chance": {
       "name": "Land Mine Chance",
@@ -602,8 +806,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 50.0,
+        "Tourney": 50.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 50,
-      "category": null
+      "category": "defense"
     },
     "Land Mine Damage": {
       "name": "Land Mine Damage",
@@ -615,8 +826,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 200.0,
+        "Tourney": 200.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 200,
-      "category": null
+      "category": "defense"
     },
     "Land Mine Radius": {
       "name": "Land Mine Radius",
@@ -628,8 +846,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 50.0,
+        "Tourney": 50.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 50,
-      "category": null
+      "category": "defense"
     },
     "Death Defy": {
       "name": "Death Defy",
@@ -641,8 +866,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 75.0,
+        "Tourney": 75.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 75,
-      "category": null
+      "category": "defense"
     },
     "Wall Health": {
       "name": "Wall Health",
@@ -650,6 +882,13 @@
       "preset_levels": {
         "Farming": 1340,
         "Tourney": 1340,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "preset_values": {
+        "Farming": 1800.0,
+        "Tourney": 1800.0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -667,6 +906,13 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 300.0,
+        "Tourney": 300.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 300,
       "category": null
     },
@@ -680,8 +926,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 149.0,
+        "Tourney": 149.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 149,
-      "category": null
+      "category": "utility"
     },
     "Cash / Wave": {
       "name": "Cash / Wave",
@@ -693,8 +946,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 149.0,
+        "Tourney": 149.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 149,
-      "category": null
+      "category": "utility"
     },
     "Coin / Kill Bonus": {
       "name": "Coin / Kill Bonus",
@@ -702,6 +962,13 @@
       "preset_levels": {
         "Farming": 149,
         "Tourney": 149,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "preset_values": {
+        "Farming": 149.0,
+        "Tourney": 149.0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -719,6 +986,13 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 149.0,
+        "Tourney": 149.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 149,
       "category": null
     },
@@ -732,8 +1006,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "utility"
     },
     "Free Defense Upgrade": {
       "name": "Free Defense Upgrade",
@@ -745,8 +1026,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "utility"
     },
     "Free Utility Upgrade": {
       "name": "Free Utility Upgrade",
@@ -758,8 +1046,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "utility"
     },
     "Interest / Wave": {
       "name": "Interest / Wave",
@@ -771,8 +1066,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 99.0,
+        "Tourney": 99.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 99,
-      "category": null
+      "category": "utility"
     },
     "Recovery Amount": {
       "name": "Recovery Amount",
@@ -780,6 +1082,13 @@
       "preset_levels": {
         "Farming": 300,
         "Tourney": 300,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "preset_values": {
+        "Farming": 300.0,
+        "Tourney": 300.0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -797,6 +1106,13 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 500.0,
+        "Tourney": 500.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 500,
       "category": null
     },
@@ -806,6 +1122,13 @@
       "preset_levels": {
         "Farming": 60,
         "Tourney": 60,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
+      "preset_values": {
+        "Farming": 60.0,
+        "Tourney": 60.0,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -823,8 +1146,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 699.0,
+        "Tourney": 699.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 699,
-      "category": null
+      "category": "utility"
     },
     "Enemy Health Level Skip": {
       "name": "Enemy Health Level Skip",
@@ -836,8 +1166,15 @@
         "Preset 4": null,
         "Preset 5": null
       },
+      "preset_values": {
+        "Farming": 699.0,
+        "Tourney": 699.0,
+        "Milestone": null,
+        "Preset 4": null,
+        "Preset 5": null
+      },
       "max_level": 699,
-      "category": null
+      "category": "utility"
     }
   },
   "workshop_enhancements": {
@@ -1055,7 +1392,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "offense"
     },
     "Rend Armor Mult +": {
       "name": "Rend Armor Mult +",
@@ -1067,7 +1405,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": null
     },
     "Critical Factor +": {
       "name": "Critical Factor +",
@@ -1079,7 +1418,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": null
     },
     "Damage / Meter +": {
       "name": "Damage / Meter +",
@@ -1091,7 +1431,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "offense"
     },
     "Super Crit Multi +": {
       "name": "Super Crit Multi +",
@@ -1103,7 +1444,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": null
     },
     "Attack Speed +": {
       "name": "Attack Speed +",
@@ -1115,7 +1457,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 75
+      "max_level": 75,
+      "category": "offense"
     },
     "Health +": {
       "name": "Health +",
@@ -1127,7 +1470,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "defense"
     },
     "Health Regen +": {
       "name": "Health Regen +",
@@ -1139,7 +1483,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "defense"
     },
     "Defense Absolute +": {
       "name": "Defense Absolute +",
@@ -1151,7 +1496,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "defense"
     },
     "Land Mine Damage +": {
       "name": "Land Mine Damage +",
@@ -1163,7 +1509,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "defense"
     },
     "Wall Health +": {
       "name": "Wall Health +",
@@ -1175,7 +1522,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": null
     },
     "Orb Size +": {
       "name": "Orb Size +",
@@ -1187,7 +1535,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 200
+      "max_level": 200,
+      "category": "defense"
     },
     "Cash Bonus +": {
       "name": "Cash Bonus +",
@@ -1199,7 +1548,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 400
+      "max_level": 400,
+      "category": "utility"
     },
     "Coin Bonus +": {
       "name": "Coin Bonus +",
@@ -1211,7 +1561,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 200
+      "max_level": 200,
+      "category": null
     },
     "Cells / Kill Bonus +": {
       "name": "Cells / Kill Bonus +",
@@ -1223,7 +1574,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 200
+      "max_level": 200,
+      "category": null
     },
     "Free Upgrades +": {
       "name": "Free Upgrades +",
@@ -1235,7 +1587,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 100
+      "max_level": 100,
+      "category": null
     },
     "Recovery Package +": {
       "name": "Recovery Package +",
@@ -1247,7 +1600,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 300
+      "max_level": 300,
+      "category": null
     },
     "Enemy Level Skips +": {
       "name": "Enemy Level Skips +",
@@ -1259,7 +1613,8 @@
         "Preset 4": null,
         "Preset 5": null
       },
-      "max_level": 60
+      "max_level": 60,
+      "category": null
     }
   },
   "ultimate_weapons": {
@@ -1771,9 +2126,9 @@
       "Range": 0
     },
     "Golden Bot": {
-      "Duration": 12,
+      "Duration": 13,
       "Cooldown": 3,
-      "Bonus": 22,
+      "Bonus": 23,
       "Range": 15
     },
     "Amplify Bot": {
@@ -1848,8 +2203,8 @@
       {
         "bot_name": "Golden Bot",
         "track_name": "Duration",
-        "level": 12,
-        "resolved_value": 26.0,
+        "level": 13,
+        "resolved_value": 26.5,
         "resolved_unit": "s"
       },
       {
@@ -1862,8 +2217,8 @@
       {
         "bot_name": "Golden Bot",
         "track_name": "Bonus",
-        "level": 22,
-        "resolved_value": 6.400000000000004,
+        "level": 23,
+        "resolved_value": 6.600000000000004,
         "resolved_unit": "x"
       },
       {
@@ -2320,7 +2675,7 @@
       "name": "Intro Sprint",
       "level": 7,
       "mastery_unlocked": true,
-      "mastery_lab_level": 2
+      "mastery_lab_level": 3
     },
     "Land Mine Stun": {
       "name": "Land Mine Stun",
@@ -2899,8 +3254,8 @@
       "name": "Singularity Harness",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "1.73",
+      "level": 167,
+      "stat": "1.74",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -2933,8 +3288,8 @@
       "name": "Pulsar Harvester",
       "slot_type": "generator",
       "rarity": "Ancestral 1*",
-      "level": 166,
-      "stat": "1.759",
+      "level": 167,
+      "stat": "1.77",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -3001,8 +3356,8 @@
       "name": "Restorative Bonus",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 166,
-      "stat": "1.73",
+      "level": 167,
+      "stat": "1.74",
       "substats": [
         {
           "name": "Enemy Health Level Skip",
@@ -3189,9 +3544,140 @@
       ]
     }
   },
-  "perk_presets": {},
-  "perk_preset_namespace_class": "canonical",
-  "active_perk_preset": null,
+  "perk_presets": {
+    "Farming": [
+      {
+        "perk_id": "PERK_X1_20_MAX_HEALTH",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_DAMAGE",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_CASH_BONUS",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_75_HEALTH_REGEN",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_INTEREST_X1_50",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_BOUNCE_SHOT_2",
+        "picks": 3
+      },
+      {
+        "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
+        "picks": 3
+      },
+      {
+        "perk_id": "PERK_ORBS_1",
+        "picks": 2
+      },
+      {
+        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_4_MORE_SMART_MISSILES",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_SWAMP_RADIUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
+        "picks": 1
+      }
+    ]
+  },
+  "perk_preset_namespace_class": "transient",
+  "active_perk_preset": "Farming",
   "active_card_preset": "Farming",
   "active_module_preset": "Farming",
   "default_preset": "Farming",
@@ -3235,7 +3721,7 @@
       ],
       [
         "Labs Speed",
-        "93",
+        "94",
         "",
         "99"
       ],
@@ -3313,13 +3799,13 @@
       ],
       [
         "Critical Factor",
-        "82",
+        "85",
         "",
         "99"
       ],
       [
         "Range",
-        "33",
+        "44",
         "",
         "80"
       ],
@@ -3397,7 +3883,7 @@
       ],
       [
         "Shockwave Size",
-        "15",
+        "20",
         "",
         "20"
       ],
@@ -4261,7 +4747,7 @@
       ],
       [
         "Intro Sprint Mastery",
-        "2",
+        "3",
         "",
         "9"
       ],
@@ -6458,8 +6944,8 @@
         "Golden Bot",
         "",
         "Duration",
-        "26",
-        "12 | 26.0s | Cost 540 ? | Next 580 ?"
+        "26.5",
+        "13 | 26.5s | Cost 580 ? | Next 620 ?"
       ],
       [
         "",
@@ -6472,8 +6958,8 @@
         "",
         "",
         "Bonus",
-        "6.400000000000004",
-        "22 | x6.4 | Cost 940 ? | Next 980 ?"
+        "6.600000000000004",
+        "23 | x6.6 | Cost 980 ? | Next 1020 ?"
       ],
       [
         "true",
@@ -7328,8 +7814,8 @@
         "",
         "",
         "Ancestral",
-        "166",
-        "1.73",
+        "167",
+        "1.74",
         "",
         "",
         "Ancestral 5*",
@@ -7496,8 +7982,8 @@
         "",
         "",
         "Ancestral 1*",
-        "166",
-        "1.759",
+        "167",
+        "1.77",
         "",
         "",
         "Ancestral",
@@ -7853,8 +8339,8 @@
         "",
         "",
         "Ancestral",
-        "166",
-        "1.73",
+        "167",
+        "1.74",
         "",
         "",
         "Ancestral 2*",

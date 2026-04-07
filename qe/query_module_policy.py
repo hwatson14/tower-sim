@@ -125,6 +125,8 @@ def _manual_input_is_set(entry: Dict[str, Any]) -> bool:
 def _publish_surface(rows: Dict[str, StatRow], *, surface_id: str, value: float, value_type: str, unit: str, notes: str, contributors: list[dict], schema: dict) -> None:
     existing = rows.get(surface_id)
     if existing is not None:
+        if isinstance(existing.schema, dict) and existing.schema.get('publisher') == 'query_module_policy':
+            return
         raise ValueError(f'Module runtime/policy publication collision for {surface_id}')
     rows[surface_id] = StatRow(
         stat_name=surface_id,

@@ -7,6 +7,8 @@ import pytest
 import yaml
 
 from input.state_types import ScenarioRuntimeInputs, projection_state_for_mode
+from simulators.scenario import ScenarioConfig, ScenarioSurfaces
+from simulators.timing import TimingSurfaces, resolve_combat_runtime_surfaces
 
 ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
@@ -53,6 +55,19 @@ def test_contract_field_set__matches_expected_dataclass_fields():
 def test_non_positive_rate_field__raises_value_error():
     with pytest.raises(ValueError, match="> 0.0"):
         ScenarioRuntimeInputs.from_mapping({"electron_hits_per_second": 0.0})
+
+
+def test_electron_hits_per_second_is_consumed_from_scenario_runtime_input_owner_seam():
+    runtime_inputs = ScenarioRuntimeInputs.from_mapping({"electron_hits_per_second": 5.0})
+    resolved = resolve_combat_runtime_surfaces(
+        config=ScenarioConfig(mode_id="farming", tier=1),
+        scenario=ScenarioSurfaces(),
+        timing=TimingSurfaces(),
+        scenario_runtime_inputs=runtime_inputs,
+    )
+
+    assert resolved.electron_hits_per_second == pytest.approx(5.0)
+    assert any("scenario runtime input owner seam" in note for note in resolved.source_notes)
 
 
 def test_projection_state_for_mode__max_progression_sets_expected_facets():

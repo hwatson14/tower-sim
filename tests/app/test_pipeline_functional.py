@@ -108,9 +108,9 @@ def test_load_ep_oracle_applies_key_level_ambiguity_overrides(tmp_path: Path) ->
 
     oracle = _load_ep_oracle(ep_csv)
 
-    # Wall rows follow label routing in the compare mapping table.
-    assert oracle['state::wall.hp']['ep_value_raw'] == '132.07 T'
-    assert oracle['state::wall.hp']['label'] == 'Wall Health'
+    # Ambiguous rows route by export key, not label-only matching.
+    assert oracle['derived::wall.hp_pre_fort']['ep_value_raw'] == '132.07 T'
+    assert oracle['derived::wall.hp_pre_fort']['label'] == 'Wall Health'
     assert oracle['state::wall.fortification_multiplier']['ep_value_raw'] == '1.37 q'
     assert oracle['state::wall.fortification_multiplier']['label'] == 'Wall Fortification'
     # Existing ambiguity aliases remain key-driven.
@@ -310,6 +310,61 @@ def test_input_dashboard_payload_consumes_qe_publications():
     assert 'module_column_not_published_upstream' not in uw_damage_gap_ids
     assert 'perk_column_not_published_upstream' not in uw_damage_gap_ids
     assert 'final_column_not_published_upstream' not in uw_damage_gap_ids
+
+
+def test_stats_dashboard_fails_closed_when_only_fallback_artifacts_have_values():
+    from app.publication import _build_input_dashboard_payload, _build_stats_dashboard_payload
+
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {
+            'Wall Rebuild': {'preset_levels': {'Farming': 250}},
+        },
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {
+            'workshop': {
+                'groups': {
+                    'utility': [
+                        {'name': 'Wall Rebuild', 'coin_level': '250', 'coin_value': '300.0', 'max_level': '300', 'max_value': '300.0'},
+                    ]
+                }
+            }
+        },
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={'Farming': {'rows': {}}},
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={
+            'state::wall.rebuild_seconds': {'final_value': 150.0, 'unit': 'seconds', 'status': 'resolved'},
+        },
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'workshop'
+    )
+    rows = [
+        row
+        for section in workshop.get('payload', {}).get('sections') or []
+        for row in section.get('rows') or []
+    ]
+    by_name = {row.get('name'): row for row in rows}
+    assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
+    assert by_name['Wall Rebuild']['max_progression_value'] == '—'
 
 
 def test_build_input_dashboard_qe_publications_accepts_typed_uw_tracks():

@@ -1,0 +1,321 @@
+{
+  "survivor_order": [
+    "state::tower.regen",
+    "state::tower.hp",
+    "state::tower.defense_absolute",
+    "state::tower.damage",
+    "state::wall.hp",
+    "state::wall.regen"
+  ],
+  "rows": [
+    {
+      "destination": "state::tower.regen",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "start_of_run",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_on",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {}
+        },
+        "modules_inventory": {}
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.hp",
+      "verification_status": "blocked",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": 1116758532848.2915,
+      "ep_compare_value": 1116758532848.2915,
+      "ep_reference_value": 7550000000000.0,
+      "delta": -6433241467151.709,
+      "relative_delta_pct": -85.20849625366502,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "start_of_run",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_on",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {}
+        },
+        "modules_inventory": {}
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.defense_absolute",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "start_of_run",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_on",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {}
+        },
+        "modules_inventory": {}
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::tower.damage",
+      "verification_status": null,
+      "issues": [],
+      "final_value": null,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": "Tourney",
+      "compare_perk_state": "off",
+      "package_value_source_state_mode": "start_of_run",
+      "ep_stage_context": {
+        "compare_preset": "Tourney",
+        "compare_perk_state": "off",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "tournament_perks_off",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "tourney_perks_off",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {}
+        },
+        "modules_inventory": {}
+      },
+      "note": "primary_upstream_survivor"
+    },
+    {
+      "destination": "state::wall.hp",
+      "verification_status": "publishable",
+      "issues": [],
+      "final_value": 528348105.33120006,
+      "ep_compare_value": null,
+      "ep_reference_value": null,
+      "delta": null,
+      "relative_delta_pct": null,
+      "compare_preset": null,
+      "compare_perk_state": null,
+      "package_value_source_state_mode": null,
+      "ep_stage_context": null,
+      "note": "downstream_reflection_of_tower_residue"
+    },
+    {
+      "destination": "state::wall.regen",
+      "verification_status": "blocked",
+      "issues": [
+        "ep_reference_stage_scope_mismatch"
+      ],
+      "final_value": 2108.3999999999996,
+      "ep_compare_value": 2108.3999999999996,
+      "ep_reference_value": 234350000000000.0,
+      "delta": -234349999997891.6,
+      "relative_delta_pct": -99.99999999910032,
+      "compare_preset": "Farming",
+      "compare_perk_state": "on",
+      "package_value_source_state_mode": "start_of_run",
+      "ep_stage_context": {
+        "compare_preset": "Farming",
+        "compare_perk_state": "on",
+        "ep_progression_state": "max_progression",
+        "ep_workshop_state": "max_workshop",
+        "ep_run_state": "farming_perks_on",
+        "package_progression_state": "current_ids_snapshot",
+        "package_workshop_state": "current_ids_workshop",
+        "package_run_state": "farming_perks_on",
+        "unsupported_facets": [
+          "max_progression",
+          "max_workshop"
+        ],
+        "notes": [
+          "EP export is max progression rather than the current package progression state.",
+          "EP export assumes max workshop rather than the current package workshop state."
+        ],
+        "active_cards_by_preset": {
+          "Farming": [
+            "Enemy Balance",
+            "Extra Defense",
+            "Health",
+            "Coins",
+            "Plasma Cannon",
+            "Attack Speed",
+            "Wave Skip",
+            "Health Regen",
+            "Wave Accelerator",
+            "Critical Coin",
+            "Second Wind",
+            "Energy Shield",
+            "Recovery Package Chance",
+            "Intro Sprint",
+            "Extra Orb",
+            "Land Mine Stun",
+            "Cash",
+            "Free Upgrades"
+          ]
+        },
+        "active_modules_by_preset": {
+          "Farming": {}
+        },
+        "modules_inventory": {}
+      },
+      "note": "downstream_reflection_of_tower_residue"
+    }
+  ]
+}

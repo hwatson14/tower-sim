@@ -1,0 +1,209 @@
+{
+  "request": {
+    "ids": "input/imports/ids.csv",
+    "out": "out_analysis_check",
+    "preset": "Farming",
+    "state_mode": "start_of_run",
+    "manual_inputs": null,
+    "perk_mode": "max_progression_policy",
+    "include_slow_audits": false,
+    "perk_state": "auto"
+  },
+  "execution_path": {
+    "recompute_mode": "report_snapshot_hybrid",
+    "execution_branch": "report_snapshot_planner",
+    "cache_status": "cold",
+    "fallback_required": false,
+    "fallback_reason": null,
+    "bundle_used": null,
+    "consumer_id": null,
+    "family_id": "progression_start_of_run",
+    "runtime_consumers": [],
+    "cache_fingerprint": null,
+    "cache_validation": null,
+    "incremental_plan": null,
+    "parity": null,
+    "runtime_publication": null,
+    "total_elapsed_ms": 4263.404
+  },
+  "stages": [
+    {
+      "stage_id": "input_load",
+      "title": "Input load",
+      "owner_module": "input.loader",
+      "entry_function": "load_inputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ids_path": "input/imports/ids.csv",
+        "manual_inputs_path": "input/manual_inputs.yaml",
+        "section_names": [
+          "Labs",
+          "WS",
+          "WS+",
+          "UWs",
+          "Cards",
+          "Relics",
+          "Vault",
+          "Bots",
+          "Themes & Songs",
+          "Modules",
+          "Guardians",
+          "Player & Stuff"
+        ],
+        "section_row_counts": {
+          "Labs": 212,
+          "WS": 50,
+          "WS+": 20,
+          "UWs": 36,
+          "Cards": 31,
+          "Relics": 37,
+          "Vault": 67,
+          "Bots": 16,
+          "Themes & Songs": 1,
+          "Modules": 80,
+          "Guardians": 18,
+          "Player & Stuff": 22
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "runtime_account_assembly",
+      "title": "Runtime/account assembly",
+      "owner_module": "input.runtime_state",
+      "entry_function": "build_runtime_state",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "perk_config_resolution": {
+          "requested_perks_path": "manual_inputs.yaml:perk_policy",
+          "resolved_perks_path": "manual_inputs.yaml:perk_policy",
+          "fallback_applied": false,
+          "fallback_reason": null,
+          "perk_mode": "max_progression_policy",
+          "manual_banned_perk_count": 2
+        },
+        "perk_support": {
+          "progression_state": "dynamic_current_or_projected_max_by_state_mode",
+          "workshop_state": "dynamic_current_or_projected_max_by_state_mode",
+          "perk_state": "auto",
+          "perk_mode": "max_progression_policy",
+          "perk_materialization": true,
+          "perk_ids_parser_support": false,
+          "perk_external_config_support": true,
+          "perk_account_state_support": true,
+          "perk_stat_input_support": true,
+          "perk_resolver_support": true,
+          "active_perk_preset": "Farming",
+          "state_mode": "start_of_run"
+        }
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "compare_materialization",
+      "title": "Compare materialization",
+      "owner_module": "evaluators.compare",
+      "entry_function": "_build_compare_rows_by_preset",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "default_preset": "Farming",
+        "state_mode": "start_of_run",
+        "perk_state": "auto"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "stat_resolution",
+      "title": "Stat-input compilation and resolution",
+      "owner_module": "qe.routing",
+      "entry_function": "QEResolutionPlanner.resolve_report_snapshot",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "stat_input_count": 542,
+        "statbook_row_count": 181,
+        "engine_status": null,
+        "qe_resolution_backend": "report_snapshot_hybrid"
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "checks_generation",
+      "title": "Compare/verification generation",
+      "owner_module": "evaluators.compare",
+      "entry_function": "build_line_by_line_verification",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "ep_compare_summary": {
+          "ep_compare_count": 26,
+          "ep_compare_status_counts": {
+            "missing_from_package": 18,
+            "non_comparable": 3,
+            "non_numeric_compare": 1,
+            "stage_scope_mismatch": 4
+          },
+          "ep_mismatch_count": 26,
+          "ep_true_formula_mismatch_count": 0,
+          "ep_formula_blocked_count": 0,
+          "ep_stage_scope_mismatch_count": 4,
+          "ep_non_comparable_count": 3,
+          "ep_missing_from_package_count": 18
+        },
+        "line_verification_summary": {
+          "blocked": 62,
+          "not_resolved": 3,
+          "publishable": 116
+        },
+        "state_matrix_modes": [
+          "account_baseline",
+          "gem_respec",
+          "start_of_run",
+          "max_progression"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "stage_id": "artifact_write",
+      "title": "Artifact write",
+      "owner_module": "app.publication",
+      "entry_function": "write_core_outputs",
+      "status": "ok",
+      "elapsed_ms": 0.0,
+      "outputs_summary": {
+        "out_dir": "out_analysis_check"
+      },
+      "notes": []
+    }
+  ],
+  "artifacts_written": [
+    "out_analysis_check/account_state.json",
+    "out_analysis_check/artifact_contract_manifest.json",
+    "out_analysis_check/audit_surface_manifest.json",
+    "out_analysis_check/diagnostics.json",
+    "out_analysis_check/ep_oracle_compare.json",
+    "out_analysis_check/family_completeness_matrix.json",
+    "out_analysis_check/input_dashboard.json",
+    "out_analysis_check/line_by_line_verification.json",
+    "out_analysis_check/module_card_payloads.json",
+    "out_analysis_check/optimizer_scores.json",
+    "out_analysis_check/run_stats_query_rows_max_progression.json",
+    "out_analysis_check/run_stats_query_rows_start_of_run.json",
+    "out_analysis_check/stat_inputs.json",
+    "out_analysis_check/statbook.json",
+    "out_analysis_check/statbook_publishable.json",
+    "out_analysis_check/state_matrix.json",
+    "out_analysis_check/stats_dashboard.json",
+    "out_analysis_check/survivor_closure_report.json",
+    "out_analysis_check/tower_damage_runtime_gap_report.json",
+    "out_analysis_check/tower_defense_absolute_semantic_gap_report.json",
+    "out_analysis_check/tower_hp_semantic_gap_report.json",
+    "out_analysis_check/tower_regen_closure_report.json",
+    "out_analysis_check/tower_regen_ep_semantic_gap_report.json",
+    "out_analysis_check/line_by_line_verification.csv"
+  ]
+}

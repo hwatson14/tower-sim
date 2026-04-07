@@ -121,6 +121,23 @@ families:
       scenario_scoped: true
       semantics: Wave Accelerator spawn-rate acceleration scalar consumed by effective
         wave-duration timing.
+    - surface_id: state::cards.wave_skip.chance_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: environment
+      domain: cards
+      owning_families:
+      - timing_tournament_no_perks
+      - timing_farm_with_perks
+      - timing_scenario_probe
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: Wave Skip chance percentage consumed by deterministic timing and economy
+        wave-skip mechanics.
     - surface_id: support_surface::timing.wave_duration_seconds_effective
       surface_kind: support_surface
       surface_class: surface
@@ -153,6 +170,7 @@ families:
     - bundle_id: timing_wave_duration
       surface_ids:
       - state::cards.wave_accelerator.spawn_rate_acceleration
+      - state::cards.wave_skip.chance_pct
       - support_surface::timing.wave_duration_seconds_effective
       - state::tower.package_chance_pct
   progression_v1:
@@ -802,10 +820,10 @@ families:
       consumer_only: false
       support_only: false
       publish_default: false
-      debug_only: true
+      debug_only: false
       scenario_scoped: true
       semantics: resolved Black Hole Digestor per-free-upgrade temporary coin/kill
-        bonus percent reserved for future optimizer analysis.
+        bonus percent available to optimizer analysis when explicitly requested.
     - surface_id: state::module.primordial_collapse.bh_damage_reduction_pct
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -823,6 +841,108 @@ families:
       scenario_scoped: true
       semantics: resolved Primordial Collapse enemy damage reduction percent inside
         Black Hole reserved for bounded optimizer analysis.
+    - surface_id: state::cards.berserker.assumed_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: true
+      scenario_scoped: true
+      semantics: explicit full-stack x8 Berserker bonus assumption for projected
+        damage consumers.
+    - surface_id: state::cards.ultimate_crit.chance_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: cards
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: resolved Ultimate Crit card chance percent consumed by ultimate-weapon
+        critical damage helpers.
+    - surface_id: state::uw.black_hole.base_duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: raw owned-state Black Hole active duration seconds before deterministic
+        timing adjustments.
+    - surface_id: state::uw.black_hole.base_cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: raw owned-state Black Hole cooldown seconds before deterministic
+        timing adjustments.
+    - surface_id: state::uw.golden_tower.base_duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: raw owned-state Golden Tower active duration seconds before deterministic
+        timing adjustments.
+    - surface_id: state::uw.golden_tower.base_cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: ultimate_weapons
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: false
+      debug_only: false
+      scenario_scoped: false
+      semantics: raw owned-state Golden Tower cooldown seconds before deterministic
+        timing adjustments.
     - surface_id: state::tower.free_attack_upgrade_chance_pct
       surface_kind: canonical_surface
       surface_class: surface
@@ -1040,6 +1160,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Amplify Bot range in meters available to progression queries.
+    - surface_id: state::bot.amplify.effective_range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: effective Amplify Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
     - surface_id: state::bot.flame.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1092,6 +1225,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Flame Bot range in meters available to progression queries.
+    - surface_id: state::bot.flame.effective_range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: effective Flame Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
     - surface_id: state::bot.flame_bot.lab_burn_stack
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1170,6 +1316,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Golden Bot range in meters available to progression queries.
+    - surface_id: state::bot.golden.effective_range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: effective Golden Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
     - surface_id: state::bot.thunder.cooldown_seconds
       surface_kind: runtime_mechanic_surface
       surface_class: surface
@@ -1235,6 +1394,19 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved Thunder Bot range in meters available to progression queries.
+    - surface_id: state::bot.thunder.effective_range_m
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: bots
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: effective Thunder Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
     - surface_id: support_surface::free_upgrade_multiplier
       surface_kind: support_surface
       surface_class: surface
@@ -1253,6 +1425,161 @@ families:
       scenario_scoped: false
       semantics: multiplicative free-upgrade support surface composed with free-upgrade
         chance surfaces.
+    - surface_id: support_surface::ehp.black_hole_duration_seconds
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped Black Hole duration helper for Primordial Collapse
+        eHP consumers.
+    - surface_id: support_surface::ehp.black_hole_cooldown_seconds
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped Black Hole cooldown helper for Primordial Collapse
+        eHP consumers.
+    - surface_id: support_surface::ehp.health_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic health contribution consumed by eHP derived layers.
+    - surface_id: support_surface::ehp.dabs_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic defense-absolute contribution consumed by eHP derived layers.
+    - surface_id: support_surface::ehp.def_pct_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic defense-percent contribution consumed by eHP derived layers.
+    - surface_id: support_surface::eecon.adstarter_theme_relic_factor
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped economy meta/relic factor consumed by eEcon derived layers.
+    - surface_id: support_surface::eecon.freeup_attack_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic attack free-upgrade contribution consumed by eEcon derived layers.
+    - surface_id: support_surface::eecon.freeup_defense_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic defense free-upgrade contribution consumed by eEcon derived layers.
+    - surface_id: support_surface::eecon.freeup_utility_relic_pct
+      surface_kind: support_surface
+      surface_class: surface
+      domain: progression
+      query_value_type: scalar
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: true
+      publish_default: false
+      debug_only: false
+      scenario_scoped: true
+      semantics: progression-scoped relic utility free-upgrade contribution consumed by eEcon derived layers.
     runtime_consumers:
     - runtime_consumer::wave_progression.attack_wave
     - runtime_consumer::wave_progression.health_wave
@@ -1309,31 +1636,50 @@ families:
       - state::bot.amplify.cooldown_seconds
       - state::bot.amplify.duration_seconds
       - state::bot.amplify.range_m
+      - state::bot.amplify.effective_range_m
       - state::bot.flame.cooldown_seconds
       - state::bot.flame.damage_multiplier
       - state::bot.flame.damage_reduction_pct
       - state::bot.flame.range_m
+      - state::bot.flame.effective_range_m
       - state::bot.flame_bot.lab_burn_stack
       - state::bot.global.range_bonus_m
       - state::bot.golden.bonus_multiplier
       - state::bot.golden.cooldown_seconds
       - state::bot.golden.duration_seconds
       - state::bot.golden.range_m
+      - state::bot.golden.effective_range_m
       - state::bot.thunder.cooldown_seconds
       - state::bot.thunder.duration_seconds
       - state::bot.thunder.linger_duration_seconds
       - state::bot.thunder.linger_slow_pct
       - state::bot.thunder.range_m
+      - state::bot.thunder.effective_range_m
       - state::cards.plasma_cannon.effect_pct
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.primordial_collapse.bh_damage_reduction_pct
+      - state::cards.berserker.assumed_bonus_multiplier
+      - state::cards.ultimate_crit.chance_pct
+      - state::uw.black_hole.base_duration_seconds
+      - state::uw.black_hole.base_cooldown_seconds
+      - state::uw.golden_tower.base_duration_seconds
+      - state::uw.golden_tower.base_cooldown_seconds
       - state::tower.free_attack_upgrade_chance_pct
       - state::tower.free_defense_upgrade_chance_pct
       - state::tower.free_utility_upgrade_chance_pct
       - state::tower.enemy_attack_level_skip_pct
       - state::tower.enemy_health_level_skip_pct
       - support_surface::free_upgrade_multiplier
+      - support_surface::ehp.health_relic_pct
+      - support_surface::ehp.dabs_relic_pct
+      - support_surface::ehp.def_pct_relic_pct
+      - support_surface::eecon.adstarter_theme_relic_factor
+      - support_surface::eecon.freeup_attack_relic_pct
+      - support_surface::eecon.freeup_defense_relic_pct
+      - support_surface::eecon.freeup_utility_relic_pct
+      - support_surface::ehp.black_hole_duration_seconds
+      - support_surface::ehp.black_hole_cooldown_seconds
     - bundle_id: progression_free_upgrades
       surface_ids:
       - state::tower.free_attack_upgrade_chance_pct
@@ -1349,6 +1695,7 @@ families:
       - state::module.primordial_collapse.bh_damage_reduction_pct
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
       - state::module.orbital_augment.electron_count
+      - state::cards.berserker.assumed_bonus_multiplier
   derived_v1:
     surfaces:
     - surface_id: derived::economy.income.bits
@@ -3427,6 +3774,30 @@ promotion_review:
       promotion_decision: first_class_surface_entry
       rationale: deterministic timing queries already request the governed Golden Tower
         duration directly.
+    - node_id: state::uw.black_hole.base_cooldown_seconds
+      domain: ultimate_weapons
+      owner_family_group: progression_v1
+      promotion_decision: first_class_surface_entry
+      rationale: raw owned-state Black Hole cooldown must stay distinct from timing-effective
+        cooldown in published queries.
+    - node_id: state::uw.black_hole.base_duration_seconds
+      domain: ultimate_weapons
+      owner_family_group: progression_v1
+      promotion_decision: first_class_surface_entry
+      rationale: raw owned-state Black Hole duration must stay distinct from timing-effective
+        duration in published queries.
+    - node_id: state::uw.golden_tower.base_cooldown_seconds
+      domain: ultimate_weapons
+      owner_family_group: progression_v1
+      promotion_decision: first_class_surface_entry
+      rationale: raw owned-state Golden Tower cooldown must stay distinct from timing-effective
+        cooldown in published queries.
+    - node_id: state::uw.golden_tower.base_duration_seconds
+      domain: ultimate_weapons
+      owner_family_group: progression_v1
+      promotion_decision: first_class_surface_entry
+      rationale: raw owned-state Golden Tower duration must stay distinct from timing-effective
+        duration in published queries.
     - node_id: support_surface::timing.gcomp_cooldown_reduction_seconds
       domain: modules
       owner_family_group: timing_v1
@@ -3437,8 +3808,9 @@ promotion_review:
       domain: modules
       owner_family_group: none_phase_1
       promotion_decision: helper_debug_only_node
-      rationale: timing engine still treats Orbital Augment cadence as open and does
-        not govern it as a phase-1 query surface.
+      rationale: Orbital Augment cadence is not intrinsic phase-1 query truth; it is
+        owned today by the scenario-runtime input seam in scenario-runtime-inputs.yaml
+        via electron_hits_per_second until a sanctioned intrinsic cadence formula exists.
     - node_id: timing.bot_amplify_uptime_fraction
       domain: bots
       owner_family_group: none_phase_1
