@@ -132,6 +132,171 @@ def _is_neutral_effect_display(value: str, *, display_kind: str) -> bool:
     return value == _neutral_effect_value(display_kind=display_kind)
 
 
+def _row_family(
+    *,
+    surface_id: str,
+    value_type: str | None,
+    start_row: dict[str, object],
+    max_row: dict[str, object],
+) -> str:
+    value_type_text = str(value_type or '').strip().lower()
+    if value_type_text in {'damage', 'hp', 'health', 'hp_per_second', 'attacks_per_second', 'multiplier'}:
+        return 'multiplicative'
+    if _surface_display_kind(surface_id=surface_id, value_type=value_type) != 'pct':
+        return 'additive_scalar'
+
+    for row in (start_row, max_row):
+        for contributor in (row.get('contributors') or []):
+            contributor_dict = dict(contributor or {})
+            source_class = str(contributor_dict.get('source_class') or '')
+            if source_class not in {'labs', 'module_main', 'module_substat', 'module_unique', 'cards', 'relics', 'enhancement', 'workshop', 'perk', 'perks', 'perk_effect'}:
+                continue
+            contributor_id = str(contributor_dict.get('contributor_id') or '')
+            if source_class == 'workshop' and not contributor_id.startswith('enhancement.'):
+                continue
+            if _contributor_display_kind(contributor_dict, surface_value_type=value_type_text) == 'multiplier':
+                return 'additive_then_multiplicative'
+    return 'additive_pct'
+
+
+def _explicit_display_kind(contributor: dict[str, object]) -> str:
+    value = str((contributor.get('input_value_type') or contributor.get('value_type') or '')).strip().lower()
+    return value if value in {'pct', 'percent_display', 'multiplier', 'multiplier_display'} else ''
+
+
+def _multiplicative_factor_for_contributor(
+    contributor: dict[str, object],
+    *,
+    value: float,
+    kind: str,
+    surface_value_type: str,
+) -> float:
+    source_class = str(contributor.get('source_class') or '').lower()
+    explicit_kind = _explicit_display_kind(contributor)
+
+    if source_class == 'relics':
+        return value if value >= 1.0 else (1.0 + value)
+
+    if source_class.startswith('module') and 0.0 < value < 1.0:
+        return 1.0 + value
+
+    if kind == 'multiplier':
+        return value
+
+    if kind == 'pct':
+        if surface_value_type == 'hp':
+            return value if value >= 1.0 else (1.0 + value)
+        if surface_value_type == 'multiplier' and not explicit_kind:
+            return value if value >= 1.0 else (1.0 + value)
+        return 1.0 + (value / 100.0)
+
+    return value
+
+
+def _component_effect(
+    row: dict[str, object],
+    *,
+    include_contributor,
+    family: str,
+    surface_value_type: str,
+) -> tuple[float, float, bool]:
+    additive_total = 0.0
+    factor_total = 1.0
+    has_value = False
+    for contributor in (row.get('contributors') or []):
+        contributor_dict = dict(contributor or {})
+        if not include_contributor(contributor_dict):
+            continue
+        raw_value = contributor_dict.get('value')
+        if not isinstance(raw_value, (int, float)):
+            continue
+        value = float(raw_value)
+        kind = _contributor_display_kind(contributor_dict, surface_value_type=surface_value_type)
+        source_class = str(contributor_dict.get('source_class') or '').lower()
+        has_value = True
+
+        if family == 'multiplicative':
+            if abs(value) < 1e-12:
+                continue
+            factor_total *= _multiplicative_factor_for_contributor(
+                contributor_dict,
+                value=value,
+                kind=kind,
+                surface_value_type=surface_value_type,
+            )
+            continue
+
+        if family == 'additive_then_multiplicative':
+            if source_class == 'enhancement' or kind == 'multiplier':
+                factor_total *= value
+            else:
+                additive_total += value
+            continue
+
+        additive_total += value
+
+    return additive_total, factor_total, has_value
+
+
+def _combine_component_effects(
+    effects: list[tuple[float, float, bool]],
+    *,
+    family: str,
+) -> tuple[float, float, bool]:
+    additive_total = 0.0
+    factor_total = 1.0
+    has_value = False
+    for additive_value, factor_value, effect_has_value in effects:
+        additive_total += additive_value
+        factor_total *= factor_value
+        has_value = has_value or effect_has_value
+    return additive_total, factor_total, has_value
+
+
+def _diff_component_effects(
+    *,
+    start_effect: tuple[float, float, bool],
+    max_effect: tuple[float, float, bool],
+    family: str,
+) -> tuple[float, float, bool]:
+    start_additive, start_factor, start_has = start_effect
+    max_additive, max_factor, max_has = max_effect
+    if family == 'multiplicative':
+        baseline = start_factor if start_has and start_factor != 0 else 1.0
+        return 0.0, (max_factor / baseline), (start_has or max_has)
+    if family == 'additive_then_multiplicative':
+        baseline = start_factor if start_has and start_factor != 0 else 1.0
+        return max_additive - start_additive, (max_factor / baseline), (start_has or max_has)
+    return max_additive - start_additive, 1.0, (start_has or max_has)
+
+
+def _format_component_effect_display(
+    effect: tuple[float, float, bool],
+    *,
+    family: str,
+) -> str:
+    additive_total, factor_total, has_value = effect
+    if not has_value:
+        return '—'
+    if family == 'multiplicative':
+        if abs(factor_total - 1.0) < 1e-9:
+            return '—'
+        return _format_effect_value(factor_total, display_kind='multiplier')
+    if family == 'additive_pct':
+        return '—' if abs(additive_total) < 1e-9 else _format_effect_value(additive_total, display_kind='pct')
+    if family == 'additive_scalar':
+        return '—' if abs(additive_total) < 1e-9 else _format_effect_value(additive_total, display_kind='scalar')
+    additive_part = None if abs(additive_total) < 1e-9 else _format_effect_value(additive_total, display_kind='pct')
+    factor_part = None if abs(factor_total - 1.0) < 1e-9 else _format_effect_value(factor_total, display_kind='multiplier')
+    if additive_part and factor_part:
+        return f'{additive_part} · {factor_part}'
+    if additive_part:
+        return additive_part
+    if factor_part:
+        return factor_part
+    return '—'
+
+
 def _aggregate_effect_total(
     row: dict[str, object],
     *,
@@ -424,18 +589,36 @@ def build_workshop_reconciliation_row(
     account_state_payload: dict[str, object],
     selected_preset: str,
 ) -> dict[str, object]:
-    start_progression_include = lambda contributor: (
-        str(contributor.get('source_class') or '') in {'labs', 'module_main', 'module_substat', 'module_unique', 'cards', 'relics', 'enhancement'}
+    surface_id = spec['surface_id']
+    canonical_row_id = str(spec.get('canonical_row_id') or surface_id)
+    value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
+    family = _row_family(
+        surface_id=surface_id,
+        value_type=value_type,
+        start_row=start_row,
+        max_row=max_row,
+    )
+
+    lab_include = lambda contributor: str(contributor.get('source_class') or '') == 'labs'
+    module_include = lambda contributor: str(contributor.get('source_class') or '') in {'module_main', 'module_substat', 'module_unique'}
+    card_include = lambda contributor: str(contributor.get('source_class') or '') == 'cards'
+    enhancement_include = lambda contributor: (
+        str(contributor.get('source_class') or '') == 'enhancement'
         or (
             str(contributor.get('source_class') or '') == 'workshop'
             and str(contributor.get('contributor_id') or '').startswith('enhancement.')
         )
     )
+    relic_include = lambda contributor: str(contributor.get('source_class') or '') == 'relics'
     perk_include = lambda contributor: str(contributor.get('source_class') or '') in {'perk', 'perks', 'perk_effect'}
+    start_modifier_include = lambda contributor: (
+        lab_include(contributor)
+        or module_include(contributor)
+        or card_include(contributor)
+        or enhancement_include(contributor)
+        or relic_include(contributor)
+    )
 
-    surface_id = spec['surface_id']
-    canonical_row_id = str(spec.get('canonical_row_id') or surface_id)
-    value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
     workshop_value = _sum_contributor_values_filtered(
         start_row,
         source_classes=('workshop',),
@@ -460,74 +643,48 @@ def build_workshop_reconciliation_row(
         if isinstance(max_display_value, str)
         else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
     )
-    other_display_kind = _modifier_total_display_kind(surface_id=surface_id, value_type=value_type)
-    other_display = _format_effect_delta_between_rows(
-        start_row=start_row,
-        max_row=max_row,
-        include_contributor=start_progression_include,
-        surface_id=surface_id,
+
+    start_component_effects = {
+        'lab': _component_effect(start_row, include_contributor=lab_include, family=family, surface_value_type=value_type),
+        'module': _component_effect(start_row, include_contributor=module_include, family=family, surface_value_type=value_type),
+        'card': _component_effect(start_row, include_contributor=card_include, family=family, surface_value_type=value_type),
+        'enhancement': _component_effect(start_row, include_contributor=enhancement_include, family=family, surface_value_type=value_type),
+        'relic': _component_effect(start_row, include_contributor=relic_include, family=family, surface_value_type=value_type),
+    }
+    # The start total must be composed from the exact visible modifier columns.
+    start_total_effect = _combine_component_effects(list(start_component_effects.values()), family=family)
+    max_nonperk_total_effect = _component_effect(
+        max_row,
+        include_contributor=start_modifier_include,
+        family=family,
         surface_value_type=value_type,
     )
-    other_display_for_cell = '—' if _is_neutral_effect_display(other_display, display_kind=other_display_kind) else other_display
+    other_effect = _diff_component_effects(
+        start_effect=start_total_effect,
+        max_effect=max_nonperk_total_effect,
+        family=family,
+    )
+    perk_effect = _component_effect(max_row, include_contributor=perk_include, family=family, surface_value_type=value_type)
+    max_component_effects = {
+        'perk': perk_effect,
+        'other': other_effect,
+    }
+    # The max total must likewise be composed from the exact visible modifier columns.
+    max_total_effect = _combine_component_effects(list(max_component_effects.values()), family=family)
+
     decomposition = {
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
-        'lab': _format_effect_from_contributors(start_row, source_classes=('labs',), surface_value_type=value_type),
-        'module': _format_effect_from_contributors(
-            start_row,
-            source_classes=('module_main', 'module_substat', 'module_unique'),
-            surface_value_type=value_type,
-        ),
-        'card': _format_effect_from_contributors(start_row, source_classes=('cards',), surface_value_type=value_type),
-        'enhancement': _format_effect_from_contributors(
-            start_row,
-            source_classes=('workshop', 'enhancement'),
-            contributor_prefixes=('enhancement.',),
-            surface_value_type=value_type,
-        ),
-        'relic': _format_effect_from_contributors(start_row, source_classes=('relics',), surface_value_type=value_type),
-        'perk': _format_effect_from_contributors(
-            max_row,
-            source_classes=('perk', 'perks', 'perk_effect'),
-            surface_value_type=value_type,
-        ),
-        'other': other_display_for_cell,
+        'lab': _format_component_effect_display(start_component_effects['lab'], family=family),
+        'module': _format_component_effect_display(start_component_effects['module'], family=family),
+        'card': _format_component_effect_display(start_component_effects['card'], family=family),
+        'enhancement': _format_component_effect_display(start_component_effects['enhancement'], family=family),
+        'relic': _format_component_effect_display(start_component_effects['relic'], family=family),
+        'perk': _format_component_effect_display(max_component_effects['perk'], family=family),
+        'other': _format_component_effect_display(max_component_effects['other'], family=family),
     }
-    start_of_run_modifier_total = _format_total_effect_from_row(
-        start_row,
-        include_contributor=start_progression_include,
-        surface_id=surface_id,
-        surface_value_type=value_type,
-    )
-    display_kind, perk_total, perk_has_value = _aggregate_effect_total(
-        max_row,
-        include_contributor=perk_include,
-        surface_id=surface_id,
-        surface_value_type=value_type,
-    )
-    _start_kind, start_progression_total, start_progression_has_value = _aggregate_effect_total(
-        start_row,
-        include_contributor=start_progression_include,
-        surface_id=surface_id,
-        surface_value_type=value_type,
-    )
-    _max_kind, max_progression_other_basis_total, max_progression_other_basis_has_value = _aggregate_effect_total(
-        max_row,
-        include_contributor=start_progression_include,
-        surface_id=surface_id,
-        surface_value_type=value_type,
-    )
-    if display_kind == 'multiplier':
-        other_total_value = (
-            max_progression_other_basis_total / (start_progression_total if start_progression_has_value and start_progression_total != 0 else 1.0)
-        )
-        combined_total_value = perk_total * other_total_value
-    else:
-        other_total_value = max_progression_other_basis_total - start_progression_total
-        combined_total_value = perk_total + other_total_value
-    if not (perk_has_value or start_progression_has_value or max_progression_other_basis_has_value):
-        max_progression_modifier_total = _neutral_effect_value(display_kind=display_kind)
-    else:
-        max_progression_modifier_total = _format_effect_value(combined_total_value, display_kind=display_kind)
+    start_of_run_modifier_total = _format_component_effect_display(start_total_effect, family=family)
+    max_progression_modifier_total = _format_component_effect_display(max_total_effect, family=family)
+
     row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
     row_notes = str(start_row.get('notes') or max_row.get('notes') or '')
     if _has_death_wave_health_contributor(start_row, max_row):

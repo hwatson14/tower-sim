@@ -170,3 +170,38 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Perk Effects' not in html
     assert "colspan='15'" in html
     assert '250' in html
+    assert html.index('>Relics<') < html.index('>Enhancement<') < html.index('>Total<')
+
+
+def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
+    html = render_workshop_stat_table_html(
+        {
+            'sections': [
+                {
+                    'title': 'Offense',
+                    'rows': [
+                        {
+                            'name': 'Damage',
+                            'workshop_level': '100',
+                            'workshop_value': '100',
+                            'lab_effects': '—',
+                            'module_effects': '—',
+                            'card_effects': '—',
+                            'enhancement_effects': '—',
+                            'relics': '—',
+                            'start_of_run_modifier_total': 'x 1',
+                            'start_of_run_value': '100',
+                            'max_workshop_value': '100',
+                            'perk_effects': '—',
+                            'other': '+ 0%',
+                            'max_progression_modifier_total': '+ 0',
+                            'max_progression_value': '100',
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+    assert 'x 1' not in html
+    assert '+ 0%' not in html
+    assert '+ 0<' not in html

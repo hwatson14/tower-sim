@@ -391,11 +391,24 @@ def render_resolved_stat_section_html(payload: dict) -> str:
 
 
 def render_workshop_stat_table_html(payload: dict) -> str:
+    neutral_effect_tokens = {
+        'x 1',
+        'x1',
+        '+ 0',
+        '+0',
+        '+ 0%',
+        '+0%',
+        '0%',
+    }
+
     def _cell_value(row: dict, key: str) -> str:
         value = row.get(key)
         if value is None or value == '':
             return '—'
-        return str(value)
+        text = str(value).strip()
+        if text in neutral_effect_tokens:
+            return '—'
+        return text
 
     header_html = (
         "<thead>"
@@ -411,8 +424,8 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th>Lab</th>"
         "<th>Module</th>"
         "<th>Card</th>"
-        "<th>Enhancement</th>"
         "<th>Relics</th>"
+        "<th>Enhancement</th>"
         "<th>Total</th>"
         "<th>Workshop</th>"
         "<th>Value</th>"
@@ -435,8 +448,8 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 _cell_value(row, 'lab_effects'),
                 _cell_value(row, 'module_effects'),
                 _cell_value(row, 'card_effects'),
-                _cell_value(row, 'enhancement_effects'),
                 _cell_value(row, 'relics'),
+                _cell_value(row, 'enhancement_effects'),
                 _cell_value(row, 'start_of_run_modifier_total'),
                 _cell_value(row, 'workshop_value'),
                 _cell_value(row, 'start_of_run_value'),
