@@ -9,7 +9,14 @@
 # Edit this file to configure loadout, perk policy, manual income observations,
 # and ELS scenario inputs. Do not add derived or generated content here.
 
-loadout: {}
+loadout:
+  lab_adjusters:
+    Farming:
+      Range: 0
+      Shockwave Size: 0
+    Tourney:
+      Range: 44
+      Shockwave Size: 20
 
 # Perk selections: named presets of perk picks. Active preset drives perk materialization.
 # Replaces input/perks.json (demoted to archive/legacy/).

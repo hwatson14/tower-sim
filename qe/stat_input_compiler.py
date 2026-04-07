@@ -144,6 +144,20 @@ def _module_substat_lookup_name(value: object) -> str:
         return 'Multishot Chance'
     return name
 
+
+def _effective_lab_level_for_name(
+    lab_name: str,
+    *,
+    actual_level: int | float | None,
+    active_lab_adjusters: Dict[str, int],
+) -> int | None:
+    selected_level = active_lab_adjusters.get(lab_name)
+    if selected_level is None:
+        if actual_level is None:
+            return None
+        return int(actual_level)
+    return int(selected_level)
+
 LAB_VALUES_PATH = KB / 'labs' / 'tables' / 'lab-values.csv'
 WORKSHOP_VALUES_PATH = KB / 'workshop' / 'tables' / 'workshop-values.csv'
 WORKSHOP_VALUES_DERIVED_PATH = KB / 'workshop' / 'derived' / 'materialized' / 'workshop-values.csv'
@@ -1072,7 +1086,13 @@ def compile_stat_inputs(
         contributor_id = LAB_IDS_TO_CONTRIBUTOR.get(name)
         if contributor_id is not None:
             bind_kb_fields(row, contributor_id, mapping_index, canonical_stats)
-            lab_value = _lab_value_with_fallback(name, level, lab_values, lab_summary)
+            effective_level = _effective_lab_level_for_name(
+                name,
+                actual_level=level,
+                active_lab_adjusters=active_lab_adjusters,
+            )
+            lab_value = _lab_value_with_fallback(name, effective_level, lab_values, lab_summary)
+            wiki_val = uw_lab_wiki_values.get((name, effective_level)) if effective_level is not None else None
             if name == 'Wall Invincibility' and level == 0:
                 lab_value = 0.0
             if name == 'Wall Thorns' and level is not None and lab_value is None:
@@ -1080,6 +1100,34 @@ def compile_stat_inputs(
             if lab_value is not None:
                 _set_row_field(row, 'value', lab_value)
                 _set_row_field(row, 'value_type', 'resolved_value')
+            elif wiki_val is not None:
+                _set_row_field(row, 'value', wiki_val)
+                _set_row_field(row, 'value_type', 'resolved_value')
+            if name == 'Shockwave Size' and row.value_type == 'resolved_value':
+                size_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                bind_destination(
+                    size_row,
+                    ('canonical_stat', 'tower_shockwave_size_m'),
+                    canonical_stats,
+                    note='kb_manual_shockwave_size_lab_routed',
+                )
+                _append(out, size_row)
+            if name == 'Shockwave Size':
+                selected_level = active_lab_adjusters.get('Shockwave Size')
+                if selected_level is not None:
+                    split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                    _set_row_field(split_row, 'stat_name', 'Shockwave Size::Selected Level')
+                    _set_row_field(split_row, 'source_family', 'lab')
+                    _set_row_field(split_row, 'source_name', 'Shockwave Size')
+                    _set_row_field(split_row, 'value', float(selected_level))
+                    _set_row_field(split_row, 'value_type', 'level')
+                    bind_destination(
+                        split_row,
+                        ('runtime_mechanic_param', 'shockwave.size_lab_level'),
+                        canonical_stats,
+                        note='loadout_lab_adjuster_routed:Shockwave Size',
+                    )
+                    _append(out, split_row)
         else:
             app = lab_application_registry.get(name) or lab_application_registry.get(slug_text(name))
             if app is not None:
@@ -1091,7 +1139,12 @@ def compile_stat_inputs(
                         _set_row_field(row, 'value', bool(level and float(level) > 0))
                         _set_row_field(row, 'value_type', 'bool')
                     else:
-                        lab_value = _lab_value_with_fallback(name, level, lab_values, lab_summary)
+                        effective_level = _effective_lab_level_for_name(
+                            name,
+                            actual_level=level,
+                            active_lab_adjusters=active_lab_adjusters,
+                        )
+                        lab_value = _lab_value_with_fallback(name, effective_level, lab_values, lab_summary)
                         if lab_value is not None:
                             _set_row_field(row, 'value', lab_value)
                             _set_row_field(row, 'value_type', 'resolved_value')
@@ -1188,6 +1241,26 @@ def compile_stat_inputs(
                     if dest is not None:
                         bind_destination(row, dest, canonical_stats, note=f'kb_uw_lab_direct_routed:{name}')
                         if name in {'Shockwave Size', 'Range'}:
+                            effective_level = _effective_lab_level_for_name(
+                                name,
+                                actual_level=level,
+                                active_lab_adjusters=active_lab_adjusters,
+                            )
+                            effective_value = _lab_value_with_fallback(name, effective_level, lab_values, lab_summary)
+                            if name == 'Shockwave Size' and effective_level == 0 and effective_value is None:
+                                effective_value = 0.0
+                            if effective_value is not None:
+                                _set_row_field(row, 'value', effective_value)
+                                _set_row_field(row, 'value_type', 'resolved_value')
+                                if name == 'Shockwave Size':
+                                    size_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
+                                    bind_destination(
+                                        size_row,
+                                        ('canonical_stat', 'tower_shockwave_size_m'),
+                                        canonical_stats,
+                                        note='kb_manual_shockwave_size_lab_routed',
+                                )
+                                    _append(out, size_row)
                             selected_level = active_lab_adjusters.get(name)
                             if selected_level is not None:
                                 split_row = StatInput(**{field: getattr(row, field) for field in StatInput.__dataclass_fields__.keys()})
@@ -1208,7 +1281,7 @@ def compile_stat_inputs(
                                     note=f'loadout_lab_adjuster_routed:{name}',
                                 )
                                 _append(out, split_row)
-                        if dest[0] == 'capability':
+                        elif dest[0] == 'capability':
                             _set_row_field(row, 'value', bool(level and float(level) > 0))
                             _set_row_field(row, 'value_type', 'bool')
                             _set_row_field(row, 'notes', f'kb_lab_capability_{"resolved" if row.value else "locked"}:{name}')
@@ -1226,8 +1299,13 @@ def compile_stat_inputs(
                             _set_row_field(row, 'value_type', 'resolved_value')
                             _set_row_field(row, 'notes', f'kb_bot_lab_formula_verified:{name}')
                         else:
-                            lab_value = _lab_value_with_fallback(name, level if isinstance(level, int) else None, lab_values, lab_summary)
-                            wiki_val = uw_lab_wiki_values.get((name, level)) if level is not None else None
+                            effective_level = _effective_lab_level_for_name(
+                                name,
+                                actual_level=level,
+                                active_lab_adjusters=active_lab_adjusters,
+                            )
+                            lab_value = _lab_value_with_fallback(name, effective_level, lab_values, lab_summary)
+                            wiki_val = uw_lab_wiki_values.get((name, effective_level)) if effective_level is not None else None
                             if lab_value is not None:
                                 _set_row_field(row, 'value', lab_value)
                                 _set_row_field(row, 'value_type', 'resolved_value')
@@ -1343,8 +1421,12 @@ def compile_stat_inputs(
             _append(out, row)
             continue
         if alias_slug == 'rend armor mult':
+            chance = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement:rend_armor_chance_surface')
+            bind_destination(chance, ('canonical_stat', 'tower_rend_armor_chance_pct'), canonical_stats, note='kb_dual_routed_enhancement:rend_armor_chance_surface')
             extra = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement:max_rend_surface')
             bind_destination(extra, ('canonical_stat', 'max_rend_mult'), canonical_stats, note='kb_dual_routed_enhancement:max_rend_surface')
+            _append(out, row)
+            _append(out, chance)
             _append(out, extra)
         else:
             _append(out, row)
@@ -1918,7 +2000,13 @@ def compile_stat_inputs(
                     rarity_key = _canonical_module_rarity_label(rarity_source)
                     exact = module_substat_values.get((slot_type.lower(), substat_lookup_name, rarity_key))
                     exact_unit = exact[1] if exact is not None else ''
-                    if '%' in display:
+                    inferred_unit = kb_unit or exact_unit
+                    if inferred_unit == 'flat' and 'x' in display.lower():
+                        numeric = float(display.replace('+', '').replace('x', '').replace('X', '').strip())
+                        if role == 'assist' and assist_substat_eff is not None:
+                            numeric = numeric * assist_substat_eff
+                        value_type = 'resolved_value'
+                    elif '%' in display:
                         numeric = float(display.replace('+', '').replace('%', '').replace('?', '').strip())
                         if role == 'assist' and assist_substat_eff is not None:
                             numeric = numeric * assist_substat_eff
@@ -1931,7 +2019,6 @@ def compile_stat_inputs(
                     else:
                         base = token or display
                         numeric = float(str(base).replace('+', '').replace('m', '').replace('s', '').replace('?', '').strip())
-                        inferred_unit = kb_unit or exact_unit
                         if role == 'assist' and inferred_unit == 'percent' and 0.0 <= numeric <= 1.0:
                             numeric *= 100.0
                         if role == 'assist' and assist_substat_eff is not None:

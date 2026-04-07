@@ -793,6 +793,61 @@ def test_stats_dashboard_workshop_panel_includes_derived_section_rows():
     assert 'derived::wall.hp_final' in canonical_row_ids
 
 
+def test_stats_dashboard_workshop_panel_includes_extended_attack_rows_from_layout_contract():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {
+            'Range': {'preset_levels': {'Farming': 69}},
+            'Damage / Meter': {'preset_levels': {'Farming': 14}},
+            'Rapid Fire Chance': {'preset_levels': {'Farming': 85}},
+            'Rapid Fire Duration': {'preset_levels': {'Farming': 84}},
+            'Bounce Shot Range': {'preset_levels': {'Farming': 60}},
+        },
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.range_m': {'display_value': '69.5', 'final_value': 69.5, 'value_type': 'distance', 'contributors': []},
+                'state::tower.damage_per_meter_multiplier': {'display_value': 'x1.1355 / m', 'final_value': 1.1355, 'value_type': 'multiplier', 'contributors': []},
+                'state::tower.rapid_fire_chance_pct': {'display_value': '34%', 'final_value': 34.0, 'value_type': 'pct', 'contributors': []},
+                'state::tower.rapid_fire_duration_seconds': {'display_value': '5.55 sec', 'final_value': 5.55, 'value_type': 'seconds', 'contributors': []},
+                'state::tower.bounce_shot_range_m': {'display_value': '8m', 'final_value': 8.0, 'value_type': 'distance', 'contributors': []},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': dict(query_rows_start['Farming']['rows'])}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    workshop_panel = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = ((workshop_panel.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
+    by_name = {row.get('name'): row for row in offense_rows}
+    assert by_name['Range']['start_of_run_value'] == '69.5'
+    assert str(by_name['Damage / Meter']['start_of_run_value']).startswith('x1.135')
+    assert by_name['Rapid Fire Chance']['start_of_run_value'] == '34%'
+    assert by_name['Rapid Fire Duration']['start_of_run_value'] == '5.55'
+    assert by_name['Bounce Shot Range']['start_of_run_value'] == '8'
+
+
 def test_stats_dashboard_canonical_row_ids_disambiguate_workshop_rows():
     account_state = {
         'default_preset': 'Farming',

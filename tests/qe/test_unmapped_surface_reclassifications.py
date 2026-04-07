@@ -441,7 +441,7 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
     expected_resolved = {
         'Orbs Speed': ('mechanic_param', 'lab.orb_speed_bonus', 2.0),
         'Land Mine Decay': ('mechanic_param', 'lab.land_mine_decay_seconds', 6.5),
-        'Shockwave Size': ('mechanic_param', 'lab.shockwave_size_bonus', 1.0),
+        'Shockwave Size': ('mechanic_param', 'lab.shockwave_size_bonus', 0.0),
         'Orb Boss Hit': ('runtime_mechanic_param', 'combat.orb_boss_hit_pct', 2.0),
         'Second Wind Blast': ('mechanic_param', 'lab.second_wind_blast_pct', 100.0),
         'Recharge Second Wind': ('mechanic_param', 'lab.recharge_second_wind_waves', 400.0),
@@ -452,12 +452,26 @@ def test_materialized_lab_values_replace_level_pending_for_sanctioned_formula_la
 
     for lab_name, expected in expected_resolved.items():
         object_type, destination_id, value = expected
-        row = _single_row_by_family(rows, name=lab_name, source_family='lab')
+        matched = [
+            row
+            for row in rows
+            if row.stat_name == lab_name
+            and row.source_family == 'lab'
+            and row.destination_object_type == object_type
+            and row.destination_id == destination_id
+        ]
+        assert len(matched) == 1, f'expected one compiled row for {lab_name!r} at {object_type}:{destination_id}, got {len(matched)}'
+        row = matched[0]
         assert row.destination_object_type == object_type
         assert row.destination_id == destination_id
         assert row.value_type == 'resolved_value'
         assert row.value == value
-        assert row.notes == f'kb_lab_value_table_resolved:{lab_name}'
+        expected_note = (
+            'kb_uw_lab_direct_routed:Shockwave Size'
+            if lab_name == 'Shockwave Size'
+            else f'kb_lab_value_table_resolved:{lab_name}'
+        )
+        assert row.notes == expected_note
 
     for lab_name, destination_id in (
         ('Enhancement Attack - Coin Discount', 'enhancement_attack_cost_reduction_pct'),
@@ -499,6 +513,23 @@ def test_shockwave_size_selected_level_uses_sanctioned_loadout_lab_adjuster_inpu
     assert row.destination_id == 'shockwave.size_lab_level'
     assert row.value == 11.0
     assert row.notes == 'loadout_lab_adjuster_routed:Shockwave Size'
+    base_row = next(
+        row
+        for row in rows
+        if row.stat_name == 'Shockwave Size' and row.source_family == 'lab'
+    )
+    assert base_row.value_type == 'resolved_value'
+    assert base_row.value == 0.55
+    routed_rows = [
+        row
+        for row in rows
+        if row.stat_name == 'Shockwave Size'
+        and row.source_family == 'lab'
+        and row.destination_object_type == 'canonical_stat'
+        and row.destination_id == 'tower_shockwave_size_m'
+    ]
+    assert len(routed_rows) == 1
+    assert routed_rows[0].value == 0.55
 
 
 def test_range_selected_level_uses_sanctioned_loadout_lab_adjuster_input() -> None:
@@ -528,18 +559,37 @@ def test_range_selected_level_uses_sanctioned_loadout_lab_adjuster_input() -> No
     assert row.destination_id == 'tower.range_lab_level'
     assert row.value == 7.0
     assert row.notes == 'loadout_lab_adjuster_routed:Range'
+    base_row = next(
+        row
+        for row in rows
+        if row.stat_name == 'Range' and row.destination_object_type == 'canonical_stat'
+    )
+    assert base_row.value_type == 'resolved_value'
+    assert base_row.value == 1.14
 
 
-def test_shockwave_size_selected_level_is_absent_without_explicit_loadout_lab_adjuster() -> None:
+def test_shockwave_size_selected_level_uses_manual_input_default_adjuster() -> None:
     rows = _compiled_rows(_base_account_state())
 
-    assert all(row.stat_name != 'Shockwave Size::Selected Level' for row in rows)
+    row = _single_row(rows, 'Shockwave Size::Selected Level')
+    assert row.value == 0.0
+    base_row = next(
+        row
+        for row in rows
+        if row.stat_name == 'Shockwave Size'
+        and row.source_family == 'lab'
+        and row.destination_object_type == 'canonical_stat'
+        and row.destination_id == 'tower_shockwave_size_m'
+    )
+    assert base_row.value_type == 'resolved_value'
+    assert base_row.value == 0.0
 
 
-def test_range_selected_level_is_absent_without_explicit_loadout_lab_adjuster() -> None:
+def test_range_selected_level_uses_manual_input_default_adjuster() -> None:
     rows = _compiled_rows(_base_account_state())
 
-    assert all(row.stat_name != 'Range::Selected Level' for row in rows)
+    row = _single_row(rows, 'Range::Selected Level')
+    assert row.value == 0.0
 
 
 def test_wave_skip_card_publishes_timing_family_state_surface() -> None:

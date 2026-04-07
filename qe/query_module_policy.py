@@ -978,19 +978,38 @@ def _scaled_substat_value(slot_type: str, sub: ModuleSubstat, *, role: str, slot
     assist_substat_eff = (slot_state.substat_cap if slot_state and slot_state.substat_cap is not None else lookup_eff) if slot_state else lookup_eff
     if assist_substat_eff is None:
         return display
-    value, suffix = _parse_token_value(display, sub.raw_token)
     rarity_text = _infer_substat_rarity(slot_type, sub, role=role, slot_state=slot_state)
     lookup_name = _normalize_module_substat_name(sub.name)
-    if rarity_text:
-        exact = load_module_substat_values().get((slot_type.strip().lower(), lookup_name, rarity_text))
-        if exact is not None:
-            exact_value, exact_unit = exact
-            return _format_token_value(
-                float(exact_value) * assist_substat_eff,
-                _module_substat_suffix(str(exact_unit), suffix),
-            )
+    value = None
+    suffix = ''
+    if '%' in display:
+        cleaned = display.replace('+', '').replace('%', '').replace('?', '').strip()
+        try:
+            value = float(cleaned)
+            suffix = '%'
+        except ValueError:
+            value = None
+    elif 'x' in display.lower():
+        cleaned = display.replace('+', '').replace('x', '').replace('X', '').strip()
+        try:
+            value = float(cleaned)
+            suffix = 'x'
+        except ValueError:
+            value = None
+    else:
+        value, suffix = _parse_token_value(display or sub.raw_token, None)
     if value is None:
+        if rarity_text:
+            exact = load_module_substat_values().get((slot_type.strip().lower(), lookup_name, rarity_text))
+            if exact is not None:
+                exact_value, exact_unit = exact
+                return _format_token_value(
+                    float(exact_value) * assist_substat_eff,
+                    _module_substat_suffix(str(exact_unit), suffix),
+                )
         return display
+    if '%' not in display and _normalize_substat_suffix(suffix) == '%' and 0.0 <= value <= 1.0:
+        value *= 100.0
     return _format_token_value(value * assist_substat_eff, suffix)
 
 

@@ -330,6 +330,28 @@ def _resolve_decimal_base_times_post_multipliers(destination_id: str, contributo
     return final, 'resolved', f'{note_label}: decimal workshop bonus x lab x post multipliers.', schema
 
 
+def _resolve_additive_base_times_post_multipliers(destination_id: str, contributors: List[StatInput], schema: Dict[str, object], *, note_label: str = 'Destination-specific additive-base-times-post-multipliers family') -> Tuple[float | None, str, str, Dict[str, object]]:
+    workshop = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    additive_bonus = 0.0
+    post_multiplier = 1.0
+    for r in contributors:
+        if r.source_family == 'workshop':
+            continue
+        v = _as_float(r.value)
+        if v is None:
+            continue
+        if r.source_family in {'lab', 'enhancement'}:
+            post_multiplier *= _canonical_source_multiplier(destination_id, r, v)
+            continue
+        if r.source_family == 'perk' and r.value_type == 'multiplier':
+            post_multiplier *= v
+            continue
+        additive_bonus += v
+    return (workshop + additive_bonus) * post_multiplier, 'resolved', f'{note_label}: (workshop + flat additive contributors) x post multipliers.', schema
+
+
 def _resolve_additive_base_plus_bonuses_pct(destination_id: str, contributors: List[StatInput], schema: Dict[str, object], *, note_label: str = 'Promoted additive-base-plus-bonuses pct family') -> Tuple[float | None, str, str, Dict[str, object]]:
     workshop = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
     if workshop is None:

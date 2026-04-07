@@ -214,7 +214,16 @@
     "Enemy Level Skip Reduction": 0,
     "END OF ARRAY": 0
   },
-  "lab_adjusters": {},
+  "lab_adjusters": {
+    "Farming": {
+      "Range": 0,
+      "Shockwave Size": 0
+    },
+    "Tourney": {
+      "Range": 44,
+      "Shockwave Size": 20
+    }
+  },
   "workshop": {
     "Damage": {
       "name": "Damage",

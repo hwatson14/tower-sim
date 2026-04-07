@@ -243,14 +243,24 @@ sections:
       - label: Crit Multiplier
         surface_id: state::tower.crit_multiplier
         canonical_row_id: workshop::tower.crit_multiplier
+      - label: Range
+        surface_id: state::tower.range_m
+      - label: Damage / Meter
+        surface_id: state::tower.damage_per_meter_multiplier
       - label: Multishot Chance
         surface_id: state::tower.multishot_chance_pct
       - label: Multishot Targets
         surface_id: state::tower.multishot_targets
+      - label: Rapid Fire Chance
+        surface_id: state::tower.rapid_fire_chance_pct
+      - label: Rapid Fire Duration
+        surface_id: state::tower.rapid_fire_duration_seconds
       - label: Bounce Shot Chance
         surface_id: state::tower.bounce_shot_chance_pct
       - label: Bounce Shot Targets
         surface_id: state::tower.bounce_shot_targets
+      - label: Bounce Shot Range
+        surface_id: state::tower.bounce_shot_range_m
       - label: Super Crit Chance
         surface_id: state::tower.supercrit_chance_pct
       - label: Super Crit Multiplier

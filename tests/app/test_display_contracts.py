@@ -142,10 +142,12 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
                             'workshop_level': '100',
                             'workshop_value': '100',
                             'lab_effects': '+ 5',
+                            'base_subtotal': '+ 11',
                             'module_effects': '+ 2',
                             'card_effects': '+ 3',
-                            'enhancement_effects': '+ 4',
                             'relics': '+ 6',
+                            'base_loadout_subtotal': '+ 16',
+                            'enhancement_effects': '+ 4',
                             'start_of_run_modifier_total': '+ 20',
                             'start_of_run_value': '200',
                             'max_workshop_value': '250',
@@ -168,9 +170,12 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Card Effects' not in html
     assert 'Enhancement Effects' not in html
     assert 'Perk Effects' not in html
-    assert "colspan='15'" in html
+    assert 'Base Modifiers' in html
+    assert 'Base &amp; Loadout' in html
+    assert "colspan='17'" in html
     assert '250' in html
-    assert html.index('>Relics<') < html.index('>Enhancement<') < html.index('>Total<')
+    assert html.index('>Relics<') < html.index('>Subtotal<') < html.index('>Module<')
+    assert html.index('>Base &amp; Loadout<') < html.index('>Enhancement<') < html.index('>Modifiers<br>Total<')
 
 
 def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():

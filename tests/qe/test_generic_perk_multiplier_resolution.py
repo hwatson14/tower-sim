@@ -4,6 +4,7 @@ from input.loader import load_inputs
 from input.runtime_state import build_runtime_state
 from qe.models import StatInput
 from qe.routing import QEResolutionPlanner, resolve_bounded_bucket
+from qe.stat_input_compiler import compile_stat_inputs
 
 
 def test_damage_bucket_applies_perk_multipliers_in_canonical_resolution() -> None:
@@ -185,3 +186,92 @@ def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_s
     assert sorted(c.get('value') for c in health_modules) == pytest.approx([0.6, 6.0])
     assert attack_row.final_value == pytest.approx(55.216)
     assert health_row.final_value == pytest.approx(52.896)
+
+
+def test_damage_per_meter_uses_base_one_plus_decimal_bonus_family() -> None:
+    contributors = [
+        StatInput(stat_name='Damage / Meter', source_family='workshop', source_name='Damage / Meter', value=59.0, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Damage / Meter Lab', source_family='lab', source_name='Damage / Meter', value=1.32, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Damage / Meter Enhancement', source_family='enhancement', source_name='Damage / Meter +', value=1.2, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Damage / Meter Relic', source_family='relic', source_name='Damage / Meter', value=0.45, value_type='resolved_value', stage='account_state'),
+    ]
+
+    final, status, *_ = resolve_bounded_bucket(
+        'canonical_stat',
+        'tower_damage_per_meter_multiplier',
+        contributors,
+        {'unit': 'multiplier', 'resolver': 'generic'},
+    )
+
+    assert status == 'resolved'
+    assert final == pytest.approx(1.1355112)
+
+
+def test_flat_cannon_crit_substats_compile_as_flat_values_not_multiplier_displays() -> None:
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset='Farming',
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+    rows = compile_stat_inputs(
+        state,
+        preset_name=state.default_preset,
+        state_mode='max_progression',
+    )
+
+    crit_rows = [
+        row
+        for row in rows
+        if row.source_family == 'module_substat'
+        and row.source_name == 'Amplifying Strike'
+        and row.stat_name in {'Critical Factor', 'Super Crit Multi'}
+    ]
+    keyed = {row.stat_name: row for row in crit_rows}
+
+    assert keyed['Critical Factor'].value == 15.0
+    assert keyed['Critical Factor'].value_type == 'resolved_value'
+    assert keyed['Super Crit Multi'].value == 5.0
+    assert keyed['Super Crit Multi'].value_type == 'resolved_value'
+
+
+def test_crit_multiplier_uses_flat_additive_base_then_post_multipliers() -> None:
+    contributors = [
+        StatInput(stat_name='Critical Factor', source_family='workshop', source_name='Critical Factor', value=16.2, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Critical Factor Lab', source_family='lab', source_name='Critical Factor', value=3.55, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Critical Factor +', source_family='enhancement', source_name='Critical Factor +', value=1.6, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Critical Factor Relic', source_family='relic', source_name='Critical Factor', value=0.5, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Critical Factor Module', source_family='module_substat', source_name='Amplifying Strike', value=15.0, value_type='resolved_value', stage='loadout'),
+    ]
+
+    final, status, *_ = resolve_bounded_bucket(
+        'canonical_stat',
+        'tower_crit_multiplier',
+        contributors,
+        {'unit': 'multiplier', 'resolver': 'generic'},
+    )
+
+    assert status == 'resolved'
+    assert final == pytest.approx((16.2 + 15.0 + 0.5) * 3.55 * 1.6)
+
+
+def test_supercrit_multiplier_uses_flat_additive_base_then_post_multipliers() -> None:
+    contributors = [
+        StatInput(stat_name='Super Crit Multi', source_family='workshop', source_name='Super Crit Multi', value=13.2, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Super Crit Multi Lab', source_family='lab', source_name='Super Crit Multi', value=1.26, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Super Crit Multi +', source_family='enhancement', source_name='Super Crit Multi +', value=1.56, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Super Crit Multi Relic', source_family='relic', source_name='Super Crit Multi', value=0.05, value_type='resolved_value', stage='account_state'),
+        StatInput(stat_name='Super Crit Multi Module', source_family='module_substat', source_name='Amplifying Strike', value=5.0, value_type='resolved_value', stage='loadout'),
+    ]
+
+    final, status, *_ = resolve_bounded_bucket(
+        'canonical_stat',
+        'tower_supercrit_multiplier',
+        contributors,
+        {'unit': 'multiplier', 'resolver': 'generic'},
+    )
+
+    assert status == 'resolved'
+    assert final == pytest.approx((13.2 + 5.0 + 0.05) * 1.26 * 1.56)

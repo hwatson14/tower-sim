@@ -669,10 +669,12 @@ def _build_wall_health_workshop_percent_row(
         'decomposition': {
             'workshop': value_text,
             'lab': '—',
+            'base_subtotal': '—',
             'module': '—',
             'card': '—',
             'enhancement': '—',
             'relic': '—',
+            'base_loadout_subtotal': '—',
             'perk': '—',
             'other': '—',
         },
@@ -686,10 +688,12 @@ def _build_wall_health_workshop_percent_row(
         ),
         'workshop_value': value_text,
         'lab_effects': '—',
+        'base_subtotal': '—',
         'module_effects': '—',
         'card_effects': '—',
-        'enhancement_effects': '—',
         'relics': '—',
+        'base_loadout_subtotal': '—',
+        'enhancement_effects': '—',
         'start_of_run_modifier_total': '—',
         'start_of_run_value': value_text,
         'max_workshop_value': max_text,
@@ -772,13 +776,24 @@ def build_workshop_reconciliation_row(
 
     start_component_effects = {
         'lab': _component_effect(start_row, include_contributor=lab_include, family=family, surface_value_type=value_type),
+        'relic': _component_effect(start_row, include_contributor=relic_include, family=family, surface_value_type=value_type),
         'module': _component_effect(start_row, include_contributor=module_include, family=family, surface_value_type=value_type),
         'card': _component_effect(start_row, include_contributor=card_include, family=family, surface_value_type=value_type),
         'enhancement': _component_effect(start_row, include_contributor=enhancement_include, family=family, surface_value_type=value_type),
-        'relic': _component_effect(start_row, include_contributor=relic_include, family=family, surface_value_type=value_type),
     }
+    base_subtotal_effect = _combine_component_effects(
+        [start_component_effects['lab'], start_component_effects['relic']],
+        family=family,
+    )
+    base_loadout_subtotal_effect = _combine_component_effects(
+        [base_subtotal_effect, start_component_effects['module'], start_component_effects['card']],
+        family=family,
+    )
     # The start total must be composed from the exact visible modifier columns.
-    start_total_effect = _combine_component_effects(list(start_component_effects.values()), family=family)
+    start_total_effect = _combine_component_effects(
+        [base_loadout_subtotal_effect, start_component_effects['enhancement']],
+        family=family,
+    )
     max_nonperk_total_effect = _component_effect(
         max_row,
         include_contributor=start_modifier_include,
@@ -801,10 +816,12 @@ def build_workshop_reconciliation_row(
     decomposition = {
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
         'lab': _format_component_effect_display(start_component_effects['lab'], family=family),
+        'relic': _format_component_effect_display(start_component_effects['relic'], family=family),
+        'base_subtotal': _format_component_effect_display(base_subtotal_effect, family=family),
         'module': _format_component_effect_display(start_component_effects['module'], family=family),
         'card': _format_component_effect_display(start_component_effects['card'], family=family),
+        'base_loadout_subtotal': _format_component_effect_display(base_loadout_subtotal_effect, family=family),
         'enhancement': _format_component_effect_display(start_component_effects['enhancement'], family=family),
-        'relic': _format_component_effect_display(start_component_effects['relic'], family=family),
         'perk': _format_component_effect_display(max_component_effects['perk'], family=family),
         'other': _format_component_effect_display(max_component_effects['other'], family=family),
     }
@@ -837,10 +854,12 @@ def build_workshop_reconciliation_row(
         ),
         'workshop_value': decomposition['workshop'],
         'lab_effects': decomposition['lab'],
+        'relics': decomposition['relic'],
+        'base_subtotal': decomposition['base_subtotal'],
         'module_effects': decomposition['module'],
         'card_effects': decomposition['card'],
+        'base_loadout_subtotal': decomposition['base_loadout_subtotal'],
         'enhancement_effects': decomposition['enhancement'],
-        'relics': decomposition['relic'],
         'start_of_run_modifier_total': start_of_run_modifier_total,
         'start_of_run_value': start_of_run_value,
         'max_workshop_value': _format_surface_value(max_workshop_contribution, surface_id=surface_id, value_type=value_type),

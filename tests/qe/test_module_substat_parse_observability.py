@@ -77,7 +77,7 @@ def test_module_substat_parse_failures_are_emitted_and_diagnosed() -> None:
     assert (unresolved_diagnostics.get('module_substat_parse_failed_by_substat') or {}).get(bad_substat.name, 0) >= 1
 
 
-def test_assist_substat_uses_rarity_cap_table_value() -> None:
+def test_assist_substat_uses_equipped_roll_scaled_by_assist_efficiency() -> None:
     state = _base_account_state()
     rows = compile_stat_inputs(
         state,
@@ -91,9 +91,9 @@ def test_assist_substat_uses_rarity_cap_table_value() -> None:
         and row.stat_name == 'Defense %'
     ]
     assert defense_rows
-    # Armor assist cap is Epic at 10%; Defense substat is 3% at Epic in KB module-substats table.
+    # Orbital Augment assist keeps the equipped 8% defense roll and scales it by the 10% assist cap.
     assert defense_rows[0].value_type == 'percent_display'
-    assert defense_rows[0].value == pytest.approx(0.3)
+    assert defense_rows[0].value == pytest.approx(0.8)
 
 
 def test_generator_assist_enemy_skip_substats_use_equipped_roll_scaled_by_assist_efficiency() -> None:

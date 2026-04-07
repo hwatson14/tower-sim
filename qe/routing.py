@@ -337,7 +337,35 @@ def _resolve_decimal_base_times_post_multipliers(destination_id: str, contributo
             value = _as_float(row.value)
             if value is not None:
                 final *= 1.0 + value
-    return final, 'resolved', f'{note_label}: decimal workshop bonus x lab x post multipliers.', schema
+    return 1.0 + final, 'resolved', f'{note_label}: one plus decimal workshop bonus x lab x post multipliers.', schema
+
+
+def _resolve_additive_base_times_post_multipliers(
+    destination_id: str,
+    contributors: list[StatInput],
+    schema: dict[str, object],
+    *,
+    note_label: str = 'Destination-specific additive-base-times-post-multipliers family',
+) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    additive_bonus = 0.0
+    post_multiplier = 1.0
+    for row in contributors:
+        if row.source_family == 'workshop':
+            continue
+        value = _as_float(row.value)
+        if value is None:
+            continue
+        if row.source_family in {'lab', 'enhancement'}:
+            post_multiplier *= _canonical_source_multiplier(destination_id, row, value)
+            continue
+        if row.source_family == 'perk' and row.value_type == 'multiplier':
+            post_multiplier *= value
+            continue
+        additive_bonus += value
+    return (workshop + additive_bonus) * post_multiplier, 'resolved', f'{note_label}: (workshop + flat additive contributors) x post multipliers.', schema
 
 
 def _tower_regen_compare_module_multiplier(contributors: list[StatInput]) -> float:
@@ -664,6 +692,8 @@ def _resolve_bucket(
         if value is None:
             return None, 'mapped_not_resolved', 'Missing enhancement contributor for exact max-rend formula.', schema
         return value, 'resolved', 'Destination-specific max-rend formula: (8 + lab + 8*module_substat_pct) x enhancement.', schema
+    if destination_id in {'tower_crit_multiplier', 'tower_supercrit_multiplier'}:
+        return _resolve_additive_base_times_post_multipliers(destination_id, contributors, schema)
     if destination_id in _FREE_UPGRADE_CHANCE_DESTINATIONS:
         return _resolve_free_upgrade_chance_pct(destination_id, contributors, schema)
 
