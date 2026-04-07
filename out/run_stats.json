@@ -382,8 +382,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.7316146089426302e+20,
-              "display_value": "273Q",
+              "final_value": 4.9297107395761524e+20,
+              "display_value": "493Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -414,8 +414,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4185297340.0697846,
-              "display_value": "4.19B",
+              "final_value": 7553153793.407189,
+              "display_value": "7.55B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -830,8 +830,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.7316146089426302e+20,
-              "display_value": "273Q",
+              "final_value": 4.9297107395761524e+20,
+              "display_value": "493Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -846,8 +846,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4185297340.0697846,
-              "display_value": "4.19B",
+              "final_value": 7553153793.407189,
+              "display_value": "7.55B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1534,8 +1534,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.899096625854841e+24,
-              "display_value": "5.9S",
+              "final_value": 1.7697289877564522e+24,
+              "display_value": "1.77S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1598,8 +1598,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 8.114854870688128e+22,
-              "display_value": "81.1s",
+              "final_value": 2.4344564612064386e+22,
+              "display_value": "24.3s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2062,8 +2062,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 474946826480272.44,
-              "display_value": "475T",
+              "final_value": 142484047944081.75,
+              "display_value": "142T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2238,8 +2238,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.1798193251709692e+23,
-              "display_value": "118s",
+              "final_value": 3.5394579755129075e+22,
+              "display_value": "35.4s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2254,8 +2254,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.899096625854841e+24,
-              "display_value": "5.9S",
+              "final_value": 1.7697289877564522e+24,
+              "display_value": "1.77S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2510,8 +2510,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 5.899096625854841e+24,
-              "display_value": "5.9S",
+              "final_value": 1.7697289877564522e+24,
+              "display_value": "1.77S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2526,8 +2526,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 474946826480272.44,
-              "display_value": "475T",
+              "final_value": 142484047944081.75,
+              "display_value": "142T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3326,8 +3326,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 48.790575912,
-              "display_value": "x48.791",
+              "final_value": 56.81585636999999,
+              "display_value": "x56.816",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -3342,10 +3342,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 691.3599999999999,
-              "display_value": "691.36",
+              "final_value": 9125.952,
+              "display_value": "9.13k",
               "value_type": "cash",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::economy.coins_per_kill_bonus": {
@@ -3358,8 +3358,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 39.456472649999995,
-              "display_value": "x39.456",
+              "final_value": 63.917485458749994,
+              "display_value": "x63.917",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -3550,10 +3550,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4185297340.0697846,
-              "display_value": "4.19B",
+              "final_value": 7553153793.407189,
+              "display_value": "7.55B",
               "value_type": "damage",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::tower.damage_per_meter_multiplier": {
@@ -3694,10 +3694,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 25162745773789.27,
-              "display_value": "25.2T",
+              "final_value": 7548823732136.78,
+              "display_value": "7.55T",
               "value_type": "hp",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::tower.knockback_chance_pct": {
@@ -3726,10 +3726,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14.555519999999998,
-              "display_value": "14.556",
+              "final_value": 4.366656,
+              "display_value": "4.367",
               "value_type": "force",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::tower.land_mine_chance_pct": {
@@ -3758,10 +3758,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2100.0,
-              "display_value": "2.1k",
+              "final_value": 35437.5,
+              "display_value": "35.4k",
               "value_type": "damage",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::tower.land_mine_radius_m": {
@@ -4014,10 +4014,10 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 838504454589.1776,
-              "display_value": "839B",
+              "final_value": 43811857752284.53,
+              "display_value": "43.8T",
               "value_type": "hp_per_second",
-              "status": "partially_resolved"
+              "status": "resolved"
             }
           },
           "state::tower.rend_armor_chance_pct": {

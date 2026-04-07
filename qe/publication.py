@@ -127,6 +127,57 @@ def publish_workshop_reconciliation_payload(
             )
         if rows:
             sections.append({'section_id': section_key, 'title': section_titles[section_key], 'rows': rows})
+    derived_rows: list[dict[str, object]] = []
+    for spec in surface_specs(stats_layout, 'derived_wall_economy_surfaces'):
+        surface_id = spec['surface_id']
+        start_row = dict(rows_start.get(surface_id) or {})
+        max_row = dict(rows_max.get(surface_id) or {})
+        start_display = start_row.get('display_value')
+        max_display = max_row.get('display_value')
+        if not isinstance(start_display, str) or not start_display.strip():
+            start_display = '—'
+        if not isinstance(max_display, str) or not max_display.strip():
+            max_display = '—'
+        row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
+        derived_rows.append({
+            'canonical_row_id': str(spec.get('canonical_row_id') or surface_id),
+            'display_label': spec['label'],
+            'value_format': {
+                'value_type': str(start_row.get('value_type') or max_row.get('value_type') or 'scalar'),
+                'display_kind': 'scalar',
+            },
+            'start_of_run': start_display,
+            'max_workshop': max_display,
+            'decomposition': {
+                'workshop': '—',
+                'lab': '—',
+                'module': '—',
+                'card': '—',
+                'enhancement': '—',
+                'relic': '—',
+                'perk': '—',
+                'other': '—',
+            },
+            'row_status': row_status,
+            'row_notes': str(start_row.get('notes') or max_row.get('notes') or ''),
+            'name': spec['label'],
+            'workshop_level': '—',
+            'workshop_value': '—',
+            'lab_effects': '—',
+            'module_effects': '—',
+            'card_effects': '—',
+            'enhancement_effects': '—',
+            'relics': '—',
+            'start_of_run_modifier_total': '—',
+            'start_of_run_value': start_display,
+            'max_workshop_value': '—',
+            'perk_effects': '—',
+            'other': '—',
+            'max_progression_modifier_total': '—',
+            'max_progression_value': max_display,
+        })
+    if derived_rows:
+        sections.append({'section_id': 'derived_wall_economy_surfaces', 'title': 'Derived', 'rows': derived_rows})
     return {
         'artifact': 'qe_workshop_reconciliation_rows',
         'owner': 'qe',
@@ -690,11 +741,6 @@ def build_stats_dashboard_payload(
                 surface_specs=_stats_surface_specs,
             )
             panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
-            derived_rows = [
-                _stats_row_payload(row_map=rows, ep_compare=ep_compare, surface_id=spec['surface_id'], label=spec['label'], canonical_row_id=spec['canonical_row_id'])
-                for spec in _stats_surface_specs(stats_layout, 'derived_wall_economy_surfaces')
-            ]
-            panels.append({'panel_id': 'derived', 'panel_type': 'resolved_stat_section', 'title': 'Derived (Wall, economy)', 'payload': {'rows': derived_rows}})
             uw_payload = dict((input_panels_by_id.get('ultimate_weapons') or {}).get('payload') or {})
             if uw_payload:
                 panels.append({'panel_id': 'uw_resolved', 'panel_type': 'resolved_uw_section', 'title': 'UW', 'payload': {'column_headers': uw_payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': list((uw_payload.get('rows') or []))}})

@@ -33,7 +33,6 @@ def test_stats_dashboard_contract_and_panel_types():
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('workshop', 'workshop_stat_table'),
-        ('derived', 'resolved_stat_section'),
         ('uw_resolved', 'resolved_uw_section'),
         ('modules_context', 'context_modules'),
         ('cards_context', 'context_cards'),
@@ -739,7 +738,7 @@ def test_stats_dashboard_workshop_level_aliases_cover_regen_coin_and_max_recover
     assert by_name['Max Recovery']['workshop_level'] == 404
 
 
-def test_stats_dashboard_derived_panel_includes_uw_damage_and_e_metrics():
+def test_stats_dashboard_workshop_panel_includes_derived_section_rows():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -775,12 +774,16 @@ def test_stats_dashboard_derived_panel_includes_uw_damage_and_e_metrics():
         selected_preset='Farming',
         selected_state_mode='start_of_run',
     )
-    derived_panel = next(
+    workshop_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
-        if panel.get('panel_id') == 'derived'
+        if panel.get('panel_id') == 'workshop'
     )
-    labels = [row.get('label') for row in (derived_panel.get('payload', {}).get('rows') or [])]
-    canonical_row_ids = [row.get('canonical_row_id') for row in (derived_panel.get('payload', {}).get('rows') or [])]
+    derived_section = next(
+        section for section in (workshop_panel.get('payload', {}).get('sections') or [])
+        if section.get('title') == 'Derived'
+    )
+    labels = [row.get('name') for row in (derived_section.get('rows') or [])]
+    canonical_row_ids = [row.get('canonical_row_id') for row in (derived_section.get('rows') or [])]
     assert 'Wall HP (Pre-Fort)' in labels
     assert 'Ultimate Weapon Damage' in labels
     assert 'eHP' in labels
@@ -842,6 +845,72 @@ def test_stats_dashboard_canonical_row_ids_disambiguate_workshop_rows():
     assert by_label['Wall Health']['canonical_row_id'] == 'workshop::wall.health'
 
 
+def test_stats_dashboard_wall_health_uses_workshop_percentage_track_not_wall_hp():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {
+            'Wall Health': {
+                'preset_levels': {'Farming': 1340},
+                'preset_values': {'Farming': 1800.0},
+                'max_level': 1800,
+            },
+        },
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::wall.hp': {
+                    'display_value': '132M',
+                    'final_value': 131560783.2,
+                    'value_type': 'hp',
+                    'contributors': [],
+                }
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::wall.hp': {
+                    'display_value': '171M',
+                    'final_value': 170858160.0,
+                    'value_type': 'hp',
+                    'contributors': [],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'workshop'
+    )
+    defense_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or [])
+    wall_health = next(item for item in defense_rows if item.get('name') == 'Wall Health')
+    assert wall_health['workshop_value'] == '1.8k%'
+    assert wall_health['start_of_run_value'] == '1.8k%'
+    assert wall_health['max_progression_value'] == '1.8k%'
+
+
 def test_stats_dashboard_does_not_backfill_missing_rows_from_line_verification():
     account_state = {
         'default_preset': 'Farming',
@@ -884,13 +953,17 @@ def test_stats_dashboard_does_not_backfill_missing_rows_from_line_verification()
     assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
     assert by_name['Interest / Wave']['start_of_run_value'] == '—'
 
-    derived_panel = next(
+    workshop_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
-        if panel.get('panel_id') == 'derived'
+        if panel.get('panel_id') == 'workshop'
     )
-    derived_rows = {row.get('label'): row for row in (derived_panel.get('payload', {}).get('rows') or [])}
-    assert derived_rows['Wall Thorns']['display_value'] is None
-    assert derived_rows['Wall Thorns']['status'] is None
+    derived_section = next(
+        section for section in (workshop_panel.get('payload', {}).get('sections') or [])
+        if section.get('title') == 'Derived'
+    )
+    derived_rows = {row.get('name'): row for row in (derived_section.get('rows') or [])}
+    assert derived_rows['Wall Thorns']['start_of_run_value'] == '—'
+    assert derived_rows['Wall Thorns']['row_status'] == 'missing'
 
 
 def test_stats_dashboard_preserves_unresolved_query_rows_without_line_verification_backfill():
@@ -1585,3 +1658,147 @@ def test_stats_dashboard_workshop_scalar_rows_can_use_multiplicative_reconciliat
     assert knockback_force['start_of_run_modifier_total'] == 'x 2.39'
     assert orb_speed['relics'] == 'x 1.17'
     assert orb_speed['start_of_run_modifier_total'] == 'x 1.17'
+
+
+def test_stats_dashboard_thorns_scales_fractional_module_substat_to_percentage_points():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Thorn Damage': {'preset_levels': {'Farming': 99}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.thorns_damage_pct': {
+                    'display_value': '140%',
+                    'final_value': 140.0,
+                    'value_type': 'pct',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__thorns_damage__pct', 'value': 99.0},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.orbital_augment.loadout_resolved', 'value': 0.2},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.sharp_fortitude.loadout_resolved', 'value': 10.0, 'input_value_type': 'percent_display'},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__thorns__pct', 'value': 11.0},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    defense_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or [])
+    row = next(item for item in defense_rows if item.get('name') == 'Thorns')
+    assert row['module_effects'] == '+ 30%'
+    assert row['start_of_run_modifier_total'] == '+ 41%'
+
+
+def test_stats_dashboard_cash_and_coin_wave_rows_use_multiplicative_family():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {
+            'Cash / Wave': {'preset_levels': {'Farming': 149}},
+            'Coin / Wave': {'preset_levels': {'Farming': 149}},
+        },
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::economy.cash_per_wave': {
+                    'display_value': '691.36',
+                    'final_value': 691.36,
+                    'value_type': 'cash',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__cash_per_wave__flat', 'value': 596.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.cash___wave.account_state', 'value': 1.16},
+                    ],
+                },
+                'state::economy.coins_per_wave': {
+                    'display_value': '168',
+                    'final_value': 168.0,
+                    'value_type': 'coins',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__coins_per_wave__flat', 'value': 150.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.coins___wave.account_state', 'value': 1.12},
+                    ],
+                },
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::economy.cash_per_wave': {
+                    'display_value': '9.13k',
+                    'final_value': 9130.0,
+                    'value_type': 'cash',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__cash_per_wave__flat', 'value': 596.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.cash___wave.account_state', 'value': 1.16},
+                        {'source_class': 'perks', 'contributor_id': 'perk::cash_wave', 'value': 13.2, 'input_value_type': 'multiplier'},
+                    ],
+                },
+                'state::economy.coins_per_wave': {
+                    'display_value': '168',
+                    'final_value': 168.0,
+                    'value_type': 'coins',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__coins_per_wave__flat', 'value': 150.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.coins___wave.account_state', 'value': 1.12},
+                    ],
+                },
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    utility_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}, {}])[2].get('rows') or [])
+    cash_per_wave = next(item for item in utility_rows if item.get('name') == 'Cash / Wave')
+    coins_per_wave = next(item for item in utility_rows if item.get('name') == 'Coins / Wave')
+    assert cash_per_wave['lab_effects'] == 'x 1.16'
+    assert cash_per_wave['start_of_run_modifier_total'] == 'x 1.16'
+    assert cash_per_wave['perk_effects'] == 'x 13.2'
+    assert cash_per_wave['max_progression_modifier_total'] == 'x 13.2'
+    assert coins_per_wave['lab_effects'] == 'x 1.12'
+    assert coins_per_wave['start_of_run_modifier_total'] == 'x 1.12'

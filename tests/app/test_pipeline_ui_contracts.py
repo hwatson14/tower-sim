@@ -201,7 +201,6 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
         'workshop',
-        'derived',
         'uw_resolved',
         'modules_context',
         'cards_context',
@@ -216,6 +215,8 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
+    assert any(section.get('title') == 'Derived' for section in (start_workshop.get('payload', {}).get('sections') or []))
+    assert any(section.get('title') == 'Derived' for section in (max_workshop.get('payload', {}).get('sections') or []))
 
 
 def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonical_pipeline_artifacts):

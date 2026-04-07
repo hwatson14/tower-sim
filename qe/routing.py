@@ -697,7 +697,7 @@ def _resolve_bucket(
                 add_sum += value
                 consumed += 1
                 continue
-            if row.source_family in {'lab', 'relic', 'card', 'enhancement', 'module_substat', 'module', 'vault'}:
+            if row.source_family in {'lab', 'relic', 'card', 'enhancement', 'module_substat', 'module', 'module_unique', 'vault', 'perk'}:
                 multiplier_product *= _canonical_source_multiplier(destination_id, row, value)
                 consumed += 1
                 continue
@@ -733,7 +733,7 @@ def _resolve_bucket(
                 consumed += 1
                 continue
         if unit == 'multiplier':
-            if row.source_family in {'lab', 'relic', 'card', 'enhancement', 'module_substat', 'module', 'vault'}:
+            if row.source_family in {'lab', 'relic', 'card', 'enhancement', 'module_substat', 'module', 'module_unique', 'vault', 'perk'}:
                 multiplier_product *= _canonical_source_multiplier(destination_id, row, value)
                 consumed += 1
                 continue

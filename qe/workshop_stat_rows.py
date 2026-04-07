@@ -20,8 +20,14 @@ _WORKSHOP_LABEL_ALIASES: dict[str, str] = {
 }
 
 _WORKSHOP_MULTIPLICATIVE_SURFACE_OVERRIDES: frozenset[str] = frozenset({
+    'state::economy.cash_per_wave',
+    'state::economy.coins_per_wave',
     'state::tower.knockback_force',
     'state::tower.orb_speed_rpm',
+})
+
+_WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES: frozenset[str] = frozenset({
+    'state::tower.thorns_damage_pct',
 })
 
 
@@ -187,6 +193,9 @@ def _multiplicative_factor_for_contributor(
     if source_class == 'module_substat' and explicit_kind == 'multiplier_display':
         return 1.0 + value
 
+    if explicit_kind == 'percent_display':
+        return 1.0 + (value / 100.0)
+
     if source_class.startswith('module') and 0.0 < value < 1.0:
         return 1.0 + value
 
@@ -194,8 +203,6 @@ def _multiplicative_factor_for_contributor(
         return value
 
     if kind == 'pct':
-        if surface_value_type == 'hp':
-            return value if value >= 1.0 else (1.0 + value)
         if surface_value_type == 'multiplier' and not explicit_kind:
             return value if value >= 1.0 else (1.0 + value)
         return 1.0 + (value / 100.0)
@@ -209,9 +216,18 @@ def _additive_component_value_for_contributor(
     value: float,
     kind: str,
     family: str,
+    surface_id: str,
 ) -> float:
     source_class = str(contributor.get('source_class') or '').lower()
     if family in {'additive_pct', 'additive_then_multiplicative'} and source_class == 'relics' and kind != 'multiplier' and 0.0 <= value <= 1.0:
+        return value * 100.0
+    if (
+        family in {'additive_pct', 'additive_then_multiplicative'}
+        and surface_id in _WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES
+        and source_class == 'module_substat'
+        and kind != 'multiplier'
+        and 0.0 <= value <= 1.0
+    ):
         return value * 100.0
     return value
 
@@ -258,6 +274,7 @@ def _component_effect(
                     value=value,
                     kind=kind,
                     family=family,
+                    surface_id=str(row.get('stat_name') or ''),
                 )
             continue
 
@@ -266,6 +283,7 @@ def _component_effect(
             value=value,
             kind=kind,
             family=family,
+            surface_id=str(row.get('stat_name') or ''),
         )
 
     return additive_total, factor_total, has_value
@@ -614,6 +632,74 @@ def _workshop_level_for_label(*, account_state_payload: dict[str, object], label
     return int(level) if isinstance(level, int) else None
 
 
+def _workshop_entry_for_label(*, account_state_payload: dict[str, object], label: str) -> dict[str, object]:
+    workshop_entries = dict(account_state_payload.get('workshop') or {})
+    workshop_name = _WORKSHOP_LABEL_ALIASES.get(label, label)
+    return dict(workshop_entries.get(workshop_name) or {})
+
+
+def _format_percent_value(value: float | int | None) -> str:
+    if value is None:
+        return '—'
+    return f'{_format_compact_number(value)}%'
+
+
+def _build_wall_health_workshop_percent_row(
+    *,
+    spec: dict[str, str],
+    account_state_payload: dict[str, object],
+    selected_preset: str,
+) -> dict[str, object]:
+    entry = _workshop_entry_for_label(account_state_payload=account_state_payload, label=spec['label'])
+    preset_values = dict(entry.get('preset_values') or {})
+    current_value = preset_values.get(selected_preset)
+    max_value = entry.get('max_level')
+    value_text = _format_percent_value(current_value if isinstance(current_value, (int, float)) else None)
+    max_text = _format_percent_value(max_value if isinstance(max_value, (int, float)) else None)
+    row_note = 'Workshop wall-health percentage. Actual Wall HP is shown in the Derived section.'
+    return {
+        'canonical_row_id': str(spec.get('canonical_row_id') or spec['surface_id']),
+        'display_label': spec['label'],
+        'value_format': {
+            'value_type': 'pct',
+            'display_kind': 'pct',
+        },
+        'start_of_run': value_text,
+        'max_workshop': max_text,
+        'decomposition': {
+            'workshop': value_text,
+            'lab': '—',
+            'module': '—',
+            'card': '—',
+            'enhancement': '—',
+            'relic': '—',
+            'perk': '—',
+            'other': '—',
+        },
+        'row_status': 'resolved',
+        'row_notes': row_note,
+        'name': spec['label'],
+        'workshop_level': _workshop_level_for_label(
+            account_state_payload=account_state_payload,
+            label=spec['label'],
+            selected_preset=selected_preset,
+        ),
+        'workshop_value': value_text,
+        'lab_effects': '—',
+        'module_effects': '—',
+        'card_effects': '—',
+        'enhancement_effects': '—',
+        'relics': '—',
+        'start_of_run_modifier_total': '—',
+        'start_of_run_value': value_text,
+        'max_workshop_value': max_text,
+        'perk_effects': '—',
+        'other': '—',
+        'max_progression_modifier_total': '—',
+        'max_progression_value': max_text,
+    }
+
+
 def build_workshop_reconciliation_row(
     *,
     spec: dict[str, str],
@@ -622,8 +708,15 @@ def build_workshop_reconciliation_row(
     account_state_payload: dict[str, object],
     selected_preset: str,
 ) -> dict[str, object]:
+    canonical_row_id = str(spec.get('canonical_row_id') or spec['surface_id'])
+    if canonical_row_id == 'workshop::wall.health':
+        return _build_wall_health_workshop_percent_row(
+            spec=spec,
+            account_state_payload=account_state_payload,
+            selected_preset=selected_preset,
+        )
+
     surface_id = spec['surface_id']
-    canonical_row_id = str(spec.get('canonical_row_id') or surface_id)
     value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
     family = _row_family(
         surface_id=surface_id,
