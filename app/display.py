@@ -279,9 +279,11 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table thead tr:first-child th{font-size:0.88rem;line-height:1.1;padding:3px 6px;}
 .workshop-stats-table thead tr:nth-child(2) th{font-size:0.78rem;line-height:1.15;padding:2px 6px;}
 .workshop-stats-table tbody td{background:#f3f3f3;}
-.workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;}
+.workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;font-weight:700;}
+.workshop-stats-table tbody td:nth-child(2){background:#e1e1e1;}
 .workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(9),.workshop-stats-table tbody td:nth-child(10){background:#d8efc8;}
 .workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15){background:#b9def0;}
+.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(15){font-weight:700;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
@@ -389,6 +391,12 @@ def render_resolved_stat_section_html(payload: dict) -> str:
 
 
 def render_workshop_stat_table_html(payload: dict) -> str:
+    def _cell_value(row: dict, key: str) -> str:
+        value = row.get(key)
+        if value is None or value == '':
+            return '—'
+        return str(value)
+
     header_html = (
         "<thead>"
         "<tr>"
@@ -422,21 +430,21 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         body_chunks.append(f"<tr class='section-row'><td colspan='15'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
             values = [
-                row.get('name', ''),
-                row.get('workshop_level', ''),
-                row.get('lab_effects', ''),
-                row.get('module_effects', ''),
-                row.get('card_effects', ''),
-                row.get('enhancement_effects', ''),
-                row.get('relics', ''),
-                row.get('start_of_run_modifier_total', ''),
-                row.get('workshop_value', ''),
-                row.get('start_of_run_value', ''),
-                row.get('perk_effects', ''),
-                row.get('other', ''),
-                row.get('max_progression_modifier_total', ''),
-                row.get('max_workshop_value', ''),
-                row.get('max_progression_value', ''),
+                _cell_value(row, 'name'),
+                _cell_value(row, 'workshop_level'),
+                _cell_value(row, 'lab_effects'),
+                _cell_value(row, 'module_effects'),
+                _cell_value(row, 'card_effects'),
+                _cell_value(row, 'enhancement_effects'),
+                _cell_value(row, 'relics'),
+                _cell_value(row, 'start_of_run_modifier_total'),
+                _cell_value(row, 'workshop_value'),
+                _cell_value(row, 'start_of_run_value'),
+                _cell_value(row, 'perk_effects'),
+                _cell_value(row, 'other'),
+                _cell_value(row, 'max_progression_modifier_total'),
+                _cell_value(row, 'max_workshop_value'),
+                _cell_value(row, 'max_progression_value'),
             ]
             cells = ''.join(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
             body_chunks.append(f"<tr>{cells}</tr>")

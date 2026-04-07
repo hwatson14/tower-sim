@@ -47,11 +47,13 @@ pytest tests/ -m slow                                           # slow integrati
 pytest tests/ -m expensive                                      # expensive parity tests
 ```
 
-### CI pytest budget invariant (mandatory)
+### Local verification
 
-- CI enforces the default fast-lane command as `pytest -q --durations=25` on the designated runner class `ubuntu-latest` in `.github/workflows/ci.yml`.
-- The run is fail-closed if wall-clock exceeds **10 seconds** (`PYTEST_TIME_BUDGET_SECONDS`), even when tests otherwise pass.
-- Top test-time offenders are persisted as the `pytest-durations` artifact (`pytest-durations.log`) for every CI run.
+Run this narrow verification command locally:
+
+```bash
+pytest tests/shared/test_import_boundaries.py tests/app/test_pipeline_functional.py tests/app/test_pipeline_ui_contracts.py -q
+```
 
 ## Key files
 
