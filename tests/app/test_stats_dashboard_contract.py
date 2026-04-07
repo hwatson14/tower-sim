@@ -334,7 +334,7 @@ def test_stats_dashboard_workshop_module_effects_follow_qe_multiplier_display_fo
         (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
-    assert damage_row['module_effects'] == 'x 10'
+    assert damage_row['module_effects'] == 'x 10.04'
 
 
 def test_stats_dashboard_workshop_relics_use_start_of_run_rows():
@@ -532,7 +532,7 @@ def test_stats_dashboard_workshop_free_upgrade_enhancement_is_multiplier_and_pct
     )
     row = next(item for item in utility_rows if item.get('name') == 'Free Attack Upgrade')
     assert row['enhancement_effects'] == 'x 1.15'
-    assert row['max_progression_value'] == '111.838%'
+    assert row['max_progression_value'] == '111.84%'
 
 
 def test_stats_dashboard_workshop_mixed_modifier_totals_are_built_from_visible_components():
@@ -606,10 +606,10 @@ def test_stats_dashboard_workshop_mixed_modifier_totals_are_built_from_visible_c
     assert row['card_effects'] == '+ 10%'
     assert row['relics'] == '+ 6%'
     assert row['enhancement_effects'] == 'x 1.15'
-    assert row['start_of_run_modifier_total'] == '+ 16% · x 1.15'
-    assert row['perk_effects'] == '+ 31.2%'
+    assert row['start_of_run_modifier_total'] == '+ 25.9%'
+    assert row['perk_effects'] == '+ 31.25%'
     assert row['other'] == '—'
-    assert row['max_progression_modifier_total'] == '+ 31.2%'
+    assert row['max_progression_modifier_total'] == '+ 31.25%'
 
 
 def test_stats_dashboard_workshop_lab_effects_use_start_of_run_values_for_multiplier_labs():
@@ -842,7 +842,7 @@ def test_stats_dashboard_workshop_panel_includes_extended_attack_rows_from_layou
     offense_rows = ((workshop_panel.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     by_name = {row.get('name'): row for row in offense_rows}
     assert by_name['Range']['start_of_run_value'] == '69.5'
-    assert str(by_name['Damage / Meter']['start_of_run_value']).startswith('x1.135')
+    assert by_name['Damage / Meter']['start_of_run_value'] == 'x1.14'
     assert by_name['Rapid Fire Chance']['start_of_run_value'] == '34%'
     assert by_name['Rapid Fire Duration']['start_of_run_value'] == '5.55'
     assert by_name['Bounce Shot Range']['start_of_run_value'] == '8'
@@ -1227,7 +1227,7 @@ def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_to
         (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
-    assert damage_row['start_of_run_modifier_total'] == 'x 126'
+    assert damage_row['start_of_run_modifier_total'] == 'x 126.03'
     assert damage_row['other'] == '—'
     assert damage_row['max_progression_modifier_total'] == 'x 1.8'
 
@@ -1434,7 +1434,7 @@ def test_stats_dashboard_workshop_super_crit_relic_uses_multiplier_factor():
     offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
     assert row['relics'] == 'x 1.05'
-    assert row['start_of_run_modifier_total'] == 'x 12.4'
+    assert row['start_of_run_modifier_total'] == 'x 12.38'
 
 
 def test_stats_dashboard_workshop_coins_kill_bonus_normalizes_module_and_lab_factors():
@@ -1542,7 +1542,7 @@ def test_stats_dashboard_workshop_enemy_attack_skip_keeps_enhancement_multiplica
     utility_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}, {}])[2].get('rows') or [])
     row = next(item for item in utility_rows if item.get('name') == 'Enemy Attack Level Skip')
     assert row['enhancement_effects'] == 'x 1.16'
-    assert row['start_of_run_modifier_total'] == '+ 12.2% · x 1.16'
+    assert row['start_of_run_modifier_total'] == '+ 16.8%'
 
 
 def test_stats_dashboard_workshop_pct_rows_scale_relic_fractions_to_percentage_points():
@@ -1646,7 +1646,7 @@ def test_stats_dashboard_workshop_multiplier_rows_expand_module_substat_multipli
     row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
     assert row['module_effects'] == 'x 6'
     assert row['relics'] == 'x 1.05'
-    assert row['start_of_run_modifier_total'] == 'x 12.4'
+    assert row['start_of_run_modifier_total'] == 'x 12.38'
 
 
 def test_stats_dashboard_workshop_scalar_rows_can_use_multiplicative_reconciliation_family():

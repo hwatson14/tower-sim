@@ -100,9 +100,9 @@ def _format_compact_number(value: float | int | None) -> str:
             token = f'{scaled:.{decimals}f}'.rstrip('0').rstrip('.')
             return f'{sign}{token}{suffix}'
     if av >= 100:
-        return f'{sign}{av:.0f}'
+        return f'{sign}{av:.2f}'.rstrip('0').rstrip('.')
     if av >= 10:
-        return f'{sign}{av:.1f}'.rstrip('0').rstrip('.')
+        return f'{sign}{av:.2f}'.rstrip('0').rstrip('.')
     return f'{sign}{av:.2f}'.rstrip('0').rstrip('.')
 
 
@@ -346,6 +346,50 @@ def _format_component_effect_display(
     if factor_part:
         return factor_part
     return '—'
+
+
+def _format_effective_total_display(
+    *,
+    effect: tuple[float, float, bool],
+    family: str,
+    workshop_value: float | None,
+    surface_id: str,
+    surface_value_type: str,
+) -> str:
+    additive_total, factor_total, has_value = effect
+    if not has_value:
+        return '—'
+    if family != 'additive_then_multiplicative':
+        return _format_component_effect_display(effect, family=family)
+    if workshop_value is None:
+        return _format_component_effect_display(effect, family=family)
+
+    final_value = (workshop_value + additive_total) * factor_total
+    if _is_multiplier_surface(surface_id=surface_id, value_type=surface_value_type):
+        if workshop_value == 0:
+            return _format_component_effect_display(effect, family=family)
+        return _format_effect_value(final_value / workshop_value, display_kind='multiplier')
+    if _is_percent_surface(surface_id=surface_id, value_type=surface_value_type):
+        return _format_effect_value(final_value - workshop_value, display_kind='pct')
+    return _format_effect_value(final_value - workshop_value, display_kind='scalar')
+
+
+def _apply_effect_to_workshop_value(
+    *,
+    effect: tuple[float, float, bool],
+    family: str,
+    workshop_value: float | None,
+) -> float | None:
+    if workshop_value is None:
+        return None
+    additive_total, factor_total, has_value = effect
+    if not has_value:
+        return workshop_value
+    if family == 'multiplicative':
+        return workshop_value * factor_total
+    if family in {'additive_pct', 'additive_scalar'}:
+        return workshop_value + additive_total
+    return (workshop_value + additive_total) * factor_total
 
 
 def _aggregate_effect_total(
@@ -603,12 +647,12 @@ def _row_display_value(
     surface_id: str,
     value_type: str | None,
 ) -> str | None:
-    display = row.get('display_value')
-    if isinstance(display, str) and display.strip():
-        return display
     final_value = row.get('final_value')
     if isinstance(final_value, (int, float)):
         return _format_surface_value(final_value, surface_id=surface_id, value_type=value_type)
+    display = row.get('display_value')
+    if isinstance(display, str) and display.strip():
+        return display
     return None
 
 
@@ -697,6 +741,7 @@ def _build_wall_health_workshop_percent_row(
         'start_of_run_modifier_total': '—',
         'start_of_run_value': value_text,
         'max_workshop_value': max_text,
+        'max_workshop_resolved_value': max_text,
         'perk_effects': '—',
         'other': '—',
         'max_progression_modifier_total': '—',
@@ -825,7 +870,22 @@ def build_workshop_reconciliation_row(
         'perk': _format_component_effect_display(max_component_effects['perk'], family=family),
         'other': _format_component_effect_display(max_component_effects['other'], family=family),
     }
-    start_of_run_modifier_total = _format_component_effect_display(start_total_effect, family=family)
+    start_of_run_modifier_total = _format_effective_total_display(
+        effect=start_total_effect,
+        family=family,
+        workshop_value=workshop_value,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    max_workshop_resolved_value = _format_surface_value(
+        _apply_effect_to_workshop_value(
+            effect=start_total_effect,
+            family=family,
+            workshop_value=max_workshop_contribution,
+        ),
+        surface_id=surface_id,
+        value_type=value_type,
+    )
     max_progression_modifier_total = _format_component_effect_display(max_total_effect, family=family)
 
     row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
@@ -863,6 +923,7 @@ def build_workshop_reconciliation_row(
         'start_of_run_modifier_total': start_of_run_modifier_total,
         'start_of_run_value': start_of_run_value,
         'max_workshop_value': _format_surface_value(max_workshop_contribution, surface_id=surface_id, value_type=value_type),
+        'max_workshop_resolved_value': max_workshop_resolved_value,
         'perk_effects': decomposition['perk'],
         'other': decomposition['other'],
         'max_progression_modifier_total': max_progression_modifier_total,

@@ -281,10 +281,10 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table tbody td{background:#f3f3f3;}
 .workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;font-weight:700;}
 .workshop-stats-table tbody td:nth-child(2){background:#e1e1e1;}
-.workshop-stats-table tbody td:nth-child(5),.workshop-stats-table tbody td:nth-child(8){font-weight:700;}
-.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(11),.workshop-stats-table tbody td:nth-child(12){background:#d8efc8;}
-.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(17){background:#b9def0;}
-.workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(17){font-weight:700;}
+.workshop-stats-table tbody td:nth-child(5),.workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(14){font-weight:700;}
+.workshop-stats-table tbody td:nth-child(11),.workshop-stats-table tbody td:nth-child(12){background:#d8efc8;}
+.workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(17),.workshop-stats-table tbody td:nth-child(18){background:#b9def0;}
+.workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
@@ -421,8 +421,9 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th rowspan='2'>Enhancement</th>"
         "<th rowspan='2'>Modifiers<br>Total</th>"
         "<th colspan='2'>Start of Run</th>"
+        "<th colspan='2'>Max Workshop</th>"
         "<th colspan='3'>Max Progression Modifiers</th>"
-        "<th colspan='2'>Max Progression</th>"
+        "<th rowspan='2'>Max Progression</th>"
         "</tr>"
         "<tr>"
         "<th>Lab</th>"
@@ -433,18 +434,18 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th><strong>Subtotal</strong></th>"
         "<th>Workshop</th>"
         "<th>Value</th>"
+        "<th>Raw</th>"
+        "<th><strong>Value</strong></th>"
         "<th>Perk</th>"
         "<th>Other</th>"
         "<th>Total</th>"
-        "<th>Workshop</th>"
-        "<th>Value</th>"
         "</tr>"
         "</thead>"
     )
     body_chunks = []
     for section in (payload.get('sections') or []):
         title = html.escape(str((section or {}).get('title') or ''))
-        body_chunks.append(f"<tr class='section-row'><td colspan='17'>{title}</td></tr>")
+        body_chunks.append(f"<tr class='section-row'><td colspan='18'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
             values = [
                 _cell_value(row, 'name'),
@@ -459,10 +460,11 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 _cell_value(row, 'start_of_run_modifier_total'),
                 _cell_value(row, 'workshop_value'),
                 _cell_value(row, 'start_of_run_value'),
+                _cell_value(row, 'max_workshop_value'),
+                _cell_value(row, 'max_workshop_resolved_value'),
                 _cell_value(row, 'perk_effects'),
                 _cell_value(row, 'other'),
                 _cell_value(row, 'max_progression_modifier_total'),
-                _cell_value(row, 'max_workshop_value'),
                 _cell_value(row, 'max_progression_value'),
             ]
             cells = ''.join(f"<td>{html.escape(str(value or ''))}</td>" for value in values)

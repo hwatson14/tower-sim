@@ -151,6 +151,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
                             'start_of_run_modifier_total': '+ 20',
                             'start_of_run_value': '200',
                             'max_workshop_value': '250',
+                            'max_workshop_resolved_value': '300',
                             'perk_effects': '+ 10',
                             'other': '0%',
                             'max_progression_modifier_total': '+ 10',
@@ -163,6 +164,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     )
     assert 'Workshop<br>Start Level' in html
     assert 'Start of Run' in html
+    assert 'Max Workshop' in html
     assert 'Max Progression Modifiers' in html
     assert html.count('>Total<') == 2
     assert 'Lab Effects' not in html
@@ -172,10 +174,11 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Perk Effects' not in html
     assert 'Base Modifiers' in html
     assert 'Base &amp; Loadout' in html
-    assert "colspan='17'" in html
+    assert "colspan='18'" in html
     assert '250' in html
+    assert '300' in html
     assert html.index('>Relics<') < html.index('>Subtotal<') < html.index('>Module<')
-    assert html.index('>Base &amp; Loadout<') < html.index('>Enhancement<') < html.index('>Modifiers<br>Total<')
+    assert html.index('>Start of Run<') < html.index('>Max Workshop<') < html.index('>Max Progression Modifiers<')
 
 
 def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
