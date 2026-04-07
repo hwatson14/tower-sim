@@ -272,12 +272,16 @@ INPUT_DASHBOARD_CSS = """
 .inputs-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
 .inputs-table th,.inputs-table td{border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
 .inputs-table th{color:#9db4ff;font-weight:600;}
-.workshop-stats-table th:nth-child(1),.workshop-stats-table td:nth-child(1){background:#3b414d;}
-.workshop-stats-table th:nth-child(2),.workshop-stats-table td:nth-child(2),
-.workshop-stats-table th:nth-child(3),.workshop-stats-table td:nth-child(3),
-.workshop-stats-table th:nth-child(4),.workshop-stats-table td:nth-child(4),
-.workshop-stats-table th:nth-child(10),.workshop-stats-table td:nth-child(10),
-.workshop-stats-table th:nth-child(13),.workshop-stats-table td:nth-child(13){background:#4a515e;}
+.workshop-stats-wrap{padding:0;overflow:auto;}
+.workshop-stats-table{width:100%;border-collapse:collapse;font-size:0.82rem;table-layout:auto;}
+.workshop-stats-table th,.workshop-stats-table td{border:1px solid rgba(0,0,0,0.55);padding:3px 6px;text-align:center;vertical-align:top;line-height:1.2;color:#111;}
+.workshop-stats-table thead th{background:#666;color:#fff;font-weight:700;}
+.workshop-stats-table thead tr:first-child th{font-size:0.88rem;line-height:1.1;padding:3px 6px;}
+.workshop-stats-table thead tr:nth-child(2) th{font-size:0.78rem;line-height:1.15;padding:2px 6px;}
+.workshop-stats-table tbody td{background:#f3f3f3;}
+.workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;}
+.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(13){background:#d8efc8;}
+.workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
 .inputs-subpanel{background:#10141d;border:1px solid #2b3241;border-radius:8px;padding:6px 8px;}
@@ -384,25 +388,36 @@ def render_resolved_stat_section_html(payload: dict) -> str:
 
 
 def render_workshop_stat_table_html(payload: dict) -> str:
-    headers = [
-        'Name',
-        'Workshop Level',
-        'Workshop Value',
-        'Max Workshop Value',
-        'Lab',
-        'Module',
-        'Card',
-        'Enhancement',
-        'Relics',
-        'Start of Run Value',
-        'Perk',
-        'Other',
-        'Max Progression Value',
-    ]
-    sections = []
+    header_html = (
+        "<thead>"
+        "<tr>"
+        "<th rowspan='2'>Name</th>"
+        "<th colspan='3'>Workshop</th>"
+        "<th colspan='5'>Modifiers</th>"
+        "<th rowspan='2'>Start of Run<br>Value</th>"
+        "<th colspan='2'>Max Progression</th>"
+        "<th rowspan='2'>Max Progression<br>Value</th>"
+        "</tr>"
+        "<tr>"
+        "<th>Start Level</th>"
+        "<th>Start Value</th>"
+        "<th>Max Value</th>"
+        "<th>Lab</th>"
+        "<th>Module</th>"
+        "<th>Card</th>"
+        "<th>Enhancement</th>"
+        "<th>Relics</th>"
+        "<th>Perk</th>"
+        "<th>Other</th>"
+        "</tr>"
+        "</thead>"
+    )
+    body_chunks = []
     for section in (payload.get('sections') or []):
-        rows = [
-            [
+        title = html.escape(str((section or {}).get('title') or ''))
+        body_chunks.append(f"<tr class='section-row'><td colspan='13'>{title}</td></tr>")
+        for row in ((section or {}).get('rows') or []):
+            values = [
                 row.get('name', ''),
                 row.get('workshop_level', ''),
                 row.get('workshop_value', ''),
@@ -417,11 +432,9 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 row.get('other', ''),
                 row.get('max_progression_value', ''),
             ]
-            for row in ((section or {}).get('rows') or [])
-        ]
-        title = html.escape(str((section or {}).get('title') or ''))
-        sections.append(f"<div class='inputs-subpanel'><h5>{title}</h5>{_render_table(headers, rows, class_name='inputs-table workshop-stats-table')}</div>")
-    return f"<div class='inputs-panel'>{''.join(sections)}</div>"
+            cells = ''.join(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
+            body_chunks.append(f"<tr>{cells}</tr>")
+    return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
 
 
 def render_stats_uw_section_html(payload: dict) -> str:
