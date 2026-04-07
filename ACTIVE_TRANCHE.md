@@ -31,7 +31,7 @@ The repo has completed the prior hardening closeout sequence and the maintenance
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
-- the latest full suite on the actual current worktree passed on **2026-04-07** (`342 passed`)
+- the latest full suite on the actual current worktree passed on **2026-04-07** (`349 passed`)
 - formula surface policy remains active
 - the repo's maintenance-mode claim is currently ahead of the actual hygiene/governance state
 
@@ -121,8 +121,8 @@ Maintenance stabilization is complete only when all of the following are true:
 
 ### Verification record
 
-- targeted tranche-alignment suite passed on **2026-04-07** (`102 passed`)
-- refreshed full suite passed on **2026-04-07** (`347 passed`) in **45.29s**
+- targeted tranche-alignment suite passed on **2026-04-07** (`104 passed`)
+- refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
 - refreshed `out/` inspection confirmed:
   - query-row artifacts remain bounded by state mode
   - query-plan artifacts remain bounded by state mode

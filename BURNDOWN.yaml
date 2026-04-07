@@ -213,17 +213,17 @@ definition_of_done:
   - full_pytest_command: pytest -q
   - full_pytest_result: passed
   - full_pytest_date_utc: '2026-04-07'
-  - full_pytest_pass_count: 342
-  - full_pytest_duration_seconds: 43.29
+  - full_pytest_pass_count: 349
+  - full_pytest_duration_seconds: 44.85
   maintenance_stabilization_validation:
   - targeted_pytest_command: pytest -q tests/app/test_pipeline_functional.py tests/app/test_pipeline_ui_contracts.py tests/app/test_inspector_data.py tests/shared/test_import_boundaries.py
   - targeted_pytest_result: passed
-  - targeted_pytest_pass_count: 102
+  - targeted_pytest_pass_count: 104
   - full_pytest_command: pytest -q
   - full_pytest_result: passed
   - full_pytest_date_utc: '2026-04-07'
-  - full_pytest_pass_count: 347
-  - full_pytest_duration_seconds: 45.29
+  - full_pytest_pass_count: 349
+  - full_pytest_duration_seconds: 44.85
   maintenance_stabilization_done:
   - active governance files explicitly define the maintenance stabilization / hygiene tranche
   - sanctioned committed out subset is explicit
