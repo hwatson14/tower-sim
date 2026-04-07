@@ -2734,7 +2734,7 @@
     "Berserker": {
       "name": "Berserker",
       "level": 7,
-      "mastery_unlocked": false,
+      "mastery_unlocked": true,
       "mastery_lab_level": 0
     },
     "Ultimate Crit": {
@@ -3532,9 +3532,9 @@
           "raw_token": "-4"
         },
         {
-          "name": "Death Wave - Quantity",
-          "value": "+2",
-          "raw_token": "2"
+          "name": "Golden Tower - Bonus",
+          "value": "+4x",
+          "raw_token": "4"
         },
         {
           "name": "Spotlight - Angle",
@@ -6388,7 +6388,7 @@
       [
         "Berserker",
         "7",
-        "false",
+        "true",
         "",
         "",
         "",
@@ -8406,10 +8406,10 @@
         "+8%",
         "0.08",
         "",
-        "Death Wave - Quantity",
-        "Mythic",
-        "+2",
-        "2"
+        "Golden Tower - Bonus",
+        "Ancestral",
+        "+4x",
+        "4"
       ],
       [
         "Critical Factor",
