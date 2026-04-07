@@ -1175,7 +1175,7 @@ def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_su
         (workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or []
     )
     defense_row = next(row for row in offense_rows if row.get('name') == 'Defense %')
-    assert defense_row['start_of_run_modifier_total'] == '+ 24.9%'
+    assert defense_row['start_of_run_modifier_total'] == '+ 28.9%'
     assert defense_row['other'] == '—'
     assert defense_row['max_progression_modifier_total'] == '+ 25%'
 
@@ -1306,7 +1306,7 @@ def test_stats_dashboard_workshop_super_crit_relic_uses_multiplier_factor():
     offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
     assert row['relics'] == 'x 1.05'
-    assert row['start_of_run_modifier_total'] == 'x 10.3'
+    assert row['start_of_run_modifier_total'] == 'x 12.4'
 
 
 def test_stats_dashboard_workshop_coins_kill_bonus_normalizes_module_and_lab_factors():
@@ -1416,3 +1416,172 @@ def test_stats_dashboard_workshop_enemy_attack_skip_keeps_enhancement_multiplica
     row = next(item for item in utility_rows if item.get('name') == 'Enemy Attack Level Skip')
     assert row['enhancement_effects'] == 'x 1.35'
     assert row['start_of_run_modifier_total'] == '+ 12.2% · x 1.35'
+
+
+def test_stats_dashboard_workshop_pct_rows_scale_relic_fractions_to_percentage_points():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Critical Chance': {'preset_levels': {'Farming': 79}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.crit_chance_pct': {
+                    'display_value': '86%',
+                    'final_value': 86.0,
+                    'value_type': 'pct',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__crit_chance__pct', 'value': 80.0},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__crit_chance__pct', 'value': 0.06},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
+    row = next(item for item in offense_rows if item.get('name') == 'Crit Chance')
+    assert row['relics'] == '+ 6%'
+    assert row['start_of_run_modifier_total'] == '+ 6%'
+
+
+def test_stats_dashboard_workshop_multiplier_rows_expand_module_substat_multiplier_display():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Super Critical Mult': {'preset_levels': {'Farming': 100}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.supercrit_multiplier': {
+                    'display_value': 'x138.693',
+                    'final_value': 138.693,
+                    'value_type': 'multiplier',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__supercrit_multiplier__multiplier', 'value': 11.2},
+                        {'source_class': 'labs', 'contributor_id': 'lab.super_crit_multi.account_state', 'value': 1.26},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.amplifying_strike.loadout_resolved', 'value': 5.0, 'input_value_type': 'multiplier_display'},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__supercrit_multiplier__pct', 'value': 0.05},
+                        {'source_class': 'enhancement', 'contributor_id': 'enhancement.super_crit_multi_+.account_state', 'value': 1.56},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
+    row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
+    assert row['module_effects'] == 'x 6'
+    assert row['relics'] == 'x 1.05'
+    assert row['start_of_run_modifier_total'] == 'x 12.4'
+
+
+def test_stats_dashboard_workshop_scalar_rows_can_use_multiplicative_reconciliation_family():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Knockback Force': {'preset_levels': {'Farming': 40}}, 'Orbs Speed': {'preset_levels': {'Farming': 38}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.knockback_force': {
+                    'display_value': '14.556',
+                    'final_value': 14.556,
+                    'value_type': 'force',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__knockback_force__flat', 'value': 6.08},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.sharp_fortitude.loadout_resolved', 'value': 0.9},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__knockback_force__pct', 'value': 0.26},
+                    ],
+                },
+                'state::tower.orb_speed_rpm': {
+                    'display_value': '7.137',
+                    'final_value': 7.137,
+                    'value_type': 'rpm',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__orb_speed__rpm', 'value': 6.1},
+                        {'source_class': 'module_substat', 'contributor_id': 'module_substat.sharp_fortitude.loadout_resolved', 'value': 1.0},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__orb_speed__pct', 'value': 0.17},
+                    ],
+                },
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    defense_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or [])
+    knockback_force = next(item for item in defense_rows if item.get('name') == 'Knockback Force')
+    orb_speed = next(item for item in defense_rows if item.get('name') == 'Orb Speed')
+    assert knockback_force['module_effects'] == 'x 1.9'
+    assert knockback_force['relics'] == 'x 1.26'
+    assert knockback_force['start_of_run_modifier_total'] == 'x 2.39'
+    assert orb_speed['relics'] == 'x 1.17'
+    assert orb_speed['start_of_run_modifier_total'] == 'x 1.17'

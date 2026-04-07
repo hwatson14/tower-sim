@@ -19,6 +19,11 @@ _WORKSHOP_LABEL_ALIASES: dict[str, str] = {
     'Max Recovery': 'Max Amount',
 }
 
+_WORKSHOP_MULTIPLICATIVE_SURFACE_OVERRIDES: frozenset[str] = frozenset({
+    'state::tower.knockback_force',
+    'state::tower.orb_speed_rpm',
+})
+
 
 def _sum_contributor_values_filtered(
     row: dict[str, object],
@@ -140,6 +145,8 @@ def _row_family(
     max_row: dict[str, object],
 ) -> str:
     value_type_text = str(value_type or '').strip().lower()
+    if surface_id in _WORKSHOP_MULTIPLICATIVE_SURFACE_OVERRIDES:
+        return 'multiplicative'
     if value_type_text in {'damage', 'hp', 'health', 'hp_per_second', 'attacks_per_second', 'multiplier'}:
         return 'multiplicative'
     if _surface_display_kind(surface_id=surface_id, value_type=value_type) != 'pct':
@@ -177,6 +184,9 @@ def _multiplicative_factor_for_contributor(
     if source_class == 'relics':
         return value if value >= 1.0 else (1.0 + value)
 
+    if source_class == 'module_substat' and explicit_kind == 'multiplier_display':
+        return 1.0 + value
+
     if source_class.startswith('module') and 0.0 < value < 1.0:
         return 1.0 + value
 
@@ -190,6 +200,19 @@ def _multiplicative_factor_for_contributor(
             return value if value >= 1.0 else (1.0 + value)
         return 1.0 + (value / 100.0)
 
+    return value
+
+
+def _additive_component_value_for_contributor(
+    contributor: dict[str, object],
+    *,
+    value: float,
+    kind: str,
+    family: str,
+) -> float:
+    source_class = str(contributor.get('source_class') or '').lower()
+    if family in {'additive_pct', 'additive_then_multiplicative'} and source_class == 'relics' and kind != 'multiplier' and 0.0 <= value <= 1.0:
+        return value * 100.0
     return value
 
 
@@ -230,10 +253,20 @@ def _component_effect(
             if source_class == 'enhancement' or kind == 'multiplier':
                 factor_total *= value
             else:
-                additive_total += value
+                additive_total += _additive_component_value_for_contributor(
+                    contributor_dict,
+                    value=value,
+                    kind=kind,
+                    family=family,
+                )
             continue
 
-        additive_total += value
+        additive_total += _additive_component_value_for_contributor(
+            contributor_dict,
+            value=value,
+            kind=kind,
+            family=family,
+        )
 
     return additive_total, factor_total, has_value
 
