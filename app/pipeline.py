@@ -11,7 +11,6 @@ Domain helpers live in their real owners (evaluators.compare, input.loader).
 from __future__ import annotations
 
 import copy
-import csv
 import json
 import shutil
 import sys
@@ -29,9 +28,12 @@ from qe.stat_input_compiler import (
     PERK_TARGET_DESTINATION_OVERRIDES,
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
     compile_stat_inputs,
+    load_card_base_value_display_map,
+    load_card_effect_display_names,
     load_card_mastery_values,
     load_perk_effects,
     load_perk_entities,
+    load_perk_entity_rows,
     normalize_state_mode,
     scaled_perk_value,
     SUPPORTED_STATE_MODES,
@@ -69,14 +71,13 @@ from input.runtime_state import build_runtime_state
 from qe.contracts import (
     normalize_surface_id_to_contract,
     normalize_contract_payload,
-    compat_surface_from_legacy_canonical,
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
-from qe.publication import publish_query_surfaces
+from qe.publication import build_input_dashboard_qe_publications as qe_build_input_dashboard_qe_publications, publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
-from qe.query_module_policy import build_module_card_payloads
+from qe.query_module_policy import build_module_card_payloads, load_module_substat_lookup
 from simulators.progression import resolve_run_stats_progression_bundle
 from simulators.contracts import SimulatorCheckpointState
 from simulators.perk_timeline_generator import (
@@ -85,14 +86,10 @@ from simulators.perk_timeline_generator import (
     perk_state_at_wave,
 )
 from simulators.snapshot_resolver import SimulatorSnapshotResolver
-from simulators.timing import compile_timing_family_rows, resolve_timing_consumer_bundle
-from simulators.scenario import publish_farming_throughput_support_surfaces
+from simulators.timing import merge_scenario_publication_rows as merge_timing_scenario_publication_rows, resolve_timing_consumer_bundle
 from simulators.contracts import PerkState
 from simulators.run_executor import RunToMaxConfig, build_boss_wave_table, build_start_of_run_state
 from input.state_types import ScenarioRuntimeInputs
-
-
-FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
 
 
 def request_from_args(args) -> PipelineRunRequest:
@@ -117,31 +114,6 @@ def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
 
 
-def _slug_text(value: str) -> str:
-    return ''.join(ch.lower() if ch.isalnum() else '_' for ch in str(value or '')).strip('_')
-
-
-def _uw_slug(value: str) -> str:
-    return _slug_text(value)
-
-
-def _uw_track_surface_tokens(track_name: object) -> tuple[str, ...]:
-    text = str(track_name or '').strip().lower()
-    mapping = {
-        'damage': ('damage',),
-        'quantity': ('quantity', 'count'),
-        'chance': ('chance',),
-        'cooldown': ('cooldown',),
-        'duration': ('duration',),
-        'multiplier': ('multiplier', 'bonus'),
-        'bonus': ('bonus', 'multiplier'),
-        'angle': ('angle',),
-        'size': ('size',),
-        'speed reduction': ('speed_reduction',),
-    }
-    return mapping.get(text, (text.replace(' ', '_'),))
-
-
 def _build_input_dashboard_qe_publications(
     *,
     account_state,
@@ -150,115 +122,13 @@ def _build_input_dashboard_qe_publications(
     stat_inputs: list,
     preset_name: str,
 ) -> dict[str, object]:
-    current_preset_rows = dict(compare_rows_by_preset.get(preset_name) or {})
-    current_normalized_rows = {normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in current_preset_rows.items()}
-    projected_preset_rows = dict(projected_compare_rows_by_preset.get(preset_name) or {})
-    projected_normalized_rows = {
-        normalize_surface_id_to_contract(raw): dict(payload or {}) for raw, payload in projected_preset_rows.items()
-    }
-
-    def _surface_id_candidates_from_row(row: object) -> list[str]:
-        candidates: list[str] = []
-
-        def _add_candidate(value: object) -> None:
-            text = str(value or '').strip()
-            if text and text not in candidates:
-                candidates.append(text)
-
-        destination_id = str(getattr(row, 'destination_id', '') or '').strip()
-        if destination_id:
-            _add_candidate(destination_id)
-            _add_candidate(normalize_surface_id_to_contract(destination_id))
-            if not destination_id.startswith('state::'):
-                _add_candidate(f'state::{destination_id}')
-            if '_' in destination_id and not destination_id.startswith('state::'):
-                prefix, tail = destination_id.split('_', 1)
-                _add_candidate(f'state::{prefix}.{tail}')
-            if '_' in destination_id and not destination_id.startswith('state::'):
-                _add_candidate(f"state::{destination_id.replace('_', '.')}")
-            compat_surface = str(compat_surface_from_legacy_canonical(destination_id) or '').strip()
-            if compat_surface:
-                _add_candidate(compat_surface)
-
-        contributor_id = str(getattr(row, 'contributor_id', '') or '').strip()
-        parts = contributor_id.split('__')
-        if len(parts) >= 3 and parts[1] and parts[2]:
-            _add_candidate(f"state::{parts[1]}.{parts[2]}")
-            if len(parts) >= 4 and parts[3]:
-                _add_candidate(f"state::{parts[1]}.{parts[2]}.{parts[3]}")
-            if parts[0] == 'uw_upgrade':
-                uw_prefix = parts[1].replace('_', '.')
-                _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}")
-                if len(parts) >= 4 and parts[3]:
-                    _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}_{parts[3]}")
-                    _add_candidate(f"state::uw.{uw_prefix}.{parts[2]}.{parts[3]}")
-        return candidates
-
-    workshop_surface_map: dict[str, str] = {}
-    for row in stat_inputs:
-        if str(getattr(row, 'source_family', '')).strip() != 'workshop':
-            continue
-        source_name = str(getattr(row, 'source_name', '') or getattr(row, 'stat_name', '') or '').strip()
-        surface_id = ''
-        for candidate_surface_id in _surface_id_candidates_from_row(row):
-            if candidate_surface_id in current_normalized_rows or candidate_surface_id in projected_normalized_rows:
-                surface_id = candidate_surface_id
-                break
-        if source_name and surface_id and source_name not in workshop_surface_map:
-            workshop_surface_map[source_name] = surface_id
-
-    workshop_coin_values: dict[str, object] = {}
-    workshop_max_values: dict[str, object] = {}
-    for source_name, surface_id in workshop_surface_map.items():
-        current_row_payload = current_normalized_rows.get(surface_id) or {}
-        projected_row_payload = projected_normalized_rows.get(surface_id) or {}
-        workshop_coin_values[source_name] = current_row_payload.get('display_value') or current_row_payload.get('final_value')
-        workshop_max_values[source_name] = projected_row_payload.get('display_value') or projected_row_payload.get('final_value')
-
-    uw_track_effects: dict[str, dict[str, object]] = {}
-    for uw_name, tracks in (account_state.uw_tracks or {}).items():
-        uw_slug = _uw_slug(uw_name)
-        for track_row in tracks or []:
-            track_name = getattr(track_row, 'track_name', None)
-            if track_name is None and isinstance(track_row, dict):
-                track_name = track_row.get('track_name')
-            if not track_name:
-                continue
-            tokens = _uw_track_surface_tokens(track_name)
-            surface_id = None
-            for candidate_surface_id in projected_normalized_rows:
-                if f'state::uw.{uw_slug}.' not in candidate_surface_id:
-                    continue
-                if any(token in candidate_surface_id for token in tokens):
-                    surface_id = candidate_surface_id
-                    break
-            row_payload = projected_normalized_rows.get(surface_id or '') or {}
-            contributors = row_payload.get('contributors') or []
-            lab_values = []
-            module_values = []
-            perk_values = []
-            for contributor in contributors:
-                source_family = str((contributor or {}).get('source_family') or '').strip().lower()
-                display = (contributor or {}).get('display_value')
-                value = (contributor or {}).get('value')
-                if source_family == 'lab' and (display is not None or value is not None):
-                    lab_values.append(str(display if display is not None else value))
-                if 'module' in source_family and (display is not None or value is not None):
-                    module_values.append(str(display if display is not None else value))
-                if source_family == 'perk' and (display is not None or value is not None):
-                    perk_values.append(str(display if display is not None else value))
-            uw_track_effects[f'{uw_name}::{track_name}'] = {
-                'surface_id': surface_id,
-                'lab_effect': '; '.join(lab_values) if lab_values else None,
-                'module_effect': '; '.join(module_values) if module_values else None,
-                'perk_effect': '; '.join(perk_values) if perk_values else None,
-                'final_value': row_payload.get('display_value') or row_payload.get('final_value'),
-            }
-    return {
-        'workshop_coin_values': workshop_coin_values,
-        'workshop_max_values': workshop_max_values,
-        'uw_track_effects': uw_track_effects,
-    }
+    return qe_build_input_dashboard_qe_publications(
+        account_state=account_state,
+        compare_rows_by_preset=compare_rows_by_preset,
+        projected_compare_rows_by_preset=projected_compare_rows_by_preset,
+        stat_inputs=stat_inputs,
+        preset_name=preset_name,
+    )
 
 
 def _contract_json_payload(obj):
@@ -266,40 +136,6 @@ def _contract_json_payload(obj):
 
 
 def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | None) -> dict[str, object]:
-    card_effects: dict[str, str] = {}
-    with (ROOT / 'kb' / 'cards' / 'tables' / 'card-effect-registry.csv').open(newline='', encoding='utf-8') as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            if str(row.get('layer') or '').strip() == 'base_card':
-                card_effects[str(row.get('card_id') or '').strip()] = str(row.get('effect_name') or '').strip()
-
-    card_values: dict[tuple[str, int], str] = {}
-    with (ROOT / 'kb' / 'cards' / 'tables' / 'card-base-ladders.csv').open(newline='', encoding='utf-8') as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            card_values[(str(row.get('card_id') or '').strip(), int(row.get('base_level') or 0))] = (
-                f"{str(row.get('raw_value') or '').strip()} {str(row.get('unit') or '').strip()}".strip()
-            )
-    module_substat_lookup: dict[tuple[str, str], list[dict[str, object]]] = {}
-    with (ROOT / 'kb' / 'modules' / 'tables' / 'module-substats.csv').open(newline='', encoding='utf-8') as handle:
-        reader = csv.DictReader(handle)
-        for row in reader:
-            slot = str(row.get('slot') or '').strip().lower()
-            substat = str(row.get('substat') or '').strip()
-            if substat == 'Defense %':
-                substat = 'Defense'
-            elif substat == 'Critical Factor':
-                substat = 'Crit Factor'
-            elif substat == 'MultiShot Chance':
-                substat = 'Multishot Chance'
-            rarity = str(row.get('rarity') or '').strip()
-            unit = str(row.get('unit') or '').strip().lower()
-            try:
-                value = float(str(row.get('value') or '').strip())
-            except ValueError:
-                continue
-            module_substat_lookup.setdefault((slot, substat), []).append({'rarity': rarity, 'unit': unit, 'value': value})
-
     bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
     perk_policy = bundle.perk_policy or {}
     manual_banned_names = set(_resolve_manual_banned_perks(perk_policy))
@@ -308,14 +144,14 @@ def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | 
     manual_banned_perk_ids = {by_name[name] for name in manual_banned_names if name in by_name}
 
     return {
-        'card_effects': card_effects,
-        'card_values': card_values,
+        'card_effects': load_card_effect_display_names(),
+        'card_values': load_card_base_value_display_map(),
         'card_mastery_values': load_card_mastery_values(),
         'perk_entity_map': perk_entity_map,
         'perk_entities': perk_entity_map,
         'perk_effects': load_perk_effects(),
         'manual_banned_perk_ids': manual_banned_perk_ids,
-        'module_substat_lookup': module_substat_lookup,
+        'module_substat_lookup': load_module_substat_lookup(),
     }
 
 
@@ -449,31 +285,15 @@ def _merge_scenario_publication_rows(
         'module.farming.hours_per_day',
         default=23.5,
     )
-    bound, rows = compile_timing_family_rows(
+    merge_timing_scenario_publication_rows(
+        statbook,
         account_state=account_state,
+        stat_inputs=stat_inputs,
         family_id=timing_family_id,
         preset_name=preset_name,
         scenario_config=scenario_config,
         state_mode=state_mode,
         perks_enabled=perks_enabled,
-    )
-    timing_statbook = QEResolutionPlanner().resolve_rows_declared_family_statbook(
-        identity=bound.binding.identity,
-        stat_inputs=rows,
-        family_id=timing_family_id,
-        requested_surface_ids=(
-            'support_surface::timing.wave_duration_seconds_effective',
-        ),
-        notes='run_stats scenario publication timing prerequisite merge',
-        diagnostics={'source': 'app.pipeline.publish_query_surfaces'},
-    )
-    for surface_id, row in timing_statbook.rows.items():
-        statbook.rows[surface_id] = row
-    publish_farming_throughput_support_surfaces(
-        statbook.rows,
-        account_state=account_state,
-        config=scenario_config,
-        stat_inputs=stat_inputs,
         farming_hours_per_day=farming_hours_per_day,
     )
 def _elapsed_ms(start: float) -> float:
@@ -794,16 +614,6 @@ def _normalize_perk_mode(perk_mode: str | None) -> str:
     return value
 
 
-def _load_perk_entity_registry() -> list[dict]:
-    path = ROOT / 'kb' / 'perks' / 'tables' / 'perk-entity-registry.csv'
-    rows = []
-    with path.open('r', encoding='utf-8-sig', newline='') as fh:
-        reader = csv.DictReader(fh)
-        for row in reader:
-            rows.append({k: (v.strip() if isinstance(v, str) else v) for k, v in row.items()})
-    return rows
-
-
 def _default_tradeoff_alias_map() -> dict[str, str]:
     return {
         "TO1": "x1.50 Tower Damage, but Bosses Have 8x Health",
@@ -895,7 +705,7 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
         'fallback_reason': None,
     }
     policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
-    entities = _load_perk_entity_registry()
+    entities = load_perk_entity_rows()
     banned_names = set(context['banned_names'])
     selections = []
     for row in entities:
@@ -937,7 +747,7 @@ def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_outp
     policy = PerkTimelinePolicy(**policy_payload)
     timeline, diag = generate_timeline_from_policy(policy)
     taken_counts = perk_state_at_wave(timeline, policy.target_wave)
-    entities = _load_perk_entity_registry()
+    entities = load_perk_entity_rows()
     by_name = {row.get('perk_name'): row for row in entities if row.get('perk_name')}
     selections = []
     unknown_names = []
@@ -1634,8 +1444,8 @@ def run_analysis_pipeline(args) -> int:
         _ep_stage_context_for_destination,
         _formula_contract,
         _is_calculator_scope_row,
-        _load_ep_oracle,
-        _load_formula_ledger,
+        load_ep_oracle,
+        load_formula_ledger,
         _normalize_compare_values,
         ensure_compare_authoritative_verdict_fields as _ensure_compare_authoritative_verdict_fields,
         ensure_line_verification_authoritative_verdict_fields as _ensure_line_verification_authoritative_verdict_fields,
@@ -1657,8 +1467,8 @@ def run_analysis_pipeline(args) -> int:
         ids_raw=ids_raw,
         diag_output_dir=args.out / 'diagnostics' / 'perks',
     )
-    formula_ledger = _load_formula_ledger(FORMULA_LEDGER_PATH)
-    ep_oracle = _load_ep_oracle(ROOT / 'input' / 'imports' / 'ep_export.csv')
+    formula_ledger = load_formula_ledger()
+    ep_oracle = load_ep_oracle()
     qe_planner = QEResolutionPlanner()
 
     def _prepare_compare_rows_bundle(state_mode: str, default_preset: str, perk_state: str) -> PreparedCompareRowsBundle:

@@ -470,6 +470,8 @@ def build_line_by_line_verification(statbook_dict, ep_compare, formula_ledger, f
 # ---------------------------------------------------------------------------
 _EV_ROOT = Path(__file__).resolve().parents[1]
 ROOT = _EV_ROOT
+FORMULA_LEDGER_PATH = ROOT / 'kb' / 'ledgers' / 'formula_surface_policy.yaml'
+EP_ORACLE_PATH = ROOT / 'input' / 'imports' / 'ep_export.csv'
 
 
 def _relpath_str(path_like) -> str | None:
@@ -671,6 +673,11 @@ def _load_formula_ledger(path: Path) -> dict:
     data.setdefault('policy', {})
     data.setdefault('surfaces', {})
     return data
+
+
+def load_formula_ledger() -> dict:
+    """Public evaluator-owned formula-ledger loader for orchestration consumers."""
+    return _load_formula_ledger(FORMULA_LEDGER_PATH)
 
 
 def _formula_contract(ledger: dict, destination: str) -> dict:
@@ -1811,6 +1818,11 @@ def _load_ep_oracle(ep_path: Path):
                 'ep_value_type': kind,
             }
     return out
+
+
+def load_ep_oracle() -> dict:
+    """Public evaluator-owned EP oracle loader for orchestration consumers."""
+    return _load_ep_oracle(EP_ORACLE_PATH)
 
 
 

@@ -581,6 +581,14 @@ def _load_module_substat_lookup() -> dict[tuple[str, str], list[dict[str, object
     return lookup
 
 
+def load_module_substat_lookup() -> dict[tuple[str, str], list[dict[str, object]]]:
+    """Public QE-owned lookup for Streamlit/module display helpers."""
+    return {
+        key: [dict(row) for row in rows]
+        for key, rows in _load_module_substat_lookup().items()
+    }
+
+
 @lru_cache(maxsize=1)
 def _load_module_main_effect_bases() -> dict[str, dict[str, float]]:
     out: dict[str, dict[str, float]] = {}

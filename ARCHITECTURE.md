@@ -60,7 +60,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     kernel.py                  # core deterministic resolution kernel
     routing.py                 # planner, report snapshots, native family query entrypoints
     stat_resolution.py         # bounded compat/report resolver; not simulator-facing foundation
-    publication.py             # sanctioned surface publication coordinator
+    publication.py             # sanctioned surface publication coordinator and dashboard payload assembly
     dependency_registry.py     # dependency graph and invalidation
     consumer_registry.py       # runtime consumer bundle registry
     kb_surfaces.py             # KB table loader for gameplay constants
@@ -298,8 +298,13 @@ Locked-foundation rules:
 **Consumes:** evaluator outputs only.
 
 ### `app/`
-**Owns:** orchestration only, CLI entrypoint, pipeline wiring, writing outputs.
+**Owns:** orchestration only, CLI entrypoint, pipeline wiring, writing outputs, display formatting.
 **Must not own:** domain logic.
+
+Locked-foundation rules:
+- `app/` must not read KB reference tables or ledgers directly.
+- `app/` must not assemble dashboard/domain payloads from raw runtime fragments when a sanctioned lower-layer builder exists.
+- `app/publication.py` is a thin persistence/render wrapper; publication payload assembly belongs to sanctioned lower-layer owners.
 
 ### Generated artifact contracts
 Generated outputs are governed as distinct contracts. They must not be treated as interchangeable.

@@ -11,7 +11,12 @@ from typing import Dict, Iterable, List, Mapping, Optional, Sequence
 from qe.contracts import normalize_surface_id_to_contract
 from qe.materializer import FamilyBaselineContributorMap, FamilyBaselineMaterializer
 from qe.consumer_registry import resolve_consumer_bundle
-from simulators.scenario import ScenarioConfig, ScenarioSurfaces, compute_scenario_surfaces
+from simulators.scenario import (
+    ScenarioConfig,
+    ScenarioSurfaces,
+    compute_scenario_surfaces,
+    publish_farming_throughput_support_surfaces,
+)
 from qe.models import BoundStatInputs, compile_stat_inputs_with_identity
 from qe.kernel import QueryResponse, StatQueryKernel, get_default_query_kernel
 from qe.routing import QEResolutionPlanner
@@ -653,6 +658,46 @@ def resolve_timing_consumer_bundle(
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
         kernel=kernel,
+    )
+
+
+def merge_scenario_publication_rows(
+    statbook,
+    *,
+    account_state: AccountState,
+    stat_inputs: Sequence[StatInput],
+    family_id: str,
+    preset_name: str,
+    scenario_config: ScenarioConfig,
+    state_mode: str,
+    perks_enabled: bool,
+    farming_hours_per_day: float = 23.5,
+) -> None:
+    """Simulator-owned timing/scenario enrichment for publication/report flows."""
+    bound, rows = compile_timing_family_rows(
+        account_state=account_state,
+        family_id=family_id,
+        preset_name=preset_name,
+        scenario_config=scenario_config,
+        state_mode=state_mode,
+        perks_enabled=perks_enabled,
+    )
+    timing_statbook = QEResolutionPlanner().resolve_rows_declared_family_statbook(
+        identity=bound.binding.identity,
+        stat_inputs=rows,
+        family_id=family_id,
+        requested_surface_ids=('support_surface::timing.wave_duration_seconds_effective',),
+        notes='scenario publication timing prerequisite merge',
+        diagnostics={'source': 'simulators.timing.merge_scenario_publication_rows'},
+    )
+    for surface_id, row in timing_statbook.rows.items():
+        statbook.rows[surface_id] = row
+    publish_farming_throughput_support_surfaces(
+        statbook.rows,
+        account_state=account_state,
+        config=scenario_config,
+        stat_inputs=stat_inputs,
+        farming_hours_per_day=farming_hours_per_day,
     )
 
 

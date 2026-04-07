@@ -905,6 +905,17 @@ def load_perk_entities() -> Dict[str, Dict[str, object]]:
     return _load_perk_entities()
 
 
+def load_perk_entity_rows() -> List[Dict[str, object]]:
+    """Public app-facing row view of perk entity metadata."""
+    rows: List[Dict[str, object]] = []
+    if not PERK_ENTITY_REGISTRY_PATH.exists():
+        return rows
+    with PERK_ENTITY_REGISTRY_PATH.open('r', encoding='utf-8-sig', newline='') as handle:
+        for row in csv.DictReader(handle):
+            rows.append({k: (v.strip() if isinstance(v, str) else v) for k, v in row.items()})
+    return rows
+
+
 def load_perk_effects() -> Dict[str, List[Dict[str, str]]]:
     """Public evaluator/app-facing surface for perk effect metadata."""
     return _load_perk_effects()
@@ -913,6 +924,32 @@ def load_perk_effects() -> Dict[str, List[Dict[str, str]]]:
 def load_card_mastery_values() -> Dict[Tuple[str, int], Tuple[float, str]]:
     """Public app-facing surface for card mastery ladder values."""
     return _load_card_mastery_values()
+
+
+def load_card_effect_display_names() -> Dict[str, str]:
+    """Public app-facing base-card effect-name lookup."""
+    out: Dict[str, str] = {}
+    if not CARD_EFFECT_REGISTRY_PATH.exists():
+        return out
+    with CARD_EFFECT_REGISTRY_PATH.open(newline='', encoding='utf-8') as handle:
+        for row in csv.DictReader(handle):
+            if str(row.get('layer') or '').strip() != 'base_card':
+                continue
+            card_id = str(row.get('card_id') or '').strip()
+            effect_name = str(row.get('effect_name') or '').strip()
+            if card_id:
+                out[card_id] = effect_name
+    return out
+
+
+def load_card_base_value_display_map() -> Dict[Tuple[str, int], str]:
+    """Public app-facing formatted card base-value lookup."""
+    out: Dict[Tuple[str, int], str] = {}
+    for (card_name, base_level), row in _load_card_ladders().items():
+        out[(str(card_name), int(base_level))] = (
+            f"{str(row.get('raw_value') or '').strip()} {str(row.get('unit') or '').strip()}".strip()
+        )
+    return out
 
 
 def scaled_perk_value(

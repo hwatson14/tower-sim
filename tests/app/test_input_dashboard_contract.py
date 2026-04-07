@@ -213,9 +213,10 @@ def test_preset_options_includes_default_when_upstream_missing():
 
 def test_labs_panel_groups_rows_using_lab_category_registry(monkeypatch):
     from app import publication as publication_mod
+    import qe.publication as qe_publication_mod
 
     monkeypatch.setattr(
-        publication_mod,
+        qe_publication_mod,
         'load_lab_category_registry_by_raw_name',
         lambda: {'Game Speed': {'category_ui': 'attack'}},
     )

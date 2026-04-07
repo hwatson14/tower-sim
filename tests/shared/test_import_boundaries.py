@@ -123,6 +123,10 @@ _QE_DIRECT_MANUAL_INPUT_READ = re.compile(
     r"manual_inputs\.yaml|manual_input_path|manual_advisory_inputs.*safe_load|safe_load.*manual_advisory_inputs",
     re.MULTILINE,
 )
+_APP_DIRECT_KB_PATH_REFERENCE = re.compile(
+    r"ROOT\s*/\s*['\"]kb['\"]|['\"]kb/(?:cards|modules|perks|ledgers)/",
+    re.MULTILINE,
+)
 _ADVISORS_DIRECT_KB_PATH_REFERENCE = re.compile(r"['\"]kb/", re.MULTILINE)
 _ADVISORS_CSV_PARSE_IMPORT = re.compile(r"^\s*import\s+csv\b|^\s*from\s+csv\s+import\b", re.MULTILINE)
 _IMPORT_DELETED_LEGACY_STATE_OWNERS = re.compile(
@@ -334,6 +338,34 @@ def test_app_files_do_not_import_private_qe_stat_input_compiler_symbols():
         assert not violations, (
             f"app/{py.name} imports private qe.stat_input_compiler symbols: {violations}"
         )
+
+
+def test_app_files_do_not_reference_kb_paths_directly():
+    """App layer must not own direct kb/* path references for reference data or ledgers."""
+    for py in _py_sources(APP_DIR):
+        src = py.read_text(encoding="utf-8")
+        violations = _violation_lines(src, _APP_DIRECT_KB_PATH_REFERENCE)
+        assert not violations, f"app/{py.name} references kb paths directly: {violations}"
+
+
+def test_app_publication_delegates_dashboard_assembly_to_qe():
+    """app/publication.py should stay a thin wrapper around QE-owned dashboard builders."""
+    src = (APP_DIR / "publication.py").read_text(encoding="utf-8")
+    forbidden_defs = [
+        "def _build_workshop_panel(",
+        "def _build_uw_panel(",
+        "def _stats_rows_by_surface(",
+        "def _rows_with_qe_derived_values(",
+    ]
+    for marker in forbidden_defs:
+        assert marker not in src, f"app/publication.py still defines dashboard assembly helper {marker}"
+    required_delegations = [
+        "qe_build_input_dashboard_payload(",
+        "qe_build_stats_dashboard_payload(",
+        "qe_build_labs_panel(",
+    ]
+    for marker in required_delegations:
+        assert marker in src, f"app/publication.py should delegate through {marker}"
 
 
 # ---------------------------------------------------------------------------

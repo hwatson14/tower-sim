@@ -135,7 +135,7 @@ app:
   app/publication.py:
     status: active_candidate
     layer: app/
-    note: T12 extraction — artifact writing and legacy cleanup logic
+    note: thin artifact writer/render wrapper; dashboard payload assembly delegated to qe.publication
 
 # ─── input/ ───────────────────────────────────────────────────────────────────
 
@@ -228,6 +228,7 @@ qe:
   qe/publication.py:
     status: active_candidate
     layer: qe/
+    note: sanctioned publication coordinator and dashboard payload assembly owner
 
   qe/query_currency_income.py:
     status: active_candidate
