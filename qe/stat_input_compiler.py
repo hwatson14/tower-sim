@@ -1327,6 +1327,7 @@ def compile_stat_inputs(
                 extra = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement')
                 bind_kb_fields(extra, extra_id, mapping_index, canonical_stats)
                 _append(out, extra)
+            continue
         if alias_slug == 'coin bonus':
             extra = StatInput(stat_name=name, source_family='enhancement', source_name=name, value=value, value_type='resolved_value', stage='account_state', provenance='IDS::WS+', notes='kb_dual_routed_enhancement:coins_per_kill_spillover')
             bind_destination(extra, ('canonical_stat', 'coins_per_kill_bonus'), canonical_stats, note='kb_dual_routed_enhancement:coins_per_kill_spillover')
@@ -1917,7 +1918,17 @@ def compile_stat_inputs(
                     rarity_key = _canonical_module_rarity_label(rarity_source)
                     exact = module_substat_values.get((slot_type.lower(), substat_lookup_name, rarity_key))
                     exact_unit = exact[1] if exact is not None else ''
-                    if role == 'assist' and exact is not None:
+                    if (
+                        role == 'assist'
+                        and slot_type == 'generator'
+                        and sub.name in {'Enemy Attack Level Skip', 'Enemy Health Level Skip'}
+                        and token
+                    ):
+                        numeric = float(token.replace('+', '').replace('%', '').replace('?', '').strip())
+                        if assist_substat_eff is not None:
+                            numeric = numeric * assist_substat_eff
+                        value_type = 'percent_display'
+                    elif role == 'assist' and exact is not None:
                         numeric = float(exact[0])
                         inferred_unit = kb_unit or exact_unit
                         if assist_substat_eff is not None:

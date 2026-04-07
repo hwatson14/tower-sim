@@ -94,3 +94,30 @@ def test_assist_substat_uses_rarity_cap_table_value() -> None:
     # Armor assist cap is Epic at 10%; Defense substat is 3% at Epic in KB module-substats table.
     assert defense_rows[0].value_type == 'percent_display'
     assert defense_rows[0].value == pytest.approx(0.3)
+
+
+def test_generator_assist_enemy_skip_substats_use_equipped_roll_scaled_by_assist_efficiency() -> None:
+    state = _base_account_state()
+    rows = compile_stat_inputs(
+        state,
+        preset_name=state.default_preset,
+        state_mode='start_of_run',
+    )
+    attack_skip_rows = [
+        row for row in rows
+        if row.source_family == 'module_substat'
+        and row.source_name == 'Black Hole Digestor'
+        and row.stat_name == 'Enemy Attack Level Skip'
+    ]
+    health_skip_rows = [
+        row for row in rows
+        if row.source_family == 'module_substat'
+        and row.source_name == 'Black Hole Digestor'
+        and row.stat_name == 'Enemy Health Level Skip'
+    ]
+    assert attack_skip_rows
+    assert health_skip_rows
+    assert attack_skip_rows[0].value_type == 'percent_display'
+    assert health_skip_rows[0].value_type == 'percent_display'
+    assert attack_skip_rows[0].value == pytest.approx(0.6)
+    assert health_skip_rows[0].value == pytest.approx(0.6)

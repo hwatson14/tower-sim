@@ -1,7 +1,9 @@
 import pytest
 
+from input.loader import load_inputs
+from input.runtime_state import build_runtime_state
 from qe.models import StatInput
-from qe.routing import resolve_bounded_bucket
+from qe.routing import QEResolutionPlanner, resolve_bounded_bucket
 
 
 def test_damage_bucket_applies_perk_multipliers_in_canonical_resolution() -> None:
@@ -151,3 +153,35 @@ def test_multiplier_bucket_applies_perk_multipliers_in_canonical_resolution() ->
 
     assert status == 'resolved'
     assert final == pytest.approx(2.49 * 1.66 * 4.56 * 1.3 * 1.06 * 2.1875)
+
+
+def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_scaling() -> None:
+    bundle = load_inputs()
+    state = build_runtime_state(
+        bundle.ids_raw,
+        default_preset='Farming',
+        loadout_config=bundle.loadout_config,
+        perk_config=bundle.perk_config,
+    )
+
+    snapshot = QEResolutionPlanner().resolve_report_snapshot(
+        state,
+        preset_name='Farming',
+        state_mode='max_progression',
+        perks_enabled=bool(state.active_perk_preset),
+    )
+
+    attack_row = snapshot.statbook.rows['state::tower.enemy_attack_level_skip_pct']
+    health_row = snapshot.statbook.rows['state::tower.enemy_health_level_skip_pct']
+
+    attack_enhancements = [c for c in attack_row.contributors if c.get('source_class') == 'enhancement']
+    health_enhancements = [c for c in health_row.contributors if c.get('source_class') == 'enhancement']
+    attack_modules = [c for c in attack_row.contributors if c.get('source_class') == 'module_substat']
+    health_modules = [c for c in health_row.contributors if c.get('source_class') == 'module_substat']
+
+    assert len(attack_enhancements) == 1
+    assert len(health_enhancements) == 1
+    assert sorted(c.get('value') for c in attack_modules) == [0.6, 8.0]
+    assert sorted(c.get('value') for c in health_modules) == [0.6, 6.0]
+    assert attack_row.final_value == pytest.approx(55.216)
+    assert health_row.final_value == pytest.approx(52.896)
