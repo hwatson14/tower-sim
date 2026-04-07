@@ -281,11 +281,17 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table tbody td{background:#f3f3f3;}
 .workshop-stats-table tbody td:nth-child(1){background:#c6c6c6;text-align:left;font-size:0.9rem;font-weight:700;}
 .workshop-stats-table tbody td:nth-child(2){background:#e1e1e1;}
-.workshop-stats-table tbody td:nth-child(5),.workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(14){font-weight:700;}
+.workshop-stats-table tbody td:nth-child(5),.workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(14){font-weight:700;}
 .workshop-stats-table tbody td:nth-child(11),.workshop-stats-table tbody td:nth-child(12){background:#d8efc8;}
-.workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(17),.workshop-stats-table tbody td:nth-child(18){background:#b9def0;}
-.workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
+.workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16){background:#d8eef0;}
+.workshop-stats-table tbody td:nth-child(17),.workshop-stats-table tbody td:nth-child(18){background:#efe3c8;}
+.workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
+.workshop-name-cell{display:flex;align-items:center;gap:6px;}
+.recon-dot{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 9px;border:1px solid rgba(0,0,0,0.35);}
+.recon-dot.green{background:#3ccf6e;box-shadow:0 0 5px rgba(60,207,110,0.55);}
+.recon-dot.red{background:#e25252;box-shadow:0 0 5px rgba(226,82,82,0.55);}
+.recon-dot.amber{background:#d7a33a;box-shadow:0 0 5px rgba(215,163,58,0.55);}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
 .inputs-subpanel{background:#10141d;border:1px solid #2b3241;border-radius:8px;padding:6px 8px;}
@@ -411,6 +417,17 @@ def render_workshop_stat_table_html(payload: dict) -> str:
             return '—'
         return text
 
+    def _name_cell(row: dict) -> str:
+        status = str((row or {}).get('reconciliation_status') or 'amber')
+        status_class = status if status in {'green', 'red', 'amber'} else 'amber'
+        title = {
+            'green': 'Row visibly reconciles',
+            'red': 'Row does not visibly reconcile',
+            'amber': 'Row reconciliation could not be fully evaluated',
+        }[status_class]
+        label = html.escape(str(_cell_value(row, 'name') or ''))
+        return f"<div class='workshop-name-cell'><span class='recon-dot {status_class}' title='{html.escape(title)}'></span><span>{label}</span></div>"
+
     header_html = (
         "<thead>"
         "<tr>"
@@ -421,9 +438,8 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th rowspan='2'>Enhancement</th>"
         "<th rowspan='2'>Modifiers<br>Total</th>"
         "<th colspan='2'>Start of Run</th>"
-        "<th colspan='2'>Max Workshop</th>"
-        "<th colspan='3'>Max Progression Modifiers</th>"
-        "<th rowspan='2'>Max Progression</th>"
+        "<th colspan='4'>Max Workshop</th>"
+        "<th colspan='2'>Perks</th>"
         "</tr>"
         "<tr>"
         "<th>Lab</th>"
@@ -434,11 +450,12 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th><strong>Subtotal</strong></th>"
         "<th>Workshop</th>"
         "<th>Value</th>"
-        "<th>Raw</th>"
-        "<th><strong>Value</strong></th>"
-        "<th>Perk</th>"
         "<th>Other</th>"
         "<th>Total</th>"
+        "<th>Raw</th>"
+        "<th><strong>Value</strong></th>"
+        "<th>Modifier</th>"
+        "<th>Value</th>"
         "</tr>"
         "</thead>"
     )
@@ -448,7 +465,6 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         body_chunks.append(f"<tr class='section-row'><td colspan='18'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
             values = [
-                _cell_value(row, 'name'),
                 _cell_value(row, 'workshop_level'),
                 _cell_value(row, 'lab_effects'),
                 _cell_value(row, 'relics'),
@@ -460,14 +476,16 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 _cell_value(row, 'start_of_run_modifier_total'),
                 _cell_value(row, 'workshop_value'),
                 _cell_value(row, 'start_of_run_value'),
+                _cell_value(row, 'other'),
+                _cell_value(row, 'max_workshop_modifier_total'),
                 _cell_value(row, 'max_workshop_value'),
                 _cell_value(row, 'max_workshop_resolved_value'),
                 _cell_value(row, 'perk_effects'),
-                _cell_value(row, 'other'),
-                _cell_value(row, 'max_progression_modifier_total'),
                 _cell_value(row, 'max_progression_value'),
             ]
-            cells = ''.join(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
+            cells = [f"<td>{_name_cell(row)}</td>"]
+            cells.extend(f"<td>{html.escape(str(value or ''))}</td>" for value in values)
+            cells = ''.join(cells)
             body_chunks.append(f"<tr>{cells}</tr>")
     return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
 

@@ -219,14 +219,14 @@ def _additive_component_value_for_contributor(
     surface_id: str,
 ) -> float:
     source_class = str(contributor.get('source_class') or '').lower()
-    if family in {'additive_pct', 'additive_then_multiplicative'} and source_class == 'relics' and kind != 'multiplier' and 0.0 <= value <= 1.0:
+    if family in {'additive_pct', 'additive_then_multiplicative'} and source_class == 'relics' and kind != 'multiplier' and 0.0 <= value < 1.0:
         return value * 100.0
     if (
         family in {'additive_pct', 'additive_then_multiplicative'}
         and surface_id in _WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES
         and source_class == 'module_substat'
         and kind != 'multiplier'
-        and 0.0 <= value <= 1.0
+        and 0.0 <= value < 1.0
     ):
         return value * 100.0
     return value
@@ -390,6 +390,64 @@ def _apply_effect_to_workshop_value(
     if family in {'additive_pct', 'additive_scalar'}:
         return workshop_value + additive_total
     return (workshop_value + additive_total) * factor_total
+
+
+def _visible_reconciliation_status(
+    *,
+    row_status: str,
+    surface_id: str,
+    value_type: str,
+    workshop_value: float | None,
+    start_total_effect: tuple[float, float, bool],
+    start_of_run_value_text: str,
+    max_workshop_modifier_effect: tuple[float, float, bool],
+    max_workshop_value: float | None,
+    max_workshop_resolved_value_text: str,
+    perk_effect: tuple[float, float, bool],
+    max_progression_value_text: str,
+    family: str,
+) -> str:
+    if row_status == 'missing':
+        return 'amber'
+
+    def _matches(expected_value: float | None, actual_text: str) -> bool | None:
+        if expected_value is None or not isinstance(actual_text, str) or actual_text == '—':
+            return None
+        return _format_surface_value(expected_value, surface_id=surface_id, value_type=value_type) == actual_text
+
+    checks: list[bool] = []
+    start_expected = _apply_effect_to_workshop_value(
+        effect=start_total_effect,
+        family=family,
+        workshop_value=workshop_value,
+    )
+    start_match = _matches(start_expected, start_of_run_value_text)
+    if start_match is not None:
+        checks.append(start_match)
+
+    max_workshop_expected = _apply_effect_to_workshop_value(
+        effect=max_workshop_modifier_effect,
+        family=family,
+        workshop_value=max_workshop_value,
+    )
+    max_workshop_match = _matches(max_workshop_expected, max_workshop_resolved_value_text)
+    if max_workshop_match is not None:
+        checks.append(max_workshop_match)
+
+    max_progression_expected = _apply_effect_to_workshop_value(
+        effect=perk_effect,
+        family=family,
+        workshop_value=max_workshop_expected,
+    )
+    max_progression_match = _matches(max_progression_expected, max_progression_value_text)
+    if max_progression_match is not None:
+        checks.append(max_progression_match)
+
+    if not checks:
+        return 'amber'
+    if all(checks):
+        return 'green'
+    return 'red'
 
 
 def _aggregate_effect_total(
@@ -724,6 +782,7 @@ def _build_wall_health_workshop_percent_row(
         },
         'row_status': 'resolved',
         'row_notes': row_note,
+        'reconciliation_status': 'green',
         'name': spec['label'],
         'workshop_level': _workshop_level_for_label(
             account_state_payload=account_state_payload,
@@ -740,6 +799,7 @@ def _build_wall_health_workshop_percent_row(
         'enhancement_effects': '—',
         'start_of_run_modifier_total': '—',
         'start_of_run_value': value_text,
+        'max_workshop_modifier_total': '—',
         'max_workshop_value': max_text,
         'max_workshop_resolved_value': max_text,
         'perk_effects': '—',
@@ -857,6 +917,7 @@ def build_workshop_reconciliation_row(
     }
     # The max total must likewise be composed from the exact visible modifier columns.
     max_total_effect = _combine_component_effects(list(max_component_effects.values()), family=family)
+    max_workshop_modifier_effect = _combine_component_effects([start_total_effect, other_effect], family=family)
 
     decomposition = {
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
@@ -879,12 +940,19 @@ def build_workshop_reconciliation_row(
     )
     max_workshop_resolved_value = _format_surface_value(
         _apply_effect_to_workshop_value(
-            effect=start_total_effect,
+            effect=max_workshop_modifier_effect,
             family=family,
             workshop_value=max_workshop_contribution,
         ),
         surface_id=surface_id,
         value_type=value_type,
+    )
+    max_workshop_modifier_total = _format_effective_total_display(
+        effect=max_workshop_modifier_effect,
+        family=family,
+        workshop_value=max_workshop_contribution,
+        surface_id=surface_id,
+        surface_value_type=value_type,
     )
     max_progression_modifier_total = _format_component_effect_display(max_total_effect, family=family)
 
@@ -894,6 +962,20 @@ def build_workshop_reconciliation_row(
         row_notes = '; '.join(part for part in [row_notes, 'Includes Death Wave Health lab contribution.'] if part)
     if row_status == 'missing' and not row_notes:
         row_notes = 'Missing QE query row.'
+    reconciliation_status = _visible_reconciliation_status(
+        row_status=row_status,
+        surface_id=surface_id,
+        value_type=value_type,
+        workshop_value=workshop_value,
+        start_total_effect=start_total_effect,
+        start_of_run_value_text=start_of_run_value,
+        max_workshop_modifier_effect=max_workshop_modifier_effect,
+        max_workshop_value=max_workshop_contribution,
+        max_workshop_resolved_value_text=max_workshop_resolved_value,
+        perk_effect=perk_effect,
+        max_progression_value_text=max_progression_value,
+        family=family,
+    )
     return {
         'canonical_row_id': canonical_row_id,
         'display_label': spec['label'],
@@ -906,6 +988,7 @@ def build_workshop_reconciliation_row(
         'decomposition': decomposition,
         'row_status': row_status,
         'row_notes': row_notes,
+        'reconciliation_status': reconciliation_status,
         'name': spec['label'],
         'workshop_level': _workshop_level_for_label(
             account_state_payload=account_state_payload,
@@ -922,6 +1005,7 @@ def build_workshop_reconciliation_row(
         'enhancement_effects': decomposition['enhancement'],
         'start_of_run_modifier_total': start_of_run_modifier_total,
         'start_of_run_value': start_of_run_value,
+        'max_workshop_modifier_total': max_workshop_modifier_total,
         'max_workshop_value': _format_surface_value(max_workshop_contribution, surface_id=surface_id, value_type=value_type),
         'max_workshop_resolved_value': max_workshop_resolved_value,
         'perk_effects': decomposition['perk'],
