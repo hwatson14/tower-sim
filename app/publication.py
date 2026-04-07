@@ -21,6 +21,46 @@ from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
 ROOT = Path(__file__).resolve().parents[1]
 
+RUN_STATS_COMMITTED_BASELINE_ARTIFACTS: tuple[str, ...] = (
+    'account_state.json',
+    'run_stats.json',
+    'run_stats_query_plan_start_of_run.json',
+    'run_stats_query_plan_max_progression.json',
+    'run_stats_query_rows_start_of_run.json',
+    'run_stats_query_rows_max_progression.json',
+)
+
+RUN_STATS_LOCAL_SUPPORT_ARTIFACTS: tuple[str, ...] = (
+    'diagnostics.json',
+    'module_card_payloads.json',
+)
+
+RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS: tuple[str, ...] = (
+    *RUN_STATS_LOCAL_SUPPORT_ARTIFACTS,
+    *RUN_STATS_COMMITTED_BASELINE_ARTIFACTS,
+)
+
+FULL_PIPELINE_PUBLICATION_ARTIFACTS: tuple[str, ...] = (
+    'diagnostics.json',
+    'account_state.json',
+    'input_dashboard.json',
+    'stats_dashboard.json',
+    'stat_inputs.json',
+    'statbook.json',
+    'statbook_publishable.json',
+    'run_stats_query_rows_start_of_run.json',
+    'run_stats_query_rows_max_progression.json',
+    'ep_oracle_compare.json',
+    'line_by_line_verification.json',
+    'survivor_closure_report.json',
+    'state_matrix.json',
+    'audit_surface_manifest.json',
+    'artifact_contract_manifest.json',
+    'family_completeness_matrix.json',
+    'optimizer_scores.json',
+    'line_by_line_verification.csv',
+)
+
 # --- Helper Functions ---
 
 def _relpath_str(path: Path | str | None, root_path: Path | None = None) -> str | None:

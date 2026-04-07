@@ -1,11 +1,11 @@
 version: 1
 prepared: '2026-04-07'
 status:
-  mode: repo_hardening
-  baseline: active snapshot with release hardening closeout recertified and governance synchronized
-  active_tranche: closeout
-  active_tranche_name: Release hardening closeout
-  overall_state: maintenance_mode_after_closeout
+  mode: maintenance_stabilization
+  baseline: active snapshot freshly recertified green on the actual current worktree, with maintenance stabilization completed for artifact governance and hygiene
+  active_tranche: maintenance_stabilization_hygiene
+  active_tranche_name: Maintenance stabilization / hygiene
+  overall_state: maintenance_baseline_stabilized_with_unrelated_local_dirt_left_explicitly_out_of_scope
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -114,25 +114,120 @@ decision_freeze:
     current_status: met_no_publish_block_entries_present
   streamlit_test_strategy: rewrite_helper_local_tests_to_boundary_contract_tests
   full_suite_certification_wording: do_not_claim_fully_recertified_green_without_durable_artifact
+  maintenance_stabilization_scope:
+  - no_new_mechanic_work
+  - do_not_start_hardening_g
+  - do_not_open_another_hardening_seam
+  - do_not_broaden_into_formula_authority_retirement
+  - do_not_use_compare_only_assumptions_to_make_dashboards_look_correct
+  - no_line_verification_or_input_dashboard_authority_for_displayed_stats
 known_verified_issues:
 - formula-authority bridge publish-block residue has been retired; formula surface policy remains active for compare/publication semantics
+maintenance_stabilization:
+  goal: Turn the current dirty-but-green snapshot into a genuinely governed maintenance baseline.
+  snapshot_facts:
+  - latest full-suite validation on the actual current worktree passed on 2026-04-07 with 342 passing tests
+  - refreshed full-suite validation after stabilization passed on 2026-04-07 with 346 passing tests
+  - formula surface policy remains active
+  - maintenance-mode wording is ahead of the actual hygiene state
+  - committed out artifact governance is still implicit and must be made explicit
+  phases:
+  - id: M1
+    name: Governance activation
+    status: complete
+    goal: Sanction the maintenance stabilization / hygiene tranche in the control stack before cleanup proceeds.
+    tasks:
+    - id: M1.1
+      task: Define the active maintenance stabilization / hygiene tranche in ACTIVE_TRANCHE.md
+      status: complete
+    - id: M1.2
+      task: Align BURNDOWN.yaml tranche status and narrow scope to hygiene-only work
+      status: complete
+  - id: M2
+    name: Artifact contract definition
+    status: complete
+    goal: Make the committed bounded out contract and the temp/full pipeline artifact contract explicit and separate.
+    tasks:
+    - id: M2.1
+      task: Define the committed bounded out contract produced by app/run_stats.py
+      status: complete
+    - id: M2.2
+      task: Define the richer temp/full pipeline artifact set produced by execute_pipeline and write_core_outputs
+      status: complete
+    - id: M2.3
+      task: Distinguish committed out artifacts from temp/debug/publication artifacts in active governance docs and index
+      status: complete
+  - id: M3
+    name: Consumer alignment
+    status: complete
+    goal: Align tests, inspector, and publication assumptions with the sanctioned artifact split.
+    tasks:
+    - id: M3.1
+      task: Make run_stats versus full-pipeline artifact expectations explicit in tests
+      status: complete
+    - id: M3.2
+      task: Tighten inspector and publication assumptions so the wrong artifact universe fails closed
+      status: complete
+  - id: M4
+    name: Ad hoc output directory policy
+    status: complete
+    goal: Remove or explicitly govern residue output directories instead of leaving them ambiguous.
+    tasks:
+    - id: M4.1
+      task: Set explicit policy for out_analysis_check
+      status: complete
+    - id: M4.2
+      task: Set explicit policy for out_direct
+      status: complete
+    - id: M4.3
+      task: Set explicit policy for out_module_test
+      status: complete
+    - id: M4.4
+      task: Set explicit policy for out_runpy_test
+      status: complete
+    - id: M4.5
+      task: Set explicit policy for out_script_test
+      status: complete
+  - id: M5
+    name: Maintenance baseline refresh
+    status: complete
+    goal: Reduce to a maintenance-clean repo state and refresh governance to that cleaned baseline.
+    tasks:
+    - id: M5.1
+      task: Reduce worktree residue without bundling unrelated mechanic changes
+      status: complete
+    - id: M5.2
+      task: Refresh pass-count and timing notes honestly after cleanup validation
+      status: complete
+    - id: M5.3
+      task: Synchronize ACTIVE_TRANCHE.md and BURNDOWN.yaml to the cleaned baseline
+      status: complete
 stop_conditions:
-- Do not start file splitting before T1-T3 are complete
-- Do not widen tranche scope into broad refactors
-- Do not claim repo is rock solid before acceptance checklist is satisfied
+- Do not start Hardening G or another hardening seam in this tranche
+- Do not widen tranche scope into broad refactors or new mechanic closure work
+- Stop if defining the committed out contract exposes a deeper unresolved governance conflict
+- Stop if hygiene cleanup requires bundling unrelated mechanic/code changes
+- Stop if maintenance-mode cannot be made honest without another implementation tranche
 definition_of_done:
-  t4_done:
-  - T4.1-T4.3 complete
-  - BURNDOWN and ACTIVE_TRANCHE remain aligned
-  release_closeout:
+  release_closeout_history:
   - full_pytest_command: pytest -q
   - full_pytest_result: passed
   - full_pytest_date_utc: '2026-04-07'
   - full_pytest_pass_count: 342
   - full_pytest_duration_seconds: 43.29
-  repo_rock_solid_threshold:
-  - Governance truth aligned
-  - Streamlit ownership cleaned in implementation and tests
-  - Native QE/compat seams closed
-  - Evaluator private imports removed
-  - Repo re-certified green with durable full-suite artifact
+  maintenance_stabilization_validation:
+  - targeted_pytest_command: pytest -q tests/app/test_pipeline_functional.py tests/app/test_pipeline_ui_contracts.py tests/app/test_inspector_data.py tests/shared/test_import_boundaries.py
+  - targeted_pytest_result: passed
+  - targeted_pytest_pass_count: 101
+  - full_pytest_command: pytest -q
+  - full_pytest_result: passed
+  - full_pytest_date_utc: '2026-04-07'
+  - full_pytest_pass_count: 346
+  - full_pytest_duration_seconds: 44.40
+  maintenance_stabilization_done:
+  - active governance files explicitly define the maintenance stabilization / hygiene tranche
+  - sanctioned committed out subset is explicit
+  - temp/full pipeline artifact universe is explicitly separate
+  - ad hoc out_* directories are removed or otherwise explicitly governed
+  - tests, inspector, and publication assumptions match the sanctioned contract split
+  - governance truth is refreshed to the cleaned maintenance baseline

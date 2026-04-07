@@ -901,6 +901,14 @@ def test_simulator_snapshot_resolver_stays_on_lightweight_checkpoint_path():
 def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
     """Committed active JSON artifacts under out/ must publish contract names, not legacy prefixes."""
     import subprocess
+    expected_tracked = {
+        ROOT / "out" / "account_state.json",
+        ROOT / "out" / "run_stats.json",
+        ROOT / "out" / "run_stats_query_plan_start_of_run.json",
+        ROOT / "out" / "run_stats_query_plan_max_progression.json",
+        ROOT / "out" / "run_stats_query_rows_start_of_run.json",
+        ROOT / "out" / "run_stats_query_rows_max_progression.json",
+    }
     output_dir = ROOT / "out"
     if not output_dir.exists():
         return
@@ -919,6 +927,9 @@ def test_active_generated_outputs_do_not_publish_legacy_surface_prefixes():
         }
     except Exception:
         return
+    assert tracked == expected_tracked, (
+        "Tracked out/ artifacts must stay equal to the sanctioned committed bounded run_stats baseline."
+    )
     for path in sorted(output_dir.glob("*.json")):
         if path not in tracked:
             continue

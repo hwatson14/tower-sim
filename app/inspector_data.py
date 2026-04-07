@@ -6,29 +6,14 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from app.publication import FULL_PIPELINE_PUBLICATION_ARTIFACTS, RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS
 from qe.contracts import normalize_surface_id_to_contract
 
 
-CORE_ARTIFACTS = (
+INSPECTOR_ARTIFACTS = (
     'pipeline_trace.json',
-    'diagnostics.json',
-    'module_card_payloads.json',
-    'account_state.json',
-    'input_dashboard.json',
-    'stats_dashboard.json',
-    'stat_inputs.json',
-    'run_stats.json',
-    'statbook.json',
-    'statbook_publishable.json',
-    'run_stats_query_rows_start_of_run.json',
-    'run_stats_query_rows_max_progression.json',
-    'run_stats_query_plan_start_of_run.json',
-    'run_stats_query_plan_max_progression.json',
-    'state_matrix.json',
-    'ep_oracle_compare.json',
-    'line_by_line_verification.json',
-    'audit_surface_manifest.json',
-    'family_completeness_matrix.json',
+    *RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS,
+    *FULL_PIPELINE_PUBLICATION_ARTIFACTS,
 )
 
 
@@ -43,7 +28,7 @@ class InspectorArtifacts:
 
 def load_artifacts(out_dir: Path) -> InspectorArtifacts:
     payload: dict[str, Any] = {}
-    for name in CORE_ARTIFACTS:
+    for name in dict.fromkeys(INSPECTOR_ARTIFACTS):
         path = out_dir / name
         if path.exists():
             try:

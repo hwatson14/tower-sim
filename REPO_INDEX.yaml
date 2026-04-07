@@ -41,6 +41,59 @@ root:
     status: active_candidate
     layer: root
 
+generated_outputs:
+  out/account_state.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/run_stats.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/run_stats_query_plan_start_of_run.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/run_stats_query_plan_max_progression.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/run_stats_query_rows_start_of_run.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/run_stats_query_rows_max_progression.json:
+    status: generated
+    note: committed bounded run_stats maintenance baseline artifact
+
+  out/diagnostics.json:
+    status: generated
+    note: local run_stats support artifact; not part of the sanctioned committed baseline
+
+  out/module_card_payloads.json:
+    status: generated
+    note: local run_stats support artifact; not part of the sanctioned committed baseline
+
+  out_analysis_check/:
+    status: generated
+    note: ad hoc analysis output residue; maintenance stabilization policy is remove and ignore
+
+  out_direct/:
+    status: generated
+    note: ad hoc run_stats output residue; maintenance stabilization policy is remove and ignore
+
+  out_module_test/:
+    status: generated
+    note: ad hoc run_stats output residue; maintenance stabilization policy is remove and ignore
+
+  out_runpy_test/:
+    status: generated
+    note: ad hoc run_stats output residue; maintenance stabilization policy is remove and ignore
+
+  out_script_test/:
+    status: generated
+    note: ad hoc run_stats output residue; maintenance stabilization policy is remove and ignore
+
 # ─── app/ ────────────────────────────────────────────────────────────────────
 
 app:

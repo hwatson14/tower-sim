@@ -47,6 +47,9 @@ from app.models import (
     _normalize_perk_state,
 )
 from app.publication import (
+    RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS,
+    RUN_STATS_COMMITTED_BASELINE_ARTIFACTS,
+    RUN_STATS_LOCAL_SUPPORT_ARTIFACTS,
     _remove_legacy_outputs,
     _RUN_STATS_LEGACY_OUTPUTS,
     _json_sanitize,
@@ -606,16 +609,7 @@ def _remove_run_stats_legacy_outputs(out_dir: Path) -> None:
 
 
 def _remove_run_stats_current_outputs(out_dir: Path) -> None:
-    for filename in (
-        'diagnostics.json',
-        'account_state.json',
-        'module_card_payloads.json',
-        'run_stats.json',
-        _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'],
-        _RUN_STATS_QUERY_OUTPUTS['max_progression_plan'],
-        _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'],
-        _RUN_STATS_QUERY_OUTPUTS['max_progression_rows'],
-    ):
+    for filename in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS:
         path = out_dir / filename
         if path.exists():
             path.unlink()
@@ -1353,15 +1347,13 @@ class RunStatsSession:
         )
         (args.out / 'run_stats.json').write_text(json.dumps(js(artifacts['run_stats_payload']), indent=2, default=str))
         diagnostics['output_contract'] = {
+            'contract_kind': 'run_stats_bounded',
+            'committed_baseline_artifacts': list(RUN_STATS_COMMITTED_BASELINE_ARTIFACTS),
+            'local_support_artifacts': list(RUN_STATS_LOCAL_SUPPORT_ARTIFACTS),
+            'all_local_output_artifacts': list(RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS),
             'product_artifact': 'run_stats.json',
-            'query_row_artifacts': [
-                _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'],
-                _RUN_STATS_QUERY_OUTPUTS['max_progression_rows'],
-            ],
-            'query_plan_artifacts': [
-                _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'],
-                _RUN_STATS_QUERY_OUTPUTS['max_progression_plan'],
-            ],
+            'query_row_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'], _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']],
+            'query_plan_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'], _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']],
             'removed_legacy_fast_path_artifacts': list(_RUN_STATS_LEGACY_OUTPUTS),
             'ui_payload_artifacts': ['module_card_payloads.json'],
         }

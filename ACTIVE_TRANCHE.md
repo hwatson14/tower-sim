@@ -23,7 +23,7 @@ Machine-readable state lives in:
 ## Current state
 
 The repo is **not in broad rebuild territory**.
-The repo has completed **release hardening closeout** for the current snapshot and should stay in **maintenance-mode / targeted regression prevention** unless a new scoped blocker appears.
+The repo has completed the prior hardening closeout sequence, but the current worktree now needs a **maintenance stabilization / hygiene tranche** before any new mechanic-facing work is considered honest.
 
 ### Durable truths on the current baseline
 
@@ -31,12 +31,20 @@ The repo has completed **release hardening closeout** for the current snapshot a
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
+- the latest full suite on the actual current worktree passed on **2026-04-07** (`342 passed`)
+- formula surface policy remains active
+- the repo's maintenance-mode claim is currently ahead of the actual hygiene/governance state
 
 ### Remaining constraints
 
-- closeout governance text must stay synchronized with executable validation status and burndown state
-- do not expand scope into broad refactor or tranche reshaping while preserving closeout evidence
-- formula-authority bridge publish-block residue has been retired; formula surface policy remains the active compare/publication policy registry
+- keep governance text synchronized with executable validation status and burndown state
+- do not expand scope into broad refactor, new hardening seams, or formula-authority retirement in this tranche
+- no app-side stat calculation
+- no compare-only assumptions used to make dashboard values appear correct
+- no `line_verification` or `input_dashboard` authority for displayed stats
+- no stale `out/` trust
+- no fallback routing as final architecture
+- fail closed when the artifact contract is ambiguous rather than guessing
 
 ---
 
@@ -50,62 +58,78 @@ The repo has completed **release hardening closeout** for the current snapshot a
 | T3 | Evaluator cleanup | COMPLETE |
 | T4 | Thinning and polish | COMPLETE |
 
-## Active tranche record: release hardening closeout - COMPLETE
+## Active tranche record: maintenance stabilization / hygiene - COMPLETE
 
 ### Goal
 
-Finalize hardening closeout evidence and publish recertification artifacts after blocker closure.
+Turn the current green snapshot into a genuinely governed maintenance baseline.
 
-### T1 closeout status
+This tranche is about:
+1. explicit artifact-contract governance
+2. worktree hygiene
+3. test/inspector/publication alignment with the sanctioned artifact split
+4. governance synchronization to the cleaned baseline
 
-T1 is now complete:
-1. resolved the legacy statbook contradiction
-2. removed private QE imports from Streamlit
-3. removed direct KB/manual file reads from Streamlit
-4. moved Boss Waves runtime orchestration behind a sanctioned app-level seam
-5. rewrote Streamlit tests away from helper-local private assertions toward app boundary/contract coverage
+This tranche is not about:
+1. Hardening G
+2. another hardening seam
+3. formula-authority retirement
+4. new subsystem mechanics
+5. app/UI polish
+6. broad refactors
 
-### T2 closeout status
+### Snapshot facts being stabilized
 
-1. remove `qe.kernel` module-level dependency on `qe.stat_resolution.resolve_bucket_value`
-2. remove `qe.routing` reliance on compat delta execution for manifest-approved native delta operation
-3. retire obsolete formula-authority bridge publish-block residue while preserving active formula surface policy ownership
+1. the actual current worktree is freshly full-suite green
+2. Hardening E/F closures appear to hold operationally
+3. formula surface policy remains active
+4. the maintenance-mode claim is ahead of the actual hygiene state
+5. the committed `out/` artifact contract is still implicit and must be made explicit
 
-### T3 closeout status
+### Active verification items
 
-1. replaced underscore-prefixed evaluator compiler imports with public surfaces
-2. added regression coverage preventing evaluator private-import reintroduction
-
-### Closeout verification status
-
-1. COMPLETE: workshop authority contract alignment preserved under approved-exception policy/data checks
-2. COMPLETE: native report routing diagnostics preserved in statbooks/snapshots
-3. COMPLETE: report-fallback callsite boundary discipline preserved in `qe/routing.py`
-4. COMPLETE: exact max-rend formula parity preserved on progression/run-stats path
-5. COMPLETE: recertification artifacts refreshed for the current validated snapshot
+1. COMPLETE: define the committed bounded `out/` contract
+2. COMPLETE: distinguish the temp/full pipeline artifact contract from the committed bounded contract
+3. COMPLETE: define policy for ad hoc `out_*` directories
+4. COMPLETE: reduce tranche-owned residue to a maintenance-clean state
+5. COMPLETE: refresh governance after cleanup so maintenance-mode wording is honest
 
 ### Exit criteria
 
-Release closeout is complete only when all of the following are true:
+Maintenance stabilization is complete only when all of the following are true:
 
-- full acceptance checklist is executed and recorded
-- durable full-suite recertification artifact is captured
+- the sanctioned committed `out/` subset is explicit in active governance docs/index
+- the temp/full pipeline artifact universe is explicitly separate
+- tests/inspector/publication align with that split and fail closed on the wrong contract
+- ad hoc `out_*` directories are removed or otherwise explicitly governed
+- governance files reflect the cleaned baseline rather than the transitional closeout state
 - `BURNDOWN.yaml` task statuses match this file
 
-### Closeout verification artifact
+### Verification baseline
 
-- full-suite recertification artifact recorded for the active snapshot via `pytest -q`
-- latest full-suite validation attempt on **2026-04-07** passed (`342 passed`)
-- reassessment rerun on **2026-04-07** measured `pytest -q` at **43.29s** on current HEAD versus **79.63s** on pre-optimization baseline `b8f30ce`
-- CI fast-lane invariant: `.github/workflows/ci.yml` enforces `pytest -q` wall-clock budget at **10 seconds** on `ubuntu-latest`; over-budget runs fail closed and publish `pytest-durations` artifact (`pytest-durations.log`)
+- `python app/run_stats.py --perk-mode max_progression_policy --out out`
+- `python -m pytest -q`
+- high-signal targeted tests around pipeline/publication/inspector and touched contract tests
+- fresh inspection of:
+  - `out/run_stats_query_rows_start_of_run.json`
+  - `out/run_stats_query_rows_max_progression.json`
+  - `out/run_stats_query_plan_start_of_run.json`
+  - `out/run_stats_query_plan_max_progression.json`
+  - `out/diagnostics.json`
+  - `out/account_state.json`
+  - `git status --short`
 
-### Verification
+### Verification record
 
-- targeted thinning-change tests plus high-signal regression checks
-- full `pytest -q`
-- consistency check against:
-  - `ACTIVE_TRANCHE.md`
-  - `BURNDOWN.yaml`
+- targeted tranche-alignment suite passed on **2026-04-07** (`101 passed`)
+- refreshed full suite passed on **2026-04-07** (`346 passed`) in **44.40s**
+- refreshed `out/` inspection confirmed:
+  - query-row artifacts remain bounded by state mode
+  - query-plan artifacts remain bounded by state mode
+  - `diagnostics.json` now publishes the explicit bounded run_stats output contract
+  - `account_state.json` refreshed through the sanctioned `run_stats` path
+- ad hoc tracked output directories were removed and moved under ignore policy
+- unrelated user-owned local edits outside this tranche were intentionally left untouched rather than folded into hygiene work
 
 ---
 
@@ -119,26 +143,16 @@ Release closeout is complete only when all of the following are true:
 
 ---
 
-## Next tranche: maintain-only
-
-### Goal
-
-Preserve invariants and prevent boundary regressions while the repo is in maintenance mode.
-
-### Why next
-
-Because release hardening closeout is complete for the current snapshot, subsequent work should remain maintenance-mode and invariant-preserving unless a new scoped blocker appears.
-
----
-
 ## Stop conditions
 
 Stop and report rather than improvising if any of the following occur:
 
 - governance files disagree on active tranche or hardening order
-- proposed changes force broad refactors instead of tranche-scoped hardening
-- maintenance work attempts to remove the active formula surface policy registry rather than only retiring dead bridge residue
-- release closeout is claimed without durable acceptance-checklist evidence
+- defining the committed `out/` contract exposes a deeper unresolved governance conflict
+- cleaning the worktree would require bundling unrelated mechanic/code changes
+- maintenance-mode cannot be made honest without another implementation tranche
+- proposed changes force broad refactors instead of tranche-scoped stabilization
+- maintenance work attempts to remove the active formula surface policy registry
 
 ---
 
@@ -146,10 +160,11 @@ Stop and report rather than improvising if any of the following occur:
 
 Do **not** start with:
 
-- file splitting
-- general cleanup
-- Input-tab polish in isolation
-- preserving helper-local Streamlit tests as the primary strategy
-- declaring the repo finished without a fresh full-suite artifact on the current snapshot
+- Hardening G
+- another hardening seam
+- formula-authority retirement
+- new subsystem mechanics
+- app/UI polish
+- broad cleanup outside artifact governance and hygiene alignment
 
 Those are sequencing mistakes at the current repo stage.

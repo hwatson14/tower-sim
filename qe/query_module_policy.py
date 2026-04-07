@@ -801,6 +801,20 @@ def _format_token_value(value: float | None, suffix: str, *, signed_default: boo
     return number
 
 
+def _module_substat_suffix(unit: str, fallback_suffix: str) -> str:
+    normalized_unit = str(unit or '').strip().lower()
+    normalized_fallback = _normalize_substat_suffix(fallback_suffix)
+    if normalized_unit == 'percent':
+        return '%'
+    if normalized_unit == 'multiplier':
+        return 'x'
+    if normalized_unit in {'seconds', 'second'}:
+        return 's'
+    if normalized_unit in {'meters', 'meter'}:
+        return 'm'
+    return normalized_fallback
+
+
 def _format_main_value_text(value: float | None, raw_text: object = None) -> str:
     if value is None:
         return f"x{str(raw_text or '').strip()}" if str(raw_text or '').strip() else ''
@@ -944,7 +958,7 @@ def _scaled_unique_value(module_name: str, module: ModuleSnapshot, *, role: str,
     return _format_unique_value_text(unique_value, unique_measure), unique_measure
 
 
-def _scaled_substat_value(sub: ModuleSubstat, *, role: str, slot_state: ModuleSystemState | None) -> str:
+def _scaled_substat_value(slot_type: str, sub: ModuleSubstat, *, role: str, slot_state: ModuleSystemState | None) -> str:
     display = str(sub.value or '').strip()
     if role != 'assist':
         value, suffix = _parse_token_value(display, sub.raw_token)
@@ -957,6 +971,16 @@ def _scaled_substat_value(sub: ModuleSubstat, *, role: str, slot_state: ModuleSy
     if assist_substat_eff is None:
         return display
     value, suffix = _parse_token_value(display, sub.raw_token)
+    rarity_text = _infer_substat_rarity(slot_type, sub, role=role, slot_state=slot_state)
+    lookup_name = _normalize_module_substat_name(sub.name)
+    if rarity_text:
+        exact = load_module_substat_values().get((slot_type.strip().lower(), lookup_name, rarity_text))
+        if exact is not None:
+            exact_value, exact_unit = exact
+            return _format_token_value(
+                float(exact_value) * assist_substat_eff,
+                _module_substat_suffix(str(exact_unit), suffix),
+            )
     if value is None:
         return display
     return _format_token_value(value * assist_substat_eff, suffix)
@@ -983,7 +1007,7 @@ def _effect_slots_for_module(module: ModuleSnapshot, *, role: str, slot_state: M
             unlock_level=unlock_level,
             rarity_key=rarity_key,
             rarity_text=rarity_text,
-            value_text=_scaled_substat_value(sub, role=role, slot_state=slot_state),
+            value_text=_scaled_substat_value(module.slot_type, sub, role=role, slot_state=slot_state),
             label_text=_normalize_module_substat_name(sub.name),
         ))
     return tuple(slots)

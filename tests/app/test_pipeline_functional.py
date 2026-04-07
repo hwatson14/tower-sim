@@ -22,6 +22,12 @@ from app.pipeline import (
     _run_stats_perk_state,
 )
 from app.pipeline import RunStatsSession
+from app.publication import (
+    FULL_PIPELINE_PUBLICATION_ARTIFACTS,
+    RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS,
+    RUN_STATS_COMMITTED_BASELINE_ARTIFACTS,
+    RUN_STATS_LOCAL_SUPPORT_ARTIFACTS,
+)
 from types import SimpleNamespace
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -446,6 +452,30 @@ def test_run_stats_canonical_output_filenames(run_stats_single_execution):
 
 
 @pytest.mark.live
+def test_run_stats_output_contract_distinguishes_committed_and_local_support(run_stats_single_execution):
+    diag = run_stats_single_execution["parsed_outputs"]["diagnostics.json"]
+    contract = diag.get('output_contract') or {}
+
+    assert contract.get('contract_kind') == 'run_stats_bounded'
+    assert tuple(contract.get('committed_baseline_artifacts') or []) == RUN_STATS_COMMITTED_BASELINE_ARTIFACTS
+    assert tuple(contract.get('local_support_artifacts') or []) == RUN_STATS_LOCAL_SUPPORT_ARTIFACTS
+    assert tuple(contract.get('all_local_output_artifacts') or []) == RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS
+
+
+@pytest.mark.live
+def test_run_stats_bounded_outputs_do_not_masquerade_as_full_pipeline_outputs(run_stats_single_execution):
+    out_dir = run_stats_single_execution["out_dir"]
+    written_names = {path.name for path in out_dir.glob("*.json")}
+
+    assert set(RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS).issubset(written_names)
+    assert 'pipeline_trace.json' not in written_names
+    for name in FULL_PIPELINE_PUBLICATION_ARTIFACTS:
+        if name in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS:
+            continue
+        assert name not in written_names, f"run_stats bounded output must not silently publish full-pipeline artifact {name}"
+
+
+@pytest.mark.live
 def test_resolve_fast_checkpoint_smoke():
     """Fast-checkpoint API resolves requested surfaces with structured statbook output."""
     request = FastCheckpointRequest(
@@ -535,6 +565,19 @@ def test_ep_oracle_compare_exists_and_nonempty_for_sharded_path(tmp_path):
     compare_path = out_dir / "ep_oracle_compare.json"
     assert compare_path.exists()
     compare_data = json.loads(compare_path.read_text(encoding='utf-8'))
+
+
+@pytest.mark.live
+def test_execute_pipeline_writes_full_pipeline_artifact_contract(tmp_path):
+    out_dir = tmp_path / "out"
+    request = PipelineRunRequest(ids=IDS_PATH, out=out_dir, preset='Farming', state_mode='start_of_run')
+    result = execute_pipeline(request)
+
+    assert result.exit_code == 0
+    written_names = {path.name for path in result.generated_files}
+    assert 'pipeline_trace.json' in written_names
+    for name in FULL_PIPELINE_PUBLICATION_ARTIFACTS:
+        assert name in written_names, f"execute_pipeline must write full-pipeline artifact {name}"
 def test_ep_oracle_compare_populated(canonical_pipeline_artifacts):
     """ep_oracle_compare.json must be a non-empty dict."""
     compare = canonical_pipeline_artifacts['ep_oracle_compare']

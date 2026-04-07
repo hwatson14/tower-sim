@@ -32,6 +32,9 @@ def test_module_card_payloads_build_expected_farming_assist_details():
     assert armor_assist['role_bar_label_text'] == 'Assist'
     assert armor_assist['role_bar_detail_text'] == 'Epic | Main 0.01x | Substats 0.10x'
     assert len(armor_assist['effect_slots']) == 8
+    assert armor_assist['effect_slots'][0]['value_text'] == '+0.3%'
+    assert armor_assist['effect_slots'][1]['value_text'] == '+6%'
+    assert armor_assist['effect_slots'][2]['value_text'] == '+2%'
 
 
 def test_module_card_payloads_use_qe_unlock_schedule_for_eight_slots():
@@ -51,7 +54,19 @@ def test_module_card_payloads_assist_angle_substat_uses_degree_symbol():
     core_assist = payload['presets']['Farming']['core']['assist']
     angle_slot = core_assist['effect_slots'][0]
     assert angle_slot['label_text'] == 'Spotlight - Angle'
-    assert angle_slot['value_text'] == '+2.25°'
+    assert angle_slot['value_text'] == '+0.45°'
+
+
+def test_module_card_payloads_assist_values_use_capped_kb_substat_values():
+    payload = build_module_card_payloads(_account_state())
+    generator_assist = payload['presets']['Farming']['generator']['assist']
+    core_assist = payload['presets']['Farming']['core']['assist']
+    assert generator_assist['effect_slots'][0]['value_text'] == '+0.5%'
+    assert generator_assist['effect_slots'][1]['value_text'] == '+0.2%'
+    assert generator_assist['effect_slots'][3]['value_text'] == '+0.2%'
+    assert core_assist['effect_slots'][1]['value_text'] == '+0.525x'
+    assert core_assist['effect_slots'][3]['value_text'] == '+0.45%'
+
 
 def test_module_card_payloads_primary_card_uses_module_level_and_cap():
     account_state = _account_state()

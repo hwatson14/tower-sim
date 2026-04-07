@@ -30,5 +30,10 @@ htmlcov/
 
 # Generated pipeline outputs -- not versioned
 /out/
+/out_analysis_check/
+/out_direct/
+/out_module_test/
+/out_runpy_test/
+/out_script_test/
 
 /.claude/worktrees

@@ -301,6 +301,35 @@ Locked-foundation rules:
 **Owns:** orchestration only, CLI entrypoint, pipeline wiring, writing outputs.
 **Must not own:** domain logic.
 
+### Generated artifact contracts
+Generated outputs are governed as distinct contracts. They must not be treated as interchangeable.
+
+Committed bounded `out/` baseline:
+- The sanctioned committed maintenance baseline under `out/` is the bounded `run_stats` subset:
+  - `account_state.json`
+  - `run_stats.json`
+  - `run_stats_query_plan_start_of_run.json`
+  - `run_stats_query_plan_max_progression.json`
+  - `run_stats_query_rows_start_of_run.json`
+  - `run_stats_query_rows_max_progression.json`
+- These files are the committed review baseline for `app/run_stats.py`.
+- Do not assume the committed `out/` baseline also contains the richer analysis/debug/publication artifact set.
+
+Local bounded `run_stats` support artifacts:
+- `app/run_stats.py` may also emit local support artifacts such as:
+  - `diagnostics.json`
+  - `module_card_payloads.json`
+- Those support artifacts are useful for local inspection, but they are not the sanctioned committed maintenance baseline unless governance is updated explicitly.
+
+Temp/full pipeline artifacts:
+- `execute_pipeline(...)` together with `write_core_outputs(...)` produces a richer temporary/full publication set for analysis, dashboards, verification, and debugging.
+- That richer set includes dashboards, statbooks, verification reports, manifests, optimizer outputs, residue reports, and `pipeline_trace.json`.
+- Treat those artifacts as temp/debug/publication outputs, not as the default committed maintenance baseline.
+
+Ad hoc output directories:
+- `out_analysis_check`, `out_direct`, `out_module_test`, `out_runpy_test`, and `out_script_test` are not sanctioned baseline surfaces.
+- They must either be removed, ignored, archived, or explicitly governed. They must not persist as ambiguous residue.
+
 ### `tests/`
 **Owns:** verification only.
 
