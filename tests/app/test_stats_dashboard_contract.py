@@ -1430,6 +1430,8 @@ def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_su
     assert defense_row['start_of_run_modifier_total'] == '+ 28.9%'
     assert defense_row['other'] == '—'
     assert defense_row['max_progression_modifier_total'] == '+ 25%'
+    assert defense_row['reconciliation_status'] == 'green'
+    assert defense_row['reconciliation_checks']['max_progression_value_ok'] is True
 
 
 def test_stats_dashboard_workshop_other_uses_start_to_max_non_perk_delta():
@@ -1545,7 +1547,7 @@ def test_stats_dashboard_workshop_super_crit_relic_uses_multiplier_factor():
         input_dashboard_payload=input_dashboard,
         module_card_payloads={},
         query_rows_start_of_run=query_rows_start,
-        query_rows_max_progression={'Farming': {'rows': {}}},
+        query_rows_max_progression=query_rows_start,
         ep_compare_publishable={},
         line_verification={},
         selected_preset='Farming',
@@ -1557,8 +1559,8 @@ def test_stats_dashboard_workshop_super_crit_relic_uses_multiplier_factor():
     )
     offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
-    assert row['relics'] == 'x 1.05'
-    assert row['start_of_run_modifier_total'] == 'x 12.38'
+    assert row['relics'] == '+ 0.05'
+    assert row['start_of_run_modifier_total'] == 'x 2.85'
 
 
 def test_stats_dashboard_workshop_coins_kill_bonus_normalizes_module_and_lab_factors():
@@ -1768,9 +1770,9 @@ def test_stats_dashboard_workshop_multiplier_rows_expand_module_substat_multipli
     )
     offense_rows = ((workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or [])
     row = next(item for item in offense_rows if item.get('name') == 'Super Crit Multiplier')
-    assert row['module_effects'] == 'x 6'
-    assert row['relics'] == 'x 1.05'
-    assert row['start_of_run_modifier_total'] == 'x 12.38'
+    assert row['module_effects'] == '+ 5'
+    assert row['relics'] == '+ 0.05'
+    assert row['start_of_run_modifier_total'] == 'x 2.85'
 
 
 def test_stats_dashboard_workshop_scalar_rows_can_use_multiplicative_reconciliation_family():

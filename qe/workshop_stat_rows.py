@@ -30,6 +30,24 @@ _WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES: frozenset[str] = frozenset({
     'state::tower.thorns_damage_pct',
 })
 
+_AUDIT_SURFACE_CAPS: dict[str, float] = {
+    'state::tower.defense_pct': 98.0,
+}
+
+_WORKSHOP_DECIMAL_BASE_SURFACES: frozenset[str] = frozenset({
+    'state::tower.damage_per_meter_multiplier',
+})
+
+_WORKSHOP_ADDITIVE_POST_MULTIPLIER_SURFACES: frozenset[str] = frozenset({
+    'state::tower.crit_multiplier',
+    'state::tower.supercrit_multiplier',
+    'state::tower.rend_armor_chance_pct',
+})
+
+_WORKSHOP_IDENTITY_LAB_SURFACES: frozenset[str] = frozenset({
+    'state::tower.range_m',
+})
+
 
 def _sum_contributor_values_filtered(
     row: dict[str, object],
@@ -151,6 +169,10 @@ def _row_family(
     max_row: dict[str, object],
 ) -> str:
     value_type_text = str(value_type or '').strip().lower()
+    if surface_id in _WORKSHOP_DECIMAL_BASE_SURFACES:
+        return 'decimal_base_multiplicative'
+    if surface_id in _WORKSHOP_ADDITIVE_POST_MULTIPLIER_SURFACES:
+        return 'additive_post_multipliers'
     if surface_id in _WORKSHOP_MULTIPLICATIVE_SURFACE_OVERRIDES:
         return 'multiplicative'
     if value_type_text in {'damage', 'hp', 'health', 'hp_per_second', 'attacks_per_second', 'multiplier'}:
@@ -238,6 +260,7 @@ def _component_effect(
     include_contributor,
     family: str,
     surface_value_type: str,
+    surface_id: str,
 ) -> tuple[float, float, bool]:
     additive_total = 0.0
     factor_total = 1.0
@@ -252,9 +275,17 @@ def _component_effect(
         value = float(raw_value)
         kind = _contributor_display_kind(contributor_dict, surface_value_type=surface_value_type)
         source_class = str(contributor_dict.get('source_class') or '').lower()
+
+        if (
+            surface_id in _WORKSHOP_IDENTITY_LAB_SURFACES
+            and source_class == 'labs'
+            and abs(value - 1.0) < 1e-12
+        ):
+            continue
+
         has_value = True
 
-        if family == 'multiplicative':
+        if family in {'multiplicative', 'decimal_base_multiplicative'}:
             if abs(value) < 1e-12:
                 continue
             factor_total *= _multiplicative_factor_for_contributor(
@@ -263,6 +294,26 @@ def _component_effect(
                 kind=kind,
                 surface_value_type=surface_value_type,
             )
+            continue
+
+        if family == 'additive_post_multipliers':
+            if source_class in {'labs', 'enhancement'}:
+                factor_total *= _multiplicative_factor_for_contributor(
+                    contributor_dict,
+                    value=value,
+                    kind='multiplier',
+                    surface_value_type=surface_value_type,
+                )
+            elif source_class in {'perk', 'perks', 'perk_effect'} and kind == 'multiplier':
+                factor_total *= value
+            else:
+                additive_total += _additive_component_value_for_contributor(
+                    contributor_dict,
+                    value=value,
+                    kind=kind,
+                    family=family,
+                    surface_id=surface_id,
+                )
             continue
 
         if family == 'additive_then_multiplicative':
@@ -274,7 +325,7 @@ def _component_effect(
                     value=value,
                     kind=kind,
                     family=family,
-                    surface_id=str(row.get('stat_name') or ''),
+                    surface_id=surface_id,
                 )
             continue
 
@@ -283,7 +334,7 @@ def _component_effect(
             value=value,
             kind=kind,
             family=family,
-            surface_id=str(row.get('stat_name') or ''),
+            surface_id=surface_id,
         )
 
     return additive_total, factor_total, has_value
@@ -312,10 +363,10 @@ def _diff_component_effects(
 ) -> tuple[float, float, bool]:
     start_additive, start_factor, start_has = start_effect
     max_additive, max_factor, max_has = max_effect
-    if family == 'multiplicative':
+    if family in {'multiplicative', 'decimal_base_multiplicative'}:
         baseline = start_factor if start_has and start_factor != 0 else 1.0
         return 0.0, (max_factor / baseline), (start_has or max_has)
-    if family == 'additive_then_multiplicative':
+    if family in {'additive_then_multiplicative', 'additive_post_multipliers'}:
         baseline = start_factor if start_has and start_factor != 0 else 1.0
         return max_additive - start_additive, (max_factor / baseline), (start_has or max_has)
     return max_additive - start_additive, 1.0, (start_has or max_has)
@@ -329,10 +380,20 @@ def _format_component_effect_display(
     additive_total, factor_total, has_value = effect
     if not has_value:
         return '—'
-    if family == 'multiplicative':
+    if family in {'multiplicative', 'decimal_base_multiplicative'}:
         if abs(factor_total - 1.0) < 1e-9:
             return '—'
         return _format_effect_value(factor_total, display_kind='multiplier')
+    if family == 'additive_post_multipliers':
+        additive_part = None if abs(additive_total) < 1e-9 else _format_effect_value(additive_total, display_kind='scalar')
+        factor_part = None if abs(factor_total - 1.0) < 1e-9 else _format_effect_value(factor_total, display_kind='multiplier')
+        if additive_part and factor_part:
+            return f'{additive_part} · {factor_part}'
+        if additive_part:
+            return additive_part
+        if factor_part:
+            return factor_part
+        return '—'
     if family == 'additive_pct':
         return '—' if abs(additive_total) < 1e-9 else _format_effect_value(additive_total, display_kind='pct')
     if family == 'additive_scalar':
@@ -359,7 +420,9 @@ def _format_effective_total_display(
     additive_total, factor_total, has_value = effect
     if not has_value:
         return '—'
-    if family != 'additive_then_multiplicative':
+    if family == 'decimal_base_multiplicative':
+        return _format_component_effect_display(effect, family=family)
+    if family != 'additive_then_multiplicative' and family != 'additive_post_multipliers':
         return _format_component_effect_display(effect, family=family)
     if workshop_value is None:
         return _format_component_effect_display(effect, family=family)
@@ -387,9 +450,20 @@ def _apply_effect_to_workshop_value(
         return workshop_value
     if family == 'multiplicative':
         return workshop_value * factor_total
+    if family == 'decimal_base_multiplicative':
+        return 1.0 + ((workshop_value + additive_total) / 1000.0) * factor_total
     if family in {'additive_pct', 'additive_scalar'}:
         return workshop_value + additive_total
     return (workshop_value + additive_total) * factor_total
+
+
+def _apply_audit_surface_cap(*, surface_id: str, value: float | None) -> float | None:
+    if value is None:
+        return None
+    cap_value = _AUDIT_SURFACE_CAPS.get(surface_id)
+    if cap_value is None:
+        return value
+    return min(float(value), cap_value)
 
 
 def _cell_flag(value: bool | None) -> str:
@@ -474,8 +548,20 @@ def _strict_reconciliation_audit(
         }
         return checks, cell_flags, [], 'amber'
 
-    expected_base_subtotal = _format_component_effect_display(base_subtotal_effect, family=family)
-    expected_base_loadout_subtotal = _format_component_effect_display(base_loadout_subtotal_effect, family=family)
+    expected_base_subtotal = _format_effective_total_display(
+        effect=base_subtotal_effect,
+        family=family,
+        workshop_value=workshop_value,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    expected_base_loadout_subtotal = _format_effective_total_display(
+        effect=base_loadout_subtotal_effect,
+        family=family,
+        workshop_value=workshop_value,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
     expected_start_modifier_total = _format_effective_total_display(
         effect=start_total_effect,
         family=family,
@@ -488,6 +574,7 @@ def _strict_reconciliation_audit(
         family=family,
         workshop_value=workshop_value,
     )
+    expected_start_value_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_start_value_numeric)
     expected_start_value = (
         None
         if expected_start_value_numeric is None
@@ -506,17 +593,23 @@ def _strict_reconciliation_audit(
         family=family,
         workshop_value=max_workshop_value,
     )
+    expected_max_workshop_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_max_workshop_numeric)
     expected_max_workshop_value = (
         None
         if expected_max_workshop_numeric is None
         else _format_surface_value(expected_max_workshop_numeric, surface_id=surface_id, value_type=value_type)
     )
     expected_perk = _format_component_effect_display(perk_effect, family=family)
-    expected_max_progression_numeric = _apply_effect_to_workshop_value(
-        effect=perk_effect,
+    expected_max_progression_effect = _combine_component_effects(
+        [max_workshop_modifier_effect, perk_effect],
         family=family,
-        workshop_value=expected_max_workshop_numeric,
     )
+    expected_max_progression_numeric = _apply_effect_to_workshop_value(
+        effect=expected_max_progression_effect,
+        family=family,
+        workshop_value=max_workshop_value,
+    )
+    expected_max_progression_numeric = _apply_audit_surface_cap(surface_id=surface_id, value=expected_max_progression_numeric)
     expected_max_progression_value = (
         None
         if expected_max_progression_numeric is None
@@ -1068,11 +1161,11 @@ def build_workshop_reconciliation_row(
     )
 
     start_component_effects = {
-        'lab': _component_effect(start_row, include_contributor=lab_include, family=family, surface_value_type=value_type),
-        'relic': _component_effect(start_row, include_contributor=relic_include, family=family, surface_value_type=value_type),
-        'module': _component_effect(start_row, include_contributor=module_include, family=family, surface_value_type=value_type),
-        'card': _component_effect(start_row, include_contributor=card_include, family=family, surface_value_type=value_type),
-        'enhancement': _component_effect(start_row, include_contributor=enhancement_include, family=family, surface_value_type=value_type),
+        'lab': _component_effect(start_row, include_contributor=lab_include, family=family, surface_value_type=value_type, surface_id=surface_id),
+        'relic': _component_effect(start_row, include_contributor=relic_include, family=family, surface_value_type=value_type, surface_id=surface_id),
+        'module': _component_effect(start_row, include_contributor=module_include, family=family, surface_value_type=value_type, surface_id=surface_id),
+        'card': _component_effect(start_row, include_contributor=card_include, family=family, surface_value_type=value_type, surface_id=surface_id),
+        'enhancement': _component_effect(start_row, include_contributor=enhancement_include, family=family, surface_value_type=value_type, surface_id=surface_id),
     }
     base_subtotal_effect = _combine_component_effects(
         [start_component_effects['lab'], start_component_effects['relic']],
@@ -1092,13 +1185,14 @@ def build_workshop_reconciliation_row(
         include_contributor=start_modifier_include,
         family=family,
         surface_value_type=value_type,
+        surface_id=surface_id,
     )
+    perk_effect = _component_effect(max_row, include_contributor=perk_include, family=family, surface_value_type=value_type, surface_id=surface_id)
     other_effect = _diff_component_effects(
         start_effect=start_total_effect,
         max_effect=max_nonperk_total_effect,
         family=family,
     )
-    perk_effect = _component_effect(max_row, include_contributor=perk_include, family=family, surface_value_type=value_type)
     max_component_effects = {
         'perk': perk_effect,
         'other': other_effect,
@@ -1111,10 +1205,22 @@ def build_workshop_reconciliation_row(
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
         'lab': _format_component_effect_display(start_component_effects['lab'], family=family),
         'relic': _format_component_effect_display(start_component_effects['relic'], family=family),
-        'base_subtotal': _format_component_effect_display(base_subtotal_effect, family=family),
+        'base_subtotal': _format_effective_total_display(
+            effect=base_subtotal_effect,
+            family=family,
+            workshop_value=workshop_value,
+            surface_id=surface_id,
+            surface_value_type=value_type,
+        ),
         'module': _format_component_effect_display(start_component_effects['module'], family=family),
         'card': _format_component_effect_display(start_component_effects['card'], family=family),
-        'base_loadout_subtotal': _format_component_effect_display(base_loadout_subtotal_effect, family=family),
+        'base_loadout_subtotal': _format_effective_total_display(
+            effect=base_loadout_subtotal_effect,
+            family=family,
+            workshop_value=workshop_value,
+            surface_id=surface_id,
+            surface_value_type=value_type,
+        ),
         'enhancement': _format_component_effect_display(start_component_effects['enhancement'], family=family),
         'perk': _format_component_effect_display(max_component_effects['perk'], family=family),
         'other': _format_component_effect_display(max_component_effects['other'], family=family),
