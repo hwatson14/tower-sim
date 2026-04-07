@@ -536,7 +536,7 @@ def test_stats_dashboard_workshop_free_upgrade_enhancement_is_multiplier_and_pct
     assert row['max_progression_value'] == '111.838%'
 
 
-def test_stats_dashboard_workshop_lab_effects_use_start_to_max_delta_for_multiplier_labs():
+def test_stats_dashboard_workshop_lab_effects_use_start_of_run_values_for_multiplier_labs():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -601,7 +601,7 @@ def test_stats_dashboard_workshop_lab_effects_use_start_to_max_delta_for_multipl
         (workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or []
     )
     health_row = next(item for item in defense_rows if item.get('name') == 'Health')
-    assert health_row['lab_effects'] == 'x 12.5'
+    assert health_row['lab_effects'] == '+ 3.04'
     assert 'Death Wave Health' in health_row['row_notes']
 
 
@@ -990,8 +990,12 @@ def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_to
                     'value_type': 'damage',
                     'contributors': [
                         {'source_class': 'workshop', 'contributor_id': 'workshop__tower__damage__flat', 'value': 71_100_000.0},
+                        {'source_class': 'labs', 'contributor_id': 'lab.damage', 'value': 2.44},
+                        {'source_class': 'module_main', 'contributor_id': 'module.damage', 'value': 10.0},
+                        {'source_class': 'cards', 'contributor_id': 'card.damage', 'value': 2.15},
+                        {'source_class': 'workshop', 'contributor_id': 'enhancement.damage', 'value': 1.56},
+                        {'source_class': 'relics', 'contributor_id': 'relic.damage', 'value': 0.54},
                         {'source_class': 'perk_effect', 'contributor_id': 'perk.damage', 'value': 1.8},
-                        {'source_class': 'scenario_rules', 'contributor_id': 'scenario.damage', 'value': 1.1},
                     ],
                 }
             }
@@ -1018,5 +1022,157 @@ def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_to
         (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
     )
     damage_row = next(row for row in offense_rows if row.get('name') == 'Damage')
-    assert damage_row['start_of_run_modifier_total'] == 'x 44.2'
-    assert damage_row['max_progression_modifier_total'] == 'x 1.98'
+    assert damage_row['start_of_run_modifier_total'] == 'x 126'
+    assert damage_row['other'] == 'x 1'
+    assert damage_row['max_progression_modifier_total'] == 'x 1.8'
+
+
+def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_surfaces():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Defense %': {'preset_levels': {'Farming': 99}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.defense_pct': {
+                    'display_value': '78.4%',
+                    'final_value': 78.4,
+                    'value_type': 'pct',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__defense_pct__pct', 'value': 49.5},
+                        {'source_class': 'labs', 'contributor_id': 'lab.defense_%.account_state', 'value': 5.6},
+                        {'source_class': 'cards', 'contributor_id': 'card.extra_defense.loadout_resolved', 'value': 11.0},
+                        {'source_class': 'module_substat', 'contributor_id': 'module.a', 'value': 8.3, 'input_value_type': 'pct'},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__defense_pct__pct', 'value': 0.04},
+                    ],
+                }
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::tower.defense_pct': {
+                    'display_value': '98%',
+                    'final_value': 98.0,
+                    'value_type': 'pct',
+                    'contributors': [
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__defense_pct__pct', 'value': 49.5},
+                        {'source_class': 'labs', 'contributor_id': 'lab.defense_%.account_state', 'value': 5.6},
+                        {'source_class': 'cards', 'contributor_id': 'card.extra_defense.loadout_resolved', 'value': 11.0},
+                        {'source_class': 'module_substat', 'contributor_id': 'module.a', 'value': 8.3, 'input_value_type': 'pct'},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__defense_pct__pct', 'value': 0.04},
+                        {'source_class': 'perks', 'contributor_id': 'perk::PERK_DEFENSE_PERCENT_4_00::effect_1', 'value': 25.0, 'input_value_type': 'pct'},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = (
+        (workshop.get('payload', {}).get('sections') or [{}, {}])[1].get('rows') or []
+    )
+    defense_row = next(row for row in offense_rows if row.get('name') == 'Defense %')
+    assert defense_row['start_of_run_modifier_total'] == '+ 24.9%'
+    assert defense_row['other'] == '+ 0%'
+    assert defense_row['max_progression_modifier_total'] == '+ 25%'
+
+
+def test_stats_dashboard_workshop_other_uses_start_to_max_non_perk_delta():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {'Attack Speed': {'preset_levels': {'Farming': 99}}},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.attack_speed': {
+                    'display_value': '39.776',
+                    'final_value': 39.776,
+                    'value_type': 'attacks_per_second',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.attack_speed.account_state', 'value': 2.5},
+                        {'source_class': 'module_substat', 'contributor_id': 'module.attack_speed', 'value': 3.0, 'input_value_type': 'pct'},
+                        {'source_class': 'cards', 'contributor_id': 'card.attack_speed.loadout_resolved', 'value': 2.15},
+                        {'source_class': 'workshop', 'contributor_id': 'enhancement.attack_speed', 'value': 1.15},
+                        {'source_class': 'relics', 'contributor_id': 'relic.attack_speed', 'value': 0.05},
+                    ],
+                }
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::tower.attack_speed': {
+                    'display_value': '41',
+                    'final_value': 41.0,
+                    'value_type': 'attacks_per_second',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.attack_speed.account_state', 'value': 2.5},
+                        {'source_class': 'module_substat', 'contributor_id': 'module.attack_speed', 'value': 6.0, 'input_value_type': 'pct'},
+                        {'source_class': 'cards', 'contributor_id': 'card.attack_speed.loadout_resolved', 'value': 2.15},
+                        {'source_class': 'workshop', 'contributor_id': 'enhancement.attack_speed', 'value': 1.15},
+                        {'source_class': 'relics', 'contributor_id': 'relic.attack_speed', 'value': 0.05},
+                    ],
+                }
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'workshop'
+    )
+    offense_rows = (
+        (workshop.get('payload', {}).get('sections') or [{}])[0].get('rows') or []
+    )
+    attack_speed_row = next(row for row in offense_rows if row.get('name') == 'Attack Speed')
+    assert attack_speed_row['lab_effects'] == '+ 2.5'
+    assert attack_speed_row['module_effects'] == '+ 3%'
+    assert attack_speed_row['other'] == 'x 1.03'

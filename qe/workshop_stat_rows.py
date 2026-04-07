@@ -113,6 +113,60 @@ def _surface_display_kind(*, surface_id: str, value_type: str | None) -> str:
     return 'scalar'
 
 
+def _modifier_total_display_kind(*, surface_id: str, value_type: str | None) -> str:
+    value_type_text = str(value_type or '').strip().lower()
+    if value_type_text in {'damage', 'hp', 'health', 'hp_per_second', 'attacks_per_second', 'multiplier'}:
+        return 'multiplier'
+    return _surface_display_kind(surface_id=surface_id, value_type=value_type)
+
+
+def _neutral_effect_value(*, display_kind: str) -> str:
+    if display_kind == 'multiplier':
+        return 'x 1'
+    if display_kind == 'pct':
+        return '+ 0%'
+    return '+ 0'
+
+
+def _aggregate_effect_total(
+    row: dict[str, object],
+    *,
+    include_contributor,
+    surface_id: str,
+    surface_value_type: str,
+) -> tuple[str, float, bool]:
+    display_kind = _modifier_total_display_kind(surface_id=surface_id, value_type=surface_value_type)
+    scalar_total = 0.0
+    multiplier_total = 1.0
+    has_value = False
+    for contributor in (row.get('contributors') or []):
+        contributor_dict = dict(contributor or {})
+        if not include_contributor(contributor_dict):
+            continue
+        value = contributor_dict.get('value')
+        if not isinstance(value, (int, float)):
+            continue
+        contributor_value = float(value)
+        contributor_kind = _contributor_display_kind(contributor_dict, surface_value_type=surface_value_type)
+        source_class = str(contributor_dict.get('source_class') or '').lower()
+        has_value = True
+
+        if display_kind == 'multiplier':
+            if contributor_value == 0:
+                continue
+            if source_class == 'relics':
+                multiplier_total *= 1.0 + contributor_value
+            elif contributor_kind == 'pct':
+                multiplier_total *= 1.0 + (contributor_value / 100.0)
+            else:
+                multiplier_total *= contributor_value
+            continue
+
+        scalar_total += contributor_value
+
+    return display_kind, (multiplier_total if display_kind == 'multiplier' else scalar_total), has_value
+
+
 def _format_effect_value(
     value: float | None,
     *,
@@ -177,31 +231,76 @@ def _format_total_effect_from_row(
     row: dict[str, object],
     *,
     include_contributor,
+    surface_id: str,
     surface_value_type: str,
 ) -> str:
-    values: list[float] = []
-    display_kinds: list[str] = []
-    for contributor in (row.get('contributors') or []):
-        contributor_dict = dict(contributor or {})
-        if not include_contributor(contributor_dict):
-            continue
-        value = contributor_dict.get('value')
-        if not isinstance(value, (int, float)):
-            continue
-        values.append(float(value))
-        display_kinds.append(
-            _contributor_display_kind(contributor_dict, surface_value_type=surface_value_type)
-        )
-    if not values:
-        return 'â€”'
-    if any(kind == 'multiplier' for kind in display_kinds):
-        product = 1.0
-        for value in values:
-            product *= float(value)
-        return _format_effect_value(product, display_kind='multiplier')
-    if any(kind == 'pct' for kind in display_kinds):
-        return _format_effect_value(sum(values), display_kind='pct')
-    return _format_effect_value(sum(values), display_kind='scalar')
+    display_kind, total_value, has_value = _aggregate_effect_total(
+        row,
+        include_contributor=include_contributor,
+        surface_id=surface_id,
+        surface_value_type=surface_value_type,
+    )
+    if not has_value:
+        return _neutral_effect_value(display_kind=display_kind)
+    return _format_effect_value(total_value, display_kind=display_kind)
+
+
+def _format_effect_delta_between_rows(
+    *,
+    start_row: dict[str, object],
+    max_row: dict[str, object],
+    include_contributor,
+    surface_id: str,
+    surface_value_type: str,
+) -> str:
+    display_kind, start_total, start_has_value = _aggregate_effect_total(
+        start_row,
+        include_contributor=include_contributor,
+        surface_id=surface_id,
+        surface_value_type=surface_value_type,
+    )
+    _display_kind_max, max_total, max_has_value = _aggregate_effect_total(
+        max_row,
+        include_contributor=include_contributor,
+        surface_id=surface_id,
+        surface_value_type=surface_value_type,
+    )
+    if display_kind == 'multiplier':
+        if not start_has_value and not max_has_value:
+            return _neutral_effect_value(display_kind=display_kind)
+        baseline = start_total if start_has_value and start_total != 0 else 1.0
+        return _format_effect_value(max_total / baseline, display_kind=display_kind)
+    if not start_has_value and not max_has_value:
+        return _neutral_effect_value(display_kind=display_kind)
+    return _format_effect_value(max_total - start_total, display_kind=display_kind)
+
+
+def _combine_effect_values(
+    *,
+    left_row: dict[str, object],
+    right_row: dict[str, object],
+    left_include_contributor,
+    right_include_contributor,
+    surface_id: str,
+    surface_value_type: str,
+) -> str:
+    display_kind, left_total, left_has_value = _aggregate_effect_total(
+        left_row,
+        include_contributor=left_include_contributor,
+        surface_id=surface_id,
+        surface_value_type=surface_value_type,
+    )
+    _display_kind_right, right_total, right_has_value = _aggregate_effect_total(
+        right_row,
+        include_contributor=right_include_contributor,
+        surface_id=surface_id,
+        surface_value_type=surface_value_type,
+    )
+    if not left_has_value and not right_has_value:
+        return _neutral_effect_value(display_kind=display_kind)
+    if display_kind == 'multiplier':
+        return _format_effect_value(left_total * right_total, display_kind=display_kind)
+    return _format_effect_value(left_total + right_total, display_kind=display_kind)
 
 
 def _lab_effects_delta_display(
@@ -307,6 +406,15 @@ def build_workshop_reconciliation_row(
     account_state_payload: dict[str, object],
     selected_preset: str,
 ) -> dict[str, object]:
+    start_progression_include = lambda contributor: (
+        str(contributor.get('source_class') or '') in {'labs', 'module_main', 'module_substat', 'module_unique', 'cards', 'relics', 'enhancement'}
+        or (
+            str(contributor.get('source_class') or '') == 'workshop'
+            and str(contributor.get('contributor_id') or '').startswith('enhancement.')
+        )
+    )
+    perk_include = lambda contributor: str(contributor.get('source_class') or '') in {'perk', 'perks', 'perk_effect'}
+
     surface_id = spec['surface_id']
     canonical_row_id = str(spec.get('canonical_row_id') or surface_id)
     value_type = str(start_row.get('value_type') or max_row.get('value_type') or '')
@@ -334,13 +442,16 @@ def build_workshop_reconciliation_row(
         if isinstance(max_display_value, str)
         else _format_surface_value(None, surface_id=surface_id, value_type=value_type)
     )
+    other_display = _format_effect_delta_between_rows(
+        start_row=start_row,
+        max_row=max_row,
+        include_contributor=start_progression_include,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
     decomposition = {
         'workshop': _format_surface_value(workshop_value, surface_id=surface_id, value_type=value_type),
-        'lab': _lab_effects_delta_display(
-            start_row=start_row,
-            max_row=max_row,
-            surface_value_type=value_type,
-        ),
+        'lab': _format_effect_from_contributors(start_row, source_classes=('labs',), surface_value_type=value_type),
         'module': _format_effect_from_contributors(
             start_row,
             source_classes=('module_main', 'module_substat', 'module_unique'),
@@ -359,28 +470,44 @@ def build_workshop_reconciliation_row(
             source_classes=('perk', 'perks', 'perk_effect'),
             surface_value_type=value_type,
         ),
-        'other': _format_effect_from_contributors(
-            max_row,
-            source_classes=('base', 'scenario_rules'),
-            surface_value_type=value_type,
-        ),
+        'other': other_display,
     }
     start_of_run_modifier_total = _format_total_effect_from_row(
         start_row,
-        include_contributor=lambda contributor: (
-            str(contributor.get('source_class') or '') in {'labs', 'module_main', 'module_substat', 'module_unique', 'cards', 'relics', 'enhancement'}
-            or (
-                str(contributor.get('source_class') or '') == 'workshop'
-                and str(contributor.get('contributor_id') or '').startswith('enhancement.')
-            )
-        ),
+        include_contributor=start_progression_include,
+        surface_id=surface_id,
         surface_value_type=value_type,
     )
-    max_progression_modifier_total = _format_total_effect_from_row(
+    display_kind, perk_total, perk_has_value = _aggregate_effect_total(
         max_row,
-        include_contributor=lambda contributor: str(contributor.get('source_class') or '') in {'perk', 'perks', 'perk_effect', 'base', 'scenario_rules'},
+        include_contributor=perk_include,
+        surface_id=surface_id,
         surface_value_type=value_type,
     )
+    _start_kind, start_progression_total, start_progression_has_value = _aggregate_effect_total(
+        start_row,
+        include_contributor=start_progression_include,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    _max_kind, max_progression_other_basis_total, max_progression_other_basis_has_value = _aggregate_effect_total(
+        max_row,
+        include_contributor=start_progression_include,
+        surface_id=surface_id,
+        surface_value_type=value_type,
+    )
+    if display_kind == 'multiplier':
+        other_total_value = (
+            max_progression_other_basis_total / (start_progression_total if start_progression_has_value and start_progression_total != 0 else 1.0)
+        )
+        combined_total_value = perk_total * other_total_value
+    else:
+        other_total_value = max_progression_other_basis_total - start_progression_total
+        combined_total_value = perk_total + other_total_value
+    if not (perk_has_value or start_progression_has_value or max_progression_other_basis_has_value):
+        max_progression_modifier_total = _neutral_effect_value(display_kind=display_kind)
+    else:
+        max_progression_modifier_total = _format_effect_value(combined_total_value, display_kind=display_kind)
     row_status = str(start_row.get('status') or max_row.get('status') or 'missing')
     row_notes = str(start_row.get('notes') or max_row.get('notes') or '')
     if _has_death_wave_health_contributor(start_row, max_row):

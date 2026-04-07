@@ -31,24 +31,12 @@ def test_pipeline_entrypoints_are_importable__callable():
         execute_pipeline,
         get_default_run_stats_session,
         run_analysis_pipeline,
-        run_stats_client,
-        run_stats_ensure_local_server,
-        run_stats_local_server_is_healthy,
-        run_pipeline,
         run_stats_pipeline,
-        run_stats_server,
-        run_stats_watch_loop,
     )
 
     assert callable(execute_pipeline)
     assert callable(run_stats_pipeline)
-    assert callable(run_stats_server)
-    assert callable(run_stats_client)
-    assert callable(run_stats_ensure_local_server)
-    assert callable(run_stats_local_server_is_healthy)
-    assert callable(run_stats_watch_loop)
     assert callable(run_analysis_pipeline)
-    assert callable(run_pipeline)
     assert callable(RunStatsSession)
     assert get_default_run_stats_session() is get_default_run_stats_session()
 
@@ -77,10 +65,10 @@ def test_pipeline_uses_explicit_report_snapshot_path():
 
 def test_run_stats_cli_defaults_to_current_stats_mode():
     src = Path((ROOT / "app" / "run_stats.py")).read_text(encoding="utf-8")
+    removed_flags = ("--" + "watch", "--" + "server", "--use" + "-server")
     assert "--perk-mode" in src
-    assert "--watch" in src
-    assert "--server" in src
-    assert "--use-server" in src
+    for flag in removed_flags:
+        assert flag not in src
     assert "--state-mode" not in src
     assert "--preset" not in src
     assert "default='none'" in src
@@ -124,14 +112,12 @@ def test_residue_artifact_contract_is_internally_consistent():
     pipeline_src = Path((ROOT / "app" / "pipeline.py")).read_text(encoding="utf-8")
     publication_src = Path((ROOT / "app" / "publication.py")).read_text(encoding="utf-8")
 
-    # These are the 5 residue filenames owned by publication.write_core_outputs().
-    # Each file must have a matching producer key in pipeline.py diagnostics.
     expected_contract = {
-        'tower_regen_closure_report.json':              "diagnostics['tower_regen_closure_report']",
-        'tower_hp_semantic_gap_report.json':            "diagnostics['tower_hp_semantic_gap_report']",
-        'tower_regen_ep_semantic_gap_report.json':      "diagnostics['tower_regen_ep_semantic_gap_report']",
+        'tower_regen_closure_report.json': "diagnostics['tower_regen_closure_report']",
+        'tower_hp_semantic_gap_report.json': "diagnostics['tower_hp_semantic_gap_report']",
+        'tower_regen_ep_semantic_gap_report.json': "diagnostics['tower_regen_ep_semantic_gap_report']",
         'tower_defense_absolute_semantic_gap_report.json': "diagnostics['tower_defense_absolute_semantic_gap_report']",
-        'tower_damage_runtime_gap_report.json':         "diagnostics['tower_damage_runtime_gap_report']",
+        'tower_damage_runtime_gap_report.json': "diagnostics['tower_damage_runtime_gap_report']",
     }
 
     for filename, producer_assignment in expected_contract.items():
@@ -143,7 +129,6 @@ def test_residue_artifact_contract_is_internally_consistent():
             f"required to populate '{filename}'"
         )
 
-    # Confirm the builder imports are present at module level (not as late stubs)
     assert "_build_tower_regen_ep_semantic_gap_report" in pipeline_src
     assert "_build_tower_defense_absolute_semantic_gap_report" in pipeline_src
     assert "_build_tower_damage_runtime_gap_report" in pipeline_src
@@ -153,101 +138,14 @@ def test_run_stats_main_defaults_to_in_process_pipeline(monkeypatch):
     import app.pipeline as pipeline_mod
     import app.run_stats as run_stats_mod
 
-    called = {"client": 0, "pipeline": 0}
-
-    def _client(args):
-        called["client"] += 1
-        return 0
+    called = {"pipeline": 0}
 
     def _pipeline(args):
         called["pipeline"] += 1
         return 0
 
-    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
     monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
     monkeypatch.setattr(sys, "argv", ["app.run_stats"])
 
     assert run_stats_mod.main() == 0
-    assert called == {"client": 0, "pipeline": 1}
-
-
-def test_run_stats_main_uses_local_server_only_when_requested(monkeypatch):
-    import app.pipeline as pipeline_mod
-    import app.run_stats as run_stats_mod
-
-    called = {"client": 0, "pipeline": 0}
-
-    def _client(args):
-        called["client"] += 1
-        return 0
-
-    def _pipeline(args):
-        called["pipeline"] += 1
-        return 0
-
-    monkeypatch.setattr(pipeline_mod, "run_stats_client", _client)
-    monkeypatch.setattr(pipeline_mod, "run_stats_pipeline", _pipeline)
-    monkeypatch.setattr(sys, "argv", ["app.run_stats", "--use-server"])
-
-    assert run_stats_mod.main() == 0
-    assert called == {"client": 1, "pipeline": 0}
-
-
-def test_run_stats_ensure_local_server_forwards_host_and_port_to_spawned_command(monkeypatch):
-    """run_stats_ensure_local_server must pass --host and --port to the spawned server subprocess.
-
-    This exercises the real implementation — not a monkeypatched stub — to verify the
-    CLI contract: health checks and the spawned server use the same address.
-    """
-    import app.pipeline as pipeline_mod
-    from types import SimpleNamespace
-
-    spawned_commands = []
-
-    class _FakePopen:
-        def __init__(self, command, **kwargs):
-            spawned_commands.append(command)
-
-    # Health check always fails so we reach the Popen call, then always fails
-    # the retry loop so ensure returns False. We only care about the command built.
-    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", lambda args: False)
-    monkeypatch.setattr("subprocess.Popen", _FakePopen)
-
-    args = SimpleNamespace(host='0.0.0.0', port=9123)
-    pipeline_mod.run_stats_ensure_local_server(args)
-
-    assert len(spawned_commands) == 1, "Expected exactly one Popen call"
-    cmd = spawned_commands[0]
-    assert '--host' in cmd, "Spawned server command must include --host"
-    assert '--port' in cmd, "Spawned server command must include --port"
-    host_idx = cmd.index('--host')
-    port_idx = cmd.index('--port')
-    assert cmd[host_idx + 1] == '0.0.0.0', f"--host value must be forwarded from args; got {cmd[host_idx + 1]!r}"
-    assert cmd[port_idx + 1] == '9123', f"--port value must be forwarded from args; got {cmd[port_idx + 1]!r}"
-    assert '--server' in cmd, "Spawned command must include --server flag"
-
-
-def test_run_stats_ensure_local_server_default_host_port_forwarded(monkeypatch):
-    """run_stats_ensure_local_server must forward defaults (127.0.0.1:8765) when args has no host/port."""
-    import app.pipeline as pipeline_mod
-    from types import SimpleNamespace
-
-    spawned_commands = []
-
-    class _FakePopen:
-        def __init__(self, command, **kwargs):
-            spawned_commands.append(command)
-
-    monkeypatch.setattr(pipeline_mod, "run_stats_local_server_is_healthy", lambda args: False)
-    monkeypatch.setattr("subprocess.Popen", _FakePopen)
-
-    # args has no host/port attributes — ensure falls back to defaults
-    args = SimpleNamespace()
-    pipeline_mod.run_stats_ensure_local_server(args)
-
-    assert len(spawned_commands) == 1
-    cmd = spawned_commands[0]
-    host_idx = cmd.index('--host')
-    port_idx = cmd.index('--port')
-    assert cmd[host_idx + 1] == '127.0.0.1'
-    assert cmd[port_idx + 1] == '8765'
+    assert called == {"pipeline": 1}

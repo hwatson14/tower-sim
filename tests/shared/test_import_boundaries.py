@@ -36,7 +36,7 @@ _ACTIVE_DIRS = [APP_DIR, QE_DIR, SIMULATORS_DIR, EVALUATORS_DIR, ROOT / "input",
 _FORBIDDEN_QE_ENGINE = re.compile(
     r"engine\.stat_resolution_core|engine\.runtime_consumer_registry|engine\.query_"
 )
-# Fixed to avoid matching 'from app.pipeline import run_stats_server' etc.
+# Fixed to avoid matching import statements that mention the app pipeline surface.
 _IMPORT_RUN_STATS = re.compile(
     r"\bimport\s+run_stats\b|from\s+run_stats\s+import"
 )
