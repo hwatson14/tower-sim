@@ -152,8 +152,8 @@ MODULE_CARD_CSS = """
 .module-effect.state-locked{opacity:.72;background:rgba(255,255,255,0.02);}
 .module-effect.state-empty{opacity:.86;}
 .module-effect-chip{display:flex;justify-content:center;}
-.module-effect-value{font-weight:800;color:#ffffff;font-size:15px;text-align:right;line-height:1;}
-.module-effect-label{font-size:15px;font-weight:600;color:#d7dee6;text-align:left;line-height:1.05;}
+.module-effect-value{font-weight:800;color:#ffffff;font-size:15px;text-align:right;line-height:1;transform:translateX(-18px);}
+.module-effect-label{font-size:15px;font-weight:600;color:#d7dee6;text-align:left;line-height:1.05;transform:translateX(-18px);white-space:nowrap;}
 .module-chip{display:inline-flex;align-items:center;justify-content:center;width:76px;padding:2px 0;border-radius:999px;border:1px solid rgba(255,255,255,0.16);font-size:11px;font-weight:900;letter-spacing:.05em;text-transform:uppercase;color:#d7dee6;text-align:center;}
 .rarity-common{border-color:#9da3ae;color:#c9ced6;}
 .rarity-rare{border-color:#63b3ff;color:#8fcbff;}
