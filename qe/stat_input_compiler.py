@@ -1918,31 +1918,7 @@ def compile_stat_inputs(
                     rarity_key = _canonical_module_rarity_label(rarity_source)
                     exact = module_substat_values.get((slot_type.lower(), substat_lookup_name, rarity_key))
                     exact_unit = exact[1] if exact is not None else ''
-                    if (
-                        role == 'assist'
-                        and slot_type == 'generator'
-                        and sub.name in {'Enemy Attack Level Skip', 'Enemy Health Level Skip'}
-                        and (display or token)
-                    ):
-                        source_text = display or token
-                        numeric = float(source_text.replace('+', '').replace('%', '').replace('?', '').strip())
-                        if '%' not in source_text and 0.0 <= numeric <= 1.0:
-                            numeric *= 100.0
-                        if assist_substat_eff is not None:
-                            numeric = numeric * assist_substat_eff
-                        value_type = 'percent_display'
-                    elif role == 'assist' and exact is not None:
-                        numeric = float(exact[0])
-                        inferred_unit = kb_unit or exact_unit
-                        if assist_substat_eff is not None:
-                            numeric = numeric * assist_substat_eff
-                        if inferred_unit == 'percent':
-                            value_type = 'percent_display'
-                        elif inferred_unit == 'multiplier':
-                            value_type = 'multiplier_display'
-                        else:
-                            value_type = 'resolved_value'
-                    elif '%' in display:
+                    if '%' in display:
                         numeric = float(display.replace('+', '').replace('%', '').replace('?', '').strip())
                         if role == 'assist' and assist_substat_eff is not None:
                             numeric = numeric * assist_substat_eff
@@ -1955,11 +1931,24 @@ def compile_stat_inputs(
                     else:
                         base = token or display
                         numeric = float(str(base).replace('+', '').replace('m', '').replace('s', '').replace('?', '').strip())
+                        inferred_unit = kb_unit or exact_unit
+                        if role == 'assist' and inferred_unit == 'percent' and 0.0 <= numeric <= 1.0:
+                            numeric *= 100.0
                         if role == 'assist' and assist_substat_eff is not None:
                             numeric = numeric * assist_substat_eff
-                        inferred_unit = kb_unit or exact_unit
                         if inferred_unit == 'percent':
                             value_type = 'percent_display'
+                        else:
+                            value_type = 'resolved_value'
+                    if role == 'assist' and numeric is None and exact is not None:
+                        numeric = float(exact[0])
+                        inferred_unit = kb_unit or exact_unit
+                        if assist_substat_eff is not None:
+                            numeric = numeric * assist_substat_eff
+                        if inferred_unit == 'percent':
+                            value_type = 'percent_display'
+                        elif inferred_unit == 'multiplier':
+                            value_type = 'multiplier_display'
                         else:
                             value_type = 'resolved_value'
                 except ValueError:
