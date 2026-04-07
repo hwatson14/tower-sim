@@ -272,6 +272,12 @@ INPUT_DASHBOARD_CSS = """
 .inputs-table{width:100%;border-collapse:collapse;font-size:0.82rem;}
 .inputs-table th,.inputs-table td{border-bottom:1px solid #2b3241;padding:4px 6px;text-align:left;vertical-align:top;}
 .inputs-table th{color:#9db4ff;font-weight:600;}
+.workshop-stats-table th:nth-child(1),.workshop-stats-table td:nth-child(1){background:#3b414d;}
+.workshop-stats-table th:nth-child(2),.workshop-stats-table td:nth-child(2),
+.workshop-stats-table th:nth-child(3),.workshop-stats-table td:nth-child(3),
+.workshop-stats-table th:nth-child(4),.workshop-stats-table td:nth-child(4),
+.workshop-stats-table th:nth-child(10),.workshop-stats-table td:nth-child(10),
+.workshop-stats-table th:nth-child(13),.workshop-stats-table td:nth-child(13){background:#4a515e;}
 .inputs-split{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
 .inputs-triple{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
 .inputs-subpanel{background:#10141d;border:1px solid #2b3241;border-radius:8px;padding:6px 8px;}
@@ -382,13 +388,13 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         'Name',
         'Workshop Level',
         'Workshop Value',
+        'Max Workshop Value',
         'Lab',
         'Module',
         'Card',
         'Enhancement',
         'Relics',
         'Start of Run Value',
-        'Max Workshop Value',
         'Perk',
         'Other',
         'Max Progression Value',
@@ -400,13 +406,13 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 row.get('name', ''),
                 row.get('workshop_level', ''),
                 row.get('workshop_value', ''),
+                row.get('max_workshop_value', ''),
                 row.get('lab_effects', ''),
                 row.get('module_effects', ''),
                 row.get('card_effects', ''),
                 row.get('enhancement_effects', ''),
                 row.get('relics', ''),
                 row.get('start_of_run_value', ''),
-                row.get('max_workshop_value', ''),
                 row.get('perk_effects', ''),
                 row.get('other', ''),
                 row.get('max_progression_value', ''),
@@ -414,7 +420,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
             for row in ((section or {}).get('rows') or [])
         ]
         title = html.escape(str((section or {}).get('title') or ''))
-        sections.append(f"<div class='inputs-subpanel'><h5>{title}</h5>{_render_table(headers, rows)}</div>")
+        sections.append(f"<div class='inputs-subpanel'><h5>{title}</h5>{_render_table(headers, rows, class_name='inputs-table workshop-stats-table')}</div>")
     return f"<div class='inputs-panel'>{''.join(sections)}</div>"
 
 
