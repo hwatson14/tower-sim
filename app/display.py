@@ -283,7 +283,7 @@ INPUT_DASHBOARD_CSS = """
 .workshop-stats-table tbody td:nth-child(2){background:#e1e1e1;}
 .workshop-stats-table tbody td:nth-child(5),.workshop-stats-table tbody td:nth-child(8),.workshop-stats-table tbody td:nth-child(10),.workshop-stats-table tbody td:nth-child(14){font-weight:700;}
 .workshop-stats-table tbody td:nth-child(11),.workshop-stats-table tbody td:nth-child(12){background:#d8efc8;}
-.workshop-stats-table tbody td:nth-child(13),.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16){background:#d8eef0;}
+.workshop-stats-table tbody td:nth-child(14),.workshop-stats-table tbody td:nth-child(15),.workshop-stats-table tbody td:nth-child(16){background:#d8eef0;}
 .workshop-stats-table tbody td:nth-child(17),.workshop-stats-table tbody td:nth-child(18){background:#efe3c8;}
 .workshop-stats-table tbody td:nth-child(12),.workshop-stats-table tbody td:nth-child(16),.workshop-stats-table tbody td:nth-child(18){font-weight:700;}
 .workshop-stats-table .section-row td{background:#8d8d8d;color:#fff;font-weight:700;text-align:left;}
