@@ -368,6 +368,29 @@ def _resolve_additive_base_times_post_multipliers(
     return (workshop + additive_bonus) * post_multiplier, 'resolved', f'{note_label}: (workshop + flat additive contributors) x post multipliers.', schema
 
 
+def _resolve_wall_rebuild_seconds(
+    destination_id: str,
+    contributors: list[StatInput],
+    schema: dict[str, object],
+) -> tuple[float | None, str, str, dict[str, object]]:
+    workshop = next((_as_float(row.value) for row in contributors if row.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    final = workshop
+    for row in contributors:
+        if row.source_family == 'workshop':
+            continue
+        value = _as_float(row.value)
+        if value is None:
+            continue
+        contributor_id = str(row.contributor_id or '').lower()
+        if row.source_family in {'relic', 'vault'} and 'reduction' in contributor_id and value > 0:
+            final -= value
+            continue
+        final += value
+    return max(150.0, final), 'resolved', 'Destination-specific wall rebuild formula: additive seconds deltas with a 150s floor.', schema
+
+
 def _tower_regen_compare_module_multiplier(contributors: list[StatInput]) -> float:
     primary_bonus = 0.0
     assist_bonus = 0.0
@@ -666,6 +689,8 @@ def _resolve_bucket(
         if lab_seconds is None:
             return None, 'mapped_not_resolved', 'Missing wall invincibility lab value.', schema
         return lab_seconds, 'resolved', 'Destination-specific wall invincibility formula: direct lab seconds.', schema
+    if destination_id in {'wall_rebuild_seconds', 'wall.rebuild_seconds'}:
+        return _resolve_wall_rebuild_seconds(destination_id, contributors, schema)
     if destination_id == 'module.orbital_augment.electron_count':
         values = [_as_float(row.value) for row in contributors]
         values = [value for value in values if value is not None]

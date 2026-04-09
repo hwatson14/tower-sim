@@ -5836,6 +5836,66 @@
         "trace_mode": "full_trace",
         "display_value": "168"
       },
+      "state::economy.interest_per_wave_pct": {
+        "stat_name": "state::economy.interest_per_wave_pct",
+        "final_value": 7.159999999999999,
+        "value_type": "pct",
+        "source_count": 3,
+        "status": "partially_resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "base",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "vault.interest___wave.account_state",
+            "value": 0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Vault",
+            "display_value": "0"
+          },
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.interest.account_state",
+            "value": 1.22,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "1.22"
+          },
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "workshop",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "workshop__tower__interest_per_wave__pct",
+            "value": 5.9399999999999995,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::WS",
+            "display_value": "5.94%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "7.16%"
+      },
       "state::economy.starting_cash_bonus": {
         "stat_name": "state::economy.starting_cash_bonus",
         "final_value": null,
@@ -9481,6 +9541,81 @@
         "trace_mode": "full_trace",
         "display_value": "144M"
       },
+      "state::wall.rebuild_seconds": {
+        "stat_name": "state::wall.rebuild_seconds",
+        "final_value": 608.0,
+        "value_type": "seconds",
+        "source_count": 4,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "base",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "vault__tower__wall_rebuild__seconds_reduction",
+            "value": 0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Vault",
+            "display_value": "0"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.wall_rebuild.account_state",
+            "value": -90.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "-90"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "relics",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "relic__tower__wall_rebuild_seconds_reduction",
+            "value": 2.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Relics",
+            "display_value": "2"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "workshop",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "workshop__wall__rebuild__seconds",
+            "value": 700.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::WS",
+            "display_value": "700"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "608"
+      },
       "state::wall.regen": {
         "stat_name": "state::wall.regen",
         "final_value": 525.0,
@@ -9898,8 +10033,8 @@
         "timing_scenario_probe",
         "timing_scenario_probe"
       ],
-      "resolved_surface_count": 264,
-      "contributor_row_count": 256
+      "resolved_surface_count": 266,
+      "contributor_row_count": 263
     }
   },
   "Tourney": {
@@ -15664,6 +15799,66 @@
         "trace_mode": "full_trace",
         "display_value": "168"
       },
+      "state::economy.interest_per_wave_pct": {
+        "stat_name": "state::economy.interest_per_wave_pct",
+        "final_value": 7.159999999999999,
+        "value_type": "pct",
+        "source_count": 3,
+        "status": "partially_resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "base",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "vault.interest___wave.account_state",
+            "value": 0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Vault",
+            "display_value": "0"
+          },
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.interest.account_state",
+            "value": 1.22,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "1.22"
+          },
+          {
+            "surface_id": "state::economy.interest_per_wave_pct",
+            "surface_class": "surface",
+            "domain": "economy",
+            "source_class": "workshop",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "workshop__tower__interest_per_wave__pct",
+            "value": 5.9399999999999995,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::WS",
+            "display_value": "5.94%"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "7.16%"
+      },
       "state::economy.starting_cash_bonus": {
         "stat_name": "state::economy.starting_cash_bonus",
         "final_value": null,
@@ -19144,6 +19339,81 @@
         "trace_mode": "full_trace",
         "display_value": "26.3M"
       },
+      "state::wall.rebuild_seconds": {
+        "stat_name": "state::wall.rebuild_seconds",
+        "final_value": 608.0,
+        "value_type": "seconds",
+        "source_count": 4,
+        "status": "resolved",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "base",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "vault__tower__wall_rebuild__seconds_reduction",
+            "value": 0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Vault",
+            "display_value": "0"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "labs",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "lab.wall_rebuild.account_state",
+            "value": -90.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Labs",
+            "display_value": "-90"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "relics",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "relic__tower__wall_rebuild_seconds_reduction",
+            "value": 2.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::Relics",
+            "display_value": "2"
+          },
+          {
+            "surface_id": "state::wall.rebuild_seconds",
+            "surface_class": "surface",
+            "domain": "progression",
+            "source_class": "workshop",
+            "composition_stage": "additive_pre_cap",
+            "contributor_id": "workshop__wall__rebuild__seconds",
+            "value": 700.0,
+            "value_type": "scalar",
+            "input_value_type": "resolved_value",
+            "active": true,
+            "gate_reason": null,
+            "provenance_ref": "IDS::WS",
+            "display_value": "700"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_start_of_run",
+        "trace_mode": "full_trace",
+        "display_value": "608"
+      },
       "state::wall.regen": {
         "stat_name": "state::wall.regen",
         "final_value": 210.0,
@@ -19546,8 +19816,8 @@
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "resolved_surface_count": 264,
-      "contributor_row_count": 239
+      "resolved_surface_count": 266,
+      "contributor_row_count": 246
     }
   }
 }

@@ -251,6 +251,9 @@ def _additive_component_value_for_contributor(
         and 0.0 <= value < 1.0
     ):
         return value * 100.0
+    contributor_id = str(contributor.get('contributor_id') or '').lower()
+    if surface_id == 'state::wall.rebuild_seconds' and source_class == 'relics' and 'reduction' in contributor_id and value > 0:
+        return -value
     return value
 
 
@@ -751,8 +754,12 @@ def _format_effect_value(
 ) -> str:
     if value is None:
         return '—'
-    prefix = 'x' if display_kind == 'multiplier' else default_prefix
-    number = _format_compact_number(value)
+    if display_kind == 'multiplier':
+        prefix = 'x'
+        number = _format_compact_number(value)
+    else:
+        prefix = '-' if value < 0 else default_prefix
+        number = _format_compact_number(abs(value))
     suffix = '%' if display_kind == 'pct' else ''
     return f'{prefix} {number}{suffix}'
 

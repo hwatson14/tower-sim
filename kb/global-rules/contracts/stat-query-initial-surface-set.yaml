@@ -239,6 +239,22 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved wall fortification multiplier available to progression queries.
+    - surface_id: state::wall.rebuild_seconds
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: progression
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved wall rebuild duration in seconds available to progression queries.
     - surface_id: state::tower.defense_pct
       surface_kind: canonical_surface
       surface_class: surface
@@ -1060,6 +1076,22 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: resolved cash per wave available to progression queries.
+    - surface_id: state::economy.interest_per_wave_pct
+      surface_kind: canonical_surface
+      surface_class: surface
+      domain: economy
+      owning_families:
+      - progression_start_of_run
+      - progression_runtime_no_perks
+      - progression_runtime_with_perks
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved interest per wave percent available to progression queries.
     - surface_id: state::economy.coins_per_kill_bonus
       surface_kind: canonical_surface
       surface_class: surface
@@ -1629,9 +1661,11 @@ families:
       - state::tower.orb_speed_rpm
       - state::economy.cash_kill_multiplier
       - state::economy.cash_per_wave
+      - state::economy.interest_per_wave_pct
       - state::economy.coins_per_kill_bonus
       - state::economy.coins_per_wave
       - state::economy.starting_cash_bonus
+      - state::wall.rebuild_seconds
       - state::bot.amplify.bonus_multiplier
       - state::bot.amplify.cooldown_seconds
       - state::bot.amplify.duration_seconds

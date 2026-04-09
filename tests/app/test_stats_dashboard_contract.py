@@ -1155,6 +1155,134 @@ def test_stats_dashboard_workshop_does_not_backfill_from_input_dashboard_when_qe
     assert by_name['Interest / Wave']['max_progression_value'] == '—'
 
 
+def test_stats_dashboard_workshop_publishes_wall_rebuild_and_interest_rows_green_when_qe_rows_exist():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {
+            'Wall Rebuild': {'preset_levels': {'Farming': 250}},
+            'Interest / Wave': {'preset_levels': {'Farming': 99}},
+        },
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {
+            'workshop': {
+                'groups': {
+                    'utility': [
+                        {'name': 'Wall Rebuild', 'coin_level': '250', 'coin_value': '300.0', 'max_level': '300', 'max_value': ''},
+                        {'name': 'Interest / Wave', 'coin_level': '99', 'coin_value': '99.0', 'max_level': '99', 'max_value': '99.0'},
+                    ]
+                }
+            }
+        },
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = {
+        'artifact': 'input_dashboard',
+        'panels': [
+            {
+                'panel_id': 'workshop',
+                'payload': {
+                    'groups': {
+                        'utility': [
+                            {'name': 'Wall Rebuild', 'coin_level': '250', 'coin_value': '300.0', 'max_level': '300', 'max_value': ''},
+                            {'name': 'Interest / Wave', 'coin_level': '99', 'coin_value': '99.0', 'max_level': '99', 'max_value': '99.0'},
+                        ]
+                    }
+                },
+            }
+        ],
+    }
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::wall.rebuild_seconds': {
+                    'display_value': '608',
+                    'final_value': 608.0,
+                    'value_type': 'seconds',
+                    'status': 'resolved',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.wall_rebuild.account_state', 'value': -90.0},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__wall_rebuild_seconds_reduction', 'value': 2.0},
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__wall__rebuild__seconds', 'value': 700.0},
+                    ],
+                },
+                'state::economy.interest_per_wave_pct': {
+                    'display_value': '7.16%',
+                    'final_value': 7.16,
+                    'value_type': 'pct',
+                    'status': 'partially_resolved',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.interest.account_state', 'value': 1.22},
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__interest_per_wave__pct', 'value': 5.94},
+                    ],
+                },
+            }
+        }
+    }
+    query_rows_max = {
+        'Farming': {
+            'rows': {
+                'state::wall.rebuild_seconds': {
+                    'display_value': '508',
+                    'final_value': 508.0,
+                    'value_type': 'seconds',
+                    'status': 'resolved',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.wall_rebuild.account_state', 'value': -90.0},
+                        {'source_class': 'relics', 'contributor_id': 'relic__tower__wall_rebuild_seconds_reduction', 'value': 2.0},
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__wall__rebuild__seconds', 'value': 600.0},
+                    ],
+                },
+                'state::economy.interest_per_wave_pct': {
+                    'display_value': '31.32%',
+                    'final_value': 31.325,
+                    'value_type': 'pct',
+                    'status': 'partially_resolved',
+                    'contributors': [
+                        {'source_class': 'labs', 'contributor_id': 'lab.interest.account_state', 'value': 1.22},
+                        {'source_class': 'perks', 'contributor_id': 'perk::PERK_INTEREST_X1_50::effect_1', 'value': 4.375, 'input_value_type': 'multiplier'},
+                        {'source_class': 'workshop', 'contributor_id': 'workshop__tower__interest_per_wave__pct', 'value': 5.94},
+                    ],
+                },
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    workshop = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'workshop'
+    )
+    rows = [
+        row
+        for section in workshop.get('payload', {}).get('sections') or []
+        for row in section.get('rows') or []
+    ]
+    by_name = {row.get('name'): row for row in rows}
+    assert by_name['Wall Rebuild']['row_status'] == 'resolved'
+    assert by_name['Wall Rebuild']['start_of_run_value'] == '608'
+    assert by_name['Wall Rebuild']['max_progression_value'] == '508'
+    assert by_name['Wall Rebuild']['reconciliation_status'] == 'green'
+    assert by_name['Wall Rebuild']['relics'] == '- 2'
+    assert by_name['Interest / Wave']['row_status'] == 'partially_resolved'
+    assert by_name['Interest / Wave']['start_of_run_value'] == '7.16%'
+    assert by_name['Interest / Wave']['max_progression_value'] == '31.32%'
+    assert by_name['Interest / Wave']['reconciliation_status'] == 'green'
+
+
 def test_stats_dashboard_workshop_surfaces_start_and_max_progression_modifier_totals():
     account_state = {
         'default_preset': 'Farming',

@@ -352,6 +352,25 @@ def _resolve_additive_base_times_post_multipliers(destination_id: str, contribut
     return (workshop + additive_bonus) * post_multiplier, 'resolved', f'{note_label}: (workshop + flat additive contributors) x post multipliers.', schema
 
 
+def _resolve_wall_rebuild_seconds(destination_id: str, contributors: List[StatInput], schema: Dict[str, object]) -> Tuple[float | None, str, str, Dict[str, object]]:
+    workshop = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
+    if workshop is None:
+        return None, 'mapped_not_resolved', f'Missing workshop base for {destination_id}.', schema
+    final = workshop
+    for r in contributors:
+        if r.source_family == 'workshop':
+            continue
+        v = _as_float(r.value)
+        if v is None:
+            continue
+        contributor_id = str(r.contributor_id or '').lower()
+        if r.source_family in {'relic', 'vault'} and 'reduction' in contributor_id and v > 0:
+            final -= v
+            continue
+        final += v
+    return max(150.0, final), 'resolved', 'Destination-specific wall rebuild formula: additive seconds deltas with a 150s floor.', schema
+
+
 def _resolve_additive_base_plus_bonuses_pct(destination_id: str, contributors: List[StatInput], schema: Dict[str, object], *, note_label: str = 'Promoted additive-base-plus-bonuses pct family') -> Tuple[float | None, str, str, Dict[str, object]]:
     workshop = next((_as_float(r.value) for r in contributors if r.source_family == 'workshop'), None)
     if workshop is None:

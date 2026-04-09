@@ -56,6 +56,14 @@ nodes:
     verification_status: verified
     blocker_reason: ''
     notes: Query-owned wall fortification multiplier surface.
+  - node_id: state::wall.rebuild_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned wall rebuild duration surface.
   - node_id: source_input::workshop:Orbs
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -920,6 +928,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned cash per wave surface.
+  - node_id: state::economy.interest_per_wave_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned interest per wave surface.
   - node_id: state::economy.coins_per_kill_bonus
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1128,6 +1144,22 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Mutable workshop coin per wave track.
+  - node_id: source_input::workshop:Interest / Wave
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop interest per wave track.
+  - node_id: source_input::workshop:Wall Rebuild
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop wall rebuild track.
   - node_id: source_input::lab:Starting Cash
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1624,6 +1656,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall HP depends on tower HP.
+  - upstream_node_id: source_input::workshop:Wall Rebuild
+    downstream_node_id: state::wall.rebuild_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Wall Rebuild routes to wall rebuild seconds.
   - upstream_node_id: source_input::lab:Wall Regen
     downstream_node_id: state::wall.regen
     invalidation_semantics: recompute_downstream
@@ -2101,6 +2140,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Workshop Cash / Wave routes to cash per wave.
+  - upstream_node_id: source_input::workshop:Interest / Wave
+    downstream_node_id: state::economy.interest_per_wave_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Interest / Wave routes to interest per wave percent.
   - upstream_node_id: source_input::workshop:Coin / Kill Bonus
     downstream_node_id: state::economy.coins_per_kill_bonus
     invalidation_semantics: recompute_downstream

@@ -3380,6 +3380,22 @@
               "status": "resolved"
             }
           },
+          "state::economy.interest_per_wave_pct": {
+            "stat_name": "state::economy.interest_per_wave_pct",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 7.159999999999999,
+              "display_value": "7.16%",
+              "value_type": "pct",
+              "status": "partially_resolved"
+            },
+            "max_progression": {
+              "final_value": 31.324999999999996,
+              "display_value": "31.325%",
+              "value_type": "pct",
+              "status": "partially_resolved"
+            }
+          },
           "state::economy.starting_cash_bonus": {
             "stat_name": "state::economy.starting_cash_bonus",
             "changed_in_max_progression": false,
@@ -4308,6 +4324,22 @@
               "status": "resolved"
             }
           },
+          "state::wall.rebuild_seconds": {
+            "stat_name": "state::wall.rebuild_seconds",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 608.0,
+              "display_value": "608",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 508.0,
+              "display_value": "508",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
           "state::wall.regen": {
             "stat_name": "state::wall.regen",
             "changed_in_max_progression": false,
@@ -4518,8 +4550,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 264,
-          "changed_in_max_progression_count": 52
+          "row_count": 266,
+          "changed_in_max_progression_count": 54
         }
       }
     },
@@ -7774,6 +7806,22 @@
               "status": "resolved"
             }
           },
+          "state::economy.interest_per_wave_pct": {
+            "stat_name": "state::economy.interest_per_wave_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": 7.159999999999999,
+              "display_value": "7.16%",
+              "value_type": "pct",
+              "status": "partially_resolved"
+            },
+            "max_progression": {
+              "final_value": 7.159999999999999,
+              "display_value": "7.16%",
+              "value_type": "pct",
+              "status": "partially_resolved"
+            }
+          },
           "state::economy.starting_cash_bonus": {
             "stat_name": "state::economy.starting_cash_bonus",
             "changed_in_max_progression": false,
@@ -8702,6 +8750,22 @@
               "status": "resolved"
             }
           },
+          "state::wall.rebuild_seconds": {
+            "stat_name": "state::wall.rebuild_seconds",
+            "changed_in_max_progression": true,
+            "start_of_run": {
+              "final_value": 608.0,
+              "display_value": "608",
+              "value_type": "seconds",
+              "status": "resolved"
+            },
+            "max_progression": {
+              "final_value": 508.0,
+              "display_value": "508",
+              "value_type": "seconds",
+              "status": "resolved"
+            }
+          },
           "state::wall.regen": {
             "stat_name": "state::wall.regen",
             "changed_in_max_progression": false,
@@ -8912,8 +8976,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 264,
-          "changed_in_max_progression_count": 42
+          "row_count": 266,
+          "changed_in_max_progression_count": 43
         }
       }
     }
@@ -8942,9 +9006,9 @@
     "qe_shared_runtime_context": {
       "context_kind": "qe_shared_runtime_context",
       "consumer_bundle_count": 13,
-      "family_surface_count": 453,
+      "family_surface_count": 459,
       "family_contract_count": 6,
-      "surface_metadata_count": 247,
+      "surface_metadata_count": 249,
       "compiler_mapping_count": 348,
       "compiler_alias_count": 22,
       "compiler_relic_count": 26,
@@ -8958,7 +9022,7 @@
       "Farming": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 264,
+          "statbook_row_count": 266,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -8969,12 +9033,12 @@
             "timing_scenario_probe",
             "timing_scenario_probe"
           ],
-          "resolved_surface_count": 264,
-          "contributor_row_count": 256
+          "resolved_surface_count": 266,
+          "contributor_row_count": 263
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 264,
+          "statbook_row_count": 266,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -8985,18 +9049,18 @@
             "timing_farm_with_perks",
             "timing_farm_with_perks"
           ],
-          "resolved_surface_count": 264,
-          "contributor_row_count": 279
+          "resolved_surface_count": 266,
+          "contributor_row_count": 287
         },
         "dual_state_stats": {
-          "row_count": 264,
-          "changed_in_max_progression_count": 52
+          "row_count": 266,
+          "changed_in_max_progression_count": 54
         }
       },
       "Tourney": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 264,
+          "statbook_row_count": 266,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9007,12 +9071,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 264,
-          "contributor_row_count": 239
+          "resolved_surface_count": 266,
+          "contributor_row_count": 246
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 264,
+          "statbook_row_count": 266,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9023,12 +9087,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 264,
-          "contributor_row_count": 240
+          "resolved_surface_count": 266,
+          "contributor_row_count": 247
         },
         "dual_state_stats": {
-          "row_count": 264,
-          "changed_in_max_progression_count": 42
+          "row_count": 266,
+          "changed_in_max_progression_count": 43
         }
       }
     },
@@ -9082,9 +9146,11 @@
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
               "state::economy.cash_per_wave",
+              "state::economy.interest_per_wave_pct",
               "state::economy.coins_per_kill_bonus",
               "state::economy.coins_per_wave",
               "state::economy.starting_cash_bonus",
+              "state::wall.rebuild_seconds",
               "state::bot.amplify.bonus_multiplier",
               "state::bot.amplify.cooldown_seconds",
               "state::bot.amplify.duration_seconds",
@@ -9201,9 +9267,11 @@
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
               "state::economy.cash_per_wave",
+              "state::economy.interest_per_wave_pct",
               "state::economy.coins_per_kill_bonus",
               "state::economy.coins_per_wave",
               "state::economy.starting_cash_bonus",
+              "state::wall.rebuild_seconds",
               "state::bot.amplify.bonus_multiplier",
               "state::bot.amplify.cooldown_seconds",
               "state::bot.amplify.duration_seconds",
@@ -9322,9 +9390,11 @@
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
               "state::economy.cash_per_wave",
+              "state::economy.interest_per_wave_pct",
               "state::economy.coins_per_kill_bonus",
               "state::economy.coins_per_wave",
               "state::economy.starting_cash_bonus",
+              "state::wall.rebuild_seconds",
               "state::bot.amplify.bonus_multiplier",
               "state::bot.amplify.cooldown_seconds",
               "state::bot.amplify.duration_seconds",
@@ -9441,9 +9511,11 @@
               "state::tower.orb_speed_rpm",
               "state::economy.cash_kill_multiplier",
               "state::economy.cash_per_wave",
+              "state::economy.interest_per_wave_pct",
               "state::economy.coins_per_kill_bonus",
               "state::economy.coins_per_wave",
               "state::economy.starting_cash_bonus",
+              "state::wall.rebuild_seconds",
               "state::bot.amplify.bonus_multiplier",
               "state::bot.amplify.cooldown_seconds",
               "state::bot.amplify.duration_seconds",
