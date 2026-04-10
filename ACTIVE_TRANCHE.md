@@ -106,14 +106,16 @@ This tranche is not about:
 
 1. COMPLETE: sync root governance to the v49 program and active authority order
 2. COMPLETE: prove the visible-stat contract is active in implementation and tests
-3. COMPLETE: current-scope canonical stat visibility is now published through Streamlit via the sanctioned owner chain, including QE-owned bots, guardians, modules, and ultimate-weapon sections
-4. COMPLETE: the sanctioned max-wave simulator product contract is now visible in Streamlit with stable payload summary, explicit runtime controls, downloadable row output, and simulator-backed execution diagnostics
-5. IN PROGRESS: run honest current-stage performance verification and sanctioned-path hardening
+3. IN PROGRESS: recover the Stats product contract so canonical visibility is operator-useful in Streamlit rather than a resolved-section-heavy dump
+4. IN PROGRESS: recover Streamlit operational product usability so Boss Waves remains usable even when optional Stats/debug data is partial or absent
+5. BLOCKED BY RECOVERY: do not resume performance work until the Stats/Boss Waves recovery tranche closes truthfully
 6. TODO: demote or remove stale duplicate authority and residue after parity
 
 ### Current blockers inside the active program
 
-1. The v49 interactive performance target is still open, so P5 remains the active blocker to full program completion.
+1. The Stats product contract regressed away from the bible’s intended operator shape; Workshop/UW/modules must be restored as the primary Stats workflow before completion claims are honest.
+2. Optional Stats/debug rendering can still break the operational product surface, so P3 and P4 are not honestly complete until that isolation is repaired and verified.
+3. Performance remains open, but it is not the next blocker to work on until this recovery tranche is closed.
 
 ### Exit criteria
 

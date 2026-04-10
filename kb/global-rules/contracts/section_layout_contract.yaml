@@ -206,9 +206,12 @@ sections:
       - true
       - false
   stats_dashboard:
-    panel_order:
+    primary_panel_order:
       - workshop
       - derived
+      - ultimate_weapons
+      - modules
+    secondary_panel_order:
       - offense_resolved
       - defense_resolved
       - utility_resolved

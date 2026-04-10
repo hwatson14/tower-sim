@@ -35,6 +35,11 @@ def test_stats_dashboard_contract_and_panel_types():
     assert panel_pairs == [
         ('workshop', 'workshop_stat_table'),
         ('derived', 'resolved_stat_section'),
+        ('ultimate_weapons', 'resolved_uw_section'),
+        ('modules', 'context_modules'),
+    ]
+    secondary_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('secondary_panels') or [])]
+    assert secondary_pairs == [
         ('offense_resolved', 'resolved_stat_section'),
         ('defense_resolved', 'resolved_stat_section'),
         ('utility_resolved', 'resolved_stat_section'),
@@ -93,17 +98,23 @@ def test_stats_dashboard_publishes_contract_manifest_and_domain_acceptance_gate(
     panel_acceptance = {entry.get('panel_id'): entry for entry in (contract.get('panel_acceptance') or [])}
     assert panel_acceptance['workshop']['acceptance_state'] == 'active'
     assert panel_acceptance['workshop']['authority'] == 'qe_query_rows'
+    assert panel_acceptance['workshop']['product_tier'] == 'primary'
     assert panel_acceptance['derived']['acceptance_state'] == 'active'
     assert panel_acceptance['derived']['authority'] == 'qe_query_rows'
-    assert panel_acceptance['offense_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['defense_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['utility_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['wall_economy_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['cards_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['bots_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['guardians_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['modules_resolved']['acceptance_state'] == 'active'
-    assert panel_acceptance['uw_stats_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['derived']['product_tier'] == 'primary'
+    assert panel_acceptance['ultimate_weapons']['acceptance_state'] == 'active'
+    assert panel_acceptance['ultimate_weapons']['product_tier'] == 'primary'
+    assert panel_acceptance['modules']['acceptance_state'] == 'active'
+    assert panel_acceptance['modules']['product_tier'] == 'primary'
+    assert panel_acceptance['offense_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['defense_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['utility_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['wall_economy_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['cards_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['bots_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['guardians_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['modules_resolved']['acceptance_state'] == 'secondary'
+    assert panel_acceptance['uw_stats_resolved']['acceptance_state'] == 'secondary'
 
 
 def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_missing_status():
@@ -255,7 +266,7 @@ def test_stats_dashboard_resolved_sections_publish_offense_defense_and_utility_r
         selected_state_mode='start_of_run',
     )
 
-    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    panels = {panel.get('panel_id'): panel for panel in payload['secondary_variants']['Farming']['start_of_run']}
     offense_rows = {row.get('label'): row for row in (panels['offense_resolved'].get('payload', {}).get('rows') or [])}
     defense_rows = {row.get('label'): row for row in (panels['defense_resolved'].get('payload', {}).get('rows') or [])}
     utility_rows = {row.get('label'): row for row in (panels['utility_resolved'].get('payload', {}).get('rows') or [])}
@@ -304,7 +315,7 @@ def test_stats_dashboard_resolved_sections_publish_wall_and_derived_rows():
         selected_state_mode='start_of_run',
     )
 
-    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    panels = {panel.get('panel_id'): panel for panel in payload['secondary_variants']['Farming']['start_of_run']}
     wall_rows = {row.get('label'): row for row in (panels['wall_economy_resolved'].get('payload', {}).get('rows') or [])}
 
     assert panels['wall_economy_resolved'].get('payload', {}).get('owner') == 'qe'
@@ -350,7 +361,7 @@ def test_stats_dashboard_resolved_sections_publish_cards_and_uw_rows():
         selected_state_mode='start_of_run',
     )
 
-    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    panels = {panel.get('panel_id'): panel for panel in payload['secondary_variants']['Farming']['start_of_run']}
     card_rows = {row.get('label'): row for row in (panels['cards_resolved'].get('payload', {}).get('rows') or [])}
     uw_rows = {row.get('label'): row for row in (panels['uw_stats_resolved'].get('payload', {}).get('rows') or [])}
 
@@ -401,7 +412,7 @@ def test_stats_dashboard_resolved_sections_publish_bot_and_guardian_rows():
         selected_state_mode='start_of_run',
     )
 
-    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    panels = {panel.get('panel_id'): panel for panel in payload['secondary_variants']['Farming']['start_of_run']}
     bot_rows = {row.get('label'): row for row in (panels['bots_resolved'].get('payload', {}).get('rows') or [])}
     guardian_rows = {row.get('label'): row for row in (panels['guardians_resolved'].get('payload', {}).get('rows') or [])}
 
@@ -450,7 +461,7 @@ def test_stats_dashboard_resolved_sections_publish_module_rows():
         selected_state_mode='start_of_run',
     )
 
-    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    panels = {panel.get('panel_id'): panel for panel in payload['secondary_variants']['Farming']['start_of_run']}
     module_rows = {row.get('label'): row for row in (panels['modules_resolved'].get('payload', {}).get('rows') or [])}
 
     assert panels['modules_resolved'].get('payload', {}).get('owner') == 'qe'

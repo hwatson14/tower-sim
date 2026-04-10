@@ -189,6 +189,8 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
         'panels',
         'preset_options',
         'schema_version',
+        'secondary_panels',
+        'secondary_variants',
         'selected_preset',
         'selected_state_mode',
         'state_mode_options',
@@ -204,6 +206,11 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     assert panel_ids == [
         'workshop',
         'derived',
+        'ultimate_weapons',
+        'modules',
+    ]
+    secondary_panel_ids = [panel.get('panel_id') for panel in (payload.get('secondary_panels') or [])]
+    assert secondary_panel_ids == [
         'offense_resolved',
         'defense_resolved',
         'utility_resolved',
@@ -215,16 +222,25 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
         'uw_stats_resolved',
     ]
     variants = payload.get('variants') or {}
+    secondary_variants = payload.get('secondary_variants') or {}
     farming_variants = variants.get('Farming') or {}
+    farming_secondary_variants = secondary_variants.get('Farming') or {}
     assert {'start_of_run', 'max_progression'}.issubset(set(farming_variants.keys()))
+    assert {'start_of_run', 'max_progression'}.issubset(set(farming_secondary_variants.keys()))
     start_panels = farming_variants['start_of_run']
     max_panels = farming_variants['max_progression']
+    start_secondary_panels = farming_secondary_variants['start_of_run']
     start_workshop = next(panel for panel in start_panels if panel.get('panel_id') == 'workshop')
     max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
+    start_uw = next(panel for panel in start_panels if panel.get('panel_id') == 'ultimate_weapons')
+    start_modules = next(panel for panel in start_panels if panel.get('panel_id') == 'modules')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
     assert any(section.get('title') == 'Derived' for section in (start_workshop.get('payload', {}).get('sections') or []))
     assert any(section.get('title') == 'Derived' for section in (max_workshop.get('payload', {}).get('sections') or []))
+    assert start_uw.get('payload', {}).get('rows') is not None
+    assert 'slots' in (start_modules.get('payload') or {})
+    assert any(panel.get('panel_id') == 'offense_resolved' for panel in start_secondary_panels)
 
 
 def test_pipeline_run_stats_query_rows_publish_qe_derived_wall_semantics(canonical_pipeline_artifacts):
@@ -351,6 +367,16 @@ def test_stats_dashboard_production_render_avoids_native_streamlit_tables() -> N
     assert 'st.table(' not in production_block
     assert 'st.dataframe(' not in production_block
     assert 'st.data_editor(' not in production_block
+
+
+def test_stats_dashboard_production_render_demotes_secondary_panels_and_guards_debug_failures() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    assert "Detailed QE rows and secondary context" in text
+    assert "dashboard.get('secondary_panels')" in text
+    assert "secondary_variants" in text
+    assert "compare_df[['surface_id', 'ep_value', 'ep_value_raw', 'compare_preset', 'compare_perk_state', 'status', 'label']]" not in text
+    assert "_render_stats_debug_tools(active_artifacts, comparison_artifacts, request)" in text
+    assert "Stats debug tools unavailable for this snapshot" in text
 
 
 def test_load_streamlit_reference_data_uses_request_ids_path(monkeypatch, tmp_path):

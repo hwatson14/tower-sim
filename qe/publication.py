@@ -232,6 +232,10 @@ def _stats_dashboard_contract_manifest() -> dict[str, object]:
     return {
         'owner': 'qe',
         'row_contract_model': 'qe_workshop_reconciliation_rows',
+        'product_contract': {
+            'primary_surface_rule': 'Stats primary surface must stay operator-useful and workshop-led; repetitive resolved ledgers belong in secondary surfaces.',
+            'secondary_surface_rule': 'Detailed QE resolved rows, compare/debug tooling, and repetitive ledger dumps must be isolated from the default operator workflow.',
+        },
         'row_status_semantics': [
             'resolved',
             'partially_resolved',
@@ -251,6 +255,7 @@ def _stats_dashboard_contract_manifest() -> dict[str, object]:
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
                 'acceptance_state': 'active',
+                'product_tier': 'primary',
                 'notes': 'Counts toward current canonical visible-stat completion. Missingness and row status are QE-owned.',
             },
             {
@@ -258,70 +263,96 @@ def _stats_dashboard_contract_manifest() -> dict[str, object]:
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
                 'acceptance_state': 'active',
+                'product_tier': 'primary',
                 'notes': 'QE-owned canonical overview rows with explicit start/max visibility and row status semantics.',
+            },
+            {
+                'panel_id': 'ultimate_weapons',
+                'panel_role': 'operator_context',
+                'authority': 'publication_payload_from_input_and_qe',
+                'acceptance_state': 'active',
+                'product_tier': 'primary',
+                'notes': 'Operator-useful ultimate-weapon visibility belongs on the main Stats surface, but does not replace canonical QE row ownership.',
+            },
+            {
+                'panel_id': 'modules',
+                'panel_role': 'operator_context',
+                'authority': 'publication_payload_from_input_and_qe',
+                'acceptance_state': 'active',
+                'product_tier': 'primary',
+                'notes': 'Operator-useful module visibility belongs on the main Stats surface, but does not replace canonical QE row ownership.',
             },
             {
                 'panel_id': 'offense_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned offense stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned offense stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'defense_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned defense stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned defense stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'utility_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned utility and economy stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned utility and economy stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'wall_economy_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned derived wall and economy rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned derived wall and economy rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'cards_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned card stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned card stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'bots_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned bot stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned bot stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'guardians_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned guardian stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned guardian stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'modules_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned module stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned module stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
             {
                 'panel_id': 'uw_stats_resolved',
                 'panel_role': 'canonical_stat_rows',
                 'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'notes': 'QE-owned ultimate-weapon stat rows published directly from the canonical visible-surface contract.',
+                'acceptance_state': 'secondary',
+                'product_tier': 'secondary',
+                'notes': 'QE-owned ultimate-weapon stat rows remain available, but they are secondary detail rather than the default operator workflow.',
             },
         ],
     }
@@ -845,7 +876,8 @@ def build_stats_dashboard_payload(
     annotate_display_fields: Callable[[dict[str, object]], None] | None = None,
 ) -> dict[str, object]:
     stats_layout = dict(load_section_layout_contract().get('stats_dashboard') or {})
-    panel_order = [str(name) for name in (stats_layout.get('panel_order') or [])]
+    primary_panel_order = [str(name) for name in (stats_layout.get('primary_panel_order') or stats_layout.get('panel_order') or [])]
+    secondary_panel_order = [str(name) for name in (stats_layout.get('secondary_panel_order') or [])]
     state_mode_options = [str(name) for name in (stats_layout.get('state_mode_options') or ['start_of_run', 'max_progression'])]
     if selected_state_mode not in state_mode_options:
         selected_state_mode = state_mode_options[0]
@@ -861,15 +893,17 @@ def build_stats_dashboard_payload(
     ep_compare = dict(ep_compare_publishable or {})
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
+    secondary_variants: dict[str, dict[str, list[dict[str, object]]]] = {}
     for preset_name in preset_opts:
         start_rows_hydrated = _rows_with_qe_derived_values(_stats_rows_by_surface(query_rows_start_of_run, preset_name), annotate_display_fields=annotate_display_fields)
         max_rows_hydrated = _rows_with_qe_derived_values(_stats_rows_by_surface(query_rows_max_progression, preset_name), annotate_display_fields=annotate_display_fields)
         variants[preset_name] = {}
+        secondary_variants[preset_name] = {}
         for state_mode in state_mode_options:
             rows_start = start_rows_hydrated
             rows_max = max_rows_hydrated
-            rows = rows_start if state_mode == 'start_of_run' else rows_max
-            panels: list[dict[str, object]] = []
+            primary_panels: list[dict[str, object]] = []
+            secondary_panels: list[dict[str, object]] = []
             workshop_payload = publish_workshop_reconciliation_payload(
                 stats_layout=stats_layout,
                 rows_start=rows_start,
@@ -878,8 +912,8 @@ def build_stats_dashboard_payload(
                 selected_preset=preset_name,
                 surface_specs=_stats_surface_specs,
             )
-            panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
-            panels.append(
+            primary_panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
+            primary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='derived',
                     title='Canonical Overview',
@@ -890,7 +924,20 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'overview_surfaces'),
                 )
             )
-            panels.append(
+            uw_panel = dict(input_panels_by_id.get('ultimate_weapons') or {})
+            if uw_panel:
+                uw_panel['panel_type'] = 'resolved_uw_section'
+                primary_panels.append(uw_panel)
+            else:
+                upstream_gaps.append(_dashboard_gap('ultimate_weapons', 'stats_primary_surface_missing', 'input_dashboard ultimate_weapons payload unavailable for Stats primary surface'))
+            modules_panel, module_panel_gaps = _build_modules_panel(module_card_payloads or {}, preset_name)
+            if modules_panel:
+                modules_panel['panel_type'] = 'context_modules'
+                primary_panels.append(modules_panel)
+                upstream_gaps.extend(module_panel_gaps)
+            else:
+                upstream_gaps.append(_dashboard_gap('modules', 'stats_primary_surface_missing', 'module_card_payloads missing selected preset payload for Stats primary surface'))
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='offense_resolved',
                     title='Offense',
@@ -901,7 +948,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'offense_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='defense_resolved',
                     title='Defense',
@@ -912,7 +959,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'defense_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='utility_resolved',
                     title='Utility and Economy',
@@ -923,7 +970,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'utility_economy_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='wall_economy_resolved',
                     title='Derived Wall and Economy',
@@ -934,7 +981,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'derived_wall_economy_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='cards_resolved',
                     title='Cards',
@@ -945,7 +992,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'cards_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='bots_resolved',
                     title='Bots',
@@ -956,7 +1003,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'bot_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='guardians_resolved',
                     title='Guardians',
@@ -967,7 +1014,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'guardian_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='modules_resolved',
                     title='Modules',
@@ -978,7 +1025,7 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'module_surfaces'),
                 )
             )
-            panels.append(
+            secondary_panels.append(
                 _resolved_stat_section_panel(
                     panel_id='uw_stats_resolved',
                     title='Ultimate Weapons',
@@ -989,11 +1036,16 @@ def build_stats_dashboard_payload(
                     surface_specs=_stats_surface_specs(stats_layout, 'uw_surfaces'),
                 )
             )
-            variants[preset_name][state_mode] = panels
+            variants[preset_name][state_mode] = primary_panels
+            secondary_variants[preset_name][state_mode] = secondary_panels
     active_panels = (variants.get(selected_preset) or {}).get(selected_state_mode) or []
+    active_secondary_panels = (secondary_variants.get(selected_preset) or {}).get(selected_state_mode) or []
     panel_map = {str(panel.get('panel_id')): panel for panel in active_panels}
-    ordered_panels = [panel_map[panel_id] for panel_id in panel_order if panel_id in panel_map]
-    ordered_panels.extend(panel for panel in active_panels if str(panel.get('panel_id')) not in set(panel_order))
+    ordered_panels = [panel_map[panel_id] for panel_id in primary_panel_order if panel_id in panel_map]
+    ordered_panels.extend(panel for panel in active_panels if str(panel.get('panel_id')) not in set(primary_panel_order))
+    secondary_panel_map = {str(panel.get('panel_id')): panel for panel in active_secondary_panels}
+    ordered_secondary_panels = [secondary_panel_map[panel_id] for panel_id in secondary_panel_order if panel_id in secondary_panel_map]
+    ordered_secondary_panels.extend(panel for panel in active_secondary_panels if str(panel.get('panel_id')) not in set(secondary_panel_order))
     payload = {
         'artifact': 'stats_dashboard.json',
         'schema_version': 1,
@@ -1005,7 +1057,9 @@ def build_stats_dashboard_payload(
         'state_mode_options': state_mode_options,
         'upstream_gaps': upstream_gaps,
         'panels': ordered_panels,
+        'secondary_panels': ordered_secondary_panels,
         'variants': variants,
+        'secondary_variants': secondary_variants,
         'debug_manifest': {'source_artifacts': ['input_dashboard.json', 'module_card_payloads.json', 'run_stats_query_rows_start_of_run.json', 'run_stats_query_rows_max_progression.json', 'ep_oracle_compare.json'], 'generated_from': list((diagnostics.get('section_names') or []))},
     }
     if annotate_display_fields is not None:

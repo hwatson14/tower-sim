@@ -221,20 +221,20 @@ v49_program:
     goal: Make the visible-stat contract explicit in implementation and tests before broad product expansion.
   - id: P2
     name: Canonical stat visibility completion
-    status: complete
-    goal: Complete current-scope canonical stat visibility through Streamlit using the sanctioned owner chain, including QE-owned bot, guardian, module, and ultimate-weapon sections.
+    status: in_progress
+    goal: Recover current-scope canonical stat visibility so the Stats product is operator-useful and workshop-led rather than resolved-section-heavy.
   - id: P3
     name: Streamlit operational product completion
-    status: pending
-    goal: Ensure the product tabs expose operator-useful truth with explicit provenance and missingness.
+    status: in_progress
+    goal: Ensure the product tabs expose operator-useful truth with explicit provenance and missingness, and isolate optional Stats/debug failures from the operational product.
   - id: P4
     name: Max-wave simulator delivery
-    status: complete
-    goal: Finish the sanctioned max-wave simulator product contract in Streamlit with stable payload summary, explicit runtime controls, downloadable rows, and simulator-backed execution diagnostics.
+    status: in_progress
+    goal: Keep the sanctioned max-wave simulator product contract usable through Streamlit while the Stats-side product recovery is repaired and reverified.
   - id: P5
     name: Targeted performance hardening
-    status: in_progress
-    goal: Improve the remaining sanctioned hot path honestly and record before/after evidence, with the current blocker now concentrated in run_stats rather than Boss Waves.
+    status: blocked
+    goal: Remain paused until the Stats/Boss Waves product-contract recovery tranche closes and the repo truthfully matches the v49 operator surface again.
   - id: P6
     name: Residue cleanup and governance sync
     status: pending

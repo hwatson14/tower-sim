@@ -1011,6 +1011,9 @@ def _render_qe(active_artifacts, request: PipelineRunRequest) -> None:
     st.dataframe(qe_plan_coverage_frame(query_plan_payload, preset=preset_name, surface_id=selected_surface), width='stretch', hide_index=True)
 
 def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple[str, object]], request: PipelineRunRequest) -> None:
+    def _available_columns(frame: pd.DataFrame, columns: list[str]) -> list[str]:
+        return [column for column in columns if column in frame.columns]
+
     st.subheader('Stats')
     run_stats_payload = active_artifacts.get('run_stats.json', {})
     available_presets = sorted(
@@ -1062,8 +1065,9 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         filtered_active = filtered_active[filtered_active['changed_in_max_progression']]
 
     compare_df = compare_rows_frame(active_artifacts.get('ep_oracle_compare.json', {}))
-    if not compare_df.empty:
-        compare_subset = compare_df[['surface_id', 'ep_value', 'ep_value_raw', 'compare_preset', 'compare_perk_state', 'status', 'label']].copy()
+    compare_columns = _available_columns(compare_df, ['surface_id', 'ep_value', 'ep_value_raw', 'compare_preset', 'compare_perk_state', 'status', 'label'])
+    if not compare_df.empty and 'surface_id' in compare_columns:
+        compare_subset = compare_df[compare_columns].copy()
         compare_subset = compare_subset.rename(
             columns={
                 'ep_value': 'ep value',
@@ -1094,7 +1098,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         )
         _render_sectioned_run_stats_table(filtered_active, show_raw_ids=show_raw_ids)
         with st.expander('Flat all-stats table'):
-            table_columns = [
+            table_columns = _available_columns(filtered_active, [
                 'group',
                 'display_label',
                 'surface_id',
@@ -1111,13 +1115,13 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
                 'ep preset',
                 'ep perks',
                 'ep status',
-            ]
-            if show_raw_ids:
+            ])
+            if show_raw_ids and 'raw_surface_id' in filtered_active.columns:
                 table_columns.insert(3, 'raw_surface_id')
             st.dataframe(filtered_active[table_columns], width='stretch', hide_index=True)
     else:
-        table_columns = ['group', 'display_label', 'surface_id', 'final_value', 'display_value', 'value_type', 'status', 'contributor_count', 'ep display', 'ep value', 'ep preset', 'ep perks', 'ep status']
-        if show_raw_ids:
+        table_columns = _available_columns(filtered_active, ['group', 'display_label', 'surface_id', 'final_value', 'display_value', 'value_type', 'status', 'contributor_count', 'ep display', 'ep value', 'ep preset', 'ep perks', 'ep status'])
+        if show_raw_ids and 'raw_surface_id' in filtered_active.columns:
             table_columns.insert(3, 'raw_surface_id')
         st.dataframe(filtered_active[table_columns], width='stretch', hide_index=True)
 
@@ -1182,7 +1186,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
         if not fast_df.empty:
             if view_mode in {'Resolved ledger (query rows)', 'Run-stats payload (fast subset)'}:
                 source_prefix = 'start_of_run' if fast_payload.get('request', {}).get('state_mode') == 'start_of_run' else 'max_progression'
-                fast_compare = filtered_active[['surface_id', 'display_label', f'{source_prefix}_display', f'{source_prefix}_value', f'{source_prefix}_status']].copy()
+                fast_compare = filtered_active[_available_columns(filtered_active, ['surface_id', 'display_label', f'{source_prefix}_display', f'{source_prefix}_value', f'{source_prefix}_status'])].copy()
                 fast_compare = fast_compare.rename(
                     columns={
                         f'{source_prefix}_display': 'artifact display',
@@ -1191,7 +1195,7 @@ def _render_stats_debug_tools(active_artifacts, comparison_artifacts: list[tuple
                     }
                 )
             else:
-                fast_compare = filtered_active[['surface_id', 'display_label', 'display_value', 'final_value', 'status']].copy()
+                fast_compare = filtered_active[_available_columns(filtered_active, ['surface_id', 'display_label', 'display_value', 'final_value', 'status'])].copy()
                 fast_compare = fast_compare.rename(
                     columns={
                         'display_value': 'artifact display',
@@ -1263,13 +1267,21 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         selected_state_mode = str(dashboard.get('selected_state_mode') or 'max_progression')
 
         variants = dashboard.get('variants') or {}
+        secondary_variants = dashboard.get('secondary_variants') or {}
         panels = (
             (((variants.get(selected_preset) or {}).get(selected_state_mode) or []))
             if isinstance(variants, dict)
             else (dashboard.get('panels') or [])
         )
+        secondary_panels = (
+            (((secondary_variants.get(selected_preset) or {}).get(selected_state_mode) or []))
+            if isinstance(secondary_variants, dict)
+            else (dashboard.get('secondary_panels') or [])
+        )
         if not panels:
             panels = dashboard.get('panels') or []
+        if not secondary_panels:
+            secondary_panels = dashboard.get('secondary_panels') or []
 
         for panel in panels:
             panel_type = str((panel or {}).get('panel_type') or '')
@@ -1312,6 +1324,47 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
             else:
                 st.markdown(render_gap_notice_html({'message': f'Unsupported panel type: {panel_type}'}), unsafe_allow_html=True)
 
+        if secondary_panels:
+            with st.expander('Detailed QE rows and secondary context', expanded=False):
+                for panel in secondary_panels:
+                    panel_type = str((panel or {}).get('panel_type') or '')
+                    payload = dict((panel or {}).get('payload') or {})
+                    title = str((panel or {}).get('title') or (panel or {}).get('panel_id') or 'Panel')
+                    st.subheader(title)
+                    if panel_type == 'resolved_stat_section':
+                        st.markdown(render_resolved_stat_section_html(payload), unsafe_allow_html=True)
+                    elif panel_type in {'context_uw', 'resolved_uw_section'}:
+                        st.markdown(render_stats_uw_section_html(payload), unsafe_allow_html=True)
+                    elif panel_type == 'context_modules':
+                        slots = payload.get('slots') or {}
+                        if not slots:
+                            st.markdown(render_gap_notice_html({'message': payload.get('message') or 'Module card payload unavailable.'}), unsafe_allow_html=True)
+                            continue
+                        st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
+                        slot_columns = st.columns(4)
+                        for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):
+                            with slot_columns[idx]:
+                                st.markdown(f'**{slot.title()}**')
+                                slot_payload = (slots.get(slot) or {})
+                                for role in ['primary', 'assist']:
+                                    card_payload = slot_payload.get(role)
+                                    if not card_payload:
+                                        st.caption(f'{role.title()}: No module equipped')
+                                        continue
+                                    st.markdown(render_module_card_html(card_payload), unsafe_allow_html=True)
+                    elif panel_type == 'context_cards':
+                        st.markdown(render_cards_inventory_and_preset_html(payload), unsafe_allow_html=True)
+                    elif panel_type == 'context_bonus_table':
+                        st.markdown(render_simple_bonus_table_html(payload), unsafe_allow_html=True)
+                    elif panel_type == 'context_track_table':
+                        st.markdown(render_track_table_html(payload), unsafe_allow_html=True)
+                    elif panel_type == 'simple_metric_panel':
+                        st.markdown(render_simple_metric_panel_html(payload), unsafe_allow_html=True)
+                    elif panel_type == 'gap_notice':
+                        st.markdown(render_gap_notice_html(payload), unsafe_allow_html=True)
+                    else:
+                        st.markdown(render_gap_notice_html({'message': f'Unsupported secondary panel type: {panel_type}'}), unsafe_allow_html=True)
+
         if dashboard.get('upstream_gaps'):
             st.warning('Upstream publication gaps detected')
             st.json(dashboard.get('upstream_gaps'))
@@ -1321,7 +1374,10 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         st.info('stats_dashboard.json missing; showing legacy debug views only.')
 
     with st.expander('Stats debug and verification', expanded=False):
-        _render_stats_debug_tools(active_artifacts, comparison_artifacts, request)
+        try:
+            _render_stats_debug_tools(active_artifacts, comparison_artifacts, request)
+        except Exception as exc:
+            st.warning(f'Stats debug tools unavailable for this snapshot: {exc}')
 
 
 def _render_checks(active_artifacts) -> None:
