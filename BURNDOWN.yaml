@@ -1,15 +1,15 @@
 version: 1
-prepared: '2026-04-07'
+prepared: '2026-04-11'
 status:
   mode: v49_streamlit_product_completion
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: scope_reset_active_governance_sync_in_progress_before_visible_stat_and_simulator_completion
+  overall_state: product_recovery_closed_performance_only_blocker_remains
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed
+    full_suite_latest_result: passed_390
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
   high_signal_result:
@@ -241,7 +241,7 @@ v49_program:
     goal: Resume only from the repaired Stats/Boss Waves product contract and current sanctioned simulator semantics.
   - id: P6
     name: Residue cleanup and governance sync
-    status: in_progress
+    status: complete
     goal: Remove or demote stale duplicate authority after parity and keep governance aligned.
 maintenance_stabilization:
   goal: Turn the current dirty-but-green snapshot into a genuinely governed maintenance baseline.

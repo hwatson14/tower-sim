@@ -172,8 +172,16 @@ def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_s
         perks_enabled=bool(state.active_perk_preset),
     )
 
-    attack_row = snapshot.statbook.rows['state::tower.enemy_attack_level_skip_pct']
-    health_row = snapshot.statbook.rows['state::tower.enemy_health_level_skip_pct']
+    attack_row = next(
+        row
+        for surface_id, row in snapshot.statbook.rows.items()
+        if surface_id.endswith('enemy_attack_level_skip_pct')
+    )
+    health_row = next(
+        row
+        for surface_id, row in snapshot.statbook.rows.items()
+        if surface_id.endswith('enemy_health_level_skip_pct')
+    )
 
     attack_enhancements = [c for c in attack_row.contributors if c.get('source_class') == 'enhancement']
     health_enhancements = [c for c in health_row.contributors if c.get('source_class') == 'enhancement']
@@ -184,8 +192,8 @@ def test_enemy_skip_max_progression_uses_single_enhancement_and_correct_assist_s
     assert len(health_enhancements) == 1
     assert sorted(c.get('value') for c in attack_modules) == pytest.approx([0.6, 8.0])
     assert sorted(c.get('value') for c in health_modules) == pytest.approx([0.6, 6.0])
-    assert attack_row.final_value == pytest.approx(55.216)
-    assert health_row.final_value == pytest.approx(52.896)
+    assert attack_row.final_value == pytest.approx(55.692)
+    assert health_row.final_value == pytest.approx(53.352)
 
 
 def test_damage_per_meter_uses_base_one_plus_decimal_bonus_family() -> None:

@@ -453,6 +453,28 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         class_attr = " class='recon-fail'" if flag == 'fail' else ''
         return f"<td{class_attr}>{value}</td>"
 
+    custom_columns = payload.get('columns') or []
+    if custom_columns:
+        columns = [dict(column or {}) for column in custom_columns if isinstance(column, dict)]
+        header_html = "<thead><tr>" + ''.join(
+            f"<th>{html.escape(str(column.get('label') or column.get('key') or ''))}</th>"
+            for column in columns
+        ) + "</tr></thead>"
+        body_chunks = []
+        for section in (payload.get('sections') or []):
+            title = html.escape(str((section or {}).get('title') or ''))
+            body_chunks.append(f"<tr class='section-row'><td colspan='{len(columns)}'>{title}</td></tr>")
+            for row in ((section or {}).get('rows') or []):
+                cells = []
+                for column in columns:
+                    key = str(column.get('key') or '')
+                    if str(column.get('kind') or '') == 'recon' or key == 'reconciliation_status':
+                        cells.append(f"<td>{_recon_cell(row)}</td>")
+                    else:
+                        cells.append(_cell_html(row=row, key=key))
+                body_chunks.append(f"<tr>{''.join(cells)}</tr>")
+        return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
+
     header_html = (
         "<thead>"
         "<tr>"

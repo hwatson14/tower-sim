@@ -153,9 +153,12 @@ _ROOT_FILE_ALLOWLIST = {
     "AGENTS.md",
     "ARCHITECTURE.md",
     "BURNDOWN.yaml",
+    "CODEX_SUPERVISOR_PROMPT.txt",
     "README.md",
     "REPO_INDEX.yaml",
     "RTK.md",
+    "TowerSim_bible_v49.md",
+    "TowerSim_bible_v49_reconciliation_review.md",
     "pyproject.toml",
     "requirements.txt",
 }

@@ -140,8 +140,19 @@ def test_checkpoint_consumer_bundle_delta__parity_and_fallback():
         perks_enabled=False,
         trigger_keys=('Wall Health',),
     )
-    assert fallback_statbook.diagnostics['delta_fallback_used'] is True
-    assert 'Unsupported mutation keys' in fallback_statbook.diagnostics['delta_fallback_reason']
+    assert fallback_statbook.diagnostics['delta_fallback_used'] is False
+    assert 'state::wall.hp' in fallback_statbook.diagnostics['delta_impacted_surface_ids']
+    fallback_full_target_response = resolve_checkpoint_consumer_bundle(
+        fallback_state,
+        consumer_id='simulator_boss_wave',
+        bundle_id='boss_wave_hot_surfaces',
+        family_id=family_id,
+        preset_name='Farming',
+        state_mode='start_of_run',
+        perks_enabled=False,
+    )
+    fallback_full_target_statbook = query_response_to_statbook(fallback_full_target_response, notes='full target', diagnostics={})
+    assert fallback_statbook.rows['state::wall.hp'].final_value == fallback_full_target_statbook.rows['state::wall.hp'].final_value
 
 
 def test_checkpoint_consumer_bundle_delta__health_trigger_impacts_tower_and_wall_hp():

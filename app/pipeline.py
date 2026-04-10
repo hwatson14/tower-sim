@@ -28,6 +28,8 @@ from qe.stat_input_compiler import (
     PERK_TARGET_DESTINATION_OVERRIDES,
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
     compile_stat_inputs,
+    load_perk_effects,
+    load_perk_entities,
     normalize_state_mode,
     SUPPORTED_STATE_MODES,
     state_mode_support,
@@ -231,7 +233,12 @@ def build_boss_wave_payload(
             'row_output_kind': 'boss_wave_table_rows',
             'summary_kind': 'max_wave_survivability',
             'checkpoint_mode': 'boss_wave_only',
+            'start_state_basis': 'start_of_run',
             'perk_timeline_mode': 'runtime_policy_projection',
+            'free_upgrade_mode': 'runtime_progression_allocation',
+            'wave_progression_mode': 'runtime_wave_progression',
+            'enemy_skip_mode': 'runtime_wave_progression',
+            'tower_damage_mode': 'derived_edamage_continuous_proxy',
         },
         'rows': rows,
         'summary': {
@@ -729,6 +736,8 @@ def _perk_policy_context(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
 
 
 def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tuple[dict, dict]:
+    from qe.stat_input_compiler import load_perk_entity_rows
+
     metadata = {
         'requested_perks_path': 'manual_inputs.yaml:perk_policy',
         'resolved_perks_path': 'manual_inputs.yaml:perk_policy',
@@ -774,6 +783,8 @@ def _build_max_progression_policy_perk_config(ids_raw, perk_policy: dict) -> tup
 
 
 def _build_runtime_timeline_perk_config(ids_raw, perk_policy: dict, *, diag_output_dir: Path | None = None) -> tuple[dict, dict]:
+    from qe.stat_input_compiler import load_perk_entity_rows
+
     policy_payload, context = _perk_policy_context(ids_raw, perk_policy)
     policy = PerkTimelinePolicy(**policy_payload)
     timeline, diag = generate_timeline_from_policy(policy)

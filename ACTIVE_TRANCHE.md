@@ -37,7 +37,7 @@ The active program is now the v49 Streamlit-first product scope reset:
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
-- the latest full suite on the actual current worktree passed on **2026-04-07** (`349 passed`)
+- the latest full suite on the actual current worktree passed on **2026-04-11** (`390 passed`)
 - formula surface policy remains active
 - the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
@@ -100,7 +100,7 @@ This tranche is not about:
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-11 corrective recovery tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -110,7 +110,8 @@ This tranche is not about:
 4. COMPLETE: recover Streamlit operational product usability so Boss Waves remains usable even when optional Stats/debug data is partial or absent
 5. COMPLETE: wire Boss Waves perk evolution through the sanctioned simulator path and revalidate the no-delta-fallback live path
 6. COMPLETE: clean the active repo-root control allowlist and remove stale zip-pack residue
-7. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+7. COMPLETE: recertify the repaired Streamlit product contract with targeted tests, full pytest, `app.run_stats`, and a UI-level Streamlit harness run
+8. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
@@ -136,9 +137,12 @@ The v49 current-stage program is complete only when all of the following are tru
 - `python -m app.run_stats`
 - `pytest -q tests/app/test_input_dashboard_contract.py`
 - `pytest -q tests/app/test_stats_dashboard_contract.py`
+- `pytest -q tests/app/test_pipeline_functional.py`
+- `pytest -q tests/app/test_pipeline_ui_contracts.py`
 - `pytest -q tests/simulators/test_run_executor.py`
 - targeted pytest selection for touched owner surfaces
 - broader `pytest -q` when a phase claims closure
+- UI-level Streamlit harness verification of the repaired Stats/Boss Waves surface
 - fresh inspection of:
   - `out/run_stats_query_rows_start_of_run.json`
   - `out/run_stats_query_rows_max_progression.json`
@@ -214,6 +218,16 @@ The v49 current-stage program is complete only when all of the following are tru
 
 - targeted tranche-alignment suite passed on **2026-04-07** (`104 passed`)
 - refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
+- corrected-recovery tranche targeted suites passed on **2026-04-11**:
+  - `pytest -q tests/app/test_stats_dashboard_contract.py` -> `43 passed`
+  - `pytest -q tests/app/test_pipeline_functional.py` -> `29 passed`
+  - `pytest -q tests/qe/test_generic_perk_multiplier_resolution.py` -> `8 passed`
+  - `pytest -q tests/qe/test_routing_checkpoint_consumer_bundle.py` -> `4 passed`
+  - `pytest -q tests/simulators/test_run_executor.py` -> `15 passed`
+  - `pytest -q tests/shared/test_import_boundaries.py` -> `51 passed`
+  - `pytest -q tests/app/test_pipeline_ui_contracts.py` -> `19 passed`
+- repaired current-worktree full suite passed on **2026-04-11** (`390 passed`) in **24.34s**
+- UI-level Streamlit harness passed on **2026-04-11** with no exceptions before or after running the Boss Waves request, recovered primary Stats surfaces present (`Workshop`, `Ultimate Weapons`, `Bots`, `Guardians`, `Modules`), and Boss Waves producing `Max surviving wave = 130`, `First failed wave = 140`, `Rows = 14` for the repaired sanctioned scenario
 - refreshed `out/` inspection confirmed:
   - query-row artifacts remain bounded by state mode
   - query-plan artifacts remain bounded by state mode

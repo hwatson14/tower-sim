@@ -14,7 +14,11 @@ from qe.query_module_policy import (
     publish_module_runtime_policy_surfaces,
 )
 from qe.models import StatRow
-from qe.workshop_stat_rows import build_workshop_reconciliation_row
+from qe.workshop_stat_rows import (
+    _format_effect_from_contributors,
+    _row_display_value,
+    build_workshop_reconciliation_row,
+)
 from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
 
@@ -746,6 +750,51 @@ def _operator_workshop_row(
     }
 
 
+def _operator_table_columns(*, level_label: str, include_labs: bool, include_modules: bool, include_perks: bool, include_max_progression: bool) -> list[dict[str, str]]:
+    columns: list[dict[str, str]] = [
+        {'key': 'name', 'label': 'Track'},
+        {'key': 'workshop_level', 'label': level_label},
+    ]
+    if include_labs:
+        columns.append({'key': 'lab_effects', 'label': 'Lab'})
+    if include_modules:
+        columns.append({'key': 'module_effects', 'label': 'Module'})
+    if include_perks:
+        columns.append({'key': 'perk_effects', 'label': 'Perk'})
+    columns.append({'key': 'start_of_run_value', 'label': 'Start of Run'})
+    if include_max_progression:
+        columns.append({'key': 'max_progression_value', 'label': 'Max Progression'})
+    columns.append({'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'})
+    return columns
+
+
+def _operator_panel_payload(
+    *,
+    panel_id: str,
+    sections: dict[str, list[dict[str, object]]],
+    level_label: str,
+    include_labs: bool,
+    include_modules: bool,
+    include_perks: bool,
+    include_max_progression: bool,
+) -> dict[str, object]:
+    return {
+        'artifact': 'stats_operator_workshop_rows',
+        'owner': 'publication',
+        'columns': _operator_table_columns(
+            level_label=level_label,
+            include_labs=include_labs,
+            include_modules=include_modules,
+            include_perks=include_perks,
+            include_max_progression=include_max_progression,
+        ),
+        'sections': [
+            {'section_id': f'{panel_id}::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+            for section_name, rows in sections.items()
+        ],
+    }
+
+
 def _reduce_prefixed_label(label: str, prefix: str) -> str:
     if label.startswith(f'{prefix} '):
         return label[len(prefix) + 1:]
@@ -803,15 +852,29 @@ def _build_stats_uw_operator_panel(
         'panel_id': 'ultimate_weapons',
         'panel_type': 'workshop_stat_table',
         'title': 'Ultimate Weapons',
-        'payload': {
-            'artifact': 'stats_operator_workshop_rows',
-            'owner': 'publication',
-            'sections': [
-                {'section_id': f'uw::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
-                for section_name, rows in sections.items()
-            ],
-        },
+        'payload': _operator_panel_payload(
+            panel_id='uw',
+            sections=sections,
+            level_label='Stone Level',
+            include_labs=True,
+            include_modules=True,
+            include_perks=True,
+            include_max_progression=True,
+        ),
     }, gaps)
+
+
+def _row_module_effect_display(row: dict[str, object], *, surface_value_type: str) -> str:
+    return _format_effect_from_contributors(
+        row,
+        source_classes=('module_main', 'module_substat', 'module_unique'),
+        surface_value_type=surface_value_type,
+    )
+
+
+def _row_level_display(metadata: dict[str, object]) -> str:
+    level = metadata.get('level')
+    return '' if level in (None, '') else str(level)
 
 
 def _build_stats_track_operator_panel(
@@ -820,10 +883,13 @@ def _build_stats_track_operator_panel(
     title: str,
     specs_key: str,
     rows_start: dict[str, dict[str, object]],
-    rows_max: dict[str, dict[str, object]],
     stats_layout: dict[str, object],
     track_rows: list[dict[str, object]],
     entity_names_by_key: dict[str, str],
+    include_labs: bool,
+    include_modules: bool,
+    include_perks: bool,
+    include_max_progression: bool,
 ) -> dict[str, object]:
     row_index = {
         f"{str(row.get('entity') or '').strip()}::{str(row.get('track') or '').strip()}": dict(row or {})
@@ -837,27 +903,48 @@ def _build_stats_track_operator_panel(
         entity_name = entity_names_by_key.get(entity_key, spec['label'])
         row_name = _reduce_prefixed_label(spec['label'], entity_name)
         track_key = f'{entity_name}::{row_name}'
+        start_row = dict(rows_start.get(surface_id) or {})
+        metadata = row_index.get(track_key) or {}
+        surface_value_type = str(start_row.get('value_type') or '')
+        row_payload = _operator_workshop_row(
+            name=row_name,
+            start_row=start_row,
+            max_row={} if not include_max_progression else dict(rows_start.get(surface_id) or {}),
+            canonical_row_id=str(spec.get('canonical_row_id') or surface_id),
+            metadata={
+                'level': _row_level_display(metadata),
+                'lab': _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('labs',),
+                    surface_value_type=surface_value_type,
+                ) if include_labs else '—',
+                'module': _row_module_effect_display(start_row, surface_value_type=surface_value_type) if include_modules else '—',
+                'perk': _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('perk', 'perks', 'perk_effect'),
+                    surface_value_type=surface_value_type,
+                ) if include_perks else '—',
+                'resolved_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or metadata.get('resolved_value') or '—',
+            },
+        )
+        if not include_max_progression:
+            row_payload['max_progression_value'] = '—'
         sections.setdefault(entity_name, []).append(
-            _operator_workshop_row(
-                name=row_name,
-                start_row=dict(rows_start.get(surface_id) or {}),
-                max_row=dict(rows_max.get(surface_id) or {}),
-                canonical_row_id=str(spec.get('canonical_row_id') or surface_id),
-                metadata=row_index.get(track_key) or {},
-            )
+            row_payload
         )
     return {
         'panel_id': panel_id,
         'panel_type': 'workshop_stat_table',
         'title': title,
-        'payload': {
-            'artifact': 'stats_operator_workshop_rows',
-            'owner': 'publication',
-            'sections': [
-                {'section_id': f'{panel_id}::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
-                for section_name, rows in sections.items()
-            ],
-        },
+        'payload': _operator_panel_payload(
+            panel_id=panel_id,
+            sections=sections,
+            level_label='Level',
+            include_labs=include_labs,
+            include_modules=include_modules,
+            include_perks=include_perks,
+            include_max_progression=include_max_progression,
+        ),
     }
 
 
@@ -883,7 +970,6 @@ def _build_stats_bots_operator_panel(
         title='Bots',
         specs_key='bot_surfaces',
         rows_start=rows_start,
-        rows_max=rows_max,
         stats_layout=stats_layout,
         track_rows=track_rows,
         entity_names_by_key={
@@ -894,6 +980,10 @@ def _build_stats_bots_operator_panel(
             'global': 'Bot',
             'flame_bot': 'Flame',
         },
+        include_labs=True,
+        include_modules=True,
+        include_perks=False,
+        include_max_progression=False,
     )
 
 
@@ -918,7 +1008,6 @@ def _build_stats_guardians_operator_panel(
         title='Guardians',
         specs_key='guardian_surfaces',
         rows_start=rows_start,
-        rows_max=rows_max,
         stats_layout=stats_layout,
         track_rows=track_rows,
         entity_names_by_key={
@@ -929,6 +1018,10 @@ def _build_stats_guardians_operator_panel(
             'scout': 'Scout',
             'summon': 'Summon',
         },
+        include_labs=False,
+        include_modules=False,
+        include_perks=False,
+        include_max_progression=False,
     )
 
 

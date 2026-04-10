@@ -332,7 +332,32 @@ consumers:
     - state::tower.free_utility_upgrade_chance_pct
     - state::tower.enemy_attack_level_skip_pct
     - state::tower.enemy_health_level_skip_pct
-    optional_surface_ids: []
+    optional_surface_ids:
+    - state::tower.damage
+    - state::tower.attack_speed
+    - state::tower.crit_chance_pct
+    - state::tower.crit_multiplier
+    - state::tower.range_m
+    - state::tower.multishot_chance_pct
+    - state::tower.multishot_targets
+    - state::tower.rapid_fire_chance_pct
+    - state::tower.rapid_fire_duration_seconds
+    - state::tower.bounce_shot_chance_pct
+    - state::tower.bounce_shot_targets
+    - state::tower.bounce_shot_range_m
+    - state::tower.damage_per_meter_multiplier
+    - state::tower.rend_armor_chance_pct
+    - state::tower.rend_armor_multiplier
+    - state::tower.supercrit_chance_pct
+    - state::tower.supercrit_multiplier
+    - state::tower.max_rend_multiplier
+    - state::cards.berserker.assumed_bonus_multiplier
+    - state::cards.ultimate_crit.chance_pct
+    - state::uw.black_hole.base_duration_seconds
+    - state::uw.black_hole.base_cooldown_seconds
+    - state::uw.golden_tower.base_duration_seconds
+    - state::uw.golden_tower.base_cooldown_seconds
+    - state::module.primordial_collapse.bh_damage_reduction_pct
     minimum_trace_mode: contributors
     overlays_allowed: false
     publish_default: true

@@ -1639,9 +1639,25 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     summary_cols_2[1].metric('Checkpoint mode', diagnostics['checkpoint_mode'])
     summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
     summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
+    contract = dict(boss_payload.get('contract') or {})
+    st.caption(
+        "Start state: "
+        f"`{contract.get('start_state_basis') or diagnostics['state_mode']}`. "
+        "Perks evolve: "
+        f"`{contract.get('perk_timeline_mode') or 'unknown'}`. "
+        "Free upgrades evolve: "
+        f"`{contract.get('free_upgrade_mode') or 'unknown'}`. "
+        "Wave stepping: "
+        f"`{contract.get('wave_progression_mode') or diagnostics['checkpoint_resolution_mode'] or 'unknown'}`. "
+        "Enemy skips: "
+        f"`{contract.get('enemy_skip_mode') or 'unknown'}`. "
+        "Tower damage basis: "
+        f"`{contract.get('tower_damage_mode') or payload_diagnostics.get('tower_damage_mode') or 'unknown'}`."
+    )
     st.caption(
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
-        'the intervening waves using the interval-start resolved values.'
+        'the intervening waves using the interval-start resolved values, while boss kill time uses the sanctioned '
+        'runtime damage proxy rather than a static max-progression shortcut.'
     )
     st.dataframe(frame, width='stretch', hide_index=True)
     st.download_button(

@@ -26,6 +26,33 @@ from simulators.timing import compute_timing_surfaces, resolve_combat_runtime_su
 
 _BOSS_WAVE_CONSUMER_ID = 'simulator_boss_wave'
 _BOSS_WAVE_BUNDLE_ID = 'boss_wave_hot_surfaces'
+_BOSS_WAVE_DAMAGE_BASIS_OPTIONAL_SURFACES = (
+    'state::tower.damage',
+    'state::tower.attack_speed',
+    'state::tower.crit_chance_pct',
+    'state::tower.crit_multiplier',
+    'state::tower.range_m',
+    'state::tower.multishot_chance_pct',
+    'state::tower.multishot_targets',
+    'state::tower.rapid_fire_chance_pct',
+    'state::tower.rapid_fire_duration_seconds',
+    'state::tower.bounce_shot_chance_pct',
+    'state::tower.bounce_shot_targets',
+    'state::tower.bounce_shot_range_m',
+    'state::tower.damage_per_meter_multiplier',
+    'state::tower.rend_armor_chance_pct',
+    'state::tower.rend_armor_multiplier',
+    'state::tower.supercrit_chance_pct',
+    'state::tower.supercrit_multiplier',
+    'state::tower.max_rend_multiplier',
+    'state::cards.berserker.assumed_bonus_multiplier',
+    'state::cards.ultimate_crit.chance_pct',
+    'state::uw.black_hole.base_duration_seconds',
+    'state::uw.black_hole.base_cooldown_seconds',
+    'state::uw.golden_tower.base_duration_seconds',
+    'state::uw.golden_tower.base_cooldown_seconds',
+    'state::module.primordial_collapse.bh_damage_reduction_pct',
+)
 
 
 def _elapsed_ms(start: float) -> float:
@@ -225,6 +252,7 @@ def resolve_wave_row_snapshot(normalized: NormalizedCheckpointState) -> WaveRowS
         module_preset_name=normalized.module_preset_name,
         perk_preset_name=normalized.perk_preset_name,
         perks_enabled=normalized.perks_enabled,
+        include_optional_surface_ids=_BOSS_WAVE_DAMAGE_BASIS_OPTIONAL_SURFACES,
         kernel=resolver._query_kernel,
     )
     statbook = query_response_to_statbook(
@@ -279,6 +307,7 @@ def resolve_wave_row_snapshot_delta(
         perks_enabled=normalized.perks_enabled,
         mutation_class='workshop_mutation',
         trigger_keys=changed_tracks,
+        include_optional_surface_ids=_BOSS_WAVE_DAMAGE_BASIS_OPTIONAL_SURFACES,
         kernel=resolver._query_kernel,
     )
     statbook.diagnostics.setdefault('resolver_kind', 'simulator_checkpoint_progression_bundle_delta')

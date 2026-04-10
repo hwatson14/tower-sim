@@ -1,5 +1,5 @@
 {
-  "ids_path": "C:\\Users\\Harry\\Documents\\GitHub\\tower-sim\\input\\imports\\ids.csv",
+  "ids_path": "input/imports/ids.csv",
   "labs": {
     "Game Speed": 7,
     "Starting Cash": 6,
@@ -3553,9 +3553,140 @@
       ]
     }
   },
-  "perk_presets": {},
-  "perk_preset_namespace_class": "canonical",
-  "active_perk_preset": null,
+  "perk_presets": {
+    "Farming": [
+      {
+        "perk_id": "PERK_X1_20_MAX_HEALTH",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_DAMAGE",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_15_CASH_BONUS",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_X1_75_HEALTH_REGEN",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_INTEREST_X1_50",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
+        "picks": 5
+      },
+      {
+        "perk_id": "PERK_BOUNCE_SHOT_2",
+        "picks": 3
+      },
+      {
+        "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
+        "picks": 3
+      },
+      {
+        "perk_id": "PERK_ORBS_1",
+        "picks": 2
+      },
+      {
+        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_4_MORE_SMART_MISSILES",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_SWAMP_RADIUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
+        "picks": 1
+      },
+      {
+        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
+        "picks": 1
+      }
+    ]
+  },
+  "perk_preset_namespace_class": "transient",
+  "active_perk_preset": "Farming",
   "active_card_preset": "Farming",
   "active_module_preset": "Farming",
   "default_preset": "Farming",

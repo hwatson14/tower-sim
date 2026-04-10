@@ -9,6 +9,7 @@ from typing import Any, Callable, Dict, Optional
 
 from input.state_types import AccountState, ScenarioRuntimeInputs
 from qe.consumer_registry import load_consumer_bundle_definitions
+from qe.query_derived_composites import compute_derived_edamage
 from qe.models import StatBook, StatRow
 from qe.kb_surfaces import (
     BOSS_HEAT_UP_DAMAGE_PER_HIT_PCT,
@@ -302,6 +303,7 @@ def build_boss_wave_table_payload(
     timing_context = current_snapshot.timing_context
     combat_runtime = current_snapshot.combat_runtime
     hot_values = _extract_hot_surface_values(current_snapshot)
+    tower_damage_per_second = _tower_runtime_damage_per_second(current_snapshot)
     rows: list[dict[str, object]] = []
     max_wave = 0
     first_failed_wave = 0
@@ -349,6 +351,7 @@ def build_boss_wave_table_payload(
             timing_context = current_snapshot.timing_context
             combat_runtime = current_snapshot.combat_runtime
             hot_values = _extract_hot_surface_values(current_snapshot)
+            tower_damage_per_second = _tower_runtime_damage_per_second(current_snapshot)
         else:
             current_snapshot = _reuse_snapshot_for_projected_state(
                 current_snapshot,
@@ -358,6 +361,7 @@ def build_boss_wave_table_payload(
             timing_context = current_snapshot.timing_context
             combat_runtime = current_snapshot.combat_runtime
             hot_values = _extract_hot_surface_values(current_snapshot)
+            tower_damage_per_second = _tower_runtime_damage_per_second(current_snapshot)
 
         wave_progression_state = current_projected_state.wave_progression_state
         attack_wave = int(wave_progression_state.get('attack_wave', 0))
@@ -368,6 +372,7 @@ def build_boss_wave_table_payload(
         boss_health = None if wave_health is None else float(wave_health) * float(BOSS_HP_MULTIPLIER)
         intake = _evaluate_boss_hot_values_fast(
             hot_values=hot_values,
+            tower_damage_per_second=tower_damage_per_second,
             attack_wave=attack_wave,
             health_wave=health_wave,
             config=config,
@@ -393,6 +398,7 @@ def build_boss_wave_table_payload(
                 'wall_fortification_multiplier': hot_values.get('state::wall.fortification_multiplier'),
                 'tower_defense_pct': hot_values.get('state::tower.defense_pct'),
                 'tower_thorns_damage_pct': hot_values.get('state::tower.thorns_damage_pct'),
+                'tower_damage_per_second': tower_damage_per_second,
                 'plasma_cannon_effect_pct': hot_values.get('state::cards.plasma_cannon.effect_pct'),
                 'free_attack_upgrade_chance_pct': hot_values.get('state::tower.free_attack_upgrade_chance_pct'),
                 'free_defense_upgrade_chance_pct': hot_values.get('state::tower.free_defense_upgrade_chance_pct'),
@@ -447,6 +453,8 @@ def build_boss_wave_table_payload(
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
             'perk_timeline_owner': 'simulators.run_executor._advance_projected_perk_state',
+            'tower_damage_owner': 'derived::edamage',
+            'tower_damage_mode': 'continuous_runtime_dps_proxy',
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
@@ -678,6 +686,8 @@ def _run_to_max_progression_mutating(
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
             'perk_timeline_owner': 'simulators.run_executor._advance_projected_perk_state',
+            'tower_damage_owner': 'derived::edamage',
+            'tower_damage_mode': 'continuous_runtime_dps_proxy',
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
@@ -771,9 +781,11 @@ def _run_to_max_table_sweep(
         timing_context = current_snapshot.timing_context
         combat_runtime = current_snapshot.combat_runtime
         hot_values = _extract_hot_surface_values(current_snapshot)
+        tower_damage_per_second = _tower_runtime_damage_per_second(current_snapshot)
         wave_progression_state = current_projected_state.wave_progression_state
         intake = _evaluate_boss_hot_values_fast(
             hot_values=hot_values,
+            tower_damage_per_second=tower_damage_per_second,
             attack_wave=int(wave_progression_state.get('attack_wave', 0)),
             health_wave=int(wave_progression_state.get('health_wave', 0)),
             config=config,
@@ -963,9 +975,17 @@ def _extract_hot_surface_values(snapshot: WaveRowSnapshot) -> dict[str, Optional
     return {surface_id: _row_float(row_map, surface_id) for surface_id in _boss_wave_hot_surface_ids()}
 
 
+def _tower_runtime_damage_per_second(snapshot: WaveRowSnapshot) -> float:
+    try:
+        return float(compute_derived_edamage(snapshot.resolved_statbook.rows) or 0.0)
+    except Exception:
+        return 0.0
+
+
 def _evaluate_boss_hot_values(
     *,
     hot_values: dict[str, Optional[float]],
+    tower_damage_per_second: float,
     wave_state: WaveProgressionState,
     config: RunToMaxConfig,
     timing_context,
@@ -980,6 +1000,7 @@ def _evaluate_boss_hot_values(
     boss_effective_hp = float(common_hp) * float(BOSS_HP_MULTIPLIER)
     ttk = _simulate_boss_ttk(
         boss_effective_hp=boss_effective_hp,
+        tower_damage_per_second=tower_damage_per_second,
         plasma_cannon_effect_pct=plasma_cannon_effect_pct,
         tower_thorns_damage_pct=tower_thorns_damage_pct,
         combat_runtime=combat_runtime,
@@ -1003,6 +1024,7 @@ def _evaluate_boss_hot_values(
 def _evaluate_boss_hot_values_fast(
     *,
     hot_values: dict[str, Optional[float]],
+    tower_damage_per_second: float,
     attack_wave: int,
     health_wave: int,
     config: RunToMaxConfig,
@@ -1020,6 +1042,7 @@ def _evaluate_boss_hot_values_fast(
     boss_effective_hp = float(common_hp) * float(BOSS_HP_MULTIPLIER)
     ttk = _simulate_boss_ttk(
         boss_effective_hp=boss_effective_hp,
+        tower_damage_per_second=tower_damage_per_second,
         plasma_cannon_effect_pct=plasma_cannon_effect_pct,
         tower_thorns_damage_pct=tower_thorns_damage_pct,
         combat_runtime=combat_runtime,
@@ -1072,6 +1095,7 @@ def _lookup_wave_value(table: Dict[int, Dict[str, float]], wave: int, column: st
 def _simulate_boss_ttk(
     *,
     boss_effective_hp: float,
+    tower_damage_per_second: float,
     plasma_cannon_effect_pct: float,
     tower_thorns_damage_pct: float,
     combat_runtime,
@@ -1102,11 +1126,25 @@ def _simulate_boss_ttk(
     thorns_pct = max(0.0, tower_thorns_damage_pct) / 100.0
     thorns_pct *= THORNS_BOSS_EFFECTIVENESS
     thorns_pct *= config.thorns_resistance_multiplier
+    tower_dps = max(0.0, float(tower_damage_per_second or 0.0))
     t = 0.0
     while remaining_hp > KILL_HP_THRESHOLD:
         next_t = min(next_orb, next_electron, next_contact)
-        if not isfinite(next_t) or next_t > float(config.max_ttk_seconds):
+        if not isfinite(next_t):
+            if tower_dps <= 0.0:
+                return None
+            kill_time = remaining_hp / tower_dps
+            if t + kill_time > float(config.max_ttk_seconds):
+                return None
+            return BossTTKResult(ttk_seconds=t + kill_time)
+        if next_t > float(config.max_ttk_seconds):
             return None
+        delta_t = max(0.0, next_t - t)
+        if tower_dps > 0.0 and delta_t > 0.0:
+            tower_damage = tower_dps * delta_t
+            if tower_damage >= remaining_hp:
+                return BossTTKResult(ttk_seconds=t + (remaining_hp / tower_dps))
+            remaining_hp -= tower_damage
         t = next_t
         if abs(next_orb - t) <= 1e-12:
             remaining_hp *= max(0.0, 1.0 - orb_pct)
