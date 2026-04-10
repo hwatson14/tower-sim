@@ -209,10 +209,15 @@ sections:
     panel_order:
       - workshop
       - derived
-      - uw_resolved
-      - modules_context
-      - cards_context
-      - bots_context
+      - offense_resolved
+      - defense_resolved
+      - utility_resolved
+      - wall_economy_resolved
+      - cards_resolved
+      - bots_resolved
+      - guardians_resolved
+      - modules_resolved
+      - uw_stats_resolved
     state_mode_options:
       - start_of_run
       - max_progression
@@ -348,3 +353,136 @@ sections:
         surface_id: derived::eecon
       - label: eDamage
         surface_id: derived::edamage
+    cards_surfaces:
+      - label: Berserker Bonus
+        surface_id: state::cards.berserker.assumed_bonus_multiplier
+      - label: Coins Card
+        surface_id: state::cards.coins.multiplier
+      - label: Plasma Cannon
+        surface_id: state::cards.plasma_cannon.effect_pct
+      - label: Super Tower
+        surface_id: state::cards.super_tower.bonus_multiplier
+      - label: Ultimate Crit
+        surface_id: state::cards.ultimate_crit.chance_pct
+      - label: Wave Accelerator
+        surface_id: state::cards.wave_accelerator.spawn_rate_acceleration
+    bot_surfaces:
+      - label: Amplify Bonus
+        surface_id: state::bot.amplify.bonus_multiplier
+      - label: Amplify Cooldown
+        surface_id: state::bot.amplify.cooldown_seconds
+      - label: Amplify Duration
+        surface_id: state::bot.amplify.duration_seconds
+      - label: Amplify Range
+        surface_id: state::bot.amplify.range_m
+      - label: Amplify Effective Range
+        surface_id: state::bot.amplify.effective_range_m
+      - label: Flame Cooldown
+        surface_id: state::bot.flame.cooldown_seconds
+      - label: Flame Damage
+        surface_id: state::bot.flame.damage_multiplier
+      - label: Flame Damage Reduction
+        surface_id: state::bot.flame.damage_reduction_pct
+      - label: Flame Range
+        surface_id: state::bot.flame.range_m
+      - label: Flame Effective Range
+        surface_id: state::bot.flame.effective_range_m
+      - label: Flame Burn Stack
+        surface_id: state::bot.flame_bot.lab_burn_stack
+      - label: Bot Range Bonus
+        surface_id: state::bot.global.range_bonus_m
+      - label: Golden Bonus
+        surface_id: state::bot.golden.bonus_multiplier
+      - label: Golden Cooldown
+        surface_id: state::bot.golden.cooldown_seconds
+      - label: Golden Duration
+        surface_id: state::bot.golden.duration_seconds
+      - label: Golden Range
+        surface_id: state::bot.golden.range_m
+      - label: Golden Effective Range
+        surface_id: state::bot.golden.effective_range_m
+      - label: Thunder Cooldown
+        surface_id: state::bot.thunder.cooldown_seconds
+      - label: Thunder Duration
+        surface_id: state::bot.thunder.duration_seconds
+      - label: Thunder Linger Duration
+        surface_id: state::bot.thunder.linger_duration_seconds
+      - label: Thunder Linger Slow
+        surface_id: state::bot.thunder.linger_slow_pct
+      - label: Thunder Range
+        surface_id: state::bot.thunder.range_m
+      - label: Thunder Effective Range
+        surface_id: state::bot.thunder.effective_range_m
+    guardian_surfaces:
+      - label: Attack Cooldown
+        surface_id: state::guardian.attack.cooldown_seconds
+      - label: Attack Missing Health Damage
+        surface_id: state::guardian.attack.missing_health_damage_pct
+      - label: Attack Targets
+        surface_id: state::guardian.attack.targets_count
+      - label: Ally Cooldown
+        surface_id: state::guardian.ally.cooldown_seconds
+      - label: Ally Recovery Amount
+        surface_id: state::guardian.ally.recovery_amount_pct
+      - label: Ally Max Recovery
+        surface_id: state::guardian.ally.max_recovery_multiplier
+      - label: Bounty Cooldown
+        surface_id: state::guardian.bounty.cooldown_seconds
+      - label: Bounty Coin Multiplier
+        surface_id: state::guardian.bounty.coin_multiplier
+      - label: Bounty Targets
+        surface_id: state::guardian.bounty.targets_count
+      - label: Fetch Cooldown
+        surface_id: state::guardian.fetch.cooldown_seconds
+      - label: Fetch Find Chance
+        surface_id: state::guardian.fetch.find_chance_pct
+      - label: Fetch Double Find Chance
+        surface_id: state::guardian.fetch.double_find_chance_pct
+      - label: Scout Cooldown
+        surface_id: state::guardian.scout.cooldown_seconds
+      - label: Scout Duration
+        surface_id: state::guardian.scout.duration_seconds
+      - label: Scout Range Bonus
+        surface_id: state::guardian.scout.range_bonus_multiplier
+      - label: Summon Cooldown
+        surface_id: state::guardian.summon.cooldown_seconds
+      - label: Summon Duration
+        surface_id: state::guardian.summon.duration_seconds
+      - label: Summon Cash Bonus
+        surface_id: state::guardian.summon.cash_bonus_multiplier
+    module_surfaces:
+      - label: Orbital Augment Electrons
+        surface_id: state::module.orbital_augment.electron_count
+      - label: BHD Extra Coin / Free Upgrade
+        surface_id: state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct
+      - label: Primordial Collapse BH Damage Reduction
+        surface_id: state::module.primordial_collapse.bh_damage_reduction_pct
+    uw_surfaces:
+      - label: Chain Lightning Damage
+        surface_id: state::uw.chain_lightning.damage_multiplier
+      - label: Chain Thunder Reduction
+        surface_id: state::uw.chain_thunder.reduction_pct
+      - label: Chrono Field Slow
+        surface_id: state::uw.chrono_field.slow_pct
+      - label: Chrono Field Duration
+        surface_id: state::uw.chrono_field.duration_seconds
+      - label: Chrono Field Damage Reduction
+        surface_id: state::uw.chrono_field.damage_reduction_pct
+      - label: Spotlight Damage
+        surface_id: state::uw.spotlight.damage_multiplier
+      - label: Spotlight Quantity
+        surface_id: state::uw.spotlight.quantity
+      - label: Spotlight Angle
+        surface_id: state::uw.spotlight.angle_degrees
+      - label: Spotlight Range
+        surface_id: state::uw.spotlight.light_range
+      - label: Spotlight Coin Bonus
+        surface_id: state::uw.spotlight.coin_bonus_multiplier
+      - label: Black Hole Cooldown
+        surface_id: state::uw.black_hole.cooldown_seconds
+      - label: Black Hole Duration
+        surface_id: state::uw.black_hole.duration_seconds
+      - label: Golden Tower Cooldown
+        surface_id: state::uw.golden_tower.cooldown_seconds
+      - label: Golden Tower Duration
+        surface_id: state::uw.golden_tower.duration_seconds

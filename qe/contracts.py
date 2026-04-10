@@ -22,12 +22,22 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 _PRESET_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'preset_contract.yaml'
 _SECTION_LAYOUT_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'section_layout_contract.yaml'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
+
+
+@lru_cache(maxsize=None)
+def load_yaml_contract(path: str) -> dict[str, Any]:
+    contract_path = Path(path)
+    with contract_path.open('r', encoding='utf-8') as handle:
+        raw = yaml.load(handle, Loader=_YAML_LOADER) or {}
+    if not isinstance(raw, dict):
+        raise ValueError(f'Expected YAML contract mapping at {contract_path}, got {type(raw).__name__}.')
+    return raw
 
 
 @lru_cache(maxsize=1)
 def load_preset_contract() -> dict[str, Any]:
-    with _PRESET_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
-        raw = yaml.safe_load(handle) or {}
+    raw = load_yaml_contract(str(_PRESET_CONTRACT_PATH))
     canonical_presets = tuple(str(name) for name in raw.get('canonical_presets') or ())
     aliases = {str(key): str(value) for key, value in (raw.get('aliases') or {}).items()}
     if not canonical_presets:
@@ -45,8 +55,7 @@ def load_preset_contract() -> dict[str, Any]:
 
 @lru_cache(maxsize=1)
 def load_section_layout_contract() -> dict[str, Any]:
-    with _SECTION_LAYOUT_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
-        raw = yaml.safe_load(handle) or {}
+    raw = load_yaml_contract(str(_SECTION_LAYOUT_CONTRACT_PATH))
     sections = raw.get('sections') or {}
     if not sections:
         raise ValueError('Section layout contract missing sections.')
@@ -221,6 +230,7 @@ def pack_v2_naming_remap_surface_maps() -> tuple[dict[str, str], dict[str, str],
     return legacy_to_v2, v2_to_legacy, tuple(legacy_patterns), tuple(v2_patterns)
 
 
+@lru_cache(maxsize=8192)
 def to_v2_surface_id(surface_id: str) -> str:
     legacy_to_v2, _, legacy_patterns, _ = pack_v2_naming_remap_surface_maps()
     exact = legacy_to_v2.get(surface_id)
@@ -233,6 +243,7 @@ def to_v2_surface_id(surface_id: str) -> str:
     return surface_id
 
 
+@lru_cache(maxsize=8192)
 def to_legacy_surface_id(surface_id: str) -> str:
     _, v2_to_legacy, _, v2_patterns = pack_v2_naming_remap_surface_maps()
     exact = v2_to_legacy.get(surface_id)
@@ -272,6 +283,7 @@ COMPAT_LEGACY_RUNTIME_ONLY_PREFIXES: tuple[str, ...] = (
 )
 
 
+@lru_cache(maxsize=8192)
 def normalize_surface_id_to_contract(surface_id: str) -> str:
     """Normalize a possibly-legacy surface id to the active naming contract."""
     normalized = to_v2_surface_id(surface_id)
@@ -310,6 +322,7 @@ def normalize_surface_id_to_contract(surface_id: str) -> str:
     return surface_id
 
 
+@lru_cache(maxsize=8192)
 def normalize_surface_token_text(value: str) -> str:
     """Rewrite embedded legacy surface-id tokens to the active naming contract."""
 

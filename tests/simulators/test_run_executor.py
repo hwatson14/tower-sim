@@ -463,7 +463,7 @@ def test_resolve_snapshot_for_projected_state__delta_path_matches_full_resolve_f
         assert delta_snapshot.resolved_statbook.rows[surface_id].contributors
 
 
-def test_resolve_snapshot_for_projected_state__falls_back_for_unsupported_tracks_and_matches_full_resolve():
+def test_resolve_snapshot_for_projected_state__falls_back_for_still_unsupported_tracks_and_matches_full_resolve():
     from simulators.contracts import DirtyLedger, ProjectedRunState, WaveCheckpoint
     from simulators.run_executor import RunToMaxConfig, _normalized_checkpoint_state_for_projected_state, _resolve_snapshot_for_projected_state
     from simulators.snapshot_resolver import resolve_wave_row_snapshot
@@ -477,7 +477,7 @@ def test_resolve_snapshot_for_projected_state__falls_back_for_unsupported_tracks
             projected_state=projected,
         )
     )
-    workshop = _safe_mutated_workshop_levels(state, projected, {'Wall Health': 1})
+    workshop = _safe_mutated_workshop_levels(state, projected, {'Attack Speed': 1})
     target_projected = ProjectedRunState(
         checkpoint=WaveCheckpoint(display_wave=10),
         workshop_levels_current=workshop,
@@ -495,7 +495,7 @@ def test_resolve_snapshot_for_projected_state__falls_back_for_unsupported_tracks
         projected_state=target_projected,
         current_snapshot=baseline_snapshot,
         row_resolver=resolve_wave_row_snapshot,
-        changed_tracks=('Wall Health',),
+        changed_tracks=('Attack Speed',),
     )
     full_snapshot = resolve_wave_row_snapshot(
         _normalized_checkpoint_state_for_projected_state(
@@ -634,7 +634,7 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     from input.runtime_state import build_runtime_state
     from simulators.contracts import PerkState
     import simulators.run_executor as run_executor_module
-    from simulators.run_executor import RunToMaxConfig, build_boss_wave_table, build_start_of_run_state
+    from simulators.run_executor import RunToMaxConfig, build_boss_wave_table, build_boss_wave_table_payload, build_start_of_run_state
 
     class _FakeRow:
         def __init__(self, value):
@@ -716,6 +716,22 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     assert rows[0]['boss_attack'] == rows[0]['wave_attack']
     assert rows[0]['boss_health'] == pytest.approx(rows[0]['wave_health'] * run_executor_module.BOSS_HP_MULTIPLIER)
     assert rows[0]['survives_boss'] is True
+
+    payload = build_boss_wave_table_payload(
+        account_state=state,
+        initial_projected_state=projected,
+        config=RunToMaxConfig(start_wave=10, end_wave=30, boss_wave_step=10, tier_column='Tier 14'),
+        row_resolver=_resolver,
+        stop_on_failure=True,
+    )
+
+    assert payload['summary']['max_wave'] == 30
+    assert payload['summary']['first_failed_wave'] == 0
+    assert payload['summary']['result_consistent_with_rows'] is True
+    assert payload['diagnostics']['execution_mode'] == 'table_sweep'
+    assert payload['diagnostics']['checkpoint_mode'] == 'boss_wave_only'
+    assert payload['diagnostics']['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert payload['diagnostics']['stop_on_failure'] is True
 
 
 @pytest.mark.expensive

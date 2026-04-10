@@ -10,6 +10,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 RUNTIME_INPUT_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'scenario-runtime-inputs.yaml'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 
 @dataclass(frozen=True)
@@ -186,7 +187,7 @@ class AccountState:
 
 @lru_cache(maxsize=1)
 def _load_runtime_input_contract() -> Dict[str, Dict[str, Any]]:
-    raw = yaml.safe_load(RUNTIME_INPUT_CONTRACT_PATH.read_text(encoding='utf-8')) or {}
+    raw = yaml.load(RUNTIME_INPUT_CONTRACT_PATH.read_text(encoding='utf-8'), Loader=_YAML_LOADER) or {}
     fields = raw.get('fields') or {}
     if not isinstance(fields, dict) or not fields:
         raise ValueError('Scenario runtime input contract must define non-empty fields.')

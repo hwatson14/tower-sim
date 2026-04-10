@@ -32,6 +32,7 @@ IDS_CSV_PATH = _HERE / "imports" / "ids.csv"
 EP_EXPORT_CSV_PATH = _HERE / "imports" / "ep_export.csv"
 PROGRESS_CSV_PATH = _HERE / "imports" / "progress.csv"
 MANIFEST_PATH = _HERE / "imports" / "manifest.json"
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 
 # ── InputBundle ───────────────────────────────────────────────────────────────
@@ -74,7 +75,7 @@ def _load_yaml_optional(path: Path) -> dict:
     if not path.exists():
         return {}
     try:
-        data = yaml.safe_load(path.read_text())
+        data = yaml.load(path.read_text(encoding='utf-8'), Loader=_YAML_LOADER)
     except Exception:
         return {}
     return data if isinstance(data, dict) else {}
@@ -100,7 +101,7 @@ def _load_yaml_required(path: Path, *, context: str) -> dict:
     if not path.exists():
         raise FileNotFoundError(f"{context}: required file not found: {path}")
     try:
-        data = yaml.safe_load(path.read_text())
+        data = yaml.load(path.read_text(encoding='utf-8'), Loader=_YAML_LOADER)
     except Exception as exc:
         raise ValueError(f"{context}: failed to parse YAML at {path}: {exc}") from exc
     if not isinstance(data, dict):

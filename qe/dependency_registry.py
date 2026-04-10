@@ -5,9 +5,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Set
 
-import yaml
-
 from qe.consumer_registry import load_consumer_bundle_definitions
+from qe.contracts import load_yaml_contract
 from qe.materializer import load_family_contracts, load_family_surface_ids
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -50,7 +49,7 @@ class MutationMapping:
 
 @lru_cache(maxsize=1)
 def load_dependency_ledger() -> dict[str, Any]:
-    return yaml.safe_load(_DEPENDENCY_LEDGER_PATH.read_text()) or {}
+    return load_yaml_contract(str(_DEPENDENCY_LEDGER_PATH))
 
 
 class DependencyRegistry:
@@ -66,48 +65,10 @@ class DependencyRegistry:
 
     @classmethod
     def load_default(cls, root: Path | None = None) -> 'DependencyRegistry':
-        _ = root
+        if root is None:
+            return _load_default_registry()
         ledger = load_dependency_ledger()
-        nodes = {
-            str(row['node_id']): DependencyNode(
-                node_id=str(row['node_id']),
-                node_kind=str(row['node_kind']),
-                family_ids=tuple(str(family_id) for family_id in (row.get('family_ids') or ())),
-                is_publishable=bool(row['is_publishable']),
-                publication_relevance=str(row['publication_relevance']),
-                verification_status=str(row['verification_status']),
-                blocker_reason=str(row.get('blocker_reason') or ''),
-                notes=str(row.get('notes') or ''),
-            )
-            for row in (ledger.get('nodes') or [])
-        }
-        edges = [
-            DependencyEdge(
-                upstream_node_id=str(row['upstream_node_id']),
-                downstream_node_id=str(row['downstream_node_id']),
-                invalidation_semantics=str(row['invalidation_semantics']),
-                mutation_classes=tuple(str(item) for item in (row.get('mutation_classes') or ())),
-                publication_relevance=str(row['publication_relevance']),
-                verification_status=str(row['verification_status']),
-                notes=str(row.get('notes') or ''),
-            )
-            for row in (ledger.get('edges') or [])
-        ]
-        mutation_mappings = {
-            (str(row['mutation_class']), str(row['trigger_key'])): MutationMapping(
-                mutation_class=str(row['mutation_class']),
-                trigger_key=str(row['trigger_key']),
-                source_node_id=str(row['source_node_id']),
-                invalidation_semantics=str(row['invalidation_semantics']),
-                publication_relevance=str(row['publication_relevance']),
-                verification_status=str(row['verification_status']),
-                notes=str(row.get('notes') or ''),
-            )
-            for row in (ledger.get('mutation_triggers') or [])
-        }
-        registry = cls(nodes=nodes, edges=edges, mutation_mappings=mutation_mappings)
-        registry.assert_contract_integrity()
-        return registry
+        return _build_registry_from_ledger(cls, ledger)
 
     def assert_contract_integrity(self) -> None:
         family_surface_ids = load_family_surface_ids()
@@ -206,3 +167,51 @@ class DependencyRegistry:
         if remaining:
             raise ValueError(f'Cycle or unresolved dependency ordering in selected nodes: {remaining}')
         return order
+
+
+def _build_registry_from_ledger(cls: type[DependencyRegistry], ledger: Mapping[str, Any]) -> DependencyRegistry:
+    nodes = {
+        str(row['node_id']): DependencyNode(
+            node_id=str(row['node_id']),
+            node_kind=str(row['node_kind']),
+            family_ids=tuple(str(family_id) for family_id in (row.get('family_ids') or ())),
+            is_publishable=bool(row['is_publishable']),
+            publication_relevance=str(row['publication_relevance']),
+            verification_status=str(row['verification_status']),
+            blocker_reason=str(row.get('blocker_reason') or ''),
+            notes=str(row.get('notes') or ''),
+        )
+        for row in (ledger.get('nodes') or [])
+    }
+    edges = [
+        DependencyEdge(
+            upstream_node_id=str(row['upstream_node_id']),
+            downstream_node_id=str(row['downstream_node_id']),
+            invalidation_semantics=str(row['invalidation_semantics']),
+            mutation_classes=tuple(str(item) for item in (row.get('mutation_classes') or ())),
+            publication_relevance=str(row['publication_relevance']),
+            verification_status=str(row['verification_status']),
+            notes=str(row.get('notes') or ''),
+        )
+        for row in (ledger.get('edges') or [])
+    ]
+    mutation_mappings = {
+        (str(row['mutation_class']), str(row['trigger_key'])): MutationMapping(
+            mutation_class=str(row['mutation_class']),
+            trigger_key=str(row['trigger_key']),
+            source_node_id=str(row['source_node_id']),
+            invalidation_semantics=str(row['invalidation_semantics']),
+            publication_relevance=str(row['publication_relevance']),
+            verification_status=str(row['verification_status']),
+            notes=str(row.get('notes') or ''),
+        )
+        for row in (ledger.get('mutation_triggers') or [])
+    }
+    registry = cls(nodes=nodes, edges=edges, mutation_mappings=mutation_mappings)
+    registry.assert_contract_integrity()
+    return registry
+
+
+@lru_cache(maxsize=1)
+def _load_default_registry() -> DependencyRegistry:
+    return _build_registry_from_ledger(DependencyRegistry, load_dependency_ledger())

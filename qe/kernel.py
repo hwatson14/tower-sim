@@ -8,9 +8,8 @@ from types import MappingProxyType
 from types import SimpleNamespace
 from typing import Any, Iterable, Mapping, Sequence
 
-import yaml
-
 from qe.dependency_registry import DependencyRegistry
+from qe.contracts import load_yaml_contract
 from qe.materializer import (
     BaselineContributorRow,
     FamilyBaselineContributorMap,
@@ -53,17 +52,17 @@ _REMOVE_FORBIDDEN_FIELDS = _MUTATION_METADATA_FIELDS | frozenset({'new_value', '
 
 @lru_cache(maxsize=1)
 def _load_overlay_contract() -> Mapping[str, Any]:
-    return MappingProxyType(yaml.safe_load(_OVERLAY_CONTRACT_PATH.read_text()) or {})
+    return MappingProxyType(load_yaml_contract(str(_OVERLAY_CONTRACT_PATH)))
 
 
 @lru_cache(maxsize=1)
 def _load_query_contract() -> Mapping[str, Any]:
-    return MappingProxyType(yaml.safe_load(_QUERY_CONTRACT_PATH.read_text()) or {})
+    return MappingProxyType(load_yaml_contract(str(_QUERY_CONTRACT_PATH)))
 
 
 @lru_cache(maxsize=1)
 def _load_family_contract() -> Mapping[str, Any]:
-    return MappingProxyType(yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {})
+    return MappingProxyType(load_yaml_contract(str(_FAMILY_CONTRACT_PATH)))
 
 
 @dataclass(frozen=True)

@@ -464,6 +464,7 @@ def materialize_progression_family_baseline(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     materializer: FamilyBaselineMaterializer | None = None,
+    bound_stat_inputs=None,
 ) -> FamilyBaselineContributorMap:
     query_materializer = materializer or FamilyBaselineMaterializer()
     query_materializer.assert_family_compatibility(
@@ -472,7 +473,7 @@ def materialize_progression_family_baseline(
         perks_enabled=perks_enabled,
         scenario_mode_id='progression',
     )
-    bound = compile_stat_inputs_with_identity(
+    bound = bound_stat_inputs or compile_stat_inputs_with_identity(
         account_state,
         preset_name=preset_name,
         state_mode=state_mode,
@@ -500,6 +501,8 @@ def resolve_progression_family_query(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
+    bound_stat_inputs=None,
+    copy_result: bool = True,
 ) -> QueryResponse:
     query_kernel = kernel or get_default_query_kernel()
     if kernel is not None:
@@ -515,22 +518,32 @@ def resolve_progression_family_query(
             module_preset_name=module_preset_name,
             perk_preset_name=perk_preset_name,
             materializer=query_kernel.materializer,
+            bound_stat_inputs=bound_stat_inputs,
         )
         return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
 
     planner = QEResolutionPlanner()
-    result = planner.resolve_declared_family_query(
-        account_state,
-        family_id=family_id,
-        requested_surface_ids=requested_surface_ids,
-        preset_name=preset_name,
-        state_mode=state_mode,
-        card_preset_name=card_preset_name or preset_name,
-        module_preset_name=module_preset_name or preset_name,
-        perk_preset_name=perk_preset_name or preset_name,
-        perks_enabled=perks_enabled,
-        trace_mode=trace_mode,
-    )
+    if bound_stat_inputs is not None:
+        result = planner.resolve_bound_declared_family_query(
+            bound_stat_inputs,
+            family_id=family_id,
+            requested_surface_ids=requested_surface_ids,
+            trace_mode=trace_mode,
+            copy_result=copy_result,
+        )
+    else:
+        result = planner.resolve_declared_family_query(
+            account_state,
+            family_id=family_id,
+            requested_surface_ids=requested_surface_ids,
+            preset_name=preset_name,
+            state_mode=state_mode,
+            card_preset_name=card_preset_name or preset_name,
+            module_preset_name=module_preset_name or preset_name,
+            perk_preset_name=perk_preset_name or preset_name,
+            perks_enabled=perks_enabled,
+            trace_mode=trace_mode,
+        )
     return result.response
 
 
@@ -550,6 +563,8 @@ def resolve_progression_consumer_bundle(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
+    bound_stat_inputs=None,
+    copy_result: bool = True,
 ) -> QueryResponse:
     resolved_bundle = resolve_consumer_bundle(
         consumer_id,
@@ -572,6 +587,8 @@ def resolve_progression_consumer_bundle(
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
         kernel=kernel,
+        bound_stat_inputs=bound_stat_inputs,
+        copy_result=copy_result,
     )
 
 
@@ -588,6 +605,8 @@ def resolve_run_stats_progression_bundle(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
+    bound_stat_inputs=None,
+    copy_result: bool = True,
 ) -> QueryResponse:
     """Resolve the sanctioned bounded progression bundle for the run_stats consumer."""
     return resolve_progression_consumer_bundle(
@@ -620,6 +639,8 @@ def resolve_run_stats_progression_bundle(
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
         kernel=kernel,
+        bound_stat_inputs=bound_stat_inputs,
+        copy_result=copy_result,
     )
 
 

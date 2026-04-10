@@ -228,6 +228,105 @@ def _dashboard_display_token(value: object) -> str:
     return str(value)
 
 
+def _stats_dashboard_contract_manifest() -> dict[str, object]:
+    return {
+        'owner': 'qe',
+        'row_contract_model': 'qe_workshop_reconciliation_rows',
+        'row_status_semantics': [
+            'resolved',
+            'partially_resolved',
+            'mapped_not_resolved',
+            'missing',
+            'non_recon',
+            'not_applicable',
+        ],
+        'missingness_rule': 'Do not backfill missing canonical QE rows from line_verification or input_dashboard context payloads.',
+        'no_backfill_sources': [
+            'line_verification',
+            'input_dashboard',
+        ],
+        'panel_acceptance': [
+            {
+                'panel_id': 'workshop',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'Counts toward current canonical visible-stat completion. Missingness and row status are QE-owned.',
+            },
+            {
+                'panel_id': 'derived',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned canonical overview rows with explicit start/max visibility and row status semantics.',
+            },
+            {
+                'panel_id': 'offense_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned offense stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'defense_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned defense stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'utility_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned utility and economy stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'wall_economy_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned derived wall and economy rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'cards_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned card stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'bots_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned bot stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'guardians_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned guardian stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'modules_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned module stat rows published directly from the canonical visible-surface contract.',
+            },
+            {
+                'panel_id': 'uw_stats_resolved',
+                'panel_role': 'canonical_stat_rows',
+                'authority': 'qe_query_rows',
+                'acceptance_state': 'active',
+                'notes': 'QE-owned ultimate-weapon stat rows published directly from the canonical visible-surface contract.',
+            },
+        ],
+    }
+
+
 def preset_options(account_state_payload: dict) -> list[str]:
     default_preset = str(account_state_payload.get('default_preset') or 'Farming')
     canonical_order = ['Farming', 'Tourney', 'Milestone', 'Preset 4', 'Preset 5']
@@ -629,25 +728,64 @@ def _stats_surface_specs(layout: dict[str, object], key: str) -> list[dict[str, 
 
 def _stats_row_payload(
     *,
-    row_map: dict[str, dict[str, object]],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    selected_state_mode: str,
     ep_compare: dict[str, object],
     surface_id: str,
     label: str,
     canonical_row_id: str,
 ) -> dict[str, object]:
-    row = dict(row_map.get(surface_id) or {})
+    start_row = dict(rows_start.get(surface_id) or {})
+    max_row = dict(rows_max.get(surface_id) or {})
+    row = start_row if selected_state_mode == 'start_of_run' else max_row
     ep = dict(ep_compare.get(surface_id) or {})
     return {
         'canonical_row_id': canonical_row_id,
         'display_label': label,
         'label': label,
         'surface_id': surface_id,
-        'display_value': row.get('display_value'),
+        'display_value': row.get('display_value') if row.get('display_value') not in (None, '') else '—',
+        'start_of_run_value': start_row.get('display_value') if start_row.get('display_value') not in (None, '') else '—',
+        'max_progression_value': max_row.get('display_value') if max_row.get('display_value') not in (None, '') else '—',
         'value': row.get('final_value'),
-        'status': row.get('status'),
+        'status': row.get('status') or start_row.get('status') or max_row.get('status') or 'missing',
         'ep_display': ep.get('ep_value_display') or ep.get('ep_value_raw'),
         'ep_delta': ep.get('delta_display'),
-        'contributors_available': bool(row.get('contributors')),
+        'contributors_available': bool(row.get('contributors') or start_row.get('contributors') or max_row.get('contributors')),
+    }
+
+
+def _resolved_stat_section_panel(
+    *,
+    panel_id: str,
+    title: str,
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    selected_state_mode: str,
+    ep_compare: dict[str, object],
+    surface_specs: list[dict[str, str]],
+) -> dict[str, object]:
+    return {
+        'panel_id': panel_id,
+        'panel_type': 'resolved_stat_section',
+        'title': title,
+        'payload': {
+            'artifact': 'qe_resolved_stat_rows',
+            'owner': 'qe',
+            'rows': [
+                _stats_row_payload(
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=selected_state_mode,
+                    ep_compare=ep_compare,
+                    surface_id=spec['surface_id'],
+                    label=spec['label'],
+                    canonical_row_id=spec['canonical_row_id'],
+                )
+                for spec in surface_specs
+            ],
+        },
     }
 
 
@@ -741,32 +879,116 @@ def build_stats_dashboard_payload(
                 surface_specs=_stats_surface_specs,
             )
             panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
-            uw_payload = dict((input_panels_by_id.get('ultimate_weapons') or {}).get('payload') or {})
-            if uw_payload:
-                panels.append({'panel_id': 'uw_resolved', 'panel_type': 'resolved_uw_section', 'title': 'UW', 'payload': {'column_headers': uw_payload.get('column_headers') or ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': list((uw_payload.get('rows') or []))}})
-            else:
-                panels.append({'panel_id': 'uw_resolved', 'panel_type': 'gap_notice', 'title': 'UW', 'payload': {'message': 'UW context unavailable.'}})
-                upstream_gaps.append(_dashboard_gap('uw_resolved', 'input_dashboard_uw_missing', 'Ultimate weapons panel missing from input_dashboard.json'))
-            modules_panel, module_gaps = _build_modules_panel(module_card_payloads or {}, preset_name)
-            panels.append({'panel_id': 'modules_context', 'panel_type': 'context_modules', 'title': 'Modules', 'payload': modules_panel.get('payload') or {}})
-            upstream_gaps.extend(module_gaps)
-            cards_payload = dict((input_panels_by_id.get('cards') or {}).get('payload') or {})
-            if cards_payload:
-                selected_rows = (cards_payload.get('preset_rows_by_preset') or {}).get(preset_name)
-                if selected_rows is None:
-                    upstream_gaps.append(_dashboard_gap('cards_context', 'cards_preset_rows_missing', f'Cards rows missing for preset {preset_name}'))
-                else:
-                    cards_payload['preset_rows'] = selected_rows
-                panels.append({'panel_id': 'cards_context', 'panel_type': 'context_cards', 'title': 'Cards', 'payload': cards_payload})
-            else:
-                panels.append({'panel_id': 'cards_context', 'panel_type': 'gap_notice', 'title': 'Cards', 'payload': {'message': 'Cards context unavailable.'}})
-                upstream_gaps.append(_dashboard_gap('cards_context', 'input_dashboard_cards_missing', 'Cards panel missing from input_dashboard.json'))
-            bots_payload = dict((input_panels_by_id.get('bots') or {}).get('payload') or {})
-            if bots_payload:
-                panels.append({'panel_id': 'bots_context', 'panel_type': 'context_track_table', 'title': 'Bots', 'payload': bots_payload})
-            else:
-                panels.append({'panel_id': 'bots_context', 'panel_type': 'gap_notice', 'title': 'Bots', 'payload': {'message': 'Bots context unavailable.'}})
-                upstream_gaps.append(_dashboard_gap('bots_context', 'input_dashboard_bots_missing', 'Bots panel missing from input_dashboard.json'))
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='derived',
+                    title='Canonical Overview',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'overview_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='offense_resolved',
+                    title='Offense',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'offense_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='defense_resolved',
+                    title='Defense',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'defense_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='utility_resolved',
+                    title='Utility and Economy',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'utility_economy_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='wall_economy_resolved',
+                    title='Derived Wall and Economy',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'derived_wall_economy_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='cards_resolved',
+                    title='Cards',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'cards_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='bots_resolved',
+                    title='Bots',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'bot_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='guardians_resolved',
+                    title='Guardians',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'guardian_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='modules_resolved',
+                    title='Modules',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'module_surfaces'),
+                )
+            )
+            panels.append(
+                _resolved_stat_section_panel(
+                    panel_id='uw_stats_resolved',
+                    title='Ultimate Weapons',
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    selected_state_mode=state_mode,
+                    ep_compare=ep_compare,
+                    surface_specs=_stats_surface_specs(stats_layout, 'uw_surfaces'),
+                )
+            )
             variants[preset_name][state_mode] = panels
     active_panels = (variants.get(selected_preset) or {}).get(selected_state_mode) or []
     panel_map = {str(panel.get('panel_id')): panel for panel in active_panels}
@@ -776,6 +998,7 @@ def build_stats_dashboard_payload(
         'artifact': 'stats_dashboard.json',
         'schema_version': 1,
         'dashboard_version': 1,
+        'contract': _stats_dashboard_contract_manifest(),
         'selected_preset': selected_preset,
         'preset_options': preset_opts,
         'selected_state_mode': selected_state_mode,

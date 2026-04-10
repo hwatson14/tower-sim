@@ -3,8 +3,7 @@ from __future__ import annotations
 from functools import lru_cache
 from pathlib import Path
 
-import yaml
-
+from qe.contracts import load_yaml_contract
 from qe.models import StatInput
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -15,7 +14,7 @@ STATE_MODE_CONTRACTS_PATH = KB_CONTRACTS / 'state-modes.yaml'
 
 @lru_cache(maxsize=1)
 def load_state_mode_contracts() -> dict:
-    raw = yaml.safe_load(STATE_MODE_CONTRACTS_PATH.read_text()) or {}
+    raw = load_yaml_contract(str(STATE_MODE_CONTRACTS_PATH))
     aliases = raw.get('state_mode_aliases') or {}
     modes = raw.get('state_modes') or {}
     normalized_modes = {}

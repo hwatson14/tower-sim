@@ -34,10 +34,16 @@ def test_stats_dashboard_contract_and_panel_types():
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('workshop', 'workshop_stat_table'),
-        ('uw_resolved', 'resolved_uw_section'),
-        ('modules_context', 'context_modules'),
-        ('cards_context', 'context_cards'),
-        ('bots_context', 'context_track_table'),
+        ('derived', 'resolved_stat_section'),
+        ('offense_resolved', 'resolved_stat_section'),
+        ('defense_resolved', 'resolved_stat_section'),
+        ('utility_resolved', 'resolved_stat_section'),
+        ('wall_economy_resolved', 'resolved_stat_section'),
+        ('cards_resolved', 'resolved_stat_section'),
+        ('bots_resolved', 'resolved_stat_section'),
+        ('guardians_resolved', 'resolved_stat_section'),
+        ('modules_resolved', 'resolved_stat_section'),
+        ('uw_stats_resolved', 'resolved_stat_section'),
     ]
 
 
@@ -60,6 +66,397 @@ def test_stats_dashboard_variants_include_state_modes():
     variants = payload.get('variants') or {}
     farming_variant = variants.get('Farming') or {}
     assert {'start_of_run', 'max_progression'}.issubset(set(farming_variant.keys()))
+
+
+def test_stats_dashboard_publishes_contract_manifest_and_domain_acceptance_gate():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={},
+        query_rows_max_progression={},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    contract = payload.get('contract') or {}
+    assert contract.get('owner') == 'qe'
+    assert contract.get('row_contract_model') == 'qe_workshop_reconciliation_rows'
+    assert contract.get('no_backfill_sources') == ['line_verification', 'input_dashboard']
+    assert 'mapped_not_resolved' in set(contract.get('row_status_semantics') or [])
+
+    panel_acceptance = {entry.get('panel_id'): entry for entry in (contract.get('panel_acceptance') or [])}
+    assert panel_acceptance['workshop']['acceptance_state'] == 'active'
+    assert panel_acceptance['workshop']['authority'] == 'qe_query_rows'
+    assert panel_acceptance['derived']['acceptance_state'] == 'active'
+    assert panel_acceptance['derived']['authority'] == 'qe_query_rows'
+    assert panel_acceptance['offense_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['defense_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['utility_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['wall_economy_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['cards_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['bots_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['guardians_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['modules_resolved']['acceptance_state'] == 'active'
+    assert panel_acceptance['uw_stats_resolved']['acceptance_state'] == 'active'
+
+
+def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_missing_status():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::tower.damage': {
+                        'display_value': '123',
+                        'final_value': 123.0,
+                        'value_type': 'damage',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'workshop', 'contributor_id': 'workshop.damage', 'value': 123.0}],
+                    }
+                }
+            }
+        },
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    derived = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'derived'
+    )
+    assert derived.get('payload', {}).get('owner') == 'qe'
+    rows_by_label = {row.get('label'): row for row in (derived.get('payload', {}).get('rows') or [])}
+    assert rows_by_label['Damage']['display_value'] == '123'
+    assert rows_by_label['Damage']['start_of_run_value'] == '123'
+    assert rows_by_label['Damage']['max_progression_value'] == '—'
+    assert rows_by_label['Damage']['status'] == 'resolved'
+    assert rows_by_label['Attack Speed']['status'] == 'missing'
+    assert rows_by_label['Attack Speed']['display_value'] == '—'
+    assert rows_by_label['Attack Speed']['start_of_run_value'] == '—'
+    assert rows_by_label['Attack Speed']['max_progression_value'] == '—'
+
+
+def test_stats_dashboard_canonical_overview_panel_carries_both_state_modes():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::tower.damage': {
+                        'display_value': '123',
+                        'final_value': 123.0,
+                        'value_type': 'damage',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'workshop', 'contributor_id': 'workshop.damage', 'value': 123.0}],
+                    }
+                }
+            }
+        },
+        query_rows_max_progression={
+            'Farming': {
+                'rows': {
+                    'state::tower.damage': {
+                        'display_value': '456',
+                        'final_value': 456.0,
+                        'value_type': 'damage',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'perk_effect', 'contributor_id': 'perk.damage', 'value': 456.0}],
+                    }
+                }
+            }
+        },
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='max_progression',
+    )
+
+    derived = next(
+        panel for panel in payload['variants']['Farming']['max_progression']
+        if panel.get('panel_id') == 'derived'
+    )
+    rows_by_label = {row.get('label'): row for row in (derived.get('payload', {}).get('rows') or [])}
+    assert rows_by_label['Damage']['display_value'] == '456'
+    assert rows_by_label['Damage']['start_of_run_value'] == '123'
+    assert rows_by_label['Damage']['max_progression_value'] == '456'
+
+
+def test_stats_dashboard_resolved_sections_publish_offense_defense_and_utility_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::tower.damage': {'display_value': '111', 'final_value': 111.0, 'value_type': 'damage', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 111.0}]},
+                'state::tower.hp': {'display_value': '222', 'final_value': 222.0, 'value_type': 'hp', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 222.0}]},
+                'state::economy.cash_per_wave': {'display_value': '333', 'final_value': 333.0, 'value_type': 'scalar', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 333.0}]},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    offense_rows = {row.get('label'): row for row in (panels['offense_resolved'].get('payload', {}).get('rows') or [])}
+    defense_rows = {row.get('label'): row for row in (panels['defense_resolved'].get('payload', {}).get('rows') or [])}
+    utility_rows = {row.get('label'): row for row in (panels['utility_resolved'].get('payload', {}).get('rows') or [])}
+
+    assert panels['offense_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert offense_rows['Damage']['display_value'] == '111'
+    assert offense_rows['Attack Speed']['status'] == 'missing'
+    assert defense_rows['Health']['display_value'] == '222'
+    assert defense_rows['Wall Rebuild']['status'] == 'missing'
+    assert utility_rows['Cash / Wave']['display_value'] == '333'
+    assert utility_rows['Interest / Wave']['status'] == 'missing'
+
+
+def test_stats_dashboard_resolved_sections_publish_wall_and_derived_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::wall.hp': {'display_value': '444', 'final_value': 444.0, 'value_type': 'hp', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 444.0}]},
+                'state::wall.regen': {'display_value': '555', 'final_value': 555.0, 'value_type': 'hp_per_second', 'status': 'resolved', 'contributors': [{'source_class': 'workshop', 'value': 555.0}]},
+                'derived::ehp': {'display_value': '666', 'final_value': 666.0, 'value_type': 'scalar', 'status': 'resolved', 'contributors': []},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    wall_rows = {row.get('label'): row for row in (panels['wall_economy_resolved'].get('payload', {}).get('rows') or [])}
+
+    assert panels['wall_economy_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert wall_rows['Wall HP']['display_value'] == '444'
+    assert wall_rows['Wall Regen']['display_value'] == '555'
+    assert wall_rows['eHP']['display_value'] == '666'
+    assert wall_rows['Wall Thorns']['status'] == 'missing'
+
+
+def test_stats_dashboard_resolved_sections_publish_cards_and_uw_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::cards.plasma_cannon.effect_pct': {'display_value': '27%', 'final_value': 27.0, 'value_type': 'pct', 'status': 'resolved', 'contributors': [{'source_class': 'cards', 'value': 27.0}]},
+                'state::cards.super_tower.bonus_multiplier': {'display_value': 'x1.5', 'final_value': 1.5, 'value_type': 'multiplier', 'status': 'resolved', 'contributors': [{'source_class': 'cards', 'value': 1.5}]},
+                'state::uw.chain_lightning.damage_multiplier': {'display_value': 'x12', 'final_value': 12.0, 'value_type': 'multiplier', 'status': 'resolved', 'contributors': [{'source_class': 'uw', 'value': 12.0}]},
+                'state::uw.chrono_field.slow_pct': {'display_value': '38%', 'final_value': 38.0, 'value_type': 'pct', 'status': 'resolved', 'contributors': [{'source_class': 'uw', 'value': 38.0}]},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    card_rows = {row.get('label'): row for row in (panels['cards_resolved'].get('payload', {}).get('rows') or [])}
+    uw_rows = {row.get('label'): row for row in (panels['uw_stats_resolved'].get('payload', {}).get('rows') or [])}
+
+    assert panels['cards_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert card_rows['Plasma Cannon']['display_value'] == '27%'
+    assert card_rows['Super Tower']['display_value'] == 'x1.5'
+    assert card_rows['Ultimate Crit']['status'] == 'missing'
+
+    assert panels['uw_stats_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert uw_rows['Chain Lightning Damage']['display_value'] == 'x12'
+    assert uw_rows['Chrono Field Slow']['display_value'] == '38%'
+    assert uw_rows['Golden Tower Cooldown']['status'] == 'missing'
+
+
+def test_stats_dashboard_resolved_sections_publish_bot_and_guardian_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::bot.golden.cooldown_seconds': {'display_value': '80s', 'final_value': 80.0, 'value_type': 'seconds', 'status': 'resolved', 'contributors': [{'source_class': 'bot', 'value': 80.0}]},
+                'state::bot.golden.effective_range_m': {'display_value': '47.5m', 'final_value': 47.5, 'value_type': 'distance_m', 'status': 'resolved', 'contributors': [{'source_class': 'bot', 'value': 47.5}]},
+                'state::guardian.attack.cooldown_seconds': {'display_value': '120s', 'final_value': 120.0, 'value_type': 'seconds', 'status': 'resolved', 'contributors': [{'source_class': 'guardian', 'value': 120.0}]},
+                'state::guardian.fetch.find_chance_pct': {'display_value': '37%', 'final_value': 37.0, 'value_type': 'pct', 'status': 'resolved', 'contributors': [{'source_class': 'guardian', 'value': 37.0}]},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    bot_rows = {row.get('label'): row for row in (panels['bots_resolved'].get('payload', {}).get('rows') or [])}
+    guardian_rows = {row.get('label'): row for row in (panels['guardians_resolved'].get('payload', {}).get('rows') or [])}
+
+    assert panels['bots_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert bot_rows['Golden Cooldown']['display_value'] == '80'
+    assert bot_rows['Golden Effective Range']['display_value'] == '47.5'
+    assert bot_rows['Amplify Bonus']['status'] == 'missing'
+
+    assert panels['guardians_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert guardian_rows['Attack Cooldown']['display_value'] == '120'
+    assert guardian_rows['Fetch Find Chance']['display_value'] == '37%'
+    assert guardian_rows['Summon Cash Bonus']['status'] == 'missing'
+
+
+def test_stats_dashboard_resolved_sections_publish_module_rows():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = {
+        'Farming': {
+            'rows': {
+                'state::module.orbital_augment.electron_count': {'display_value': '5', 'final_value': 5.0, 'value_type': 'count', 'status': 'resolved', 'contributors': [{'source_class': 'module', 'value': 5.0}]},
+                'state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct': {'display_value': '12%', 'final_value': 12.0, 'value_type': 'pct', 'status': 'resolved', 'contributors': [{'source_class': 'module', 'value': 12.0}]},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    panels = {panel.get('panel_id'): panel for panel in payload['variants']['Farming']['start_of_run']}
+    module_rows = {row.get('label'): row for row in (panels['modules_resolved'].get('payload', {}).get('rows') or [])}
+
+    assert panels['modules_resolved'].get('payload', {}).get('owner') == 'qe'
+    assert module_rows['Orbital Augment Electrons']['display_value'] == '5'
+    assert module_rows['BHD Extra Coin / Free Upgrade']['display_value'] == '12%'
+    assert module_rows['Primordial Collapse BH Damage Reduction']['status'] == 'missing'
 
 
 def test_stats_dashboard_variants_use_rows_for_each_preset():

@@ -9,8 +9,6 @@ import json
 from pathlib import Path
 from types import SimpleNamespace
 
-import pandas as pd
-
 from app.models import PipelineRunRequest, PipelineTrace, PipelineRunResult, FastCheckpointRequest, FastCheckpointResult
 from qe.contracts import contract_json_payload as js, normalize_surface_id_to_contract
 from qe.publication import (
@@ -28,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RUN_STATS_COMMITTED_BASELINE_ARTIFACTS: tuple[str, ...] = (
     'account_state.json',
     'run_stats.json',
+    'stats_dashboard.json',
     'run_stats_query_plan_start_of_run.json',
     'run_stats_query_plan_max_progression.json',
     'run_stats_query_rows_start_of_run.json',
@@ -36,6 +35,7 @@ RUN_STATS_COMMITTED_BASELINE_ARTIFACTS: tuple[str, ...] = (
 
 RUN_STATS_LOCAL_SUPPORT_ARTIFACTS: tuple[str, ...] = (
     'diagnostics.json',
+    'input_dashboard.json',
     'module_card_payloads.json',
 )
 
@@ -279,6 +279,8 @@ def write_core_outputs(
     # CSV export
     verification_rows = js([{'destination': k, **v} for k, v in line_verification.items()])
     csv_path = out_dir / 'line_by_line_verification.csv'
+    import pandas as pd
+
     pd.DataFrame(verification_rows).to_csv(csv_path, index=False)
     written.append('line_by_line_verification.csv')
 

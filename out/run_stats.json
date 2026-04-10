@@ -122,137 +122,8 @@
             }
           },
           "perks": {
-            "perk_preset_name": "ProjectedMaxPolicy_AllExceptManualBans",
-            "selections": [
-              {
-                "perk_id": "PERK_X1_20_MAX_HEALTH",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_X1_15_DAMAGE",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_X1_15_CASH_BONUS",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_X1_75_HEALTH_REGEN",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_INTEREST_X1_50",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_DEFENSE_PERCENT_4_00",
-                "picks": 5
-              },
-              {
-                "perk_id": "PERK_BOUNCE_SHOT_2",
-                "picks": 3
-              },
-              {
-                "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
-                "picks": 3
-              },
-              {
-                "perk_id": "PERK_ORBS_1",
-                "picks": 2
-              },
-              {
-                "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_4_MORE_SMART_MISSILES",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_SWAMP_RADIUS_X1_5",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
-                "picks": 1
-              },
-              {
-                "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
-                "picks": 1
-              }
-            ]
+            "perk_preset_name": null,
+            "selections": []
           },
           "bots": {
             "enabled": [
@@ -376,14 +247,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.375655852122577e+19,
-              "display_value": "13.8Q",
+              "final_value": 1.4822554789105617e+19,
+              "display_value": "14.8Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.009173079193664e+19,
-              "display_value": "40.1Q",
+              "final_value": 2.1945331353828917e+19,
+              "display_value": "21.9Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -408,14 +279,14 @@
             "stat_name": "derived::edamage.base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3431287158.7357497,
-              "display_value": "3.43B",
+              "final_value": 3697177737.3708506,
+              "display_value": "3.7B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7553153793.407189,
-              "display_value": "7.55B",
+              "final_value": 4509616197.696707,
+              "display_value": "4.51B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -462,8 +333,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.400190893297815,
-              "display_value": "x4.4",
+              "final_value": 4.034108744542168,
+              "display_value": "x4.034",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -510,8 +381,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3514353.2326243967,
-              "display_value": "3.51M",
+              "final_value": 3221970.012422497,
+              "display_value": "3.22M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -824,14 +695,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.375655852122577e+19,
-              "display_value": "13.8Q",
+              "final_value": 1.4822554789105617e+19,
+              "display_value": "14.8Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.009173079193664e+19,
-              "display_value": "40.1Q",
+              "final_value": 2.1945331353828917e+19,
+              "display_value": "21.9Q",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -840,14 +711,14 @@
             "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3431287158.7357497,
-              "display_value": "3.43B",
+              "final_value": 3697177737.3708506,
+              "display_value": "3.7B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7553153793.407189,
-              "display_value": "7.55B",
+              "final_value": 4509616197.696707,
+              "display_value": "4.51B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -910,8 +781,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3514353.2326243967,
-              "display_value": "3.51M",
+              "final_value": 3221970.012422497,
+              "display_value": "3.22M",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1528,14 +1399,14 @@
             "stat_name": "derived::ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.7708644174965433e+22,
-              "display_value": "17.7s",
+              "final_value": 1.806140601112012e+22,
+              "display_value": "18.1s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9432318129379604e+24,
-              "display_value": "1.94S",
+              "final_value": 6.606472033361458e+24,
+              "display_value": "6.61S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -1592,14 +1463,14 @@
             "stat_name": "derived::ehp.base_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 2.4360183694342708e+20,
-              "display_value": "244Q",
+              "final_value": 2.4845446317735992e+20,
+              "display_value": "248Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 2.673128640236611e+22,
-              "display_value": "26.7s",
+              "final_value": 9.08792738247772e+22,
+              "display_value": "90.9s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2056,14 +1927,14 @@
             "stat_name": "derived::ehp.health_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1686305384600.9202,
-              "display_value": "1.69T",
+              "final_value": 1719897125330.0225,
+              "display_value": "1.72T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 142484047944081.75,
-              "display_value": "142T",
+              "final_value": 484407918641234.06,
+              "display_value": "484T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2232,14 +2103,14 @@
             "stat_name": "derived::ehp.pre_defense_pool",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3.5417288349930894e+20,
-              "display_value": "354Q",
+              "final_value": 3.6122812022240274e+20,
+              "display_value": "361Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 3.886463625875924e+22,
-              "display_value": "38.9s",
+              "final_value": 1.3212944066722928e+23,
+              "display_value": "132s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2248,14 +2119,14 @@
             "stat_name": "derived::ehp.pre_tradeoff_ehp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.7708644174965433e+22,
-              "display_value": "17.7s",
+              "final_value": 1.806140601112012e+22,
+              "display_value": "18.1s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9432318129379604e+24,
-              "display_value": "1.94S",
+              "final_value": 6.606472033361458e+24,
+              "display_value": "6.61S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2504,14 +2375,14 @@
             "stat_name": "derived::ehp_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.7708644174965433e+22,
-              "display_value": "17.7s",
+              "final_value": 1.806140601112012e+22,
+              "display_value": "18.1s",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.9432318129379604e+24,
-              "display_value": "1.94S",
+              "final_value": 6.606472033361458e+24,
+              "display_value": "6.61S",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -2520,14 +2391,14 @@
             "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1686305384600.9202,
-              "display_value": "1.69T",
+              "final_value": 1719897125330.0225,
+              "display_value": "1.72T",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 142484047944081.75,
-              "display_value": "142T",
+              "final_value": 484407918641234.06,
+              "display_value": "484T",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -3318,7 +3189,7 @@
           },
           "state::economy.cash_kill_multiplier": {
             "stat_name": "state::economy.cash_kill_multiplier",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 25.972962912,
               "display_value": "x25.973",
@@ -3326,15 +3197,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 56.81585636999999,
-              "display_value": "x56.816",
+              "final_value": 25.972962912,
+              "display_value": "x25.973",
               "value_type": "multiplier",
               "status": "resolved"
             }
           },
           "state::economy.cash_per_wave": {
             "stat_name": "state::economy.cash_per_wave",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 691.3599999999999,
               "display_value": "691.36",
@@ -3342,15 +3213,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9125.952,
-              "display_value": "9.13k",
+              "final_value": 691.3599999999999,
+              "display_value": "691.36",
               "value_type": "cash",
               "status": "resolved"
             }
           },
           "state::economy.coins_per_kill_bonus": {
             "stat_name": "state::economy.coins_per_kill_bonus",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 14.900558400000001,
               "display_value": "x14.901",
@@ -3358,8 +3229,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 64.53804357,
-              "display_value": "x64.538",
+              "final_value": 14.900558400000001,
+              "display_value": "x14.901",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -3382,7 +3253,7 @@
           },
           "state::economy.interest_per_wave_pct": {
             "stat_name": "state::economy.interest_per_wave_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 7.159999999999999,
               "display_value": "7.16%",
@@ -3390,14 +3261,302 @@
               "status": "partially_resolved"
             },
             "max_progression": {
-              "final_value": 31.324999999999996,
-              "display_value": "31.325%",
+              "final_value": 7.159999999999999,
+              "display_value": "7.16%",
               "value_type": "pct",
               "status": "partially_resolved"
             }
           },
           "state::economy.starting_cash_bonus": {
             "stat_name": "state::economy.starting_cash_bonus",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.ally.cooldown_seconds": {
+            "stat_name": "state::guardian.ally.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.ally.max_recovery_multiplier": {
+            "stat_name": "state::guardian.ally.max_recovery_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.ally.recovery_amount_pct": {
+            "stat_name": "state::guardian.ally.recovery_amount_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.cooldown_seconds": {
+            "stat_name": "state::guardian.attack.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.missing_health_damage_pct": {
+            "stat_name": "state::guardian.attack.missing_health_damage_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.targets_count": {
+            "stat_name": "state::guardian.attack.targets_count",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.coin_multiplier": {
+            "stat_name": "state::guardian.bounty.coin_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.cooldown_seconds": {
+            "stat_name": "state::guardian.bounty.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.targets_count": {
+            "stat_name": "state::guardian.bounty.targets_count",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.cooldown_seconds": {
+            "stat_name": "state::guardian.fetch.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.double_find_chance_pct": {
+            "stat_name": "state::guardian.fetch.double_find_chance_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.find_chance_pct": {
+            "stat_name": "state::guardian.fetch.find_chance_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.cooldown_seconds": {
+            "stat_name": "state::guardian.scout.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.duration_seconds": {
+            "stat_name": "state::guardian.scout.duration_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.range_bonus_multiplier": {
+            "stat_name": "state::guardian.scout.range_bonus_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.cash_bonus_multiplier": {
+            "stat_name": "state::guardian.summon.cash_bonus_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.cooldown_seconds": {
+            "stat_name": "state::guardian.summon.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.duration_seconds": {
+            "stat_name": "state::guardian.summon.duration_seconds",
             "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": null,
@@ -3518,8 +3677,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 14,
-              "display_value": "14",
+              "final_value": 8,
+              "display_value": "8",
               "value_type": "count",
               "status": "resolved"
             }
@@ -3560,14 +3719,14 @@
             "stat_name": "state::tower.damage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 3431287158.7357497,
-              "display_value": "3.43B",
+              "final_value": 3697177737.3708506,
+              "display_value": "3.7B",
               "value_type": "damage",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7553153793.407189,
-              "display_value": "7.55B",
+              "final_value": 4509616197.696707,
+              "display_value": "4.51B",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -3606,7 +3765,7 @@
           },
           "state::tower.defense_pct": {
             "stat_name": "state::tower.defense_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 78.9,
               "display_value": "78.9%",
@@ -3614,8 +3773,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 98.0,
-              "display_value": "98%",
+              "final_value": 78.9,
+              "display_value": "78.9%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3624,14 +3783,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 33.81399999999999,
-              "display_value": "33.814%",
+              "final_value": 34.1055,
+              "display_value": "34.105%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 55.216,
-              "display_value": "55.216%",
+              "final_value": 55.692,
+              "display_value": "55.692%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3640,21 +3799,21 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 30.913999999999998,
-              "display_value": "30.914%",
+              "final_value": 31.180499999999995,
+              "display_value": "31.18%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 52.896,
-              "display_value": "52.896%",
+              "final_value": 53.352,
+              "display_value": "53.352%",
               "value_type": "pct",
               "status": "resolved"
             }
           },
           "state::tower.free_attack_upgrade_chance_pct": {
             "stat_name": "state::tower.free_attack_upgrade_chance_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 75.89999999999999,
               "display_value": "75.9%",
@@ -3662,15 +3821,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 111.83749999999999,
-              "display_value": "111.837%",
+              "final_value": 75.89999999999999,
+              "display_value": "75.9%",
               "value_type": "pct",
               "status": "resolved"
             }
           },
           "state::tower.free_defense_upgrade_chance_pct": {
             "stat_name": "state::tower.free_defense_upgrade_chance_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 72.44999999999999,
               "display_value": "72.45%",
@@ -3678,15 +3837,15 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 108.38749999999999,
-              "display_value": "108.387%",
+              "final_value": 72.44999999999999,
+              "display_value": "72.45%",
               "value_type": "pct",
               "status": "resolved"
             }
           },
           "state::tower.free_utility_upgrade_chance_pct": {
             "stat_name": "state::tower.free_utility_upgrade_chance_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 86.71,
               "display_value": "86.71%",
@@ -3694,8 +3853,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 122.6475,
-              "display_value": "122.647%",
+              "final_value": 86.71,
+              "display_value": "86.71%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3704,14 +3863,14 @@
             "stat_name": "state::tower.hp",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1116758532848.2915,
-              "display_value": "1.12T",
+              "final_value": 1139004718761.6042,
+              "display_value": "1.14T",
               "value_type": "hp",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 7548823732136.78,
-              "display_value": "7.55T",
+              "final_value": 25663995689601.805,
+              "display_value": "25.7T",
               "value_type": "hp",
               "status": "resolved"
             }
@@ -3734,7 +3893,7 @@
           },
           "state::tower.knockback_force": {
             "stat_name": "state::tower.knockback_force",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 14.555519999999998,
               "display_value": "14.556",
@@ -3742,8 +3901,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 4.366656,
-              "display_value": "4.367",
+              "final_value": 14.555519999999998,
+              "display_value": "14.556",
               "value_type": "force",
               "status": "resolved"
             }
@@ -3774,8 +3933,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 35437.5,
-              "display_value": "35.4k",
+              "final_value": 2100.0,
+              "display_value": "2.1k",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -3798,7 +3957,7 @@
           },
           "state::tower.lifesteal_pct": {
             "stat_name": "state::tower.lifesteal_pct",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 4.460204124,
               "display_value": "4.46%",
@@ -3806,8 +3965,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 12.265561341,
-              "display_value": "12.266%",
+              "final_value": 4.460204124,
+              "display_value": "4.46%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -3878,7 +4037,7 @@
           },
           "state::tower.orb_count": {
             "stat_name": "state::tower.orb_count",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 7,
               "display_value": "7",
@@ -3886,8 +4045,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 9,
-              "display_value": "9",
+              "final_value": 7,
+              "display_value": "7",
               "value_type": "count",
               "status": "resolved"
             }
@@ -4022,7 +4181,7 @@
           },
           "state::tower.regen": {
             "stat_name": "state::tower.regen",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 1107458713608.3477,
               "display_value": "1.11T",
@@ -4030,8 +4189,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 57864717786036.18,
-              "display_value": "57.9T",
+              "final_value": 1107458713608.3477,
+              "display_value": "1.11T",
               "value_type": "hp_per_second",
               "status": "resolved"
             }
@@ -4152,14 +4311,14 @@
             "stat_name": "state::tower.ultimate_damage_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 24.13471466,
-              "display_value": "x24.135",
+              "final_value": 25.12415906,
+              "display_value": "x25.124",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 24.13471466,
-              "display_value": "x24.135",
+              "final_value": 25.12415906,
+              "display_value": "x25.124",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -4182,7 +4341,7 @@
           },
           "state::uw.black_hole.base_duration_seconds": {
             "stat_name": "state::uw.black_hole.base_duration_seconds",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 36.0,
               "display_value": "36",
@@ -4190,8 +4349,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 48.0,
-              "display_value": "48",
+              "final_value": 36.0,
+              "display_value": "36",
               "value_type": "seconds",
               "status": "resolved"
             }
@@ -4214,7 +4373,7 @@
           },
           "state::uw.black_hole.duration_seconds": {
             "stat_name": "state::uw.black_hole.duration_seconds",
-            "changed_in_max_progression": true,
+            "changed_in_max_progression": false,
             "start_of_run": {
               "final_value": 36.0,
               "display_value": "36",
@@ -4222,8 +4381,8 @@
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 48.0,
-              "display_value": "48",
+              "final_value": 36.0,
+              "display_value": "36",
               "value_type": "seconds",
               "status": "resolved"
             }
@@ -4550,8 +4709,8 @@
           }
         },
         "diagnostics": {
-          "row_count": 266,
-          "changed_in_max_progression_count": 54
+          "row_count": 284,
+          "changed_in_max_progression_count": 40
         }
       }
     },
@@ -4802,14 +4961,14 @@
             "stat_name": "derived::edamage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.159826070685807e+20,
-              "display_value": "116Q",
+              "final_value": 1.2497010391114601e+20,
+              "display_value": "125Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.5455346017557888e+21,
-              "display_value": "1.55s",
+              "final_value": 1.665298139620929e+21,
+              "display_value": "1.67s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -4834,14 +4993,14 @@
             "stat_name": "derived::edamage.base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 13725148634.942999,
-              "display_value": "13.7B",
+              "final_value": 14788710949.483402,
+              "display_value": "14.8B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 150670704242.51224,
-              "display_value": "151B",
+              "final_value": 162346183117.08145,
+              "display_value": "162B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -5250,14 +5409,14 @@
             "stat_name": "derived::edamage_ep",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 1.159826070685807e+20,
-              "display_value": "116Q",
+              "final_value": 1.2497010391114601e+20,
+              "display_value": "125Q",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 1.5455346017557888e+21,
-              "display_value": "1.55s",
+              "final_value": 1.665298139620929e+21,
+              "display_value": "1.67s",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -5266,14 +5425,14 @@
             "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 13725148634.942999,
-              "display_value": "13.7B",
+              "final_value": 14788710949.483402,
+              "display_value": "14.8B",
               "value_type": "scalar",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 150670704242.51224,
-              "display_value": "151B",
+              "final_value": 162346183117.08145,
+              "display_value": "162B",
               "value_type": "scalar",
               "status": "resolved"
             }
@@ -7838,6 +7997,294 @@
               "status": "gated_off"
             }
           },
+          "state::guardian.ally.cooldown_seconds": {
+            "stat_name": "state::guardian.ally.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.ally.max_recovery_multiplier": {
+            "stat_name": "state::guardian.ally.max_recovery_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.ally.recovery_amount_pct": {
+            "stat_name": "state::guardian.ally.recovery_amount_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.cooldown_seconds": {
+            "stat_name": "state::guardian.attack.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.missing_health_damage_pct": {
+            "stat_name": "state::guardian.attack.missing_health_damage_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.attack.targets_count": {
+            "stat_name": "state::guardian.attack.targets_count",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.coin_multiplier": {
+            "stat_name": "state::guardian.bounty.coin_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.cooldown_seconds": {
+            "stat_name": "state::guardian.bounty.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.bounty.targets_count": {
+            "stat_name": "state::guardian.bounty.targets_count",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.cooldown_seconds": {
+            "stat_name": "state::guardian.fetch.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.double_find_chance_pct": {
+            "stat_name": "state::guardian.fetch.double_find_chance_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.fetch.find_chance_pct": {
+            "stat_name": "state::guardian.fetch.find_chance_pct",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.cooldown_seconds": {
+            "stat_name": "state::guardian.scout.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.duration_seconds": {
+            "stat_name": "state::guardian.scout.duration_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.scout.range_bonus_multiplier": {
+            "stat_name": "state::guardian.scout.range_bonus_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.cash_bonus_multiplier": {
+            "stat_name": "state::guardian.summon.cash_bonus_multiplier",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.cooldown_seconds": {
+            "stat_name": "state::guardian.summon.cooldown_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
+          "state::guardian.summon.duration_seconds": {
+            "stat_name": "state::guardian.summon.duration_seconds",
+            "changed_in_max_progression": false,
+            "start_of_run": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            },
+            "max_progression": {
+              "final_value": null,
+              "display_value": null,
+              "value_type": "scalar",
+              "status": "gated_off"
+            }
+          },
           "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct": {
             "stat_name": "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
             "changed_in_max_progression": false,
@@ -7986,14 +8433,14 @@
             "stat_name": "state::tower.damage",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 13725148634.942999,
-              "display_value": "13.7B",
+              "final_value": 14788710949.483402,
+              "display_value": "14.8B",
               "value_type": "damage",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 16741189360.279139,
-              "display_value": "16.7B",
+              "final_value": 18038464790.786827,
+              "display_value": "18B",
               "value_type": "damage",
               "status": "resolved"
             }
@@ -8050,14 +8497,14 @@
             "stat_name": "state::tower.enemy_attack_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 31.262,
-              "display_value": "31.262%",
+              "final_value": 31.5315,
+              "display_value": "31.532%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 52.663999999999994,
-              "display_value": "52.664%",
+              "final_value": 53.117999999999995,
+              "display_value": "53.118%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -8066,14 +8513,14 @@
             "stat_name": "state::tower.enemy_health_level_skip_pct",
             "changed_in_max_progression": true,
             "start_of_run": {
-              "final_value": 30.218,
-              "display_value": "30.218%",
+              "final_value": 30.4785,
+              "display_value": "30.479%",
               "value_type": "pct",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 52.199999999999996,
-              "display_value": "52.2%",
+              "final_value": 52.65,
+              "display_value": "52.65%",
               "value_type": "pct",
               "status": "resolved"
             }
@@ -8578,14 +9025,14 @@
             "stat_name": "state::tower.ultimate_damage_multiplier",
             "changed_in_max_progression": false,
             "start_of_run": {
-              "final_value": 22.4851795,
-              "display_value": "x22.485",
+              "final_value": 23.694428249999998,
+              "display_value": "x23.694",
               "value_type": "multiplier",
               "status": "resolved"
             },
             "max_progression": {
-              "final_value": 22.4851795,
-              "display_value": "x22.485",
+              "final_value": 23.694428249999998,
+              "display_value": "x23.694",
               "value_type": "multiplier",
               "status": "resolved"
             }
@@ -8976,7 +9423,7 @@
           }
         },
         "diagnostics": {
-          "row_count": 266,
+          "row_count": 284,
           "changed_in_max_progression_count": 43
         }
       }
@@ -8994,21 +9441,20 @@
       "max_progression"
     ],
     "perk_state": "auto",
-    "perk_mode": "max_progression_policy",
+    "perk_mode": "none",
     "perk_config_resolution": {
-      "requested_perks_path": "manual_inputs.yaml:perk_policy",
-      "resolved_perks_path": "manual_inputs.yaml:perk_policy",
+      "requested_perks_path": "manual_inputs.yaml:perk_config",
+      "resolved_perks_path": "none",
       "fallback_applied": false,
       "fallback_reason": null,
-      "perk_mode": "max_progression_policy",
-      "manual_banned_perk_count": 2
+      "perk_mode": "none"
     },
     "qe_shared_runtime_context": {
       "context_kind": "qe_shared_runtime_context",
       "consumer_bundle_count": 13,
-      "family_surface_count": 459,
+      "family_surface_count": 513,
       "family_contract_count": 6,
-      "surface_metadata_count": 249,
+      "surface_metadata_count": 267,
       "compiler_mapping_count": 348,
       "compiler_alias_count": 22,
       "compiler_relic_count": 26,
@@ -9022,7 +9468,7 @@
       "Farming": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 266,
+          "statbook_row_count": 284,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9033,34 +9479,34 @@
             "timing_scenario_probe",
             "timing_scenario_probe"
           ],
-          "resolved_surface_count": 266,
-          "contributor_row_count": 263
+          "resolved_surface_count": 284,
+          "contributor_row_count": 285
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 266,
+          "statbook_row_count": 284,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
             "timing_wave_duration"
           ],
           "family_ids": [
-            "progression_runtime_with_perks",
-            "timing_farm_with_perks",
-            "timing_farm_with_perks"
+            "progression_runtime_no_perks",
+            "timing_scenario_probe",
+            "timing_scenario_probe"
           ],
-          "resolved_surface_count": 266,
-          "contributor_row_count": 287
+          "resolved_surface_count": 284,
+          "contributor_row_count": 286
         },
         "dual_state_stats": {
-          "row_count": 266,
-          "changed_in_max_progression_count": 54
+          "row_count": 284,
+          "changed_in_max_progression_count": 40
         }
       },
       "Tourney": {
         "start_of_run": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 266,
+          "statbook_row_count": 284,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9071,12 +9517,12 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 266,
-          "contributor_row_count": 246
+          "resolved_surface_count": 284,
+          "contributor_row_count": 268
         },
         "max_progression": {
           "query_backend": "bounded_qe_bundle",
-          "statbook_row_count": 266,
+          "statbook_row_count": 284,
           "bundle_ids": [
             "progression_core_stats",
             "timing_core_cycle",
@@ -9087,11 +9533,11 @@
             "timing_tournament_no_perks",
             "timing_tournament_no_perks"
           ],
-          "resolved_surface_count": 266,
-          "contributor_row_count": 247
+          "resolved_surface_count": 284,
+          "contributor_row_count": 269
         },
         "dual_state_stats": {
-          "row_count": 266,
+          "row_count": 284,
           "changed_in_max_progression_count": 43
         }
       }
@@ -9170,6 +9616,28 @@
               "state::bot.thunder.linger_duration_seconds",
               "state::bot.thunder.linger_slow_pct",
               "state::bot.thunder.range_m",
+              "state::bot.amplify.effective_range_m",
+              "state::bot.flame.effective_range_m",
+              "state::bot.golden.effective_range_m",
+              "state::bot.thunder.effective_range_m",
+              "state::guardian.attack.cooldown_seconds",
+              "state::guardian.attack.missing_health_damage_pct",
+              "state::guardian.attack.targets_count",
+              "state::guardian.ally.cooldown_seconds",
+              "state::guardian.ally.recovery_amount_pct",
+              "state::guardian.ally.max_recovery_multiplier",
+              "state::guardian.bounty.cooldown_seconds",
+              "state::guardian.bounty.coin_multiplier",
+              "state::guardian.bounty.targets_count",
+              "state::guardian.fetch.cooldown_seconds",
+              "state::guardian.fetch.find_chance_pct",
+              "state::guardian.fetch.double_find_chance_pct",
+              "state::guardian.scout.cooldown_seconds",
+              "state::guardian.scout.duration_seconds",
+              "state::guardian.scout.range_bonus_multiplier",
+              "state::guardian.summon.cooldown_seconds",
+              "state::guardian.summon.duration_seconds",
+              "state::guardian.summon.cash_bonus_multiplier",
               "state::cards.plasma_cannon.effect_pct",
               "state::module.orbital_augment.electron_count",
               "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
@@ -9291,6 +9759,28 @@
               "state::bot.thunder.linger_duration_seconds",
               "state::bot.thunder.linger_slow_pct",
               "state::bot.thunder.range_m",
+              "state::bot.amplify.effective_range_m",
+              "state::bot.flame.effective_range_m",
+              "state::bot.golden.effective_range_m",
+              "state::bot.thunder.effective_range_m",
+              "state::guardian.attack.cooldown_seconds",
+              "state::guardian.attack.missing_health_damage_pct",
+              "state::guardian.attack.targets_count",
+              "state::guardian.ally.cooldown_seconds",
+              "state::guardian.ally.recovery_amount_pct",
+              "state::guardian.ally.max_recovery_multiplier",
+              "state::guardian.bounty.cooldown_seconds",
+              "state::guardian.bounty.coin_multiplier",
+              "state::guardian.bounty.targets_count",
+              "state::guardian.fetch.cooldown_seconds",
+              "state::guardian.fetch.find_chance_pct",
+              "state::guardian.fetch.double_find_chance_pct",
+              "state::guardian.scout.cooldown_seconds",
+              "state::guardian.scout.duration_seconds",
+              "state::guardian.scout.range_bonus_multiplier",
+              "state::guardian.summon.cooldown_seconds",
+              "state::guardian.summon.duration_seconds",
+              "state::guardian.summon.cash_bonus_multiplier",
               "state::cards.plasma_cannon.effect_pct",
               "state::module.orbital_augment.electron_count",
               "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
@@ -9345,7 +9835,7 @@
         "Farming": {
           "progression": {
             "bundle_id": "progression_core_stats",
-            "family_id": "progression_runtime_with_perks",
+            "family_id": "progression_runtime_no_perks",
             "resolved_surface_ids": [
               "state::tower.damage",
               "state::tower.attack_speed",
@@ -9414,6 +9904,28 @@
               "state::bot.thunder.linger_duration_seconds",
               "state::bot.thunder.linger_slow_pct",
               "state::bot.thunder.range_m",
+              "state::bot.amplify.effective_range_m",
+              "state::bot.flame.effective_range_m",
+              "state::bot.golden.effective_range_m",
+              "state::bot.thunder.effective_range_m",
+              "state::guardian.attack.cooldown_seconds",
+              "state::guardian.attack.missing_health_damage_pct",
+              "state::guardian.attack.targets_count",
+              "state::guardian.ally.cooldown_seconds",
+              "state::guardian.ally.recovery_amount_pct",
+              "state::guardian.ally.max_recovery_multiplier",
+              "state::guardian.bounty.cooldown_seconds",
+              "state::guardian.bounty.coin_multiplier",
+              "state::guardian.bounty.targets_count",
+              "state::guardian.fetch.cooldown_seconds",
+              "state::guardian.fetch.find_chance_pct",
+              "state::guardian.fetch.double_find_chance_pct",
+              "state::guardian.scout.cooldown_seconds",
+              "state::guardian.scout.duration_seconds",
+              "state::guardian.scout.range_bonus_multiplier",
+              "state::guardian.summon.cooldown_seconds",
+              "state::guardian.summon.duration_seconds",
+              "state::guardian.summon.cash_bonus_multiplier",
               "state::cards.plasma_cannon.effect_pct",
               "state::module.orbital_augment.electron_count",
               "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
@@ -9443,7 +9955,7 @@
           "timing": [
             {
               "bundle_id": "timing_core_cycle",
-              "family_id": "timing_farm_with_perks",
+              "family_id": "timing_scenario_probe",
               "resolved_surface_ids": [
                 "state::uw.black_hole.cooldown_seconds",
                 "state::uw.black_hole.duration_seconds",
@@ -9454,7 +9966,7 @@
             },
             {
               "bundle_id": "timing_wave_duration",
-              "family_id": "timing_farm_with_perks",
+              "family_id": "timing_scenario_probe",
               "resolved_surface_ids": [
                 "support_surface::timing.wave_duration_seconds_effective",
                 "state::cards.wave_accelerator.spawn_rate_acceleration",
@@ -9535,6 +10047,28 @@
               "state::bot.thunder.linger_duration_seconds",
               "state::bot.thunder.linger_slow_pct",
               "state::bot.thunder.range_m",
+              "state::bot.amplify.effective_range_m",
+              "state::bot.flame.effective_range_m",
+              "state::bot.golden.effective_range_m",
+              "state::bot.thunder.effective_range_m",
+              "state::guardian.attack.cooldown_seconds",
+              "state::guardian.attack.missing_health_damage_pct",
+              "state::guardian.attack.targets_count",
+              "state::guardian.ally.cooldown_seconds",
+              "state::guardian.ally.recovery_amount_pct",
+              "state::guardian.ally.max_recovery_multiplier",
+              "state::guardian.bounty.cooldown_seconds",
+              "state::guardian.bounty.coin_multiplier",
+              "state::guardian.bounty.targets_count",
+              "state::guardian.fetch.cooldown_seconds",
+              "state::guardian.fetch.find_chance_pct",
+              "state::guardian.fetch.double_find_chance_pct",
+              "state::guardian.scout.cooldown_seconds",
+              "state::guardian.scout.duration_seconds",
+              "state::guardian.scout.range_bonus_multiplier",
+              "state::guardian.summon.cooldown_seconds",
+              "state::guardian.summon.duration_seconds",
+              "state::guardian.summon.cash_bonus_multiplier",
               "state::cards.plasma_cannon.effect_pct",
               "state::module.orbital_augment.electron_count",
               "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
@@ -9591,6 +10125,7 @@
       "committed_baseline_artifacts": [
         "account_state.json",
         "run_stats.json",
+        "stats_dashboard.json",
         "run_stats_query_plan_start_of_run.json",
         "run_stats_query_plan_max_progression.json",
         "run_stats_query_rows_start_of_run.json",
@@ -9598,13 +10133,16 @@
       ],
       "local_support_artifacts": [
         "diagnostics.json",
+        "input_dashboard.json",
         "module_card_payloads.json"
       ],
       "all_local_output_artifacts": [
         "diagnostics.json",
+        "input_dashboard.json",
         "module_card_payloads.json",
         "account_state.json",
         "run_stats.json",
+        "stats_dashboard.json",
         "run_stats_query_plan_start_of_run.json",
         "run_stats_query_plan_max_progression.json",
         "run_stats_query_rows_start_of_run.json",
@@ -9626,7 +10164,9 @@
         "statbook_max_progression.json"
       ],
       "ui_payload_artifacts": [
-        "module_card_payloads.json"
+        "input_dashboard.json",
+        "module_card_payloads.json",
+        "stats_dashboard.json"
       ]
     }
   }

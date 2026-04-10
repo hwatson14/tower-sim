@@ -384,17 +384,36 @@ def render_overview_metric_strip_html(payload: dict) -> str:
 
 
 def render_resolved_stat_section_html(payload: dict) -> str:
-    headers = ['Label', 'Resolved', 'Status', 'EP', 'Δ']
-    rows = [
-        [
-            row.get('label', ''),
-            row.get('display_value', ''),
-            row.get('status', ''),
-            row.get('ep_display', ''),
-            row.get('ep_delta', ''),
-        ]
-        for row in (payload.get('rows') or [])
-    ]
+    payload_rows = list(payload.get('rows') or [])
+    show_dual_state = any(
+        'start_of_run_value' in row or 'max_progression_value' in row
+        for row in payload_rows
+        if isinstance(row, dict)
+    )
+    headers = ['Label', 'Start', 'Max', 'Status', 'EP', 'Δ'] if show_dual_state else ['Label', 'Resolved', 'Status', 'EP', 'Δ']
+    rows = []
+    for row in payload_rows:
+        if show_dual_state:
+            rows.append(
+                [
+                    row.get('label', ''),
+                    row.get('start_of_run_value', row.get('display_value', '')),
+                    row.get('max_progression_value', row.get('display_value', '')),
+                    row.get('status', ''),
+                    row.get('ep_display', ''),
+                    row.get('ep_delta', ''),
+                ]
+            )
+        else:
+            rows.append(
+                [
+                    row.get('label', ''),
+                    row.get('display_value', ''),
+                    row.get('status', ''),
+                    row.get('ep_display', ''),
+                    row.get('ep_delta', ''),
+                ]
+            )
     return f"<div class='inputs-panel'>{_render_table(headers, rows)}</div>"
 
 

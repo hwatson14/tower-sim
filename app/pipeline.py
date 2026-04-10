@@ -53,6 +53,8 @@ from app.publication import (
     RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS,
     RUN_STATS_COMMITTED_BASELINE_ARTIFACTS,
     RUN_STATS_LOCAL_SUPPORT_ARTIFACTS,
+    _build_input_dashboard_payload,
+    _build_stats_dashboard_payload,
     _remove_legacy_outputs,
     _RUN_STATS_LEGACY_OUTPUTS,
     _json_sanitize,
@@ -86,10 +88,11 @@ from simulators.perk_timeline_generator import (
     perk_state_at_wave,
 )
 from simulators.snapshot_resolver import SimulatorSnapshotResolver
-from simulators.timing import merge_scenario_publication_rows as merge_timing_scenario_publication_rows, resolve_timing_consumer_bundle
+from simulators.timing import compile_timing_family_rows, merge_scenario_publication_rows as merge_timing_scenario_publication_rows, resolve_timing_consumer_bundle
 from simulators.contracts import PerkState
-from simulators.run_executor import RunToMaxConfig, build_boss_wave_table, build_start_of_run_state
+from simulators.run_executor import RunToMaxConfig, build_boss_wave_table_payload, build_start_of_run_state
 from input.state_types import ScenarioRuntimeInputs
+from qe.models import BoundStatInputs, bind_state_identity
 
 
 def _load_json_config(path: Path) -> dict:
@@ -199,21 +202,45 @@ def build_boss_wave_payload(
         state_mode='start_of_run',
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
     )
-    rows = build_boss_wave_table(
+    boss_wave_run = build_boss_wave_table_payload(
         account_state=account_state,
         initial_projected_state=initial_state,
         config=config,
         stop_on_failure=bool(stop_on_failure),
     )
+    rows = list(boss_wave_run.get('rows') or [])
+    summary = dict(boss_wave_run.get('summary') or {})
+    execution_diagnostics = dict(boss_wave_run.get('diagnostics') or {})
     return {
+        'artifact': 'boss_wave_dashboard_payload',
+        'schema_version': 1,
+        'contract': {
+            'payload_owner': 'app.pipeline.build_boss_wave_payload',
+            'simulator_owner': 'simulators.run_executor.build_boss_wave_table_payload',
+            'row_output_kind': 'boss_wave_table_rows',
+            'summary_kind': 'max_wave_survivability',
+            'checkpoint_mode': 'boss_wave_only',
+        },
         'rows': rows,
-        'diagnostics': {
+        'summary': {
             'preset_name': preset_name,
             'tier_column': config.tier_column,
-            'boss_wave_step': config.boss_wave_step,
-            'row_count': len(rows),
             'state_mode': config.state_mode,
-            'checkpoint_mode': 'boss_wave_only',
+            'max_wave': int(summary.get('max_wave') or 0),
+            'max_surviving_wave': int(summary.get('max_surviving_wave') or 0),
+            'first_failed_wave': int(summary.get('first_failed_wave') or 0),
+            'row_count': int(summary.get('row_count') or len(rows)),
+            'terminal_display_wave': int(summary.get('terminal_display_wave') or 0),
+            'survives_through_end': bool(summary.get('survives_through_end')),
+            'result_consistent_with_rows': bool(summary.get('result_consistent_with_rows')),
+        },
+        'diagnostics': {
+            'preset_name': preset_name,
+            **execution_diagnostics,
+        },
+        'download': {
+            'format': 'csv',
+            'file_name': f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
         },
     }
 
@@ -420,7 +447,10 @@ def _remove_run_stats_current_outputs(out_dir: Path) -> None:
     for filename in RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS:
         path = out_dir / filename
         if path.exists():
-            path.unlink()
+            try:
+                path.unlink()
+            except FileNotFoundError:
+                continue
     perk_diag_dir = out_dir / 'diagnostics' / 'perks'
     if perk_diag_dir.exists():
         shutil.rmtree(perk_diag_dir, ignore_errors=True)
@@ -952,6 +982,50 @@ class RunStatsSession:
                 progression_family_id = _run_stats_progression_family_id(state_mode=state_mode, perks_enabled=perks_enabled)
                 timing_family_id = _run_stats_timing_family_id(preset_name=preset_name, perks_enabled=perks_enabled)
                 scenario_config = _run_stats_scenario_config(account_state, preset_name=preset_name)
+                base_stat_inputs = tuple(compile_stat_inputs(
+                    account_state,
+                    preset_name=preset_name,
+                    state_mode=state_mode,
+                    perk_preset_name=perk_preset_name,
+                    perks_enabled=perks_enabled,
+                ))
+                progression_bound = BoundStatInputs(
+                    binding=bind_state_identity(
+                        account_state,
+                        preset_name=preset_name,
+                        state_mode=state_mode,
+                        perk_preset_name=perk_preset_name,
+                        perks_enabled=perks_enabled,
+                        scenario_context={'mode_id': 'progression'},
+                    ),
+                    stat_inputs=base_stat_inputs,
+                )
+                timing_bound = BoundStatInputs(
+                    binding=bind_state_identity(
+                        account_state,
+                        state_mode=state_mode,
+                        preset_name=preset_name,
+                        perk_preset_name=perk_preset_name,
+                        perks_enabled=perks_enabled,
+                        scenario_context={
+                            'mode_id': scenario_config.mode_id,
+                            'tier': scenario_config.tier,
+                            'league': scenario_config.league,
+                            'tournament_wave': scenario_config.tournament_wave,
+                        },
+                    ),
+                    stat_inputs=base_stat_inputs,
+                )
+                compiled_timing_family_rows = compile_timing_family_rows(
+                    account_state=account_state,
+                    family_id=timing_family_id,
+                    preset_name=preset_name,
+                    scenario_config=scenario_config,
+                    perks_enabled=perks_enabled,
+                    state_mode=state_mode,
+                    perk_preset_name=perk_preset_name,
+                    bound_stat_inputs=timing_bound,
+                )
 
                 t = perf_counter()
                 progression_response = resolve_run_stats_progression_bundle(
@@ -963,6 +1037,8 @@ class RunStatsSession:
                     perk_preset_name=perk_preset_name,
                     trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                    bound_stat_inputs=progression_bound,
+                    copy_result=False,
                 )
                 progression_ms = _elapsed_ms(t)
 
@@ -980,6 +1056,8 @@ class RunStatsSession:
                     include_optional_surface_ids=('support_surface::timing.gcomp_cooldown_reduction_seconds',),
                     trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                    compiled_family_rows=compiled_timing_family_rows,
+                    copy_result=False,
                 )
                 timing_core_ms = _elapsed_ms(t)
 
@@ -1000,6 +1078,8 @@ class RunStatsSession:
                     ),
                     trace_mode='full_trace',
                     kernel=self.query_kernel if state_mode == 'start_of_run' else None,
+                    compiled_family_rows=compiled_timing_family_rows,
+                    copy_result=False,
                 )
                 timing_wave_ms = _elapsed_ms(t)
 
@@ -1146,6 +1226,15 @@ class RunStatsSession:
         (args.out / 'module_card_payloads.json').write_text(
             json.dumps(js(build_module_card_payloads(artifacts['account_state'])), indent=2, default=str)
         )
+        input_dashboard_payload = _build_input_dashboard_payload(
+            _sanitized_account_state_for_output(artifacts['account_state'], 'Farming'),
+            diagnostics,
+            qe_dashboard_publications={},
+            module_card_payloads=build_module_card_payloads(artifacts['account_state']),
+        )
+        (args.out / 'input_dashboard.json').write_text(
+            json.dumps(js(input_dashboard_payload), indent=2, default=str)
+        )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan']).write_text(
             json.dumps(js({
                 'pipeline_kind': 'run_stats_bounded_query',
@@ -1166,6 +1255,21 @@ class RunStatsSession:
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(
             json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str)
         )
+        stats_dashboard_payload = _build_stats_dashboard_payload(
+            account_state_payload=_sanitized_account_state_for_output(artifacts['account_state'], 'Farming'),
+            diagnostics=diagnostics,
+            input_dashboard_payload=input_dashboard_payload,
+            module_card_payloads=build_module_card_payloads(artifacts['account_state']),
+            query_rows_start_of_run=artifacts['start_books_by_preset'],
+            query_rows_max_progression=artifacts['max_books_by_preset'],
+            ep_compare_publishable={},
+            line_verification={},
+            selected_preset='Farming',
+            selected_state_mode='start_of_run',
+        )
+        (args.out / 'stats_dashboard.json').write_text(
+            json.dumps(js(stats_dashboard_payload), indent=2, default=str)
+        )
         diagnostics['output_contract'] = {
             'contract_kind': 'run_stats_bounded',
             'committed_baseline_artifacts': list(RUN_STATS_COMMITTED_BASELINE_ARTIFACTS),
@@ -1175,7 +1279,7 @@ class RunStatsSession:
             'query_row_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_rows'], _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']],
             'query_plan_artifacts': [_RUN_STATS_QUERY_OUTPUTS['start_of_run_plan'], _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']],
             'removed_legacy_fast_path_artifacts': list(_RUN_STATS_LEGACY_OUTPUTS),
-            'ui_payload_artifacts': ['module_card_payloads.json'],
+            'ui_payload_artifacts': ['input_dashboard.json', 'module_card_payloads.json', 'stats_dashboard.json'],
         }
         stable_run_stats_payload = _stable_run_stats_payload_for_commit(artifacts['run_stats_payload'])
         (args.out / 'run_stats.json').write_text(json.dumps(js(stable_run_stats_payload), indent=2, default=str))
@@ -1808,7 +1912,10 @@ def run_analysis_pipeline(args) -> int:
     for stale_name in stale_outputs:
         stale_path = args.out / stale_name
         if stale_path.exists():
-            stale_path.unlink()
+            try:
+                stale_path.unlink()
+            except FileNotFoundError:
+                continue
 
     return 0
 

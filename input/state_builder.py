@@ -37,12 +37,13 @@ from input.ids_parser import IdsRaw
 ROOT = Path(__file__).resolve().parents[1]
 _PRESET_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'preset_contract.yaml'
 _SECTION_LAYOUT_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'section_layout_contract.yaml'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 
 @lru_cache(maxsize=1)
 def _load_preset_contract() -> dict[str, Any]:
     with _PRESET_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
-        raw = yaml.safe_load(handle) or {}
+        raw = yaml.load(handle, Loader=_YAML_LOADER) or {}
     canonical_presets = tuple(str(name) for name in raw.get('canonical_presets') or ())
     aliases = {str(key): str(value) for key, value in (raw.get('aliases') or {}).items()}
     if not canonical_presets:
@@ -59,7 +60,7 @@ def _load_preset_contract() -> dict[str, Any]:
 @lru_cache(maxsize=1)
 def load_section_layout_contract() -> dict[str, Any]:
     with _SECTION_LAYOUT_CONTRACT_PATH.open('r', encoding='utf-8') as handle:
-        raw = yaml.safe_load(handle) or {}
+        raw = yaml.load(handle, Loader=_YAML_LOADER) or {}
     sections = raw.get('sections') or {}
     if not sections:
         raise ValueError('Section layout contract missing sections.')

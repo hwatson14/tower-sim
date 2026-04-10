@@ -6,9 +6,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 
-import yaml
-
 from qe.contracts import (
+    load_yaml_contract,
     to_legacy_destination,
     to_legacy_surface_id,
     to_v2_destination,
@@ -33,9 +32,13 @@ COMPILER_ROUTING_POLICY_PATH = KB_CONTRACTS / 'compiler-routing-policy.yaml'
 QUERY_ROUTING_MAPPINGS_PATH = KB_CONTRACTS / 'query-routing-mappings.yaml'
 
 
+def _load_yaml(path: Path) -> dict:
+    return load_yaml_contract(str(path))
+
+
 @lru_cache(maxsize=1)
 def _load_compiler_routing_policy() -> dict:
-    raw = yaml.safe_load(COMPILER_ROUTING_POLICY_PATH.read_text()) or {}
+    raw = _load_yaml(COMPILER_ROUTING_POLICY_PATH)
 
     def _nested_tuple_map(section: str) -> dict:
         out = {}
@@ -89,7 +92,7 @@ def _to_nested_contributor_key_map(rows: list[dict] | None) -> Dict[Tuple[str, s
 
 @lru_cache(maxsize=1)
 def _load_query_routing_mappings() -> dict:
-    raw = yaml.safe_load(QUERY_ROUTING_MAPPINGS_PATH.read_text()) or {}
+    raw = _load_yaml(QUERY_ROUTING_MAPPINGS_PATH)
     return {
         'uw_lab_direct_destination': _to_destination_tuple_map(raw.get('uw_lab_direct_destination')),
         'workshop_ids_to_contributor': dict(raw.get('workshop_ids_to_contributor') or {}),
@@ -197,6 +200,7 @@ ENHANCEMENT_ALIAS_OVERRIDES = _QUERY_ROUTING_MAPPINGS['enhancement_alias_overrid
 RELIC_CONTRIBUTOR_OVERRIDES = _QUERY_ROUTING_MAPPINGS['relic_contributor_overrides']
 PERK_TARGET_DESTINATION_OVERRIDES = _QUERY_ROUTING_MAPPINGS['perk_target_destination_overrides']
 
+@lru_cache(maxsize=8192)
 def slug_text(text: str) -> str:
     text = text.lower().strip()
     text = text.replace('&', ' and ')
@@ -213,7 +217,7 @@ def slug_text(text: str) -> str:
 
 @lru_cache(maxsize=1)
 def compiler_routing_indexes() -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dict[str, str]], Dict[str, Tuple[str, str]], Dict[str, str], Dict[Tuple[str, str], str]]:
-    mapping_data = yaml.safe_load(KB_MAPPINGS_PATH.read_text())
+    mapping_data = _load_yaml(KB_MAPPINGS_PATH)
     mapping_index: Dict[str, Dict[str, str]] = {}
     family_slug_index: Dict[Tuple[str, str], str] = {}
     for family, rows in mapping_data['source_families'].items():
@@ -230,7 +234,7 @@ def compiler_routing_indexes() -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dic
                 if family == 'module' and len(parts) >= 4:
                     family_slug_index[(family, slug_text(parts[1].replace('_', ' ') + ' ' + parts[2].replace('_', ' ')))] = row['contributor_id']
 
-    stats = yaml.safe_load(KB_CANONICAL_STATS_PATH.read_text())
+    stats = _load_yaml(KB_CANONICAL_STATS_PATH)
     canonical_stats: Dict[str, Dict[str, str]] = {}
     for domain, entries in stats['domains'].items():
         for entry in entries:
@@ -240,7 +244,7 @@ def compiler_routing_indexes() -> Tuple[Dict[str, Dict[str, str]], Dict[str, Dic
                 'resolver': entry['resolver'],
             }
 
-    alias_data = yaml.safe_load(KB_ALIASES_PATH.read_text())
+    alias_data = _load_yaml(KB_ALIASES_PATH)
     alias_index: Dict[str, Tuple[str, str]] = {}
     for row in alias_data['alias_groups'].get('object_aliases', []):
         alias_index[slug_text(row['alias'])] = (row['resolves_to_type'], row['resolves_to_id'])

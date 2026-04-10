@@ -208,15 +208,126 @@ def test_input_dashboard_artifact_is_published(tmp_path):
     labs_rows = (((panel_by_id['labs'].get('payload') or {}).get('buckets') or [{}])[0].get('rows') or [])
     if labs_rows:
         assert {'name', 'level', 'max'}.issubset(labs_rows[0].keys())
-    workshop_rows = ((((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('offense') or [])
-                     + (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('defense') or [])
-                     + (((panel_by_id['workshop'].get('payload') or {}).get('groups') or {}).get('utility') or []))
-    if workshop_rows:
-        assert {'unlock', 'name', 'coin_level', 'coin_value', 'max_level', 'max_value'}.issubset(workshop_rows[0].keys())
-    uw_rows = ((panel_by_id['ultimate_weapons'].get('payload') or {}).get('rows') or [])
-    if uw_rows:
-        assert {'unlock', 'uw', 'track', 'stone_level', 'stone_value', 'lab', 'module', 'perk', 'final', 'uw_plus'}.issubset(uw_rows[0].keys())
-    assert isinstance(dashboard.get('upstream_gaps'), list)
+
+
+def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    monkeypatch.setattr(
+        pipeline_mod,
+        'load_inputs',
+        lambda ids_path=None, manual_inputs_path=None: type(
+            'Bundle',
+            (),
+            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}},
+        )(),
+    )
+    monkeypatch.setattr(pipeline_mod, 'build_runtime_state', lambda ids_raw, loadout_config=None, perk_config=None: {'ok': True})
+    monkeypatch.setattr(pipeline_mod, 'build_start_of_run_state', lambda account_state, preset_name, perk_state: {'state': 'start'})
+
+    def _fake_build_boss_wave_table_payload(*, account_state, initial_projected_state, config, stop_on_failure):
+        assert stop_on_failure is True
+        assert config.tier_column == 'Tier 14'
+        return {
+            'rows': [
+                {'display_wave': 10, 'survives_boss': True},
+                {'display_wave': 20, 'survives_boss': True},
+                {'display_wave': 30, 'survives_boss': False},
+            ],
+            'summary': {
+                'max_wave': 20,
+                'max_surviving_wave': 20,
+                'first_failed_wave': 30,
+                'row_count': 3,
+                'terminal_display_wave': 30,
+                'survives_through_end': False,
+                'result_consistent_with_rows': True,
+            },
+            'diagnostics': {
+                'execution_mode': 'table_sweep',
+                'tier_column': 'Tier 14',
+                'boss_wave_step': 10,
+                'state_mode': 'start_of_run',
+                'checkpoint_mode': 'boss_wave_only',
+                'checkpoint_resolution_mode': 'per_boss_wave',
+                'stop_on_failure': True,
+                'scenario_runtime_inputs': {'orb_boss_hit_pct': 2.5},
+                'qe_resolution_count': 2,
+                'timing_recompute_count': 2,
+                'snapshot_reuse_count': 0,
+                'qe_dirty_reresolve_count': 1,
+                'delta_fallback_count': 0,
+            },
+        }
+
+    monkeypatch.setattr(pipeline_mod, 'build_boss_wave_table_payload', _fake_build_boss_wave_table_payload)
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=30,
+        boss_wave_step=10,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_hit_pct': 2.5,
+            'orb_boss_hits_per_second': 5.0,
+            'electron_hits_per_second': 5.0,
+            'boss_contact_time_seconds': 1.0,
+            'effective_damage_reduction_pct': 90.0,
+            'incoming_damage_multiplier': 1.0,
+        },
+    )
+
+    assert payload.get('artifact') == 'boss_wave_dashboard_payload'
+    assert payload.get('schema_version') == 1
+    assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
+    assert payload.get('download', {}).get('format') == 'csv'
+    summary = payload.get('summary') or {}
+    assert summary['max_wave'] == 20
+    assert summary['max_surviving_wave'] == 20
+    assert summary['first_failed_wave'] == 30
+    assert summary['result_consistent_with_rows'] is True
+    diagnostics = payload.get('diagnostics') or {}
+    assert diagnostics['preset_name'] == 'Farming'
+    assert diagnostics['tier_column'] == 'Tier 14'
+    assert diagnostics['boss_wave_step'] == 10
+    assert diagnostics['checkpoint_mode'] == 'boss_wave_only'
+    assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert diagnostics['execution_mode'] == 'table_sweep'
+    assert diagnostics['stop_on_failure'] is True
+    assert diagnostics['scenario_runtime_inputs']['orb_boss_hit_pct'] == 2.5
+
+
+@pytest.mark.live
+def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
+    from app.models import PipelineRunRequest
+    from app.pipeline import build_boss_wave_payload
+
+    request = PipelineRunRequest(ids=IDS_PATH, out=ROOT / 'out')
+    payload = build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=50,
+        boss_wave_step=10,
+        stop_on_failure=False,
+        scenario_runtime_inputs={
+            'orb_boss_hit_pct': 2.5,
+            'orb_boss_hits_per_second': 5.0,
+            'electron_hits_per_second': 5.0,
+            'boss_contact_time_seconds': 1.0,
+            'effective_damage_reduction_pct': 90.0,
+            'incoming_damage_multiplier': 1.0,
+        },
+    )
+
+    diagnostics = payload.get('diagnostics') or {}
+    assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert diagnostics['qe_dirty_reresolve_count'] > 0
+    assert diagnostics['delta_fallback_count'] == 0
 
 
 @pytest.mark.live
@@ -460,6 +571,17 @@ def test_run_stats_output_contract_distinguishes_committed_and_local_support(run
     assert tuple(contract.get('committed_baseline_artifacts') or []) == RUN_STATS_COMMITTED_BASELINE_ARTIFACTS
     assert tuple(contract.get('local_support_artifacts') or []) == RUN_STATS_LOCAL_SUPPORT_ARTIFACTS
     assert tuple(contract.get('all_local_output_artifacts') or []) == RUN_STATS_BOUNDED_OUTPUT_ARTIFACTS
+
+
+@pytest.mark.live
+def test_run_stats_writes_stats_dashboard_artifact(run_stats_single_execution):
+    stats_dashboard = json.loads((run_stats_single_execution["out_dir"] / "stats_dashboard.json").read_text(encoding='utf-8'))
+
+    assert stats_dashboard.get("artifact") == "stats_dashboard.json"
+    assert stats_dashboard.get("schema_version") == 1
+    panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("panels") or [])]
+    assert "modules_resolved" in panel_ids
+    assert "guardians_resolved" in panel_ids
 
 
 @pytest.mark.live

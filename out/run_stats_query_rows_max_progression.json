@@ -27,7 +27,7 @@
           "unit": "coins_income_proxy"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -64,7 +64,7 @@
           "unit": "gems_per_week"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "4k"
       },
@@ -101,7 +101,7 @@
           "unit": "keys_per_week"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -138,7 +138,7 @@
           "unit": "medals_per_week"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1k"
       },
@@ -175,13 +175,13 @@
           "unit": "power_stones_per_week"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "450"
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 4.009173079193664e+19,
+        "final_value": 2.1945331353828917e+19,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -191,23 +191,23 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 7553153793.407189,
+            "value": 4509616197.696707,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55B"
+            "display_value": "4.51B"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "40.1Q"
+        "display_value": "21.9Q"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -235,13 +235,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "derived::edamage.base_damage_stack": {
         "stat_name": "derived::edamage.base_damage_stack",
-        "final_value": 7553153793.407189,
+        "final_value": 4509616197.696707,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -251,23 +251,23 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 7553153793.407189,
+            "value": 4509616197.696707,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage.base_damage_stack",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55B"
+            "display_value": "4.51B"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "7.55B"
+        "display_value": "4.51B"
       },
       "derived::edamage.berserker_bonus_multiplier": {
         "stat_name": "derived::edamage.berserker_bonus_multiplier",
@@ -295,7 +295,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x0"
       },
@@ -325,13 +325,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "derived::edamage.bounce_factor": {
         "stat_name": "derived::edamage.bounce_factor",
-        "final_value": 4.400190893297815,
+        "final_value": 4.034108744542168,
         "value_type": "multiplier",
         "source_count": 2,
         "status": "resolved",
@@ -354,23 +354,23 @@
             "stat_name": "state::tower.bounce_shot_targets",
             "source_family": "published_surface",
             "source_name": "state::tower.bounce_shot_targets",
-            "value": 14,
+            "value": 8,
             "value_type": "count",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage.bounce_factor",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "14"
+            "display_value": "8"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x4.4"
+        "display_value": "x4.034"
       },
       "derived::edamage.bullet_crit_factor": {
         "stat_name": "derived::edamage.bullet_crit_factor",
@@ -411,7 +411,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.51k"
       },
@@ -441,13 +441,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "357.312"
       },
       "derived::edamage.bullet_pipeline_factor": {
         "stat_name": "derived::edamage.bullet_pipeline_factor",
-        "final_value": 3514353.2326243967,
+        "final_value": 3221970.012422497,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -471,9 +471,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "3.51M"
+        "display_value": "3.22M"
       },
       "derived::edamage.multishot_factor": {
         "stat_name": "derived::edamage.multishot_factor",
@@ -514,7 +514,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x7"
       },
@@ -557,7 +557,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x79.918"
       },
@@ -600,7 +600,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x3.996"
       },
@@ -630,7 +630,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -660,7 +660,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -690,7 +690,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -733,7 +733,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -763,7 +763,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -793,7 +793,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -823,7 +823,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -853,7 +853,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -883,7 +883,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -913,7 +913,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -943,7 +943,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -973,7 +973,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1003,7 +1003,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1046,7 +1046,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1076,7 +1076,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.36k"
       },
@@ -1106,13 +1106,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 4.009173079193664e+19,
+        "final_value": 2.1945331353828917e+19,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -1122,27 +1122,27 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 7553153793.407189,
+            "value": 4509616197.696707,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55B"
+            "display_value": "4.51B"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "40.1Q"
+        "display_value": "21.9Q"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
-        "final_value": 7553153793.407189,
+        "final_value": 4509616197.696707,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -1152,23 +1152,23 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 7553153793.407189,
+            "value": 4509616197.696707,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep_helper.dc_base_damage_stack",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55B"
+            "display_value": "4.51B"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "7.55B"
+        "display_value": "4.51B"
       },
       "derived::edamage_ep_helper.di_bullet_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
@@ -1196,7 +1196,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.51k"
       },
@@ -1226,7 +1226,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1256,13 +1256,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.36k"
       },
       "derived::edamage_ep_helper.dv_bullet_pipeline_factor": {
         "stat_name": "derived::edamage_ep_helper.dv_bullet_pipeline_factor",
-        "final_value": 3514353.2326243967,
+        "final_value": 3221970.012422497,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -1286,9 +1286,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "3.51M"
+        "display_value": "3.22M"
       },
       "derived::edamage_ep_helper.dx_spotlight_bonus_term": {
         "stat_name": "derived::edamage_ep_helper.dx_spotlight_bonus_term",
@@ -1316,7 +1316,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1359,7 +1359,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1389,7 +1389,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1419,7 +1419,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1449,7 +1449,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1479,7 +1479,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1509,7 +1509,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1525,7 +1525,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.48"
       },
@@ -1541,7 +1541,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1557,7 +1557,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1573,7 +1573,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "15"
       },
@@ -1589,7 +1589,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x0"
       },
@@ -1619,7 +1619,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1649,7 +1649,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x0"
       },
@@ -1665,7 +1665,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.5"
       },
@@ -1681,7 +1681,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1697,7 +1697,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "4"
       },
@@ -1713,7 +1713,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1729,7 +1729,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1745,7 +1745,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1761,7 +1761,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x5"
       },
@@ -1777,7 +1777,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1793,7 +1793,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "15"
       },
@@ -1809,7 +1809,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1825,7 +1825,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1841,7 +1841,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1871,7 +1871,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1914,7 +1914,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -1944,7 +1944,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1960,7 +1960,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -1976,7 +1976,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2006,7 +2006,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2022,7 +2022,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x0"
       },
@@ -2038,7 +2038,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2054,7 +2054,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2084,7 +2084,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2127,7 +2127,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2157,13 +2157,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "derived::ehp": {
         "stat_name": "derived::ehp",
-        "final_value": 1.9432318129379604e+24,
+        "final_value": 6.606472033361458e+24,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -2173,14 +2173,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -2200,9 +2200,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.94S"
+        "display_value": "6.61S"
       },
       "derived::ehp.armor_assist_factor": {
         "stat_name": "derived::ehp.armor_assist_factor",
@@ -2216,7 +2216,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2246,7 +2246,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2262,13 +2262,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "derived::ehp.base_pool": {
         "stat_name": "derived::ehp.base_pool",
-        "final_value": 2.673128640236611e+22,
+        "final_value": 9.08792738247772e+22,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -2278,14 +2278,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -2305,9 +2305,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "26.7s"
+        "display_value": "90.9s"
       },
       "derived::ehp.chain_thunder_factor": {
         "stat_name": "derived::ehp.chain_thunder_factor",
@@ -2335,7 +2335,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2351,7 +2351,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2367,7 +2367,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2397,7 +2397,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2413,7 +2413,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2429,7 +2429,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2459,7 +2459,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2475,7 +2475,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2491,7 +2491,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2507,7 +2507,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2537,7 +2537,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2553,7 +2553,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2569,7 +2569,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2585,7 +2585,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.28"
       },
@@ -2601,7 +2601,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2617,7 +2617,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2633,7 +2633,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2649,7 +2649,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2665,7 +2665,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2681,7 +2681,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2697,7 +2697,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.98"
       },
@@ -2713,7 +2713,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.04"
       },
@@ -2729,7 +2729,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2745,7 +2745,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2761,21 +2761,21 @@
             "stat_name": "state::tower.defense_pct",
             "source_family": "published_surface",
             "source_name": "state::tower.defense_pct",
-            "value": 98.0,
+            "value": 78.9,
             "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.defense_taken_factor",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "98%"
+            "display_value": "78.9%"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x50"
       },
@@ -2791,7 +2791,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2807,7 +2807,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2823,13 +2823,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x12.5"
       },
       "derived::ehp.health_factor": {
         "stat_name": "derived::ehp.health_factor",
-        "final_value": 142484047944081.75,
+        "final_value": 484407918641234.06,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -2839,14 +2839,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -2866,9 +2866,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "142T"
+        "display_value": "484T"
       },
       "derived::ehp.health_lab_factor": {
         "stat_name": "derived::ehp.health_lab_factor",
@@ -2882,7 +2882,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2898,7 +2898,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2914,7 +2914,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.51"
       },
@@ -2930,7 +2930,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2946,7 +2946,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2962,7 +2962,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -2978,7 +2978,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -2994,7 +2994,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3010,7 +3010,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3026,13 +3026,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "derived::ehp.pre_defense_pool": {
         "stat_name": "derived::ehp.pre_defense_pool",
-        "final_value": 3.886463625875924e+22,
+        "final_value": 1.3212944066722928e+23,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3042,14 +3042,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3069,13 +3069,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "38.9s"
+        "display_value": "132s"
       },
       "derived::ehp.pre_tradeoff_ehp": {
         "stat_name": "derived::ehp.pre_tradeoff_ehp",
-        "final_value": 1.9432318129379604e+24,
+        "final_value": 6.606472033361458e+24,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3085,14 +3085,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3112,9 +3112,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.94S"
+        "display_value": "6.61S"
       },
       "derived::ehp.primordial_black_hole_damage_reduction_factor": {
         "stat_name": "derived::ehp.primordial_black_hole_damage_reduction_factor",
@@ -3168,7 +3168,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.454"
       },
@@ -3211,7 +3211,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.39"
       },
@@ -3227,14 +3227,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3254,7 +3254,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "16.5"
       },
@@ -3284,7 +3284,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3300,7 +3300,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3316,14 +3316,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3343,7 +3343,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "188M"
       },
@@ -3359,7 +3359,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x10.4"
       },
@@ -3375,7 +3375,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3391,7 +3391,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3407,7 +3407,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3423,7 +3423,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3453,7 +3453,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3469,7 +3469,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3485,14 +3485,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3512,7 +3512,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "188M"
       },
@@ -3528,14 +3528,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3555,13 +3555,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "188M"
       },
       "derived::ehp_ep": {
         "stat_name": "derived::ehp_ep",
-        "final_value": 1.9432318129379604e+24,
+        "final_value": 6.606472033361458e+24,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3571,14 +3571,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3598,13 +3598,13 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.94S"
+        "display_value": "6.61S"
       },
       "derived::ehp_ep_helper.ce_pool_factor": {
         "stat_name": "derived::ehp_ep_helper.ce_pool_factor",
-        "final_value": 142484047944081.75,
+        "final_value": 484407918641234.06,
         "value_type": "scalar",
         "source_count": 2,
         "status": "resolved",
@@ -3614,14 +3614,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3641,9 +3641,9 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "142T"
+        "display_value": "484T"
       },
       "derived::ehp_ep_helper.cf_armor_factor": {
         "stat_name": "derived::ehp_ep_helper.cf_armor_factor",
@@ -3671,7 +3671,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3701,7 +3701,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3717,21 +3717,21 @@
             "stat_name": "state::tower.defense_pct",
             "source_family": "published_surface",
             "source_name": "state::tower.defense_pct",
-            "value": 98.0,
+            "value": 78.9,
             "value_type": "pct",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp.ep_ch_defense_taken_factor",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "98%"
+            "display_value": "78.9%"
           }
         ],
         "schema": {
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x50"
       },
@@ -3747,14 +3747,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3774,7 +3774,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "188M"
       },
@@ -3790,14 +3790,14 @@
             "stat_name": "state::tower.hp",
             "source_family": "published_surface",
             "source_name": "state::tower.hp",
-            "value": 7548823732136.78,
+            "value": 25663995689601.805,
             "value_type": "hp",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "ehp",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "7.55T"
+            "display_value": "25.7T"
           },
           {
             "stat_name": "state::wall.hp",
@@ -3817,7 +3817,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "16.5"
       },
@@ -3847,7 +3847,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3877,7 +3877,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3907,7 +3907,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
@@ -3932,7 +3932,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "68.5"
       },
@@ -3957,7 +3957,7 @@
           "unit": "shards"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -3982,7 +3982,7 @@
           "unit": "draws"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "150"
       },
@@ -4007,7 +4007,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "2.5"
       },
@@ -4032,7 +4032,7 @@
           "unit": "gems"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "20"
       },
@@ -4057,7 +4057,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "29"
       },
@@ -4082,7 +4082,7 @@
           "unit": "multiplier"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1"
       },
@@ -4107,7 +4107,7 @@
           "unit": "rare_per_ten_pull"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1"
       },
@@ -4137,7 +4137,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1"
       },
@@ -4167,7 +4167,7 @@
           "unit": "shards_per_mission"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "50"
       },
@@ -4197,7 +4197,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1"
       },
@@ -4227,7 +4227,7 @@
           "unit": "shards"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "100"
       },
@@ -4257,7 +4257,7 @@
           "unit": "pct"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "100"
       },
@@ -4294,7 +4294,7 @@
           "unit": "hours_per_day"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "23.5"
       },
@@ -4363,7 +4363,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "18M"
       },
@@ -4393,7 +4393,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x3.5"
       },
@@ -4438,7 +4438,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "120"
       },
@@ -4483,7 +4483,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "20"
       },
@@ -4539,7 +4539,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "77.14"
       },
@@ -4599,7 +4599,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "34"
       },
@@ -4644,7 +4644,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "26"
       },
@@ -4674,7 +4674,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x50"
       },
@@ -4704,7 +4704,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.35%"
       },
@@ -4760,7 +4760,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "105.07"
       },
@@ -4820,7 +4820,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "55"
       },
@@ -4850,7 +4850,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -4910,7 +4910,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "24"
       },
@@ -4940,7 +4940,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x6.6"
       },
@@ -4985,7 +4985,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "90"
       },
@@ -5030,7 +5030,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "32.5"
       },
@@ -5086,7 +5086,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "110.39"
       },
@@ -5146,7 +5146,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "59"
       },
@@ -5191,7 +5191,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "120"
       },
@@ -5221,7 +5221,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "5"
       },
@@ -5277,7 +5277,7 @@
           "resolver": "query_derived_composites"
         },
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "77.14"
       },
@@ -5307,7 +5307,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0"
       },
@@ -5337,7 +5337,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.2%"
       },
@@ -5397,7 +5397,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "34"
       },
@@ -5427,7 +5427,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": null
       },
@@ -5457,7 +5457,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "54%"
       },
@@ -5487,15 +5487,15 @@
         ],
         "schema": null,
         "bundle_id": "timing_wave_duration",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "54"
       },
       "state::economy.cash_kill_multiplier": {
         "stat_name": "state::economy.cash_kill_multiplier",
-        "final_value": 56.81585636999999,
+        "final_value": 25.972962912,
         "value_type": "multiplier",
-        "source_count": 8,
+        "source_count": 7,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -5578,21 +5578,6 @@
             "surface_id": "state::economy.cash_kill_multiplier",
             "surface_class": "surface",
             "domain": "economy",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_15_CASH_BONUS::effect_1",
-            "value": 2.1874999999999996,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x2.187"
-          },
-          {
-            "surface_id": "state::economy.cash_kill_multiplier",
-            "surface_class": "surface",
-            "domain": "economy",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__cash__pct",
@@ -5622,15 +5607,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x56.816"
+        "display_value": "x25.973"
       },
       "state::economy.cash_per_wave": {
         "stat_name": "state::economy.cash_per_wave",
-        "final_value": 9125.952,
+        "final_value": 691.3599999999999,
         "value_type": "cash",
-        "source_count": 4,
+        "source_count": 3,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -5668,21 +5653,6 @@
             "surface_id": "state::economy.cash_per_wave",
             "surface_class": "surface",
             "domain": "economy",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH::effect_1",
-            "value": 13.200000000000001,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x13.2"
-          },
-          {
-            "surface_id": "state::economy.cash_per_wave",
-            "surface_class": "surface",
-            "domain": "economy",
             "source_class": "workshop",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "workshop__tower__cash_per_wave__flat",
@@ -5697,15 +5667,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "9.13k"
+        "display_value": "691.36"
       },
       "state::economy.coins_per_kill_bonus": {
         "stat_name": "state::economy.coins_per_kill_bonus",
-        "final_value": 64.53804357,
+        "final_value": 14.900558400000001,
         "value_type": "multiplier",
-        "source_count": 8,
+        "source_count": 6,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -5788,36 +5758,6 @@
             "surface_id": "state::economy.coins_per_kill_bonus",
             "surface_class": "surface",
             "domain": "economy",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_15_ALL_COIN_BONUSES::effect_1",
-            "value": 2.1874999999999996,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x2.187"
-          },
-          {
-            "surface_id": "state::economy.coins_per_kill_bonus",
-            "surface_class": "surface",
-            "domain": "economy",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70::effect_1",
-            "value": 1.9800000000000002,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x1.98"
-          },
-          {
-            "surface_id": "state::economy.coins_per_kill_bonus",
-            "surface_class": "surface",
-            "domain": "economy",
             "source_class": "workshop",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "workshop__tower__coin_kill_bonus__multiplier",
@@ -5832,9 +5772,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x64.538"
+        "display_value": "x14.901"
       },
       "state::economy.coins_per_wave": {
         "stat_name": "state::economy.coins_per_wave",
@@ -5892,15 +5832,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "168"
       },
       "state::economy.interest_per_wave_pct": {
         "stat_name": "state::economy.interest_per_wave_pct",
-        "final_value": 31.324999999999996,
+        "final_value": 7.159999999999999,
         "value_type": "pct",
-        "source_count": 4,
+        "source_count": 3,
         "status": "partially_resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -5938,21 +5878,6 @@
             "surface_id": "state::economy.interest_per_wave_pct",
             "surface_class": "surface",
             "domain": "economy",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_INTEREST_X1_50::effect_1",
-            "value": 4.375,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x4.375"
-          },
-          {
-            "surface_id": "state::economy.interest_per_wave_pct",
-            "surface_class": "surface",
-            "domain": "economy",
             "source_class": "workshop",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "workshop__tower__interest_per_wave__pct",
@@ -5967,9 +5892,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "31.325%"
+        "display_value": "7.16%"
       },
       "state::economy.starting_cash_bonus": {
         "stat_name": "state::economy.starting_cash_bonus",
@@ -5997,7 +5922,547 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.ally.cooldown_seconds": {
+        "stat_name": "state::guardian.ally.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.ally.max_recovery_multiplier": {
+        "stat_name": "state::guardian.ally.max_recovery_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.max_recovery_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.max_recovery_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.ally.recovery_amount_pct": {
+        "stat_name": "state::guardian.ally.recovery_amount_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.recovery_amount_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.recovery_amount_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.cooldown_seconds": {
+        "stat_name": "state::guardian.attack.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.missing_health_damage_pct": {
+        "stat_name": "state::guardian.attack.missing_health_damage_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.missing_health_damage_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.missing_health_damage_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.targets_count": {
+        "stat_name": "state::guardian.attack.targets_count",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.targets_count",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.targets_count",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.coin_multiplier": {
+        "stat_name": "state::guardian.bounty.coin_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.coin_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.coin_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.cooldown_seconds": {
+        "stat_name": "state::guardian.bounty.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.targets_count": {
+        "stat_name": "state::guardian.bounty.targets_count",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.targets_count",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.targets_count",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.cooldown_seconds": {
+        "stat_name": "state::guardian.fetch.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.double_find_chance_pct": {
+        "stat_name": "state::guardian.fetch.double_find_chance_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.double_find_chance_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.double_find_chance_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.find_chance_pct": {
+        "stat_name": "state::guardian.fetch.find_chance_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.find_chance_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.find_chance_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.cooldown_seconds": {
+        "stat_name": "state::guardian.scout.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.duration_seconds": {
+        "stat_name": "state::guardian.scout.duration_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.duration_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.duration_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.range_bonus_multiplier": {
+        "stat_name": "state::guardian.scout.range_bonus_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.range_bonus_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.range_bonus_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.cash_bonus_multiplier": {
+        "stat_name": "state::guardian.summon.cash_bonus_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.cash_bonus_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.cash_bonus_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.cooldown_seconds": {
+        "stat_name": "state::guardian.summon.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.duration_seconds": {
+        "stat_name": "state::guardian.summon.duration_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.duration_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.duration_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": null
       },
@@ -6027,7 +6492,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.3%"
       },
@@ -6057,7 +6522,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "2"
       },
@@ -6087,7 +6552,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "80%"
       },
@@ -6207,7 +6672,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "39.776"
       },
@@ -6267,7 +6732,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "77.8%"
       },
@@ -6297,33 +6762,18 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "8"
       },
       "state::tower.bounce_shot_targets": {
         "stat_name": "state::tower.bounce_shot_targets",
-        "final_value": 14,
+        "final_value": 8,
         "value_type": "count",
-        "source_count": 2,
+        "source_count": 1,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
-          {
-            "surface_id": "state::tower.bounce_shot_targets",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_BOUNCE_SHOT_2::effect_1",
-            "value": 6.0,
-            "value_type": "scalar",
-            "input_value_type": "flat",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "6"
-          },
           {
             "surface_id": "state::tower.bounce_shot_targets",
             "surface_class": "surface",
@@ -6342,9 +6792,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "14"
+        "display_value": "8"
       },
       "state::tower.crit_chance_pct": {
         "stat_name": "state::tower.crit_chance_pct",
@@ -6402,7 +6852,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "86%"
       },
@@ -6507,15 +6957,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x180.056"
       },
       "state::tower.damage": {
         "stat_name": "state::tower.damage",
-        "final_value": 7553153793.407189,
+        "final_value": 4509616197.696707,
         "value_type": "damage",
-        "source_count": 9,
+        "source_count": 6,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -6571,58 +7021,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__cannon__damage__pct@@amplifying strike@@primary",
-            "value": 10.04,
+            "value": 10.818,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x10.04"
-          },
-          {
-            "surface_id": "state::tower.damage",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50::effect_2",
-            "value": 0.5,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x0.5"
-          },
-          {
-            "surface_id": "state::tower.damage",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_15_DAMAGE::effect_1",
-            "value": 2.1874999999999996,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x2.187"
-          },
-          {
-            "surface_id": "state::tower.damage",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH::effect_1",
-            "value": 1.6500000000000001,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x1.65"
+            "display_value": "x10.818"
           },
           {
             "surface_id": "state::tower.damage",
@@ -6657,9 +7062,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "7.55B"
+        "display_value": "4.51B"
       },
       "state::tower.damage_per_meter_multiplier": {
         "stat_name": "state::tower.damage_per_meter_multiplier",
@@ -6747,7 +7152,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1.136"
       },
@@ -6792,15 +7197,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "30%"
       },
       "state::tower.defense_pct": {
         "stat_name": "state::tower.defense_pct",
-        "final_value": 98.0,
+        "final_value": 78.9,
         "value_type": "pct",
-        "source_count": 8,
+        "source_count": 7,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -6883,21 +7288,6 @@
             "surface_id": "state::tower.defense_pct",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_DEFENSE_PERCENT_4_00::effect_1",
-            "value": 25.0,
-            "value_type": "scalar",
-            "input_value_type": "pct",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "25%"
-          },
-          {
-            "surface_id": "state::tower.defense_pct",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__defense_pct__pct",
@@ -6927,13 +7317,13 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "98%"
+        "display_value": "78.9%"
       },
       "state::tower.enemy_attack_level_skip_pct": {
         "stat_name": "state::tower.enemy_attack_level_skip_pct",
-        "final_value": 55.216,
+        "final_value": 55.692,
         "value_type": "pct",
         "source_count": 7,
         "status": "resolved",
@@ -6961,13 +7351,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancements__tower__enemy_attack_level_skip__multiplier",
-            "value": 1.16,
+            "value": 1.17,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "x1.16"
+            "display_value": "x1.17"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -7047,13 +7437,13 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "55.216%"
+        "display_value": "55.692%"
       },
       "state::tower.enemy_health_level_skip_pct": {
         "stat_name": "state::tower.enemy_health_level_skip_pct",
-        "final_value": 52.896,
+        "final_value": 53.352,
         "value_type": "pct",
         "source_count": 7,
         "status": "resolved",
@@ -7081,13 +7471,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancements__tower__enemy_health_level_skip__multiplier",
-            "value": 1.16,
+            "value": 1.17,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "x1.16"
+            "display_value": "x1.17"
           },
           {
             "surface_id": "state::tower.enemy_health_level_skip_pct",
@@ -7167,15 +7557,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "52.896%"
+        "display_value": "53.352%"
       },
       "state::tower.free_attack_upgrade_chance_pct": {
         "stat_name": "state::tower.free_attack_upgrade_chance_pct",
-        "final_value": 111.83749999999999,
+        "final_value": 75.89999999999999,
         "value_type": "pct",
-        "source_count": 6,
+        "source_count": 5,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7228,21 +7618,6 @@
             "surface_id": "state::tower.free_attack_upgrade_chance_pct",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
-            "value": 31.25,
-            "value_type": "scalar",
-            "input_value_type": "pct",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "31.25%"
-          },
-          {
-            "surface_id": "state::tower.free_attack_upgrade_chance_pct",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__free_attack_upgrade__pct",
@@ -7272,15 +7647,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "111.837%"
+        "display_value": "75.9%"
       },
       "state::tower.free_defense_upgrade_chance_pct": {
         "stat_name": "state::tower.free_defense_upgrade_chance_pct",
-        "final_value": 108.38749999999999,
+        "final_value": 72.44999999999999,
         "value_type": "pct",
-        "source_count": 6,
+        "source_count": 5,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7333,21 +7708,6 @@
             "surface_id": "state::tower.free_defense_upgrade_chance_pct",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
-            "value": 31.25,
-            "value_type": "scalar",
-            "input_value_type": "pct",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "31.25%"
-          },
-          {
-            "surface_id": "state::tower.free_defense_upgrade_chance_pct",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__free_defense_upgrade__pct",
@@ -7377,15 +7737,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "108.387%"
+        "display_value": "72.45%"
       },
       "state::tower.free_utility_upgrade_chance_pct": {
         "stat_name": "state::tower.free_utility_upgrade_chance_pct",
-        "final_value": 122.6475,
+        "final_value": 86.71,
         "value_type": "pct",
-        "source_count": 8,
+        "source_count": 7,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7468,21 +7828,6 @@
             "surface_id": "state::tower.free_utility_upgrade_chance_pct",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0::effect_1",
-            "value": 31.25,
-            "value_type": "scalar",
-            "input_value_type": "pct",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "31.25%"
-          },
-          {
-            "surface_id": "state::tower.free_utility_upgrade_chance_pct",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__free_utility_upgrade__pct",
@@ -7512,15 +7857,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "122.647%"
+        "display_value": "86.71%"
       },
       "state::tower.hp": {
         "stat_name": "state::tower.hp",
-        "final_value": 7548823732136.78,
+        "final_value": 25663995689601.805,
         "value_type": "hp",
-        "source_count": 12,
+        "source_count": 9,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7621,58 +7966,13 @@
             "source_class": "module_main",
             "composition_stage": "multiplicative",
             "contributor_id": "module__armor__health__pct@@sharp fortitude@@primary",
-            "value": 10.04,
+            "value": 10.24,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x10.04"
-          },
-          {
-            "surface_id": "state::tower.hp",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "multiplicative",
-            "contributor_id": "perk::PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60::effect_2",
-            "value": 0.4,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x0.4"
-          },
-          {
-            "surface_id": "state::tower.hp",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "multiplicative",
-            "contributor_id": "perk::PERK_X1_20_MAX_HEALTH::effect_1",
-            "value": 2.4999999999999996,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x2.5"
-          },
-          {
-            "surface_id": "state::tower.hp",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "multiplicative",
-            "contributor_id": "perk::PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70::effect_2",
-            "value": 0.3,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x0.3"
+            "display_value": "x10.24"
           },
           {
             "surface_id": "state::tower.hp",
@@ -7707,9 +8007,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "7.55T"
+        "display_value": "25.7T"
       },
       "state::tower.knockback_chance_pct": {
         "stat_name": "state::tower.knockback_chance_pct",
@@ -7752,15 +8052,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "81%"
       },
       "state::tower.knockback_force": {
         "stat_name": "state::tower.knockback_force",
-        "final_value": 4.366656,
+        "final_value": 14.555519999999998,
         "value_type": "force",
-        "source_count": 5,
+        "source_count": 4,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7798,21 +8098,6 @@
             "surface_id": "state::tower.knockback_force",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70::effect_2",
-            "value": 0.3,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x0.3"
-          },
-          {
-            "surface_id": "state::tower.knockback_force",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__knockback_force__pct",
@@ -7842,9 +8127,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "4.367"
+        "display_value": "14.556"
       },
       "state::tower.land_mine_chance_pct": {
         "stat_name": "state::tower.land_mine_chance_pct",
@@ -7872,15 +8157,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "30%"
       },
       "state::tower.land_mine_damage": {
         "stat_name": "state::tower.land_mine_damage",
-        "final_value": 35437.5,
+        "final_value": 2100.0,
         "value_type": "damage",
-        "source_count": 3,
+        "source_count": 2,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -7903,21 +8188,6 @@
             "surface_id": "state::tower.land_mine_damage",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_LAND_MINE_DAMAGE_X3_50::effect_1",
-            "value": 16.875,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x16.875"
-          },
-          {
-            "surface_id": "state::tower.land_mine_damage",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "workshop",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "workshop__tower__land_mine_damage__flat",
@@ -7932,9 +8202,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "35.4k"
+        "display_value": "2.1k"
       },
       "state::tower.land_mine_radius_m": {
         "stat_name": "state::tower.land_mine_radius_m",
@@ -7962,33 +8232,18 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1.5"
       },
       "state::tower.lifesteal_pct": {
         "stat_name": "state::tower.lifesteal_pct",
-        "final_value": 12.265561341,
+        "final_value": 4.460204124,
         "value_type": "pct",
-        "source_count": 2,
+        "source_count": 1,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
-          {
-            "surface_id": "state::tower.lifesteal_pct",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70::effect_1",
-            "value": 2.75,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x2.75"
-          },
           {
             "surface_id": "state::tower.lifesteal_pct",
             "surface_class": "surface",
@@ -8007,9 +8262,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "12.266%"
+        "display_value": "4.46%"
       },
       "state::tower.max_recovery_multiplier": {
         "stat_name": "state::tower.max_recovery_multiplier",
@@ -8067,7 +8322,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x16.5"
       },
@@ -8112,7 +8367,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x9.6"
       },
@@ -8157,7 +8412,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "50%"
       },
@@ -8202,15 +8457,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "13"
       },
       "state::tower.orb_count": {
         "stat_name": "state::tower.orb_count",
-        "final_value": 9,
+        "final_value": 7,
         "value_type": "count",
-        "source_count": 5,
+        "source_count": 4,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -8263,21 +8518,6 @@
             "surface_id": "state::tower.orb_count",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_ORBS_1::effect_1",
-            "value": 2.0,
-            "value_type": "scalar",
-            "input_value_type": "flat",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "2"
-          },
-          {
-            "surface_id": "state::tower.orb_count",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "workshop",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "workshop__tower__orb_count__count",
@@ -8292,9 +8532,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "9"
+        "display_value": "7"
       },
       "state::tower.orb_size_multiplier": {
         "stat_name": "state::tower.orb_size_multiplier",
@@ -8322,7 +8562,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": null
       },
@@ -8397,7 +8637,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "7.137"
       },
@@ -8487,7 +8727,7 @@
         ],
         "schema": null,
         "bundle_id": "timing_wave_duration",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "79.1%"
       },
@@ -8532,7 +8772,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "69.5"
       },
@@ -8577,7 +8817,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "34.4%"
       },
@@ -8607,7 +8847,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "5.55"
       },
@@ -8682,7 +8922,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "145%"
       },
@@ -8712,15 +8952,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x1"
       },
       "state::tower.regen": {
         "stat_name": "state::tower.regen",
-        "final_value": 57864717786036.18,
+        "final_value": 1107458713608.3477,
         "value_type": "hp_per_second",
-        "source_count": 10,
+        "source_count": 8,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -8818,36 +9058,6 @@
             "surface_id": "state::tower.regen",
             "surface_class": "surface",
             "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60::effect_1",
-            "value": 8.8,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x8.8"
-          },
-          {
-            "surface_id": "state::tower.regen",
-            "surface_class": "surface",
-            "domain": "progression",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_X1_75_HEALTH_REGEN::effect_1",
-            "value": 5.9375,
-            "value_type": "scalar",
-            "input_value_type": "multiplier",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "x5.938"
-          },
-          {
-            "surface_id": "state::tower.regen",
-            "surface_class": "surface",
-            "domain": "progression",
             "source_class": "relics",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "relic__tower__health_regen__pct",
@@ -8877,9 +9087,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "57.9T"
+        "display_value": "1.11T"
       },
       "state::tower.rend_armor_chance_pct": {
         "stat_name": "state::tower.rend_armor_chance_pct",
@@ -8937,7 +9147,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "36%"
       },
@@ -9012,7 +9222,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x0.36"
       },
@@ -9057,7 +9267,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "14"
       },
@@ -9102,7 +9312,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "2.35"
       },
@@ -9177,7 +9387,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "25.1%"
       },
@@ -9282,7 +9492,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x35.872"
       },
@@ -9372,13 +9582,13 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "121%"
       },
       "state::tower.ultimate_damage_multiplier": {
         "stat_name": "state::tower.ultimate_damage_multiplier",
-        "final_value": 24.13471466,
+        "final_value": 25.12415906,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -9406,13 +9616,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@dimension core@@assist",
-            "value": 1.5295,
+            "value": 1.4695,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.53"
+            "display_value": "x1.47"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -9421,13 +9631,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@primordial collapse@@primary",
-            "value": 12.934,
+            "value": 14.014,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x12.934"
+            "display_value": "x14.014"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -9447,9 +9657,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x24.135"
+        "display_value": "x25.124"
       },
       "state::uw.black_hole.base_cooldown_seconds": {
         "stat_name": "state::uw.black_hole.base_cooldown_seconds",
@@ -9492,15 +9702,15 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "46"
       },
       "state::uw.black_hole.base_duration_seconds": {
         "stat_name": "state::uw.black_hole.base_duration_seconds",
-        "final_value": 48.0,
+        "final_value": 36.0,
         "value_type": "seconds",
-        "source_count": 3,
+        "source_count": 2,
         "status": "resolved",
         "notes": "Resolved through run_stats bounded query bundle.",
         "contributors": [
@@ -9523,21 +9733,6 @@
             "surface_id": "state::uw.black_hole.base_duration_seconds",
             "surface_class": "surface",
             "domain": "ultimate_weapons",
-            "source_class": "perks",
-            "composition_stage": "additive_pre_cap",
-            "contributor_id": "perk::PERK_BLACK_HOLE_DURATION_12_0S::effect_1",
-            "value": 12.0,
-            "value_type": "scalar",
-            "input_value_type": "flat",
-            "active": true,
-            "gate_reason": null,
-            "provenance_ref": "KB::Perks",
-            "display_value": "12"
-          },
-          {
-            "surface_id": "state::uw.black_hole.base_duration_seconds",
-            "surface_class": "surface",
-            "domain": "ultimate_weapons",
             "source_class": "ultimate_weapons",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "uw_upgrade__black_hole__duration__seconds",
@@ -9552,9 +9747,9 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "48"
+        "display_value": "36"
       },
       "state::uw.black_hole.cooldown_seconds": {
         "stat_name": "state::uw.black_hole.cooldown_seconds",
@@ -9582,13 +9777,13 @@
         ],
         "schema": null,
         "bundle_id": "timing_core_cycle",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "46"
       },
       "state::uw.black_hole.duration_seconds": {
         "stat_name": "state::uw.black_hole.duration_seconds",
-        "final_value": 48.0,
+        "final_value": 36.0,
         "value_type": "seconds",
         "source_count": 1,
         "status": "resolved",
@@ -9601,20 +9796,20 @@
             "source_class": "scenario_rules",
             "composition_stage": "scenario_adjustment",
             "contributor_id": "timing.black_hole.effective_duration",
-            "value": 48.0,
+            "value": 36.0,
             "value_type": "seconds",
             "input_value_type": "seconds",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "engine.timing_engine.compute_timing_surfaces",
-            "display_value": "48"
+            "display_value": "36"
           }
         ],
         "schema": null,
         "bundle_id": "timing_core_cycle",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
-        "display_value": "48"
+        "display_value": "36"
       },
       "state::uw.golden_tower.base_cooldown_seconds": {
         "stat_name": "state::uw.golden_tower.base_cooldown_seconds",
@@ -9642,7 +9837,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "180"
       },
@@ -9687,7 +9882,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "42"
       },
@@ -9717,7 +9912,7 @@
         ],
         "schema": null,
         "bundle_id": "timing_core_cycle",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "180"
       },
@@ -9747,7 +9942,7 @@
         ],
         "schema": null,
         "bundle_id": "timing_core_cycle",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "42"
       },
@@ -9777,7 +9972,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "x10.4"
       },
@@ -9897,7 +10092,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "188M"
       },
@@ -9972,7 +10167,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "508"
       },
@@ -10017,7 +10212,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "525"
       },
@@ -10047,7 +10242,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1.48"
       },
@@ -10077,7 +10272,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.06"
       },
@@ -10107,7 +10302,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.03"
       },
@@ -10137,7 +10332,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.05"
       },
@@ -10167,7 +10362,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "50"
       },
@@ -10197,7 +10392,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "32"
       },
@@ -10227,7 +10422,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.28"
       },
@@ -10257,7 +10452,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.04"
       },
@@ -10287,7 +10482,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "0.51"
       },
@@ -10317,7 +10512,7 @@
         ],
         "schema": null,
         "bundle_id": "progression_core_stats",
-        "family_id": "progression_runtime_with_perks",
+        "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
         "display_value": "1.15"
       },
@@ -10347,7 +10542,7 @@
         ],
         "schema": null,
         "bundle_id": "timing_core_cycle",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": null
       },
@@ -10377,7 +10572,7 @@
         ],
         "schema": null,
         "bundle_id": "timing_wave_duration",
-        "family_id": "timing_farm_with_perks",
+        "family_id": "timing_scenario_probe",
         "trace_mode": "full_trace",
         "display_value": "16.1"
       }
@@ -10389,12 +10584,12 @@
         "timing_wave_duration"
       ],
       "family_ids": [
-        "progression_runtime_with_perks",
-        "timing_farm_with_perks",
-        "timing_farm_with_perks"
+        "progression_runtime_no_perks",
+        "timing_scenario_probe",
+        "timing_scenario_probe"
       ],
-      "resolved_surface_count": 266,
-      "contributor_row_count": 287
+      "resolved_surface_count": 284,
+      "contributor_row_count": 286
     }
   },
   "Tourney": {
@@ -10579,7 +10774,7 @@
       },
       "derived::edamage": {
         "stat_name": "derived::edamage",
-        "final_value": 1.5455346017557888e+21,
+        "final_value": 1.665298139620929e+21,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -10589,14 +10784,14 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 16741189360.279139,
+            "value": 18038464790.786827,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "16.7B"
+            "display_value": "18B"
           }
         ],
         "schema": {
@@ -10605,7 +10800,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.55s"
+        "display_value": "1.67s"
       },
       "derived::edamage.acp_factor": {
         "stat_name": "derived::edamage.acp_factor",
@@ -10639,7 +10834,7 @@
       },
       "derived::edamage.base_damage_stack": {
         "stat_name": "derived::edamage.base_damage_stack",
-        "final_value": 150670704242.51224,
+        "final_value": 162346183117.08145,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -10649,14 +10844,14 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 16741189360.279139,
+            "value": 18038464790.786827,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage.base_damage_stack",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "16.7B"
+            "display_value": "18B"
           }
         ],
         "schema": {
@@ -10665,7 +10860,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "151B"
+        "display_value": "162B"
       },
       "derived::edamage.berserker_bonus_multiplier": {
         "stat_name": "derived::edamage.berserker_bonus_multiplier",
@@ -11510,7 +11705,7 @@
       },
       "derived::edamage_ep": {
         "stat_name": "derived::edamage_ep",
-        "final_value": 1.5455346017557888e+21,
+        "final_value": 1.665298139620929e+21,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -11520,14 +11715,14 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 16741189360.279139,
+            "value": 18038464790.786827,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "16.7B"
+            "display_value": "18B"
           }
         ],
         "schema": {
@@ -11536,11 +11731,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "1.55s"
+        "display_value": "1.67s"
       },
       "derived::edamage_ep_helper.dc_base_damage_stack": {
         "stat_name": "derived::edamage_ep_helper.dc_base_damage_stack",
-        "final_value": 150670704242.51224,
+        "final_value": 162346183117.08145,
         "value_type": "scalar",
         "source_count": 1,
         "status": "resolved",
@@ -11550,14 +11745,14 @@
             "stat_name": "state::tower.damage",
             "source_family": "published_surface",
             "source_name": "state::tower.damage",
-            "value": 16741189360.279139,
+            "value": 18038464790.786827,
             "value_type": "damage",
             "stage": "derived_surface_publication",
             "destination_object_type": "derived",
             "destination_id": "edamage_ep_helper.dc_base_damage_stack",
             "resolver_id": "query_derived_composites",
             "kb_mapped": true,
-            "display_value": "16.7B"
+            "display_value": "18B"
           }
         ],
         "schema": {
@@ -11566,7 +11761,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "151B"
+        "display_value": "162B"
       },
       "derived::edamage_ep_helper.di_bullet_crit_factor": {
         "stat_name": "derived::edamage_ep_helper.di_bullet_crit_factor",
@@ -16249,6 +16444,546 @@
         "trace_mode": "full_trace",
         "display_value": null
       },
+      "state::guardian.ally.cooldown_seconds": {
+        "stat_name": "state::guardian.ally.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.ally.max_recovery_multiplier": {
+        "stat_name": "state::guardian.ally.max_recovery_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.max_recovery_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.max_recovery_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.ally.recovery_amount_pct": {
+        "stat_name": "state::guardian.ally.recovery_amount_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.ally.recovery_amount_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.ally.recovery_amount_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.cooldown_seconds": {
+        "stat_name": "state::guardian.attack.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.missing_health_damage_pct": {
+        "stat_name": "state::guardian.attack.missing_health_damage_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.missing_health_damage_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.missing_health_damage_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.attack.targets_count": {
+        "stat_name": "state::guardian.attack.targets_count",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.attack.targets_count",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.attack.targets_count",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.coin_multiplier": {
+        "stat_name": "state::guardian.bounty.coin_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.coin_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.coin_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.cooldown_seconds": {
+        "stat_name": "state::guardian.bounty.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.bounty.targets_count": {
+        "stat_name": "state::guardian.bounty.targets_count",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.bounty.targets_count",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.bounty.targets_count",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.cooldown_seconds": {
+        "stat_name": "state::guardian.fetch.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.double_find_chance_pct": {
+        "stat_name": "state::guardian.fetch.double_find_chance_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.double_find_chance_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.double_find_chance_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.fetch.find_chance_pct": {
+        "stat_name": "state::guardian.fetch.find_chance_pct",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.fetch.find_chance_pct",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.fetch.find_chance_pct",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.cooldown_seconds": {
+        "stat_name": "state::guardian.scout.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.duration_seconds": {
+        "stat_name": "state::guardian.scout.duration_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.duration_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.duration_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.scout.range_bonus_multiplier": {
+        "stat_name": "state::guardian.scout.range_bonus_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.scout.range_bonus_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.scout.range_bonus_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.cash_bonus_multiplier": {
+        "stat_name": "state::guardian.summon.cash_bonus_multiplier",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.cash_bonus_multiplier",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.cash_bonus_multiplier",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.cooldown_seconds": {
+        "stat_name": "state::guardian.summon.cooldown_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.cooldown_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.cooldown_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
+      "state::guardian.summon.duration_seconds": {
+        "stat_name": "state::guardian.summon.duration_seconds",
+        "final_value": null,
+        "value_type": "scalar",
+        "source_count": 1,
+        "status": "gated_off",
+        "notes": "Resolved through run_stats bounded query bundle.",
+        "contributors": [
+          {
+            "surface_id": "state::guardian.summon.duration_seconds",
+            "surface_class": "surface",
+            "domain": "guardians",
+            "source_class": "base",
+            "composition_stage": "gate_enable_disable",
+            "contributor_id": "query_placeholder::state::guardian.summon.duration_seconds",
+            "value": false,
+            "value_type": "scalar",
+            "input_value_type": "scalar",
+            "active": false,
+            "gate_reason": "surface_absent_from_bound_inputs",
+            "provenance_ref": "engine.family_baseline_materializer.placeholder",
+            "display_value": "false"
+          }
+        ],
+        "schema": null,
+        "bundle_id": "progression_core_stats",
+        "family_id": "progression_runtime_no_perks",
+        "trace_mode": "full_trace",
+        "display_value": null
+      },
       "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct": {
         "stat_name": "state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct",
         "final_value": null,
@@ -16761,7 +17496,7 @@
       },
       "state::tower.damage": {
         "stat_name": "state::tower.damage",
-        "final_value": 16741189360.279139,
+        "final_value": 18038464790.786827,
         "value_type": "damage",
         "source_count": 7,
         "status": "resolved",
@@ -16834,13 +17569,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__cannon__damage__pct@@amplifying strike@@primary",
-            "value": 10.04,
+            "value": 10.818,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x10.04"
+            "display_value": "x10.818"
           },
           {
             "surface_id": "state::tower.damage",
@@ -16877,7 +17612,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "16.7B"
+        "display_value": "18B"
       },
       "state::tower.damage_per_meter_multiplier": {
         "stat_name": "state::tower.damage_per_meter_multiplier",
@@ -17121,7 +17856,7 @@
       },
       "state::tower.enemy_attack_level_skip_pct": {
         "stat_name": "state::tower.enemy_attack_level_skip_pct",
-        "final_value": 52.663999999999994,
+        "final_value": 53.117999999999995,
         "value_type": "pct",
         "source_count": 7,
         "status": "resolved",
@@ -17149,13 +17884,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancements__tower__enemy_attack_level_skip__multiplier",
-            "value": 1.16,
+            "value": 1.17,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "x1.16"
+            "display_value": "x1.17"
           },
           {
             "surface_id": "state::tower.enemy_attack_level_skip_pct",
@@ -17237,11 +17972,11 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "52.664%"
+        "display_value": "53.118%"
       },
       "state::tower.enemy_health_level_skip_pct": {
         "stat_name": "state::tower.enemy_health_level_skip_pct",
-        "final_value": 52.199999999999996,
+        "final_value": 52.65,
         "value_type": "pct",
         "source_count": 6,
         "status": "resolved",
@@ -17269,13 +18004,13 @@
             "source_class": "enhancement",
             "composition_stage": "multiplicative",
             "contributor_id": "enhancements__tower__enemy_health_level_skip__multiplier",
-            "value": 1.16,
+            "value": 1.17,
             "value_type": "scalar",
             "input_value_type": "resolved_value",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::WS+",
-            "display_value": "x1.16"
+            "display_value": "x1.17"
           },
           {
             "surface_id": "state::tower.enemy_health_level_skip_pct",
@@ -17342,7 +18077,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "52.2%"
+        "display_value": "52.65%"
       },
       "state::tower.free_attack_upgrade_chance_pct": {
         "stat_name": "state::tower.free_attack_upgrade_chance_pct",
@@ -19266,7 +20001,7 @@
       },
       "state::tower.ultimate_damage_multiplier": {
         "stat_name": "state::tower.ultimate_damage_multiplier",
-        "final_value": 22.4851795,
+        "final_value": 23.694428249999998,
         "value_type": "multiplier",
         "source_count": 4,
         "status": "resolved",
@@ -19294,13 +20029,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@dimension core@@primary",
-            "value": 12.05,
+            "value": 13.05,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x12.05"
+            "display_value": "x13.05"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -19309,13 +20044,13 @@
             "source_class": "module_main",
             "composition_stage": "additive_pre_cap",
             "contributor_id": "module__core__ultimate_weapon_damage__pct@@om chip@@assist",
-            "value": 1.5295,
+            "value": 1.4882499999999999,
             "value_type": "scalar",
             "input_value_type": "multiplier_display",
             "active": true,
             "gate_reason": null,
             "provenance_ref": "IDS::Modules",
-            "display_value": "x1.53"
+            "display_value": "x1.488"
           },
           {
             "surface_id": "state::tower.ultimate_damage_multiplier",
@@ -19337,7 +20072,7 @@
         "bundle_id": "progression_core_stats",
         "family_id": "progression_runtime_no_perks",
         "trace_mode": "full_trace",
-        "display_value": "x22.485"
+        "display_value": "x23.694"
       },
       "state::uw.black_hole.base_cooldown_seconds": {
         "stat_name": "state::uw.black_hole.base_cooldown_seconds",
@@ -20191,8 +20926,8 @@
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "resolved_surface_count": 266,
-      "contributor_row_count": 247
+      "resolved_surface_count": 284,
+      "contributor_row_count": 269
     }
   }
 }

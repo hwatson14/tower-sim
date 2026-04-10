@@ -183,6 +183,7 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     assert (out_dir / 'run_stats_query_rows_max_progression.json').exists()
     assert sorted(payload.keys()) == [
         'artifact',
+        'contract',
         'dashboard_version',
         'debug_manifest',
         'panels',
@@ -195,16 +196,23 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
         'variants',
     ]
     assert payload.get('artifact') == 'stats_dashboard.json'
+    assert payload.get('contract', {}).get('owner') == 'qe'
     assert payload.get('schema_version') == 1
     assert payload.get('selected_preset') == 'Farming'
     assert payload.get('selected_state_mode') == 'start_of_run'
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
         'workshop',
-        'uw_resolved',
-        'modules_context',
-        'cards_context',
-        'bots_context',
+        'derived',
+        'offense_resolved',
+        'defense_resolved',
+        'utility_resolved',
+        'wall_economy_resolved',
+        'cards_resolved',
+        'bots_resolved',
+        'guardians_resolved',
+        'modules_resolved',
+        'uw_stats_resolved',
     ]
     variants = payload.get('variants') or {}
     farming_variants = variants.get('Farming') or {}
@@ -299,6 +307,19 @@ def test_streamlit_stats_and_boss_waves_use_sanctioned_facades() -> None:
     assert 'query_rows_surface_detail(' in text
     assert 'build_boss_wave_payload(' in text
     assert '_module_unique_effect_map(' not in text
+
+
+def test_boss_waves_render_uses_published_summary_and_execution_contract() -> None:
+    text = (ROOT / 'app' / 'streamlit_inspector.py').read_text(encoding='utf-8')
+    start = text.index("def _render_boss_waves(request: PipelineRunRequest) -> None:")
+    end = text.index("\ndef main() -> None:", start)
+    boss_block = text[start:end]
+    assert "st.toggle('Stop on first failed boss', value=True)" in boss_block
+    assert "payload_summary = dict(boss_payload.get('summary') or {})" in boss_block
+    assert "payload_diagnostics = dict(boss_payload.get('diagnostics') or {})" in boss_block
+    assert "payload_download = dict(boss_payload.get('download') or {})" in boss_block
+    assert "boss_payload.get('contract') or {}" in boss_block
+    assert "st.download_button(" in boss_block
 
 
 def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> None:

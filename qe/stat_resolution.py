@@ -12,8 +12,6 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
-import yaml
-
 from qe.compat.legacy_surface_ids import (
     legacy_capability_surface_id as _compat_cap,
     legacy_canonical_surface_id as _state,
@@ -26,6 +24,7 @@ from qe.compat.legacy_surface_ids import (
 )
 from qe.models import StatInput
 from qe.models import StatBook, StatRow
+from qe.contracts import load_yaml_contract
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT_PATHS = [
@@ -97,7 +96,7 @@ def _resolved_bool_lookup(resolved_rows: Dict[str, StatRow], row_key: str) -> bo
 def _load_canonical_stats() -> Dict[str, Dict[str, str]]:
     out: Dict[str, Dict[str, str]] = {}
     for path in CONTRACT_PATHS:
-        data = yaml.safe_load(path.read_text())
+        data = load_yaml_contract(str(path))
         for domain, entries in data['domains'].items():
             for entry in entries:
                 out[entry['id']] = {

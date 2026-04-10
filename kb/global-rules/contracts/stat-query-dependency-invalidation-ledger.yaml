@@ -992,6 +992,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Amplify Bot range surface.
+  - node_id: state::bot.amplify.effective_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Amplify Bot effective-range surface.
   - node_id: state::bot.flame.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1024,6 +1032,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Flame Bot range surface.
+  - node_id: state::bot.flame.effective_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Flame Bot effective-range surface.
   - node_id: state::bot.flame_bot.lab_burn_stack
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1072,6 +1088,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Golden Bot range surface.
+  - node_id: state::bot.golden.effective_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Golden Bot effective-range surface.
   - node_id: state::bot.thunder.cooldown_seconds
     node_kind: surface
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1112,6 +1136,158 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Query-owned Thunder Bot range surface.
+  - node_id: state::bot.thunder.effective_range_m
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Thunder Bot effective-range surface.
+  - node_id: state::guardian.attack.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Attack Guardian cooldown surface.
+  - node_id: state::guardian.attack.missing_health_damage_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Attack Guardian missing-health damage surface.
+  - node_id: state::guardian.attack.targets_count
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Attack Guardian targets surface.
+  - node_id: state::guardian.ally.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Ally Guardian cooldown surface.
+  - node_id: state::guardian.ally.recovery_amount_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Ally Guardian recovery-amount surface.
+  - node_id: state::guardian.ally.max_recovery_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Ally Guardian max-recovery surface.
+  - node_id: state::guardian.bounty.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Bounty Guardian cooldown surface.
+  - node_id: state::guardian.bounty.coin_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Bounty Guardian coin-multiplier surface.
+  - node_id: state::guardian.bounty.targets_count
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Bounty Guardian targets surface.
+  - node_id: state::guardian.fetch.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Fetch Guardian cooldown surface.
+  - node_id: state::guardian.fetch.find_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Fetch Guardian find-chance surface.
+  - node_id: state::guardian.fetch.double_find_chance_pct
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Fetch Guardian double-find-chance surface.
+  - node_id: state::guardian.scout.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Scout Guardian cooldown surface.
+  - node_id: state::guardian.scout.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Scout Guardian duration surface.
+  - node_id: state::guardian.scout.range_bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Scout Guardian range-bonus surface.
+  - node_id: state::guardian.summon.cooldown_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Summon Guardian cooldown surface.
+  - node_id: state::guardian.summon.duration_seconds
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Summon Guardian duration surface.
+  - node_id: state::guardian.summon.cash_bonus_multiplier
+    node_kind: surface
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: true
+    publication_relevance: publish_default
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Query-owned Summon Guardian cash-bonus surface.
   - node_id: source_input::workshop:Cash Bonus
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1160,6 +1336,14 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Mutable workshop wall rebuild track.
+  - node_id: source_input::workshop:Wall Health
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Mutable workshop wall health track.
   - node_id: source_input::lab:Starting Cash
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1224,6 +1408,54 @@ nodes:
     verification_status: analysis_provisional
     blocker_reason: ''
     notes: Shared Bot Range vault source.
+  - node_id: source_input::guardian:Attack
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Attack Guardian base source.
+  - node_id: source_input::guardian:Ally
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Ally Guardian base source.
+  - node_id: source_input::guardian:Bounty
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Bounty Guardian base source.
+  - node_id: source_input::guardian:Fetch
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Fetch Guardian base source.
+  - node_id: source_input::guardian:Scout
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Scout Guardian base source.
+  - node_id: source_input::guardian:Summon
+    node_kind: source_input
+    family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+    is_publishable: false
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    blocker_reason: ''
+    notes: Summon Guardian base source.
   - node_id: source_input::relic:Health
     node_kind: source_input
     family_ids: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
@@ -1656,6 +1888,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: verified
     notes: Wall HP depends on tower HP.
+  - upstream_node_id: source_input::workshop:Wall Health
+    downstream_node_id: state::wall.hp
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Workshop Wall Health routes directly to wall HP.
   - upstream_node_id: source_input::workshop:Wall Rebuild
     downstream_node_id: state::wall.rebuild_seconds
     invalidation_semantics: recompute_downstream
@@ -2238,6 +2477,20 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Bot Range vault source routes to global bot range bonus.
+  - upstream_node_id: source_input::bot:Amplify Bot
+    downstream_node_id: state::bot.amplify.effective_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation, vault_mutation, workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Amplify Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::bot:Flame Bot
+    downstream_node_id: state::bot.flame.effective_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation, vault_mutation, workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Flame Bot range and shared-range modifiers route to effective range.
   - upstream_node_id: source_input::bot:Golden Bot
     downstream_node_id: state::bot.golden.bonus_multiplier
     invalidation_semantics: recompute_downstream
@@ -2266,6 +2519,13 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Golden Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Golden Bot
+    downstream_node_id: state::bot.golden.effective_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation, vault_mutation, workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Golden Bot range and shared-range modifiers route to effective range.
   - upstream_node_id: source_input::bot:Thunder Bot
     downstream_node_id: state::bot.thunder.cooldown_seconds
     invalidation_semantics: recompute_downstream
@@ -2301,6 +2561,139 @@ edges:
     publication_relevance: publishable_path
     verification_status: analysis_provisional
     notes: Thunder Bot base source routes to range.
+  - upstream_node_id: source_input::bot:Thunder Bot
+    downstream_node_id: state::bot.thunder.effective_range_m
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [bot_upgrade_mutation, vault_mutation, workshop_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Thunder Bot range and shared-range modifiers route to effective range.
+  - upstream_node_id: source_input::guardian:Attack
+    downstream_node_id: state::guardian.attack.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Attack Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Attack
+    downstream_node_id: state::guardian.attack.missing_health_damage_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Attack Guardian base source routes to missing-health damage.
+  - upstream_node_id: source_input::guardian:Attack
+    downstream_node_id: state::guardian.attack.targets_count
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Attack Guardian base source routes to targets.
+  - upstream_node_id: source_input::guardian:Ally
+    downstream_node_id: state::guardian.ally.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Ally Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Ally
+    downstream_node_id: state::guardian.ally.recovery_amount_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Ally Guardian base source routes to recovery amount.
+  - upstream_node_id: source_input::guardian:Ally
+    downstream_node_id: state::guardian.ally.max_recovery_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Ally Guardian base source routes to max recovery.
+  - upstream_node_id: source_input::guardian:Bounty
+    downstream_node_id: state::guardian.bounty.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Bounty Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Bounty
+    downstream_node_id: state::guardian.bounty.coin_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Bounty Guardian base source routes to coin multiplier.
+  - upstream_node_id: source_input::guardian:Bounty
+    downstream_node_id: state::guardian.bounty.targets_count
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Bounty Guardian base source routes to targets.
+  - upstream_node_id: source_input::guardian:Fetch
+    downstream_node_id: state::guardian.fetch.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Fetch Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Fetch
+    downstream_node_id: state::guardian.fetch.find_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Fetch Guardian base source routes to find chance.
+  - upstream_node_id: source_input::guardian:Fetch
+    downstream_node_id: state::guardian.fetch.double_find_chance_pct
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Fetch Guardian base source routes to double find chance.
+  - upstream_node_id: source_input::guardian:Scout
+    downstream_node_id: state::guardian.scout.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Scout Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Scout
+    downstream_node_id: state::guardian.scout.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Scout Guardian base source routes to duration.
+  - upstream_node_id: source_input::guardian:Scout
+    downstream_node_id: state::guardian.scout.range_bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Scout Guardian base source routes to range bonus.
+  - upstream_node_id: source_input::guardian:Summon
+    downstream_node_id: state::guardian.summon.cooldown_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Summon Guardian base source routes to cooldown.
+  - upstream_node_id: source_input::guardian:Summon
+    downstream_node_id: state::guardian.summon.duration_seconds
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Summon Guardian base source routes to duration.
+  - upstream_node_id: source_input::guardian:Summon
+    downstream_node_id: state::guardian.summon.cash_bonus_multiplier
+    invalidation_semantics: recompute_downstream
+    mutation_classes: [guardian_upgrade_mutation]
+    publication_relevance: publishable_path
+    verification_status: analysis_provisional
+    notes: Summon Guardian base source routes to cash bonus.
   - upstream_node_id: state::tower.enemy_attack_level_skip_pct
     downstream_node_id: runtime_consumer::wave_progression.attack_wave
     invalidation_semantics: impact_runtime_consumer
@@ -2549,6 +2942,27 @@ edges:
     notes: Derived analysis produces economy income bits output.
 mutation_triggers:
   - mutation_class: workshop_mutation
+    trigger_key: Bounce Shot Targets
+    source_node_id: source_input::workshop:Bounce Shot Targets
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Damage
+    source_node_id: source_input::workshop:Damage
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Damage / Meter
+    source_node_id: source_input::workshop:Damage / Meter
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
     trigger_key: Health
     source_node_id: source_input::workshop:Health
     invalidation_semantics: recompute_downstream
@@ -2563,11 +2977,39 @@ mutation_triggers:
     verification_status: verified
     notes: Workshop override trigger.
   - mutation_class: workshop_mutation
+    trigger_key: Land Mine Damage
+    source_node_id: source_input::workshop:Land Mine Damage
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Max Amount
+    source_node_id: source_input::workshop:Max Amount
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
     trigger_key: Orbs
     source_node_id: source_input::workshop:Orbs
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Rend Armor Chance
+    source_node_id: source_input::workshop:Rend Armor Chance
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Rend Armor Mult
+    source_node_id: source_input::workshop:Rend Armor Mult
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
     notes: Workshop override trigger.
   - mutation_class: workshop_mutation
     trigger_key: Defense %
@@ -2589,6 +3031,13 @@ mutation_triggers:
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Super Critical Mult
+    source_node_id: source_input::workshop:Super Critical Mult
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
     notes: Workshop override trigger.
   - mutation_class: workshop_mutation
     trigger_key: Free Attack Upgrade
@@ -2624,6 +3073,20 @@ mutation_triggers:
     invalidation_semantics: recompute_downstream
     publication_relevance: mutation_source_only
     verification_status: verified
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Wall Health
+    source_node_id: source_input::workshop:Wall Health
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
+    notes: Workshop override trigger.
+  - mutation_class: workshop_mutation
+    trigger_key: Wall Rebuild
+    source_node_id: source_input::workshop:Wall Rebuild
+    invalidation_semantics: recompute_downstream
+    publication_relevance: mutation_source_only
+    verification_status: analysis_provisional
     notes: Workshop override trigger.
   - mutation_class: card_assertions
     trigger_key: Recovery Package Chance

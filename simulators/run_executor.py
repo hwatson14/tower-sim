@@ -206,6 +206,23 @@ def build_boss_wave_table(
     row_resolver: Callable[[NormalizedCheckpointState], WaveRowSnapshot] = resolve_wave_row_snapshot,
     stop_on_failure: bool = False,
 ) -> list[dict[str, object]]:
+    return build_boss_wave_table_payload(
+        account_state=account_state,
+        initial_projected_state=initial_projected_state,
+        config=config,
+        row_resolver=row_resolver,
+        stop_on_failure=stop_on_failure,
+    )['rows']
+
+
+def build_boss_wave_table_payload(
+    *,
+    account_state: AccountState,
+    initial_projected_state: ProjectedRunState,
+    config: RunToMaxConfig,
+    row_resolver: Callable[[NormalizedCheckpointState], WaveRowSnapshot] = resolve_wave_row_snapshot,
+    stop_on_failure: bool = False,
+) -> dict[str, object]:
     if config.execution_mode != 'table_sweep':
         raise ValueError(
             f"Unsupported build_boss_wave_table execution_mode {config.execution_mode!r}. "
@@ -226,10 +243,18 @@ def build_boss_wave_table(
             projected_state=current_projected_state,
         )
     )
+    qe_resolution_count = current_snapshot.metrics.qe_resolution_count if current_snapshot.metrics else 1
+    timing_recompute_count = current_snapshot.metrics.timing_recompute_count if current_snapshot.metrics else 1
+    snapshot_reuse_count = 0
+    qe_dirty_reresolve_count = 0
+    delta_fallback_count = 0
     timing_context = current_snapshot.timing_context
     combat_runtime = current_snapshot.combat_runtime
     hot_values = _extract_hot_surface_values(current_snapshot)
     rows: list[dict[str, object]] = []
+    max_wave = 0
+    first_failed_wave = 0
+    terminal_snapshot = current_snapshot
 
     for display_wave in range(int(config.start_wave), int(config.end_wave) + 1, boss_wave_interval):
         current_projected_state = advance_projected_free_upgrade_state(
@@ -253,7 +278,7 @@ def build_boss_wave_table(
         )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
         if current_projected_state.dirty_ledger.qe_dirty:
-            current_snapshot, _delta_fallback_used = _resolve_snapshot_for_projected_state(
+            current_snapshot, delta_fallback_used = _resolve_snapshot_for_projected_state(
                 account_state=account_state,
                 config=config,
                 projected_state=current_projected_state,
@@ -261,6 +286,10 @@ def build_boss_wave_table(
                 row_resolver=row_resolver,
                 changed_tracks=changed_tracks,
             )
+            qe_dirty_reresolve_count += 1
+            delta_fallback_count += int(delta_fallback_used)
+            qe_resolution_count += current_snapshot.metrics.qe_resolution_count if current_snapshot.metrics else 1
+            timing_recompute_count += current_snapshot.metrics.timing_recompute_count if current_snapshot.metrics else 1
             timing_context = current_snapshot.timing_context
             combat_runtime = current_snapshot.combat_runtime
             hot_values = _extract_hot_surface_values(current_snapshot)
@@ -269,6 +298,7 @@ def build_boss_wave_table(
                 current_snapshot,
                 projected_state=current_projected_state,
             )
+            snapshot_reuse_count += 1
             timing_context = current_snapshot.timing_context
             combat_runtime = current_snapshot.combat_runtime
             hot_values = _extract_hot_surface_values(current_snapshot)
@@ -290,6 +320,7 @@ def build_boss_wave_table(
             enemy_damage_table=enemy_damage_table,
             enemy_health_table=enemy_health_table,
         )
+        survives_boss = bool(intake is not None and intake.survival_margin_hp >= 0.0)
         generated_by_category = dict(current_projected_state.counters.get('generated_free_upgrades_last_step_by_category') or {})
         allocated_by_category = dict(current_projected_state.counters.get('allocated_free_upgrades_by_category') or {})
         rows.append(
@@ -319,16 +350,55 @@ def build_boss_wave_table(
                 'allocated_free_upgrades_defense': int(allocated_by_category.get('defense', 0) or 0),
                 'allocated_free_upgrades_utility': int(allocated_by_category.get('utility', 0) or 0),
                 'changed_workshop_tracks_last_step': '|'.join(changed_tracks),
-                'survives_boss': bool(intake is not None and intake.survival_margin_hp >= 0.0),
+                'survives_boss': survives_boss,
                 'boss_survival_margin_hp': None if intake is None else float(intake.survival_margin_hp),
                 'boss_total_damage_taken': None if intake is None else float(intake.total_damage_taken),
                 'boss_hits_taken': None if intake is None else int(intake.boss_hits_taken),
             }
         )
-        if stop_on_failure and (intake is None or intake.survival_margin_hp < 0.0):
+        terminal_snapshot = current_snapshot
+        if survives_boss:
+            max_wave = int(display_wave)
+        elif first_failed_wave == 0:
+            first_failed_wave = int(display_wave)
+        if stop_on_failure and not survives_boss:
             break
 
-    return rows
+    runtime_inputs = config.scenario_runtime_inputs.to_debug_dict() if config.scenario_runtime_inputs else {}
+    terminal_display_wave = int(rows[-1]['display_wave']) if rows else 0
+    return {
+        'rows': rows,
+        'summary': {
+            'max_wave': max_wave,
+            'max_surviving_wave': max_wave,
+            'first_failed_wave': first_failed_wave,
+            'row_count': len(rows),
+            'terminal_display_wave': terminal_display_wave,
+            'survives_through_end': bool(rows) and first_failed_wave == 0,
+            'result_consistent_with_rows': max_wave == max((int((row or {}).get('display_wave') or 0) for row in rows if bool((row or {}).get('survives_boss'))), default=0),
+        },
+        'diagnostics': {
+            'execution_mode': config.execution_mode,
+            'mode_id': config.mode_id,
+            'tier_column': config.tier_column,
+            'boss_wave_step': config.boss_wave_step,
+            'state_mode': config.state_mode,
+            'checkpoint_mode': 'boss_wave_only',
+            'checkpoint_resolution_mode': 'per_boss_wave',
+            'stop_on_failure': bool(stop_on_failure),
+            'scenario_runtime_inputs': runtime_inputs,
+            'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
+            'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
+            'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
+            'qe_resolution_count': qe_resolution_count,
+            'timing_recompute_count': timing_recompute_count,
+            'snapshot_reuse_count': snapshot_reuse_count,
+            'qe_dirty_reresolve_count': qe_dirty_reresolve_count,
+            'delta_fallback_count': delta_fallback_count,
+            'execution_architecture': 'table_sweep_hot_columns',
+            'terminal_checkpoint_display_wave': terminal_snapshot.checkpoint.display_wave if terminal_snapshot is not None else 0,
+        },
+    }
 
 
 def _run_to_max_static_build(

@@ -1439,6 +1439,240 @@ families:
       debug_only: false
       scenario_scoped: false
       semantics: effective Thunder Bot active range in meters after shared flat bot-range bonuses and tower-range amplification.
+    - surface_id: state::guardian.attack.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Attack Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.attack.missing_health_damage_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Attack Guardian missing-health damage percent available to progression queries.
+    - surface_id: state::guardian.attack.targets_count
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Attack Guardian targets count available to progression queries.
+    - surface_id: state::guardian.ally.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Ally Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.ally.recovery_amount_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Ally Guardian recovery amount percent available to progression queries.
+    - surface_id: state::guardian.ally.max_recovery_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Ally Guardian max recovery multiplier available to progression queries.
+    - surface_id: state::guardian.bounty.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Bounty Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.bounty.coin_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Bounty Guardian coin multiplier available to progression queries.
+    - surface_id: state::guardian.bounty.targets_count
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Bounty Guardian targets count available to progression queries.
+    - surface_id: state::guardian.fetch.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Fetch Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.fetch.find_chance_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Fetch Guardian find chance percent available to progression queries.
+    - surface_id: state::guardian.fetch.double_find_chance_pct
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Fetch Guardian double-find chance percent available to progression queries.
+    - surface_id: state::guardian.scout.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Scout Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.scout.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Scout Guardian duration in seconds available to progression queries.
+    - surface_id: state::guardian.scout.range_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Scout Guardian range bonus multiplier available to progression queries.
+    - surface_id: state::guardian.summon.cooldown_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Summon Guardian cooldown in seconds available to progression queries.
+    - surface_id: state::guardian.summon.duration_seconds
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Summon Guardian duration in seconds available to progression queries.
+    - surface_id: state::guardian.summon.cash_bonus_multiplier
+      surface_kind: runtime_mechanic_surface
+      surface_class: surface
+      domain: guardians
+      owning_families: [progression_start_of_run, progression_runtime_no_perks, progression_runtime_with_perks]
+      query_resolvable_phase_1: true
+      queryable_directly: true
+      consumer_only: false
+      support_only: false
+      publish_default: true
+      debug_only: false
+      scenario_scoped: false
+      semantics: resolved Summon Guardian cash-bonus multiplier available to progression queries.
     - surface_id: support_surface::free_upgrade_multiplier
       surface_kind: support_surface
       surface_class: surface
@@ -1689,6 +1923,24 @@ families:
       - state::bot.thunder.linger_slow_pct
       - state::bot.thunder.range_m
       - state::bot.thunder.effective_range_m
+      - state::guardian.attack.cooldown_seconds
+      - state::guardian.attack.missing_health_damage_pct
+      - state::guardian.attack.targets_count
+      - state::guardian.ally.cooldown_seconds
+      - state::guardian.ally.recovery_amount_pct
+      - state::guardian.ally.max_recovery_multiplier
+      - state::guardian.bounty.cooldown_seconds
+      - state::guardian.bounty.coin_multiplier
+      - state::guardian.bounty.targets_count
+      - state::guardian.fetch.cooldown_seconds
+      - state::guardian.fetch.find_chance_pct
+      - state::guardian.fetch.double_find_chance_pct
+      - state::guardian.scout.cooldown_seconds
+      - state::guardian.scout.duration_seconds
+      - state::guardian.scout.range_bonus_multiplier
+      - state::guardian.summon.cooldown_seconds
+      - state::guardian.summon.duration_seconds
+      - state::guardian.summon.cash_bonus_multiplier
       - state::cards.plasma_cannon.effect_pct
       - state::module.orbital_augment.electron_count
       - state::module.black_hole_digestor.extra_coin_kill_bonus_per_free_upgrade_pct

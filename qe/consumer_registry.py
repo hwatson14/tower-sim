@@ -5,9 +5,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterable, Mapping, Sequence
 
-import yaml
-
-from qe.contracts import to_legacy_surface_id, to_v2_surface_id
+from qe.contracts import load_yaml_contract, to_legacy_surface_id, to_v2_surface_id
 
 ROOT = Path(__file__).resolve().parents[1]
 _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
@@ -74,17 +72,17 @@ _RUNTIME_CONSUMER_RULES: tuple[RuntimeConsumerRule, ...] = (
 
 @lru_cache(maxsize=1)
 def load_surface_ownership_ledger() -> dict[str, Any]:
-    return yaml.safe_load(_OWNERSHIP_LEDGER_PATH.read_text()) or {}
+    return load_yaml_contract(str(_OWNERSHIP_LEDGER_PATH))
 
 
 @lru_cache(maxsize=1)
 def load_initial_surface_contract() -> dict[str, Any]:
-    return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
+    return load_yaml_contract(str(_INITIAL_SURFACE_SET_PATH))
 
 
 @lru_cache(maxsize=1)
 def load_consumer_bundle_contract() -> dict[str, Any]:
-    return yaml.safe_load(_CONSUMER_BUNDLE_PATH.read_text()) or {}
+    return load_yaml_contract(str(_CONSUMER_BUNDLE_PATH))
 
 
 @lru_cache(maxsize=1)

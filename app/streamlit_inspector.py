@@ -1515,7 +1515,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
     end_wave = control_cols[2].number_input('End wave', min_value=10, max_value=100000, value=500, step=10)
     boss_wave_step = control_cols[3].number_input('Boss wave step', min_value=1, max_value=1000, value=10, step=1)
-    stop_on_failure = st.toggle('Stop on first failed boss', value=False)
+    stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
     with st.expander('Runtime assumptions', expanded=False):
         runtime_cols = st.columns(3)
@@ -1546,15 +1546,31 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     frame = pd.DataFrame(boss_payload.get('rows') or [])
     if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:
         frame['changed_workshop_tracks_last_step'] = frame['changed_workshop_tracks_last_step'].fillna('')
-    surviving_rows = frame[frame['survives_boss'] == True] if not frame.empty else frame
+    payload_summary = dict(boss_payload.get('summary') or {})
+    payload_diagnostics = dict(boss_payload.get('diagnostics') or {})
+    payload_download = dict(boss_payload.get('download') or {})
     diagnostics = {
-        'preset_name': preset_name,
-        'tier_column': (boss_payload.get('diagnostics') or {}).get('tier_column'),
-        'boss_wave_step': (boss_payload.get('diagnostics') or {}).get('boss_wave_step'),
-        'row_count': int(len(frame)),
-        'max_surviving_wave': int(surviving_rows['display_wave'].max()) if not surviving_rows.empty else 0,
-        'state_mode': (boss_payload.get('diagnostics') or {}).get('state_mode'),
-        'checkpoint_mode': 'boss_wave_only',
+        'preset_name': payload_diagnostics.get('preset_name') or preset_name,
+        'tier_column': payload_diagnostics.get('tier_column'),
+        'boss_wave_step': payload_diagnostics.get('boss_wave_step'),
+        'row_count': int(payload_summary.get('row_count') or len(frame)),
+        'max_surviving_wave': int(payload_summary.get('max_surviving_wave') or 0),
+        'first_failed_wave': int(payload_summary.get('first_failed_wave') or 0),
+        'max_wave': int(payload_summary.get('max_wave') or 0),
+        'terminal_display_wave': int(payload_summary.get('terminal_display_wave') or 0),
+        'survives_through_end': bool(payload_summary.get('survives_through_end')),
+        'result_consistent_with_rows': bool(payload_summary.get('result_consistent_with_rows')),
+        'state_mode': payload_diagnostics.get('state_mode'),
+        'checkpoint_mode': payload_diagnostics.get('checkpoint_mode') or 'boss_wave_only',
+        'stop_on_failure': bool(payload_diagnostics.get('stop_on_failure')),
+        'scenario_runtime_inputs': dict(payload_diagnostics.get('scenario_runtime_inputs') or {}),
+        'execution_mode': payload_diagnostics.get('execution_mode'),
+        'checkpoint_resolution_mode': payload_diagnostics.get('checkpoint_resolution_mode'),
+        'qe_resolution_count': int(payload_diagnostics.get('qe_resolution_count') or 0),
+        'timing_recompute_count': int(payload_diagnostics.get('timing_recompute_count') or 0),
+        'snapshot_reuse_count': int(payload_diagnostics.get('snapshot_reuse_count') or 0),
+        'qe_dirty_reresolve_count': int(payload_diagnostics.get('qe_dirty_reresolve_count') or 0),
+        'delta_fallback_count': int(payload_diagnostics.get('delta_fallback_count') or 0),
     }
 
     summary_cols = st.columns(4)
@@ -1562,6 +1578,11 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     summary_cols[1].metric('Max surviving wave', diagnostics['max_surviving_wave'])
     summary_cols[2].metric('Tier', diagnostics['tier_column'])
     summary_cols[3].metric('Preset', diagnostics['preset_name'])
+    summary_cols_2 = st.columns(4)
+    summary_cols_2[0].metric('First failed wave', diagnostics['first_failed_wave'] or '—')
+    summary_cols_2[1].metric('Checkpoint mode', diagnostics['checkpoint_mode'])
+    summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
+    summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
     st.caption(
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
         'the intervening waves using the interval-start resolved values.'
@@ -1570,12 +1591,26 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.download_button(
         'Download boss-wave CSV',
         data=frame.to_csv(index=False).encode('utf-8'),
-        file_name=f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
+        file_name=str(payload_download.get('file_name') or f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv'),
         mime='text/csv',
         width='stretch',
     )
     with st.expander('Boss-wave diagnostics'):
         st.json(diagnostics)
+    with st.expander('Boss-wave execution details'):
+        st.json({
+            'contract': boss_payload.get('contract') or {},
+            'runtime_inputs_used': diagnostics['scenario_runtime_inputs'],
+            'execution_counts': {
+                'qe_resolution_count': diagnostics['qe_resolution_count'],
+                'timing_recompute_count': diagnostics['timing_recompute_count'],
+                'snapshot_reuse_count': diagnostics['snapshot_reuse_count'],
+                'qe_dirty_reresolve_count': diagnostics['qe_dirty_reresolve_count'],
+                'delta_fallback_count': diagnostics['delta_fallback_count'],
+            },
+            'terminal_display_wave': diagnostics['terminal_display_wave'],
+            'survives_through_end': diagnostics['survives_through_end'],
+        })
 
 
 def main() -> None:

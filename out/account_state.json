@@ -1195,7 +1195,7 @@
       "Preset 3",
       "Preset 4",
       "Preset 5",
-      "12.33 q"
+      "13.84 q"
     ],
     "rows": [
       [
@@ -1380,9 +1380,9 @@
       ],
       [
         "Enemy Level Skips +",
-        "1.16",
-        "16",
-        "16",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -1614,10 +1614,10 @@
     },
     "Enemy Level Skips +": {
       "name": "Enemy Level Skips +",
-      "current_multiplier": 1.16,
+      "current_multiplier": 1.17,
       "preset_levels": {
-        "Farming": 16,
-        "Tourney": 16,
+        "Farming": 17,
+        "Tourney": 17,
         "Milestone": null,
         "Preset 4": null,
         "Preset 5": null
@@ -2833,7 +2833,7 @@
     "core": {
       "slot_type": "core",
       "assist_unlocked": true,
-      "assist_level": 106,
+      "assist_level": 101,
       "rarity_cap": "Epic",
       "multiplier_cap": 0.15,
       "substat_cap": 0.15
@@ -2944,8 +2944,8 @@
       "name": "Being Annihilator",
       "slot_type": "cannon",
       "rarity": "Ancestral",
-      "level": 169,
-      "stat": "10.04",
+      "level": 171,
+      "stat": "10.44",
       "substats": [
         {
           "name": "Attack Speed",
@@ -3001,9 +3001,9 @@
     "Havoc Bringer": {
       "name": "Havoc Bringer",
       "slot_type": "cannon",
-      "rarity": "Ancestral",
-      "level": 169,
-      "stat": "10.04",
+      "rarity": "Ancestral 2*",
+      "level": 171,
+      "stat": "11.195",
       "substats": []
     },
     "Shrink Ray": {
@@ -3017,9 +3017,9 @@
     "Amplifying Strike": {
       "name": "Amplifying Strike",
       "slot_type": "cannon",
-      "rarity": "Ancestral",
-      "level": 169,
-      "stat": "10.04",
+      "rarity": "Ancestral 1*",
+      "level": 171,
+      "stat": "10.818",
       "substats": [
         {
           "name": "Bounce Shot Chance",
@@ -3096,17 +3096,17 @@
     "Negative Mass Projector": {
       "name": "Negative Mass Projector",
       "slot_type": "armor",
-      "rarity": "Legendary",
-      "level": 100,
-      "stat": "2.27",
+      "rarity": "Mythic+",
+      "level": 160,
+      "stat": "8.19",
       "substats": []
     },
     "Space Displacer": {
       "name": "Space Displacer",
       "slot_type": "armor",
       "rarity": "Ancestral 2*",
-      "level": 169,
-      "stat": "10.763",
+      "level": 170,
+      "stat": "10.979",
       "substats": []
     },
     "Wormhole Redirector": {
@@ -3137,8 +3137,8 @@
       "name": "Sharp Fortitude",
       "slot_type": "armor",
       "rarity": "Ancestral",
-      "level": 169,
-      "stat": "10.04",
+      "level": 170,
+      "stat": "10.24",
       "substats": [
         {
           "name": "Health Regen",
@@ -3176,8 +3176,8 @@
       "name": "Orbital Augment",
       "slot_type": "armor",
       "rarity": "Ancestral 1*",
-      "level": 169,
-      "stat": "10.402",
+      "level": 170,
+      "stat": "10.61",
       "substats": [
         {
           "name": "Defense %",
@@ -3262,9 +3262,9 @@
     "Singularity Harness": {
       "name": "Singularity Harness",
       "slot_type": "generator",
-      "rarity": "Ancestral",
-      "level": 167,
-      "stat": "1.74",
+      "rarity": "Ancestral 2*",
+      "level": 168,
+      "stat": "1.81",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -3296,9 +3296,9 @@
     "Pulsar Harvester": {
       "name": "Pulsar Harvester",
       "slot_type": "generator",
-      "rarity": "Ancestral 1*",
-      "level": 167,
-      "stat": "1.77",
+      "rarity": "Ancestral 2*",
+      "level": 168,
+      "stat": "1.81",
       "substats": [
         {
           "name": "Free Utility Upgrade",
@@ -3365,8 +3365,8 @@
       "name": "Restorative Bonus",
       "slot_type": "generator",
       "rarity": "Ancestral",
-      "level": 167,
-      "stat": "1.74",
+      "level": 168,
+      "stat": "1.75",
       "substats": [
         {
           "name": "Enemy Health Level Skip",
@@ -3394,8 +3394,8 @@
       "name": "Multiverse Nexus",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 164,
-      "stat": "12.934",
+      "level": 168,
+      "stat": "14.014",
       "substats": [
         {
           "name": "Death Wave - Quantity",
@@ -3443,8 +3443,8 @@
       "name": "Dimension Core",
       "slot_type": "core",
       "rarity": "Ancestral",
-      "level": 164,
-      "stat": "12.05",
+      "level": 168,
+      "stat": "13.05",
       "substats": [
         {
           "name": "Spotlight - Angle",
@@ -3482,16 +3482,16 @@
       "name": "Harmony Conductor",
       "slot_type": "core",
       "rarity": "Ancestral 5*",
-      "level": 164,
-      "stat": "14.26",
+      "level": 168,
+      "stat": "15.46",
       "substats": []
     },
     "Om Chip": {
       "name": "Om Chip",
       "slot_type": "core",
-      "rarity": "Ancestral",
-      "level": 164,
-      "stat": "12.05",
+      "rarity": "Ancestral 1*",
+      "level": 168,
+      "stat": "13.532",
       "substats": [
         {
           "name": "Chrono Field - Duration",
@@ -3518,17 +3518,17 @@
     "Magnetic Hook": {
       "name": "Magnetic Hook",
       "slot_type": "core",
-      "rarity": "Ancestral",
-      "level": 164,
-      "stat": "12.05",
+      "rarity": "Ancestral 1*",
+      "level": 168,
+      "stat": "13.532",
       "substats": []
     },
     "Primordial Collapse": {
       "name": "Primordial Collapse",
       "slot_type": "core",
       "rarity": "Ancestral 2*",
-      "level": 164,
-      "stat": "12.934",
+      "level": 168,
+      "stat": "14.014",
       "substats": [
         {
           "name": "Black Hole - Duration",
@@ -3553,140 +3553,9 @@
       ]
     }
   },
-  "perk_presets": {
-    "Farming": [
-      {
-        "perk_id": "PERK_X1_20_MAX_HEALTH",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_X1_15_DAMAGE",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_X1_15_ALL_COIN_BONUSES",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_X1_15_DEFENSE_ABSOLUTE",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_X1_15_CASH_BONUS",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_X1_75_HEALTH_REGEN",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_INTEREST_X1_50",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_LAND_MINE_DAMAGE_X3_50",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_FREE_UPGRADE_CHANCE_FOR_ALL_5_0",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_DEFENSE_PERCENT_4_00",
-        "picks": 5
-      },
-      {
-        "perk_id": "PERK_BOUNCE_SHOT_2",
-        "picks": 3
-      },
-      {
-        "perk_id": "PERK_PERK_WAVE_REQUIREMENT_20_00",
-        "picks": 3
-      },
-      {
-        "perk_id": "PERK_ORBS_1",
-        "picks": 2
-      },
-      {
-        "perk_id": "PERK_UNLOCK_A_RANDOM_ULTIMATE_WEAPON",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_INCREASE_MAX_GAME_SPEED_BY_1_00",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_4_MORE_SMART_MISSILES",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_SWAMP_RADIUS_X1_5",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_1_WAVE_ON_DEATH_WAVE",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_EXTRA_SET_OF_INNER_MINES",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_GOLDEN_TOWER_BONUS_X1_5",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_CHAIN_LIGHTNING_DAMAGE_X2",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_CHRONO_FIELD_DURATION_5S",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_BLACK_HOLE_DURATION_12_0S",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_SPOTLIGHT_DAMAGE_BONUS_X1_5",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_X1_50_TOWER_DAMAGE_BUT_BOSSES_HAVE_8X_HEALTH",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_X1_80_COINS_BUT_TOWER_MAX_HEALTH_70",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_ENEMIES_DAMAGE_50_BUT_TOWER_DAMAGE_50",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_RANGED_ENEMIES_ATTACK_DISTANCE_REDUCED_BUT_TOWER_RANGED_ENEMIES_DAMAGE_X3",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_X12_00_CASH_PER_WAVE_BUT_ENEMY_KILL_DON_T_GIVE_CASH",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_TOWER_HEALTH_REGEN_X8_00_BUT_TOWER_MAX_MAX_HEALTH_60",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_BOSS_HEALTH_70_BUT_BOSS_SPEED_50",
-        "picks": 1
-      },
-      {
-        "perk_id": "PERK_LIFESTEAL_X2_50_BUT_KNOCKBACK_FORCE_70",
-        "picks": 1
-      }
-    ]
-  },
-  "perk_preset_namespace_class": "transient",
-  "active_perk_preset": "Farming",
+  "perk_presets": {},
+  "perk_preset_namespace_class": "canonical",
+  "active_perk_preset": null,
   "active_card_preset": "Farming",
   "active_module_preset": "Farming",
   "default_preset": "Farming",
@@ -5676,7 +5545,7 @@
         "Preset 3",
         "Preset 4",
         "Preset 5",
-        "12.33 q"
+        "13.84 q"
       ],
       [
         "",
@@ -5860,9 +5729,9 @@
       ],
       [
         "Enemy Level Skips +",
-        "1.16",
-        "16",
-        "16",
+        "1.17",
+        "17",
+        "17",
         "",
         "",
         "",
@@ -7031,7 +6900,7 @@
         "",
         "Assist Slot",
         "true",
-        "106",
+        "101",
         ""
       ],
       [
@@ -7101,7 +6970,7 @@
         "",
         "",
         "",
-        "0.44675925925925924",
+        "0.5115740740740741",
         "",
         "",
         "",
@@ -7408,8 +7277,8 @@
         "",
         "",
         "Ancestral 2*",
-        "164",
-        "12.934",
+        "168",
+        "14.014",
         ""
       ],
       [
@@ -7624,13 +7493,13 @@
       ],
       [
         "Ancestral",
-        "169",
-        "10.04",
+        "171",
+        "10.44",
         "",
         "",
-        "Legendary",
-        "100",
-        "2.27",
+        "Mythic+",
+        "160",
+        "8.19",
         "",
         "",
         "Mythic+",
@@ -7639,8 +7508,8 @@
         "",
         "",
         "Ancestral",
-        "164",
-        "12.05",
+        "168",
+        "13.05",
         ""
       ],
       [
@@ -7818,18 +7687,18 @@
         "",
         "",
         "Ancestral 2*",
-        "169",
-        "10.763",
+        "170",
+        "10.979",
         "",
         "",
-        "Ancestral",
-        "167",
-        "1.74",
+        "Ancestral 2*",
+        "168",
+        "1.81",
         "",
         "",
         "Ancestral 5*",
-        "164",
-        "14.26",
+        "168",
+        "15.46",
         ""
       ],
       [
@@ -7980,9 +7849,9 @@
         ""
       ],
       [
-        "Ancestral",
-        "169",
-        "10.04",
+        "Ancestral 2*",
+        "171",
+        "11.195",
         "",
         "",
         "Mythic+",
@@ -7990,14 +7859,14 @@
         "8.19",
         "",
         "",
+        "Ancestral 2*",
+        "168",
+        "1.81",
+        "",
+        "",
         "Ancestral 1*",
-        "167",
-        "1.77",
-        "",
-        "",
-        "Ancestral",
-        "164",
-        "12.05",
+        "168",
+        "13.532",
         ""
       ],
       [
@@ -8154,8 +8023,8 @@
         "",
         "",
         "Ancestral",
-        "169",
-        "10.04",
+        "170",
+        "10.24",
         "",
         "",
         "Mythic+",
@@ -8163,9 +8032,9 @@
         "1.665",
         "",
         "",
-        "Ancestral",
-        "164",
-        "12.05",
+        "Ancestral 1*",
+        "168",
+        "13.532",
         ""
       ],
       [
@@ -8337,24 +8206,24 @@
         ""
       ],
       [
-        "Ancestral",
-        "169",
-        "10.04",
+        "Ancestral 1*",
+        "171",
+        "10.818",
         "",
         "",
         "Ancestral 1*",
-        "169",
-        "10.402",
+        "170",
+        "10.61",
         "",
         "",
         "Ancestral",
-        "167",
-        "1.74",
+        "168",
+        "1.75",
         "",
         "",
         "Ancestral 2*",
-        "164",
-        "12.934",
+        "168",
+        "14.014",
         ""
       ],
       [
@@ -8536,98 +8405,14 @@
         "1.37",
         "",
         "",
-        "Legendary",
-        "100",
-        "1.275",
+        "Epic",
+        "60",
+        "1.128",
         "",
         "",
         "Epic",
         "60",
         "2.17",
-        ""
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Enemy Attack Level Skip",
-        "Legendary",
-        "+4%",
-        "0.04",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Coins / Kill Bonus",
-        "Epic",
-        "+0.3x",
-        "0.3",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Free Utility Upgrade",
-        "Legendary",
-        "+8%",
-        "0.08",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "Free Attack Upgrade",
-        "Legendary",
-        "+8%",
-        "0.08",
-        "",
-        "",
-        "",
-        "",
         ""
       ],
       [

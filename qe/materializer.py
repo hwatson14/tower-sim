@@ -14,7 +14,7 @@ from qe.compat.legacy_surface_ids import (
     legacy_mechanic_surface_id,
     legacy_surface_id,
 )
-from qe.contracts import normalize_surface_id_to_contract, to_v2_surface_id
+from qe.contracts import load_yaml_contract, normalize_surface_id_to_contract, to_v2_surface_id
 from qe.models import BoundStatInputs, StateIdentity
 from qe.models import StatInput
 
@@ -24,6 +24,7 @@ _FAMILY_CONTRACT_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query
 _OWNERSHIP_LEDGER_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'stat-query-surface-ownership-ledger.yaml'
 _CANONICAL_STATS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'canonical-stats.yaml'
 _MECHANIC_PARAMS_PATH = ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 _COMPATIBILITY_SURFACE_ID_ALIASES = {
     legacy_canonical_surface_id('free_upgrade_multiplier'): 'support_surface::free_upgrade_multiplier',
@@ -507,12 +508,12 @@ class FamilyBaselineMaterializer:
 
 @lru_cache(maxsize=1)
 def load_surface_registry_contract() -> dict[str, Any]:
-    return yaml.safe_load(_INITIAL_SURFACE_SET_PATH.read_text()) or {}
+    return load_yaml_contract(str(_INITIAL_SURFACE_SET_PATH))
 
 
 @lru_cache(maxsize=1)
 def load_surface_ownership_ledger() -> dict[str, Any]:
-    return yaml.safe_load(_OWNERSHIP_LEDGER_PATH.read_text()) or {}
+    return load_yaml_contract(str(_OWNERSHIP_LEDGER_PATH))
 
 
 @lru_cache(maxsize=1)
@@ -615,7 +616,7 @@ def load_surface_metadata_by_id() -> dict[str, Mapping[str, Any]]:
 
 @lru_cache(maxsize=1)
 def load_family_contracts() -> dict[str, Mapping[str, Any]]:
-    family_contract = yaml.safe_load(_FAMILY_CONTRACT_PATH.read_text()) or {}
+    family_contract = load_yaml_contract(str(_FAMILY_CONTRACT_PATH))
     family_contracts: dict[str, Mapping[str, Any]] = {}
     for group_id, group_payload in (family_contract.get('family_groups') or {}).items():
         for family_id, payload in (group_payload.get('families') or {}).items():
@@ -737,8 +738,8 @@ def _resolver_to_query_value_type(resolver: str) -> str:
 
 @lru_cache(maxsize=1)
 def _contract_registry_value_types() -> dict[tuple[str, str], str]:
-    canonical_stats = yaml.safe_load(_CANONICAL_STATS_PATH.read_text()) or {}
-    mechanic_params = yaml.safe_load(_MECHANIC_PARAMS_PATH.read_text()) or {}
+    canonical_stats = load_yaml_contract(str(_CANONICAL_STATS_PATH))
+    mechanic_params = load_yaml_contract(str(_MECHANIC_PARAMS_PATH))
     out: dict[tuple[str, str], str] = {}
 
     for entries in (canonical_stats.get('domains') or {}).values():

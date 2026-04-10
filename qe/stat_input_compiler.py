@@ -182,6 +182,7 @@ PERK_ENTITY_REGISTRY_PATH = KB / 'perks' / 'tables' / 'perk-entity-registry.csv'
 PERK_EFFECT_REGISTRY_PATH = KB / 'perks' / 'tables' / 'perk-effect-registry.csv'
 
 SCOUT_GUARDIAN_TABLE_PATH = KB / 'guardians' / 'tables' / 'wiki-verified-guardian-scout-upgrades.csv'
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 # ── UW lab wiki-verified value tables (from UW complete branch) ──
 _UW_LAB_TABLE_REGISTRY: Dict[str, Tuple[str, str]] = {
@@ -279,24 +280,37 @@ def _load_workshop_value_lookup() -> Dict[Tuple[str, int], float]:
     # Prefer the derived materialized table because it contains the full workshop ladders
     # for the published core stats. The older flat table in kb/workshop/tables tops out at
     # low levels and silently causes the engine to fall back to raw level numbers.
-    with WORKSHOP_VALUES_DERIVED_PATH.open(newline='') as f:
-        reader = csv.reader(f)
-        header = next(reader)
-        pairs = []
+    header_to_ids_name = {
+        'Damage': 'Damage',
+        'Health': 'Health',
+        'HPregen': 'Health Regen',
+        'DefAbs': 'Defense Absolute',
+        'Damage / Meter': 'Damage / Meter',
+        'Lifesteal': 'Lifesteal',
+    }
+    with WORKSHOP_VALUES_DERIVED_PATH.open('r', encoding='utf-8', newline='') as f:
+        header = f.readline().rstrip('\r\n').split(',')
+        pairs: list[tuple[int, str]] = []
         for i in range(0, len(header), 2):
-            if i + 1 < len(header) and header[i+1]:
-                pairs.append((i, header[i+1]))
-        normalized = {'HPregen': 'Health Regen'}
-        for row in reader:
-            for i, col in pairs:
+            if i + 1 >= len(header):
+                continue
+            ids_name = header_to_ids_name.get(header[i + 1])
+            if ids_name:
+                pairs.append((i, ids_name))
+        for raw_line in f:
+            row = raw_line.rstrip('\r\n').split(',')
+            for i, ids_name in pairs:
                 if i + 1 >= len(row):
                     continue
+                raw_level = row[i]
+                raw_value = row[i + 1]
+                if not raw_level or not raw_value:
+                    continue
                 try:
-                    level = int(float(row[i]))
-                    value = float(row[i+1])
+                    level = int(float(raw_level))
+                    value = float(raw_value)
                 except (ValueError, TypeError):
                     continue
-                ids_name = normalized.get(col, col)
                 out[(ids_name, level)] = value
     # Keep the old direct table as a fallback only.
     if WORKSHOP_VALUES_PATH.exists():
@@ -397,7 +411,8 @@ def _load_bot_track_values() -> Dict[Tuple[str, str, int], float]:
 
 @lru_cache(maxsize=1)
 def _load_bot_lab_rules() -> Dict[str, Dict[str, float | str]]:
-    data = yaml.safe_load(BOT_LABS_SUMMARY_PATH.read_text(encoding='utf-8')) or {}
+    with BOT_LABS_SUMMARY_PATH.open('r', encoding='utf-8') as handle:
+        data = yaml.load(handle, Loader=_YAML_LOADER) or {}
     out: Dict[str, Dict[str, float | str]] = {}
     for key, payload in (data.get('bot_labs') or {}).items():
         out[key] = payload or {}

@@ -117,10 +117,30 @@ uw_contributor_overrides:
   Poison Swamp:
     Cooldown: uw_upgrade__poison_swamp__cooldown__seconds
 guardian_destination_overrides:
+  Attack:
+    Cooldown: [mechanic_param, guardian.attack.cooldown_seconds]
+    Percentage: [mechanic_param, guardian.attack.missing_health_damage_pct]
+    Targets: [mechanic_param, guardian.attack.targets_count]
+  Ally:
+    Cooldown: [mechanic_param, guardian.ally.cooldown_seconds]
+    Recovery Amount: [mechanic_param, guardian.ally.recovery_amount_pct]
+    Max Recovery: [mechanic_param, guardian.ally.max_recovery_multiplier]
+  Bounty:
+    Cooldown: [mechanic_param, guardian.bounty.cooldown_seconds]
+    Multiplier: [mechanic_param, guardian.bounty.coin_multiplier]
+    Targets: [mechanic_param, guardian.bounty.targets_count]
+  Fetch:
+    Cooldown: [mechanic_param, guardian.fetch.cooldown_seconds]
+    Find Chance: [mechanic_param, guardian.fetch.find_chance_pct]
+    Double Find Chance: [mechanic_param, guardian.fetch.double_find_chance_pct]
   Scout:
     Cooldown: [mechanic_param, guardian.scout.cooldown_seconds]
     Range Bonus: [mechanic_param, guardian.scout.range_bonus_multiplier]
     Duration: [mechanic_param, guardian.scout.duration_seconds]
+  Summon:
+    Cooldown: [mechanic_param, guardian.summon.cooldown_seconds]
+    Duration: [mechanic_param, guardian.summon.duration_seconds]
+    Cash Bonus: [mechanic_param, guardian.summon.cash_bonus_multiplier]
 vault_boolean_flags:
   demon mode automation: [account_flag, account_flag.demon_mode_automation]
   smart demon mode automation: [account_flag, account_flag.smart_demon_mode_automation]

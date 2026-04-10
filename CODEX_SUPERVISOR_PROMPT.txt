@@ -1,0 +1,20 @@
+Before continuing, run a strict self-audit against TowerSim_bible_v49.md and TowerSim_bible_v49_reconciliation_review.md.
+
+Report using these headings only:
+- Phase just completed
+- Files changed
+- Verification run
+- Acceptance result
+- Remaining blockers
+- Any scope drift risk
+- Any authority drift risk
+- Any stale governance/docs left behind
+- Any residue now safe to demote/delete
+- Next phase
+
+Rules:
+- do not claim completion without the required verification gates
+- do not widen scope into evaluator or optimiser work
+- do not leave stale governance text behind if repo truth materially changed
+- if a blocking contradiction remains, stop rather than continue
+- if work is only partial, say partial

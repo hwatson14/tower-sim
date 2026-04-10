@@ -492,8 +492,9 @@ def materialize_timing_family_baseline(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     materializer: FamilyBaselineMaterializer | None = None,
+    compiled_family_rows: tuple[BoundStatInputs, tuple[StatInput, ...]] | None = None,
 ) -> FamilyBaselineContributorMap:
-    bound, rows = compile_timing_family_rows(
+    bound, rows = compiled_family_rows or compile_timing_family_rows(
         account_state=account_state,
         family_id=family_id,
         preset_name=preset_name,
@@ -520,9 +521,10 @@ def compile_timing_family_rows(
     card_preset_name: str | None = None,
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
+    bound_stat_inputs: BoundStatInputs | None = None,
 ) -> tuple[BoundStatInputs, tuple[StatInput, ...]]:
     _validate_timing_family_request(family_id=family_id, scenario_config=scenario_config, perks_enabled=perks_enabled)
-    bound = compile_stat_inputs_with_identity(
+    bound = bound_stat_inputs or compile_stat_inputs_with_identity(
         account_state,
         preset_name=preset_name,
         state_mode=state_mode,
@@ -576,6 +578,8 @@ def resolve_timing_family_query(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
+    compiled_family_rows: tuple[BoundStatInputs, tuple[StatInput, ...]] | None = None,
+    copy_result: bool = True,
 ) -> QueryResponse:
     query_kernel = kernel or get_default_query_kernel()
     if kernel is not None:
@@ -592,11 +596,12 @@ def resolve_timing_family_query(
             module_preset_name=module_preset_name,
             perk_preset_name=perk_preset_name,
             materializer=query_kernel.materializer,
+            compiled_family_rows=compiled_family_rows,
         )
         return query_kernel.resolve_surfaces(baseline, requested_surface_ids=requested_surface_ids, trace_mode=trace_mode)
 
     planner = QEResolutionPlanner()
-    bound, rows = compile_timing_family_rows(
+    bound, rows = compiled_family_rows or compile_timing_family_rows(
         account_state=account_state,
         family_id=family_id,
         preset_name=preset_name,
@@ -614,6 +619,7 @@ def resolve_timing_family_query(
         family_id=family_id,
         requested_surface_ids=requested_surface_ids,
         trace_mode=trace_mode,
+        copy_result=copy_result,
     )
     return result.response
 
@@ -635,6 +641,8 @@ def resolve_timing_consumer_bundle(
     module_preset_name: str | None = None,
     perk_preset_name: str | None = None,
     kernel: StatQueryKernel | None = None,
+    compiled_family_rows: tuple[BoundStatInputs, tuple[StatInput, ...]] | None = None,
+    copy_result: bool = True,
 ) -> QueryResponse:
     resolved_bundle = resolve_consumer_bundle(
         consumer_id,
@@ -658,6 +666,8 @@ def resolve_timing_consumer_bundle(
         module_preset_name=module_preset_name,
         perk_preset_name=perk_preset_name,
         kernel=kernel,
+        compiled_family_rows=compiled_family_rows,
+        copy_result=copy_result,
     )
 
 

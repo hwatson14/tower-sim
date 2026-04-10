@@ -18,6 +18,29 @@ This file is the shared repo contract for coding agents.
 - Claude project instructions should import this file instead of duplicating it.
 - Do not maintain separate repo-level rule sets for different agents unless a tool-specific exception is truly required.
 
+## Active authority
+
+For the current TowerSim program:
+- `TowerSim_bible_v49.md` is the sole active product-and-scope authority.
+- Live repo code, tests, and generated artifacts are the implementation-reality authority.
+- `TowerSim_bible_v49_reconciliation_review.md` is a preservation and anti-regression companion only, not a second design authority.
+- Root governance docs may be stale and must not override the bible for current scope.
+
+If these sources conflict in a scope-changing way:
+- stop
+- state the conflict explicitly
+- treat it as a truth-sync problem
+- do not improvise a blended answer
+
+## Required repo-local skills
+
+For non-trivial TowerSim work:
+1. run `tower-authority-check` first
+2. use `tower-tranche-executor` for bounded implementation work
+3. use `tower-freeze-audit` before claiming completion, freeze, handoff, or merge readiness
+
+These skills are workflow machinery only. They must not replace the bible as product-and-scope authority or widen scope beyond the active TowerSim program.
+
 ## Current architecture
 
 The live package spine is:
@@ -48,8 +71,11 @@ Use these files as the execution-control stack when present:
 
 Rules:
 - Do not infer active scope from repo history, archived notes, or old worktrees when `ACTIVE_TRANCHE.md` exists.
+- The current scope is the v49 bible program only.
 - Do not treat archived branches, historical handoff packs, legacy documents, or worktrees as active instructions.
 - Do not broaden a request into architecture work, refactors, or file moves unless explicitly asked.
+- Do not widen into evaluator or optimiser delivery unless explicitly asked.
+- Do not create UI-local truth or a second active authority path.
 - Do not edit unrelated dirty files to "clean things up".
 - Do not add new top-level packages, registries, or orchestration layers unless explicitly approved.
 - Prefer the smallest viable diff in the existing owner surface.

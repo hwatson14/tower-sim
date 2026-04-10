@@ -46,6 +46,7 @@ _CONTRACT_PATHS = (
     _ROOT / 'kb' / 'global-rules' / 'contracts' / 'mechanic-params.yaml',
     _ROOT / 'kb' / 'global-rules' / 'contracts' / 'environment-params.yaml',
 )
+_YAML_LOADER = getattr(yaml, 'CSafeLoader', yaml.SafeLoader)
 
 
 def _state(destination_id: str) -> str:
@@ -865,7 +866,8 @@ def _load_tier_coin_bonus(tier_display_raw) -> float | None:
 def _load_bounded_resolution_metadata_cached() -> dict[str, dict[str, str]]:
     out: dict[str, dict[str, str]] = {}
     for path in _CONTRACT_PATHS:
-        data = yaml.safe_load(path.read_text(encoding='utf-8'))
+        with path.open('r', encoding='utf-8') as handle:
+            data = yaml.load(handle, Loader=_YAML_LOADER)
         for domain, entries in data['domains'].items():
             for entry in entries:
                 out[entry['id']] = {
@@ -1018,13 +1020,13 @@ class QEResolutionPlanner:
         )
         return self.resolve_bound_report_snapshot(bound_inputs)
 
-    def resolve_bound_report_snapshot(self, bound_inputs: BoundStatInputs) -> QEResolvedSnapshot:
+    def resolve_bound_report_snapshot(self, bound_inputs: BoundStatInputs, *, copy_result: bool = True) -> QEResolvedSnapshot:
         key = _snapshot_cache_key(bound_inputs)
         cached = self._snapshot_cache.get(key)
         if cached is None:
             cached = _build_report_snapshot(bound_inputs)
             self._snapshot_cache[key] = cached
-        return copy.deepcopy(cached)
+        return copy.deepcopy(cached) if copy_result else cached
 
     def resolve_family_query(
         self,
@@ -1078,6 +1080,7 @@ class QEResolutionPlanner:
         family_id: str,
         requested_surface_ids: Sequence[str],
         trace_mode: str = 'contributors',
+        copy_result: bool = True,
     ) -> QEFamilyQueryResult:
         normalized_requested = tuple(str(surface_id) for surface_id in requested_surface_ids)
         key = _snapshot_cache_key(bound_inputs) + (family_id, normalized_requested, str(trace_mode))
@@ -1090,7 +1093,7 @@ class QEResolutionPlanner:
                 trace_mode=trace_mode,
             )
             self._family_query_cache[key] = cached
-        return copy.deepcopy(cached)
+        return copy.deepcopy(cached) if copy_result else cached
 
     def resolve_declared_family_query(
         self,
@@ -1246,6 +1249,7 @@ class QEResolutionPlanner:
         family_id: str,
         requested_surface_ids: Sequence[str],
         trace_mode: str = 'contributors',
+        copy_result: bool = True,
     ) -> QEFamilyQueryResult:
         normalized_requested = tuple(str(surface_id) for surface_id in requested_surface_ids)
         key = (
@@ -1267,7 +1271,7 @@ class QEResolutionPlanner:
                 trace_mode=trace_mode,
             )
             self._family_query_cache[key] = cached
-        return copy.deepcopy(cached)
+        return copy.deepcopy(cached) if copy_result else cached
 
     def resolve_rows_declared_family_statbook(
         self,

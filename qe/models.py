@@ -186,6 +186,11 @@ class BoundStatInputs:
     stat_inputs: tuple[Any, ...]
 
 
+_ACCOUNT_SNAPSHOT_ID_CACHE: dict[int, str] = {}
+_LOADOUT_ID_CACHE: dict[tuple[object, ...], str] = {}
+_SCENARIO_ID_CACHE: dict[tuple[object, ...], str] = {}
+
+
 def bind_state_identity(
     account_state: AccountState,
     *,
@@ -209,51 +214,83 @@ def bind_state_identity(
     if not runtime_branch_id or not str(runtime_branch_id).strip():
         raise ValueError('runtime_branch_id must be a non-empty string.')
 
-    account_snapshot_id = _fingerprint_id(
-        'acct',
-        {
-            'labs': account_state.labs,
-            'workshop': account_state.workshop,
-            'workshop_enhancements': account_state.workshop_enhancements,
-            'ultimate_weapons': account_state.ultimate_weapons,
-            'uw_plus_tracks': account_state.uw_plus_tracks,
-            'relics': account_state.relics,
-            'vault': account_state.vault,
-            'bots': account_state.bots,
-            'bot_upgrades': account_state.bot_upgrades,
-            'guardians': account_state.guardians,
-            'player_meta': account_state.player_meta,
-            'theme_song_coin_multiplier': account_state.theme_song_coin_multiplier,
-            'cards_inventory': account_state.cards_inventory,
-            'card_slots_unlocked': account_state.card_slots_unlocked,
-            'module_system_state': account_state.module_system_state,
-            'modules_inventory': account_state.modules_inventory,
-            'raw_sections': account_state.raw_sections,
-        },
+    account_identity_key = id(account_state)
+    account_snapshot_id = _ACCOUNT_SNAPSHOT_ID_CACHE.get(account_identity_key)
+    if account_snapshot_id is None:
+        account_snapshot_id = _fingerprint_id(
+            'acct',
+            {
+                'labs': account_state.labs,
+                'workshop': account_state.workshop,
+                'workshop_enhancements': account_state.workshop_enhancements,
+                'ultimate_weapons': account_state.ultimate_weapons,
+                'uw_plus_tracks': account_state.uw_plus_tracks,
+                'relics': account_state.relics,
+                'vault': account_state.vault,
+                'bots': account_state.bots,
+                'bot_upgrades': account_state.bot_upgrades,
+                'guardians': account_state.guardians,
+                'player_meta': account_state.player_meta,
+                'theme_song_coin_multiplier': account_state.theme_song_coin_multiplier,
+                'cards_inventory': account_state.cards_inventory,
+                'card_slots_unlocked': account_state.card_slots_unlocked,
+                'module_system_state': account_state.module_system_state,
+                'modules_inventory': account_state.modules_inventory,
+                'raw_sections': account_state.raw_sections,
+            },
+        )
+        _ACCOUNT_SNAPSHOT_ID_CACHE[account_identity_key] = account_snapshot_id
+    canonical_perk_preset_name = sanitize_preset_name_for_canonical_output(
+        resolved_perk_preset,
+        namespace_class=resolved_perk_namespace_class,
+        fallback_preset_name=resolved_preset,
     )
-    loadout_id = _fingerprint_id(
-        'loadout',
-        {
-            'preset_name': resolved_preset,
-            'card_preset_name': resolved_card_preset,
-            'module_preset_name': resolved_module_preset,
-            'perk_preset_name': sanitize_preset_name_for_canonical_output(resolved_perk_preset, namespace_class=resolved_perk_namespace_class, fallback_preset_name=resolved_preset),
-            'equipped_cards': account_state.card_presets.get(resolved_card_preset),
-            'equipped_modules': _serialize_module_preset(account_state, resolved_module_preset),
-            'equipped_perks': _serialize_perk_preset(account_state, resolved_perk_preset, canonical_preset_name=resolved_preset),
-        },
+    loadout_cache_key = (
+        account_identity_key,
+        resolved_preset,
+        resolved_card_preset,
+        resolved_module_preset,
+        canonical_perk_preset_name,
     )
+    loadout_id = _LOADOUT_ID_CACHE.get(loadout_cache_key)
+    if loadout_id is None:
+        loadout_id = _fingerprint_id(
+            'loadout',
+            {
+                'preset_name': resolved_preset,
+                'card_preset_name': resolved_card_preset,
+                'module_preset_name': resolved_module_preset,
+                'perk_preset_name': canonical_perk_preset_name,
+                'equipped_cards': account_state.card_presets.get(resolved_card_preset),
+                'equipped_modules': _serialize_module_preset(account_state, resolved_module_preset),
+                'equipped_perks': _serialize_perk_preset(account_state, resolved_perk_preset, canonical_preset_name=resolved_preset),
+            },
+        )
+        _LOADOUT_ID_CACHE[loadout_cache_key] = loadout_id
     resolved_projection_state = scenario_projection_state or projection_state_for_mode(state_mode)
-    scenario_id = _fingerprint_id(
-        'scenario',
-        {
-            'state_mode': state_mode,
-            'perks_enabled': resolved_perks_enabled,
-            'scenario_runtime_inputs': None if scenario_runtime_inputs is None else scenario_runtime_inputs.to_debug_dict(),
-            'scenario_projection_state': resolved_projection_state.to_debug_dict(),
-            'scenario_context': dict(scenario_context or {}),
-        },
+    runtime_inputs_debug = None if scenario_runtime_inputs is None else scenario_runtime_inputs.to_debug_dict()
+    projection_debug = resolved_projection_state.to_debug_dict()
+    scenario_context_debug = dict(scenario_context or {})
+    scenario_cache_key = (
+        state_mode,
+        resolved_perks_enabled,
+        _stable_jsonish(runtime_inputs_debug),
+        _stable_jsonish(projection_debug),
+        _stable_jsonish(scenario_context_debug),
     )
+    scenario_id = _SCENARIO_ID_CACHE.get(scenario_cache_key)
+    if scenario_id is None:
+        scenario_id = _fingerprint_id(
+            'scenario',
+            {
+                'state_mode': state_mode,
+                'perks_enabled': resolved_perks_enabled,
+                'scenario_runtime_inputs': runtime_inputs_debug,
+                'scenario_projection_state': projection_debug,
+                'scenario_context': scenario_context_debug,
+            },
+        )
+        _SCENARIO_ID_CACHE[scenario_cache_key] = scenario_id
     return StateIdentityBinding(
         identity=StateIdentity(
             account_snapshot_id=account_snapshot_id,
@@ -265,6 +302,8 @@ def bind_state_identity(
         scenario_runtime_inputs=scenario_runtime_inputs,
         scenario_projection_state=resolved_projection_state,
     )
+
+
 
 
 def compile_stat_inputs_with_identity(
