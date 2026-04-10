@@ -25,6 +25,30 @@ root:
     status: active_candidate
     layer: root
 
+  AGENTS.md:
+    status: active_candidate
+    layer: root
+
+  BURNDOWN.yaml:
+    status: active_candidate
+    layer: root
+
+  RTK.md:
+    status: active_candidate
+    layer: root
+
+  CODEX_SUPERVISOR_PROMPT.txt:
+    status: active_candidate
+    layer: root
+
+  TowerSim_bible_v49.md:
+    status: active_candidate
+    layer: root
+
+  TowerSim_bible_v49_reconciliation_review.md:
+    status: active_candidate
+    layer: root
+
   REPO_INDEX.yaml:
     status: active_candidate
     layer: root

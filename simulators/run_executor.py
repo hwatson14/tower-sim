@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from functools import lru_cache
 from math import inf, isfinite
 from pathlib import Path
-from typing import Callable, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 from input.state_types import AccountState, ScenarioRuntimeInputs
 from qe.consumer_registry import load_consumer_bundle_definitions
@@ -19,6 +19,7 @@ from qe.kb_surfaces import (
 from simulators.contracts import (
     DirtyLedger,
     NormalizedCheckpointState,
+    PerkState,
     ProjectedRunState,
     RunResult,
     WaveCheckpoint,
@@ -137,6 +138,7 @@ class RunToMaxConfig:
     perks_enabled: bool = True
     state_mode: str = 'start_of_run'
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None
+    perk_timeline: tuple[dict[str, Any], ...] = ()
     max_ttk_seconds: float = 120.0
     incoming_damage_multiplier_override: float = 1.0
     plasma_cannon_resistance_multiplier: float = 1.0
@@ -175,6 +177,55 @@ def build_start_of_run_state(account_state: AccountState, *, preset_name: str, p
             'health_skip_counter': 0.0,
         },
         dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
+    )
+
+
+def _perk_counts_at_wave(perk_timeline: tuple[dict[str, Any], ...], wave: int) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in perk_timeline:
+        try:
+            row_wave = int((row or {}).get('wave') or 0)
+        except Exception:
+            row_wave = 0
+        if row_wave > int(wave):
+            continue
+        perk_name = str((row or {}).get('perk_taken') or (row or {}).get('perk_name') or '').strip()
+        if not perk_name:
+            continue
+        counts[perk_name] = counts.get(perk_name, 0) + 1
+    return counts
+
+
+def _advance_projected_perk_state(
+    projected_state: ProjectedRunState,
+    *,
+    target_display_wave: int,
+    perk_timeline: tuple[dict[str, Any], ...],
+) -> ProjectedRunState:
+    if not perk_timeline:
+        return projected_state
+    next_counts = _perk_counts_at_wave(perk_timeline, target_display_wave)
+    current_counts = dict(projected_state.perk_state.counts or {})
+    next_perk_state = PerkState(
+        wave=int(target_display_wave),
+        counts=next_counts,
+        dirty=next_counts != current_counts,
+    )
+    next_dirty = DirtyLedger(
+        progression_dirty=projected_state.dirty_ledger.progression_dirty,
+        qe_dirty=projected_state.dirty_ledger.qe_dirty or next_perk_state.dirty,
+        timing_dirty=projected_state.dirty_ledger.timing_dirty or next_perk_state.dirty,
+        geometry_dirty=projected_state.dirty_ledger.geometry_dirty,
+    )
+    return ProjectedRunState(
+        checkpoint=WaveCheckpoint(display_wave=int(target_display_wave)),
+        workshop_levels_current=dict(projected_state.workshop_levels_current),
+        perk_state=next_perk_state,
+        wave_progression_state=dict(projected_state.wave_progression_state),
+        free_upgrade_state=dict(projected_state.free_upgrade_state),
+        counters=dict(projected_state.counters),
+        dirty_ledger=next_dirty,
+        notes=projected_state.notes,
     )
 
 
@@ -275,6 +326,11 @@ def build_boss_wave_table_payload(
             current_projected_state,
             category_track_order=category_track_order,
             track_max_levels=track_max_levels,
+        )
+        current_projected_state = _advance_projected_perk_state(
+            current_projected_state,
+            target_display_wave=display_wave,
+            perk_timeline=config.perk_timeline,
         )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
         if current_projected_state.dirty_ledger.qe_dirty:
@@ -390,6 +446,7 @@ def build_boss_wave_table_payload(
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
+            'perk_timeline_owner': 'simulators.run_executor._advance_projected_perk_state',
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
@@ -454,6 +511,11 @@ def _run_to_max_static_build(
             attack_skip_pct=float(attack_skip_pct) / 100.0,
             health_skip_pct=float(health_skip_pct) / 100.0,
             policy=wave_policy,
+        )
+        current_projected_state = _advance_projected_perk_state(
+            current_projected_state,
+            target_display_wave=display_wave,
+            perk_timeline=config.perk_timeline,
         )
         wave_state = WaveProgressionState(
             display_wave=int(current_projected_state.wave_progression_state.get('display_wave', display_wave)),
@@ -558,6 +620,11 @@ def _run_to_max_progression_mutating(
             category_track_order=category_track_order,
             track_max_levels=track_max_levels,
         )
+        current_projected_state = _advance_projected_perk_state(
+            current_projected_state,
+            target_display_wave=display_wave,
+            perk_timeline=config.perk_timeline,
+        )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
         if current_projected_state.dirty_ledger.qe_dirty:
             current_snapshot, delta_fallback_used = _resolve_snapshot_for_projected_state(
@@ -610,6 +677,7 @@ def _run_to_max_progression_mutating(
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
+            'perk_timeline_owner': 'simulators.run_executor._advance_projected_perk_state',
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,
@@ -675,6 +743,11 @@ def _run_to_max_table_sweep(
             category_track_order=category_track_order,
             track_max_levels=track_max_levels,
         )
+        current_projected_state = _advance_projected_perk_state(
+            current_projected_state,
+            target_display_wave=display_wave,
+            perk_timeline=config.perk_timeline,
+        )
         changed_tracks = tuple(current_projected_state.counters.get('changed_workshop_tracks_last_step') or ())
         if current_projected_state.dirty_ledger.qe_dirty:
             current_snapshot, delta_fallback_used = _resolve_snapshot_for_projected_state(
@@ -730,6 +803,7 @@ def _run_to_max_table_sweep(
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
+            'perk_timeline_owner': 'simulators.run_executor._advance_projected_perk_state',
             'qe_resolution_count': qe_resolution_count,
             'timing_recompute_count': timing_recompute_count,
             'snapshot_reuse_count': snapshot_reuse_count,

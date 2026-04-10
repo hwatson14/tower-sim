@@ -34,8 +34,9 @@ def test_stats_dashboard_contract_and_panel_types():
     panel_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('panels') or [])]
     assert panel_pairs == [
         ('workshop', 'workshop_stat_table'),
-        ('derived', 'resolved_stat_section'),
-        ('ultimate_weapons', 'resolved_uw_section'),
+        ('ultimate_weapons', 'workshop_stat_table'),
+        ('bots', 'workshop_stat_table'),
+        ('guardians', 'workshop_stat_table'),
         ('modules', 'context_modules'),
     ]
     secondary_pairs = [(panel.get('panel_id'), panel.get('panel_type')) for panel in (payload.get('secondary_panels') or [])]
@@ -99,11 +100,12 @@ def test_stats_dashboard_publishes_contract_manifest_and_domain_acceptance_gate(
     assert panel_acceptance['workshop']['acceptance_state'] == 'active'
     assert panel_acceptance['workshop']['authority'] == 'qe_query_rows'
     assert panel_acceptance['workshop']['product_tier'] == 'primary'
-    assert panel_acceptance['derived']['acceptance_state'] == 'active'
-    assert panel_acceptance['derived']['authority'] == 'qe_query_rows'
-    assert panel_acceptance['derived']['product_tier'] == 'primary'
     assert panel_acceptance['ultimate_weapons']['acceptance_state'] == 'active'
     assert panel_acceptance['ultimate_weapons']['product_tier'] == 'primary'
+    assert panel_acceptance['bots']['acceptance_state'] == 'active'
+    assert panel_acceptance['bots']['product_tier'] == 'primary'
+    assert panel_acceptance['guardians']['acceptance_state'] == 'active'
+    assert panel_acceptance['guardians']['product_tier'] == 'primary'
     assert panel_acceptance['modules']['acceptance_state'] == 'active'
     assert panel_acceptance['modules']['product_tier'] == 'primary'
     assert panel_acceptance['offense_resolved']['acceptance_state'] == 'secondary'
@@ -117,7 +119,7 @@ def test_stats_dashboard_publishes_contract_manifest_and_domain_acceptance_gate(
     assert panel_acceptance['uw_stats_resolved']['acceptance_state'] == 'secondary'
 
 
-def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_missing_status():
+def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
     account_state = {
         'default_preset': 'Farming',
         'card_presets': {'Farming': []},
@@ -126,8 +128,13 @@ def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_miss
         'workshop_enhancement_tracks': {},
         'cards_inventory': {},
         'raw_sections': {},
-        'uw_tracks': {},
-        'ultimate_weapons': {},
+        'uw_tracks': {
+            'Golden Tower': [
+                {'track_name': 'Cooldown', 'level': 2, 'resolved_value': 180.0},
+                {'track_name': 'Duration', 'level': 3, 'resolved_value': 42.0},
+            ],
+        },
+        'ultimate_weapons': {'Golden Tower': {'unlocked': True}},
     }
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     payload = _build_stats_dashboard_payload(
@@ -138,13 +145,95 @@ def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_miss
         query_rows_start_of_run={
             'Farming': {
                 'rows': {
-                    'state::tower.damage': {
-                        'display_value': '123',
-                        'final_value': 123.0,
-                        'value_type': 'damage',
+                    'state::uw.golden_tower.cooldown_seconds': {
+                        'display_value': '180',
+                        'final_value': 180.0,
+                        'value_type': 'seconds',
                         'status': 'resolved',
-                        'contributors': [{'source_class': 'workshop', 'contributor_id': 'workshop.damage', 'value': 123.0}],
-                    }
+                        'contributors': [{'source_class': 'ultimate_weapons', 'value': 180.0}],
+                    },
+                    'state::uw.golden_tower.duration_seconds': {
+                        'display_value': '42',
+                        'final_value': 42.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'ultimate_weapons', 'value': 42.0}],
+                    },
+                }
+            }
+        },
+        query_rows_max_progression={
+            'Farming': {
+                'rows': {
+                    'state::uw.golden_tower.cooldown_seconds': {'display_value': '160', 'final_value': 160.0, 'value_type': 'seconds', 'status': 'resolved'},
+                    'state::uw.golden_tower.duration_seconds': {'display_value': '48', 'final_value': 48.0, 'value_type': 'seconds', 'status': 'resolved'},
+                }
+            }
+        },
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    uw_panel = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'ultimate_weapons'
+    )
+    sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
+    rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
+    assert rows_by_name['Cooldown']['workshop_level'] == '2'
+    assert rows_by_name['Cooldown']['start_of_run_value'] == '180'
+    assert rows_by_name['Cooldown']['max_progression_value'] == '160'
+    assert rows_by_name['Duration']['workshop_level'] == '3'
+    assert rows_by_name['Duration']['start_of_run_value'] == '42'
+
+
+def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_shape():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+        'bot_upgrade_tracks': {
+            'Golden Bot': [
+                {'track_name': 'Cooldown', 'level': 4, 'resolved_value': 80.0},
+            ],
+        },
+        'guardian_tracks': {
+            'Attack': [
+                {'track_name': 'Cooldown', 'level': 1, 'resolved_value': 120.0},
+            ],
+        },
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::bot.golden.cooldown_seconds': {
+                        'display_value': '80',
+                        'final_value': 80.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 80.0}],
+                    },
+                    'state::guardian.attack.cooldown_seconds': {
+                        'display_value': '120',
+                        'final_value': 120.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'guardians', 'value': 120.0}],
+                    },
                 }
             }
         },
@@ -155,80 +244,22 @@ def test_stats_dashboard_canonical_overview_panel_uses_qe_rows_and_explicit_miss
         selected_state_mode='start_of_run',
     )
 
-    derived = next(
+    bot_panel = next(
         panel for panel in payload['variants']['Farming']['start_of_run']
-        if panel.get('panel_id') == 'derived'
+        if panel.get('panel_id') == 'bots'
     )
-    assert derived.get('payload', {}).get('owner') == 'qe'
-    rows_by_label = {row.get('label'): row for row in (derived.get('payload', {}).get('rows') or [])}
-    assert rows_by_label['Damage']['display_value'] == '123'
-    assert rows_by_label['Damage']['start_of_run_value'] == '123'
-    assert rows_by_label['Damage']['max_progression_value'] == '—'
-    assert rows_by_label['Damage']['status'] == 'resolved'
-    assert rows_by_label['Attack Speed']['status'] == 'missing'
-    assert rows_by_label['Attack Speed']['display_value'] == '—'
-    assert rows_by_label['Attack Speed']['start_of_run_value'] == '—'
-    assert rows_by_label['Attack Speed']['max_progression_value'] == '—'
-
-
-def test_stats_dashboard_canonical_overview_panel_carries_both_state_modes():
-    account_state = {
-        'default_preset': 'Farming',
-        'card_presets': {'Farming': []},
-        'module_presets': {},
-        'workshop': {},
-        'workshop_enhancement_tracks': {},
-        'cards_inventory': {},
-        'raw_sections': {},
-        'uw_tracks': {},
-        'ultimate_weapons': {},
-    }
-    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
-    payload = _build_stats_dashboard_payload(
-        account_state_payload=account_state,
-        diagnostics={},
-        input_dashboard_payload=input_dashboard,
-        module_card_payloads={},
-        query_rows_start_of_run={
-            'Farming': {
-                'rows': {
-                    'state::tower.damage': {
-                        'display_value': '123',
-                        'final_value': 123.0,
-                        'value_type': 'damage',
-                        'status': 'resolved',
-                        'contributors': [{'source_class': 'workshop', 'contributor_id': 'workshop.damage', 'value': 123.0}],
-                    }
-                }
-            }
-        },
-        query_rows_max_progression={
-            'Farming': {
-                'rows': {
-                    'state::tower.damage': {
-                        'display_value': '456',
-                        'final_value': 456.0,
-                        'value_type': 'damage',
-                        'status': 'resolved',
-                        'contributors': [{'source_class': 'perk_effect', 'contributor_id': 'perk.damage', 'value': 456.0}],
-                    }
-                }
-            }
-        },
-        ep_compare_publishable={},
-        line_verification={},
-        selected_preset='Farming',
-        selected_state_mode='max_progression',
+    guardian_panel = next(
+        panel for panel in payload['variants']['Farming']['start_of_run']
+        if panel.get('panel_id') == 'guardians'
     )
-
-    derived = next(
-        panel for panel in payload['variants']['Farming']['max_progression']
-        if panel.get('panel_id') == 'derived'
-    )
-    rows_by_label = {row.get('label'): row for row in (derived.get('payload', {}).get('rows') or [])}
-    assert rows_by_label['Damage']['display_value'] == '456'
-    assert rows_by_label['Damage']['start_of_run_value'] == '123'
-    assert rows_by_label['Damage']['max_progression_value'] == '456'
+    bot_sections = {section.get('title'): section for section in (bot_panel.get('payload', {}).get('sections') or [])}
+    guardian_sections = {section.get('title'): section for section in (guardian_panel.get('payload', {}).get('sections') or [])}
+    bot_rows = {row.get('name'): row for row in (bot_sections['Golden'].get('rows') or [])}
+    guardian_rows = {row.get('name'): row for row in (guardian_sections['Attack'].get('rows') or [])}
+    assert bot_rows['Cooldown']['workshop_level'] == '4'
+    assert bot_rows['Cooldown']['start_of_run_value'] == '80'
+    assert guardian_rows['Cooldown']['workshop_level'] == '1'
+    assert guardian_rows['Cooldown']['start_of_run_value'] == '120'
 
 
 def test_stats_dashboard_resolved_sections_publish_offense_defense_and_utility_rows():
@@ -2170,8 +2201,8 @@ def test_stats_dashboard_workshop_enemy_attack_skip_keeps_enhancement_multiplica
         'Farming': {
             'rows': {
                 'state::tower.enemy_attack_level_skip_pct': {
-                    'display_value': '38.686%',
-                    'final_value': 38.686,
+                    'display_value': '33.35%',
+                    'final_value': 33.35,
                     'value_type': 'pct',
                     'contributors': [
                         {'source_class': 'workshop', 'contributor_id': 'workshop__tower__enemy_attack_level_skip__pct', 'value': 16.55},

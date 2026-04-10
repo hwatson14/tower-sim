@@ -734,6 +734,108 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     assert payload['diagnostics']['stop_on_failure'] is True
 
 
+def test_build_boss_wave_table_payload__projects_perk_timeline_into_wave_resolves(monkeypatch):
+    from input.loader import load_inputs
+    from input.runtime_state import build_runtime_state
+    from simulators.contracts import PerkState
+    import simulators.run_executor as run_executor_module
+    from simulators.run_executor import RunToMaxConfig, build_boss_wave_table_payload, build_start_of_run_state
+
+    class _FakeRow:
+        def __init__(self, value):
+            self.final_value = value
+
+    class _FakeSnapshot:
+        def __init__(self, wave):
+            from simulators.contracts import PerformanceMetrics, WaveCheckpoint
+            self.checkpoint = WaveCheckpoint(display_wave=wave)
+            self.resolved_statbook = type(
+                'StatBook',
+                (),
+                {
+                    'rows': {
+                        'state::tower.enemy_attack_level_skip_pct': _FakeRow(0.0),
+                        'state::tower.enemy_health_level_skip_pct': _FakeRow(0.0),
+                        'state::tower.free_attack_upgrade_chance_pct': _FakeRow(0.0),
+                        'state::tower.free_defense_upgrade_chance_pct': _FakeRow(0.0),
+                        'state::tower.free_utility_upgrade_chance_pct': _FakeRow(0.0),
+                        'state::wall.hp': _FakeRow(1000.0),
+                        'state::wall.regen': _FakeRow(10.0),
+                        'state::wall.fortification_multiplier': _FakeRow(1.0),
+                        'state::tower.defense_pct': _FakeRow(50.0),
+                        'state::tower.thorns_damage_pct': _FakeRow(10.0),
+                        'state::cards.plasma_cannon.effect_pct': _FakeRow(30.0),
+                    },
+                    'diagnostics': {'delta_fallback_used': False},
+                },
+            )()
+            self.scenario_context = {}
+            self.timing_context = type('Timing', (), {})()
+            self.geometry_context = {}
+            self.combat_runtime = type(
+                'Combat',
+                (),
+                {
+                    'orb_boss_hit_pct': 5.0,
+                    'orb_boss_hits_per_second': 5.0,
+                    'electron_hits_per_second': 5.0,
+                    'boss_contact_time_seconds': 1.0,
+                    'boss_hit_interval_seconds': 2.0,
+                    'effective_damage_reduction_pct': 90.0,
+                    'incoming_damage_multiplier': 1.0,
+                },
+            )()
+            self.metrics = PerformanceMetrics(row_resolution_ms=1.0, qe_resolution_count=1, timing_recompute_count=1)
+
+    bundle = load_inputs()
+    state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    projected = build_start_of_run_state(state, preset_name='Farming', perk_state=PerkState(wave=0, counts={}, dirty=False))
+
+    seen = []
+
+    def _resolver(normalized):
+        seen.append((normalized.checkpoint.display_wave, dict(normalized.projected_run_state.perk_state.counts or {})))
+        return _FakeSnapshot(normalized.checkpoint.display_wave)
+
+    monkeypatch.setattr(
+        run_executor_module,
+        '_simulate_boss_ttk',
+        lambda **kwargs: run_executor_module.BossTTKResult(ttk_seconds=5.0),
+    )
+    monkeypatch.setattr(
+        run_executor_module,
+        '_simulate_boss_damage_intake',
+        lambda **kwargs: run_executor_module.BossDamageIntakeResult(
+            survival_margin_hp=100.0,
+            total_damage_taken=0.0,
+            boss_hits_taken=1,
+        ),
+    )
+
+    payload = build_boss_wave_table_payload(
+        account_state=state,
+        initial_projected_state=projected,
+        config=RunToMaxConfig(
+            start_wave=10,
+            end_wave=20,
+            boss_wave_step=10,
+            tier_column='Tier 14',
+            perk_timeline=(
+                {'wave': 10, 'perk_taken': 'Perk A'},
+                {'wave': 20, 'perk_taken': 'Perk A'},
+                {'wave': 20, 'perk_taken': 'Perk B'},
+            ),
+        ),
+        row_resolver=_resolver,
+    )
+
+    assert payload['summary']['max_wave'] == 20
+    assert seen[0] == (0, {})
+    assert seen[1] == (10, {'Perk A': 1})
+    assert seen[2] == (20, {'Perk A': 2, 'Perk B': 1})
+    assert payload['diagnostics']['perk_timeline_owner'] == 'simulators.run_executor._advance_projected_perk_state'
+
+
 @pytest.mark.expensive
 def test_run_to_max__warm_path_benchmark_shape():
     from input.loader import load_inputs

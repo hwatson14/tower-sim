@@ -28,14 +28,7 @@ from qe.stat_input_compiler import (
     PERK_TARGET_DESTINATION_OVERRIDES,
     TRADE_OFF_BENEFIT_EFFECT_INDEXES,
     compile_stat_inputs,
-    load_card_base_value_display_map,
-    load_card_effect_display_names,
-    load_card_mastery_values,
-    load_perk_effects,
-    load_perk_entities,
-    load_perk_entity_rows,
     normalize_state_mode,
-    scaled_perk_value,
     SUPPORTED_STATE_MODES,
     state_mode_support,
 )
@@ -76,21 +69,13 @@ from qe.contracts import (
     sanitize_perk_presets_for_canonical_output,
     sanitize_preset_name_for_canonical_output,
 )
-from qe.publication import build_input_dashboard_qe_publications as qe_build_input_dashboard_qe_publications, publish_query_surfaces
+from qe.publication import publish_query_surfaces
 from qe.routing import QEResolutionPlanner, query_response_to_statbook, resolve_checkpoint_surfaces
 from qe.shared_runtime_context import get_default_qe_shared_runtime_context
-from qe.query_module_policy import build_module_card_payloads, load_module_substat_lookup
+from qe.query_module_policy import build_module_card_payloads
 from simulators.progression import resolve_run_stats_progression_bundle
 from simulators.contracts import SimulatorCheckpointState
-from simulators.perk_timeline_generator import (
-    PerkTimelinePolicy,
-    generate_timeline_from_policy,
-    perk_state_at_wave,
-)
-from simulators.snapshot_resolver import SimulatorSnapshotResolver
 from simulators.timing import compile_timing_family_rows, merge_scenario_publication_rows as merge_timing_scenario_publication_rows, resolve_timing_consumer_bundle
-from simulators.contracts import PerkState
-from simulators.run_executor import RunToMaxConfig, build_boss_wave_table_payload, build_start_of_run_state
 from input.state_types import ScenarioRuntimeInputs
 from qe.models import BoundStatInputs, bind_state_identity
 
@@ -104,6 +89,16 @@ def _safe_pct(n: int, d: int) -> float:
     return round((100.0 * n / d), 2) if d else 0.0
 
 
+def build_start_of_run_state(*args, **kwargs):
+    from simulators.run_executor import build_start_of_run_state as _impl
+    return _impl(*args, **kwargs)
+
+
+def build_boss_wave_table_payload(*args, **kwargs):
+    from simulators.run_executor import build_boss_wave_table_payload as _impl
+    return _impl(*args, **kwargs)
+
+
 def _build_input_dashboard_qe_publications(
     *,
     account_state,
@@ -112,6 +107,7 @@ def _build_input_dashboard_qe_publications(
     stat_inputs: list,
     preset_name: str,
 ) -> dict[str, object]:
+    from qe.publication import build_input_dashboard_qe_publications as qe_build_input_dashboard_qe_publications
     return qe_build_input_dashboard_qe_publications(
         account_state=account_state,
         compare_rows_by_preset=compare_rows_by_preset,
@@ -126,6 +122,14 @@ def _contract_json_payload(obj):
 
 
 def load_streamlit_reference_data(*, ids_path: Path, manual_inputs_path: Path | None) -> dict[str, object]:
+    from qe.query_module_policy import load_module_substat_lookup
+    from qe.stat_input_compiler import (
+        load_card_base_value_display_map,
+        load_card_effect_display_names,
+        load_card_mastery_values,
+        load_perk_effects,
+        load_perk_entities,
+    )
     bundle = load_inputs(ids_path=ids_path, manual_inputs_path=manual_inputs_path)
     perk_policy = bundle.perk_policy or {}
     manual_banned_names = set(_resolve_manual_banned_perks(perk_policy))
@@ -151,6 +155,7 @@ def compute_perk_max_effect_displays(
     standard_bonus_pct: float | None,
     tradeoff_bonus_pct: float | None,
 ) -> list[tuple[object, object]]:
+    from qe.stat_input_compiler import load_perk_effects, load_perk_entities, scaled_perk_value
     perk_entities = load_perk_entities()
     perk_effects = load_perk_effects()
     perk_meta = perk_entities.get(perk_id) or {}
@@ -185,12 +190,17 @@ def build_boss_wave_payload(
     stop_on_failure: bool,
     scenario_runtime_inputs: dict[str, float],
 ) -> dict[str, object]:
+    from simulators.contracts import PerkState
+    from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
+    from simulators.run_executor import RunToMaxConfig
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
     account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
+    perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
     initial_state = build_start_of_run_state(
         account_state,
         preset_name=preset_name,
-        perk_state=PerkState(wave=0, counts={}, dirty=False),
+        perk_state=PerkState(wave=0, counts=perk_state_at_wave(perk_timeline, 0), dirty=False),
     )
     config = RunToMaxConfig(
         execution_mode='table_sweep',
@@ -201,6 +211,7 @@ def build_boss_wave_payload(
         boss_wave_step=int(boss_wave_step),
         state_mode='start_of_run',
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+        perk_timeline=tuple(dict(row or {}) for row in perk_timeline),
     )
     boss_wave_run = build_boss_wave_table_payload(
         account_state=account_state,
@@ -220,6 +231,7 @@ def build_boss_wave_payload(
             'row_output_kind': 'boss_wave_table_rows',
             'summary_kind': 'max_wave_survivability',
             'checkpoint_mode': 'boss_wave_only',
+            'perk_timeline_mode': 'runtime_policy_projection',
         },
         'rows': rows,
         'summary': {
@@ -236,6 +248,8 @@ def build_boss_wave_payload(
         },
         'diagnostics': {
             'preset_name': preset_name,
+            'perk_timeline_rows': len(perk_timeline),
+            'perk_timeline_final_wave': int(perk_timeline_diag.get('final_wave') or 0),
             **execution_diagnostics,
         },
         'download': {
@@ -1218,48 +1232,50 @@ class RunStatsSession:
         _remove_run_stats_legacy_outputs(args.out)
         artifacts = self.build_run_stats_artifacts(args)
         diagnostics = artifacts['diagnostics']
-        js = _json_sanitize
+        contract_payload = normalize_contract_payload
+        sanitized_account_state = _sanitized_account_state_for_output(artifacts['account_state'], 'Farming')
+        module_card_payloads = build_module_card_payloads(artifacts['account_state'])
         write_start = perf_counter()
         (args.out / 'account_state.json').write_text(
-            json.dumps(js(_sanitized_account_state_for_output(artifacts['account_state'], 'Farming')), indent=2, default=str)
+            json.dumps(contract_payload(sanitized_account_state), indent=2, default=str)
         )
         (args.out / 'module_card_payloads.json').write_text(
-            json.dumps(js(build_module_card_payloads(artifacts['account_state'])), indent=2, default=str)
+            json.dumps(contract_payload(module_card_payloads), indent=2, default=str)
         )
         input_dashboard_payload = _build_input_dashboard_payload(
-            _sanitized_account_state_for_output(artifacts['account_state'], 'Farming'),
+            sanitized_account_state,
             diagnostics,
             qe_dashboard_publications={},
-            module_card_payloads=build_module_card_payloads(artifacts['account_state']),
+            module_card_payloads=module_card_payloads,
         )
         (args.out / 'input_dashboard.json').write_text(
-            json.dumps(js(input_dashboard_payload), indent=2, default=str)
+            json.dumps(contract_payload(input_dashboard_payload), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_plan']).write_text(
-            json.dumps(js({
+            json.dumps(contract_payload({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'start_of_run',
                 'presets': artifacts['state_query_plans']['start_of_run'],
             }), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_plan']).write_text(
-            json.dumps(js({
+            json.dumps(contract_payload({
                 'pipeline_kind': 'run_stats_bounded_query',
                 'state_mode': 'max_progression',
                 'presets': artifacts['state_query_plans']['max_progression'],
             }), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['start_of_run_rows']).write_text(
-            json.dumps(js(artifacts['start_books_by_preset']), indent=2, default=str)
+            json.dumps(contract_payload(artifacts['start_books_by_preset']), indent=2, default=str)
         )
         (args.out / _RUN_STATS_QUERY_OUTPUTS['max_progression_rows']).write_text(
-            json.dumps(js(artifacts['max_books_by_preset']), indent=2, default=str)
+            json.dumps(contract_payload(artifacts['max_books_by_preset']), indent=2, default=str)
         )
         stats_dashboard_payload = _build_stats_dashboard_payload(
-            account_state_payload=_sanitized_account_state_for_output(artifacts['account_state'], 'Farming'),
+            account_state_payload=sanitized_account_state,
             diagnostics=diagnostics,
             input_dashboard_payload=input_dashboard_payload,
-            module_card_payloads=build_module_card_payloads(artifacts['account_state']),
+            module_card_payloads=module_card_payloads,
             query_rows_start_of_run=artifacts['start_books_by_preset'],
             query_rows_max_progression=artifacts['max_books_by_preset'],
             ep_compare_publishable={},
@@ -1268,7 +1284,7 @@ class RunStatsSession:
             selected_state_mode='start_of_run',
         )
         (args.out / 'stats_dashboard.json').write_text(
-            json.dumps(js(stats_dashboard_payload), indent=2, default=str)
+            json.dumps(contract_payload(stats_dashboard_payload), indent=2, default=str)
         )
         diagnostics['output_contract'] = {
             'contract_kind': 'run_stats_bounded',
@@ -1282,9 +1298,13 @@ class RunStatsSession:
             'ui_payload_artifacts': ['input_dashboard.json', 'module_card_payloads.json', 'stats_dashboard.json'],
         }
         stable_run_stats_payload = _stable_run_stats_payload_for_commit(artifacts['run_stats_payload'])
-        (args.out / 'run_stats.json').write_text(json.dumps(js(stable_run_stats_payload), indent=2, default=str))
+        (args.out / 'run_stats.json').write_text(
+            json.dumps(contract_payload(stable_run_stats_payload), indent=2, default=str)
+        )
         diagnostics['timings_ms']['write_outputs_ms'] = _elapsed_ms(write_start)
-        (args.out / 'diagnostics.json').write_text(json.dumps(js(diagnostics), indent=2, default=str))
+        (args.out / 'diagnostics.json').write_text(
+            json.dumps(_json_sanitize(diagnostics), indent=2, default=str)
+        )
         return 0
 
 
@@ -2119,6 +2139,7 @@ def _default_verification_matrix_requests(base_request: PipelineRunRequest) -> t
 
 
 def resolve_fast_checkpoint(request: FastCheckpointRequest) -> FastCheckpointResult:
+    from simulators.snapshot_resolver import SimulatorSnapshotResolver
     if not request.requested_surface_ids:
         raise ValueError('requested_surface_ids must not be empty: fast checkpoint resolution requires at least one surface id.')
 

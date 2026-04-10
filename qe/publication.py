@@ -259,20 +259,28 @@ def _stats_dashboard_contract_manifest() -> dict[str, object]:
                 'notes': 'Counts toward current canonical visible-stat completion. Missingness and row status are QE-owned.',
             },
             {
-                'panel_id': 'derived',
-                'panel_role': 'canonical_stat_rows',
-                'authority': 'qe_query_rows',
-                'acceptance_state': 'active',
-                'product_tier': 'primary',
-                'notes': 'QE-owned canonical overview rows with explicit start/max visibility and row status semantics.',
-            },
-            {
                 'panel_id': 'ultimate_weapons',
                 'panel_role': 'operator_context',
                 'authority': 'publication_payload_from_input_and_qe',
                 'acceptance_state': 'active',
                 'product_tier': 'primary',
                 'notes': 'Operator-useful ultimate-weapon visibility belongs on the main Stats surface, but does not replace canonical QE row ownership.',
+            },
+            {
+                'panel_id': 'bots',
+                'panel_role': 'operator_context',
+                'authority': 'publication_payload_from_input_and_qe',
+                'acceptance_state': 'active',
+                'product_tier': 'primary',
+                'notes': 'Operator-useful bot visibility belongs on the main Stats surface, but does not replace canonical QE row ownership.',
+            },
+            {
+                'panel_id': 'guardians',
+                'panel_role': 'operator_context',
+                'authority': 'publication_payload_from_input_and_qe',
+                'acceptance_state': 'active',
+                'product_tier': 'primary',
+                'notes': 'Operator-useful guardian visibility belongs on the main Stats surface, but does not replace canonical QE row ownership.',
             },
             {
                 'panel_id': 'modules',
@@ -693,6 +701,237 @@ def _build_guardians_panel(account_state_payload: dict) -> tuple[dict[str, objec
     return ({'panel_id': 'guardians', 'panel_type': 'track_table', 'title': 'Guardians', 'payload': {'entity_key': 'guardian', 'column_headers': ['Unlock', 'Guardian', 'Track', 'Level', 'Value'], 'rows': rows}}, [])
 
 
+def _stats_reconciliation_status(*, start_row: dict[str, object], max_row: dict[str, object]) -> str:
+    status = str(start_row.get('status') or max_row.get('status') or 'missing')
+    if status == 'resolved':
+        return 'green'
+    if status == 'non_recon':
+        return 'red'
+    return 'amber'
+
+
+def _operator_workshop_row(
+    *,
+    name: str,
+    start_row: dict[str, object],
+    max_row: dict[str, object],
+    canonical_row_id: str,
+    metadata: dict[str, object] | None = None,
+) -> dict[str, object]:
+    meta = dict(metadata or {})
+    base_value = str(meta.get('base_value') or meta.get('resolved_value') or '—')
+    return {
+        'canonical_row_id': canonical_row_id,
+        'display_label': name,
+        'name': name,
+        'workshop_level': str(meta.get('level') or '—'),
+        'lab_effects': str(meta.get('lab') or '—'),
+        'relics': str(meta.get('relics') or '—'),
+        'base_subtotal': base_value,
+        'module_effects': str(meta.get('module') or '—'),
+        'card_effects': str(meta.get('card') or '—'),
+        'base_loadout_subtotal': str(meta.get('final') or '—'),
+        'enhancement_effects': str(meta.get('enhancement') or '—'),
+        'start_of_run_modifier_total': str(meta.get('modifier_total') or '—'),
+        'workshop_value': base_value,
+        'start_of_run_value': str(start_row.get('display_value') or meta.get('final') or '—'),
+        'other': str(meta.get('other') or '—'),
+        'max_workshop_modifier_total': str(meta.get('max_modifier_total') or '—'),
+        'max_workshop_value': str(meta.get('max_value') or '—'),
+        'max_workshop_resolved_value': str(meta.get('max_resolved_value') or '—'),
+        'perk_effects': str(meta.get('perk') or '—'),
+        'max_progression_value': str(max_row.get('display_value') or start_row.get('display_value') or meta.get('final') or '—'),
+        'reconciliation_status': _stats_reconciliation_status(start_row=start_row, max_row=max_row),
+        'reconciliation_cell_flags': {},
+    }
+
+
+def _reduce_prefixed_label(label: str, prefix: str) -> str:
+    if label.startswith(f'{prefix} '):
+        return label[len(prefix) + 1:]
+    return label
+
+
+def _build_stats_uw_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+    qe_dashboard_publications: dict[str, object] | None = None,
+) -> tuple[dict[str, object], list[dict[str, str]]]:
+    raw_panel, gaps = _build_uw_panel(account_state_payload, qe_dashboard_publications=qe_dashboard_publications)
+    row_index = {
+        f"{str(row.get('uw') or '').strip()}::{str(row.get('track') or '').strip()}": {
+            'level': str(row.get('stone_level') or ''),
+            'resolved_value': str(row.get('stone_value') or ''),
+            'lab': str(row.get('lab') or ''),
+            'module': str(row.get('module') or ''),
+            'perk': str(row.get('perk') or ''),
+            'final': str(row.get('final') or ''),
+            'other': str(row.get('uw_plus') or ''),
+        }
+        for row in ((raw_panel.get('payload') or {}).get('rows') or [])
+        if isinstance(row, dict)
+    }
+    uw_name_map = {
+        'chain_lightning': 'Chain Lightning',
+        'chain_thunder': 'Chain Thunder',
+        'chrono_field': 'Chrono Field',
+        'black_hole': 'Black Hole',
+        'golden_tower': 'Golden Tower',
+        'spotlight': 'Spotlight',
+    }
+    sections: dict[str, list[dict[str, object]]] = {}
+    for spec in _stats_surface_specs(stats_layout, 'uw_surfaces'):
+        surface_id = spec['surface_id']
+        parts = surface_id.split('.')
+        uw_key = parts[1] if len(parts) > 2 else ''
+        uw_name = uw_name_map.get(uw_key, spec['label'])
+        row_name = _reduce_prefixed_label(spec['label'], uw_name)
+        track_key = f'{uw_name}::{row_name}'
+        sections.setdefault(uw_name, []).append(
+            _operator_workshop_row(
+                name=row_name,
+                start_row=dict(rows_start.get(surface_id) or {}),
+                max_row=dict(rows_max.get(surface_id) or {}),
+                canonical_row_id=str(spec.get('canonical_row_id') or surface_id),
+                metadata=row_index.get(track_key) or {},
+            )
+        )
+    return ({
+        'panel_id': 'ultimate_weapons',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Ultimate Weapons',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'sections': [
+                {'section_id': f'uw::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
+    }, gaps)
+
+
+def _build_stats_track_operator_panel(
+    *,
+    panel_id: str,
+    title: str,
+    specs_key: str,
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+    track_rows: list[dict[str, object]],
+    entity_names_by_key: dict[str, str],
+) -> dict[str, object]:
+    row_index = {
+        f"{str(row.get('entity') or '').strip()}::{str(row.get('track') or '').strip()}": dict(row or {})
+        for row in track_rows
+    }
+    sections: dict[str, list[dict[str, object]]] = {}
+    for spec in _stats_surface_specs(stats_layout, specs_key):
+        surface_id = spec['surface_id']
+        parts = surface_id.split('.')
+        entity_key = parts[1] if len(parts) > 2 else ''
+        entity_name = entity_names_by_key.get(entity_key, spec['label'])
+        row_name = _reduce_prefixed_label(spec['label'], entity_name)
+        track_key = f'{entity_name}::{row_name}'
+        sections.setdefault(entity_name, []).append(
+            _operator_workshop_row(
+                name=row_name,
+                start_row=dict(rows_start.get(surface_id) or {}),
+                max_row=dict(rows_max.get(surface_id) or {}),
+                canonical_row_id=str(spec.get('canonical_row_id') or surface_id),
+                metadata=row_index.get(track_key) or {},
+            )
+        )
+    return {
+        'panel_id': panel_id,
+        'panel_type': 'workshop_stat_table',
+        'title': title,
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'sections': [
+                {'section_id': f'{panel_id}::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
+    }
+
+
+def _build_stats_bots_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+) -> dict[str, object]:
+    track_rows = []
+    for bot_name, tracks in (account_state_payload.get('bot_upgrade_tracks') or {}).items():
+        short_name = str(bot_name).replace(' Bot', '')
+        for track in tracks or []:
+            track_rows.append({
+                'entity': short_name,
+                'track': str(track.get('track_name') or ''),
+                'level': '' if track.get('level') is None else str(track.get('level')),
+                'resolved_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
+            })
+    return _build_stats_track_operator_panel(
+        panel_id='bots',
+        title='Bots',
+        specs_key='bot_surfaces',
+        rows_start=rows_start,
+        rows_max=rows_max,
+        stats_layout=stats_layout,
+        track_rows=track_rows,
+        entity_names_by_key={
+            'amplify': 'Amplify',
+            'flame': 'Flame',
+            'golden': 'Golden',
+            'thunder': 'Thunder',
+            'global': 'Bot',
+            'flame_bot': 'Flame',
+        },
+    )
+
+
+def _build_stats_guardians_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+) -> dict[str, object]:
+    track_rows = []
+    for guardian_name, tracks in (account_state_payload.get('guardian_tracks') or {}).items():
+        for track in tracks or []:
+            track_rows.append({
+                'entity': guardian_name,
+                'track': str(track.get('track_name') or ''),
+                'level': '' if track.get('level') is None else str(track.get('level')),
+                'resolved_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
+            })
+    return _build_stats_track_operator_panel(
+        panel_id='guardians',
+        title='Guardians',
+        specs_key='guardian_surfaces',
+        rows_start=rows_start,
+        rows_max=rows_max,
+        stats_layout=stats_layout,
+        track_rows=track_rows,
+        entity_names_by_key={
+            'attack': 'Attack',
+            'ally': 'Ally',
+            'bounty': 'Bounty',
+            'fetch': 'Fetch',
+            'scout': 'Scout',
+            'summon': 'Summon',
+        },
+    )
+
+
 def _build_themes_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
     value = account_state_payload.get('theme_song_coin_multiplier')
     return ({'panel_id': 'themes_and_songs', 'panel_type': 'simple_metric_panel', 'title': 'Themes and Songs', 'payload': {'metric_label': 'Coin Multiplier', 'metric_value': '' if value is None else str(value)}}, [])
@@ -889,7 +1128,6 @@ def build_stats_dashboard_payload(
         preset_opts = configured_preset_options
     if selected_preset not in preset_opts:
         selected_preset = preset_opts[0]
-    input_panels_by_id = {str(panel.get('panel_id')): dict(panel or {}) for panel in (input_dashboard_payload.get('panels') or []) if isinstance(panel, dict)}
     ep_compare = dict(ep_compare_publishable or {})
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
@@ -913,23 +1151,33 @@ def build_stats_dashboard_payload(
                 surface_specs=_stats_surface_specs,
             )
             primary_panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
+            uw_panel, uw_panel_gaps = _build_stats_uw_operator_panel(
+                account_state_payload=account_state_payload,
+                rows_start=rows_start,
+                rows_max=rows_max,
+                stats_layout=stats_layout,
+            )
+            if uw_panel:
+                primary_panels.append(uw_panel)
+                upstream_gaps.extend(uw_panel_gaps)
+            else:
+                upstream_gaps.append(_dashboard_gap('ultimate_weapons', 'stats_primary_surface_missing', 'ultimate weapon operator payload unavailable for Stats primary surface'))
             primary_panels.append(
-                _resolved_stat_section_panel(
-                    panel_id='derived',
-                    title='Canonical Overview',
+                _build_stats_bots_operator_panel(
+                    account_state_payload=account_state_payload,
                     rows_start=rows_start,
                     rows_max=rows_max,
-                    selected_state_mode=state_mode,
-                    ep_compare=ep_compare,
-                    surface_specs=_stats_surface_specs(stats_layout, 'overview_surfaces'),
+                    stats_layout=stats_layout,
                 )
             )
-            uw_panel = dict(input_panels_by_id.get('ultimate_weapons') or {})
-            if uw_panel:
-                uw_panel['panel_type'] = 'resolved_uw_section'
-                primary_panels.append(uw_panel)
-            else:
-                upstream_gaps.append(_dashboard_gap('ultimate_weapons', 'stats_primary_surface_missing', 'input_dashboard ultimate_weapons payload unavailable for Stats primary surface'))
+            primary_panels.append(
+                _build_stats_guardians_operator_panel(
+                    account_state_payload=account_state_payload,
+                    rows_start=rows_start,
+                    rows_max=rows_max,
+                    stats_layout=stats_layout,
+                )
+            )
             modules_panel, module_panel_gaps = _build_modules_panel(module_card_payloads or {}, preset_name)
             if modules_panel:
                 modules_panel['panel_type'] = 'context_modules'

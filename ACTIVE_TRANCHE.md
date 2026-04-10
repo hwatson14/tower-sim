@@ -106,16 +106,17 @@ This tranche is not about:
 
 1. COMPLETE: sync root governance to the v49 program and active authority order
 2. COMPLETE: prove the visible-stat contract is active in implementation and tests
-3. IN PROGRESS: recover the Stats product contract so canonical visibility is operator-useful in Streamlit rather than a resolved-section-heavy dump
-4. IN PROGRESS: recover Streamlit operational product usability so Boss Waves remains usable even when optional Stats/debug data is partial or absent
-5. BLOCKED BY RECOVERY: do not resume performance work until the Stats/Boss Waves recovery tranche closes truthfully
-6. TODO: demote or remove stale duplicate authority and residue after parity
+3. COMPLETE: recover the Stats product contract so canonical visibility is operator-useful in Streamlit rather than a resolved-section-heavy dump
+4. COMPLETE: recover Streamlit operational product usability so Boss Waves remains usable even when optional Stats/debug data is partial or absent
+5. COMPLETE: wire Boss Waves perk evolution through the sanctioned simulator path and revalidate the no-delta-fallback live path
+6. COMPLETE: clean the active repo-root control allowlist and remove stale zip-pack residue
+7. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
-1. The Stats product contract regressed away from the bible’s intended operator shape; Workshop/UW/modules must be restored as the primary Stats workflow before completion claims are honest.
-2. Optional Stats/debug rendering can still break the operational product surface, so P3 and P4 are not honestly complete until that isolation is repaired and verified.
-3. Performance remains open, but it is not the next blocker to work on until this recovery tranche is closed.
+1. Performance remains the only active blocker inside the current v49 program.
+2. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
+3. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
 ### Exit criteria
 
@@ -191,6 +192,10 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 1: **704.59 ms**
   - run 2: **487.24 ms**
   - run 3: **544.84 ms**
+- post-write-path-contract-normalization measured wall-clock runs on **2026-04-10**:
+  - run 1: **1011.11 ms**
+  - run 2: **1045.87 ms**
+  - run 3: **934.96 ms**
 - sanctioned Boss Waves payload benchmark (`build_boss_wave_payload`, Tier 14, wave 500, boss step 10, `stop_on_failure=false`) on **2026-04-10** after the explicit payload contract landed:
   - run 1: **2655.53 ms**
   - run 2: **1763.50 ms**
@@ -203,7 +208,7 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 1: **570.16 ms**
   - run 2: **95.76 ms**
   - run 3: **101.10 ms**
-- interpretation: sanctioned-path YAML/contract loading, import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, and compiler cold-path hardening improved the `run_stats` hot path materially. The bounded contract still writes dashboard artifacts, and the true fresh CLI path remains well above the preserved v49 target band even though repeated in-process session runs are materially faster. Boss Waves is now product-complete with stable payload summary, explicit execution diagnostics, and no delta fallback on the live path; its default `stop_on_failure=true` mode is directionally interactive on warm runs. The remaining blocker is still `run_stats`-path performance, whose measured cost is now concentrated in residual cold YAML/contract work and `compile_stat_inputs` startup cost rather than the earlier boss-wave delta-fallback bug.
+- interpretation: sanctioned-path YAML/contract loading, import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the `run_stats` hot path materially. The bounded contract still writes dashboard artifacts, and the true fresh CLI path has now moved to roughly **0.93s-1.05s**, but it remains well above the preserved v49 target band even though repeated in-process session runs are materially faster. Boss Waves is now product-complete with stable payload summary, explicit execution diagnostics, and no delta fallback on the live path; its default `stop_on_failure=true` mode is directionally interactive on warm runs. The remaining blocker is still `run_stats`-path performance, whose measured cost is now concentrated in residual cold YAML/contract work and `compile_stat_inputs` startup cost rather than the earlier boss-wave delta-fallback bug.
 
 ### Verification record
 

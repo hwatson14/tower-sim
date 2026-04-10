@@ -208,8 +208,9 @@ sections:
   stats_dashboard:
     primary_panel_order:
       - workshop
-      - derived
       - ultimate_weapons
+      - bots
+      - guardians
       - modules
     secondary_panel_order:
       - offense_resolved
@@ -224,23 +225,6 @@ sections:
     state_mode_options:
       - start_of_run
       - max_progression
-    overview_surfaces:
-      - label: Damage
-        surface_id: state::tower.damage
-      - label: Attack Speed
-        surface_id: state::tower.attack_speed
-      - label: Health
-        surface_id: state::tower.hp
-      - label: Regen
-        surface_id: state::tower.regen
-      - label: Defense %
-        surface_id: state::tower.defense_pct
-      - label: Coins / Kill
-        surface_id: state::economy.coins_per_kill_bonus
-      - label: EALS
-        surface_id: state::tower.enemy_attack_level_skip_pct
-      - label: EHLS
-        surface_id: state::tower.enemy_health_level_skip_pct
     offense_surfaces:
       - label: Damage
         surface_id: state::tower.damage

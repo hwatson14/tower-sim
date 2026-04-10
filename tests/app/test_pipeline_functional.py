@@ -220,7 +220,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
         lambda ids_path=None, manual_inputs_path=None: type(
             'Bundle',
             (),
-            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}},
+            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
         )(),
     )
     monkeypatch.setattr(pipeline_mod, 'build_runtime_state', lambda ids_raw, loadout_config=None, perk_config=None: {'ok': True})
@@ -284,6 +284,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert payload.get('artifact') == 'boss_wave_dashboard_payload'
     assert payload.get('schema_version') == 1
     assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
+    assert payload.get('contract', {}).get('perk_timeline_mode') == 'runtime_policy_projection'
     assert payload.get('download', {}).get('format') == 'csv'
     summary = payload.get('summary') or {}
     assert summary['max_wave'] == 20
@@ -298,6 +299,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
     assert diagnostics['execution_mode'] == 'table_sweep'
     assert diagnostics['stop_on_failure'] is True
+    assert diagnostics['perk_timeline_rows'] >= 0
     assert diagnostics['scenario_runtime_inputs']['orb_boss_hit_pct'] == 2.5
 
 
@@ -580,8 +582,10 @@ def test_run_stats_writes_stats_dashboard_artifact(run_stats_single_execution):
     assert stats_dashboard.get("artifact") == "stats_dashboard.json"
     assert stats_dashboard.get("schema_version") == 1
     panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("panels") or [])]
-    assert "modules_resolved" in panel_ids
-    assert "guardians_resolved" in panel_ids
+    secondary_panel_ids = [panel.get("panel_id") for panel in (stats_dashboard.get("secondary_panels") or [])]
+    assert panel_ids == ["workshop", "ultimate_weapons", "bots", "guardians", "modules"]
+    assert "modules_resolved" in secondary_panel_ids
+    assert "guardians_resolved" in secondary_panel_ids
 
 
 @pytest.mark.live

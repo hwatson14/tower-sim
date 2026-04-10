@@ -205,8 +205,9 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     panel_ids = [panel.get('panel_id') for panel in (payload.get('panels') or [])]
     assert panel_ids == [
         'workshop',
-        'derived',
         'ultimate_weapons',
+        'bots',
+        'guardians',
         'modules',
     ]
     secondary_panel_ids = [panel.get('panel_id') for panel in (payload.get('secondary_panels') or [])]
@@ -233,12 +234,16 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     start_workshop = next(panel for panel in start_panels if panel.get('panel_id') == 'workshop')
     max_workshop = next(panel for panel in max_panels if panel.get('panel_id') == 'workshop')
     start_uw = next(panel for panel in start_panels if panel.get('panel_id') == 'ultimate_weapons')
+    start_bots = next(panel for panel in start_panels if panel.get('panel_id') == 'bots')
+    start_guardians = next(panel for panel in start_panels if panel.get('panel_id') == 'guardians')
     start_modules = next(panel for panel in start_panels if panel.get('panel_id') == 'modules')
     assert start_workshop.get('payload', {}).get('sections')
     assert max_workshop.get('payload', {}).get('sections')
     assert any(section.get('title') == 'Derived' for section in (start_workshop.get('payload', {}).get('sections') or []))
     assert any(section.get('title') == 'Derived' for section in (max_workshop.get('payload', {}).get('sections') or []))
-    assert start_uw.get('payload', {}).get('rows') is not None
+    assert start_uw.get('payload', {}).get('sections')
+    assert start_bots.get('payload', {}).get('sections')
+    assert start_guardians.get('payload', {}).get('sections')
     assert 'slots' in (start_modules.get('payload') or {})
     assert any(panel.get('panel_id') == 'offense_resolved' for panel in start_secondary_panels)
 
