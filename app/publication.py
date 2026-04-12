@@ -141,6 +141,8 @@ def _build_stats_dashboard_payload(
     line_verification: dict[str, object] | None,
     selected_preset: str,
     selected_state_mode: str,
+    qe_dashboard_publications: dict[str, object] | None = None,
+    stat_inputs_payload: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     return qe_build_stats_dashboard_payload(
         account_state_payload=account_state_payload,
@@ -153,6 +155,8 @@ def _build_stats_dashboard_payload(
         line_verification=line_verification,
         selected_preset=selected_preset,
         selected_state_mode=selected_state_mode,
+        qe_dashboard_publications=qe_dashboard_publications,
+        stat_inputs_payload=stat_inputs_payload,
         annotate_display_fields=annotate_display_fields,
     )
 
@@ -235,6 +239,8 @@ def write_core_outputs(
         line_verification=line_verification,
         selected_preset=selected_preset,
         selected_state_mode=selected_state_mode,
+        qe_dashboard_publications=qe_dashboard_publications,
+        stat_inputs_payload=stat_inputs_payload,
     )
     artifacts = [
         ('diagnostics.json', diagnostics),

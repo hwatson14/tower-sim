@@ -10563,18 +10563,18 @@
       }
     },
     "diagnostics": {
-      "pipeline_kind": "run_stats_bounded_query",
-      "state_mode": "start_of_run",
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ],
       "family_ids": [
         "progression_start_of_run",
         "timing_scenario_probe",
         "timing_scenario_probe"
       ],
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ]
+      "resolved_surface_count": 284,
+      "contributor_row_count": 285
     }
   },
   "Tourney": {
@@ -20886,18 +20886,18 @@
       }
     },
     "diagnostics": {
-      "pipeline_kind": "run_stats_bounded_query",
-      "state_mode": "start_of_run",
+      "bundle_ids": [
+        "progression_core_stats",
+        "timing_core_cycle",
+        "timing_wave_duration"
+      ],
       "family_ids": [
         "progression_start_of_run",
         "timing_tournament_no_perks",
         "timing_tournament_no_perks"
       ],
-      "bundle_ids": [
-        "progression_core_stats",
-        "timing_core_cycle",
-        "timing_wave_duration"
-      ]
+      "resolved_surface_count": 284,
+      "contributor_row_count": 268
     }
   }
 }

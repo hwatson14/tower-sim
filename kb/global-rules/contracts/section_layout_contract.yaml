@@ -447,29 +447,68 @@ sections:
     uw_surfaces:
       - label: Chain Lightning Damage
         surface_id: state::uw.chain_lightning.damage_multiplier
-      - label: Chain Thunder Reduction
-        surface_id: state::uw.chain_thunder.reduction_pct
-      - label: Chrono Field Slow
-        surface_id: state::uw.chrono_field.slow_pct
+      - label: Chain Lightning Quantity
+        surface_id: state::uw.chain_lightning.quantity
+      - label: Chain Lightning Chance
+        surface_id: state::uw.chain_lightning.chance_pct
+      - label: Smart Missiles Damage
+        surface_id: state::uw.smart_missiles.damage_multiplier
+      - label: Smart Missiles Quantity
+        surface_id: state::uw.smart_missiles.quantity
+      - label: Smart Missiles Cooldown
+        surface_id: state::uw.smart_missiles.cooldown_seconds
+      - label: Death Wave Damage
+        surface_id: state::uw.death_wave.damage_multiplier
+      - label: Death Wave Quantity
+        surface_id: state::uw.death_wave.effect_wave_count
+      - label: Death Wave Cooldown
+        surface_id: state::uw.death_wave.cooldown_seconds
       - label: Chrono Field Duration
         surface_id: state::uw.chrono_field.duration_seconds
-      - label: Chrono Field Damage Reduction
-        surface_id: state::uw.chrono_field.damage_reduction_pct
-      - label: Spotlight Damage
-        surface_id: state::uw.spotlight.damage_multiplier
-      - label: Spotlight Quantity
-        surface_id: state::uw.spotlight.quantity
-      - label: Spotlight Angle
-        surface_id: state::uw.spotlight.angle_degrees
-      - label: Spotlight Range
-        surface_id: state::uw.spotlight.light_range
-      - label: Spotlight Coin Bonus
-        surface_id: state::uw.spotlight.coin_bonus_multiplier
-      - label: Black Hole Cooldown
-        surface_id: state::uw.black_hole.cooldown_seconds
-      - label: Black Hole Duration
-        surface_id: state::uw.black_hole.duration_seconds
-      - label: Golden Tower Cooldown
-        surface_id: state::uw.golden_tower.cooldown_seconds
+      - label: Chrono Field Speed Reduction
+        surface_id: state::uw.chrono_field.slow_pct
+      - label: Chrono Field Cooldown
+        surface_id: state::uw.chrono_field.cooldown_seconds
+      - label: Inner Land Mines Damage
+        surface_id: state::uw.inner_land_mines.damage
+      - label: Inner Land Mines Quantity
+        surface_id: state::uw.inner_land_mines.quantity
+      - label: Inner Land Mines Cooldown
+        surface_id: state::uw.inner_land_mines.cooldown_seconds
+      - label: Golden Tower Multiplier
+        surface_id: state::uw.golden_tower.bonus_multiplier
       - label: Golden Tower Duration
         surface_id: state::uw.golden_tower.duration_seconds
+      - label: Golden Tower Cooldown
+        surface_id: state::uw.golden_tower.cooldown_seconds
+      - label: Poison Swamp Damage
+        surface_id: state::uw.poison_swamp.damage_multiplier
+      - label: Poison Swamp Duration
+        surface_id: state::uw.poison_swamp.duration_seconds
+      - label: Poison Swamp Cooldown
+        surface_id: state::uw.poison_swamp.cooldown_seconds
+      - label: Black Hole Size
+        surface_id: state::uw.black_hole.size_m
+      - label: Black Hole Duration
+        surface_id: state::uw.black_hole.duration_seconds
+      - label: Black Hole Cooldown
+        surface_id: state::uw.black_hole.cooldown_seconds
+      - label: Spotlight Multiplier
+        surface_id: state::uw.spotlight.bonus_multiplier
+      - label: Spotlight Angle
+        surface_id: state::uw.spotlight.angle_degrees
+      - label: Spotlight Quantity
+        surface_id: state::uw.spotlight.count
+    uw_other_surfaces:
+      - section: Chain Lightning
+        label: Chain Thunder Damage Reduction
+        surface_id: state::uw.chain_thunder.reduction_pct
+      - section: Chrono Field
+        label: Damage Reduction
+        surface_id: state::uw.chrono_field.damage_reduction_pct
+      - section: Spotlight
+        label: Light Range
+        surface_id: state::uw.spotlight.light_range
+      - section: Spotlight
+        label: Coin Bonus
+        surface_id: state::uw.spotlight.coin_bonus_multiplier

@@ -655,6 +655,146 @@ def _build_uw_panel(account_state_payload: dict, qe_dashboard_publications: dict
     return ({'panel_id': 'ultimate_weapons', 'panel_type': 'uw_track_table', 'title': 'Ultimate Weapons', 'payload': {'column_headers': ['Unlock', 'UW', 'Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Perk', 'Final', 'UW+'], 'rows': rows}}, gaps)
 
 
+def _uw_track_surface_map() -> dict[str, dict[str, str]]:
+    return {
+        'Chain Lightning': {
+            'Damage': 'state::uw.chain_lightning.damage_multiplier',
+            'Quantity': 'state::uw.chain_lightning.quantity',
+            'Chance': 'state::uw.chain_lightning.chance_pct',
+        },
+        'Smart Missiles': {
+            'Damage': 'state::uw.smart_missiles.damage_multiplier',
+            'Quantity': 'state::uw.smart_missiles.quantity',
+            'Cooldown': 'state::uw.smart_missiles.cooldown_seconds',
+        },
+        'Death Wave': {
+            'Damage': 'state::uw.death_wave.damage_multiplier',
+            'Quantity': 'state::uw.death_wave.effect_wave_count',
+            'Cooldown': 'state::uw.death_wave.cooldown_seconds',
+        },
+        'Chrono Field': {
+            'Duration': 'state::uw.chrono_field.duration_seconds',
+            'Speed Reduction': 'state::uw.chrono_field.slow_pct',
+            'Cooldown': 'state::uw.chrono_field.cooldown_seconds',
+        },
+        'Inner Land Mines': {
+            'Damage': 'state::uw.inner_land_mines.damage',
+            'Quantity': 'state::uw.inner_land_mines.quantity',
+            'Cooldown': 'state::uw.inner_land_mines.cooldown_seconds',
+        },
+        'Golden Tower': {
+            'Multiplier': 'state::uw.golden_tower.bonus_multiplier',
+            'Duration': 'state::uw.golden_tower.duration_seconds',
+            'Cooldown': 'state::uw.golden_tower.cooldown_seconds',
+        },
+        'Poison Swamp': {
+            'Damage': 'state::uw.poison_swamp.damage_multiplier',
+            'Duration': 'state::uw.poison_swamp.duration_seconds',
+            'Cooldown': 'state::uw.poison_swamp.cooldown_seconds',
+        },
+        'Black Hole': {
+            'Size': 'state::uw.black_hole.size_m',
+            'Duration': 'state::uw.black_hole.duration_seconds',
+            'Cooldown': 'state::uw.black_hole.cooldown_seconds',
+        },
+        'Spotlight': {
+            'Multiplier': 'state::uw.spotlight.bonus_multiplier',
+            'Angle': 'state::uw.spotlight.angle_degrees',
+            'Quantity': 'state::uw.spotlight.count',
+        },
+    }
+
+
+def _uw_other_surface_specs(stats_layout: dict[str, object]) -> dict[str, list[dict[str, str]]]:
+    sections: dict[str, list[dict[str, str]]] = {}
+    for entry in (stats_layout.get('uw_other_surfaces') or []):
+        if not isinstance(entry, dict):
+            continue
+        section = str(entry.get('section') or '').strip()
+        label = str(entry.get('label') or '').strip()
+        surface_id = normalize_surface_id_to_contract(str(entry.get('surface_id') or '').strip())
+        if section and label and surface_id:
+            sections.setdefault(section, []).append({'label': label, 'surface_id': surface_id})
+    return sections
+
+
+def _format_named_other_entries(entries: list[tuple[str, object]]) -> str:
+    tokens: list[str] = []
+    for label, value in entries:
+        label_text = str(label or '').strip()
+        value_text = str(value or '').strip()
+        if not label_text and not value_text:
+            continue
+        tokens.append(f'{label_text} {value_text}'.strip())
+    return ' · '.join(tokens) if tokens else '—'
+
+
+def _format_uw_stat_input_value(*, destination_id: str, raw_value: object) -> str:
+    if raw_value in (None, ''):
+        return '—'
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return str(raw_value)
+    if destination_id.endswith('_pct'):
+        return f'{_dashboard_display_token(value)}%'
+    if destination_id.endswith('_multiplier') or destination_id.endswith('.damage'):
+        return f'x{_dashboard_display_token(value)}'
+    return _dashboard_display_token(value)
+
+
+def _build_uw_stat_input_maps(stat_inputs_payload: list[dict[str, object]] | None) -> tuple[dict[str, dict[str, list[str]]], dict[str, list[tuple[str, str]]]]:
+    primary_surface_ids = {
+        surface_id
+        for track_map in _uw_track_surface_map().values()
+        for surface_id in track_map.values()
+    }
+    surface_effects: dict[str, dict[str, list[str]]] = {}
+    section_other_entries: dict[str, list[tuple[str, str]]] = {}
+    explicit_other_sections = {
+        'state::uw.chain_lightning.max_enemy_damage_reduction_pct': 'Chain Lightning',
+        'state::uw.chrono_field.damage_reduction_pct': 'Chrono Field',
+        'state::uw.spotlight.coin_bonus_multiplier': 'Spotlight',
+        'state::uw.spotlight.light_range': 'Spotlight',
+    }
+    for row in (stat_inputs_payload or []):
+        if not isinstance(row, dict):
+            continue
+        raw_destination_id = str(row.get('destination_id') or '').strip()
+        destination_id = normalize_surface_id_to_contract(raw_destination_id)
+        if destination_id.startswith('uw.'):
+            destination_id = f'state::{destination_id}'
+        if not destination_id.startswith('state::uw.'):
+            continue
+        source_family = str(row.get('source_family') or '').strip().lower()
+        source_name = str(row.get('source_name') or '').strip()
+        value_text = _format_uw_stat_input_value(destination_id=destination_id, raw_value=row.get('value'))
+        if destination_id in primary_surface_ids:
+            effects = surface_effects.setdefault(destination_id, {'lab': [], 'module': [], 'perk': []})
+            if source_family == 'lab':
+                effects['lab'].append(value_text)
+            elif source_family.startswith('module'):
+                effects['module'].append(value_text)
+            elif source_family in {'perk', 'perks', 'perk_effect'}:
+                effects['perk'].append(value_text)
+            continue
+        section_name = explicit_other_sections.get(destination_id)
+        if not section_name:
+            continue
+        section_other_entries.setdefault(section_name, []).append(
+            (source_name or destination_id.split('.')[-1].replace('_', ' ').title(), value_text)
+        )
+    return surface_effects, section_other_entries
+
+
+def _uw_recon_status(*, start_value: str, max_value: str, other_value: str, perk_value: str) -> str:
+    if start_value not in {'', '—'} and max_value not in {'', '—'}:
+        return 'green'
+    if any(value not in {'', '—'} for value in (other_value, perk_value)):
+        return 'amber'
+    return 'amber'
+
+
 def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
     inventory_rows = []
     for card_name, card_payload in (account_state_payload.get('cards_inventory') or {}).items():
@@ -768,6 +908,21 @@ def _operator_table_columns(*, level_label: str, include_labs: bool, include_mod
     return columns
 
 
+def _uw_operator_table_columns() -> list[dict[str, str]]:
+    return [
+        {'key': 'name', 'label': 'Track'},
+        {'key': 'workshop_level', 'label': 'Stone Level'},
+        {'key': 'stone_value', 'label': 'Stone Value'},
+        {'key': 'lab_effects', 'label': 'Lab'},
+        {'key': 'module_effects', 'label': 'Module'},
+        {'key': 'start_of_run_value', 'label': 'Start of Run'},
+        {'key': 'perk_effects', 'label': 'Perk'},
+        {'key': 'max_progression_value', 'label': 'Max Progression'},
+        {'key': 'other', 'label': 'Other'},
+        {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
+    ]
+
+
 def _operator_panel_payload(
     *,
     panel_id: str,
@@ -804,63 +959,112 @@ def _reduce_prefixed_label(label: str, prefix: str) -> str:
 def _build_stats_uw_operator_panel(
     *,
     account_state_payload: dict[str, object],
+    input_dashboard_payload: dict[str, object],
     rows_start: dict[str, dict[str, object]],
     rows_max: dict[str, dict[str, object]],
     stats_layout: dict[str, object],
     qe_dashboard_publications: dict[str, object] | None = None,
+    uw_surface_effects: dict[str, dict[str, list[str]]] | None = None,
+    uw_section_other_entries: dict[str, list[tuple[str, str]]] | None = None,
 ) -> tuple[dict[str, object], list[dict[str, str]]]:
-    raw_panel, gaps = _build_uw_panel(account_state_payload, qe_dashboard_publications=qe_dashboard_publications)
+    gaps: list[dict[str, str]] = []
+    input_uw_panel = next(
+        (panel for panel in (input_dashboard_payload.get('panels') or []) if str((panel or {}).get('panel_id') or '') == 'ultimate_weapons'),
+        {},
+    )
+    input_rows = ((input_uw_panel.get('payload') or {}).get('rows') or [])
     row_index = {
-        f"{str(row.get('uw') or '').strip()}::{str(row.get('track') or '').strip()}": {
-            'level': str(row.get('stone_level') or ''),
-            'resolved_value': str(row.get('stone_value') or ''),
-            'lab': str(row.get('lab') or ''),
-            'module': str(row.get('module') or ''),
-            'perk': str(row.get('perk') or ''),
-            'final': str(row.get('final') or ''),
-            'other': str(row.get('uw_plus') or ''),
-        }
-        for row in ((raw_panel.get('payload') or {}).get('rows') or [])
+        f"{str(row.get('uw') or '').strip()}::{str(row.get('track') or '').strip()}": dict(row or {})
+        for row in input_rows
         if isinstance(row, dict)
     }
-    uw_name_map = {
-        'chain_lightning': 'Chain Lightning',
-        'chain_thunder': 'Chain Thunder',
-        'chrono_field': 'Chrono Field',
-        'black_hole': 'Black Hole',
-        'golden_tower': 'Golden Tower',
-        'spotlight': 'Spotlight',
-    }
+    track_surface_map = _uw_track_surface_map()
+    other_specs_by_section = _uw_other_surface_specs(stats_layout)
+    surface_effect_map = uw_surface_effects or {}
+    section_other_from_inputs = uw_section_other_entries or {}
     sections: dict[str, list[dict[str, object]]] = {}
-    for spec in _stats_surface_specs(stats_layout, 'uw_surfaces'):
-        surface_id = spec['surface_id']
-        parts = surface_id.split('.')
-        uw_key = parts[1] if len(parts) > 2 else ''
-        uw_name = uw_name_map.get(uw_key, spec['label'])
-        row_name = _reduce_prefixed_label(spec['label'], uw_name)
-        track_key = f'{uw_name}::{row_name}'
-        sections.setdefault(uw_name, []).append(
-            _operator_workshop_row(
-                name=row_name,
-                start_row=dict(rows_start.get(surface_id) or {}),
-                max_row=dict(rows_max.get(surface_id) or {}),
-                canonical_row_id=str(spec.get('canonical_row_id') or surface_id),
-                metadata=row_index.get(track_key) or {},
+    for uw_name, track_map in track_surface_map.items():
+        section_rows: list[dict[str, object]] = []
+        primary_other_entries = [
+            (
+                spec['label'],
+                (dict(rows_start.get(spec['surface_id']) or {}).get('display_value')
+                 or dict(rows_max.get(spec['surface_id']) or {}).get('display_value')
+                 or '—'),
             )
-        )
+            for spec in other_specs_by_section.get(uw_name, [])
+            if (
+                dict(rows_start.get(spec['surface_id']) or {}).get('display_value') not in (None, '')
+                or dict(rows_max.get(spec['surface_id']) or {}).get('display_value') not in (None, '')
+            )
+        ]
+        primary_other_entries.extend(section_other_from_inputs.get(uw_name, []))
+        first_row = True
+        for track_name, surface_id in track_map.items():
+            metadata = dict(row_index.get(f'{uw_name}::{track_name}') or {})
+            effect_map = surface_effect_map.get(surface_id) or {}
+            start_row = dict(rows_start.get(surface_id) or {})
+            max_row = dict(rows_max.get(surface_id) or {})
+            start_value = str(start_row.get('display_value') or metadata.get('final') or '—')
+            max_value = str(max_row.get('display_value') or metadata.get('final') or '—')
+            other_value = _format_named_other_entries(primary_other_entries) if first_row else '—'
+            perk_value = str(metadata.get('perk') or (' · '.join(effect_map.get('perk') or []) if (effect_map.get('perk') or []) else '—'))
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'workshop_level': str(metadata.get('stone_level') or '—'),
+                'stone_value': str(metadata.get('stone_value') or '—'),
+                'lab_effects': str(metadata.get('lab') or (' · '.join(effect_map.get('lab') or []) if (effect_map.get('lab') or []) else '—')),
+                'module_effects': str(metadata.get('module') or (' · '.join(effect_map.get('module') or []) if (effect_map.get('module') or []) else '—')),
+                'start_of_run_value': start_value,
+                'perk_effects': perk_value,
+                'max_progression_value': max_value,
+                'other': other_value,
+                'reconciliation_status': _uw_recon_status(
+                    start_value=start_value,
+                    max_value=max_value,
+                    other_value=other_value,
+                    perk_value=perk_value,
+                ),
+                'reconciliation_cell_flags': {},
+            })
+            first_row = False
+        plus_key = f'{uw_name}::'
+        for key, plus_payload in sorted((account_state_payload.get('uw_plus_tracks') or {}).items()):
+            if not str(key).startswith(plus_key):
+                continue
+            display_token = str((plus_payload or {}).get('display_token') or '—')
+            plus_name = str((plus_payload or {}).get('plus_track_name') or str(key).split('::', 1)[-1] or 'UW+')
+            section_rows.append({
+                'canonical_row_id': f'uw_plus::{uw_name}::{plus_name}',
+                'display_label': f'UW+ {plus_name}',
+                'name': f'UW+ {plus_name}',
+                'workshop_level': '—',
+                'stone_value': display_token,
+                'lab_effects': '—',
+                'module_effects': '—',
+                'start_of_run_value': '—',
+                'perk_effects': '—',
+                'max_progression_value': '—',
+                'other': '—',
+                'reconciliation_status': 'amber',
+                'reconciliation_cell_flags': {},
+            })
+        sections[uw_name] = section_rows
     return ({
         'panel_id': 'ultimate_weapons',
         'panel_type': 'workshop_stat_table',
         'title': 'Ultimate Weapons',
-        'payload': _operator_panel_payload(
-            panel_id='uw',
-            sections=sections,
-            level_label='Stone Level',
-            include_labs=True,
-            include_modules=True,
-            include_perks=True,
-            include_max_progression=True,
-        ),
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _uw_operator_table_columns(),
+            'sections': [
+                {'section_id': f'uw::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
     }, gaps)
 
 
@@ -1205,6 +1409,8 @@ def build_stats_dashboard_payload(
     line_verification: dict[str, object] | None,
     selected_preset: str,
     selected_state_mode: str,
+    qe_dashboard_publications: dict[str, object] | None = None,
+    stat_inputs_payload: list[dict[str, object]] | None = None,
     annotate_display_fields: Callable[[dict[str, object]], None] | None = None,
 ) -> dict[str, object]:
     stats_layout = dict(load_section_layout_contract().get('stats_dashboard') or {})
@@ -1222,6 +1428,7 @@ def build_stats_dashboard_payload(
     if selected_preset not in preset_opts:
         selected_preset = preset_opts[0]
     ep_compare = dict(ep_compare_publishable or {})
+    uw_surface_effects, uw_section_other_entries = _build_uw_stat_input_maps(stat_inputs_payload)
     upstream_gaps: list[dict[str, str]] = []
     variants: dict[str, dict[str, list[dict[str, object]]]] = {}
     secondary_variants: dict[str, dict[str, list[dict[str, object]]]] = {}
@@ -1246,9 +1453,13 @@ def build_stats_dashboard_payload(
             primary_panels.append({'panel_id': 'workshop', 'panel_type': 'workshop_stat_table', 'title': 'Workshop', 'payload': workshop_payload})
             uw_panel, uw_panel_gaps = _build_stats_uw_operator_panel(
                 account_state_payload=account_state_payload,
+                input_dashboard_payload=input_dashboard_payload,
                 rows_start=rows_start,
                 rows_max=rows_max,
                 stats_layout=stats_layout,
+                qe_dashboard_publications=qe_dashboard_publications,
+                uw_surface_effects=uw_surface_effects,
+                uw_section_other_entries=uw_section_other_entries,
             )
             if uw_panel:
                 primary_panels.append(uw_panel)

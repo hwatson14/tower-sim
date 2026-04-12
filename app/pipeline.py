@@ -981,6 +981,7 @@ class RunStatsSession:
         max_books_by_preset = {}
         state_query_plans = {'start_of_run': {}, 'max_progression': {}}
         pipeline_timings = {'presets': {}}
+        primary_stats_stat_inputs_payload = None
 
         for preset_name in preset_names:
             preset_state_timings: dict[str, dict] = {}
@@ -1014,6 +1015,8 @@ class RunStatsSession:
                     perk_preset_name=perk_preset_name,
                     perks_enabled=perks_enabled,
                 ))
+                if preset_name == 'Farming' and state_mode == 'start_of_run':
+                    primary_stats_stat_inputs_payload = [row.to_dict() for row in base_stat_inputs]
                 progression_bound = BoundStatInputs(
                     binding=bind_state_identity(
                         account_state,
@@ -1232,6 +1235,7 @@ class RunStatsSession:
             'run_stats_payload': run_stats_payload,
             'diagnostics': diagnostics,
             'account_state': account_state,
+            'stat_inputs': primary_stats_stat_inputs_payload or [],
             'start_books_by_preset': start_books_by_preset,
             'max_books_by_preset': max_books_by_preset,
             'state_query_plans': state_query_plans,
@@ -1289,6 +1293,8 @@ class RunStatsSession:
             module_card_payloads=module_card_payloads,
             query_rows_start_of_run=artifacts['start_books_by_preset'],
             query_rows_max_progression=artifacts['max_books_by_preset'],
+            qe_dashboard_publications=artifacts.get('qe_dashboard_publications'),
+            stat_inputs_payload=artifacts.get('stat_inputs'),
             ep_compare_publishable={},
             line_verification={},
             selected_preset='Farming',
