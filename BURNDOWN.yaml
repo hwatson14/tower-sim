@@ -1,11 +1,11 @@
 version: 1
-prepared: '2026-04-11'
+prepared: '2026-04-12'
 status:
   mode: v49_streamlit_product_completion
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: product_recovery_closed_performance_only_blocker_remains
+  overall_state: product_recovery_recertified_on_uploaded_baseline_performance_only_blocker_remains
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true

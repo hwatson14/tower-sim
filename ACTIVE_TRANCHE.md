@@ -37,7 +37,7 @@ The active program is now the v49 Streamlit-first product scope reset:
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
-- the latest full suite on the actual current worktree passed on **2026-04-11** (`390 passed`)
+- the latest full suite on the actual current uploaded baseline passed on **2026-04-12** (`390 passed`)
 - formula surface policy remains active
 - the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
@@ -100,7 +100,7 @@ This tranche is not about:
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. after the 2026-04-11 corrective recovery tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-12 corrective recovery recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -218,6 +218,21 @@ The v49 current-stage program is complete only when all of the following are tru
 
 - targeted tranche-alignment suite passed on **2026-04-07** (`104 passed`)
 - refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
+- corrective recovery tranche targeted suites passed on **2026-04-12**, including:
+  - `tests/app/test_stats_dashboard_contract.py`
+  - `tests/app/test_pipeline_functional.py`
+  - `tests/app/test_pipeline_ui_contracts.py`
+  - `tests/qe/test_generic_perk_multiplier_resolution.py`
+  - `tests/qe/test_routing_checkpoint_consumer_bundle.py`
+  - `tests/simulators/test_run_executor.py`
+  - `tests/shared/test_import_boundaries.py`
+- `python -m app.run_stats` completed successfully on **2026-04-12**
+- UI-level Streamlit harness verification passed on **2026-04-12** with:
+  - primary Stats surface labels `Workshop`, `Ultimate Weapons`, `Bots`, `Guardians`, `Modules`
+  - no `Canonical Overview` on the main Stats workflow
+  - Boss Waves runtime-basis caption present
+  - sanctioned Boss Waves run showing `Max surviving wave = 130`, `First failed wave = 140`, `Rows = 14`
+- refreshed full suite passed on **2026-04-12** (`390 passed`)
 - corrected-recovery tranche targeted suites passed on **2026-04-11**:
   - `pytest -q tests/app/test_stats_dashboard_contract.py` -> `43 passed`
   - `pytest -q tests/app/test_pipeline_functional.py` -> `29 passed`
