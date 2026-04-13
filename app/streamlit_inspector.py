@@ -49,6 +49,7 @@ from app.display import (
     render_cards_inventory_and_preset_html,
     render_gap_notice_html,
     render_grouped_enhancement_table_html,
+    render_grouped_modules_html,
     render_grouped_workshop_table_html,
     render_labs_bucket_grid_html,
     render_module_card_html,
@@ -1338,7 +1339,11 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
         st.markdown(INPUT_DASHBOARD_CSS, unsafe_allow_html=True)
         preset_options = [str(name) for name in (dashboard.get('preset_options') or ['Farming'])]
         default_preset = str(dashboard.get('selected_preset') or preset_options[0])
-        selected_preset = default_preset if default_preset in preset_options else preset_options[0]
+        requested_preset = str(request.preset or '').strip()
+        if requested_preset in preset_options:
+            selected_preset = requested_preset
+        else:
+            selected_preset = default_preset if default_preset in preset_options else preset_options[0]
         selected_state_mode = str(dashboard.get('selected_state_mode') or 'max_progression')
 
         variants = dashboard.get('variants') or {}
@@ -1370,6 +1375,9 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
                 if not slots:
                     st.markdown(render_gap_notice_html({'message': payload.get('message') or 'Module card payload unavailable.'}), unsafe_allow_html=True)
                     continue
+                grouped_modules_html = render_grouped_modules_html(payload)
+                if grouped_modules_html:
+                    st.markdown(grouped_modules_html, unsafe_allow_html=True)
                 st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
                 slot_columns = st.columns(4)
                 for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):
@@ -1415,6 +1423,9 @@ def _render_stats(active_artifacts, comparison_artifacts: list[tuple[str, object
                         if not slots:
                             st.markdown(render_gap_notice_html({'message': payload.get('message') or 'Module card payload unavailable.'}), unsafe_allow_html=True)
                             continue
+                        grouped_modules_html = render_grouped_modules_html(payload)
+                        if grouped_modules_html:
+                            st.markdown(grouped_modules_html, unsafe_allow_html=True)
                         st.markdown(MODULE_CARD_CSS, unsafe_allow_html=True)
                         slot_columns = st.columns(4)
                         for idx, slot in enumerate(['cannon', 'armor', 'generator', 'core']):

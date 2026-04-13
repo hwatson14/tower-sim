@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import csv
 import re
+from functools import lru_cache
+from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 from qe.contracts import compat_surface_from_legacy_canonical, load_section_layout_contract, normalize_surface_id_to_contract
@@ -21,9 +24,71 @@ from qe.workshop_stat_rows import (
 )
 from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
+_REPO_ROOT = Path(__file__).resolve().parents[1]
+_BOT_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'bots' / 'tables' / 'bot-upgrade-tracks-long.csv'
+_GUARDIAN_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'guardians' / 'tables' / 'guardian-track-registry.csv'
+_DASH = '—'
+_DISPLAY_REPLACEMENTS = {
+    'Ã¢â‚¬â€': _DASH,
+    'â€”': _DASH,
+    'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â': _DASH,
+    'Â·': ' · ',
+    'Ã‚Â·': ' · ',
+}
+
 
 def _sid(surface_id: str) -> str:
     return normalize_surface_id_to_contract(surface_id)
+
+
+def _normalize_display_text(value: object) -> str:
+    text = '' if value is None else str(value)
+    for bad, good in _DISPLAY_REPLACEMENTS.items():
+        text = text.replace(bad, good)
+    text = re.sub(r'\s*·\s*', ' · ', text).strip()
+    return text or _DASH
+
+
+def _normalize_identity(value: object) -> str:
+    return re.sub(r'[^a-z0-9]+', '_', str(value or '').strip().lower()).strip('_')
+
+
+@lru_cache(maxsize=1)
+def _load_bot_cumulative_costs() -> dict[tuple[str, str, int], float]:
+    costs: dict[tuple[str, str, int], float] = {}
+    with _BOT_TRACK_COSTS_PATH.open(encoding='utf-8', newline='') as handle:
+        for row in csv.DictReader(handle):
+            bot_name = _normalize_identity(row.get('bot_name'))
+            track_name = _normalize_identity(row.get('track_name'))
+            try:
+                level = int(float(row.get('level') or 0))
+                medal_cost = float(row.get('medal_cost') or 0.0)
+            except ValueError:
+                continue
+            costs[(bot_name, track_name, level)] = medal_cost
+    return costs
+
+
+@lru_cache(maxsize=1)
+def _load_guardian_cumulative_costs() -> dict[tuple[str, str, int], float]:
+    costs: dict[tuple[str, str, int], float] = {}
+    with _GUARDIAN_TRACK_COSTS_PATH.open(encoding='utf-8', newline='') as handle:
+        for row in csv.DictReader(handle):
+            guardian_name = _normalize_identity(row.get('guardian_name'))
+            track_name = _normalize_identity(row.get('track_attribute'))
+            try:
+                level = int(float(row.get('level') or 0))
+                bit_cost = float(row.get('cost_bits') or 0.0)
+            except ValueError:
+                continue
+            costs[(guardian_name, track_name, level)] = bit_cost
+    return costs
+
+
+def _format_cumulative_cost(value: float | None) -> str:
+    if value is None:
+        return _DASH
+    return str(int(value)) if float(value).is_integer() else f'{value:.2f}'.rstrip('0').rstrip('.')
 
 
 def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
@@ -787,12 +852,16 @@ def _build_uw_stat_input_maps(stat_inputs_payload: list[dict[str, object]] | Non
     return surface_effects, section_other_entries
 
 
-def _uw_recon_status(*, start_value: str, max_value: str, other_value: str, perk_value: str) -> str:
-    if start_value not in {'', '—'} and max_value not in {'', '—'}:
-        return 'green'
-    if any(value not in {'', '—'} for value in (other_value, perk_value)):
+def _uw_recon_status(*, start_row: dict[str, object], max_row: dict[str, object], stone_value: str) -> str:
+    # UW rows reconcile green only when the stone/base value is present and both
+    # sanctioned QE states resolve for the same visible row.
+    if _normalize_display_text(stone_value) == _DASH:
         return 'amber'
-    return 'amber'
+    if str(start_row.get('status') or '') != 'resolved':
+        return 'amber'
+    if str(max_row.get('status') or '') != 'resolved':
+        return 'amber'
+    return 'green'
 
 
 def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
@@ -827,14 +896,86 @@ def _build_simple_bonus_panel(panel_id: str, title: str, section_rows: list[list
     return {'panel_id': panel_id, 'panel_type': 'simple_bonus_table', 'title': title, 'payload': {'column_headers': ['Name', 'Bonus'], 'rows': rows}}
 
 
+def _extract_module_assist_pct(slot_payload: dict[str, object]) -> str:
+    assist_payload = dict(slot_payload.get('assist') or {})
+    detail = str(assist_payload.get('role_bar_detail_text') or '').strip()
+    match = re.search(r'Main\s+([0-9.]+)x', detail)
+    if not match:
+        return _DASH
+    try:
+        return f"{float(match.group(1)) * 100:.2f}".rstrip('0').rstrip('.') + '%'
+    except ValueError:
+        return _DASH
+
+
+def _module_slot_recon_status(slot_payload: dict[str, object]) -> str:
+    primary = dict(slot_payload.get('primary') or {})
+    assist = dict(slot_payload.get('assist') or {})
+    if not primary:
+        return 'amber'
+    required_primary_fields = (
+        primary.get('module_name'),
+        primary.get('rarity_text'),
+        primary.get('main_value_text'),
+        primary.get('main_label_text'),
+        primary.get('displayed_level_cap'),
+    )
+    if any(value in (None, '') for value in required_primary_fields):
+        return 'amber'
+    if assist and not assist.get('role_bar_detail_text'):
+        return 'amber'
+    return 'green'
+
+
+def _build_module_grouped_summary(slots: dict[str, object]) -> list[dict[str, object]]:
+    slot_order = ['cannon', 'armor', 'generator', 'core']
+
+    def _slot_value(slot: str, key: str, role: str = 'primary') -> str:
+        slot_payload = dict((slots.get(slot) or {}))
+        role_payload = dict(slot_payload.get(role) or {})
+        return _normalize_display_text(role_payload.get(key))
+
+    def _slot_module_name(slot: str, role: str) -> str:
+        slot_payload = dict((slots.get(slot) or {}))
+        role_payload = dict(slot_payload.get(role) or {})
+        return _normalize_display_text(role_payload.get('module_name'))
+
+    return [
+        {'group': '', 'label': 'Max Level', 'values': {slot: _slot_value(slot, 'displayed_level_cap') for slot in slot_order}},
+        {'group': '', 'label': 'Assist %', 'values': {slot: _extract_module_assist_pct(dict(slots.get(slot) or {})) for slot in slot_order}},
+        {'group': 'Primary', 'label': 'Module', 'values': {slot: _slot_module_name(slot, 'primary') for slot in slot_order}},
+        {'group': 'Primary', 'label': 'Rarity', 'values': {slot: _slot_value(slot, 'rarity_text') for slot in slot_order}},
+        {'group': 'Assist', 'label': 'Module', 'values': {slot: _slot_module_name(slot, 'assist') for slot in slot_order}},
+        {'group': 'Assist', 'label': 'Rarity', 'values': {slot: _slot_value(slot, 'rarity_text', 'assist') for slot in slot_order}},
+        {'group': 'Current', 'label': 'Multiplier', 'values': {slot: _slot_value(slot, 'main_value_text') for slot in slot_order}},
+        {'group': 'Current', 'label': 'Effect', 'values': {slot: _slot_value(slot, 'main_label_text') for slot in slot_order}},
+        {'group': 'Recon', 'label': 'Status', 'values': {slot: _module_slot_recon_status(dict(slots.get(slot) or {})) for slot in slot_order}},
+    ]
+
+
 def _build_modules_panel(module_card_payloads: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
     gaps: list[dict[str, str]] = []
     presets = module_card_payloads.get('presets') or {}
     preset_payload = presets.get(selected_preset)
     if not preset_payload:
         gaps.append(_dashboard_gap('modules', 'module_card_payloads_missing', 'module_card_payloads.json missing selected preset payload'))
-        return ({'panel_id': 'modules', 'panel_type': 'module_slot_stack', 'title': 'Modules', 'payload': {'selected_preset': selected_preset, 'slots': {}, 'message': 'Module card payload unavailable.'}}, gaps)
-    return ({'panel_id': 'modules', 'panel_type': 'module_slot_stack', 'title': 'Modules', 'payload': {'selected_preset': selected_preset, 'slots': preset_payload}}, gaps)
+        return ({
+            'panel_id': 'modules',
+            'panel_type': 'module_slot_stack',
+            'title': 'Modules',
+            'payload': {'selected_preset': selected_preset, 'slots': {}, 'summary_rows': [], 'slot_order': ['cannon', 'armor', 'generator', 'core'], 'message': 'Module card payload unavailable.'},
+        }, gaps)
+    return ({
+        'panel_id': 'modules',
+        'panel_type': 'module_slot_stack',
+        'title': 'Modules',
+        'payload': {
+            'selected_preset': selected_preset,
+            'slot_order': ['cannon', 'armor', 'generator', 'core'],
+            'summary_rows': _build_module_grouped_summary(preset_payload),
+            'slots': preset_payload,
+        },
+    }, gaps)
 
 
 def _build_guardians_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:
@@ -1018,6 +1159,7 @@ def _extract_bot_medal_spent(level_token: str) -> str:
 def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
     rows = (account_state_payload.get('raw_sections') or {}).get('Bots') or []
     index: dict[str, dict[str, str]] = {}
+    cumulative_costs = _load_guardian_cumulative_costs()
     current_bot = ''
     track_name_overrides = {
         'Damage R.': 'Damage Reduction',
@@ -1038,9 +1180,25 @@ def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) ->
         token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
         medal_level = token_parts[0] if token_parts else 'â€”'
         medal_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        try:
+            medal_level_value = int(medal_level)
+        except ValueError:
+            medal_level_value = None
+        track_cost_key = {
+            'Bonus': 'bonus_multiplier',
+            'Cooldown': 'cooldown_seconds',
+            'Duration': 'duration_seconds',
+            'Range': 'range_m',
+            'Damage': 'damage_multiplier',
+            'Damage Reduction': 'damage_reduction_pct',
+            'Linger': 'linger_slow_pct',
+        }.get(normalized_track_name, _normalize_identity(normalized_track_name))
+        medals_spent = _format_cumulative_cost(
+            cumulative_costs.get((_normalize_identity(f'{current_bot} Bot'), track_cost_key, int(medal_level_value or -1)))
+        ) if medal_level_value is not None else _DASH
         index[f'{current_bot}::{normalized_track_name}'] = {
             'medal_level': medal_level or 'â€”',
-            'medals_spent': _extract_bot_medal_spent(level_token),
+            'medals_spent': medals_spent,
             'medal_value': medal_value or 'â€”',
         }
     return index
@@ -1105,9 +1263,29 @@ def _build_guardian_track_metadata_index(account_state_payload: dict[str, object
         token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
         bit_level = token_parts[0] if token_parts else 'â€”'
         bit_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        try:
+            bit_level_value = int(bit_level)
+        except ValueError:
+            bit_level_value = None
+        track_cost_key = {
+            'Percentage': 'percentage',
+            'Cooldown': 'cooldown',
+            'Targets': 'targets',
+            'Recovery Amount': 'recovery_amount',
+            'Max Recovery': 'max_recovery',
+            'Multiplier': 'multiplier',
+            'Find Chance': 'find_chance',
+            'Double Find Chance': 'double_find_chance',
+            'Cash Bonus': 'cash_bonus',
+            'Range Bonus': 'range_bonus',
+            'Duration': 'duration',
+        }.get(track_name, _normalize_identity(track_name))
+        bits_spent = _format_cumulative_cost(
+            cumulative_costs.get((_normalize_identity(current_guardian), track_cost_key, int(bit_level_value or -1)))
+        ) if bit_level_value is not None else _DASH
         index[f'{current_guardian}::{track_name}'] = {
             'bit_level': bit_level or 'â€”',
-            'bits_spent': _extract_guardian_bits_spent(level_token),
+            'bits_spent': bits_spent,
             'bit_value': bit_value or 'â€”',
         }
     return index
@@ -1141,6 +1319,172 @@ def _bot_recon_status(*, start_row: dict[str, object], effective_row: dict[str, 
     ):
         return 'green'
     return 'amber'
+
+
+def _operator_workshop_row(
+    *,
+    name: str,
+    start_row: dict[str, object],
+    max_row: dict[str, object],
+    canonical_row_id: str,
+    metadata: dict[str, object] | None = None,
+) -> dict[str, object]:
+    meta = dict(metadata or {})
+    base_value = _normalize_display_text(meta.get('base_value') or meta.get('resolved_value') or _DASH)
+    return {
+        'canonical_row_id': canonical_row_id,
+        'display_label': name,
+        'name': name,
+        'workshop_level': _normalize_display_text(meta.get('level') or _DASH),
+        'lab_effects': _normalize_display_text(meta.get('lab') or _DASH),
+        'relics': _normalize_display_text(meta.get('relics') or _DASH),
+        'base_subtotal': base_value,
+        'module_effects': _normalize_display_text(meta.get('module') or _DASH),
+        'card_effects': _normalize_display_text(meta.get('card') or _DASH),
+        'base_loadout_subtotal': _normalize_display_text(meta.get('final') or _DASH),
+        'enhancement_effects': _normalize_display_text(meta.get('enhancement') or _DASH),
+        'start_of_run_modifier_total': _normalize_display_text(meta.get('modifier_total') or _DASH),
+        'workshop_value': base_value,
+        'start_of_run_value': _normalize_display_text(start_row.get('display_value') or meta.get('final') or _DASH),
+        'other': _normalize_display_text(meta.get('other') or _DASH),
+        'max_workshop_modifier_total': _normalize_display_text(meta.get('max_modifier_total') or _DASH),
+        'max_workshop_value': _normalize_display_text(meta.get('max_value') or _DASH),
+        'max_workshop_resolved_value': _normalize_display_text(meta.get('max_resolved_value') or _DASH),
+        'perk_effects': _normalize_display_text(meta.get('perk') or _DASH),
+        'max_progression_value': _normalize_display_text(max_row.get('display_value') or start_row.get('display_value') or meta.get('final') or _DASH),
+        'reconciliation_status': _stats_reconciliation_status(start_row=start_row, max_row=max_row),
+        'reconciliation_cell_flags': {},
+    }
+
+
+def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
+    rows = (account_state_payload.get('raw_sections') or {}).get('Bots') or []
+    index: dict[str, dict[str, str]] = {}
+    cumulative_costs = _load_bot_cumulative_costs()
+    current_bot = ''
+    track_name_overrides = {'Damage R.': 'Damage Reduction'}
+    track_cost_keys = {
+        'Bonus': 'bonus_multiplier',
+        'Cooldown': 'cooldown_seconds',
+        'Duration': 'duration_seconds',
+        'Range': 'range_meters',
+        'Damage': 'damage_multiplier',
+        'Damage Reduction': 'damage_reduction_pct',
+        'Linger': 'linger_slow_pct',
+    }
+    for row in rows:
+        if not isinstance(row, list):
+            continue
+        bot_name = str(row[0] if len(row) > 0 else '').strip()
+        if bot_name and bot_name.lower() not in {'true', 'false'}:
+            current_bot = bot_name.replace(' Bot', '')
+        if not current_bot:
+            continue
+        track_name = str(row[2] if len(row) > 2 else '').strip()
+        if not track_name:
+            continue
+        normalized_track_name = track_name_overrides.get(track_name, track_name)
+        level_token = str(row[4] if len(row) > 4 else '').strip()
+        token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
+        medal_level = token_parts[0] if token_parts else _DASH
+        medal_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or _DASH)
+        try:
+            medal_level_value = int(medal_level)
+        except ValueError:
+            medal_level_value = None
+        medals_spent = _format_cumulative_cost(
+            cumulative_costs.get((_normalize_identity(f'{current_bot} Bot'), track_cost_keys.get(normalized_track_name, _normalize_identity(normalized_track_name)), medal_level_value))
+        ) if medal_level_value is not None else _DASH
+        index[f'{current_bot}::{normalized_track_name}'] = {
+            'medal_level': _normalize_display_text(medal_level or _DASH),
+            'medals_spent': medals_spent,
+            'medal_value': _normalize_display_text(medal_value or _DASH),
+        }
+    return index
+
+
+def _build_guardian_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
+    rows = (account_state_payload.get('raw_sections') or {}).get('Guardians') or []
+    index: dict[str, dict[str, str]] = {}
+    cumulative_costs = _load_guardian_cumulative_costs()
+    current_guardian = ''
+    track_cost_keys = {
+        'Percentage': 'percentage',
+        'Cooldown': 'cooldown',
+        'Targets': 'targets',
+        'Recovery Amount': 'recovery_amount',
+        'Max Recovery': 'max_recovery',
+        'Multiplier': 'multiplier',
+        'Find Chance': 'find_chance',
+        'Double Find Chance': 'double_find_chance',
+        'Cash Bonus': 'cash_bonus',
+        'Range Bonus': 'range_bonus',
+        'Duration': 'duration',
+    }
+    for row in rows:
+        if not isinstance(row, list):
+            continue
+        guardian_name = str(row[0] if len(row) > 0 else '').strip()
+        if guardian_name and guardian_name.lower() not in {'true', 'false'}:
+            current_guardian = guardian_name
+        if not current_guardian:
+            continue
+        track_name = str(row[2] if len(row) > 2 else '').strip()
+        if not track_name:
+            continue
+        level_token = str(row[4] if len(row) > 4 else '').strip()
+        token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
+        bit_level = token_parts[0] if token_parts else _DASH
+        bit_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or _DASH)
+        try:
+            bit_level_value = int(bit_level)
+        except ValueError:
+            bit_level_value = None
+        bits_spent = _format_cumulative_cost(
+            cumulative_costs.get((_normalize_identity(current_guardian), track_cost_keys.get(track_name, _normalize_identity(track_name)), bit_level_value))
+        ) if bit_level_value is not None else _DASH
+        index[f'{current_guardian}::{track_name}'] = {
+            'bit_level': _normalize_display_text(bit_level or _DASH),
+            'bits_spent': bits_spent,
+            'bit_value': _normalize_display_text(bit_value or _DASH),
+        }
+    return index
+
+
+def _guardian_start_value(metadata_value: object, start_row: dict[str, object], *, surface_id: str, value_type: str) -> str:
+    return _normalize_display_text(_row_display_value(start_row, surface_id=surface_id, value_type=value_type) or metadata_value or _DASH)
+
+
+def _guardian_recon_status(*, start_row: dict[str, object], metadata: dict[str, str], start_value: str) -> str:
+    # Guardian rows reconcile green only when current-level bit metadata resolves and the
+    # sanctioned start_of_run row resolves for the same visible track.
+    if str(start_row.get('status') or '') != 'resolved':
+        return 'amber'
+    if _normalize_display_text(metadata.get('bit_level')) == _DASH or _normalize_display_text(metadata.get('bits_spent')) == _DASH:
+        return 'amber'
+    return 'green' if _normalize_display_text(start_value) != _DASH else 'amber'
+
+
+def _join_display_tokens(*values: str) -> str:
+    tokens: list[str] = []
+    for value in values:
+        text = _normalize_display_text(value)
+        if text == _DASH:
+            continue
+        tokens.append(text)
+    return ' · '.join(tokens) if tokens else _DASH
+
+
+def _bot_recon_status(*, start_row: dict[str, object], effective_row: dict[str, object], metadata: dict[str, str], requires_effective: bool) -> str:
+    # Bot rows reconcile green only when cumulative medal metadata resolves from KB,
+    # the start-state QE row resolves, and any published effective surface also resolves.
+    if _normalize_display_text(metadata.get('medal_level')) == _DASH or _normalize_display_text(metadata.get('medals_spent')) == _DASH:
+        return 'amber'
+    if str(start_row.get('status') or '') != 'resolved':
+        return 'amber'
+    if requires_effective and str(effective_row.get('status') or '') != 'resolved':
+        return 'amber'
+    return 'green'
 
 
 def _build_stats_uw_operator_panel(
@@ -1192,27 +1536,26 @@ def _build_stats_uw_operator_panel(
             effect_map = surface_effect_map.get(surface_id) or {}
             start_row = dict(rows_start.get(surface_id) or {})
             max_row = dict(rows_max.get(surface_id) or {})
-            start_value = str(start_row.get('display_value') or metadata.get('final') or '—')
-            max_value = str(max_row.get('display_value') or metadata.get('final') or '—')
-            other_value = _format_named_other_entries(primary_other_entries) if first_row else '—'
-            perk_value = str(metadata.get('perk') or (' · '.join(effect_map.get('perk') or []) if (effect_map.get('perk') or []) else '—'))
+            start_value = _normalize_display_text(start_row.get('display_value') or metadata.get('final') or _DASH)
+            max_value = _normalize_display_text(max_row.get('display_value') or metadata.get('final') or _DASH)
+            other_value = _format_named_other_entries(primary_other_entries) if first_row else _DASH
+            perk_value = _normalize_display_text(metadata.get('perk') or (' · '.join(effect_map.get('perk') or []) if (effect_map.get('perk') or []) else _DASH))
             section_rows.append({
                 'canonical_row_id': surface_id,
                 'display_label': track_name,
                 'name': track_name,
-                'workshop_level': str(metadata.get('stone_level') or '—'),
-                'stone_value': str(metadata.get('stone_value') or '—'),
-                'lab_effects': str(metadata.get('lab') or (' · '.join(effect_map.get('lab') or []) if (effect_map.get('lab') or []) else '—')),
-                'module_effects': str(metadata.get('module') or (' · '.join(effect_map.get('module') or []) if (effect_map.get('module') or []) else '—')),
+                'workshop_level': _normalize_display_text(metadata.get('stone_level') or _DASH),
+                'stone_value': _normalize_display_text(metadata.get('stone_value') or _DASH),
+                'lab_effects': _normalize_display_text(metadata.get('lab') or (' · '.join(effect_map.get('lab') or []) if (effect_map.get('lab') or []) else _DASH)),
+                'module_effects': _normalize_display_text(metadata.get('module') or (' · '.join(effect_map.get('module') or []) if (effect_map.get('module') or []) else _DASH)),
                 'start_of_run_value': start_value,
                 'perk_effects': perk_value,
                 'max_progression_value': max_value,
                 'other': other_value,
                 'reconciliation_status': _uw_recon_status(
-                    start_value=start_value,
-                    max_value=max_value,
-                    other_value=other_value,
-                    perk_value=perk_value,
+                    start_row=start_row,
+                    max_row=max_row,
+                    stone_value=metadata.get('stone_value') or _DASH,
                 ),
                 'reconciliation_cell_flags': {},
             })
@@ -1221,20 +1564,20 @@ def _build_stats_uw_operator_panel(
         for key, plus_payload in sorted((account_state_payload.get('uw_plus_tracks') or {}).items()):
             if not str(key).startswith(plus_key):
                 continue
-            display_token = str((plus_payload or {}).get('display_token') or '—')
+            display_token = _normalize_display_text((plus_payload or {}).get('display_token') or _DASH)
             plus_name = str((plus_payload or {}).get('plus_track_name') or str(key).split('::', 1)[-1] or 'UW+')
             section_rows.append({
                 'canonical_row_id': f'uw_plus::{uw_name}::{plus_name}',
                 'display_label': f'UW+ {plus_name}',
                 'name': f'UW+ {plus_name}',
-                'workshop_level': '—',
+                'workshop_level': _DASH,
                 'stone_value': display_token,
-                'lab_effects': '—',
-                'module_effects': '—',
-                'start_of_run_value': '—',
-                'perk_effects': '—',
-                'max_progression_value': '—',
-                'other': '—',
+                'lab_effects': _DASH,
+                'module_effects': _DASH,
+                'start_of_run_value': _DASH,
+                'perk_effects': _DASH,
+                'max_progression_value': _DASH,
+                'other': _DASH,
                 'reconciliation_status': 'amber',
                 'reconciliation_cell_flags': {},
             })
@@ -1445,6 +1788,270 @@ def _build_stats_guardians_operator_panel(
                 'bit_value': str(metadata.get('bit_value') or 'â€”'),
                 'start_of_run_value': start_value,
                 'reconciliation_status': _guardian_recon_status(start_value=start_value),
+                'reconciliation_cell_flags': {},
+            })
+        sections[guardian_name] = section_rows
+    return {
+        'panel_id': 'guardians',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Guardians',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _guardian_operator_table_columns(),
+            'sections': [
+                {'section_id': f'guardians::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
+    }
+
+
+def _build_stats_uw_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    input_dashboard_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+    qe_dashboard_publications: dict[str, object] | None = None,
+    uw_surface_effects: dict[str, dict[str, list[str]]] | None = None,
+    uw_section_other_entries: dict[str, list[tuple[str, str]]] | None = None,
+) -> tuple[dict[str, object], list[dict[str, str]]]:
+    del qe_dashboard_publications
+    gaps: list[dict[str, str]] = []
+    input_uw_panel = next(
+        (panel for panel in (input_dashboard_payload.get('panels') or []) if str((panel or {}).get('panel_id') or '') == 'ultimate_weapons'),
+        {},
+    )
+    input_rows = ((input_uw_panel.get('payload') or {}).get('rows') or [])
+    row_index = {
+        f"{str(row.get('uw') or '').strip()}::{str(row.get('track') or '').strip()}": dict(row or {})
+        for row in input_rows
+        if isinstance(row, dict)
+    }
+    track_surface_map = _uw_track_surface_map()
+    other_specs_by_section = _uw_other_surface_specs(stats_layout)
+    surface_effect_map = uw_surface_effects or {}
+    section_other_from_inputs = uw_section_other_entries or {}
+    sections: dict[str, list[dict[str, object]]] = {}
+    for uw_name, track_map in track_surface_map.items():
+        section_rows: list[dict[str, object]] = []
+        primary_other_entries = [
+            (
+                spec['label'],
+                _normalize_display_text(
+                    dict(rows_start.get(spec['surface_id']) or {}).get('display_value')
+                    or dict(rows_max.get(spec['surface_id']) or {}).get('display_value')
+                    or _DASH
+                ),
+            )
+            for spec in other_specs_by_section.get(uw_name, [])
+            if (
+                dict(rows_start.get(spec['surface_id']) or {}).get('display_value') not in (None, '')
+                or dict(rows_max.get(spec['surface_id']) or {}).get('display_value') not in (None, '')
+            )
+        ]
+        primary_other_entries.extend(section_other_from_inputs.get(uw_name, []))
+        first_row = True
+        for track_name, surface_id in track_map.items():
+            metadata = dict(row_index.get(f'{uw_name}::{track_name}') or {})
+            effect_map = surface_effect_map.get(surface_id) or {}
+            start_row = dict(rows_start.get(surface_id) or {})
+            max_row = dict(rows_max.get(surface_id) or {})
+            start_value = _normalize_display_text(start_row.get('display_value') or metadata.get('final') or _DASH)
+            max_value = _normalize_display_text(max_row.get('display_value') or metadata.get('final') or _DASH)
+            lab_value = metadata.get('lab') or (' · '.join(effect_map.get('lab') or []) if (effect_map.get('lab') or []) else None)
+            if not lab_value:
+                lab_value = _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('labs',),
+                    surface_value_type=str(start_row.get('value_type') or ''),
+                )
+            module_value = metadata.get('module') or (' · '.join(effect_map.get('module') or []) if (effect_map.get('module') or []) else None)
+            if not module_value:
+                module_value = _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('module_main', 'module_substat', 'module_unique'),
+                    surface_value_type=str(start_row.get('value_type') or ''),
+                )
+            perk_value = metadata.get('perk') or (' · '.join(effect_map.get('perk') or []) if (effect_map.get('perk') or []) else None)
+            if not perk_value:
+                perk_value = _format_effect_from_contributors(
+                    max_row or start_row,
+                    source_classes=('perk', 'perks', 'perk_effect'),
+                    surface_value_type=str((max_row or start_row).get('value_type') or ''),
+                )
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'workshop_level': _normalize_display_text(metadata.get('stone_level') or _DASH),
+                'stone_value': _normalize_display_text(metadata.get('stone_value') or _DASH),
+                'lab_effects': _normalize_display_text(lab_value or _DASH),
+                'module_effects': _normalize_display_text(module_value or _DASH),
+                'start_of_run_value': start_value,
+                'perk_effects': _normalize_display_text(perk_value or _DASH),
+                'max_progression_value': max_value,
+                'other': _format_named_other_entries(primary_other_entries) if first_row else _DASH,
+                'reconciliation_status': _uw_recon_status(
+                    start_row=start_row,
+                    max_row=max_row,
+                    stone_value=metadata.get('stone_value') or _DASH,
+                ),
+                'reconciliation_cell_flags': {},
+            })
+            first_row = False
+        plus_key = f'{uw_name}::'
+        for key, plus_payload in sorted((account_state_payload.get('uw_plus_tracks') or {}).items()):
+            if not str(key).startswith(plus_key):
+                continue
+            plus_name = str((plus_payload or {}).get('plus_track_name') or str(key).split('::', 1)[-1] or 'UW+')
+            section_rows.append({
+                'canonical_row_id': f'uw_plus::{uw_name}::{plus_name}',
+                'display_label': f'UW+ {plus_name}',
+                'name': f'UW+ {plus_name}',
+                'workshop_level': _DASH,
+                'stone_value': _normalize_display_text((plus_payload or {}).get('display_token') or _DASH),
+                'lab_effects': _DASH,
+                'module_effects': _DASH,
+                'start_of_run_value': _DASH,
+                'perk_effects': _DASH,
+                'max_progression_value': _DASH,
+                'other': _DASH,
+                'reconciliation_status': 'amber',
+                'reconciliation_cell_flags': {},
+            })
+        sections[uw_name] = section_rows
+    return ({
+        'panel_id': 'ultimate_weapons',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Ultimate Weapons',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _uw_operator_table_columns(),
+            'sections': [
+                {'section_id': f'uw::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
+    }, gaps)
+
+
+def _build_stats_bots_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+) -> dict[str, object]:
+    del rows_max, stats_layout
+    metadata_index = _build_bot_track_metadata_index(account_state_payload)
+    global_range_row = dict(rows_start.get('state::bot.global.range_bonus_m') or {})
+    global_range_value_type = str(global_range_row.get('value_type') or '')
+    sections: dict[str, list[dict[str, object]]] = {}
+    for bot_name, track_specs in _bot_track_surface_map().items():
+        section_rows: list[dict[str, object]] = []
+        for spec in track_specs:
+            track_name = spec['track']
+            surface_id = spec['surface_id']
+            effective_surface_id = spec['effective_surface_id']
+            metadata = metadata_index.get(f'{bot_name}::{track_name}') or {}
+            start_row = dict(rows_start.get(surface_id) or {})
+            effective_row = dict(rows_start.get(effective_surface_id) or {}) if effective_surface_id else {}
+            surface_value_type = str(start_row.get('value_type') or '')
+            module_value = _row_module_effect_display(start_row, surface_value_type=surface_value_type)
+            if track_name == 'Range':
+                module_value = _join_display_tokens(
+                    module_value,
+                    _format_effect_from_contributors(
+                        global_range_row,
+                        source_classes=('module_main', 'module_substat', 'module_unique'),
+                        surface_value_type=global_range_value_type,
+                    ),
+                )
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'medal_level': _normalize_display_text(metadata.get('medal_level') or _DASH),
+                'medals_spent': _normalize_display_text(metadata.get('medals_spent') or _DASH),
+                'medal_value': _normalize_display_text(metadata.get('medal_value') or _DASH),
+                'lab_effects': _normalize_display_text(
+                    _format_effect_from_contributors(
+                        start_row,
+                        source_classes=('labs',),
+                        surface_value_type=surface_value_type,
+                    )
+                ),
+                'module_effects': _normalize_display_text(module_value),
+                'start_of_run_value': _normalize_display_text(_row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or _DASH),
+                'effective_value': _normalize_display_text(effective_row.get('display_value') or _DASH),
+                'reconciliation_status': _bot_recon_status(
+                    start_row=start_row,
+                    effective_row=effective_row,
+                    metadata=metadata,
+                    requires_effective=bool(effective_surface_id),
+                ),
+                'reconciliation_cell_flags': {},
+            })
+        sections[bot_name] = section_rows
+    return {
+        'panel_id': 'bots',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Bots',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _bot_operator_table_columns(),
+            'sections': [
+                {'section_id': f'bots::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
+        },
+    }
+
+
+def _build_stats_guardians_operator_panel(
+    *,
+    account_state_payload: dict[str, object],
+    rows_start: dict[str, dict[str, object]],
+    rows_max: dict[str, dict[str, object]],
+    stats_layout: dict[str, object],
+) -> dict[str, object]:
+    del rows_max, stats_layout
+    metadata_index = _build_guardian_track_metadata_index(account_state_payload)
+    guardian_value_index = {
+        f"{guardian_name}::{str(track.get('track_name') or '').strip()}": dict(track or {})
+        for guardian_name, tracks in (account_state_payload.get('guardian_tracks') or {}).items()
+        for track in (tracks or [])
+    }
+    sections: dict[str, list[dict[str, object]]] = {}
+    for guardian_name, track_specs in _guardian_track_surface_map().items():
+        section_rows: list[dict[str, object]] = []
+        for spec in track_specs:
+            track_name = spec['track']
+            surface_id = spec['surface_id']
+            start_row = dict(rows_start.get(surface_id) or {})
+            metadata = metadata_index.get(f'{guardian_name}::{track_name}') or {}
+            guardian_snapshot = guardian_value_index.get(f'{guardian_name}::{track_name}') or {}
+            surface_value_type = str(start_row.get('value_type') or guardian_snapshot.get('resolved_unit') or '')
+            start_value = _guardian_start_value(
+                guardian_snapshot.get('resolved_value'),
+                start_row,
+                surface_id=surface_id,
+                value_type=surface_value_type,
+            )
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'bit_level': _normalize_display_text(metadata.get('bit_level') or _DASH),
+                'bits_spent': _normalize_display_text(metadata.get('bits_spent') or _DASH),
+                'bit_value': _normalize_display_text(metadata.get('bit_value') or _DASH),
+                'start_of_run_value': start_value,
+                'reconciliation_status': _guardian_recon_status(start_row=start_row, metadata=metadata, start_value=start_value),
                 'reconciliation_cell_flags': {},
             })
         sections[guardian_name] = section_rows

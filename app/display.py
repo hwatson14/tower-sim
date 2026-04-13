@@ -14,9 +14,44 @@ DISPLAY_SUFFIXES = [
     (1e3, 'k'),
 ]
 
+_DISPLAY_REPLACEMENTS = {
+    'Ã¢â‚¬â€': '—',
+    'â€”': '—',
+    'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â': '—',
+    'Â·': ' · ',
+    'Ã‚Â·': ' · ',
+    'Î”': 'Δ',
+}
+
+_NUMERIC_TOKEN_RE = re.compile(
+    r'^(?P<prefix>(?:x|\+|-|\+\s+|-\s+)?)'
+    r'(?P<number>\d+(?:\.\d+)?)'
+    r'(?P<suffix>%|x|s|m)?$',
+    flags=re.IGNORECASE,
+)
+
 
 def _trim_decimal_string(text: str) -> str:
     return text.rstrip('0').rstrip('.') if '.' in text else text
+
+
+def _normalize_display_text(value) -> str:
+    text = '' if value is None else str(value)
+    for bad, good in _DISPLAY_REPLACEMENTS.items():
+        text = text.replace(bad, good)
+    text = re.sub(r'\s*·\s*', ' · ', text).strip()
+    if not text:
+        return '—'
+    match = _NUMERIC_TOKEN_RE.match(text.replace(' ', ''))
+    if match:
+        prefix = match.group('prefix') or ''
+        number = float(match.group('number'))
+        suffix = match.group('suffix') or ''
+        number_text = str(int(number)) if number.is_integer() else _trim_decimal_string(f'{number:.2f}')
+        if prefix in {'+', '-'}:
+            return f'{prefix} {number_text}{suffix}'
+        return f'{prefix}{number_text}{suffix}'
+    return text
 
 
 def _format_display_number(value) -> str | None:
@@ -370,7 +405,7 @@ def render_simple_bonus_table_html(payload: dict) -> str:
 
 def render_simple_metric_panel_html(payload: dict) -> str:
     label = html.escape(str(payload.get('metric_label') or 'Metric'))
-    value = html.escape(str(payload.get('metric_value') or ''))
+    value = html.escape(_normalize_display_text(payload.get('metric_value') or ''))
     return f"<div class='inputs-panel'><h5>{label}</h5><div>{value}</div></div>"
 
 
@@ -378,7 +413,7 @@ def render_overview_metric_strip_html(payload: dict) -> str:
     tiles = []
     for metric in (payload.get('metrics') or []):
         label = html.escape(str((metric or {}).get('label') or ''))
-        value = html.escape(str((metric or {}).get('display_value') or '—'))
+        value = html.escape(_normalize_display_text((metric or {}).get('display_value') or '—'))
         tiles.append(f"<div class='inputs-panel'><h5>{label}</h5><div>{value}</div></div>")
     return f"<div class='inputs-grid'>{''.join(tiles)}</div>"
 
@@ -432,7 +467,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         value = row.get(key)
         if value is None or value == '':
             return '—'
-        text = str(value).strip()
+        text = _normalize_display_text(value)
         if text in neutral_effect_tokens:
             return '—'
         return text
@@ -539,6 +574,29 @@ def render_workshop_stat_table_html(payload: dict) -> str:
             cells = ''.join(cells)
             body_chunks.append(f"<tr>{cells}</tr>")
     return f"<div class='inputs-panel workshop-stats-wrap'><table class='workshop-stats-table'>{header_html}<tbody>{''.join(body_chunks)}</tbody></table></div>"
+
+
+def render_grouped_modules_html(payload: dict) -> str:
+    slots = [str(slot) for slot in (payload.get('slot_order') or ['cannon', 'armor', 'generator', 'core'])]
+    summary_rows = list(payload.get('summary_rows') or [])
+    if not summary_rows:
+        return ''
+    header_cells = ['<th></th>', '<th></th>']
+    header_cells.extend(f"<th>{html.escape(slot.title())}</th>" for slot in slots)
+    body_chunks: list[str] = []
+    for row in summary_rows:
+        group = html.escape(str((row or {}).get('group') or ''))
+        label = html.escape(str((row or {}).get('label') or ''))
+        values = dict((row or {}).get('values') or {})
+        cells = [f'<td>{group}</td>', f'<td>{label}</td>']
+        for slot in slots:
+            cells.append(f"<td>{html.escape(_normalize_display_text(values.get(slot)))}</td>")
+        body_chunks.append(f"<tr>{''.join(cells)}</tr>")
+    return (
+        "<div class='inputs-panel workshop-stats-wrap'>"
+        f"<table class='workshop-stats-table'><thead><tr>{''.join(header_cells)}</tr></thead>"
+        f"<tbody>{''.join(body_chunks)}</tbody></table></div>"
+    )
 
 
 def render_stats_uw_section_html(payload: dict) -> str:

@@ -245,6 +245,7 @@ def test_pipeline_writes_stats_dashboard_contract(canonical_pipeline_artifacts):
     assert start_bots.get('payload', {}).get('sections')
     assert start_guardians.get('payload', {}).get('sections')
     assert 'slots' in (start_modules.get('payload') or {})
+    assert (start_modules.get('payload') or {}).get('summary_rows')
     assert any(panel.get('panel_id') == 'offense_resolved' for panel in start_secondary_panels)
 
 
@@ -382,6 +383,8 @@ def test_stats_dashboard_production_render_demotes_secondary_panels_and_guards_d
     assert "Detailed QE rows and secondary context" in text
     assert "dashboard.get('secondary_panels')" in text
     assert "secondary_variants" in text
+    assert "requested_preset = str(request.preset or '').strip()" in text
+    assert "render_grouped_modules_html(payload)" in text
     assert "compare_df[['surface_id', 'ep_value', 'ep_value_raw', 'compare_preset', 'compare_perk_state', 'status', 'label']]" not in text
     assert "_render_stats_debug_tools(active_artifacts, comparison_artifacts, request)" in text
     assert "Stats debug tools unavailable for this snapshot" in text

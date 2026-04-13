@@ -239,7 +239,32 @@ def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_p
 def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
-    stat_inputs_payload = json.loads((ROOT / 'out' / 'stat_inputs.json').read_text(encoding='utf-8'))
+    stat_inputs_payload = [
+        {
+            'destination_id': 'state::uw.chain_lightning.damage_multiplier',
+            'source_family': 'module_unique',
+            'source_name': 'Dimension Core',
+            'value': 2.25,
+        },
+        {
+            'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct',
+            'source_family': 'module_unique',
+            'source_name': 'Chain Thunder',
+            'value': 22.0,
+        },
+        {
+            'destination_id': 'state::uw.golden_tower.duration_seconds',
+            'source_family': 'lab',
+            'source_name': 'Golden Tower Duration Lab',
+            'value': 20.0,
+        },
+        {
+            'destination_id': 'state::uw.black_hole.duration_seconds',
+            'source_family': 'module_unique',
+            'source_name': 'Multiverse Nexus',
+            'value': 4.0,
+        },
+    ]
     query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
     payload = _build_stats_dashboard_payload(
@@ -303,6 +328,38 @@ def test_stats_dashboard_primary_bot_operator_table_wires_medals_and_effective_r
     assert amplify_rows['Range']['effective_value'] == '77.14'
     assert golden_rows['Range']['start_of_run_value'] == '59'
     assert golden_rows['Range']['effective_value']
+
+
+def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    module_card_payloads = json.loads((ROOT / 'out' / 'module_card_payloads.json').read_text(encoding='utf-8'))
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads=module_card_payloads,
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    modules_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'modules')
+    summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
+    by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
+
+    assert modules_panel.get('panel_type') == 'context_modules'
+    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Assist %')]['armor'] == '1%'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
+    assert by_key[('Assist', 'Module')]['cannon'] == '—'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.014'
+    assert by_key[('Recon', 'Status')]['generator'] == 'green'
 
 
 def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_shape():

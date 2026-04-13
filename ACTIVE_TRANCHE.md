@@ -37,7 +37,7 @@ The active program is now the v49 Streamlit-first product scope reset:
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
-- the latest full suite on the actual current uploaded baseline passed on **2026-04-12** (`390 passed`)
+- the latest full suite on the actual current uploaded baseline passed on **2026-04-13** (`395 passed`)
 - formula surface policy remains active
 - the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
@@ -96,11 +96,11 @@ This tranche is not about:
 
 ### Snapshot facts being advanced
 
-1. the actual current worktree has a recent durable full-suite green baseline from **2026-04-07**
+1. the actual current worktree has a durable full-suite green baseline from **2026-04-13**
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. after the 2026-04-13 Boss Waves semantic/product recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-13 Stats/Boss Waves corrective recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -112,7 +112,8 @@ This tranche is not about:
 6. COMPLETE: clean the active repo-root control allowlist and remove stale zip-pack residue
 7. COMPLETE: recertify the repaired Streamlit product contract with targeted tests, full pytest, `app.run_stats`, and a UI-level Streamlit harness run
 8. COMPLETE: recertify the Boss Waves product surface so the main table is operator-facing, the raw row dump is demoted to debug, and the active DR/contact assumptions used by the solver are visible in the product surface
-9. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+9. COMPLETE: repair fresh-clone Stats contract truth, live preset/view-state wiring, grouped Modules layout, cumulative Bot/Guardian spend, mojibake normalization, and primary-surface reconciliation semantics
+10. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
@@ -217,7 +218,7 @@ The v49 current-stage program is complete only when all of the following are tru
 
 ### Verification record
 
-- targeted tranche-alignment suite passed on **2026-04-07** (`104 passed`)
+- targeted tranche-alignment suites passed on **2026-04-13** across Stats contract, pipeline functional, simulator, UI contract, and import-boundary coverage
 - refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
 - corrective recovery tranche targeted suites passed on **2026-04-12**, including:
   - `tests/app/test_stats_dashboard_contract.py`

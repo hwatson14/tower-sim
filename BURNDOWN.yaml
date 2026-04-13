@@ -5,11 +5,11 @@ status:
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: boss_waves_semantic_recertified_performance_only_blocker_remains
+  overall_state: repaired_product_contract_performance_only_blocker_remains
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_394
+    full_suite_latest_result: passed_395
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
   high_signal_result:
