@@ -26,7 +26,7 @@ from input.lab_category_registry import load_lab_category_registry_by_raw_name
 
 _REPO_ROOT = Path(__file__).resolve().parents[1]
 _BOT_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'bots' / 'tables' / 'bot-upgrade-tracks-long.csv'
-_GUARDIAN_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'guardians' / 'tables' / 'guardian-track-registry.csv'
+_GUARDIAN_TRACK_COSTS_PATH = _REPO_ROOT / 'kb' / 'guardians' / 'tables' / 'guardian-upgrades.csv'
 _DASH = '—'
 _DISPLAY_REPLACEMENTS = {
     'Ã¢â‚¬â€': _DASH,
@@ -35,6 +35,13 @@ _DISPLAY_REPLACEMENTS = {
     'Â·': ' · ',
     'Ã‚Â·': ' · ',
 }
+
+_NUMERIC_TOKEN_RE = re.compile(
+    r'^(?P<prefix>(?:x|\+|-|\+\s+|-\s+)?)'
+    r'(?P<number>\d+(?:\.\d+)?)'
+    r'(?P<suffix>%|x|s|m)?$',
+    flags=re.IGNORECASE,
+)
 
 
 def _sid(surface_id: str) -> str:
@@ -46,7 +53,18 @@ def _normalize_display_text(value: object) -> str:
     for bad, good in _DISPLAY_REPLACEMENTS.items():
         text = text.replace(bad, good)
     text = re.sub(r'\s*·\s*', ' · ', text).strip()
-    return text or _DASH
+    if not text:
+        return _DASH
+    match = _NUMERIC_TOKEN_RE.match(text.replace(' ', ''))
+    if match:
+        prefix = match.group('prefix') or ''
+        number = float(match.group('number'))
+        suffix = match.group('suffix') or ''
+        number_text = str(int(number)) if number.is_integer() else f'{number:.2f}'.rstrip('0').rstrip('.')
+        if prefix in {'+', '-'}:
+            return f'{prefix} {number_text}{suffix}'
+        return f'{prefix}{number_text}{suffix}'
+    return text
 
 
 def _normalize_identity(value: object) -> str:
@@ -74,11 +92,11 @@ def _load_guardian_cumulative_costs() -> dict[tuple[str, str, int], float]:
     costs: dict[tuple[str, str, int], float] = {}
     with _GUARDIAN_TRACK_COSTS_PATH.open(encoding='utf-8', newline='') as handle:
         for row in csv.DictReader(handle):
-            guardian_name = _normalize_identity(row.get('guardian_name'))
-            track_name = _normalize_identity(row.get('track_attribute'))
+            guardian_name = _normalize_identity(row.get('guardian_name') or row.get('guardian'))
+            track_name = _normalize_identity(row.get('track_attribute') or row.get('attribute'))
             try:
                 level = int(float(row.get('level') or 0))
-                bit_cost = float(row.get('cost_bits') or 0.0)
+                bit_cost = float(row.get('cost_bits') or row.get('cost') or 0.0)
             except ValueError:
                 continue
             costs[(guardian_name, track_name, level)] = bit_cost
@@ -864,6 +882,147 @@ def _uw_recon_status(*, start_row: dict[str, object], max_row: dict[str, object]
     return 'green'
 
 
+def _row_is_resolved(row: dict[str, object]) -> bool:
+    return str(row.get('status') or '').strip() == 'resolved'
+
+
+def _parse_display_number(text: object) -> tuple[float | None, str]:
+    normalized = _normalize_display_text(text)
+    if normalized == _DASH:
+        return None, ''
+    compact = normalized.replace(' ', '')
+    match = _NUMERIC_TOKEN_RE.match(compact)
+    if not match:
+        return None, ''
+    try:
+        value = float(match.group('number'))
+    except ValueError:
+        return None, ''
+    prefix = match.group('prefix') or ''
+    if prefix.startswith('-'):
+        value = -value
+    return value, (match.group('suffix') or '')
+
+
+def _surface_pct_scale_hint(surface_id: str) -> str:
+    if surface_id in {
+        'state::bot.flame.damage_reduction_pct',
+        'state::bot.thunder.linger_slow_pct',
+        'state::guardian.attack.missing_health_damage_pct',
+        'state::guardian.ally.recovery_amount_pct',
+        'state::guardian.fetch.find_chance_pct',
+        'state::guardian.fetch.double_find_chance_pct',
+    }:
+        return 'fraction_to_percent'
+    return 'direct'
+
+
+def _semantic_suffix_for_display(value_text: object, *, fallback_surface_id: str = '') -> str:
+    normalized = _normalize_display_text(value_text)
+    compact = normalized.replace(' ', '')
+    match = _NUMERIC_TOKEN_RE.match(compact)
+    if match and (match.group('suffix') or ''):
+        return match.group('suffix') or ''
+    if 'multiplier' in fallback_surface_id or 'bonus' in fallback_surface_id:
+        return 'x'
+    if fallback_surface_id.endswith('_pct'):
+        return '%'
+    if fallback_surface_id.endswith('_seconds'):
+        return 's'
+    if fallback_surface_id.endswith('_m'):
+        return 'm'
+    return ''
+
+
+def _format_value_with_hint(value: object, *, suffix_hint: str = '', scale_hint: str = 'direct') -> str:
+    if value in (None, ''):
+        return _DASH
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return _normalize_display_text(value)
+    if scale_hint == 'fraction_to_percent':
+        number *= 100.0
+        suffix_hint = '%'
+    number_text = str(int(number)) if float(number).is_integer() else f'{number:.2f}'.rstrip('0').rstrip('.')
+    if suffix_hint == 'x':
+        return f'x{number_text}'
+    return f'{number_text}{suffix_hint}'
+
+
+def _surface_display_value(row: dict[str, object], *, surface_id: str, fallback_value: object = None) -> str:
+    if _row_is_resolved(row):
+        final_value = row.get('final_value')
+        if final_value is not None:
+            return _format_value_with_hint(
+                final_value,
+                suffix_hint=_semantic_suffix_for_display(row.get('display_value'), fallback_surface_id=surface_id),
+                scale_hint=_surface_pct_scale_hint(surface_id),
+            )
+        display = row.get('display_value')
+        if display not in (None, ''):
+            return _normalize_display_text(display)
+    return _format_value_with_hint(
+        fallback_value,
+        suffix_hint=_semantic_suffix_for_display(fallback_value, fallback_surface_id=surface_id),
+        scale_hint=_surface_pct_scale_hint(surface_id),
+    )
+
+
+def _bot_recon_status_explicit(
+    *,
+    surface_id: str,
+    start_value: str,
+    metadata: dict[str, str],
+    lab_effects: str,
+    module_effects: str,
+) -> str:
+    base_text = _normalize_display_text(metadata.get('medal_value') or _DASH)
+    spent_text = _normalize_display_text(metadata.get('medals_spent') or _DASH)
+    if spent_text == _DASH or base_text == _DASH:
+        return 'red'
+    base_value, _ = _parse_display_number(base_text)
+    start_number, _ = _parse_display_number(start_value)
+    if base_value is None or start_number is None:
+        return 'amber'
+    lab_value, _ = _parse_display_number(lab_effects)
+    module_value, _ = _parse_display_number(module_effects)
+    expected = base_value + (lab_value or 0.0) + (module_value or 0.0)
+    return 'green' if abs(expected - start_number) < 0.011 else 'amber'
+
+
+def _guardian_recon_status_explicit(*, bit_value: str, start_value: str, bits_spent: str) -> str:
+    if _normalize_display_text(bits_spent) == _DASH:
+        return 'red'
+    base_value, _ = _parse_display_number(bit_value)
+    start_number, _ = _parse_display_number(start_value)
+    if base_value is None or start_number is None:
+        return 'amber'
+    return 'green' if abs(base_value - start_number) < 0.011 else 'red'
+
+
+def _module_slot_recon_status_explicit(slot_payload: dict[str, object]) -> str:
+    primary = dict(slot_payload.get('primary') or {})
+    assist = dict(slot_payload.get('assist') or {})
+    required_primary_fields = (
+        primary.get('module_name'),
+        primary.get('rarity_text'),
+        primary.get('main_value_text'),
+        primary.get('main_label_text'),
+        primary.get('displayed_level_cap'),
+    )
+    if any(value in (None, '') for value in required_primary_fields):
+        return 'amber'
+    if assist:
+        if not assist.get('module_name') or not assist.get('rarity_text'):
+            return 'amber'
+        if not str(assist.get('role_bar_detail_text') or '').strip():
+            return 'amber'
+        if _extract_module_assist_pct({'assist': assist}) == _DASH:
+            return 'amber'
+    return 'green'
+
+
 def _build_cards_panel(account_state_payload: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
     inventory_rows = []
     for card_name, card_payload in (account_state_payload.get('cards_inventory') or {}).items():
@@ -909,22 +1068,7 @@ def _extract_module_assist_pct(slot_payload: dict[str, object]) -> str:
 
 
 def _module_slot_recon_status(slot_payload: dict[str, object]) -> str:
-    primary = dict(slot_payload.get('primary') or {})
-    assist = dict(slot_payload.get('assist') or {})
-    if not primary:
-        return 'amber'
-    required_primary_fields = (
-        primary.get('module_name'),
-        primary.get('rarity_text'),
-        primary.get('main_value_text'),
-        primary.get('main_label_text'),
-        primary.get('displayed_level_cap'),
-    )
-    if any(value in (None, '') for value in required_primary_fields):
-        return 'amber'
-    if assist and not assist.get('role_bar_detail_text'):
-        return 'amber'
-    return 'green'
+    return _module_slot_recon_status_explicit(slot_payload)
 
 
 def _build_module_grouped_summary(slots: dict[str, object]) -> list[dict[str, object]]:
@@ -949,7 +1093,7 @@ def _build_module_grouped_summary(slots: dict[str, object]) -> list[dict[str, ob
         {'group': 'Assist', 'label': 'Rarity', 'values': {slot: _slot_value(slot, 'rarity_text', 'assist') for slot in slot_order}},
         {'group': 'Current', 'label': 'Multiplier', 'values': {slot: _slot_value(slot, 'main_value_text') for slot in slot_order}},
         {'group': 'Current', 'label': 'Effect', 'values': {slot: _slot_value(slot, 'main_label_text') for slot in slot_order}},
-        {'group': 'Recon', 'label': 'Status', 'values': {slot: _module_slot_recon_status(dict(slots.get(slot) or {})) for slot in slot_order}},
+        {'group': 'Recon', 'label': 'Recon', 'values': {slot: _module_slot_recon_status(dict(slots.get(slot) or {})) for slot in slot_order}},
     ]
 
 
@@ -1068,12 +1212,11 @@ def _bot_operator_table_columns() -> list[dict[str, str]]:
     return [
         {'key': 'name', 'label': 'Track'},
         {'key': 'medal_level', 'label': 'Level'},
-        {'key': 'medals_spent', 'label': 'Spent'},
+        {'key': 'medals_spent', 'label': 'Cumulative Medals Spent'},
         {'key': 'medal_value', 'label': 'Value'},
         {'key': 'lab_effects', 'label': 'Lab'},
         {'key': 'module_effects', 'label': 'Module'},
         {'key': 'start_of_run_value', 'label': 'Start of Run'},
-        {'key': 'effective_value', 'label': 'Effective'},
         {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
     ]
 
@@ -1082,7 +1225,7 @@ def _guardian_operator_table_columns() -> list[dict[str, str]]:
     return [
         {'key': 'name', 'label': 'Track'},
         {'key': 'bit_level', 'label': 'Level'},
-        {'key': 'bits_spent', 'label': 'Spent'},
+        {'key': 'bits_spent', 'label': 'Cumulative Bits Spent'},
         {'key': 'bit_value', 'label': 'Value'},
         {'key': 'start_of_run_value', 'label': 'Start of Run'},
         {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
@@ -1267,21 +1410,9 @@ def _build_guardian_track_metadata_index(account_state_payload: dict[str, object
             bit_level_value = int(bit_level)
         except ValueError:
             bit_level_value = None
-        track_cost_key = {
-            'Percentage': 'percentage',
-            'Cooldown': 'cooldown',
-            'Targets': 'targets',
-            'Recovery Amount': 'recovery_amount',
-            'Max Recovery': 'max_recovery',
-            'Multiplier': 'multiplier',
-            'Find Chance': 'find_chance',
-            'Double Find Chance': 'double_find_chance',
-            'Cash Bonus': 'cash_bonus',
-            'Range Bonus': 'range_bonus',
-            'Duration': 'duration',
-        }.get(track_name, _normalize_identity(track_name))
+        track_cost_key = _normalize_identity(track_name)
         bits_spent = _format_cumulative_cost(
-            cumulative_costs.get((_normalize_identity(current_guardian), track_cost_key, int(bit_level_value or -1)))
+            cumulative_costs.get((_normalize_identity(current_guardian), track_cost_key, bit_level_value))
         ) if bit_level_value is not None else _DASH
         index[f'{current_guardian}::{track_name}'] = {
             'bit_level': bit_level or 'â€”',
@@ -1364,13 +1495,13 @@ def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) ->
     current_bot = ''
     track_name_overrides = {'Damage R.': 'Damage Reduction'}
     track_cost_keys = {
-        'Bonus': 'bonus_multiplier',
+        'Bonus': 'bonus_multiplier_x',
         'Cooldown': 'cooldown_seconds',
         'Duration': 'duration_seconds',
         'Range': 'range_meters',
-        'Damage': 'damage_multiplier',
+        'Damage': 'damage_multiplier_x',
         'Damage Reduction': 'damage_reduction_pct',
-        'Linger': 'linger_slow_pct',
+        'Linger': 'linger_seconds',
     }
     for row in rows:
         if not isinstance(row, list):
@@ -1948,51 +2079,46 @@ def _build_stats_bots_operator_panel(
 ) -> dict[str, object]:
     del rows_max, stats_layout
     metadata_index = _build_bot_track_metadata_index(account_state_payload)
-    global_range_row = dict(rows_start.get('state::bot.global.range_bonus_m') or {})
-    global_range_value_type = str(global_range_row.get('value_type') or '')
     sections: dict[str, list[dict[str, object]]] = {}
     for bot_name, track_specs in _bot_track_surface_map().items():
         section_rows: list[dict[str, object]] = []
         for spec in track_specs:
             track_name = spec['track']
             surface_id = spec['surface_id']
-            effective_surface_id = spec['effective_surface_id']
             metadata = metadata_index.get(f'{bot_name}::{track_name}') or {}
             start_row = dict(rows_start.get(surface_id) or {})
-            effective_row = dict(rows_start.get(effective_surface_id) or {}) if effective_surface_id else {}
             surface_value_type = str(start_row.get('value_type') or '')
             module_value = _row_module_effect_display(start_row, surface_value_type=surface_value_type)
-            if track_name == 'Range':
-                module_value = _join_display_tokens(
-                    module_value,
-                    _format_effect_from_contributors(
-                        global_range_row,
-                        source_classes=('module_main', 'module_substat', 'module_unique'),
-                        surface_value_type=global_range_value_type,
-                    ),
+            if track_name == 'Range' and module_value != _DASH:
+                module_value = _DASH
+            lab_effects = _normalize_display_text(
+                _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('labs',),
+                    surface_value_type=surface_value_type,
                 )
+            )
+            start_value = _surface_display_value(
+                start_row,
+                surface_id=surface_id,
+                fallback_value=metadata.get('medal_value'),
+            )
             section_rows.append({
                 'canonical_row_id': surface_id,
-                'display_label': track_name,
-                'name': track_name,
+                'display_label': _normalize_display_text(track_name),
+                'name': _normalize_display_text(track_name),
                 'medal_level': _normalize_display_text(metadata.get('medal_level') or _DASH),
                 'medals_spent': _normalize_display_text(metadata.get('medals_spent') or _DASH),
                 'medal_value': _normalize_display_text(metadata.get('medal_value') or _DASH),
-                'lab_effects': _normalize_display_text(
-                    _format_effect_from_contributors(
-                        start_row,
-                        source_classes=('labs',),
-                        surface_value_type=surface_value_type,
-                    )
-                ),
+                'lab_effects': lab_effects,
                 'module_effects': _normalize_display_text(module_value),
-                'start_of_run_value': _normalize_display_text(_row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or _DASH),
-                'effective_value': _normalize_display_text(effective_row.get('display_value') or _DASH),
-                'reconciliation_status': _bot_recon_status(
-                    start_row=start_row,
-                    effective_row=effective_row,
+                'start_of_run_value': start_value,
+                'reconciliation_status': _bot_recon_status_explicit(
+                    surface_id=surface_id,
+                    start_value=start_value,
                     metadata=metadata,
-                    requires_effective=bool(effective_surface_id),
+                    lab_effects=lab_effects,
+                    module_effects=_normalize_display_text(module_value),
                 ),
                 'reconciliation_cell_flags': {},
             })
@@ -2036,22 +2162,25 @@ def _build_stats_guardians_operator_panel(
             start_row = dict(rows_start.get(surface_id) or {})
             metadata = metadata_index.get(f'{guardian_name}::{track_name}') or {}
             guardian_snapshot = guardian_value_index.get(f'{guardian_name}::{track_name}') or {}
-            surface_value_type = str(start_row.get('value_type') or guardian_snapshot.get('resolved_unit') or '')
-            start_value = _guardian_start_value(
-                guardian_snapshot.get('resolved_value'),
+            start_value = _surface_display_value(
                 start_row,
                 surface_id=surface_id,
-                value_type=surface_value_type,
+                fallback_value=guardian_snapshot.get('resolved_value'),
             )
+            bit_value = _normalize_display_text(metadata.get('bit_value') or _DASH)
             section_rows.append({
                 'canonical_row_id': surface_id,
-                'display_label': track_name,
-                'name': track_name,
+                'display_label': _normalize_display_text(track_name),
+                'name': _normalize_display_text(track_name),
                 'bit_level': _normalize_display_text(metadata.get('bit_level') or _DASH),
                 'bits_spent': _normalize_display_text(metadata.get('bits_spent') or _DASH),
-                'bit_value': _normalize_display_text(metadata.get('bit_value') or _DASH),
+                'bit_value': bit_value,
                 'start_of_run_value': start_value,
-                'reconciliation_status': _guardian_recon_status(start_row=start_row, metadata=metadata, start_value=start_value),
+                'reconciliation_status': _guardian_recon_status_explicit(
+                    bit_value=bit_value,
+                    start_value=start_value,
+                    bits_spent=_normalize_display_text(metadata.get('bits_spent') or _DASH),
+                ),
                 'reconciliation_cell_flags': {},
             })
         sections[guardian_name] = section_rows

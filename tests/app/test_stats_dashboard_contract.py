@@ -196,7 +196,7 @@ def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
     sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
     rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     assert rows_by_name['Cooldown']['workshop_level'] == '2'
-    assert rows_by_name['Cooldown']['stone_value'] == '180.0'
+    assert rows_by_name['Cooldown']['stone_value'] == '180'
     assert rows_by_name['Cooldown']['start_of_run_value'] == '180'
     assert rows_by_name['Cooldown']['max_progression_value'] == '160'
     assert rows_by_name['Duration']['workshop_level'] == '3'
@@ -289,13 +289,13 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
 
     assert chain_rows['Damage']['module_effects'] == 'x2.25'
     assert chain_rows['Damage']['other'].startswith('Chain Thunder ')
-    assert golden_rows['Duration']['lab_effects'] == '20.0'
+    assert golden_rows['Duration']['lab_effects'] == '20'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
-    assert black_hole_rows['Duration']['module_effects'] == '4.0'
+    assert black_hole_rows['Duration']['module_effects'] == '4'
     assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
 
 
-def test_stats_dashboard_primary_bot_operator_table_wires_medals_and_effective_range_fields():
+def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
     account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
@@ -320,14 +320,14 @@ def test_stats_dashboard_primary_bot_operator_table_wires_medals_and_effective_r
 
     assert [section.get('title') for section in (bot_panel.get('payload', {}).get('sections') or [])] == ['Amplify', 'Flame', 'Golden', 'Thunder']
     assert [row.get('name') for row in (sections['Amplify'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
-    assert amplify_rows['Range']['medal_level'] == '00'
+    assert amplify_rows['Range']['medal_level'] == '0'
     assert amplify_rows['Range']['medals_spent'] == '0'
     assert amplify_rows['Range']['medal_value'] == '25m'
-    assert amplify_rows['Range']['start_of_run_value'] == '34'
-    assert amplify_rows['Range']['module_effects'] == '+ 15'
-    assert amplify_rows['Range']['effective_value'] == '77.14'
-    assert golden_rows['Range']['start_of_run_value'] == '59'
-    assert golden_rows['Range']['effective_value']
+    assert amplify_rows['Range']['start_of_run_value'] == '34m'
+    assert amplify_rows['Range']['module_effects'] == '—'
+    assert amplify_rows['Range']['reconciliation_status'] == 'amber'
+    assert golden_rows['Range']['start_of_run_value'] == '59m'
+    assert golden_rows['Range']['reconciliation_status'] == 'amber'
 
 
 def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
@@ -358,8 +358,8 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     assert by_key[('', 'Assist %')]['armor'] == '1%'
     assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
     assert by_key[('Assist', 'Module')]['cannon'] == '—'
-    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.014'
-    assert by_key[('Recon', 'Status')]['generator'] == 'green'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.01'
+    assert by_key[('Recon', 'Recon')]['generator'] == 'green'
 
 
 def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_shape():
@@ -486,21 +486,21 @@ def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_s
     guardian_rows = {row.get('name'): row for row in (guardian_sections['Attack'].get('rows') or [])}
     bot_columns = [column.get('label') for column in (bot_panel.get('payload', {}).get('columns') or [])]
     guardian_columns = [column.get('label') for column in (guardian_panel.get('payload', {}).get('columns') or [])]
-    assert bot_columns == ['Track', 'Level', 'Spent', 'Value', 'Lab', 'Module', 'Start of Run', 'Effective', 'Recon']
-    assert guardian_columns == ['Track', 'Level', 'Spent', 'Value', 'Start of Run', 'Recon']
+    assert bot_columns == ['Track', 'Level', 'Cumulative Medals Spent', 'Value', 'Lab', 'Module', 'Start of Run', 'Recon']
+    assert guardian_columns == ['Track', 'Level', 'Cumulative Bits Spent', 'Value', 'Start of Run', 'Recon']
     assert [row.get('name') for row in (bot_sections['Golden'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
     assert [row.get('name') for row in (guardian_sections['Attack'].get('rows') or [])] == ['Percentage', 'Cooldown', 'Targets']
-    assert bot_rows['Cooldown']['medal_level'] == '03'
+    assert bot_rows['Cooldown']['medal_level'] == '3'
     assert bot_rows['Cooldown']['medals_spent'] == '180'
     assert bot_rows['Cooldown']['medal_value'] == '111s'
-    assert bot_rows['Cooldown']['start_of_run_value'] == '80'
+    assert bot_rows['Cooldown']['start_of_run_value'] == '80s'
     assert bot_rows['Duration']['lab_effects'] == '+ 6'
-    assert bot_rows['Range']['module_effects'] == '+ 15'
-    assert bot_rows['Range']['effective_value'] == '110.39'
-    assert guardian_rows['Cooldown']['bit_level'] == '00'
+    assert bot_rows['Range']['module_effects'] == '—'
+    assert bot_rows['Range']['reconciliation_status'] == 'amber'
+    assert guardian_rows['Cooldown']['bit_level'] == '0'
     assert guardian_rows['Cooldown']['bits_spent'] == '0'
     assert guardian_rows['Cooldown']['bit_value'] == '120s'
-    assert guardian_rows['Cooldown']['start_of_run_value'] == '120'
+    assert guardian_rows['Cooldown']['start_of_run_value'] == '120s'
     assert guardian_rows['Cooldown']['reconciliation_status'] == 'green'
 
 

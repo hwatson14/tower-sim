@@ -219,6 +219,12 @@ The v49 current-stage program is complete only when all of the following are tru
 ### Verification record
 
 - targeted tranche-alignment suites passed on **2026-04-13** across Stats contract, pipeline functional, simulator, UI contract, and import-boundary coverage
+- visual/semantic acceptance recovery passed on **2026-04-13** for the live primary Stats/Boss Waves surface:
+  - preset switching updates the visible product state without a rebuild
+  - primary Stats tables now follow the shared display grammar (`—`, max 2 decimals, normalized units, no mojibake)
+  - Bots now use start-of-run-only primary semantics with truthful cumulative medal spend and no misleading effective-range column
+  - Guardians now use truthful cumulative-bit and start-state semantics with simple green recon where base equals start state
+  - full `pytest -q` passed on the repaired baseline (`395 passed`)
 - refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
 - corrective recovery tranche targeted suites passed on **2026-04-12**, including:
   - `tests/app/test_stats_dashboard_contract.py`

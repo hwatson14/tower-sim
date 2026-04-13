@@ -472,7 +472,7 @@ def _apply_audit_surface_cap(*, surface_id: str, value: float | None) -> float |
 def _format_audit_surface_cap(*, surface_id: str, value_type: str | None) -> str:
     cap_value = _AUDIT_SURFACE_CAPS.get(surface_id)
     if cap_value is None:
-        return 'â€”'
+        return '—'
     return _format_surface_value(cap_value, surface_id=surface_id, value_type=value_type)
 
 
