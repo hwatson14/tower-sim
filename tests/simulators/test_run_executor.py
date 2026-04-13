@@ -715,6 +715,10 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     assert rows[0]['health_wave'] == 10
     assert rows[0]['boss_attack'] == rows[0]['wave_attack']
     assert rows[0]['boss_health'] == pytest.approx(rows[0]['wave_health'] * run_executor_module.BOSS_HP_MULTIPLIER)
+    assert rows[0]['effective_damage_reduction_pct_used'] == pytest.approx(90.0)
+    assert rows[0]['boss_contact_time_seconds_used'] == pytest.approx(1.0)
+    assert rows[0]['boss_hit_interval_seconds_used'] == pytest.approx(2.0)
+    assert rows[0]['incoming_damage_multiplier_used'] == pytest.approx(1.0)
     assert rows[0]['survives_boss'] is True
 
     payload = build_boss_wave_table_payload(

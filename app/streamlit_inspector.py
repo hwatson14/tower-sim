@@ -45,6 +45,7 @@ if str(ROOT) not in sys.path:
 from app.display import (
     INPUT_DASHBOARD_CSS,
     MODULE_CARD_CSS,
+    _format_display_number,
     render_cards_inventory_and_preset_html,
     render_gap_notice_html,
     render_grouped_enhancement_table_html,
@@ -109,6 +110,80 @@ def _friendly_cache_status(value: object) -> str:
     if text == 'not_attempted':
         return 'not used on this path'
     return text or 'n/a'
+
+
+def _boss_wave_percent_text(value: object) -> str:
+    if value is None or pd.isna(value):
+        return '—'
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    text = f"{number:.2f}".rstrip('0').rstrip('.')
+    return f"{text}%"
+
+
+def _boss_wave_seconds_text(value: object) -> str:
+    if value is None or pd.isna(value):
+        return '—'
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    text = f"{number:.2f}".rstrip('0').rstrip('.')
+    return text
+
+
+def _boss_wave_compact_text(value: object) -> str:
+    if value is None or pd.isna(value):
+        return '—'
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    formatted = _format_display_number(number)
+    return formatted if formatted is not None else str(value)
+
+
+def _boss_wave_signed_compact_text(value: object) -> str:
+    if value is None or pd.isna(value):
+        return '—'
+    try:
+        number = float(value)
+    except (TypeError, ValueError):
+        return str(value)
+    if number == 0:
+        return '0'
+    sign = '+' if number > 0 else '-'
+    formatted = _format_display_number(abs(number))
+    return f"{sign}{formatted if formatted is not None else abs(number)}"
+
+
+def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
+    if frame.empty:
+        return frame
+
+    def _series(key: str) -> pd.Series:
+        return frame.get(key, pd.Series([None] * len(frame), index=frame.index))
+
+    wall_pool = _series('wall_hp') * _series('wall_fortification_multiplier')
+    return pd.DataFrame(
+        {
+            'Wave': _series('display_wave'),
+            'Atk Wave': _series('attack_wave'),
+            'HP Wave': _series('health_wave'),
+            'Boss HP': _series('boss_health').map(_boss_wave_compact_text),
+            'Boss Atk': _series('boss_attack').map(_boss_wave_compact_text),
+            'Tower DPS': _series('tower_damage_per_second').map(_boss_wave_compact_text),
+            'Wall Pool': wall_pool.map(_boss_wave_compact_text),
+            'DR Used': _series('effective_damage_reduction_pct_used').map(_boss_wave_percent_text),
+            'Contact (s)': _series('boss_contact_time_seconds_used').map(_boss_wave_seconds_text),
+            'Boss Hits': _series('boss_hits_taken'),
+            'Damage Taken': _series('boss_total_damage_taken').map(_boss_wave_compact_text),
+            'Margin': _series('boss_survival_margin_hp').map(_boss_wave_signed_compact_text),
+            'Survives': _series('survives_boss').map(lambda value: 'Yes' if bool(value) else 'No'),
+        }
+    )
 
 
 def _slug_text(value: str) -> str:
@@ -1602,6 +1677,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     frame = pd.DataFrame(boss_payload.get('rows') or [])
     if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:
         frame['changed_workshop_tracks_last_step'] = frame['changed_workshop_tracks_last_step'].fillna('')
+    display_frame = _build_boss_wave_operator_frame(frame)
     payload_summary = dict(boss_payload.get('summary') or {})
     payload_diagnostics = dict(boss_payload.get('diagnostics') or {})
     payload_download = dict(boss_payload.get('download') or {})
@@ -1655,11 +1731,20 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         f"`{contract.get('tower_damage_mode') or payload_diagnostics.get('tower_damage_mode') or 'unknown'}`."
     )
     st.caption(
+        "Model bounds: "
+        f"`{contract.get('survivability_semantics') or 'bounded_runtime_assumption_model'}`. "
+        "The operator table reflects the actual DR/contact assumptions used by the current run."
+    )
+    st.caption(
         'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
         'the intervening waves using the interval-start resolved values, while boss kill time uses the sanctioned '
         'runtime damage proxy rather than a static max-progression shortcut.'
     )
-    st.dataframe(frame, width='stretch', hide_index=True)
+    st.info(
+        'Boss Waves is a bounded runtime estimate. The main table shows the operator-facing survival view; '
+        'the raw simulator/debug row dump remains available below.'
+    )
+    st.dataframe(display_frame, width='stretch', hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
         data=frame.to_csv(index=False).encode('utf-8'),
@@ -1667,6 +1752,8 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         mime='text/csv',
         width='stretch',
     )
+    with st.expander('Boss-wave raw rows (debug)'):
+        st.dataframe(frame, width='stretch', hide_index=True)
     with st.expander('Boss-wave diagnostics'):
         st.json(diagnostics)
     with st.expander('Boss-wave execution details'):

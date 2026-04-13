@@ -238,7 +238,8 @@ def build_boss_wave_payload(
             'free_upgrade_mode': 'runtime_progression_allocation',
             'wave_progression_mode': 'runtime_wave_progression',
             'enemy_skip_mode': 'runtime_wave_progression',
-            'tower_damage_mode': 'derived_edamage_continuous_proxy',
+            'tower_damage_mode': 'continuous_runtime_dps_proxy',
+            'survivability_semantics': 'bounded_runtime_assumption_model',
         },
         'rows': rows,
         'summary': {

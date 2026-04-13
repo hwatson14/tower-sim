@@ -100,7 +100,7 @@ This tranche is not about:
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. after the 2026-04-12 corrective recovery recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-13 Boss Waves semantic/product recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -111,7 +111,8 @@ This tranche is not about:
 5. COMPLETE: wire Boss Waves perk evolution through the sanctioned simulator path and revalidate the no-delta-fallback live path
 6. COMPLETE: clean the active repo-root control allowlist and remove stale zip-pack residue
 7. COMPLETE: recertify the repaired Streamlit product contract with targeted tests, full pytest, `app.run_stats`, and a UI-level Streamlit harness run
-8. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+8. COMPLETE: recertify the Boss Waves product surface so the main table is operator-facing, the raw row dump is demoted to debug, and the active DR/contact assumptions used by the solver are visible in the product surface
+9. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
@@ -233,6 +234,12 @@ The v49 current-stage program is complete only when all of the following are tru
   - Boss Waves runtime-basis caption present
   - sanctioned Boss Waves run showing `Max surviving wave = 130`, `First failed wave = 140`, `Rows = 14`
 - refreshed full suite passed on **2026-04-12** (`390 passed`)
+- refreshed Boss Waves semantic/product recertification suites passed on **2026-04-13**:
+  - `pytest -q tests/simulators/test_run_executor.py` (`15 passed`)
+  - `pytest -q tests/app/test_pipeline_functional.py` (`29 passed`)
+  - `pytest -q tests/app/test_pipeline_ui_contracts.py` (`19 passed`)
+  - `python -m app.run_stats`
+- repaired current-worktree full suite passed on **2026-04-13** (`394 passed`) in **25.59s**
 - corrected-recovery tranche targeted suites passed on **2026-04-11**:
   - `pytest -q tests/app/test_stats_dashboard_contract.py` -> `43 passed`
   - `pytest -q tests/app/test_pipeline_functional.py` -> `29 passed`

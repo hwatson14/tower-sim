@@ -336,10 +336,13 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     end = text.index("\ndef main() -> None:", start)
     boss_block = text[start:end]
     assert "st.toggle('Stop on first failed boss', value=True)" in boss_block
+    assert "display_frame = _build_boss_wave_operator_frame(frame)" in boss_block
     assert "payload_summary = dict(boss_payload.get('summary') or {})" in boss_block
     assert "payload_diagnostics = dict(boss_payload.get('diagnostics') or {})" in boss_block
     assert "payload_download = dict(boss_payload.get('download') or {})" in boss_block
     assert "boss_payload.get('contract') or {}" in boss_block
+    assert "Boss Waves is a bounded runtime estimate" in boss_block
+    assert "Boss-wave raw rows (debug)" in boss_block
     assert "st.download_button(" in boss_block
 
 

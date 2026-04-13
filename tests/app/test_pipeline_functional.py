@@ -330,6 +330,11 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
     assert diagnostics['qe_dirty_reresolve_count'] > 0
     assert diagnostics['delta_fallback_count'] == 0
+    first_row = (payload.get('rows') or [{}])[0]
+    assert 'effective_damage_reduction_pct_used' in first_row
+    assert 'boss_contact_time_seconds_used' in first_row
+    assert 'boss_hit_interval_seconds_used' in first_row
+    assert 'incoming_damage_multiplier_used' in first_row
 
 
 @pytest.mark.live
