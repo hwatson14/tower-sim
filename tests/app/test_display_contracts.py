@@ -158,6 +158,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
                             'max_workshop_resolved_value': '300',
                             'perk_effects': '+ 10',
                             'max_progression_value': '260',
+                            'cap': '—',
                         }
                     ],
                 }
@@ -168,6 +169,7 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Start of Run' in html
     assert 'Max Workshop' in html
     assert 'Perks' in html
+    assert '>Cap<' in html
     assert '>Recon<' in html
     assert html.count('>Total<') == 2
     assert 'recon-dot green' in html
@@ -178,12 +180,12 @@ def test_workshop_stats_renderer_uses_grouped_phase_headers_and_totals():
     assert 'Perk Effects' not in html
     assert 'Base Modifiers' in html
     assert 'Base &amp; Loadout' in html
-    assert "colspan='19'" in html
+    assert "colspan='20'" in html
     assert '250' in html
     assert '300' in html
     assert html.index('>Relics<') < html.index('>Subtotal<') < html.index('>Module<')
     assert html.index('>Start of Run<') < html.index('>Max Workshop<') < html.index('>Perks<')
-    assert html.index('>Perks<') < html.index('>Recon<')
+    assert html.index('>Perks<') < html.index('>Cap<') < html.index('>Recon<')
 
 
 def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
@@ -210,6 +212,7 @@ def test_workshop_stats_renderer_collapses_neutral_effect_tokens_to_dash():
                             'other': '+ 0%',
                             'max_progression_modifier_total': '+ 0',
                             'max_progression_value': '100',
+                            'cap': '—',
                         }
                     ],
                 }
@@ -252,6 +255,7 @@ def test_workshop_stats_renderer_marks_failed_cells_and_keeps_recon_on_right():
                             'max_workshop_resolved_value': '140',
                             'perk_effects': '+ 10',
                             'max_progression_value': '150',
+                            'cap': '98%',
                         }
                     ],
                 }
@@ -260,3 +264,43 @@ def test_workshop_stats_renderer_marks_failed_cells_and_keeps_recon_on_right():
     )
     assert html.count("class='recon-fail'") == 2
     assert 'recon-dot red' in html
+
+
+def test_workshop_stats_renderer_shows_cap_before_recon():
+    html = render_workshop_stat_table_html(
+        {
+            'sections': [
+                {
+                    'title': 'Defense',
+                    'rows': [
+                        {
+                            'name': 'Defense %',
+                            'reconciliation_status': 'green',
+                            'reconciliation_cell_flags': {},
+                            'workshop_level': '100',
+                            'workshop_value': '49.5%',
+                            'lab_effects': '+ 5.6%',
+                            'relics': '+ 4%',
+                            'base_subtotal': '59.1%',
+                            'module_effects': '+ 8.3%',
+                            'card_effects': '+ 11%',
+                            'base_loadout_subtotal': '78.4%',
+                            'enhancement_effects': '—',
+                            'start_of_run_modifier_total': '78.4%',
+                            'start_of_run_value': '78.4%',
+                            'other': '—',
+                            'max_workshop_modifier_total': '98%',
+                            'max_workshop_value': '98%',
+                            'max_workshop_resolved_value': '98%',
+                            'perk_effects': '+ 25%',
+                            'max_progression_value': '98%',
+                            'cap': '98%',
+                        }
+                    ],
+                }
+            ]
+        }
+    )
+    assert '>Cap<' in html
+    assert html.index('>Cap<') < html.index('>Recon<')
+    assert html.count('>98%<') >= 4

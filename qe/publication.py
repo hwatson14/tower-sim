@@ -923,6 +923,31 @@ def _uw_operator_table_columns() -> list[dict[str, str]]:
     ]
 
 
+def _bot_operator_table_columns() -> list[dict[str, str]]:
+    return [
+        {'key': 'name', 'label': 'Track'},
+        {'key': 'medal_level', 'label': 'Level'},
+        {'key': 'medals_spent', 'label': 'Spent'},
+        {'key': 'medal_value', 'label': 'Value'},
+        {'key': 'lab_effects', 'label': 'Lab'},
+        {'key': 'module_effects', 'label': 'Module'},
+        {'key': 'start_of_run_value', 'label': 'Start of Run'},
+        {'key': 'effective_value', 'label': 'Effective'},
+        {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
+    ]
+
+
+def _guardian_operator_table_columns() -> list[dict[str, str]]:
+    return [
+        {'key': 'name', 'label': 'Track'},
+        {'key': 'bit_level', 'label': 'Level'},
+        {'key': 'bits_spent', 'label': 'Spent'},
+        {'key': 'bit_value', 'label': 'Value'},
+        {'key': 'start_of_run_value', 'label': 'Start of Run'},
+        {'key': 'reconciliation_status', 'label': 'Recon', 'kind': 'recon'},
+    ]
+
+
 def _operator_panel_payload(
     *,
     panel_id: str,
@@ -954,6 +979,168 @@ def _reduce_prefixed_label(label: str, prefix: str) -> str:
     if label.startswith(f'{prefix} '):
         return label[len(prefix) + 1:]
     return label
+
+
+def _bot_track_surface_map() -> dict[str, list[dict[str, str]]]:
+    return {
+        'Amplify': [
+            {'track': 'Bonus', 'surface_id': 'state::bot.amplify.bonus_multiplier', 'effective_surface_id': ''},
+            {'track': 'Cooldown', 'surface_id': 'state::bot.amplify.cooldown_seconds', 'effective_surface_id': ''},
+            {'track': 'Duration', 'surface_id': 'state::bot.amplify.duration_seconds', 'effective_surface_id': ''},
+            {'track': 'Range', 'surface_id': 'state::bot.amplify.range_m', 'effective_surface_id': 'state::bot.amplify.effective_range_m'},
+        ],
+        'Flame': [
+            {'track': 'Cooldown', 'surface_id': 'state::bot.flame.cooldown_seconds', 'effective_surface_id': ''},
+            {'track': 'Damage', 'surface_id': 'state::bot.flame.damage_multiplier', 'effective_surface_id': ''},
+            {'track': 'Damage Reduction', 'surface_id': 'state::bot.flame.damage_reduction_pct', 'effective_surface_id': ''},
+            {'track': 'Range', 'surface_id': 'state::bot.flame.range_m', 'effective_surface_id': 'state::bot.flame.effective_range_m'},
+        ],
+        'Golden': [
+            {'track': 'Bonus', 'surface_id': 'state::bot.golden.bonus_multiplier', 'effective_surface_id': ''},
+            {'track': 'Cooldown', 'surface_id': 'state::bot.golden.cooldown_seconds', 'effective_surface_id': ''},
+            {'track': 'Duration', 'surface_id': 'state::bot.golden.duration_seconds', 'effective_surface_id': ''},
+            {'track': 'Range', 'surface_id': 'state::bot.golden.range_m', 'effective_surface_id': 'state::bot.golden.effective_range_m'},
+        ],
+        'Thunder': [
+            {'track': 'Cooldown', 'surface_id': 'state::bot.thunder.cooldown_seconds', 'effective_surface_id': ''},
+            {'track': 'Duration', 'surface_id': 'state::bot.thunder.duration_seconds', 'effective_surface_id': ''},
+            {'track': 'Linger', 'surface_id': 'state::bot.thunder.linger_slow_pct', 'effective_surface_id': ''},
+            {'track': 'Range', 'surface_id': 'state::bot.thunder.range_m', 'effective_surface_id': 'state::bot.thunder.effective_range_m'},
+        ],
+    }
+
+
+def _extract_bot_medal_spent(level_token: str) -> str:
+    match = re.search(r'Cost\s+([0-9]+)', level_token or '')
+    return match.group(1) if match else 'â€”'
+
+
+def _build_bot_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
+    rows = (account_state_payload.get('raw_sections') or {}).get('Bots') or []
+    index: dict[str, dict[str, str]] = {}
+    current_bot = ''
+    track_name_overrides = {
+        'Damage R.': 'Damage Reduction',
+    }
+    for row in rows:
+        if not isinstance(row, list):
+            continue
+        bot_name = str(row[0] if len(row) > 0 else '').strip()
+        if bot_name and bot_name.lower() not in {'true', 'false'}:
+            current_bot = bot_name.replace(' Bot', '')
+        if not current_bot:
+            continue
+        track_name = str(row[2] if len(row) > 2 else '').strip()
+        if not track_name:
+            continue
+        normalized_track_name = track_name_overrides.get(track_name, track_name)
+        level_token = str(row[4] if len(row) > 4 else '').strip()
+        token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
+        medal_level = token_parts[0] if token_parts else 'â€”'
+        medal_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        index[f'{current_bot}::{normalized_track_name}'] = {
+            'medal_level': medal_level or 'â€”',
+            'medals_spent': _extract_bot_medal_spent(level_token),
+            'medal_value': medal_value or 'â€”',
+        }
+    return index
+
+
+def _guardian_track_surface_map() -> dict[str, list[dict[str, str]]]:
+    return {
+        'Attack': [
+            {'track': 'Percentage', 'surface_id': 'state::guardian.attack.missing_health_damage_pct'},
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.attack.cooldown_seconds'},
+            {'track': 'Targets', 'surface_id': 'state::guardian.attack.targets_count'},
+        ],
+        'Ally': [
+            {'track': 'Recovery Amount', 'surface_id': 'state::guardian.ally.recovery_amount_pct'},
+            {'track': 'Max Recovery', 'surface_id': 'state::guardian.ally.max_recovery_multiplier'},
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.ally.cooldown_seconds'},
+        ],
+        'Bounty': [
+            {'track': 'Multiplier', 'surface_id': 'state::guardian.bounty.coin_multiplier'},
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.bounty.cooldown_seconds'},
+            {'track': 'Targets', 'surface_id': 'state::guardian.bounty.targets_count'},
+        ],
+        'Fetch': [
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.fetch.cooldown_seconds'},
+            {'track': 'Find Chance', 'surface_id': 'state::guardian.fetch.find_chance_pct'},
+            {'track': 'Double Find Chance', 'surface_id': 'state::guardian.fetch.double_find_chance_pct'},
+        ],
+        'Summon': [
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.summon.cooldown_seconds'},
+            {'track': 'Duration', 'surface_id': 'state::guardian.summon.duration_seconds'},
+            {'track': 'Cash Bonus', 'surface_id': 'state::guardian.summon.cash_bonus_multiplier'},
+        ],
+        'Scout': [
+            {'track': 'Cooldown', 'surface_id': 'state::guardian.scout.cooldown_seconds'},
+            {'track': 'Range Bonus', 'surface_id': 'state::guardian.scout.range_bonus_multiplier'},
+            {'track': 'Duration', 'surface_id': 'state::guardian.scout.duration_seconds'},
+        ],
+    }
+
+
+def _extract_guardian_bits_spent(level_token: str) -> str:
+    match = re.search(r'Cost\s+([0-9]+)', level_token or '')
+    return match.group(1) if match else 'â€”'
+
+
+def _build_guardian_track_metadata_index(account_state_payload: dict[str, object]) -> dict[str, dict[str, str]]:
+    rows = (account_state_payload.get('raw_sections') or {}).get('Guardians') or []
+    index: dict[str, dict[str, str]] = {}
+    current_guardian = ''
+    for row in rows:
+        if not isinstance(row, list):
+            continue
+        guardian_name = str(row[0] if len(row) > 0 else '').strip()
+        if guardian_name and guardian_name.lower() not in {'true', 'false'}:
+            current_guardian = guardian_name
+        if not current_guardian:
+            continue
+        track_name = str(row[2] if len(row) > 2 else '').strip()
+        if not track_name:
+            continue
+        level_token = str(row[4] if len(row) > 4 else '').strip()
+        token_parts = [part.strip() for part in level_token.split('|')] if level_token else []
+        bit_level = token_parts[0] if token_parts else 'â€”'
+        bit_value = token_parts[1] if len(token_parts) > 1 and token_parts[1] else (str(row[3] if len(row) > 3 else '').strip() or 'â€”')
+        index[f'{current_guardian}::{track_name}'] = {
+            'bit_level': bit_level or 'â€”',
+            'bits_spent': _extract_guardian_bits_spent(level_token),
+            'bit_value': bit_value or 'â€”',
+        }
+    return index
+
+
+def _guardian_start_value(metadata_value: object, start_row: dict[str, object], *, surface_id: str, value_type: str) -> str:
+    return _row_display_value(start_row, surface_id=surface_id, value_type=value_type) or str(metadata_value or 'â€”')
+
+
+def _guardian_recon_status(*, start_value: str) -> str:
+    normalized = str(start_value or '').strip().replace('Ã¢â‚¬â€', 'â€”')
+    return 'green' if normalized not in {'', 'â€”'} else 'amber'
+
+
+def _join_display_tokens(*values: str) -> str:
+    tokens: list[str] = []
+    for value in values:
+        text = str(value).strip()
+        if not text:
+            continue
+        normalized = text.replace('â€”', '—')
+        if normalized == '—':
+            continue
+        tokens.append(normalized)
+    return ' Â· '.join(tokens) if tokens else 'â€”'
+
+
+def _bot_recon_status(*, start_row: dict[str, object], effective_row: dict[str, object]) -> str:
+    if str(start_row.get('status') or '') == 'resolved' and (
+        not effective_row or str(effective_row.get('status') or '') == 'resolved'
+    ):
+        return 'green'
+    return 'amber'
 
 
 def _build_stats_uw_operator_panel(
@@ -1159,36 +1346,64 @@ def _build_stats_bots_operator_panel(
     rows_max: dict[str, dict[str, object]],
     stats_layout: dict[str, object],
 ) -> dict[str, object]:
-    track_rows = []
-    for bot_name, tracks in (account_state_payload.get('bot_upgrade_tracks') or {}).items():
-        short_name = str(bot_name).replace(' Bot', '')
-        for track in tracks or []:
-            track_rows.append({
-                'entity': short_name,
-                'track': str(track.get('track_name') or ''),
-                'level': '' if track.get('level') is None else str(track.get('level')),
-                'resolved_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
+    del rows_max, stats_layout
+    metadata_index = _build_bot_track_metadata_index(account_state_payload)
+    global_range_row = dict(rows_start.get('state::bot.global.range_bonus_m') or {})
+    global_range_value_type = str(global_range_row.get('value_type') or '')
+    sections: dict[str, list[dict[str, object]]] = {}
+    for bot_name, track_specs in _bot_track_surface_map().items():
+        section_rows: list[dict[str, object]] = []
+        for spec in track_specs:
+            track_name = spec['track']
+            surface_id = spec['surface_id']
+            effective_surface_id = spec['effective_surface_id']
+            metadata = metadata_index.get(f'{bot_name}::{track_name}') or {}
+            start_row = dict(rows_start.get(surface_id) or {})
+            effective_row = dict(rows_start.get(effective_surface_id) or {}) if effective_surface_id else {}
+            surface_value_type = str(start_row.get('value_type') or '')
+            module_value = _row_module_effect_display(start_row, surface_value_type=surface_value_type)
+            if track_name == 'Range':
+                module_value = _join_display_tokens(
+                    module_value,
+                    _format_effect_from_contributors(
+                        global_range_row,
+                        source_classes=('module_main', 'module_substat', 'module_unique'),
+                        surface_value_type=global_range_value_type,
+                    ),
+                )
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'medal_level': str(metadata.get('medal_level') or 'â€”'),
+                'medals_spent': str(metadata.get('medals_spent') or 'â€”'),
+                'medal_value': str(metadata.get('medal_value') or 'â€”'),
+                'lab_effects': _format_effect_from_contributors(
+                    start_row,
+                    source_classes=('labs',),
+                    surface_value_type=surface_value_type,
+                ),
+                'module_effects': module_value,
+                'start_of_run_value': _row_display_value(start_row, surface_id=surface_id, value_type=surface_value_type) or 'â€”',
+                'effective_value': str(effective_row.get('display_value') or 'â€”'),
+                'reconciliation_status': _bot_recon_status(start_row=start_row, effective_row=effective_row),
+                'reconciliation_cell_flags': {},
             })
-    return _build_stats_track_operator_panel(
-        panel_id='bots',
-        title='Bots',
-        specs_key='bot_surfaces',
-        rows_start=rows_start,
-        stats_layout=stats_layout,
-        track_rows=track_rows,
-        entity_names_by_key={
-            'amplify': 'Amplify',
-            'flame': 'Flame',
-            'golden': 'Golden',
-            'thunder': 'Thunder',
-            'global': 'Bot',
-            'flame_bot': 'Flame',
+        sections[bot_name] = section_rows
+    return {
+        'panel_id': 'bots',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Bots',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _bot_operator_table_columns(),
+            'sections': [
+                {'section_id': f'bots::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
         },
-        include_labs=True,
-        include_modules=True,
-        include_perks=False,
-        include_max_progression=False,
-    )
+    }
 
 
 def _build_stats_guardians_operator_panel(
@@ -1198,35 +1413,55 @@ def _build_stats_guardians_operator_panel(
     rows_max: dict[str, dict[str, object]],
     stats_layout: dict[str, object],
 ) -> dict[str, object]:
-    track_rows = []
-    for guardian_name, tracks in (account_state_payload.get('guardian_tracks') or {}).items():
-        for track in tracks or []:
-            track_rows.append({
-                'entity': guardian_name,
-                'track': str(track.get('track_name') or ''),
-                'level': '' if track.get('level') is None else str(track.get('level')),
-                'resolved_value': '' if track.get('resolved_value') is None else str(track.get('resolved_value')),
+    del rows_max, stats_layout
+    metadata_index = _build_guardian_track_metadata_index(account_state_payload)
+    guardian_value_index = {
+        f"{guardian_name}::{str(track.get('track_name') or '').strip()}": dict(track or {})
+        for guardian_name, tracks in (account_state_payload.get('guardian_tracks') or {}).items()
+        for track in (tracks or [])
+    }
+    sections: dict[str, list[dict[str, object]]] = {}
+    for guardian_name, track_specs in _guardian_track_surface_map().items():
+        section_rows: list[dict[str, object]] = []
+        for spec in track_specs:
+            track_name = spec['track']
+            surface_id = spec['surface_id']
+            start_row = dict(rows_start.get(surface_id) or {})
+            metadata = metadata_index.get(f'{guardian_name}::{track_name}') or {}
+            guardian_snapshot = guardian_value_index.get(f'{guardian_name}::{track_name}') or {}
+            surface_value_type = str(start_row.get('value_type') or guardian_snapshot.get('resolved_unit') or '')
+            start_value = _guardian_start_value(
+                guardian_snapshot.get('resolved_value'),
+                start_row,
+                surface_id=surface_id,
+                value_type=surface_value_type,
+            )
+            section_rows.append({
+                'canonical_row_id': surface_id,
+                'display_label': track_name,
+                'name': track_name,
+                'bit_level': str(metadata.get('bit_level') or 'â€”'),
+                'bits_spent': str(metadata.get('bits_spent') or 'â€”'),
+                'bit_value': str(metadata.get('bit_value') or 'â€”'),
+                'start_of_run_value': start_value,
+                'reconciliation_status': _guardian_recon_status(start_value=start_value),
+                'reconciliation_cell_flags': {},
             })
-    return _build_stats_track_operator_panel(
-        panel_id='guardians',
-        title='Guardians',
-        specs_key='guardian_surfaces',
-        rows_start=rows_start,
-        stats_layout=stats_layout,
-        track_rows=track_rows,
-        entity_names_by_key={
-            'attack': 'Attack',
-            'ally': 'Ally',
-            'bounty': 'Bounty',
-            'fetch': 'Fetch',
-            'scout': 'Scout',
-            'summon': 'Summon',
+        sections[guardian_name] = section_rows
+    return {
+        'panel_id': 'guardians',
+        'panel_type': 'workshop_stat_table',
+        'title': 'Guardians',
+        'payload': {
+            'artifact': 'stats_operator_workshop_rows',
+            'owner': 'publication',
+            'columns': _guardian_operator_table_columns(),
+            'sections': [
+                {'section_id': f'guardians::{section_name.lower().replace(" ", "_")}', 'title': section_name, 'rows': rows}
+                for section_name, rows in sections.items()
+            ],
         },
-        include_labs=False,
-        include_modules=False,
-        include_perks=False,
-        include_max_progression=False,
-    )
+    }
 
 
 def _build_themes_panel(account_state_payload: dict) -> tuple[dict[str, object], list[dict[str, str]]]:

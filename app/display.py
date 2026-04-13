@@ -503,6 +503,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
         "<th><strong>Value</strong></th>"
         "<th>Modifier</th>"
         "<th>Value</th>"
+        "<th rowspan='2'>Cap</th>"
         "<th rowspan='2'>Recon</th>"
         "</tr>"
         "</thead>"
@@ -510,7 +511,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
     body_chunks = []
     for section in (payload.get('sections') or []):
         title = html.escape(str((section or {}).get('title') or ''))
-        body_chunks.append(f"<tr class='section-row'><td colspan='19'>{title}</td></tr>")
+        body_chunks.append(f"<tr class='section-row'><td colspan='20'>{title}</td></tr>")
         for row in ((section or {}).get('rows') or []):
             value_keys = [
                 'workshop_level',
@@ -530,6 +531,7 @@ def render_workshop_stat_table_html(payload: dict) -> str:
                 'max_workshop_resolved_value',
                 'perk_effects',
                 'max_progression_value',
+                'cap',
             ]
             cells = [f"<td>{html.escape(str(_cell_value(row, 'name') or ''))}</td>"]
             cells.extend(_cell_html(row=row, key=key) for key in value_keys)

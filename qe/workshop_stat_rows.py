@@ -469,6 +469,13 @@ def _apply_audit_surface_cap(*, surface_id: str, value: float | None) -> float |
     return min(float(value), cap_value)
 
 
+def _format_audit_surface_cap(*, surface_id: str, value_type: str | None) -> str:
+    cap_value = _AUDIT_SURFACE_CAPS.get(surface_id)
+    if cap_value is None:
+        return 'â€”'
+    return _format_surface_value(cap_value, surface_id=surface_id, value_type=value_type)
+
+
 def _cell_flag(value: bool | None) -> str:
     if value is True:
         return 'pass'
@@ -1325,4 +1332,5 @@ def build_workshop_reconciliation_row(
         'other': decomposition['other'],
         'max_progression_modifier_total': max_progression_modifier_total,
         'max_progression_value': max_progression_value,
+        'cap': _format_audit_surface_cap(surface_id=surface_id, value_type=value_type),
     }

@@ -270,6 +270,41 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
 
 
+def test_stats_dashboard_primary_bot_operator_table_wires_medals_and_effective_range_fields():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start_of_run,
+        query_rows_max_progression=query_rows_max_progression,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+
+    bot_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'bots')
+    sections = {section.get('title'): section for section in (bot_panel.get('payload', {}).get('sections') or [])}
+    amplify_rows = {row.get('name'): row for row in (sections['Amplify'].get('rows') or [])}
+    golden_rows = {row.get('name'): row for row in (sections['Golden'].get('rows') or [])}
+
+    assert [section.get('title') for section in (bot_panel.get('payload', {}).get('sections') or [])] == ['Amplify', 'Flame', 'Golden', 'Thunder']
+    assert [row.get('name') for row in (sections['Amplify'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
+    assert amplify_rows['Range']['medal_level'] == '00'
+    assert amplify_rows['Range']['medals_spent'] == '0'
+    assert amplify_rows['Range']['medal_value'] == '25m'
+    assert amplify_rows['Range']['start_of_run_value'] == '34'
+    assert amplify_rows['Range']['module_effects'] == '+ 15'
+    assert amplify_rows['Range']['effective_value'] == '77.14'
+    assert golden_rows['Range']['start_of_run_value'] == '59'
+    assert golden_rows['Range']['effective_value']
+
+
 def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_shape():
     account_state = {
         'default_preset': 'Farming',
@@ -278,17 +313,35 @@ def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_s
         'workshop': {},
         'workshop_enhancement_tracks': {},
         'cards_inventory': {},
-        'raw_sections': {},
+        'raw_sections': {
+            'Bots': [
+                ['Golden Bot', '', 'Duration', '26.5', '13 | 26.5s | Cost 580 ? | Next 620 ?'],
+                ['', '', 'Cooldown', '111', '03 | 111s | Cost 180 ? | Next 220 ?'],
+                ['', '', 'Bonus', '6.6', '23 | x6.6 | Cost 980 ? | Next 1020 ?'],
+                ['true', 'Unlocked', 'Range', '50', '15 | 50m | Cost 660 ? | Maxed'],
+            ],
+        },
         'uw_tracks': {},
         'ultimate_weapons': {},
-        'bot_upgrade_tracks': {
-            'Golden Bot': [
-                {'track_name': 'Cooldown', 'level': 4, 'resolved_value': 80.0},
+        'bot_upgrade_tracks': {},
+        'raw_sections': {
+            'Bots': [
+                ['Golden Bot', '', 'Duration', '26.5', '13 | 26.5s | Cost 580 ? | Next 620 ?'],
+                ['', '', 'Cooldown', '111', '03 | 111s | Cost 180 ? | Next 220 ?'],
+                ['', '', 'Bonus', '6.6', '23 | x6.6 | Cost 980 ? | Next 1020 ?'],
+                ['true', 'Unlocked', 'Range', '50', '15 | 50m | Cost 660 ? | Maxed'],
+            ],
+            'Guardians': [
+                ['Attack', '', 'Percentage', '0.01', '00 | 1% | Cost 0 ? | Next 25 ?'],
+                ['', '', 'Cooldown', '120', '00 | 120s | Cost 0 ? | Next 1 ?'],
+                ['true', 'Unlocked', 'Targets', '1', '00 | 1 | Cost 0 ? | Next 100 ?'],
             ],
         },
         'guardian_tracks': {
             'Attack': [
+                {'track_name': 'Percentage', 'level': 0, 'resolved_value': 0.01},
                 {'track_name': 'Cooldown', 'level': 1, 'resolved_value': 120.0},
+                {'track_name': 'Targets', 'level': 0, 'resolved_value': 1.0},
             ],
         },
     }
@@ -307,6 +360,43 @@ def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_s
                         'value_type': 'seconds',
                         'status': 'resolved',
                         'contributors': [{'source_class': 'bots', 'value': 80.0}],
+                    },
+                    'state::bot.golden.duration_seconds': {
+                        'display_value': '32.5',
+                        'final_value': 32.5,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [
+                            {'source_class': 'bots', 'value': 26.5},
+                            {'source_class': 'labs', 'value': 6.0, 'display_value': '6'},
+                        ],
+                    },
+                    'state::bot.golden.bonus_multiplier': {
+                        'display_value': 'x6.6',
+                        'final_value': 6.6,
+                        'value_type': 'multiplier',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 6.6}],
+                    },
+                    'state::bot.golden.range_m': {
+                        'display_value': '59',
+                        'final_value': 59.0,
+                        'value_type': 'm',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 50.0}],
+                    },
+                    'state::bot.golden.effective_range_m': {
+                        'display_value': '110.39',
+                        'final_value': 110.39,
+                        'value_type': 'distance',
+                        'status': 'resolved',
+                    },
+                    'state::bot.global.range_bonus_m': {
+                        'display_value': '15',
+                        'final_value': 15.0,
+                        'value_type': 'm',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'module_unique', 'value': 15.0, 'display_value': '15'}],
                     },
                     'state::guardian.attack.cooldown_seconds': {
                         'display_value': '120',
@@ -337,10 +427,24 @@ def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_s
     guardian_sections = {section.get('title'): section for section in (guardian_panel.get('payload', {}).get('sections') or [])}
     bot_rows = {row.get('name'): row for row in (bot_sections['Golden'].get('rows') or [])}
     guardian_rows = {row.get('name'): row for row in (guardian_sections['Attack'].get('rows') or [])}
-    assert bot_rows['Cooldown']['workshop_level'] == '4'
+    bot_columns = [column.get('label') for column in (bot_panel.get('payload', {}).get('columns') or [])]
+    guardian_columns = [column.get('label') for column in (guardian_panel.get('payload', {}).get('columns') or [])]
+    assert bot_columns == ['Track', 'Level', 'Spent', 'Value', 'Lab', 'Module', 'Start of Run', 'Effective', 'Recon']
+    assert guardian_columns == ['Track', 'Level', 'Spent', 'Value', 'Start of Run', 'Recon']
+    assert [row.get('name') for row in (bot_sections['Golden'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
+    assert [row.get('name') for row in (guardian_sections['Attack'].get('rows') or [])] == ['Percentage', 'Cooldown', 'Targets']
+    assert bot_rows['Cooldown']['medal_level'] == '03'
+    assert bot_rows['Cooldown']['medals_spent'] == '180'
+    assert bot_rows['Cooldown']['medal_value'] == '111s'
     assert bot_rows['Cooldown']['start_of_run_value'] == '80'
-    assert guardian_rows['Cooldown']['workshop_level'] == '1'
+    assert bot_rows['Duration']['lab_effects'] == '+ 6'
+    assert bot_rows['Range']['module_effects'] == '+ 15'
+    assert bot_rows['Range']['effective_value'] == '110.39'
+    assert guardian_rows['Cooldown']['bit_level'] == '00'
+    assert guardian_rows['Cooldown']['bits_spent'] == '0'
+    assert guardian_rows['Cooldown']['bit_value'] == '120s'
     assert guardian_rows['Cooldown']['start_of_run_value'] == '120'
+    assert guardian_rows['Cooldown']['reconciliation_status'] == 'green'
 
 
 def test_stats_dashboard_resolved_sections_publish_offense_defense_and_utility_rows():
@@ -2077,6 +2181,7 @@ def test_stats_dashboard_workshop_modifier_totals_use_percent_display_for_pct_su
     defense_row = next(row for row in offense_rows if row.get('name') == 'Defense %')
     assert defense_row['start_of_run_modifier_total'] == '+ 28.9%'
     assert defense_row['other'] == '—'
+    assert defense_row['cap'] == '98%'
     assert defense_row['max_progression_modifier_total'] == '+ 25%'
     assert defense_row['reconciliation_status'] == 'green'
     assert defense_row['reconciliation_checks']['max_progression_value_ok'] is True
