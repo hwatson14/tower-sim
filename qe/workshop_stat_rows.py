@@ -30,8 +30,10 @@ _WORKSHOP_FRACTIONAL_MODULE_PCT_SURFACES: frozenset[str] = frozenset({
     'state::tower.thorns_damage_pct',
 })
 
-_AUDIT_SURFACE_CAPS: dict[str, float] = {
-    'state::tower.defense_pct': 98.0,
+_AUDIT_SURFACE_CAPS: dict[str, dict[str, object]] = {
+    'state::tower.defense_pct': {'cap_type': 'max', 'cap_value': 98.0},
+    'state::wall.rebuild_seconds': {'cap_type': 'min', 'cap_value': 150.0},
+    'state::tower.shockwave_interval_seconds': {'cap_type': 'min', 'cap_value': 7.0},
 }
 
 _WORKSHOP_DECIMAL_BASE_SURFACES: frozenset[str] = frozenset({
@@ -463,16 +465,22 @@ def _apply_effect_to_workshop_value(
 def _apply_audit_surface_cap(*, surface_id: str, value: float | None) -> float | None:
     if value is None:
         return None
-    cap_value = _AUDIT_SURFACE_CAPS.get(surface_id)
-    if cap_value is None:
+    cap_spec = _AUDIT_SURFACE_CAPS.get(surface_id)
+    if not cap_spec:
         return value
-    return min(float(value), cap_value)
+    cap_value = float(cap_spec.get('cap_value', value))
+    cap_type = str(cap_spec.get('cap_type') or 'max').strip().lower()
+    numeric_value = float(value)
+    if cap_type == 'min':
+        return max(numeric_value, cap_value)
+    return min(numeric_value, cap_value)
 
 
 def _format_audit_surface_cap(*, surface_id: str, value_type: str | None) -> str:
-    cap_value = _AUDIT_SURFACE_CAPS.get(surface_id)
-    if cap_value is None:
+    cap_spec = _AUDIT_SURFACE_CAPS.get(surface_id)
+    if not cap_spec:
         return '—'
+    cap_value = float(cap_spec.get('cap_value'))
     return _format_surface_value(cap_value, surface_id=surface_id, value_type=value_type)
 
 

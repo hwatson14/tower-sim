@@ -1579,6 +1579,7 @@ def test_stats_dashboard_canonical_row_ids_disambiguate_workshop_rows():
     assert by_label['Regen']['canonical_row_id'] == 'workshop::tower.regen'
     assert by_label['Package Chance']['canonical_row_id'] == 'workshop::tower.package_chance_pct'
     assert by_label['Shockwave Interval']['canonical_row_id'] == 'workshop::tower.shockwave_interval_seconds'
+    assert by_label['Shockwave Interval']['cap'] == '7'
     assert by_label['Wall Health']['canonical_row_id'] == 'workshop::wall.health'
 
 
@@ -1832,6 +1833,7 @@ def test_stats_dashboard_workshop_does_not_backfill_from_input_dashboard_when_qe
     assert by_name['Wall Rebuild']['row_notes'] == 'Missing QE query row.'
     assert by_name['Wall Rebuild']['start_of_run_value'] == '—'
     assert by_name['Wall Rebuild']['max_progression_value'] == '—'
+    assert by_name['Wall Rebuild']['cap'] == '150'
     assert by_name['Interest / Wave']['start_of_run_value'] == '—'
     assert by_name['Interest / Wave']['max_progression_value'] == '—'
 
@@ -1956,6 +1958,7 @@ def test_stats_dashboard_workshop_publishes_wall_rebuild_and_interest_rows_green
     assert by_name['Wall Rebuild']['row_status'] == 'resolved'
     assert by_name['Wall Rebuild']['start_of_run_value'] == '608'
     assert by_name['Wall Rebuild']['max_progression_value'] == '508'
+    assert by_name['Wall Rebuild']['cap'] == '150'
     assert by_name['Wall Rebuild']['reconciliation_status'] == 'green'
     assert by_name['Wall Rebuild']['relics'] == '- 2'
     assert by_name['Interest / Wave']['row_status'] == 'partially_resolved'
