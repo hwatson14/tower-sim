@@ -228,6 +228,9 @@ def test_run_to_max__steps_boss_waves_and_stops_on_negative_survival_margin(monk
             survival_margin_hp=margin,
             total_damage_taken=0.0,
             boss_hits_taken=1,
+            ttk_seconds=5.0,
+            wall_pool_hp=1000.0,
+            wall_regen_gained_hp=50.0,
         )
 
     monkeypatch.setattr(run_executor_module, '_simulate_boss_ttk', _fake_ttk)
@@ -365,6 +368,9 @@ def test_run_to_max__table_sweep_reuses_baseline_when_rows_do_not_change(monkeyp
             survival_margin_hp=100.0,
             total_damage_taken=0.0,
             boss_hits_taken=1,
+            ttk_seconds=5.0,
+            wall_pool_hp=1000.0,
+            wall_regen_gained_hp=50.0,
         ),
     )
 
@@ -629,6 +635,9 @@ def test_run_to_max__table_sweep_uses_delta_path_not_overlay(monkeypatch):
             survival_margin_hp=100.0,
             total_damage_taken=0.0,
             boss_hits_taken=1,
+            ttk_seconds=5.0,
+            wall_pool_hp=1000.0,
+            wall_regen_gained_hp=50.0,
         ),
     )
 
@@ -723,6 +732,9 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
             survival_margin_hp=100.0,
             total_damage_taken=25.0,
             boss_hits_taken=2,
+            ttk_seconds=5.0,
+            wall_pool_hp=1000.0,
+            wall_regen_gained_hp=50.0,
         ),
     )
 
@@ -836,6 +848,9 @@ def test_build_boss_wave_table_payload__projects_perk_timeline_into_wave_resolve
             survival_margin_hp=100.0,
             total_damage_taken=0.0,
             boss_hits_taken=1,
+            ttk_seconds=5.0,
+            wall_pool_hp=1000.0,
+            wall_regen_gained_hp=50.0,
         ),
     )
 

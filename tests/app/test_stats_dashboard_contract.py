@@ -200,10 +200,10 @@ def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
     rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
     assert rows_by_name['Cooldown']['workshop_level'] == '2'
     assert rows_by_name['Cooldown']['stone_value'] == '180'
-    assert rows_by_name['Cooldown']['start_of_run_value'] == '180'
-    assert rows_by_name['Cooldown']['max_progression_value'] == '160'
+    assert rows_by_name['Cooldown']['start_of_run_value'] == '180s'
+    assert rows_by_name['Cooldown']['max_progression_value'] == '160s'
     assert rows_by_name['Duration']['workshop_level'] == '3'
-    assert rows_by_name['Duration']['start_of_run_value'] == '42'
+    assert rows_by_name['Duration']['start_of_run_value'] == '42s'
 
 
 def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_plus():
@@ -236,7 +236,7 @@ def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_p
         'Spotlight',
     ]
     chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
-    assert chain_rows[:4] == ['Damage', 'Quantity', 'Chance', 'UW+ Smite']
+    assert chain_rows[:4] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite']
 
 
 def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
@@ -291,11 +291,46 @@ def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_
     black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
 
     assert chain_rows['Damage']['module_effects'] == 'x2.25'
-    assert chain_rows['Damage']['other'].startswith('Chain Thunder ')
-    assert golden_rows['Duration']['lab_effects'] == '20'
+    assert chain_rows['Damage']['other'] == '—'
+    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
+    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
+    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '22%'
+    assert golden_rows['Duration']['lab_effects'] == '20s'
     assert golden_rows['Duration']['reconciliation_status'] == 'green'
-    assert black_hole_rows['Duration']['module_effects'] == '4'
+    assert black_hole_rows['Duration']['module_effects'] == '4s'
     assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+
+
+def test_stats_dashboard_live_guardian_scout_rows_publish_cumulative_bits_and_green_recon():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    guardian_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'guardians')
+    sections = {section.get('title'): section for section in (guardian_panel.get('payload', {}).get('sections') or [])}
+    scout_rows = {row.get('name'): row for row in (sections['Scout'].get('rows') or [])}
+    assert scout_rows['Cooldown']['bits_spent'] == '0'
+    assert scout_rows['Cooldown']['bit_value'] == '105s'
+    assert scout_rows['Cooldown']['start_of_run_value'] == '105s'
+    assert scout_rows['Cooldown']['reconciliation_status'] == 'green'
+    assert scout_rows['Range Bonus']['bits_spent'] == '0'
+    assert scout_rows['Range Bonus']['bit_value'] == '2x'
+    assert scout_rows['Range Bonus']['start_of_run_value'] == 'x2'
+    assert scout_rows['Range Bonus']['reconciliation_status'] == 'green'
+    totals_rows = {row.get('name'): row for row in (sections['Totals'].get('rows') or [])}
+    assert totals_rows['Total']['bits_spent'] == '558'
 
 
 def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
@@ -2875,3 +2910,407 @@ def test_stats_dashboard_cash_and_coin_wave_rows_use_multiplicative_family():
     assert cash_per_wave['max_progression_modifier_total'] == 'x 13.2'
     assert coins_per_wave['lab_effects'] == 'x 1.12'
     assert coins_per_wave['start_of_run_modifier_total'] == 'x 1.12'
+
+
+def test_stats_dashboard_primary_uw_operator_table_uses_workshop_shape():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {},
+        'uw_tracks': {
+            'Golden Tower': [
+                {'track_name': 'Cooldown', 'level': 2, 'resolved_value': 180.0},
+                {'track_name': 'Duration', 'level': 3, 'resolved_value': 42.0},
+            ],
+        },
+        'ultimate_weapons': {'Golden Tower': {'unlocked': True}},
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::uw.golden_tower.cooldown_seconds': {
+                        'display_value': '180',
+                        'final_value': 180.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'ultimate_weapons', 'value': 180.0}],
+                    },
+                    'state::uw.golden_tower.duration_seconds': {
+                        'display_value': '42',
+                        'final_value': 42.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'ultimate_weapons', 'value': 42.0}],
+                    },
+                }
+            }
+        },
+        query_rows_max_progression={
+            'Farming': {
+                'rows': {
+                    'state::uw.golden_tower.cooldown_seconds': {'display_value': '160', 'final_value': 160.0, 'value_type': 'seconds', 'status': 'resolved'},
+                    'state::uw.golden_tower.duration_seconds': {'display_value': '48', 'final_value': 48.0, 'value_type': 'seconds', 'status': 'resolved'},
+                }
+            }
+        },
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
+    columns = [column.get('label') for column in (uw_panel.get('payload', {}).get('columns') or [])]
+    assert columns == ['Track', 'Stone Level', 'Stone Value', 'Lab', 'Module', 'Start of Run', 'Perk', 'Max Progression', 'Other', 'Recon']
+    sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
+    rows_by_name = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
+    assert rows_by_name['Cooldown']['workshop_level'] == '2'
+    assert rows_by_name['Cooldown']['stone_value'] == '180'
+    assert rows_by_name['Cooldown']['start_of_run_value'] == '180s'
+    assert rows_by_name['Cooldown']['max_progression_value'] == '160s'
+    assert rows_by_name['Duration']['workshop_level'] == '3'
+    assert rows_by_name['Duration']['start_of_run_value'] == '42s'
+
+
+def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_plus():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={},
+        query_rows_max_progression={},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
+    sections = list((uw_panel.get('payload', {}).get('sections') or []))
+    assert [section.get('title') for section in sections] == [
+        'Chain Lightning',
+        'Smart Missiles',
+        'Death Wave',
+        'Chrono Field',
+        'Inner Land Mines',
+        'Golden Tower',
+        'Poison Swamp',
+        'Black Hole',
+        'Spotlight',
+    ]
+    chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
+    assert chain_rows[:6] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite', 'Supplemental effects', 'Supplemental: Chain Thunder']
+
+
+def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    stat_inputs_payload = [
+        {'destination_id': 'state::uw.chain_lightning.damage_multiplier', 'source_family': 'module_unique', 'source_name': 'Dimension Core', 'value': 2.25},
+        {'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct', 'source_family': 'module_unique', 'source_name': 'Chain Thunder', 'value': 22.0},
+        {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 20.0},
+        {'destination_id': 'state::uw.black_hole.duration_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': 4.0},
+    ]
+    query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start_of_run,
+        query_rows_max_progression=query_rows_max_progression,
+        stat_inputs_payload=stat_inputs_payload,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
+    sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
+    chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
+    golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
+    black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
+    assert chain_rows['Damage']['module_effects'] == 'x2.25'
+    assert chain_rows['Damage']['other'] == '—'
+    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
+    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
+    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '36%'
+    assert golden_rows['Duration']['lab_effects'] == '20s'
+    assert golden_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Duration']['module_effects'] == '4s'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'
+
+
+def test_stats_dashboard_primary_bot_operator_table_uses_start_of_run_only_surface():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start_of_run,
+        query_rows_max_progression=query_rows_max_progression,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    bot_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'bots')
+    sections = {section.get('title'): section for section in (bot_panel.get('payload', {}).get('sections') or [])}
+    amplify_rows = {row.get('name'): row for row in (sections['Amplify'].get('rows') or [])}
+    golden_rows = {row.get('name'): row for row in (sections['Golden'].get('rows') or [])}
+    totals_rows = {row.get('name'): row for row in (sections['Totals'].get('rows') or [])}
+    assert [section.get('title') for section in (bot_panel.get('payload', {}).get('sections') or [])] == ['Amplify', 'Flame', 'Golden', 'Thunder', 'Totals']
+    assert [row.get('name') for row in (sections['Amplify'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
+    assert amplify_rows['Range']['medal_level'] == '0'
+    assert amplify_rows['Range']['medals_spent'] == '0'
+    assert amplify_rows['Range']['medal_value'] == '25m'
+    assert amplify_rows['Range']['start_of_run_value'] == '34m'
+    assert amplify_rows['Range']['module_effects'] == '+ 15'
+    assert amplify_rows['Range']['reconciliation_status'] == 'red'
+    assert golden_rows['Range']['start_of_run_value'] == '59m'
+    assert golden_rows['Range']['module_effects'] == '+ 15'
+    assert golden_rows['Range']['reconciliation_status'] == 'red'
+    assert totals_rows['Total']['medals_spent'] == '3260'
+
+
+def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    bundle = load_inputs(ids_path=ROOT / 'input' / 'imports' / 'ids.csv')
+    live_account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    module_card_payloads = build_module_card_payloads(live_account_state)
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads=module_card_payloads,
+        query_rows_start_of_run=query_rows_start,
+        query_rows_max_progression=query_rows_max,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    modules_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'modules')
+    summary_rows = modules_panel.get('payload', {}).get('summary_rows') or []
+    by_key = {(row.get('group'), row.get('label')): (row.get('values') or {}) for row in summary_rows}
+    assert modules_panel.get('panel_type') == 'context_modules'
+    assert by_key[('', 'Max Level')]['cannon'] == '220'
+    assert by_key[('', 'Assist %')]['armor'] == '1%'
+    assert by_key[('Primary', 'Module')]['generator'] == 'Singularity Harness'
+    assert by_key[('Assist', 'Module')]['cannon'] == '—'
+    assert by_key[('Current', 'Multiplier')]['core'] == 'x14.01'
+    assert ('Recon', 'Recon') not in by_key
+
+
+def test_stats_dashboard_primary_bot_and_guardian_operator_tables_use_workshop_shape():
+    account_state = {
+        'default_preset': 'Farming',
+        'card_presets': {'Farming': []},
+        'module_presets': {},
+        'workshop': {},
+        'workshop_enhancement_tracks': {},
+        'cards_inventory': {},
+        'raw_sections': {
+            'Bots': [
+                ['Golden Bot', '', 'Duration', '26.5', '13 | 26.5s | Cost 580 ? | Next 620 ?'],
+                ['', '', 'Cooldown', '111', '03 | 111s | Cost 180 ? | Next 220 ?'],
+                ['', '', 'Bonus', '6.6', '23 | x6.6 | Cost 980 ? | Next 1020 ?'],
+                ['true', 'Unlocked', 'Range', '50', '15 | 50m | Cost 660 ? | Maxed'],
+            ],
+            'Guardians': [
+                ['Attack', '', 'Percentage', '0.01', '00 | 1% | Cost 0 ? | Next 25 ?'],
+                ['', '', 'Cooldown', '120', '00 | 120s | Cost 0 ? | Next 1 ?'],
+                ['true', 'Unlocked', 'Targets', '1', '00 | 1 | Cost 0 ? | Next 100 ?'],
+            ],
+        },
+        'uw_tracks': {},
+        'ultimate_weapons': {},
+        'bot_upgrade_tracks': {},
+        'guardian_tracks': {
+            'Attack': [
+                {'track_name': 'Percentage', 'level': 0, 'resolved_value': 0.01},
+                {'track_name': 'Cooldown', 'level': 1, 'resolved_value': 120.0},
+                {'track_name': 'Targets', 'level': 0, 'resolved_value': 1.0},
+            ],
+        },
+    }
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={
+            'Farming': {
+                'rows': {
+                    'state::bot.golden.cooldown_seconds': {
+                        'display_value': '80',
+                        'final_value': 80.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 80.0}],
+                    },
+                    'state::bot.golden.duration_seconds': {
+                        'display_value': '32.5',
+                        'final_value': 32.5,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [
+                            {'source_class': 'bots', 'value': 26.5},
+                            {'source_class': 'labs', 'value': 6.0, 'display_value': '6'},
+                        ],
+                    },
+                    'state::bot.golden.bonus_multiplier': {
+                        'display_value': 'x6.6',
+                        'final_value': 6.6,
+                        'value_type': 'multiplier',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 6.6}],
+                    },
+                    'state::bot.golden.range_m': {
+                        'display_value': '59',
+                        'final_value': 59.0,
+                        'value_type': 'm',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'bots', 'value': 50.0}],
+                    },
+                    'state::bot.global.range_bonus_m': {
+                        'display_value': '15',
+                        'final_value': 15.0,
+                        'value_type': 'm',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'module_unique', 'value': 15.0, 'display_value': '15'}],
+                    },
+                    'state::guardian.attack.cooldown_seconds': {
+                        'display_value': '120',
+                        'final_value': 120.0,
+                        'value_type': 'seconds',
+                        'status': 'resolved',
+                        'contributors': [{'source_class': 'guardians', 'value': 120.0}],
+                    },
+                }
+            }
+        },
+        query_rows_max_progression={'Farming': {'rows': {}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    bot_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'bots')
+    guardian_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'guardians')
+    bot_sections = {section.get('title'): section for section in (bot_panel.get('payload', {}).get('sections') or [])}
+    guardian_sections = {section.get('title'): section for section in (guardian_panel.get('payload', {}).get('sections') or [])}
+    bot_rows = {row.get('name'): row for row in (bot_sections['Golden'].get('rows') or [])}
+    guardian_rows = {row.get('name'): row for row in (guardian_sections['Attack'].get('rows') or [])}
+    bot_columns = [column.get('label') for column in (bot_panel.get('payload', {}).get('columns') or [])]
+    guardian_columns = [column.get('label') for column in (guardian_panel.get('payload', {}).get('columns') or [])]
+    assert bot_columns == ['Track', 'Level', 'Cumulative Medals Spent', 'Value', 'Lab', 'Module', 'Start of Run', 'Recon']
+    assert guardian_columns == ['Track', 'Level', 'Cumulative Bits Spent', 'Value', 'Start of Run', 'Recon']
+    assert [row.get('name') for row in (bot_sections['Golden'].get('rows') or [])] == ['Bonus', 'Cooldown', 'Duration', 'Range']
+    assert [row.get('name') for row in (guardian_sections['Attack'].get('rows') or [])] == ['Percentage', 'Cooldown', 'Targets']
+    assert bot_rows['Cooldown']['medal_level'] == '3'
+    assert bot_rows['Cooldown']['medals_spent'] == '180'
+    assert bot_rows['Cooldown']['medal_value'] == '111s'
+    assert bot_rows['Cooldown']['start_of_run_value'] == '80s'
+    assert bot_rows['Duration']['lab_effects'] == '+ 6'
+    assert bot_rows['Range']['module_effects'] == '+ 15'
+    assert bot_rows['Range']['reconciliation_status'] == 'red'
+    assert guardian_rows['Cooldown']['bit_level'] == '0'
+    assert guardian_rows['Cooldown']['bits_spent'] == '0'
+    assert guardian_rows['Cooldown']['bit_value'] == '120s'
+    assert guardian_rows['Cooldown']['start_of_run_value'] == '120s'
+    assert guardian_rows['Cooldown']['reconciliation_status'] == 'green'
+    guardian_totals = {row.get('name'): row for row in (guardian_sections['Totals'].get('rows') or [])}
+    assert guardian_totals['Total']['bits_spent'] == '0'
+
+
+def test_stats_dashboard_primary_uw_operator_table_lists_all_uw_and_appends_uw_plus():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={},
+        query_rows_max_progression={},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
+    sections = list((uw_panel.get('payload', {}).get('sections') or []))
+    assert [section.get('title') for section in sections] == [
+        'Chain Lightning',
+        'Smart Missiles',
+        'Death Wave',
+        'Chrono Field',
+        'Inner Land Mines',
+        'Golden Tower',
+        'Poison Swamp',
+        'Black Hole',
+        'Spotlight',
+    ]
+    chain_rows = [row.get('name') for row in (sections[0].get('rows') or [])]
+    assert chain_rows[:4] == ['Damage', 'Quantity', 'Chance', 'UW+: Smite']
+
+
+def test_stats_dashboard_primary_uw_operator_table_wires_module_other_and_recon_fields():
+    account_state = json.loads((ROOT / 'out' / 'account_state.json').read_text(encoding='utf-8'))
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    stat_inputs_payload = [
+        {'destination_id': 'state::uw.chain_lightning.damage_multiplier', 'source_family': 'module_unique', 'source_name': 'Dimension Core', 'value': 2.25},
+        {'destination_id': 'state::uw.chain_lightning.max_enemy_damage_reduction_pct', 'source_family': 'module_unique', 'source_name': 'Chain Thunder', 'value': 22.0},
+        {'destination_id': 'state::uw.golden_tower.duration_seconds', 'source_family': 'lab', 'source_name': 'Golden Tower Duration Lab', 'value': 20.0},
+        {'destination_id': 'state::uw.black_hole.duration_seconds', 'source_family': 'module_unique', 'source_name': 'Multiverse Nexus', 'value': 4.0},
+    ]
+    query_rows_start_of_run = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
+    query_rows_max_progression = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run=query_rows_start_of_run,
+        query_rows_max_progression=query_rows_max_progression,
+        stat_inputs_payload=stat_inputs_payload,
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    uw_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'ultimate_weapons')
+    sections = {section.get('title'): section for section in (uw_panel.get('payload', {}).get('sections') or [])}
+    chain_rows = {row.get('name'): row for row in (sections['Chain Lightning'].get('rows') or [])}
+    golden_rows = {row.get('name'): row for row in (sections['Golden Tower'].get('rows') or [])}
+    black_hole_rows = {row.get('name'): row for row in (sections['Black Hole'].get('rows') or [])}
+    assert chain_rows['Damage']['module_effects'] == 'x2.25'
+    assert chain_rows['Damage']['other'] == '—'
+    assert chain_rows['Damage']['start_of_run_value'] == 'x900.25'
+    assert chain_rows['Damage']['max_progression_value'] == 'x900.25'
+    assert chain_rows['Supplemental: Chain Thunder']['start_of_run_value'] == '22%'
+    assert golden_rows['Duration']['lab_effects'] == '20s'
+    assert golden_rows['Duration']['reconciliation_status'] == 'green'
+    assert black_hole_rows['Duration']['module_effects'] == '4s'
+    assert black_hole_rows['Duration']['reconciliation_status'] == 'green'

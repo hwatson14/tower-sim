@@ -5,11 +5,11 @@ status:
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: repaired_product_and_boss_waves_semantics_performance_only_blocker_remains
+  overall_state: final_product_correctness_hardening_complete_performance_only_blocker_remains
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_398
+    full_suite_latest_result: passed_399
     shipped_baseline_differed_before_repair: true
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
@@ -149,17 +149,20 @@ v49_program:
       note: shipped-baseline truth was not yet performance-only because Boss Waves semantics and a hidden generated-artifact contract seam were still open
     rebuilt_worktree_after_repair_2026_04_15:
       pytest_q:
-        passed: 398
+        passed: 399
         failed: 0
         skipped: 0
       targeted_semantic_gate:
         command: python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py
-        passed: 164
+        passed: 165
       python_m_app_run_stats: passed
       streamlit_harness:
         boss_waves_default_render: passed
         boss_waves_tourney_fail_closed_without_tournament_wave: passed
-      note: repaired worktree truth is now non-performance green; only P5 remains open
+        preset_switching_updates_visible_state: passed
+        primary_stats_surfaces_visible_and_clean: passed
+        boss_waves_regen_auditability_visible: passed
+      note: repaired worktree truth is now non-performance green, including final visible-product hardening for UW supplemental rows, cumulative Bot/Guardian spend totals, Guardian Scout truth, per-surface recon semantics, and Boss Waves regen auditability; only P5 remains open
   performance_baseline:
     repo_snapshot: d04f328
     command: python -m app.run_stats

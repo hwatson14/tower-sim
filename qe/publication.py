@@ -100,6 +100,35 @@ def _load_guardian_cumulative_costs() -> dict[tuple[str, str, int], float]:
             except ValueError:
                 continue
             costs[(guardian_name, track_name, level)] = bit_cost
+    verified_track_columns = {
+        'cooldown_bits': 'cooldown',
+        'duration_bits': 'duration',
+        'range_bonus_bits': 'range_bonus',
+        'cash_bonus_bits': 'cash_bonus',
+        'find_chance_bits': 'find_chance',
+        'double_find_chance_bits': 'double_find_chance',
+        'recovery_amount_bits': 'recovery_amount',
+        'max_recovery_bits': 'max_recovery',
+        'multiplier_bits': 'multiplier',
+        'targets_bits': 'targets',
+        'percentage_bits': 'percentage',
+    }
+    for path in sorted((_REPO_ROOT / 'kb' / 'guardians' / 'tables').glob('wiki-verified-guardian-*-upgrades.csv')):
+        guardian_name = _normalize_identity(path.stem.replace('wiki-verified-guardian-', '').replace('-upgrades', ''))
+        with path.open(encoding='utf-8', newline='') as handle:
+            for row in csv.DictReader(handle):
+                try:
+                    level = int(float(row.get('level') or 0))
+                except ValueError:
+                    continue
+                for cost_key, normalized_track in verified_track_columns.items():
+                    if cost_key not in row:
+                        continue
+                    try:
+                        bit_cost = float(row.get(cost_key) or 0.0)
+                    except ValueError:
+                        continue
+                    costs.setdefault((guardian_name, normalized_track, level), bit_cost)
     return costs
 
 
@@ -107,6 +136,23 @@ def _format_cumulative_cost(value: float | None) -> str:
     if value is None:
         return _DASH
     return str(int(value)) if float(value).is_integer() else f'{value:.2f}'.rstrip('0').rstrip('.')
+
+
+def _cumulative_total_text(*values: object) -> str:
+    total = 0.0
+    saw_value = False
+    for value in values:
+        normalized = _normalize_display_text(value)
+        if normalized == _DASH:
+            continue
+        number, _suffix = _parse_display_number(normalized)
+        if number is None:
+            continue
+        total += number
+        saw_value = True
+    if not saw_value:
+        return _DASH
+    return _format_cumulative_cost(total)
 
 
 def _publish_module_account_tier_surfaces(rows: Dict[str, StatRow]) -> None:
@@ -812,6 +858,101 @@ def _format_named_other_entries(entries: list[tuple[str, object]]) -> str:
     return ' · '.join(tokens) if tokens else '—'
 
 
+def _section_surface_value(row: dict[str, object], *, metadata_value: object = None) -> str:
+    if row:
+        final_value = row.get('final_value')
+        if final_value is not None:
+            return _normalize_display_text(row.get('display_value') or final_value)
+        display_value = row.get('display_value')
+        if display_value not in (None, ''):
+            return _normalize_display_text(display_value)
+    return _normalize_display_text(metadata_value or _DASH)
+
+
+def _build_supplemental_rows(
+    *,
+    prefix: str,
+    entries: list[tuple[str, object]],
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    if not entries:
+        return rows
+    rows.append({
+        'canonical_row_id': f'{prefix}::supplemental_header',
+        'display_label': 'Supplemental effects',
+        'name': 'Supplemental effects',
+        'workshop_level': _DASH,
+        'stone_value': _DASH,
+        'lab_effects': _DASH,
+        'module_effects': _DASH,
+        'start_of_run_value': _DASH,
+        'perk_effects': _DASH,
+        'max_progression_value': _DASH,
+        'other': _DASH,
+        'reconciliation_status': 'not_applicable',
+        'reconciliation_cell_flags': {},
+        'row_status': 'non_recon',
+    })
+    for label, value in entries:
+        rows.append({
+            'canonical_row_id': f'{prefix}::supplemental::{_normalize_identity(label)}',
+            'display_label': f'Supplemental: {label}',
+            'name': f'Supplemental: {label}',
+            'workshop_level': _DASH,
+            'stone_value': _DASH,
+            'lab_effects': _DASH,
+            'module_effects': _DASH,
+            'start_of_run_value': _normalize_display_text(value),
+            'perk_effects': _DASH,
+            'max_progression_value': _DASH,
+            'other': _DASH,
+            'reconciliation_status': 'not_applicable',
+            'reconciliation_cell_flags': {},
+            'row_status': 'non_recon',
+        })
+    return rows
+
+
+def _display_terms_parseable(*terms: object) -> bool:
+    for term in terms:
+        normalized = _normalize_display_text(term)
+        if normalized == _DASH:
+            continue
+        value, _suffix = _parse_display_number(normalized)
+        if value is None:
+            return False
+    return True
+
+
+def _sum_display_terms(*terms: object) -> tuple[float | None, str]:
+    total = 0.0
+    suffix = ''
+    saw = False
+    for term in terms:
+        normalized = _normalize_display_text(term)
+        if normalized == _DASH:
+            continue
+        value, parsed_suffix = _parse_display_number(normalized)
+        if value is None:
+            return None, ''
+        if not suffix and parsed_suffix:
+            suffix = parsed_suffix
+        saw = True
+        total += value
+    if not saw:
+        return None, suffix
+    return total, suffix
+
+
+def _format_compacted_display_sum(*terms: object, fallback_surface_id: str = '') -> str:
+    total, suffix = _sum_display_terms(*terms)
+    if total is None:
+        return _join_display_tokens(*[str(term) for term in terms if _normalize_display_text(term) != _DASH])
+    if not suffix:
+        suffix = _semantic_suffix_for_display(total, fallback_surface_id=fallback_surface_id)
+    return _format_value_with_hint(total, suffix_hint=suffix)
+
+
 def _format_uw_stat_input_value(*, destination_id: str, raw_value: object) -> str:
     if raw_value in (None, ''):
         return '—'
@@ -871,10 +1012,8 @@ def _build_uw_stat_input_maps(stat_inputs_payload: list[dict[str, object]] | Non
 
 
 def _uw_recon_status(*, start_row: dict[str, object], max_row: dict[str, object], stone_value: str) -> str:
-    # UW rows reconcile green only when the stone/base value is present and both
-    # sanctioned QE states resolve for the same visible row.
     if _normalize_display_text(stone_value) == _DASH:
-        return 'amber'
+        return 'red'
     if str(start_row.get('status') or '') != 'resolved':
         return 'amber'
     if str(max_row.get('status') or '') != 'resolved':
@@ -969,6 +1108,17 @@ def _surface_display_value(row: dict[str, object], *, surface_id: str, fallback_
     )
 
 
+def _normalize_effect_text_for_surface(surface_id: str, value: object) -> str:
+    normalized = _normalize_display_text(value)
+    if normalized == _DASH:
+        return _DASH
+    number, parsed_suffix = _parse_display_number(normalized)
+    if number is None:
+        return normalized
+    suffix_hint = parsed_suffix or _semantic_suffix_for_display(normalized, fallback_surface_id=surface_id)
+    return _format_value_with_hint(number, suffix_hint=suffix_hint, scale_hint=_surface_pct_scale_hint(surface_id))
+
+
 def _bot_recon_status_explicit(
     *,
     surface_id: str,
@@ -981,23 +1131,27 @@ def _bot_recon_status_explicit(
     spent_text = _normalize_display_text(metadata.get('medals_spent') or _DASH)
     if spent_text == _DASH or base_text == _DASH:
         return 'red'
+    if not _display_terms_parseable(base_text, lab_effects, module_effects, start_value):
+        return 'red'
     base_value, _ = _parse_display_number(base_text)
     start_number, _ = _parse_display_number(start_value)
     if base_value is None or start_number is None:
-        return 'amber'
+        return 'red'
     lab_value, _ = _parse_display_number(lab_effects)
     module_value, _ = _parse_display_number(module_effects)
     expected = base_value + (lab_value or 0.0) + (module_value or 0.0)
-    return 'green' if abs(expected - start_number) < 0.011 else 'amber'
+    return 'green' if abs(expected - start_number) < 0.011 else 'red'
 
 
 def _guardian_recon_status_explicit(*, bit_value: str, start_value: str, bits_spent: str) -> str:
     if _normalize_display_text(bits_spent) == _DASH:
         return 'red'
+    if not _display_terms_parseable(bit_value, start_value):
+        return 'red'
     base_value, _ = _parse_display_number(bit_value)
     start_number, _ = _parse_display_number(start_value)
     if base_value is None or start_number is None:
-        return 'amber'
+        return 'red'
     return 'green' if abs(base_value - start_number) < 0.011 else 'red'
 
 
@@ -1093,7 +1247,6 @@ def _build_module_grouped_summary(slots: dict[str, object]) -> list[dict[str, ob
         {'group': 'Assist', 'label': 'Rarity', 'values': {slot: _slot_value(slot, 'rarity_text', 'assist') for slot in slot_order}},
         {'group': 'Current', 'label': 'Multiplier', 'values': {slot: _slot_value(slot, 'main_value_text') for slot in slot_order}},
         {'group': 'Current', 'label': 'Effect', 'values': {slot: _slot_value(slot, 'main_label_text') for slot in slot_order}},
-        {'group': 'Recon', 'label': 'Recon', 'values': {slot: _module_slot_recon_status(dict(slots.get(slot) or {})) for slot in slot_order}},
     ]
 
 
@@ -1983,13 +2136,11 @@ def _build_stats_uw_operator_panel(
     sections: dict[str, list[dict[str, object]]] = {}
     for uw_name, track_map in track_surface_map.items():
         section_rows: list[dict[str, object]] = []
-        primary_other_entries = [
+        supplemental_entries = [
             (
                 spec['label'],
-                _normalize_display_text(
-                    dict(rows_start.get(spec['surface_id']) or {}).get('display_value')
-                    or dict(rows_max.get(spec['surface_id']) or {}).get('display_value')
-                    or _DASH
+                _section_surface_value(
+                    dict(rows_start.get(spec['surface_id']) or {}) or dict(rows_max.get(spec['surface_id']) or {})
                 ),
             )
             for spec in other_specs_by_section.get(uw_name, [])
@@ -1998,56 +2149,76 @@ def _build_stats_uw_operator_panel(
                 or dict(rows_max.get(spec['surface_id']) or {}).get('display_value') not in (None, '')
             )
         ]
-        primary_other_entries.extend(section_other_from_inputs.get(uw_name, []))
-        first_row = True
+        supplemental_entries.extend(section_other_from_inputs.get(uw_name, []))
         for track_name, surface_id in track_map.items():
             metadata = dict(row_index.get(f'{uw_name}::{track_name}') or {})
             effect_map = surface_effect_map.get(surface_id) or {}
             start_row = dict(rows_start.get(surface_id) or {})
             max_row = dict(rows_max.get(surface_id) or {})
-            start_value = _normalize_display_text(start_row.get('display_value') or metadata.get('final') or _DASH)
-            max_value = _normalize_display_text(max_row.get('display_value') or metadata.get('final') or _DASH)
-            lab_value = metadata.get('lab') or (' · '.join(effect_map.get('lab') or []) if (effect_map.get('lab') or []) else None)
+            lab_value = _normalize_effect_text_for_surface(surface_id, metadata.get('lab')) if metadata.get('lab') not in (None, '') else (_format_compacted_display_sum(*(effect_map.get('lab') or []), fallback_surface_id=surface_id) if (effect_map.get('lab') or []) else None)
             if not lab_value:
                 lab_value = _format_effect_from_contributors(
                     start_row,
                     source_classes=('labs',),
                     surface_value_type=str(start_row.get('value_type') or ''),
                 )
-            module_value = metadata.get('module') or (' · '.join(effect_map.get('module') or []) if (effect_map.get('module') or []) else None)
+            module_value = _normalize_effect_text_for_surface(surface_id, metadata.get('module')) if metadata.get('module') not in (None, '') else (_format_compacted_display_sum(*(effect_map.get('module') or []), fallback_surface_id=surface_id) if (effect_map.get('module') or []) else None)
             if not module_value:
                 module_value = _format_effect_from_contributors(
                     start_row,
                     source_classes=('module_main', 'module_substat', 'module_unique'),
                     surface_value_type=str(start_row.get('value_type') or ''),
                 )
-            perk_value = metadata.get('perk') or (' · '.join(effect_map.get('perk') or []) if (effect_map.get('perk') or []) else None)
+            perk_value = _normalize_effect_text_for_surface(surface_id, metadata.get('perk')) if metadata.get('perk') not in (None, '') else (_format_compacted_display_sum(*(effect_map.get('perk') or []), fallback_surface_id=surface_id) if (effect_map.get('perk') or []) else None)
             if not perk_value:
                 perk_value = _format_effect_from_contributors(
                     max_row or start_row,
                     source_classes=('perk', 'perks', 'perk_effect'),
                     surface_value_type=str((max_row or start_row).get('value_type') or ''),
                 )
+            lab_text = _normalize_display_text(lab_value or _DASH)
+            module_text = _normalize_display_text(module_value or _DASH)
+            perk_text = _normalize_display_text(perk_value or _DASH)
+            other_text = _DASH
+            start_expected, _suffix = _sum_display_terms(metadata.get('stone_value') or _DASH, lab_text, module_text, other_text)
+            max_expected, _suffix = _sum_display_terms(metadata.get('stone_value') or _DASH, lab_text, module_text, other_text, perk_text)
+            start_value = _surface_display_value(
+                start_row,
+                surface_id=surface_id,
+                fallback_value=start_expected if start_expected is not None else metadata.get('final'),
+            )
+            max_value = _surface_display_value(
+                max_row,
+                surface_id=surface_id,
+                fallback_value=max_expected if max_expected is not None else metadata.get('final'),
+            )
+            uw_recon_status = 'amber'
+            if not _display_terms_parseable(metadata.get('stone_value') or _DASH, start_value, max_value, lab_text, module_text, perk_text):
+                uw_recon_status = 'red'
+            elif start_expected is not None and max_expected is not None:
+                start_number, _ = _parse_display_number(start_value)
+                max_number, _ = _parse_display_number(max_value)
+                if start_number is None or max_number is None:
+                    uw_recon_status = 'red'
+                elif abs(start_expected - start_number) < 0.011 and abs(max_expected - max_number) < 0.011:
+                    uw_recon_status = 'green'
+                else:
+                    uw_recon_status = 'red'
             section_rows.append({
                 'canonical_row_id': surface_id,
                 'display_label': track_name,
                 'name': track_name,
                 'workshop_level': _normalize_display_text(metadata.get('stone_level') or _DASH),
                 'stone_value': _normalize_display_text(metadata.get('stone_value') or _DASH),
-                'lab_effects': _normalize_display_text(lab_value or _DASH),
-                'module_effects': _normalize_display_text(module_value or _DASH),
+                'lab_effects': lab_text,
+                'module_effects': module_text,
                 'start_of_run_value': start_value,
-                'perk_effects': _normalize_display_text(perk_value or _DASH),
+                'perk_effects': perk_text,
                 'max_progression_value': max_value,
-                'other': _format_named_other_entries(primary_other_entries) if first_row else _DASH,
-                'reconciliation_status': _uw_recon_status(
-                    start_row=start_row,
-                    max_row=max_row,
-                    stone_value=metadata.get('stone_value') or _DASH,
-                ),
+                'other': other_text,
+                'reconciliation_status': uw_recon_status,
                 'reconciliation_cell_flags': {},
             })
-            first_row = False
         plus_key = f'{uw_name}::'
         for key, plus_payload in sorted((account_state_payload.get('uw_plus_tracks') or {}).items()):
             if not str(key).startswith(plus_key):
@@ -2055,8 +2226,8 @@ def _build_stats_uw_operator_panel(
             plus_name = str((plus_payload or {}).get('plus_track_name') or str(key).split('::', 1)[-1] or 'UW+')
             section_rows.append({
                 'canonical_row_id': f'uw_plus::{uw_name}::{plus_name}',
-                'display_label': f'UW+ {plus_name}',
-                'name': f'UW+ {plus_name}',
+                'display_label': f'UW+: {plus_name}',
+                'name': f'UW+: {plus_name}',
                 'workshop_level': _DASH,
                 'stone_value': _normalize_display_text((plus_payload or {}).get('display_token') or _DASH),
                 'lab_effects': _DASH,
@@ -2065,9 +2236,11 @@ def _build_stats_uw_operator_panel(
                 'perk_effects': _DASH,
                 'max_progression_value': _DASH,
                 'other': _DASH,
-                'reconciliation_status': 'amber',
+                'reconciliation_status': 'not_applicable',
                 'reconciliation_cell_flags': {},
+                'row_status': 'non_recon',
             })
+        section_rows.extend(_build_supplemental_rows(prefix=f'uw::{_normalize_identity(uw_name)}', entries=supplemental_entries))
         sections[uw_name] = section_rows
     return ({
         'panel_id': 'ultimate_weapons',
@@ -2094,7 +2267,10 @@ def _build_stats_bots_operator_panel(
 ) -> dict[str, object]:
     del rows_max, stats_layout
     metadata_index = _build_bot_track_metadata_index(account_state_payload)
+    global_range_row = dict(rows_start.get('state::bot.global.range_bonus_m') or {})
+    global_range_value_type = str(global_range_row.get('value_type') or '')
     sections: dict[str, list[dict[str, object]]] = {}
+    total_spent_values: list[str] = []
     for bot_name, track_specs in _bot_track_surface_map().items():
         section_rows: list[dict[str, object]] = []
         for spec in track_specs:
@@ -2104,8 +2280,15 @@ def _build_stats_bots_operator_panel(
             start_row = dict(rows_start.get(surface_id) or {})
             surface_value_type = str(start_row.get('value_type') or '')
             module_value = _row_module_effect_display(start_row, surface_value_type=surface_value_type)
-            if track_name == 'Range' and module_value != _DASH:
-                module_value = _DASH
+            if track_name == 'Range':
+                module_value = _join_display_tokens(
+                    module_value,
+                    _format_effect_from_contributors(
+                        global_range_row,
+                        source_classes=('module_main', 'module_substat', 'module_unique'),
+                        surface_value_type=global_range_value_type,
+                    ),
+                )
             lab_effects = _normalize_display_text(
                 _format_effect_from_contributors(
                     start_row,
@@ -2137,7 +2320,22 @@ def _build_stats_bots_operator_panel(
                 ),
                 'reconciliation_cell_flags': {},
             })
+            total_spent_values.append(metadata.get('medals_spent') or _DASH)
         sections[bot_name] = section_rows
+    sections['Totals'] = [{
+        'canonical_row_id': 'bots::total_spent',
+        'display_label': 'Total',
+        'name': 'Total',
+        'medal_level': _DASH,
+        'medals_spent': _cumulative_total_text(*total_spent_values),
+        'medal_value': _DASH,
+        'lab_effects': _DASH,
+        'module_effects': _DASH,
+        'start_of_run_value': _DASH,
+        'reconciliation_status': 'not_applicable',
+        'reconciliation_cell_flags': {},
+        'row_status': 'non_recon',
+    }]
     return {
         'panel_id': 'bots',
         'panel_type': 'workshop_stat_table',
@@ -2169,6 +2367,7 @@ def _build_stats_guardians_operator_panel(
         for track in (tracks or [])
     }
     sections: dict[str, list[dict[str, object]]] = {}
+    total_spent_values: list[str] = []
     for guardian_name, track_specs in _guardian_track_surface_map().items():
         section_rows: list[dict[str, object]] = []
         for spec in track_specs:
@@ -2198,7 +2397,20 @@ def _build_stats_guardians_operator_panel(
                 ),
                 'reconciliation_cell_flags': {},
             })
+            total_spent_values.append(metadata.get('bits_spent') or _DASH)
         sections[guardian_name] = section_rows
+    sections['Totals'] = [{
+        'canonical_row_id': 'guardians::total_spent',
+        'display_label': 'Total',
+        'name': 'Total',
+        'bit_level': _DASH,
+        'bits_spent': _cumulative_total_text(*total_spent_values),
+        'bit_value': _DASH,
+        'start_of_run_value': _DASH,
+        'reconciliation_status': 'not_applicable',
+        'reconciliation_cell_flags': {},
+        'row_status': 'non_recon',
+    }]
     return {
         'panel_id': 'guardians',
         'panel_type': 'workshop_stat_table',

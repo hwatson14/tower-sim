@@ -38,7 +38,7 @@ The active program is now the v49 Streamlit-first product scope reset:
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
 - the latest historical shipped-baseline audit from `tower-sim-src(9).zip` on **2026-04-15** was **not** fully green (`392 passed, 1 failed, 1 skipped`) until rebuilt-state repair work ran
-- the latest rebuilt-worktree full suite on the repaired current baseline passed on **2026-04-15** (`398 passed`)
+- the latest rebuilt-worktree full suite on the repaired current baseline passed on **2026-04-15** (`399 passed`)
 - formula surface policy remains active
 - the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
@@ -101,7 +101,7 @@ This tranche is not about:
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. after the 2026-04-15 Boss Waves semantic repair and fresh-clone truth tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-15 final product-correctness hardening tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -116,7 +116,8 @@ This tranche is not about:
 9. COMPLETE: repair fresh-clone Stats contract truth, live preset/view-state wiring, grouped Modules layout, cumulative Bot/Guardian spend, mojibake normalization, and primary-surface reconciliation semantics
 10. COMPLETE: repair Boss Waves semantics so the product uses one canonical run-context contract, separates actual boss cadence from checkpoint sampling, and fails closed for Tourney when required tournament-wave context is unavailable
 11. COMPLETE: remove the hidden fresh-clone generated-artifact dependency from the touched Stats contract test family
-12. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+12. COMPLETE: harden the visible product so UW supplemental/UW+ handling, Bot/Guardian cumulative spend and totals, Guardian Scout truth, per-surface recon semantics, and Boss Waves regen auditability are all visible and defensible in the live product surface
+13. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
@@ -206,10 +207,14 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 1: **1011.11 ms**
   - run 2: **1045.87 ms**
   - run 3: **934.96 ms**
-- rebuilt-worktree verification after the 2026-04-15 Boss Waves semantic repair and fresh-clone truth tranche:
-  - `python -m pytest -q` -> **398 passed**
-  - `python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py` -> **164 passed**
+- rebuilt-worktree verification after the 2026-04-15 final product-correctness hardening tranche:
+  - `python -m pytest -q` -> **399 passed**
+  - `python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py` -> **165 passed**
   - `python -m app.run_stats` -> **passed**
+- live product acceptance verification after the 2026-04-15 final product-correctness hardening tranche:
+  - Streamlit harness preset switching -> **passed**
+  - primary Stats surfaces remain Workshop / Ultimate Weapons / Bots / Guardians / Modules -> **passed**
+  - Boss Waves surface exposes cadence and regen auditability in the visible operator contract -> **passed**
 - sanctioned Boss Waves payload benchmark (`build_boss_wave_payload`, Tier 14, wave 500, boss step 10, `stop_on_failure=false`) on **2026-04-10** after the explicit payload contract landed:
   - run 1: **2655.53 ms**
   - run 2: **1763.50 ms**

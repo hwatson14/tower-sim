@@ -474,7 +474,9 @@ def render_workshop_stat_table_html(payload: dict) -> str:
 
     def _recon_cell(row: dict) -> str:
         status = str((row or {}).get('reconciliation_status') or 'amber')
-        status_class = status if status in {'green', 'red', 'amber'} else 'amber'
+        if status not in {'green', 'red', 'amber'}:
+            return html.escape(_normalize_display_text('—'))
+        status_class = status
         title = {
             'green': 'Row visibly reconciles',
             'red': 'Row does not visibly reconcile',

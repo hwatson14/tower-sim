@@ -161,6 +161,9 @@ class BossDamageIntakeResult:
     survival_margin_hp: float
     total_damage_taken: float
     boss_hits_taken: int
+    ttk_seconds: float
+    wall_pool_hp: float
+    wall_regen_gained_hp: float
 
 
 def build_start_of_run_state(account_state: AccountState, *, preset_name: str, perk_state) -> ProjectedRunState:
@@ -447,6 +450,9 @@ def build_boss_wave_table_payload(
                 'boss_contact_time_seconds_used': combat_runtime.boss_contact_time_seconds,
                 'boss_hit_interval_seconds_used': combat_runtime.boss_hit_interval_seconds,
                 'incoming_damage_multiplier_used': combat_runtime.incoming_damage_multiplier,
+                'boss_ttk_seconds_used': None if intake is None else float(intake.ttk_seconds),
+                'wall_pool_hp_used': None if intake is None else float(intake.wall_pool_hp),
+                'wall_regen_gained_hp': None if intake is None else float(intake.wall_regen_gained_hp),
                 'free_attack_upgrade_chance_pct': hot_values.get('state::tower.free_attack_upgrade_chance_pct'),
                 'free_defense_upgrade_chance_pct': hot_values.get('state::tower.free_defense_upgrade_chance_pct'),
                 'free_utility_upgrade_chance_pct': hot_values.get('state::tower.free_utility_upgrade_chance_pct'),
@@ -1232,6 +1238,9 @@ def _simulate_boss_damage_intake(
             survival_margin_hp=survival_margin_hp,
             total_damage_taken=0.0,
             boss_hits_taken=0,
+            ttk_seconds=ttk_seconds,
+            wall_pool_hp=wall_hp * wall_fortification_multiplier,
+            wall_regen_gained_hp=max(0.0, wall_regen * ttk_seconds),
         )
 
     hit_t = float(combat_runtime.boss_contact_time_seconds)
@@ -1258,4 +1267,7 @@ def _simulate_boss_damage_intake(
         survival_margin_hp=wall_pool + wall_regen_gained - total_damage_taken,
         total_damage_taken=total_damage_taken,
         boss_hits_taken=hits,
+        ttk_seconds=ttk_seconds,
+        wall_pool_hp=wall_pool,
+        wall_regen_gained_hp=wall_regen_gained,
     )

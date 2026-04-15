@@ -167,7 +167,7 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
     def _series(key: str) -> pd.Series:
         return frame.get(key, pd.Series([None] * len(frame), index=frame.index))
 
-    wall_pool = _series('wall_hp') * _series('wall_fortification_multiplier')
+    wall_pool = _series('wall_pool_hp_used')
     return pd.DataFrame(
         {
             'Wave': _series('display_wave'),
@@ -177,7 +177,10 @@ def _build_boss_wave_operator_frame(frame: pd.DataFrame) -> pd.DataFrame:
             'Boss Atk': _series('boss_attack').map(_boss_wave_compact_text),
             'Tower DPS': _series('tower_damage_per_second').map(_boss_wave_compact_text),
             'Wall Pool': wall_pool.map(_boss_wave_compact_text),
+            'Wall Regen': _series('wall_regen').map(_boss_wave_compact_text),
+            'Regen Gain': _series('wall_regen_gained_hp').map(_boss_wave_compact_text),
             'DR Used': _series('effective_damage_reduction_pct_used').map(_boss_wave_percent_text),
+            'TTK (s)': _series('boss_ttk_seconds_used').map(_boss_wave_seconds_text),
             'Contact (s)': _series('boss_contact_time_seconds_used').map(_boss_wave_seconds_text),
             'Boss Hits': _series('boss_hits_taken'),
             'Damage Taken': _series('boss_total_damage_taken').map(_boss_wave_compact_text),
@@ -1762,7 +1765,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.caption(
         "Model bounds: "
         f"`{contract.get('survivability_semantics') or 'bounded_runtime_assumption_model'}`. "
-        "The operator table reflects the actual DR/contact assumptions used by the current run."
+        "The operator table reflects the actual DR/contact assumptions used by the current run, including visible wall regen contribution."
     )
     st.caption(
         'Rows are sampled every N bosses on top of the resolved scenario boss cadence. Free upgrades and enemy level '
