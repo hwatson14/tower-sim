@@ -221,9 +221,9 @@ def test_run_to_max__steps_boss_waves_and_stops_on_negative_survival_margin(monk
         return run_executor_module.BossTTKResult(ttk_seconds=5.0)
 
     def _fake_intake(**kwargs):
-        wave = 10 * (len(intake_calls) + 1)
+        wave = 9 * (len(intake_calls) + 1)
         intake_calls.append(wave)
-        margin = 100.0 if wave < 30 else -1.0
+        margin = 100.0 if wave < 27 else -1.0
         return run_executor_module.BossDamageIntakeResult(
             survival_margin_hp=margin,
             total_damage_taken=0.0,
@@ -236,15 +236,24 @@ def test_run_to_max__steps_boss_waves_and_stops_on_negative_survival_margin(monk
     result = run_to_max(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(start_wave=10, end_wave=50, boss_wave_step=10, tier_column='Tier 14'),
+        config=RunToMaxConfig(
+            start_wave=1,
+            end_wave=50,
+            tier_number=14,
+            tier_column='Tier 14',
+            boss_interval_waves=9,
+            checkpoint_every_bosses=1,
+        ),
         row_resolver=_resolver,
     )
 
     assert seen == [0]
-    assert intake_calls == [10, 20, 30]
-    assert result.max_wave == 20
+    assert intake_calls == [9, 18, 27]
+    assert result.max_wave == 18
     assert result.row_count == 3
     assert result.diagnostics['execution_mode'] == 'table_sweep'
+    assert result.diagnostics['actual_boss_interval_waves'] == 9
+    assert result.diagnostics['checkpoint_every_bosses'] == 1
     assert result.diagnostics['wave_progression_owner'] == 'simulators.progression.advance_projected_wave_state'
     assert result.diagnostics['free_upgrade_owner'] == 'simulators.progression.advance_projected_free_upgrade_state'
 
@@ -362,18 +371,24 @@ def test_run_to_max__table_sweep_reuses_baseline_when_rows_do_not_change(monkeyp
     result = run_to_max(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10),
+        config=RunToMaxConfig(
+            execution_mode='table_sweep',
+            start_wave=1,
+            end_wave=27,
+            boss_interval_waves=9,
+            checkpoint_every_bosses=1,
+        ),
         row_resolver=_resolver,
     )
 
     assert len(seen) == 1
-    assert result.max_wave == 30
+    assert result.max_wave == 27
     assert result.diagnostics['execution_mode'] == 'table_sweep'
     assert result.diagnostics['qe_resolution_count'] == 1
     assert result.diagnostics['snapshot_reuse_count'] == 3
     assert result.diagnostics['qe_dirty_reresolve_count'] == 0
     assert result.diagnostics['delta_fallback_count'] == 0
-    assert result.diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert result.diagnostics['checkpoint_resolution_mode'] == 'every_n_bosses'
 
 
 def _safe_mutated_workshop_levels(state, projected, deltas):
@@ -620,10 +635,18 @@ def test_run_to_max__table_sweep_uses_delta_path_not_overlay(monkeypatch):
     result = run_to_max(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(execution_mode='table_sweep', start_wave=10, end_wave=30, boss_wave_step=10, perks_enabled=False, state_mode='start_of_run'),
+        config=RunToMaxConfig(
+            execution_mode='table_sweep',
+            start_wave=1,
+            end_wave=27,
+            boss_interval_waves=9,
+            checkpoint_every_bosses=1,
+            perks_enabled=False,
+            state_mode='start_of_run',
+        ),
     )
 
-    assert result.max_wave == 30
+    assert result.max_wave == 27
     assert delta_calls['count'] == 3
     assert result.diagnostics['qe_dirty_reresolve_count'] == 3
     assert result.diagnostics['delta_fallback_count'] == 0
@@ -706,13 +729,13 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     rows = build_boss_wave_table(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(start_wave=10, end_wave=30, boss_wave_step=10, tier_column='Tier 14'),
+        config=RunToMaxConfig(start_wave=1, end_wave=30, boss_interval_waves=9, checkpoint_every_bosses=1, tier_column='Tier 14'),
         row_resolver=_resolver,
     )
 
-    assert [row['display_wave'] for row in rows] == [10, 20, 30]
-    assert rows[0]['attack_wave'] == 10
-    assert rows[0]['health_wave'] == 10
+    assert [row['display_wave'] for row in rows] == [9, 18, 27]
+    assert rows[0]['attack_wave'] == 9
+    assert rows[0]['health_wave'] == 9
     assert rows[0]['boss_attack'] == rows[0]['wave_attack']
     assert rows[0]['boss_health'] == pytest.approx(rows[0]['wave_health'] * run_executor_module.BOSS_HP_MULTIPLIER)
     assert rows[0]['effective_damage_reduction_pct_used'] == pytest.approx(90.0)
@@ -724,17 +747,17 @@ def test_build_boss_wave_table__emits_boss_wave_rows_with_attack_and_health(monk
     payload = build_boss_wave_table_payload(
         account_state=state,
         initial_projected_state=projected,
-        config=RunToMaxConfig(start_wave=10, end_wave=30, boss_wave_step=10, tier_column='Tier 14'),
+        config=RunToMaxConfig(start_wave=1, end_wave=30, boss_interval_waves=9, checkpoint_every_bosses=1, tier_column='Tier 14'),
         row_resolver=_resolver,
         stop_on_failure=True,
     )
 
-    assert payload['summary']['max_wave'] == 30
+    assert payload['summary']['max_wave'] == 27
     assert payload['summary']['first_failed_wave'] == 0
     assert payload['summary']['result_consistent_with_rows'] is True
     assert payload['diagnostics']['execution_mode'] == 'table_sweep'
-    assert payload['diagnostics']['checkpoint_mode'] == 'boss_wave_only'
-    assert payload['diagnostics']['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert payload['diagnostics']['checkpoint_mode'] == 'actual_boss_cadence_with_sampling'
+    assert payload['diagnostics']['checkpoint_resolution_mode'] == 'every_n_bosses'
     assert payload['diagnostics']['stop_on_failure'] is True
 
 
@@ -820,9 +843,10 @@ def test_build_boss_wave_table_payload__projects_perk_timeline_into_wave_resolve
         account_state=state,
         initial_projected_state=projected,
         config=RunToMaxConfig(
-            start_wave=10,
+            start_wave=1,
             end_wave=20,
-            boss_wave_step=10,
+            boss_interval_waves=9,
+            checkpoint_every_bosses=1,
             tier_column='Tier 14',
             perk_timeline=(
                 {'wave': 10, 'perk_taken': 'Perk A'},
@@ -833,10 +857,9 @@ def test_build_boss_wave_table_payload__projects_perk_timeline_into_wave_resolve
         row_resolver=_resolver,
     )
 
-    assert payload['summary']['max_wave'] == 20
+    assert payload['summary']['max_wave'] == 18
     assert seen[0] == (0, {})
-    assert seen[1] == (10, {'Perk A': 1})
-    assert seen[2] == (20, {'Perk A': 2, 'Perk B': 1})
+    assert seen[1] == (18, {'Perk A': 1})
     assert payload['diagnostics']['perk_timeline_owner'] == 'simulators.run_executor._advance_projected_perk_state'
 
 
@@ -854,9 +877,10 @@ def test_run_to_max__warm_path_benchmark_shape():
         account_state=state,
         initial_projected_state=projected,
         config=RunToMaxConfig(
-            start_wave=10,
+            start_wave=1,
             end_wave=30,
-            boss_wave_step=10,
+            boss_interval_waves=9,
+            checkpoint_every_bosses=1,
             tier_column='Tier 14',
         ),
     )

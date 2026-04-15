@@ -219,8 +219,8 @@ def publish_workshop_reconciliation_payload(
         surface_id = spec['surface_id']
         start_row = dict(rows_start.get(surface_id) or {})
         max_row = dict(rows_max.get(surface_id) or {})
-        start_display = start_row.get('display_value')
-        max_display = max_row.get('display_value')
+        start_display = _normalize_display_text(start_row.get('display_value'))
+        max_display = _normalize_display_text(max_row.get('display_value'))
         if not isinstance(start_display, str) or not start_display.strip():
             start_display = '—'
         if not isinstance(max_display, str) or not max_display.strip():
@@ -1097,6 +1097,17 @@ def _build_module_grouped_summary(slots: dict[str, object]) -> list[dict[str, ob
     ]
 
 
+def _normalize_module_slot_payload(slot_payload: dict[str, object]) -> dict[str, object]:
+    normalized = dict(slot_payload or {})
+    for role in ('primary', 'assist'):
+        role_payload = dict(normalized.get(role) or {})
+        if role_payload:
+            if 'main_value_text' in role_payload:
+                role_payload['main_value_text'] = _normalize_display_text(role_payload.get('main_value_text'))
+            normalized[role] = role_payload
+    return normalized
+
+
 def _build_modules_panel(module_card_payloads: dict, selected_preset: str) -> tuple[dict[str, object], list[dict[str, str]]]:
     gaps: list[dict[str, str]] = []
     presets = module_card_payloads.get('presets') or {}
@@ -1109,6 +1120,10 @@ def _build_modules_panel(module_card_payloads: dict, selected_preset: str) -> tu
             'title': 'Modules',
             'payload': {'selected_preset': selected_preset, 'slots': {}, 'summary_rows': [], 'slot_order': ['cannon', 'armor', 'generator', 'core'], 'message': 'Module card payload unavailable.'},
         }, gaps)
+    normalized_slots = {
+        slot: _normalize_module_slot_payload(dict(slot_payload or {}))
+        for slot, slot_payload in dict(preset_payload or {}).items()
+    }
     return ({
         'panel_id': 'modules',
         'panel_type': 'module_slot_stack',
@@ -1116,8 +1131,8 @@ def _build_modules_panel(module_card_payloads: dict, selected_preset: str) -> tu
         'payload': {
             'selected_preset': selected_preset,
             'slot_order': ['cannon', 'armor', 'generator', 'core'],
-            'summary_rows': _build_module_grouped_summary(preset_payload),
-            'slots': preset_payload,
+            'summary_rows': _build_module_grouped_summary(normalized_slots),
+            'slots': normalized_slots,
         },
     }, gaps)
 

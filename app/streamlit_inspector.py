@@ -1656,7 +1656,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     preset_name = control_cols[0].selectbox('Boss preset', options=['Farming', 'Tourney', 'Milestone'], index=['Farming', 'Tourney', 'Milestone'].index(request.preset) if request.preset in {'Farming', 'Tourney', 'Milestone'} else 0)
     tier_number = control_cols[1].number_input('Tier', min_value=1, max_value=18, value=14, step=1)
     end_wave = control_cols[2].number_input('End wave', min_value=10, max_value=100000, value=500, step=10)
-    boss_wave_step = control_cols[3].number_input('Boss wave step', min_value=1, max_value=1000, value=10, step=1)
+    boss_wave_step = control_cols[3].number_input('Checkpoint every N bosses', min_value=1, max_value=1000, value=1, step=1)
     stop_on_failure = st.toggle('Stop on first failed boss', value=True)
 
     with st.expander('Runtime assumptions', expanded=False):
@@ -1694,8 +1694,20 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     payload_download = dict(boss_payload.get('download') or {})
     diagnostics = {
         'preset_name': payload_diagnostics.get('preset_name') or preset_name,
+        'mode_id': payload_diagnostics.get('mode_id'),
+        'tier_number': payload_diagnostics.get('tier_number'),
         'tier_column': payload_diagnostics.get('tier_column'),
-        'boss_wave_step': payload_diagnostics.get('boss_wave_step'),
+        'league': payload_diagnostics.get('league'),
+        'tournament_wave': payload_diagnostics.get('tournament_wave'),
+        'perks_enabled': bool(payload_diagnostics.get('perks_enabled')),
+        'context_status': payload_diagnostics.get('context_status') or 'resolved',
+        'context_error': payload_diagnostics.get('context_error'),
+        'context_error_message': payload_diagnostics.get('context_error_message'),
+        'actual_boss_interval_waves': payload_diagnostics.get('actual_boss_interval_waves'),
+        'checkpoint_every_bosses': payload_diagnostics.get('checkpoint_every_bosses'),
+        'checkpoint_stride_waves': payload_diagnostics.get('checkpoint_stride_waves'),
+        'requested_start_wave': payload_diagnostics.get('requested_start_wave'),
+        'first_checkpoint_wave': payload_diagnostics.get('first_checkpoint_wave'),
         'row_count': int(payload_summary.get('row_count') or len(frame)),
         'max_surviving_wave': int(payload_summary.get('max_surviving_wave') or 0),
         'first_failed_wave': int(payload_summary.get('first_failed_wave') or 0),
@@ -1704,7 +1716,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         'survives_through_end': bool(payload_summary.get('survives_through_end')),
         'result_consistent_with_rows': bool(payload_summary.get('result_consistent_with_rows')),
         'state_mode': payload_diagnostics.get('state_mode'),
-        'checkpoint_mode': payload_diagnostics.get('checkpoint_mode') or 'boss_wave_only',
+        'checkpoint_mode': payload_diagnostics.get('checkpoint_mode') or 'actual_boss_cadence_with_sampling',
         'stop_on_failure': bool(payload_diagnostics.get('stop_on_failure')),
         'scenario_runtime_inputs': dict(payload_diagnostics.get('scenario_runtime_inputs') or {}),
         'execution_mode': payload_diagnostics.get('execution_mode'),
@@ -1723,7 +1735,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     summary_cols[3].metric('Preset', diagnostics['preset_name'])
     summary_cols_2 = st.columns(4)
     summary_cols_2[0].metric('First failed wave', diagnostics['first_failed_wave'] or '—')
-    summary_cols_2[1].metric('Checkpoint mode', diagnostics['checkpoint_mode'])
+    summary_cols_2[1].metric('Boss cadence', diagnostics['actual_boss_interval_waves'] or '—')
     summary_cols_2[2].metric('Execution mode', diagnostics['execution_mode'] or '—')
     summary_cols_2[3].metric('Row/result agreement', 'Yes' if diagnostics['result_consistent_with_rows'] else 'No')
     contract = dict(boss_payload.get('contract') or {})
@@ -1732,10 +1744,16 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         f"`{contract.get('start_state_basis') or diagnostics['state_mode']}`. "
         "Perks evolve: "
         f"`{contract.get('perk_timeline_mode') or 'unknown'}`. "
+        "Perks enabled: "
+        f"`{'yes' if diagnostics['perks_enabled'] else 'no'}`. "
         "Free upgrades evolve: "
         f"`{contract.get('free_upgrade_mode') or 'unknown'}`. "
-        "Wave stepping: "
-        f"`{contract.get('wave_progression_mode') or diagnostics['checkpoint_resolution_mode'] or 'unknown'}`. "
+        "Actual boss cadence: "
+        f"`every {diagnostics['actual_boss_interval_waves'] or '—'} waves`. "
+        "Checkpoint sampling: "
+        f"`every {diagnostics['checkpoint_every_bosses'] or '—'} boss(es)`. "
+        "Wave progression: "
+        f"`{contract.get('wave_progression_mode') or 'unknown'}`. "
         "Enemy skips: "
         f"`{contract.get('enemy_skip_mode') or 'unknown'}`. "
         "Tower damage basis: "
@@ -1747,10 +1765,12 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
         "The operator table reflects the actual DR/contact assumptions used by the current run."
     )
     st.caption(
-        'Rows are stepped only at boss-wave checkpoints. Free upgrades and enemy level skips are accumulated across '
-        'the intervening waves using the interval-start resolved values, while boss kill time uses the sanctioned '
-        'runtime damage proxy rather than a static max-progression shortcut.'
+        'Rows are sampled every N bosses on top of the resolved scenario boss cadence. Free upgrades and enemy level '
+        'skips are accumulated across the intervening waves using the interval-start resolved values, while boss kill '
+        'time uses the sanctioned runtime damage proxy rather than a static max-progression shortcut.'
     )
+    if diagnostics['context_status'] != 'resolved':
+        st.error(diagnostics['context_error_message'] or 'Boss Waves cannot resolve the required scenario context for this request.')
     st.info(
         'Boss Waves is a bounded runtime estimate. The main table shows the operator-facing survival view; '
         'the raw simulator/debug row dump remains available below.'

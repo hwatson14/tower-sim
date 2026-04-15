@@ -223,35 +223,50 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
             {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
         )(),
     )
-    monkeypatch.setattr(pipeline_mod, 'build_runtime_state', lambda ids_raw, loadout_config=None, perk_config=None: {'ok': True})
+    monkeypatch.setattr(
+        pipeline_mod,
+        'build_runtime_state',
+        lambda ids_raw, loadout_config=None, perk_config=None: type('State', (), {'player_meta': {}})(),
+    )
     monkeypatch.setattr(pipeline_mod, 'build_start_of_run_state', lambda account_state, preset_name, perk_state: {'state': 'start'})
 
     def _fake_build_boss_wave_table_payload(*, account_state, initial_projected_state, config, stop_on_failure):
         assert stop_on_failure is True
+        assert config.mode_id == 'farming'
+        assert config.tier_number == 14
         assert config.tier_column == 'Tier 14'
+        assert config.boss_interval_waves == 9
+        assert config.checkpoint_every_bosses == 1
         return {
             'rows': [
-                {'display_wave': 10, 'survives_boss': True},
-                {'display_wave': 20, 'survives_boss': True},
-                {'display_wave': 30, 'survives_boss': False},
+                {'display_wave': 9, 'survives_boss': True},
+                {'display_wave': 18, 'survives_boss': True},
+                {'display_wave': 27, 'survives_boss': False},
             ],
             'summary': {
-                'max_wave': 20,
-                'max_surviving_wave': 20,
-                'first_failed_wave': 30,
+                'max_wave': 18,
+                'max_surviving_wave': 18,
+                'first_failed_wave': 27,
                 'row_count': 3,
-                'terminal_display_wave': 30,
+                'terminal_display_wave': 27,
                 'survives_through_end': False,
                 'result_consistent_with_rows': True,
             },
             'diagnostics': {
                 'execution_mode': 'table_sweep',
+                'mode_id': 'farming',
+                'tier_number': 14,
                 'tier_column': 'Tier 14',
-                'boss_wave_step': 10,
+                'actual_boss_interval_waves': 9,
+                'checkpoint_every_bosses': 1,
+                'checkpoint_stride_waves': 9,
+                'requested_start_wave': 1,
+                'first_checkpoint_wave': 9,
                 'state_mode': 'start_of_run',
-                'checkpoint_mode': 'boss_wave_only',
-                'checkpoint_resolution_mode': 'per_boss_wave',
+                'checkpoint_mode': 'actual_boss_cadence_with_sampling',
+                'checkpoint_resolution_mode': 'every_n_bosses',
                 'stop_on_failure': True,
+                'perks_enabled': True,
                 'scenario_runtime_inputs': {'orb_boss_hit_pct': 2.5},
                 'qe_resolution_count': 2,
                 'timing_recompute_count': 2,
@@ -269,7 +284,7 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
         preset_name='Farming',
         tier_number=14,
         end_wave=30,
-        boss_wave_step=10,
+        boss_wave_step=1,
         stop_on_failure=True,
         scenario_runtime_inputs={
             'orb_boss_hit_pct': 2.5,
@@ -285,18 +300,22 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert payload.get('schema_version') == 1
     assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
     assert payload.get('contract', {}).get('perk_timeline_mode') == 'runtime_policy_projection'
+    assert payload.get('contract', {}).get('checkpoint_mode') == 'actual_boss_cadence_with_sampling'
     assert payload.get('download', {}).get('format') == 'csv'
     summary = payload.get('summary') or {}
-    assert summary['max_wave'] == 20
-    assert summary['max_surviving_wave'] == 20
-    assert summary['first_failed_wave'] == 30
+    assert summary['max_wave'] == 18
+    assert summary['max_surviving_wave'] == 18
+    assert summary['first_failed_wave'] == 27
     assert summary['result_consistent_with_rows'] is True
     diagnostics = payload.get('diagnostics') or {}
     assert diagnostics['preset_name'] == 'Farming'
+    assert diagnostics['mode_id'] == 'farming'
+    assert diagnostics['tier_number'] == 14
     assert diagnostics['tier_column'] == 'Tier 14'
-    assert diagnostics['boss_wave_step'] == 10
-    assert diagnostics['checkpoint_mode'] == 'boss_wave_only'
-    assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert diagnostics['actual_boss_interval_waves'] == 9
+    assert diagnostics['checkpoint_every_bosses'] == 1
+    assert diagnostics['checkpoint_mode'] == 'actual_boss_cadence_with_sampling'
+    assert diagnostics['checkpoint_resolution_mode'] == 'every_n_bosses'
     assert diagnostics['execution_mode'] == 'table_sweep'
     assert diagnostics['stop_on_failure'] is True
     assert diagnostics['perk_timeline_rows'] >= 0
@@ -314,7 +333,7 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
         preset_name='Farming',
         tier_number=14,
         end_wave=50,
-        boss_wave_step=10,
+        boss_wave_step=1,
         stop_on_failure=False,
         scenario_runtime_inputs={
             'orb_boss_hit_pct': 2.5,
@@ -327,14 +346,58 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     )
 
     diagnostics = payload.get('diagnostics') or {}
-    assert diagnostics['checkpoint_resolution_mode'] == 'per_boss_wave'
+    assert diagnostics['actual_boss_interval_waves'] == 9
+    assert diagnostics['checkpoint_every_bosses'] == 1
+    assert diagnostics['checkpoint_resolution_mode'] == 'every_n_bosses'
     assert diagnostics['qe_dirty_reresolve_count'] > 0
     assert diagnostics['delta_fallback_count'] == 0
     first_row = (payload.get('rows') or [{}])[0]
+    assert first_row.get('display_wave') == 9
     assert 'effective_damage_reduction_pct_used' in first_row
     assert 'boss_contact_time_seconds_used' in first_row
     assert 'boss_hit_interval_seconds_used' in first_row
     assert 'incoming_damage_multiplier_used' in first_row
+
+
+def test_build_boss_wave_payload_tourney_fails_closed_without_tournament_wave(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    monkeypatch.setattr(
+        pipeline_mod,
+        'load_inputs',
+        lambda ids_path=None, manual_inputs_path=None: type(
+            'Bundle',
+            (),
+            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
+        )(),
+    )
+    monkeypatch.setattr(
+        pipeline_mod,
+        'build_runtime_state',
+        lambda ids_raw, loadout_config=None, perk_config=None: type(
+            'State',
+            (),
+            {'player_meta': {'Tourney League': 'Legends'}},
+        )(),
+    )
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out', preset='Tourney')
+    payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Tourney',
+        tier_number=14,
+        end_wave=100,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={},
+    )
+
+    diagnostics = payload.get('diagnostics') or {}
+    assert (payload.get('rows') or []) == []
+    assert diagnostics['context_status'] == 'error'
+    assert diagnostics['context_error'] == 'missing_tournament_wave'
+    assert 'requires a resolved tournament wave' in str(diagnostics['context_error_message'] or '').lower()
 
 
 @pytest.mark.live

@@ -101,6 +101,104 @@ def build_boss_wave_table_payload(*args, **kwargs):
     return _impl(*args, **kwargs)
 
 
+def _boss_wave_mode_id_for_preset(preset_name: str) -> str:
+    if preset_name == 'Tourney':
+        return 'tournament'
+    if preset_name == 'Milestone':
+        return 'milestone'
+    return 'farming'
+
+
+def _extract_optional_wave_number(raw_value) -> int | None:
+    if raw_value in (None, ''):
+        return None
+    text = str(raw_value).strip()
+    if not text:
+        return None
+    digits = ''.join(ch for ch in text if ch.isdigit())
+    if not digits:
+        return None
+    try:
+        value = int(digits)
+    except ValueError:
+        return None
+    return value if value > 0 else None
+
+
+def _resolve_boss_wave_run_context(
+    account_state,
+    *,
+    preset_name: str,
+    tier_number: int,
+    checkpoint_every_bosses: int,
+) -> dict[str, object]:
+    from simulators.scenario import ScenarioConfig, compute_scenario_surfaces
+
+    mode_id = _boss_wave_mode_id_for_preset(preset_name)
+    league = None
+    tournament_wave = None
+    if mode_id == 'tournament':
+        league = (
+            account_state.player_meta.get('Tourney League')
+            or account_state.player_meta.get('Tournament League')
+            or account_state.player_meta.get('League')
+        )
+        tournament_wave = (
+            _extract_optional_wave_number(account_state.player_meta.get('Tournament Wave'))
+            or _extract_optional_wave_number(account_state.player_meta.get('Tourney Wave'))
+        )
+        if not league:
+            return {
+                'resolved': False,
+                'mode_id': mode_id,
+                'preset_name': preset_name,
+                'tier_number': int(tier_number),
+                'tier_column': f'Tier {int(tier_number)}',
+                'checkpoint_every_bosses': max(1, int(checkpoint_every_bosses)),
+                'context_error': 'missing_tournament_league',
+                'context_error_message': 'Boss Waves Tourney mode requires a resolved tournament league in player metadata.',
+            }
+        if tournament_wave is None:
+            return {
+                'resolved': False,
+                'mode_id': mode_id,
+                'preset_name': preset_name,
+                'tier_number': int(tier_number),
+                'tier_column': f'Tier {int(tier_number)}',
+                'league': league,
+                'checkpoint_every_bosses': max(1, int(checkpoint_every_bosses)),
+                'context_error': 'missing_tournament_wave',
+                'context_error_message': 'Boss Waves Tourney mode requires a resolved tournament wave. This repo baseline does not ship that context for the active account snapshot.',
+            }
+        scenario_config = ScenarioConfig(
+            mode_id='tournament',
+            league=str(league),
+            tournament_wave=int(tournament_wave),
+        )
+    else:
+        scenario_config = ScenarioConfig(mode_id=mode_id, tier=int(tier_number))
+
+    scenario_surfaces = compute_scenario_surfaces(scenario_config)
+    actual_boss_interval_waves = max(1, int(getattr(scenario_surfaces, 'boss_wave_interval', 10) or 10))
+    checkpoint_every_bosses = max(1, int(checkpoint_every_bosses))
+    return {
+        'resolved': True,
+        'mode_id': mode_id,
+        'preset_name': preset_name,
+        'tier_number': int(tier_number),
+        'tier_column': f'Tier {int(tier_number)}',
+        'league': scenario_config.league,
+        'tournament_wave': int(scenario_config.tournament_wave or 0) or None,
+        'perks_enabled': mode_id != 'tournament',
+        'perk_timeline_mode': 'runtime_policy_projection' if mode_id != 'tournament' else 'disabled_for_scenario',
+        'actual_boss_interval_waves': actual_boss_interval_waves,
+        'checkpoint_every_bosses': checkpoint_every_bosses,
+        'checkpoint_stride_waves': actual_boss_interval_waves * checkpoint_every_bosses,
+        'requested_start_wave': 1,
+        'scenario_config': scenario_config,
+    }
+
+
 def _build_input_dashboard_qe_publications(
     *,
     account_state,
@@ -197,23 +295,96 @@ def build_boss_wave_payload(
     from simulators.run_executor import RunToMaxConfig
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
     account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    resolved_context = _resolve_boss_wave_run_context(
+        account_state,
+        preset_name=preset_name,
+        tier_number=int(tier_number),
+        checkpoint_every_bosses=int(boss_wave_step),
+    )
     perk_policy_payload, _perk_context = _perk_policy_context(bundle.ids_raw, getattr(bundle, 'perk_policy', {}) or {})
     perk_timeline, perk_timeline_diag = generate_timeline_from_policy(PerkTimelinePolicy(**perk_policy_payload))
+    if not bool(resolved_context.get('resolved')):
+        return {
+            'artifact': 'boss_wave_dashboard_payload',
+            'schema_version': 1,
+            'contract': {
+                'payload_owner': 'app.pipeline.build_boss_wave_payload',
+                'simulator_owner': 'simulators.run_executor.build_boss_wave_table_payload',
+                'row_output_kind': 'boss_wave_table_rows',
+                'summary_kind': 'max_wave_survivability',
+                'checkpoint_mode': 'actual_boss_cadence_with_sampling',
+                'start_state_basis': 'start_of_run',
+                'perk_timeline_mode': 'disabled_until_context_resolves',
+                'free_upgrade_mode': 'runtime_progression_allocation',
+                'wave_progression_mode': 'runtime_wave_progression',
+                'enemy_skip_mode': 'runtime_wave_progression',
+                'tower_damage_mode': 'continuous_runtime_dps_proxy',
+                'survivability_semantics': 'bounded_runtime_assumption_model',
+            },
+            'rows': [],
+            'summary': {
+                'preset_name': preset_name,
+                'tier_column': resolved_context.get('tier_column'),
+                'state_mode': 'start_of_run',
+                'max_wave': 0,
+                'max_surviving_wave': 0,
+                'first_failed_wave': 0,
+                'row_count': 0,
+                'terminal_display_wave': 0,
+                'survives_through_end': False,
+                'result_consistent_with_rows': True,
+            },
+            'diagnostics': {
+                'preset_name': preset_name,
+                'perk_timeline_rows': len(perk_timeline),
+                'perk_timeline_final_wave': int(perk_timeline_diag.get('final_wave') or 0),
+                'mode_id': resolved_context.get('mode_id'),
+                'tier_number': int(resolved_context.get('tier_number') or 0),
+                'tier_column': resolved_context.get('tier_column'),
+                'league': resolved_context.get('league'),
+                'tournament_wave': resolved_context.get('tournament_wave'),
+                'perks_enabled': False,
+                'perk_timeline_enabled': False,
+                'context_status': 'error',
+                'context_error': resolved_context.get('context_error'),
+                'context_error_message': resolved_context.get('context_error_message'),
+                'checkpoint_every_bosses': int(resolved_context.get('checkpoint_every_bosses') or 1),
+                'actual_boss_interval_waves': None,
+                'checkpoint_stride_waves': None,
+                'requested_start_wave': 1,
+                'first_checkpoint_wave': None,
+                'scenario_runtime_inputs': dict(scenario_runtime_inputs),
+            },
+            'download': {
+                'format': 'csv',
+                'file_name': f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
+            },
+        }
     initial_state = build_start_of_run_state(
         account_state,
         preset_name=preset_name,
-        perk_state=PerkState(wave=0, counts=perk_state_at_wave(perk_timeline, 0), dirty=False),
+        perk_state=PerkState(
+            wave=0,
+            counts=perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {},
+            dirty=False,
+        ),
     )
     config = RunToMaxConfig(
         execution_mode='table_sweep',
         preset_name=preset_name,
-        tier_column=f'Tier {int(tier_number)}',
-        start_wave=max(1, int(boss_wave_step)),
+        mode_id=str(resolved_context.get('mode_id') or 'farming'),
+        tier_number=int(resolved_context.get('tier_number') or tier_number),
+        tier_column=str(resolved_context.get('tier_column') or f'Tier {int(tier_number)}'),
+        league=resolved_context.get('league'),
+        tournament_wave=int(resolved_context.get('tournament_wave') or 0),
+        start_wave=int(resolved_context.get('requested_start_wave') or 1),
         end_wave=int(end_wave),
-        boss_wave_step=int(boss_wave_step),
+        boss_interval_waves=int(resolved_context.get('actual_boss_interval_waves') or 10),
+        checkpoint_every_bosses=int(resolved_context.get('checkpoint_every_bosses') or 1),
+        perks_enabled=bool(resolved_context.get('perks_enabled')),
         state_mode='start_of_run',
         scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
-        perk_timeline=tuple(dict(row or {}) for row in perk_timeline),
+        perk_timeline=tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
     )
     boss_wave_run = build_boss_wave_table_payload(
         account_state=account_state,
@@ -232,9 +403,9 @@ def build_boss_wave_payload(
             'simulator_owner': 'simulators.run_executor.build_boss_wave_table_payload',
             'row_output_kind': 'boss_wave_table_rows',
             'summary_kind': 'max_wave_survivability',
-            'checkpoint_mode': 'boss_wave_only',
+            'checkpoint_mode': 'actual_boss_cadence_with_sampling',
             'start_state_basis': 'start_of_run',
-            'perk_timeline_mode': 'runtime_policy_projection',
+            'perk_timeline_mode': resolved_context.get('perk_timeline_mode') or 'runtime_policy_projection',
             'free_upgrade_mode': 'runtime_progression_allocation',
             'wave_progression_mode': 'runtime_wave_progression',
             'enemy_skip_mode': 'runtime_wave_progression',
@@ -258,6 +429,7 @@ def build_boss_wave_payload(
             'preset_name': preset_name,
             'perk_timeline_rows': len(perk_timeline),
             'perk_timeline_final_wave': int(perk_timeline_diag.get('final_wave') or 0),
+            'context_status': 'resolved',
             **execution_diagnostics,
         },
         'download': {

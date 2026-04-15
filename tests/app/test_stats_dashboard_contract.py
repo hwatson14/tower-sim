@@ -4,6 +4,9 @@ import json
 from pathlib import Path
 
 from app.publication import _build_input_dashboard_payload, _build_stats_dashboard_payload
+from input.loader import load_inputs
+from input.runtime_state import build_runtime_state
+from qe.query_module_policy import build_module_card_payloads
 from qe.workshop_stat_rows import build_workshop_reconciliation_row, _strict_reconciliation_audit
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -335,7 +338,9 @@ def test_stats_dashboard_primary_modules_panel_publishes_grouped_summary_rows():
     input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
     query_rows_start = json.loads((ROOT / 'out' / 'run_stats_query_rows_start_of_run.json').read_text(encoding='utf-8'))
     query_rows_max = json.loads((ROOT / 'out' / 'run_stats_query_rows_max_progression.json').read_text(encoding='utf-8'))
-    module_card_payloads = json.loads((ROOT / 'out' / 'module_card_payloads.json').read_text(encoding='utf-8'))
+    bundle = load_inputs(ids_path=ROOT / 'input' / 'imports' / 'ids.csv')
+    live_account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
+    module_card_payloads = build_module_card_payloads(live_account_state)
     payload = _build_stats_dashboard_payload(
         account_state_payload=account_state,
         diagnostics={},
@@ -1581,6 +1586,62 @@ def test_stats_dashboard_canonical_row_ids_disambiguate_workshop_rows():
     assert by_label['Shockwave Interval']['canonical_row_id'] == 'workshop::tower.shockwave_interval_seconds'
     assert by_label['Shockwave Interval']['cap'] == '7'
     assert by_label['Wall Health']['canonical_row_id'] == 'workshop::wall.health'
+
+
+def test_stats_dashboard_modules_slot_payload_normalizes_primary_display_values():
+    account_state = {'default_preset': 'Farming', 'card_presets': {'Farming': []}, 'module_presets': {}, 'workshop': {}, 'workshop_enhancement_tracks': {}, 'cards_inventory': {}, 'raw_sections': {}, 'uw_tracks': {}, 'ultimate_weapons': {}}
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    module_card_payloads = {
+        'presets': {
+            'Farming': {
+                'cannon': {'primary': {'main_value_text': 'x10.818', 'module_name': 'Amplifying Strike', 'rarity_text': 'Ancestral'}, 'assist': {}},
+                'armor': {'primary': {'main_value_text': 'x10.24', 'module_name': 'Sharp Fortitude', 'rarity_text': 'Ancestral'}, 'assist': {'main_value_text': 'x1.0047', 'module_name': 'Assist Armor', 'rarity_text': 'Rare'}},
+                'generator': {'primary': {'main_value_text': 'x1.81', 'module_name': 'Singularity Harness', 'rarity_text': 'Ancestral'}, 'assist': {'main_value_text': 'x1.029', 'module_name': 'Assist Generator', 'rarity_text': 'Rare'}},
+                'core': {'primary': {'main_value_text': 'x14.014', 'module_name': 'Primordial Collapse', 'rarity_text': 'Ancestral'}, 'assist': {'main_value_text': 'x1.4695', 'module_name': 'Assist Core', 'rarity_text': 'Rare'}},
+            }
+        }
+    }
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads=module_card_payloads,
+        query_rows_start_of_run={},
+        query_rows_max_progression={},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    modules_panel = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'modules')
+    slots = modules_panel.get('payload', {}).get('slots') or {}
+    assert slots['cannon']['primary']['main_value_text'] == 'x10.82'
+    assert slots['armor']['assist']['main_value_text'] == 'x1'
+    assert slots['generator']['assist']['main_value_text'] == 'x1.03'
+    assert slots['core']['primary']['main_value_text'] == 'x14.01'
+    assert slots['core']['assist']['main_value_text'] == 'x1.47'
+
+
+def test_stats_dashboard_derived_rows_normalize_display_values():
+    account_state = {'default_preset': 'Farming', 'card_presets': {'Farming': []}, 'module_presets': {}, 'workshop': {}, 'workshop_enhancement_tracks': {}, 'cards_inventory': {}, 'raw_sections': {}, 'uw_tracks': {}, 'ultimate_weapons': {}}
+    input_dashboard = _build_input_dashboard_payload(account_state, {}, module_card_payloads={})
+    payload = _build_stats_dashboard_payload(
+        account_state_payload=account_state,
+        diagnostics={},
+        input_dashboard_payload=input_dashboard,
+        module_card_payloads={},
+        query_rows_start_of_run={'Farming': {'rows': {'state::tower.ultimate_damage_multiplier': {'display_value': 'x25.124', 'final_value': 25.124, 'value_type': 'multiplier', 'status': 'resolved'}}}},
+        query_rows_max_progression={'Farming': {'rows': {'state::tower.ultimate_damage_multiplier': {'display_value': 'x25.124', 'final_value': 25.124, 'value_type': 'multiplier', 'status': 'resolved'}}}},
+        ep_compare_publishable={},
+        line_verification={},
+        selected_preset='Farming',
+        selected_state_mode='start_of_run',
+    )
+    workshop = next(panel for panel in payload['variants']['Farming']['start_of_run'] if panel.get('panel_id') == 'workshop')
+    derived_rows = ((workshop.get('payload', {}).get('sections') or [{}, {}, {}, {}])[3].get('rows') or [])
+    by_name = {row.get('name'): row for row in derived_rows}
+    assert by_name['Ultimate Weapon Damage']['start_of_run_value'] == 'x25.12'
+    assert by_name['Ultimate Weapon Damage']['max_progression_value'] == 'x25.12'
 
 
 def test_stats_dashboard_wall_health_uses_workshop_percentage_track_not_wall_hp():

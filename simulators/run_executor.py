@@ -132,10 +132,14 @@ class RunToMaxConfig:
     execution_mode: str = 'table_sweep'
     preset_name: str = 'Farming'
     mode_id: str = 'farming'
+    tier_number: int = 14
     tier_column: str = 'Tier 14'
+    league: Optional[str] = None
+    tournament_wave: int = 0
     start_wave: int = 10
     end_wave: int = 1000
-    boss_wave_step: int = 10
+    boss_interval_waves: int = 10
+    checkpoint_every_bosses: int = 1
     perks_enabled: bool = True
     state_mode: str = 'start_of_run'
     scenario_runtime_inputs: Optional[ScenarioRuntimeInputs] = None
@@ -179,6 +183,45 @@ def build_start_of_run_state(account_state: AccountState, *, preset_name: str, p
         },
         dirty_ledger=DirtyLedger(progression_dirty=True, qe_dirty=True, timing_dirty=True),
     )
+
+
+def _first_boss_wave_at_or_after(*, requested_start_wave: int, boss_interval_waves: int) -> int:
+    interval = max(1, int(boss_interval_waves))
+    start_wave = max(1, int(requested_start_wave))
+    return ((start_wave + interval - 1) // interval) * interval
+
+
+def _checkpoint_display_waves(config: RunToMaxConfig) -> range:
+    first_wave = _first_boss_wave_at_or_after(
+        requested_start_wave=int(config.start_wave),
+        boss_interval_waves=int(config.boss_interval_waves),
+    )
+    stride_waves = max(1, int(config.boss_interval_waves)) * max(1, int(config.checkpoint_every_bosses))
+    if first_wave > int(config.end_wave):
+        return range(0, 0, 1)
+    return range(first_wave, int(config.end_wave) + 1, stride_waves)
+
+
+def _boss_wave_diagnostics(config: RunToMaxConfig) -> dict[str, object]:
+    first_checkpoint_wave = _first_boss_wave_at_or_after(
+        requested_start_wave=int(config.start_wave),
+        boss_interval_waves=int(config.boss_interval_waves),
+    )
+    return {
+        'mode_id': config.mode_id,
+        'tier_number': int(config.tier_number),
+        'tier_column': config.tier_column,
+        'league': config.league,
+        'tournament_wave': int(config.tournament_wave or 0) or None,
+        'perks_enabled': bool(config.perks_enabled),
+        'actual_boss_interval_waves': int(config.boss_interval_waves),
+        'checkpoint_every_bosses': int(config.checkpoint_every_bosses),
+        'checkpoint_stride_waves': int(config.boss_interval_waves) * int(config.checkpoint_every_bosses),
+        'requested_start_wave': int(config.start_wave),
+        'first_checkpoint_wave': first_checkpoint_wave,
+        'checkpoint_mode': 'actual_boss_cadence_with_sampling',
+        'checkpoint_resolution_mode': 'every_n_bosses',
+    }
 
 
 def _perk_counts_at_wave(perk_timeline: tuple[dict[str, Any], ...], wave: int) -> dict[str, int]:
@@ -282,7 +325,7 @@ def build_boss_wave_table_payload(
         )
 
     wave_policy = WaveProgressionPolicy()
-    boss_wave_interval = max(1, int(config.boss_wave_step))
+    checkpoint_waves = _checkpoint_display_waves(config)
     category_track_order = _category_track_order_from_account_state(account_state)
     track_max_levels = _track_max_levels_from_account_state(account_state)
     enemy_damage_table = _load_wave_table(ENEMY_DAMAGE_TABLE)
@@ -309,7 +352,7 @@ def build_boss_wave_table_payload(
     first_failed_wave = 0
     terminal_snapshot = current_snapshot
 
-    for display_wave in range(int(config.start_wave), int(config.end_wave) + 1, boss_wave_interval):
+    for display_wave in checkpoint_waves:
         current_projected_state = advance_projected_free_upgrade_state(
             current_projected_state,
             target_display_wave=display_wave,
@@ -445,12 +488,7 @@ def build_boss_wave_table_payload(
         },
         'diagnostics': {
             'execution_mode': config.execution_mode,
-            'mode_id': config.mode_id,
-            'tier_column': config.tier_column,
-            'boss_wave_step': config.boss_wave_step,
             'state_mode': config.state_mode,
-            'checkpoint_mode': 'boss_wave_only',
-            'checkpoint_resolution_mode': 'per_boss_wave',
             'stop_on_failure': bool(stop_on_failure),
             'scenario_runtime_inputs': runtime_inputs,
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
@@ -466,6 +504,7 @@ def build_boss_wave_table_payload(
             'delta_fallback_count': delta_fallback_count,
             'execution_architecture': 'table_sweep_hot_columns',
             'terminal_checkpoint_display_wave': terminal_snapshot.checkpoint.display_wave if terminal_snapshot is not None else 0,
+            **_boss_wave_diagnostics(config),
         },
     }
 
@@ -481,7 +520,7 @@ def _run_to_max_static_build(
     max_wave = 0
     terminal_snapshot: WaveRowSnapshot | None = None
     row_count = 0
-    boss_wave_interval = max(1, int(config.boss_wave_step))
+    checkpoint_waves = _checkpoint_display_waves(config)
     current_projected_state = _clone_projected_run_state(initial_projected_state)
     base_snapshot = row_resolver(
         _normalized_checkpoint_state_for_projected_state(
@@ -503,10 +542,7 @@ def _run_to_max_static_build(
     base_timing_context = base_snapshot.timing_context
     base_combat_runtime = base_snapshot.combat_runtime
 
-    for display_wave in range(int(config.start_wave), int(config.end_wave) + 1):
-        if (display_wave - int(config.start_wave)) % boss_wave_interval != 0:
-            continue
-
+    for display_wave in checkpoint_waves:
         row_count += 1
         attack_skip_pct = _row_float(base_row_map, 'state::tower.enemy_attack_level_skip_pct') or 0.0
         health_skip_pct = _row_float(base_row_map, 'state::tower.enemy_health_level_skip_pct') or 0.0
@@ -557,12 +593,10 @@ def _run_to_max_static_build(
         terminal_snapshot=terminal_snapshot,
         diagnostics={
             'execution_mode': config.execution_mode,
-            'mode_id': config.mode_id,
-            'tier_column': config.tier_column,
-            'boss_wave_step': config.boss_wave_step,
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'warm_path_required': True,
+            **_boss_wave_diagnostics(config),
         },
     )
 
@@ -583,7 +617,7 @@ def _run_to_max_progression_mutating(
     snapshot_reuse_count = 0
     qe_dirty_reresolve_count = 0
     delta_fallback_count = 0
-    boss_wave_interval = max(1, int(config.boss_wave_step))
+    checkpoint_waves = _checkpoint_display_waves(config)
     category_track_order = _category_track_order_from_account_state(account_state)
     track_max_levels = _track_max_levels_from_account_state(account_state)
     enemy_damage_table = _load_wave_table(ENEMY_DAMAGE_TABLE)
@@ -607,10 +641,7 @@ def _run_to_max_progression_mutating(
     qe_resolution_count += current_snapshot.metrics.qe_resolution_count if current_snapshot.metrics else 1
     timing_recompute_count += current_snapshot.metrics.timing_recompute_count if current_snapshot.metrics else 1
 
-    for display_wave in range(int(config.start_wave), int(config.end_wave) + 1):
-        if (display_wave - int(config.start_wave)) % boss_wave_interval != 0:
-            continue
-
+    for display_wave in checkpoint_waves:
         row_count += 1
         row_map = current_snapshot.resolved_statbook.rows
         current_projected_state = advance_projected_free_upgrade_state(
@@ -683,9 +714,6 @@ def _run_to_max_progression_mutating(
         terminal_snapshot=terminal_snapshot,
         diagnostics={
             'execution_mode': config.execution_mode,
-            'mode_id': config.mode_id,
-            'tier_column': config.tier_column,
-            'boss_wave_step': config.boss_wave_step,
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
@@ -697,7 +725,7 @@ def _run_to_max_progression_mutating(
             'snapshot_reuse_count': snapshot_reuse_count,
             'qe_dirty_reresolve_count': qe_dirty_reresolve_count,
             'delta_fallback_count': delta_fallback_count,
-            'checkpoint_resolution_mode': 'per_boss_wave',
+            **_boss_wave_diagnostics(config),
         },
     )
 
@@ -717,7 +745,7 @@ def _run_to_max_table_sweep(
     snapshot_reuse_count = 0
     qe_dirty_reresolve_count = 0
     delta_fallback_count = 0
-    boss_wave_interval = max(1, int(config.boss_wave_step))
+    checkpoint_waves = _checkpoint_display_waves(config)
     category_track_order = _category_track_order_from_account_state(account_state)
     track_max_levels = _track_max_levels_from_account_state(account_state)
     enemy_damage_table = _load_wave_table(ENEMY_DAMAGE_TABLE)
@@ -736,7 +764,7 @@ def _run_to_max_table_sweep(
     combat_runtime = current_snapshot.combat_runtime
     hot_values = _extract_hot_surface_values(current_snapshot)
 
-    for display_wave in range(int(config.start_wave), int(config.end_wave) + 1, boss_wave_interval):
+    for display_wave in checkpoint_waves:
         row_count += 1
         current_projected_state = advance_projected_free_upgrade_state(
             current_projected_state,
@@ -813,9 +841,6 @@ def _run_to_max_table_sweep(
         terminal_snapshot=terminal_snapshot,
         diagnostics={
             'execution_mode': config.execution_mode,
-            'mode_id': config.mode_id,
-            'tier_column': config.tier_column,
-            'boss_wave_step': config.boss_wave_step,
             'wave_progression_owner': 'simulators.progression.advance_projected_wave_state',
             'free_upgrade_owner': 'simulators.progression.advance_projected_free_upgrade_state',
             'workshop_allocation_owner': 'simulators.progression.allocate_generated_free_upgrades_to_workshop',
@@ -825,8 +850,8 @@ def _run_to_max_table_sweep(
             'snapshot_reuse_count': snapshot_reuse_count,
             'qe_dirty_reresolve_count': qe_dirty_reresolve_count,
             'delta_fallback_count': delta_fallback_count,
-            'checkpoint_resolution_mode': 'per_boss_wave',
             'execution_architecture': 'table_sweep_hot_columns',
+            **_boss_wave_diagnostics(config),
         },
     )
 
@@ -857,9 +882,15 @@ def _baseline_snapshot_cache_key(
         id(account_state),
         config.preset_name,
         config.mode_id,
+        int(config.tier_number),
+        config.tier_column,
+        config.league,
+        int(config.tournament_wave or 0),
         config.state_mode,
         bool(config.perks_enabled),
         runtime_inputs,
+        int(config.boss_interval_waves),
+        int(config.checkpoint_every_bosses),
         int(projected_state.checkpoint.display_wave),
         perk_counts,
         workshop_levels,
@@ -880,6 +911,9 @@ def _normalized_checkpoint_state_for_projected_state(
         state_mode=config.state_mode,
         perks_enabled=config.perks_enabled,
         mode_id=config.mode_id,
+        tier=int(config.tier_number),
+        league=config.league,
+        tournament_wave=int(config.tournament_wave or 0),
         scenario_runtime_inputs=config.scenario_runtime_inputs,
     )
 

@@ -1,15 +1,16 @@
 version: 1
-prepared: '2026-04-13'
+prepared: '2026-04-15'
 status:
   mode: v49_streamlit_product_completion
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: repaired_product_contract_performance_only_blocker_remains
+  overall_state: repaired_product_and_boss_waves_semantics_performance_only_blocker_remains
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_395
+    full_suite_latest_result: passed_398
+    shipped_baseline_differed_before_repair: true
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
   high_signal_result:
@@ -137,6 +138,28 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
+  shipped_vs_rebuilt_truth:
+    latest_shipped_extract_audit_2026_04_15:
+      source: tower-sim-src(9).zip
+      pytest_q:
+        passed: 392
+        failed: 1
+        skipped: 1
+      python_m_app_run_stats: passed
+      note: shipped-baseline truth was not yet performance-only because Boss Waves semantics and a hidden generated-artifact contract seam were still open
+    rebuilt_worktree_after_repair_2026_04_15:
+      pytest_q:
+        passed: 398
+        failed: 0
+        skipped: 0
+      targeted_semantic_gate:
+        command: python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py
+        passed: 164
+      python_m_app_run_stats: passed
+      streamlit_harness:
+        boss_waves_default_render: passed
+        boss_waves_tourney_fail_closed_without_tournament_wave: passed
+      note: repaired worktree truth is now non-performance green; only P5 remains open
   performance_baseline:
     repo_snapshot: d04f328
     command: python -m app.run_stats
@@ -196,8 +219,8 @@ v49_program:
     - 570.16
     - 95.76
     - 101.1
-    interpretation: sanctioned-path YAML and contract loading plus import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the hot path materially. The current bounded contract still includes dashboard artifact writes, and the fresh CLI path has now moved to roughly 0.93s-1.05s but remains above the preserved v49 interactive target band even though repeated in-process session runs are much faster. Boss Waves is now product-complete with explicit payload contract, stable summary, execution diagnostics, and no live delta fallback; the default stop-on-failure mode is directionally interactive on warm runs. The remaining open performance problem is now concentrated in the run_stats path rather than the earlier boss-wave delta-fallback bug, with residual cost dominated by cold YAML/contract work and compile_stat_inputs startup cost
-    visual_semantic_repair_2026_04_13: primary Stats surfaces now pass the repaired operator-facing contract in the harnessed live UI, including preset-driven view-state updates, grouped Modules summary plus cards, no mojibake in Stats/Boss Waves surfaces, normalized max-2-decimal formatting on primary tables, truthful cumulative Bot/Guardian spend, and surface-specific reconciliation semantics. Full pytest is green on this repaired baseline.
+    interpretation: sanctioned-path YAML and contract loading plus import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the hot path materially. The current bounded contract still includes dashboard artifact writes, and the fresh CLI path has now moved to roughly 0.93s-1.05s but remains above the preserved v49 interactive target band even though repeated in-process session runs are much faster. Boss Waves is now product-complete on the repaired worktree baseline with explicit payload contract, stable summary, execution diagnostics, canonical resolved run context, actual boss cadence separated from checkpoint sampling, and no live delta fallback; Tourney now fails closed when the required tournament-wave context is unavailable instead of silently using a misleading surrogate. The remaining open performance problem is now concentrated in the run_stats path rather than the earlier boss-wave cadence/context defects, with residual cost dominated by cold YAML/contract work and compile_stat_inputs startup cost
+    visual_semantic_repair_2026_04_14: primary Stats surfaces now pass the repaired operator-facing contract in the harnessed live UI, including preset-driven view-state updates, grouped Modules summary plus cards, no mojibake in Stats/Boss Waves surfaces, normalized max-2-decimal formatting on primary tables, truthful cumulative Bot/Guardian spend, explicit workshop cap wiring for Defense %, Shockwave Interval, and Wall Rebuild, and surface-specific reconciliation semantics. Full pytest is green on this repaired baseline.
     machine:
       os: Windows 10 Pro x64
       cpu: Intel(R) Core(TM) i7-6700K CPU @ 4.00GHz
@@ -235,7 +258,7 @@ v49_program:
   - id: P4
     name: Max-wave simulator delivery
     status: complete
-    goal: Keep the sanctioned max-wave simulator product contract usable through Streamlit, including runtime perk evolution and live-path no-delta-fallback verification.
+    goal: Keep the sanctioned max-wave simulator product contract usable through Streamlit, including runtime perk evolution, canonical resolved run context, boss-cadence/checkpoint separation, and live-path no-delta-fallback verification.
   - id: P5
     name: Targeted performance hardening
     status: pending

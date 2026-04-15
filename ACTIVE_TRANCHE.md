@@ -37,7 +37,8 @@ The active program is now the v49 Streamlit-first product scope reset:
 - runtime formula authority table is present and canonical coverage remains explicit
 - native family query path is present for progression/timing/report surfaces
 - the current active snapshot has a durable full-suite recertification artifact
-- the latest full suite on the actual current uploaded baseline passed on **2026-04-13** (`395 passed`)
+- the latest historical shipped-baseline audit from `tower-sim-src(9).zip` on **2026-04-15** was **not** fully green (`392 passed, 1 failed, 1 skipped`) until rebuilt-state repair work ran
+- the latest rebuilt-worktree full suite on the repaired current baseline passed on **2026-04-15** (`398 passed`)
 - formula surface policy remains active
 - the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
@@ -96,11 +97,11 @@ This tranche is not about:
 
 ### Snapshot facts being advanced
 
-1. the actual current worktree has a durable full-suite green baseline from **2026-04-13**
+1. the repaired current worktree has a durable full-suite green baseline from **2026-04-15**
 2. the repo already has a live Boss Waves tab and sanctioned app/simulator runtime seam
 3. current committed QE surfaces already cover `Interest / Wave`, `Wall Rebuild`, and the current `tower thorns` naming
 4. root governance still misstates the active program as maintenance stabilization
-5. after the 2026-04-13 Stats/Boss Waves corrective recertification tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
+5. after the 2026-04-15 Boss Waves semantic repair and fresh-clone truth tranche, the remaining open completion gate is honest current-stage performance evidence for the sanctioned product paths
 
 ### Active verification items
 
@@ -113,11 +114,13 @@ This tranche is not about:
 7. COMPLETE: recertify the repaired Streamlit product contract with targeted tests, full pytest, `app.run_stats`, and a UI-level Streamlit harness run
 8. COMPLETE: recertify the Boss Waves product surface so the main table is operator-facing, the raw row dump is demoted to debug, and the active DR/contact assumptions used by the solver are visible in the product surface
 9. COMPLETE: repair fresh-clone Stats contract truth, live preset/view-state wiring, grouped Modules layout, cumulative Bot/Guardian spend, mojibake normalization, and primary-surface reconciliation semantics
-10. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+10. COMPLETE: repair Boss Waves semantics so the product uses one canonical run-context contract, separates actual boss cadence from checkpoint sampling, and fails closed for Tourney when required tournament-wave context is unavailable
+11. COMPLETE: remove the hidden fresh-clone generated-artifact dependency from the touched Stats contract test family
+12. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
 
 ### Current blockers inside the active program
 
-1. Performance remains the only active blocker inside the current v49 program.
+1. Performance remains the only active blocker inside the current v49 program on the repaired worktree baseline.
 2. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
 3. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
@@ -145,6 +148,7 @@ The v49 current-stage program is complete only when all of the following are tru
 - targeted pytest selection for touched owner surfaces
 - broader `pytest -q` when a phase claims closure
 - UI-level Streamlit harness verification of the repaired Stats/Boss Waves surface
+- distinguish shipped-baseline truth from rebuilt-worktree truth when they differ
 - fresh inspection of:
   - `out/run_stats_query_rows_start_of_run.json`
   - `out/run_stats_query_rows_max_progression.json`
@@ -202,6 +206,10 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 1: **1011.11 ms**
   - run 2: **1045.87 ms**
   - run 3: **934.96 ms**
+- rebuilt-worktree verification after the 2026-04-15 Boss Waves semantic repair and fresh-clone truth tranche:
+  - `python -m pytest -q` -> **398 passed**
+  - `python -m pytest -q tests/app/test_pipeline_functional.py tests/simulators/test_run_executor.py tests/app/test_stats_dashboard_contract.py tests/shared/test_import_boundaries.py tests/app/test_pipeline_ui_contracts.py` -> **164 passed**
+  - `python -m app.run_stats` -> **passed**
 - sanctioned Boss Waves payload benchmark (`build_boss_wave_payload`, Tier 14, wave 500, boss step 10, `stop_on_failure=false`) on **2026-04-10** after the explicit payload contract landed:
   - run 1: **2655.53 ms**
   - run 2: **1763.50 ms**
@@ -214,17 +222,18 @@ The v49 current-stage program is complete only when all of the following are tru
   - run 1: **570.16 ms**
   - run 2: **95.76 ms**
   - run 3: **101.10 ms**
-- interpretation: sanctioned-path YAML/contract loading, import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the `run_stats` hot path materially. The bounded contract still writes dashboard artifacts, and the true fresh CLI path has now moved to roughly **0.93s-1.05s**, but it remains well above the preserved v49 target band even though repeated in-process session runs are materially faster. Boss Waves is now product-complete with stable payload summary, explicit execution diagnostics, and no delta fallback on the live path; its default `stop_on_failure=true` mode is directionally interactive on warm runs. The remaining blocker is still `run_stats`-path performance, whose measured cost is now concentrated in residual cold YAML/contract work and `compile_stat_inputs` startup cost rather than the earlier boss-wave delta-fallback bug.
+- interpretation: sanctioned-path YAML/contract loading, import-thinning, surface-id caching, bound-input reuse, input-loader hardening, default dependency-registry reuse, shared YAML contract caching, compiler cold-path hardening, and bounded write-path contract normalization improved the `run_stats` hot path materially. The bounded contract still writes dashboard artifacts, and the true fresh CLI path has now moved to roughly **0.93s-1.05s**, but it remains well above the preserved v49 target band even though repeated in-process session runs are materially faster. Boss Waves is now product-complete on the repaired worktree baseline with stable payload summary, explicit execution diagnostics, canonical resolved run context, actual boss cadence separated from checkpoint sampling, and no delta fallback on the live path; Tourney now fails closed instead of silently inventing missing tournament-wave context. The remaining blocker is still `run_stats`-path performance, whose measured cost is now concentrated in residual cold YAML/contract work and `compile_stat_inputs` startup cost rather than the earlier boss-wave cadence/context defects.
 
 ### Verification record
 
-- targeted tranche-alignment suites passed on **2026-04-13** across Stats contract, pipeline functional, simulator, UI contract, and import-boundary coverage
-- visual/semantic acceptance recovery passed on **2026-04-13** for the live primary Stats/Boss Waves surface:
+- targeted tranche-alignment suites passed on **2026-04-14** across Stats contract, pipeline functional, simulator, UI contract, and import-boundary coverage
+- visual/semantic acceptance recovery passed on **2026-04-14** for the live primary Stats/Boss Waves surface:
   - preset switching updates the visible product state without a rebuild
   - primary Stats tables now follow the shared display grammar (`—`, max 2 decimals, normalized units, no mojibake)
   - Bots now use start-of-run-only primary semantics with truthful cumulative medal spend and no misleading effective-range column
   - Guardians now use truthful cumulative-bit and start-state semantics with simple green recon where base equals start state
-  - full `pytest -q` passed on the repaired baseline (`395 passed`)
+  - workshop `Cap` wiring now includes ceiling/floor truth for `Defense %`, `Shockwave Interval`, and `Wall Rebuild`
+  - full `pytest -q` passed on the repaired baseline (`397 passed`)
 - refreshed full suite passed on **2026-04-07** (`349 passed`) in **44.85s**
 - corrective recovery tranche targeted suites passed on **2026-04-12**, including:
   - `tests/app/test_stats_dashboard_contract.py`
