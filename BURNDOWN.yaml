@@ -260,12 +260,12 @@ v49_program:
     goal: Ensure the product tabs expose operator-useful truth with explicit provenance and missingness, and isolate optional Stats/debug failures from the operational product.
   - id: P4
     name: Max-wave simulator delivery
-    status: complete
-    goal: Keep the sanctioned max-wave simulator product contract usable through Streamlit, including runtime perk evolution, canonical resolved run context, boss-cadence/checkpoint separation, and live-path no-delta-fallback verification.
+    status: in_progress
+    goal: Build the Boss Waves staged replacement architecture: compiled RunPlan, explicit Table 1/Table 2 registries, Table 1 survivability contributor bundles, Table 2 scenario transforms, v21 event-only combat, avg/min/max lanes, and operator-table handles, while preserving the current product surface until cutover is explicitly in scope.
   - id: P5
     name: Targeted performance hardening
-    status: pending
-    goal: Resume only from the repaired Stats/Boss Waves product contract and current sanctioned simulator semantics.
+    status: pending_blocked
+    goal: Resume only after the staged Boss Waves replacement path is structurally present and governance/tests agree on its boundaries.
   - id: P6
     name: Residue cleanup and governance sync
     status: complete

@@ -27,7 +27,7 @@ The repo has completed the prior hardening closeout sequence and the maintenance
 The active program is now the v49 Streamlit-first product scope reset:
 - make every current-scope canonical, user-relevant stat visible in Streamlit
 - keep those visible stats KB/QE-aligned, provenance-bearing, and contract-governed
-- deliver the sanctioned max-wave simulator through the Streamlit product surface
+- replace the Boss Waves row-engine target with a staged Table 1 / Table 2 / combat kernel while preserving the current product surface until cutover is explicitly in scope
 - meet the current-stage performance contract honestly
 - remove stale duplicate authority and residue where they undermine truth, speed, or blind maintainability
 
@@ -40,7 +40,7 @@ The active program is now the v49 Streamlit-first product scope reset:
 - the latest historical shipped-baseline audit from `tower-sim-src(9).zip` on **2026-04-15** was **not** fully green (`392 passed, 1 failed, 1 skipped`) until rebuilt-state repair work ran
 - the latest rebuilt-worktree full suite on the repaired current baseline passed on **2026-04-15** (`399 passed`)
 - formula surface policy remains active
-- the repo already exposes a live Boss Waves Streamlit surface wired through the sanctioned app/simulator path
+- the repo already exposes a live Boss Waves Streamlit surface wired through the legacy sanctioned app/simulator path; current structural replacement work must not treat that row-engine as the target architecture
 - committed QE query-row artifacts already include `state::economy.interest_per_wave_pct`, `state::wall.rebuild_seconds`, and `state::tower.thorns_damage_pct`
 
 ### Remaining constraints
@@ -83,7 +83,7 @@ This tranche is about:
 2. visible-stat contract activation
 3. canonical stat visibility completion
 4. Streamlit operational product completion
-5. sanctioned max-wave simulator completion
+5. sanctioned max-wave simulator completion and staged Boss Waves replacement build
 6. targeted performance hardening
 7. residue cleanup and governance synchronization
 
@@ -117,11 +117,12 @@ This tranche is not about:
 10. COMPLETE: repair Boss Waves semantics so the product uses one canonical run-context contract, separates actual boss cadence from checkpoint sampling, and fails closed for Tourney when required tournament-wave context is unavailable
 11. COMPLETE: remove the hidden fresh-clone generated-artifact dependency from the touched Stats contract test family
 12. COMPLETE: harden the visible product so UW supplemental/UW+ handling, Bot/Guardian cumulative spend and totals, Guardian Scout truth, per-surface recon semantics, and Boss Waves regen auditability are all visible and defensible in the live product surface
-13. NEXT: resume performance work only from the repaired product contract and current sanctioned simulator semantics
+13. IN PROGRESS: build the Boss Waves staged replacement architecture: compiled RunPlan, explicit Table 1/Table 2 registries, Table 1 survivability contributor bundles, Table 2 scenario transforms, v21 event-only combat, avg/min/max lanes, and operator-table handles, without depending on the legacy row-engine hot path
+14. NEXT: resume performance work only after the staged Boss Waves replacement path is structurally present and governance/tests agree on its boundaries
 
 ### Current blockers inside the active program
 
-1. Performance remains the only active blocker inside the current v49 program on the repaired worktree baseline.
+1. Boss Waves staged replacement is now the active structural blocker before further performance work is resumed.
 2. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
 3. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
@@ -134,6 +135,7 @@ The v49 current-stage program is complete only when all of the following are tru
 - missingness and non-recon behavior are explicit rather than silently backfilled
 - Streamlit can operate the sanctioned max-wave simulator path with explicit runtime controls
 - current-scope simulator tests and touched contract tests pass
+- Boss Waves staged kernel exists as compiled RunPlan plus Table 1 common trajectory and Table 2 scenario overlay/v21 combat outputs, with explicit registries, derived wall HP/regen from staged contributors, avg/min/max lanes, explicit avg summary-lane policy, operator-table handles, and no hot-path dependency on the legacy row-engine
 - performance claims for the active product path are evidenced honestly
 - stale root governance no longer misstates the active program
 - `BURNDOWN.yaml` task statuses match this file

@@ -249,6 +249,11 @@ qe:
     status: active_candidate
     layer: qe/
 
+  qe/run_plan.py:
+    status: active_candidate
+    layer: qe/
+    note: Boss Waves compiled RunPlan and Table 1 common trajectory registry owner for the staged replacement kernel
+
   qe/publication.py:
     status: active_candidate
     layer: qe/
@@ -308,6 +313,11 @@ simulators:
   simulators/contracts.py:
     status: active_candidate
     layer: simulators/
+
+  simulators/evaluator_kernel.py:
+    status: active_candidate
+    layer: simulators/
+    note: Boss Waves Table 2 scenario overlay, v21 event-only combat kernel, lanes, and operator handles; consumes staged outputs
 
   simulators/incremental_cache_fingerprint.py:
     status: active_candidate

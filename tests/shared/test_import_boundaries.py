@@ -196,6 +196,7 @@ _QE_FILE_ALLOWLIST = {
     "models.py",
     "perk_tables.py",
     "publication.py",
+    "run_plan.py",
     "query_currency_income.py",
     "query_derived_composites.py",
     "query_module_policy.py",
@@ -210,6 +211,7 @@ _QE_FILE_ALLOWLIST = {
 _SIMULATORS_FILE_ALLOWLIST = {
     "__init__.py",
     "contracts.py",
+    "evaluator_kernel.py",
     "incremental_cache_fingerprint.py",
     "incremental_cache_validator.py",
     "incremental_overlay_publisher.py",
@@ -930,6 +932,30 @@ def test_simulator_snapshot_resolver_stays_on_lightweight_checkpoint_path():
     )
     assert "resolve_stats(" not in src, (
         "simulators/snapshot_resolver.py must not call the broad compat/report resolver."
+    )
+
+
+def test_boss_waves_replacement_kernel_stays_off_legacy_runtime_paths():
+    """The staged Boss Waves kernel must not become a wrapper around legacy runtime engines."""
+    for path in (ROOT / "qe" / "run_plan.py", ROOT / "simulators" / "evaluator_kernel.py"):
+        src = path.read_text(encoding="utf-8")
+        forbidden = (
+            "simulators.run_executor",
+            "simulators.snapshot_resolver",
+            "simulators.runtime_consumer_executor",
+            "simulators.incremental_",
+            "app.",
+        )
+        hits = [token for token in forbidden if token in src]
+        assert not hits, f"{path.relative_to(ROOT)} imports or references forbidden Boss Waves runtime path(s): {hits}"
+
+    qe_plan_src = (ROOT / "qe" / "run_plan.py").read_text(encoding="utf-8")
+    assert "from simulators" not in qe_plan_src and "import simulators" not in qe_plan_src, (
+        "qe/run_plan.py must stay below simulators and own only the common trajectory table."
+    )
+    evaluator_src = (ROOT / "simulators" / "evaluator_kernel.py").read_text(encoding="utf-8")
+    assert "tower_damage_per_second" not in evaluator_src, (
+        "simulators/evaluator_kernel.py must use v21 event-only boss TTK, not continuous DPS proxy logic."
     )
 
 

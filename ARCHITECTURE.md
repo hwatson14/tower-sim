@@ -65,6 +65,7 @@ The active surface should be small enough that an AI agent can navigate it in on
     consumer_registry.py       # runtime consumer bundle registry
     kb_surfaces.py             # KB table loader for gameplay constants
     perk_tables.py             # perk lookup table loader
+    run_plan.py                # Boss Waves compiled RunPlan and common trajectory table registry
     query_perk_compiler.py     # perk-query compilation helper
     query_state_mode_policy.py # state-mode policy helper
     query_currency_income.py   # bounded publisher: currency income
@@ -74,6 +75,7 @@ The active surface should be small enough that an AI agent can navigate it in on
   simulators/
     __init__.py
     contracts.py                # simulator-facing checkpoint/row contracts
+    evaluator_kernel.py         # Boss Waves scenario overlay, v21 combat kernel, and lane registry
     perks.py                    # checkpoint-local perk application helpers
     snapshot_resolver.py        # lightweight QE-backed checkpoint resolver
     performance.py              # narrow simulator performance probes/benchmarks
@@ -184,6 +186,9 @@ Explicit report/compat boundary:
    - `query_module_policy.py`
    - `workshop_stat_rows.py`
 
+4. Staged simulator planning support
+   - `run_plan.py`
+
 The bounded publisher modules are allowed as active files today, but they are the first
 consolidation candidates if `qe/` needs to shrink further. No new direct files may be added
 under `qe/` without updating this inventory and the matching enforcement test.
@@ -195,6 +200,7 @@ Allowed direct files are:
 
 - `__init__.py`
 - `contracts.py`
+- `evaluator_kernel.py`
 - `incremental_cache_fingerprint.py`
 - `incremental_cache_validator.py`
 - `incremental_overlay_publisher.py`
@@ -274,6 +280,8 @@ Locked-foundation rules:
 
 Locked-foundation rules:
 - Simulator hot paths must use explicit requested-surface QE seams.
+- The Boss Waves replacement kernel consumes `qe.run_plan` compiled RunPlan/common-trajectory rows and explicit staged survivability contributor bundles plus scenario transforms; it must not call the legacy Boss Waves row-engine as its runtime authority.
+- Boss Waves replacement combat uses the v21 event-only boss TTK/TTD contract for this tranche; continuous additive tower/projectile DPS proxy logic is forbidden in `simulators/evaluator_kernel.py`.
 - Ordinary row/checkpoint execution must not call `ProgressionRecalcBridge.recompute()`.
 - Simulator hot paths must not import `qe.stat_resolution` or broad report/compat resolver paths.
 - Simulator hot paths must not depend on `app.pipeline` orchestration helpers.
