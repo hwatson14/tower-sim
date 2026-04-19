@@ -228,6 +228,7 @@ the matching enforcement test.
 Allowed direct files are:
 
 - `__init__.py`
+- `boss_waves_phase2a_field_map.yaml`
 - `display.py`
 - `inspector_data.py`
 - `models.py`

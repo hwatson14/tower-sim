@@ -17,6 +17,7 @@ from qe.run_plan import (
     ColumnFormulaSpec,
     CommonTrajectoryRow,
     CommonTrajectoryTable,
+    PERK_CONTRIBUTION_EFFECT_IDS,
     SurvivabilityContributorBundle,
     WaveProgressionRecurrence,
     advance_wave_progression,
@@ -37,13 +38,22 @@ TABLE2_COLUMN_REGISTRY: tuple[ColumnFormulaSpec, ...] = (
     ColumnFormulaSpec("effective_health_wave", "simulators", "int", ("table1.wave_progression", "scenario.health_skip"), "scenario_overlay", "per_overlay_row", "row_static"),
     ColumnFormulaSpec("enemy_attack", "simulators", "float", ("effective_attack_wave", "enemy_damage_table"), "table_lookup", "per_overlay_row", "kb_cached"),
     ColumnFormulaSpec("enemy_health", "simulators", "float", ("effective_health_wave", "enemy_health_table", "boss_multiplier"), "table_lookup", "per_overlay_row", "kb_cached"),
-    ColumnFormulaSpec("final_wall_hp", "simulators", "float", ("table1.survivability_contributors", "scenario.wall_hp_multiplier"), "staged_contributor_formula", "per_overlay_row", "row_static"),
-    ColumnFormulaSpec("final_wall_regen", "simulators", "float", ("table1.survivability_contributors", "scenario.wall_regen_multiplier"), "staged_contributor_formula", "per_overlay_row", "row_static"),
+    ColumnFormulaSpec("active_perk_contributions", "simulators", "mapping[str,float]", ("table1.compiled_perk_state", "scenario.removed_perk_ids"), "scenario_perk_mask", "per_overlay_row", "row_static"),
+    ColumnFormulaSpec("final_wall_hp", "simulators", "float", ("table1.survivability_contributors", "active_perk_contributions", "scenario.wall_hp_multiplier"), "staged_contributor_formula", "per_overlay_row", "row_static"),
+    ColumnFormulaSpec("final_wall_regen", "simulators", "float", ("table1.survivability_contributors", "active_perk_contributions", "scenario.wall_regen_multiplier"), "staged_contributor_formula", "per_overlay_row", "row_static"),
     ColumnFormulaSpec("lane_evaluations", "simulators", "tuple[CombatLaneEvaluation]", ("final_wall_hp", "final_wall_regen", "v21_ttk"), "lane_evaluation", "per_overlay_row", "row_static"),
     ColumnFormulaSpec("summary_lane_id", "simulators", "str", ("summary_lane_policy",), "explicit_policy", "per_overlay_row", "plan_static"),
     ColumnFormulaSpec("summary_combat", "simulators", "CombatLaneEvaluation", ("lane_evaluations", "summary_lane_id"), "explicit_policy_lookup", "per_overlay_row", "row_static"),
     ColumnFormulaSpec("operator_handle", "simulators", "OperatorLookupHandle", ("row_key", "summary_lane_id"), "identity", "per_overlay_row", "row_static"),
 )
+TABLE2_REQUIRED_COLUMN_IDS: frozenset[str] = frozenset(spec.column_id for spec in TABLE2_COLUMN_REGISTRY)
+TABLE2_KEY_CONTRACTS: Mapping[str, tuple[tuple[str, ...], str]] = {
+    "active_perk_contributions": (("table1.compiled_perk_state", "scenario.removed_perk_ids"), "scenario_perk_mask"),
+    "final_wall_hp": (("table1.survivability_contributors", "active_perk_contributions", "scenario.wall_hp_multiplier"), "staged_contributor_formula"),
+    "final_wall_regen": (("table1.survivability_contributors", "active_perk_contributions", "scenario.wall_regen_multiplier"), "staged_contributor_formula"),
+    "lane_evaluations": (("final_wall_hp", "final_wall_regen", "v21_ttk"), "lane_evaluation"),
+    "summary_combat": (("lane_evaluations", "summary_lane_id"), "explicit_policy_lookup"),
+}
 
 
 class KernelAmbiguityError(ValueError):
@@ -124,6 +134,7 @@ class ScenarioOverlayRow:
     heat: Mapping[str, float]
     tournament_perks_enabled: bool
     active_perk_counts: Mapping[str, int]
+    active_perk_contributions: Mapping[str, float]
     removed_perk_ids: tuple[str, ...]
     effective_attack_skip_chance: float
     effective_health_skip_chance: float
@@ -156,6 +167,7 @@ class ScenarioOverlayRow:
             "enemy_health": self.enemy_health,
             "wall_hp": self.final_wall_hp,
             "wall_regen": self.final_wall_regen,
+            "active_perk_contributions": dict(self.active_perk_contributions),
             "damage_reduction_pct": self.damage_reduction_pct,
             "survival_margin_hp": self.summary_combat.survival_margin_hp,
             "survives": self.summary_combat.survives,
@@ -218,8 +230,9 @@ def evaluate_overlay_row(
         * max(0.0, float(transforms.enemy_health_multiplier))
         * max(0.0, float(row.death_wave_health_multiplier))
     )
-    final_wall_hp = _derive_wall_hp(row.survivability_contributors, transforms)
-    final_wall_regen = _derive_wall_regen(row.survivability_contributors, transforms)
+    active_perk_counts, active_perk_contributions = _active_perk_state(row, scenario)
+    final_wall_hp = _derive_wall_hp(row.survivability_contributors, transforms, active_perk_contributions)
+    final_wall_regen = _derive_wall_regen(row.survivability_contributors, transforms, active_perk_contributions)
     lane_drs = _derive_lane_damage_reduction(row.survivability_contributors, transforms)
     ttk_seconds = _simulate_boss_ttk(enemy_health=enemy_health, combat=combat)
     lane_evaluations = tuple(
@@ -256,7 +269,8 @@ def evaluate_overlay_row(
         battle_conditions=tuple(scenario.battle_conditions),
         heat=dict(scenario.heat),
         tournament_perks_enabled=bool(scenario.tournament_perks_enabled),
-        active_perk_counts=_active_perk_counts(row, scenario),
+        active_perk_counts=active_perk_counts,
+        active_perk_contributions=active_perk_contributions,
         removed_perk_ids=tuple(scenario.removed_perk_ids),
         effective_attack_skip_chance=effective_attack_skip,
         effective_health_skip_chance=effective_health_skip,
@@ -274,23 +288,39 @@ def evaluate_overlay_row(
 
 
 def validate_table2_registry(table: ScenarioOverlayTable) -> None:
-    registry_ids = frozenset(spec.column_id for spec in table.column_registry)
+    registry = _registry_by_id(table.column_registry)
+    missing_required = sorted(TABLE2_REQUIRED_COLUMN_IDS - frozenset(registry))
+    if missing_required:
+        raise ValueError(f"Table 2 registry missing required columns: {missing_required!r}")
+    _validate_registry_contracts(registry, TABLE2_KEY_CONTRACTS, "Table 2")
+    registry_ids = frozenset(registry)
     for row in table.rows:
         missing = [column_id for column_id in registry_ids if not hasattr(row, column_id)]
         if missing:
             raise ValueError(f"Table 2 row missing registered columns: {missing!r}")
+        _validate_table2_row_contract(row)
 
 
-def _derive_wall_hp(contributors: SurvivabilityContributorBundle, transforms: ScenarioSurvivabilityTransforms) -> float:
+def _derive_wall_hp(
+    contributors: SurvivabilityContributorBundle,
+    transforms: ScenarioSurvivabilityTransforms,
+    perk_contributions: Mapping[str, float],
+) -> float:
     _validate_survivability_contributors(contributors)
-    base = contributors.base_wall_hp + contributors.workshop_wall_hp + contributors.lab_wall_hp + contributors.enhancement_wall_hp + contributors.module_flat_wall_hp
-    return base * max(0.0, float(contributors.wall_hp_multiplier)) * max(0.0, float(transforms.wall_hp_multiplier))
+    flat, multiplier = _perk_contribution_pair(perk_contributions, flat_effect_id="wall_hp_flat", multiplier_effect_id="wall_hp_multiplier")
+    base = sum(contributors.wall_hp_primitives.values()) + flat
+    return base * max(0.0, float(contributors.wall_hp_multiplier)) * multiplier * max(0.0, float(transforms.wall_hp_multiplier))
 
 
-def _derive_wall_regen(contributors: SurvivabilityContributorBundle, transforms: ScenarioSurvivabilityTransforms) -> float:
+def _derive_wall_regen(
+    contributors: SurvivabilityContributorBundle,
+    transforms: ScenarioSurvivabilityTransforms,
+    perk_contributions: Mapping[str, float],
+) -> float:
     _validate_survivability_contributors(contributors)
-    base = contributors.base_wall_regen + contributors.workshop_wall_regen + contributors.lab_wall_regen + contributors.enhancement_wall_regen + contributors.module_flat_wall_regen
-    return base * max(0.0, float(contributors.wall_regen_multiplier)) * max(0.0, float(transforms.wall_regen_multiplier))
+    flat, multiplier = _perk_contribution_pair(perk_contributions, flat_effect_id="wall_regen_flat", multiplier_effect_id="wall_regen_multiplier")
+    base = sum(contributors.wall_regen_primitives.values()) + flat
+    return base * max(0.0, float(contributors.wall_regen_multiplier)) * multiplier * max(0.0, float(transforms.wall_regen_multiplier))
 
 
 def _derive_lane_damage_reduction(contributors: SurvivabilityContributorBundle, transforms: ScenarioSurvivabilityTransforms) -> dict[str, float]:
@@ -315,17 +345,60 @@ def _effective_progression_for_row(progression: WaveProgressionRecurrence, *, st
     )
 
 
-def _active_perk_counts(row: CommonTrajectoryRow, scenario: ScenarioOverlayInputs) -> dict[str, int]:
+def _active_perk_state(row: CommonTrajectoryRow, scenario: ScenarioOverlayInputs) -> tuple[dict[str, int], dict[str, float]]:
     counts = {str(k): int(v) for k, v in row.compiled_perk_state.counts.items()}
+    contributions = {str(k): float(v) for k, v in row.compiled_perk_state.contributions.items()}
+    _validate_perk_contributions(contributions)
     if scenario.tournament_perks_enabled:
-        return counts
+        return counts, contributions
     removed = set(str(perk_id) for perk_id in scenario.removed_perk_ids)
     if not removed:
         raise KernelAmbiguityError("tournament perk removal requested without removed_perk_ids")
     missing = sorted(perk_id for perk_id in removed if perk_id not in counts)
     if missing:
         raise KernelAmbiguityError(f"tournament perk removal references unknown compiled perk ids: {missing!r}")
-    return {perk_id: count for perk_id, count in counts.items() if perk_id not in removed}
+    active_counts = {perk_id: count for perk_id, count in counts.items() if perk_id not in removed}
+    active_contributions = {
+        contribution_id: value
+        for contribution_id, value in contributions.items()
+        if _perk_contribution_owner(contribution_id) not in removed
+    }
+    return active_counts, active_contributions
+
+
+def _perk_contribution_pair(
+    contributions: Mapping[str, float],
+    *,
+    flat_effect_id: str,
+    multiplier_effect_id: str,
+) -> tuple[float, float]:
+    _validate_perk_contributions(contributions)
+    flat = 0.0
+    multiplier = 1.0
+    for contribution_id, value in contributions.items():
+        effect_id = _perk_contribution_effect_id(contribution_id)
+        if effect_id == flat_effect_id:
+            flat += float(value)
+        elif effect_id == multiplier_effect_id:
+            multiplier *= max(0.0, float(value))
+    return flat, multiplier
+
+
+def _validate_perk_contributions(contributions: Mapping[str, float]) -> None:
+    for contribution_id, value in contributions.items():
+        effect_id = _perk_contribution_effect_id(contribution_id)
+        if effect_id not in PERK_CONTRIBUTION_EFFECT_IDS:
+            raise KernelAmbiguityError(f"unsupported perk contribution effect {effect_id!r}")
+        if effect_id.endswith("_multiplier") and float(value) < 0.0:
+            raise KernelAmbiguityError(f"perk contribution {contribution_id!r} multiplier cannot be negative")
+
+
+def _perk_contribution_owner(contribution_id: str) -> str | None:
+    return str(contribution_id).split(":", 1)[0] if ":" in str(contribution_id) else None
+
+
+def _perk_contribution_effect_id(contribution_id: str) -> str:
+    return str(contribution_id).split(":", 1)[1] if ":" in str(contribution_id) else str(contribution_id)
 
 
 def _summary_lane(lanes: tuple[CombatLaneEvaluation, ...]) -> CombatLaneEvaluation:
@@ -410,9 +483,52 @@ def _simulate_boss_ttk(*, enemy_health: float, combat: CombatInputs) -> float:
 
 
 def _validate_survivability_contributors(contributors: SurvivabilityContributorBundle) -> None:
+    if contributors.source_policy != "explicit_staged_contributors_v1":
+        raise KernelAmbiguityError("survivability contributors source_policy must be explicit_staged_contributors_v1")
     for name in ("base_wall_hp", "workshop_wall_hp", "lab_wall_hp", "enhancement_wall_hp", "module_flat_wall_hp", "wall_hp_multiplier", "base_wall_regen", "workshop_wall_regen", "lab_wall_regen", "enhancement_wall_regen", "module_flat_wall_regen", "wall_regen_multiplier", "wall_fortification_multiplier"):
         if float(getattr(contributors, name)) < 0.0:
             raise KernelAmbiguityError(f"survivability contributor {name} cannot be negative")
+
+
+def _registry_by_id(registry: tuple[ColumnFormulaSpec, ...]) -> dict[str, ColumnFormulaSpec]:
+    out: dict[str, ColumnFormulaSpec] = {}
+    for spec in registry:
+        if spec.column_id in out:
+            raise ValueError(f"duplicate registry column {spec.column_id!r}")
+        for field_name in ("column_id", "owner_layer", "dtype", "recurrence_type", "evaluation_policy", "cache_policy"):
+            if not str(getattr(spec, field_name)):
+                raise ValueError(f"registry column {spec.column_id!r} has empty {field_name}")
+        out[spec.column_id] = spec
+    return out
+
+
+def _validate_registry_contracts(
+    registry: Mapping[str, ColumnFormulaSpec],
+    contracts: Mapping[str, tuple[tuple[str, ...], str]],
+    label: str,
+) -> None:
+    for column_id, (dependencies, recurrence_type) in contracts.items():
+        spec = registry.get(column_id)
+        if spec is None:
+            raise ValueError(f"{label} registry missing key contract column {column_id!r}")
+        if tuple(spec.dependencies) != tuple(dependencies):
+            raise ValueError(f"{label} registry column {column_id!r} dependencies changed from {dependencies!r}")
+        if spec.recurrence_type != recurrence_type:
+            raise ValueError(f"{label} registry column {column_id!r} recurrence_type must be {recurrence_type!r}")
+
+
+def _validate_table2_row_contract(row: ScenarioOverlayRow) -> None:
+    if not isinstance(row.row_key, str) or not row.row_key:
+        raise ValueError("Table 2 row_key must be a non-empty string")
+    if not isinstance(row.final_wall_hp, (int, float)) or float(row.final_wall_hp) < 0.0:
+        raise ValueError("Table 2 final_wall_hp must be non-negative")
+    if not isinstance(row.final_wall_regen, (int, float)) or float(row.final_wall_regen) < 0.0:
+        raise ValueError("Table 2 final_wall_regen must be non-negative")
+    if tuple(lane.lane_id for lane in row.lane_evaluations) != LANE_ORDER:
+        raise ValueError("Table 2 lane_evaluations must follow canonical lane order")
+    if row.summary_lane_id != SUMMARY_LANE_ID or row.summary_combat.lane_id != SUMMARY_LANE_ID:
+        raise ValueError("Table 2 summary lane must use explicit avg policy")
+    _validate_perk_contributions(row.active_perk_contributions)
 
 
 def _validate_combat(combat: CombatInputs) -> None:

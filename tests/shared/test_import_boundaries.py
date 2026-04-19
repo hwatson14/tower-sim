@@ -175,6 +175,7 @@ _INPUT_FILE_ALLOWLIST = {
 }
 _APP_FILE_ALLOWLIST = {
     "__init__.py",
+    "boss_waves_phase2a_field_map.yaml",
     "display.py",
     "inspector_data.py",
     "models.py",
@@ -790,9 +791,10 @@ def test_architecture_inventory_matches_repo_index_for_app_and_simulators():
 
     app_repo_index = _active_candidate_python_files_from_repo_index("app")
     simulators_repo_index = _active_candidate_python_files_from_repo_index("simulators")
-    assert app_repo_index == _APP_FILE_ALLOWLIST, (
+    app_python_allowlist = {name for name in _APP_FILE_ALLOWLIST if name.endswith(".py")}
+    assert app_repo_index == app_python_allowlist, (
         "REPO_INDEX.yaml app active candidates do not match test allowlist: "
-        f"{sorted(app_repo_index ^ _APP_FILE_ALLOWLIST)}"
+        f"{sorted(app_repo_index ^ app_python_allowlist)}"
     )
     assert simulators_repo_index == _SIMULATORS_FILE_ALLOWLIST, (
         "REPO_INDEX.yaml simulators active candidates do not match test allowlist: "

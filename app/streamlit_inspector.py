@@ -1688,7 +1688,14 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             'incoming_damage_multiplier': incoming_damage_multiplier,
         },
     )
-    frame = pd.DataFrame(boss_payload.get('rows') or [])
+    operator_rows = boss_payload.get('operator_rows')
+    if operator_rows is None:
+        operator_rows = boss_payload.get('rows') or []
+    download_rows = boss_payload.get('download_rows')
+    if download_rows is None:
+        download_rows = boss_payload.get('rows') or []
+    frame = pd.DataFrame(operator_rows)
+    download_frame = pd.DataFrame(download_rows)
     if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:
         frame['changed_workshop_tracks_last_step'] = frame['changed_workshop_tracks_last_step'].fillna('')
     display_frame = _build_boss_wave_operator_frame(frame)
@@ -1781,7 +1788,7 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.dataframe(display_frame, width='stretch', hide_index=True)
     st.download_button(
         'Download boss-wave CSV',
-        data=frame.to_csv(index=False).encode('utf-8'),
+        data=download_frame.to_csv(index=False).encode('utf-8'),
         file_name=str(payload_download.get('file_name') or f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv'),
         mime='text/csv',
         width='stretch',

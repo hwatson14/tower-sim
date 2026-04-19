@@ -1,0 +1,211 @@
+artifact: boss_waves_phase2a_field_map
+schema_version: 1
+scope:
+  phase: Phase 2A
+  surfaces:
+    table: in_scope
+    summary: in_scope
+    export: out_of_scope_uses_legacy_compatible_download_rows
+    diagnostics: out_of_scope_uses_legacy_compatible_diagnostics
+  derivation_basis: actual_current_product_consumption_in_app_streamlit_inspector
+source_selection_owner: app.pipeline.build_boss_wave_payload
+renderer_policy: app.streamlit_inspector consumes selected payload fields only
+operator_table_fields:
+  - product_field: Wave
+    consumer_input: display_wave
+    legacy_source: legacy rows.display_wave
+    replacement_source: operator_rows.display_wave
+    comparability: equivalent
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Atk Wave
+    consumer_input: attack_wave
+    legacy_source: legacy rows.attack_wave
+    replacement_source: operator_rows.attack_wave
+    comparability: equivalent
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: HP Wave
+    consumer_input: health_wave
+    legacy_source: legacy rows.health_wave
+    replacement_source: operator_rows.health_wave
+    comparability: equivalent
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Boss HP
+    consumer_input: boss_health
+    legacy_source: legacy rows.boss_health
+    replacement_source: operator_rows.boss_health
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Boss Atk
+    consumer_input: boss_attack
+    legacy_source: legacy rows.boss_attack
+    replacement_source: operator_rows.boss_attack
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Tower DPS
+    consumer_input: tower_damage_per_second
+    legacy_source: legacy rows.tower_damage_per_second
+    replacement_source: none
+    comparability: not_comparable
+    normalization: null_display_dash
+    required_for: [table]
+    cutover_behavior: not_exposed_in_phase2a_v21_event_only_ttk
+  - product_field: Wall Pool
+    consumer_input: wall_pool_hp_used
+    legacy_source: legacy rows.wall_pool_hp_used
+    replacement_source: operator_rows.wall_pool_hp_used
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Wall Regen
+    consumer_input: wall_regen
+    legacy_source: legacy rows.wall_regen
+    replacement_source: operator_rows.wall_regen
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Regen Gain
+    consumer_input: wall_regen_gained_hp
+    legacy_source: legacy rows.wall_regen_gained_hp
+    replacement_source: operator_rows.wall_regen_gained_hp
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: DR Used
+    consumer_input: effective_damage_reduction_pct_used
+    legacy_source: legacy rows.effective_damage_reduction_pct_used
+    replacement_source: operator_rows.effective_damage_reduction_pct_used
+    comparability: equivalent
+    normalization: percent_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: TTK (s)
+    consumer_input: boss_ttk_seconds_used
+    legacy_source: legacy rows.boss_ttk_seconds_used
+    replacement_source: operator_rows.boss_ttk_seconds_used
+    comparability: intentional_model_improvement
+    normalization: seconds_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Contact (s)
+    consumer_input: boss_contact_time_seconds_used
+    legacy_source: legacy rows.boss_contact_time_seconds_used
+    replacement_source: operator_rows.boss_contact_time_seconds_used
+    comparability: equivalent
+    normalization: seconds_display
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Boss Hits
+    consumer_input: boss_hits_taken
+    legacy_source: legacy rows.boss_hits_taken
+    replacement_source: operator_rows.boss_hits_taken
+    comparability: transformed
+    normalization: integer
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Damage Taken
+    consumer_input: boss_total_damage_taken
+    legacy_source: legacy rows.boss_total_damage_taken
+    replacement_source: operator_rows.boss_total_damage_taken
+    comparability: transformed
+    normalization: numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Margin
+    consumer_input: boss_survival_margin_hp
+    legacy_source: legacy rows.boss_survival_margin_hp
+    replacement_source: operator_rows.boss_survival_margin_hp
+    comparability: transformed
+    normalization: signed_numeric_display_compact
+    required_for: [table]
+    cutover_behavior: switch_now
+  - product_field: Survives
+    consumer_input: survives_boss
+    legacy_source: legacy rows.survives_boss
+    replacement_source: operator_rows.survives_boss
+    comparability: transformed
+    normalization: boolean_yes_no
+    required_for: [table]
+    cutover_behavior: switch_now
+summary_fields:
+  - product_field: Rows
+    consumer_input: summary.row_count
+    legacy_source: legacy summary.row_count
+    replacement_source: summary.row_count
+    comparability: equivalent
+    normalization: integer
+    required_for: [summary]
+    cutover_behavior: switch_now
+  - product_field: Max surviving wave
+    consumer_input: summary.max_surviving_wave
+    legacy_source: legacy summary.max_surviving_wave
+    replacement_source: summary.max_surviving_wave
+    comparability: transformed
+    normalization: integer
+    required_for: [summary]
+    cutover_behavior: switch_now
+  - product_field: Tier
+    consumer_input: summary.tier_column
+    legacy_source: legacy summary.tier_column
+    replacement_source: summary.tier_column
+    comparability: equivalent
+    normalization: string
+    required_for: [summary]
+    cutover_behavior: switch_now
+  - product_field: Preset
+    consumer_input: summary.preset_name
+    legacy_source: legacy summary.preset_name
+    replacement_source: summary.preset_name
+    comparability: equivalent
+    normalization: string
+    required_for: [summary]
+    cutover_behavior: switch_now
+  - product_field: First failed wave
+    consumer_input: summary.first_failed_wave
+    legacy_source: legacy summary.first_failed_wave
+    replacement_source: summary.first_failed_wave
+    comparability: transformed
+    normalization: integer_zero_as_dash
+    required_for: [summary]
+    cutover_behavior: switch_now
+  - product_field: Boss cadence
+    consumer_input: diagnostics.actual_boss_interval_waves
+    legacy_source: legacy diagnostics.actual_boss_interval_waves
+    replacement_source: legacy-compatible diagnostics
+    comparability: equivalent
+    normalization: integer_zero_as_dash
+    required_for: [summary]
+    cutover_behavior: stay_legacy_for_now
+  - product_field: Execution mode
+    consumer_input: diagnostics.execution_mode
+    legacy_source: legacy diagnostics.execution_mode
+    replacement_source: legacy-compatible diagnostics
+    comparability: equivalent
+    normalization: string_dash_if_empty
+    required_for: [summary]
+    cutover_behavior: stay_legacy_for_now
+  - product_field: Row/result agreement
+    consumer_input: summary.result_consistent_with_rows
+    legacy_source: legacy summary.result_consistent_with_rows
+    replacement_source: summary.result_consistent_with_rows
+    comparability: transformed
+    normalization: boolean_yes_no
+    required_for: [summary]
+    cutover_behavior: switch_now
+payload_split:
+  operator_rows: replacement-backed selected rows for Phase 2A table rendering
+  rows: selected rows retained as backward-compatible table alias
+  download_rows: legacy-compatible rows for CSV/export during Phase 2A
+  diagnostics: legacy-compatible diagnostics during Phase 2A

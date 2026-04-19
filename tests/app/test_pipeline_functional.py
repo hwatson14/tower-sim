@@ -294,11 +294,13 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
             'effective_damage_reduction_pct': 90.0,
             'incoming_damage_multiplier': 1.0,
         },
+        boss_wave_source='legacy',
     )
 
     assert payload.get('artifact') == 'boss_wave_dashboard_payload'
     assert payload.get('schema_version') == 1
     assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
+    assert payload.get('source_selection', {}).get('active_source') == 'legacy'
     assert payload.get('contract', {}).get('perk_timeline_mode') == 'runtime_policy_projection'
     assert payload.get('contract', {}).get('checkpoint_mode') == 'actual_boss_cadence_with_sampling'
     assert payload.get('download', {}).get('format') == 'csv'
@@ -320,6 +322,237 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['stop_on_failure'] is True
     assert diagnostics['perk_timeline_rows'] >= 0
     assert diagnostics['scenario_runtime_inputs']['orb_boss_hit_pct'] == 2.5
+
+
+def _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, *, rows, summary):
+    monkeypatch.setattr(
+        pipeline_mod,
+        'load_inputs',
+        lambda ids_path=None, manual_inputs_path=None: type(
+            'Bundle',
+            (),
+            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
+        )(),
+    )
+    monkeypatch.setattr(
+        pipeline_mod,
+        'build_runtime_state',
+        lambda ids_raw, loadout_config=None, perk_config=None: type('State', (), {'player_meta': {}})(),
+    )
+    monkeypatch.setattr(pipeline_mod, 'build_start_of_run_state', lambda account_state, preset_name, perk_state: {'state': 'start'})
+
+    def _fake_build_boss_wave_table_payload(*, account_state, initial_projected_state, config, stop_on_failure):
+        return {
+            'rows': rows,
+            'summary': summary,
+            'diagnostics': {
+                'execution_mode': 'table_sweep',
+                'mode_id': 'farming',
+                'tier_number': 14,
+                'tier_column': 'Tier 14',
+                'actual_boss_interval_waves': 9,
+                'checkpoint_every_bosses': 1,
+                'checkpoint_stride_waves': 9,
+                'requested_start_wave': 1,
+                'first_checkpoint_wave': 9,
+                'state_mode': 'start_of_run',
+                'checkpoint_mode': 'actual_boss_cadence_with_sampling',
+                'checkpoint_resolution_mode': 'every_n_bosses',
+                'stop_on_failure': bool(stop_on_failure),
+                'perks_enabled': True,
+                'scenario_runtime_inputs': {'orb_boss_hit_pct': 2.5},
+                'qe_resolution_count': 2,
+                'timing_recompute_count': 2,
+                'snapshot_reuse_count': 0,
+                'qe_dirty_reresolve_count': 1,
+                'delta_fallback_count': 0,
+            },
+        }
+
+    monkeypatch.setattr(pipeline_mod, 'build_boss_wave_table_payload', _fake_build_boss_wave_table_payload)
+
+
+def _phase2a_fake_legacy_row(display_wave: int) -> dict[str, object]:
+    return {
+        'display_wave': display_wave,
+        'attack_wave': display_wave,
+        'health_wave': display_wave,
+        'boss_attack': 10.0,
+        'boss_health': 100.0,
+        'wall_hp': 1000.0,
+        'wall_regen': 25.0,
+        'wall_fortification_multiplier': 2.0,
+        'tower_defense_pct': 90.0,
+        'tower_thorns_damage_pct': 99.0,
+        'tower_damage_per_second': 12345.0,
+        'plasma_cannon_effect_pct': 100.0,
+        'effective_damage_reduction_pct_used': 90.0,
+        'boss_contact_time_seconds_used': 1.0,
+        'boss_hit_interval_seconds_used': 2.0,
+        'incoming_damage_multiplier_used': 1.0,
+        'boss_ttk_seconds_used': 7.5,
+        'wall_pool_hp_used': 2000.0,
+        'wall_regen_gained_hp': 187.5,
+        'boss_hits_taken': 4,
+        'boss_total_damage_taken': 10.0,
+        'boss_survival_margin_hp': 2177.5,
+        'survives_boss': True,
+    }
+
+
+def test_build_boss_wave_payload_phase2a_switches_table_and_summary_but_keeps_export_and_diagnostics_legacy(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    legacy_rows = [_phase2a_fake_legacy_row(9), _phase2a_fake_legacy_row(18)]
+    legacy_summary = {
+        'max_wave': 9,
+        'max_surviving_wave': 9,
+        'first_failed_wave': 18,
+        'row_count': 2,
+        'terminal_display_wave': 18,
+        'survives_through_end': False,
+        'result_consistent_with_rows': True,
+    }
+    _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, rows=legacy_rows, summary=legacy_summary)
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=30,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_hit_pct': 2.5,
+            'orb_boss_hits_per_second': 5.0,
+            'electron_hits_per_second': 5.0,
+            'boss_contact_time_seconds': 1.0,
+            'effective_damage_reduction_pct': 90.0,
+            'incoming_damage_multiplier': 1.0,
+        },
+    )
+
+    contract = payload.get('contract') or {}
+    source_selection = payload.get('source_selection') or {}
+    assert contract.get('simulator_owner') == 'simulators.evaluator_kernel.evaluate_overlay_row'
+    assert contract.get('operator_table_source') == 'phase2a_replacement'
+    assert contract.get('summary_source') == 'phase2a_replacement'
+    assert contract.get('csv_export_source') == 'legacy_compatible_rows'
+    assert contract.get('diagnostics_source') == 'legacy_compatible_diagnostics'
+    assert source_selection.get('rollback_source') == 'legacy'
+    assert source_selection.get('rollback_available') is True
+
+    operator_rows = payload.get('operator_rows') or []
+    assert payload.get('rows') == operator_rows
+    assert operator_rows[0]['phase2a_source'] == 'phase2a_replacement'
+    assert operator_rows[0]['tower_damage_per_second'] is None
+    assert operator_rows[0]['summary_lane_id'] == 'avg'
+    assert set(operator_rows[0]['lane_handle_ids']) == {'avg', 'min', 'max'}
+    assert payload.get('download_rows') == legacy_rows
+    assert payload.get('download', {}).get('row_source') == 'legacy_compatible'
+    assert (payload.get('diagnostics') or {}).get('execution_mode') == 'table_sweep'
+
+    summary = payload.get('summary') or {}
+    assert summary['max_surviving_wave'] == 18
+    assert summary['first_failed_wave'] == 0
+    assert summary['survives_through_end'] is True
+
+
+def test_build_boss_wave_payload_phase2a_rollback_restores_legacy_table_and_summary(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    legacy_rows = [_phase2a_fake_legacy_row(9)]
+    legacy_summary = {
+        'max_wave': 9,
+        'max_surviving_wave': 9,
+        'first_failed_wave': 0,
+        'row_count': 1,
+        'terminal_display_wave': 9,
+        'survives_through_end': True,
+        'result_consistent_with_rows': True,
+    }
+    _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, rows=legacy_rows, summary=legacy_summary)
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    payload = pipeline_mod.build_boss_wave_payload(
+        request,
+        preset_name='Farming',
+        tier_number=14,
+        end_wave=30,
+        boss_wave_step=1,
+        stop_on_failure=True,
+        scenario_runtime_inputs={
+            'orb_boss_hit_pct': 2.5,
+            'orb_boss_hits_per_second': 5.0,
+            'electron_hits_per_second': 5.0,
+            'boss_contact_time_seconds': 1.0,
+            'effective_damage_reduction_pct': 90.0,
+            'incoming_damage_multiplier': 1.0,
+        },
+        boss_wave_source='legacy',
+    )
+
+    assert payload.get('rows') == legacy_rows
+    assert payload.get('operator_rows') == legacy_rows
+    assert payload.get('download_rows') == legacy_rows
+    assert payload.get('summary') == {
+        'preset_name': 'Farming',
+        'tier_column': 'Tier 14',
+        'state_mode': 'start_of_run',
+        'max_wave': 9,
+        'max_surviving_wave': 9,
+        'first_failed_wave': 0,
+        'row_count': 1,
+        'terminal_display_wave': 9,
+        'survives_through_end': True,
+        'result_consistent_with_rows': True,
+    }
+    assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
+    assert payload.get('source_selection', {}).get('active_source') == 'legacy'
+
+
+def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_field(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    row = _phase2a_fake_legacy_row(9)
+    row.pop('wall_regen')
+    _install_fake_boss_wave_pipeline_dependencies(
+        monkeypatch,
+        pipeline_mod,
+        rows=[row],
+        summary={
+            'max_wave': 9,
+            'max_surviving_wave': 9,
+            'first_failed_wave': 0,
+            'row_count': 1,
+            'terminal_display_wave': 9,
+            'survives_through_end': True,
+            'result_consistent_with_rows': True,
+        },
+    )
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    with pytest.raises(ValueError, match="requires legacy product row field 'wall_regen'"):
+        pipeline_mod.build_boss_wave_payload(
+            request,
+            preset_name='Farming',
+            tier_number=14,
+            end_wave=30,
+            boss_wave_step=1,
+            stop_on_failure=True,
+            scenario_runtime_inputs={
+                'orb_boss_hit_pct': 2.5,
+                'orb_boss_hits_per_second': 5.0,
+                'electron_hits_per_second': 5.0,
+                'boss_contact_time_seconds': 1.0,
+                'effective_damage_reduction_pct': 90.0,
+                'incoming_damage_multiplier': 1.0,
+            },
+        )
 
 
 @pytest.mark.live

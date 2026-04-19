@@ -81,6 +81,11 @@ from simulators.timing import compile_timing_family_rows, merge_scenario_publica
 from input.state_types import ScenarioRuntimeInputs
 from qe.models import BoundStatInputs, bind_state_identity
 
+BOSS_WAVE_SOURCE_LEGACY = 'legacy'
+BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT = 'phase2a_replacement'
+BOSS_WAVE_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_LEGACY, BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT})
+BOSS_WAVE_PHASE2A_FIELD_MAP_PATH = ROOT / 'app' / 'boss_waves_phase2a_field_map.yaml'
+
 
 def _load_json_config(path: Path) -> dict:
     import json
@@ -99,6 +104,32 @@ def build_start_of_run_state(*args, **kwargs):
 def build_boss_wave_table_payload(*args, **kwargs):
     from simulators.run_executor import build_boss_wave_table_payload as _impl
     return _impl(*args, **kwargs)
+
+
+def _normalize_boss_wave_source(source_id: str | None) -> str:
+    normalized = str(source_id or BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT).strip()
+    if normalized not in BOSS_WAVE_SOURCE_IDS:
+        raise ValueError(f"unsupported Boss Waves source {source_id!r}; expected one of {sorted(BOSS_WAVE_SOURCE_IDS)!r}")
+    return normalized
+
+
+def _boss_wave_source_selection_payload(
+    requested_source: str,
+    *,
+    active_source: str,
+    rollback_available: bool,
+) -> dict[str, object]:
+    return {
+        'requested_source': _normalize_boss_wave_source(requested_source),
+        'active_source': _normalize_boss_wave_source(active_source),
+        'operator_table_source': active_source,
+        'summary_source': active_source,
+        'csv_export_source': 'legacy_compatible',
+        'diagnostics_source': 'legacy_compatible',
+        'rollback_source': BOSS_WAVE_SOURCE_LEGACY,
+        'rollback_available': bool(rollback_available),
+        'field_map_artifact': str(BOSS_WAVE_PHASE2A_FIELD_MAP_PATH.relative_to(ROOT)),
+    }
 
 
 def _boss_wave_mode_id_for_preset(preset_name: str) -> str:
@@ -289,10 +320,12 @@ def build_boss_wave_payload(
     boss_wave_step: int,
     stop_on_failure: bool,
     scenario_runtime_inputs: dict[str, float],
+    boss_wave_source: str = BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT,
 ) -> dict[str, object]:
     from simulators.contracts import PerkState
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
     from simulators.run_executor import RunToMaxConfig
+    source_id = _normalize_boss_wave_source(boss_wave_source)
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
     account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
     resolved_context = _resolve_boss_wave_run_context(
@@ -359,6 +392,9 @@ def build_boss_wave_payload(
                 'format': 'csv',
                 'file_name': f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
             },
+            'source_selection': _boss_wave_source_selection_payload(source_id, active_source=BOSS_WAVE_SOURCE_LEGACY, rollback_available=True),
+            'operator_rows': [],
+            'download_rows': [],
         }
     initial_state = build_start_of_run_state(
         account_state,
@@ -395,13 +431,29 @@ def build_boss_wave_payload(
     rows = list(boss_wave_run.get('rows') or [])
     summary = dict(boss_wave_run.get('summary') or {})
     execution_diagnostics = dict(boss_wave_run.get('diagnostics') or {})
+    if source_id == BOSS_WAVE_SOURCE_LEGACY:
+        operator_rows = rows
+        selected_summary = summary
+        active_owner = 'simulators.run_executor.build_boss_wave_table_payload'
+        tower_damage_mode = 'continuous_runtime_dps_proxy'
+        survivability_semantics = 'bounded_runtime_assumption_model'
+    else:
+        operator_rows, selected_summary = _build_phase2a_replacement_operator_table_and_summary(
+            legacy_rows=rows,
+            legacy_summary=summary,
+            config=config,
+            scenario_runtime_inputs=scenario_runtime_inputs,
+        )
+        active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
+        tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
+        survivability_semantics = 'staged_replacement_phase2a_operator_table_and_summary'
     return {
         'artifact': 'boss_wave_dashboard_payload',
         'schema_version': 1,
         'contract': {
             'payload_owner': 'app.pipeline.build_boss_wave_payload',
-            'simulator_owner': 'simulators.run_executor.build_boss_wave_table_payload',
-            'row_output_kind': 'boss_wave_table_rows',
+            'simulator_owner': active_owner,
+            'row_output_kind': 'boss_wave_phase2a_selected_operator_rows',
             'summary_kind': 'max_wave_survivability',
             'checkpoint_mode': 'actual_boss_cadence_with_sampling',
             'start_state_basis': 'start_of_run',
@@ -409,21 +461,30 @@ def build_boss_wave_payload(
             'free_upgrade_mode': 'runtime_progression_allocation',
             'wave_progression_mode': 'runtime_wave_progression',
             'enemy_skip_mode': 'runtime_wave_progression',
-            'tower_damage_mode': 'continuous_runtime_dps_proxy',
-            'survivability_semantics': 'bounded_runtime_assumption_model',
+            'tower_damage_mode': tower_damage_mode,
+            'survivability_semantics': survivability_semantics,
+            'phase2a_scope': 'operator_table_and_summary_only',
+            'operator_table_source': source_id,
+            'summary_source': source_id,
+            'csv_export_source': 'legacy_compatible_rows',
+            'diagnostics_source': 'legacy_compatible_diagnostics',
+            'legacy_export_owner': 'simulators.run_executor.build_boss_wave_table_payload',
+            'phase2a_field_map_artifact': str(BOSS_WAVE_PHASE2A_FIELD_MAP_PATH.relative_to(ROOT)),
         },
-        'rows': rows,
+        'rows': operator_rows,
+        'operator_rows': operator_rows,
+        'download_rows': rows,
         'summary': {
             'preset_name': preset_name,
             'tier_column': config.tier_column,
             'state_mode': config.state_mode,
-            'max_wave': int(summary.get('max_wave') or 0),
-            'max_surviving_wave': int(summary.get('max_surviving_wave') or 0),
-            'first_failed_wave': int(summary.get('first_failed_wave') or 0),
-            'row_count': int(summary.get('row_count') or len(rows)),
-            'terminal_display_wave': int(summary.get('terminal_display_wave') or 0),
-            'survives_through_end': bool(summary.get('survives_through_end')),
-            'result_consistent_with_rows': bool(summary.get('result_consistent_with_rows')),
+            'max_wave': int(selected_summary.get('max_wave') or 0),
+            'max_surviving_wave': int(selected_summary.get('max_surviving_wave') or 0),
+            'first_failed_wave': int(selected_summary.get('first_failed_wave') or 0),
+            'row_count': int(selected_summary.get('row_count') or len(operator_rows)),
+            'terminal_display_wave': int(selected_summary.get('terminal_display_wave') or 0),
+            'survives_through_end': bool(selected_summary.get('survives_through_end')),
+            'result_consistent_with_rows': bool(selected_summary.get('result_consistent_with_rows')),
         },
         'diagnostics': {
             'preset_name': preset_name,
@@ -435,8 +496,215 @@ def build_boss_wave_payload(
         'download': {
             'format': 'csv',
             'file_name': f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
+            'row_source': 'legacy_compatible',
         },
+        'source_selection': _boss_wave_source_selection_payload(source_id, active_source=source_id, rollback_available=True),
     }
+
+
+def _build_phase2a_replacement_operator_table_and_summary(
+    *,
+    legacy_rows: list[dict[str, object]],
+    legacy_summary: dict[str, object],
+    config,
+    scenario_runtime_inputs: dict[str, float],
+) -> tuple[list[dict[str, object]], dict[str, object]]:
+    from qe.run_plan import (
+        CommonTrajectoryRow,
+        CompiledPerkState,
+        FreeUpgradeRecurrence,
+        SurvivabilityContributorBundle,
+        WaveProgressionRecurrence,
+    )
+    from simulators.evaluator_kernel import (
+        CombatInputs,
+        ScenarioOverlayInputs,
+        ScenarioSurvivabilityTransforms,
+        evaluate_overlay_row,
+    )
+
+    operator_rows: list[dict[str, object]] = []
+    for index, legacy_row in enumerate(legacy_rows):
+        display_wave = _required_boss_wave_row_int(legacy_row, 'display_wave')
+        attack_wave = _required_boss_wave_row_int(legacy_row, 'attack_wave')
+        health_wave = _required_boss_wave_row_int(legacy_row, 'health_wave')
+        wall_hp = _required_boss_wave_row_float(legacy_row, 'wall_hp')
+        wall_regen = _required_boss_wave_row_float(legacy_row, 'wall_regen')
+        wall_fortification = _required_boss_wave_row_float(legacy_row, 'wall_fortification_multiplier')
+        tower_defense_pct = _optional_boss_wave_row_float(legacy_row, 'effective_damage_reduction_pct_used')
+        if tower_defense_pct is None:
+            tower_defense_pct = _optional_boss_wave_row_float(legacy_row, 'tower_defense_pct') or 0.0
+        incoming_mult = _optional_boss_wave_row_float(legacy_row, 'incoming_damage_multiplier_used')
+        if incoming_mult is None:
+            incoming_mult = float(scenario_runtime_inputs.get('incoming_damage_multiplier', 1.0) or 1.0)
+        attack_skip = _phase2a_skip_fraction_for_effective_wave(display_wave=display_wave, effective_wave=attack_wave)
+        health_skip = _phase2a_skip_fraction_for_effective_wave(display_wave=display_wave, effective_wave=health_wave)
+        row = CommonTrajectoryRow(
+            row_key=f'phase2a:table1:{index}:{display_wave}',
+            display_wave=display_wave,
+            checkpoint_index=index,
+            wave_progression=WaveProgressionRecurrence(display_wave=display_wave, attack_wave=display_wave, health_wave=display_wave),
+            free_upgrade_state=FreeUpgradeRecurrence(),
+            generated_free_upgrades_last_step={},
+            allocated_free_upgrades_last_step={},
+            unallocated_free_upgrades_last_step={},
+            workshop_levels={},
+            compiled_perk_state=CompiledPerkState(
+                counts={},
+                contributions={},
+                source_policy='phase2a_app_cutover_legacy_resolved_product_inputs',
+                dependency_identity=f'phase2a:{config.preset_name}:{config.tier_column}',
+            ),
+            survivability_contributors=SurvivabilityContributorBundle(
+                base_wall_hp=wall_hp,
+                base_wall_regen=wall_regen,
+                wall_fortification_multiplier=wall_fortification,
+                tower_defense_pct=tower_defense_pct,
+                timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
+            ),
+            death_wave_health_multiplier=1.0,
+            common_inputs={
+                'start_progression_wave': 0,
+                'attack_skip_chance': attack_skip,
+                'health_skip_chance': health_skip,
+                'phase2a_source_row': 'legacy_live_product_row',
+            },
+        )
+        scenario = ScenarioOverlayInputs(
+            scenario_key='phase2a_operator_table',
+            tier_column=str(config.tier_column),
+            tournament_perks_enabled=True,
+            survivability_transforms=ScenarioSurvivabilityTransforms(
+                incoming_damage_multiplier=incoming_mult,
+            ),
+        )
+        boss_contact_time_seconds = _optional_boss_wave_row_float(legacy_row, 'boss_contact_time_seconds_used')
+        if boss_contact_time_seconds is None:
+            boss_contact_time_seconds = _optional_runtime_float(scenario_runtime_inputs, 'boss_contact_time_seconds')
+        combat = CombatInputs(
+            plasma_cannon_effect_pct=_optional_boss_wave_row_float(legacy_row, 'plasma_cannon_effect_pct') or 0.0,
+            tower_thorns_damage_pct=_optional_boss_wave_row_float(legacy_row, 'tower_thorns_damage_pct') or 0.0,
+            orb_boss_hit_pct=float(scenario_runtime_inputs.get('orb_boss_hit_pct', 0.0) or 0.0),
+            orb_boss_hits_per_second=float(scenario_runtime_inputs.get('orb_boss_hits_per_second', 0.0) or 0.0),
+            electron_hits_per_second=float(scenario_runtime_inputs.get('electron_hits_per_second', 0.0) or 0.0),
+            boss_contact_time_seconds=boss_contact_time_seconds,
+            boss_hit_interval_seconds=_optional_boss_wave_row_float(legacy_row, 'boss_hit_interval_seconds_used') or 2.0,
+        )
+        overlay = evaluate_overlay_row(row, scenario=scenario, combat=combat)
+        operator_rows.append(_phase2a_operator_row_from_overlay(legacy_row=legacy_row, overlay=overlay))
+    return operator_rows, _phase2a_summary_from_operator_rows(operator_rows, legacy_summary=legacy_summary)
+
+
+def _phase2a_operator_row_from_overlay(*, legacy_row: dict[str, object], overlay) -> dict[str, object]:
+    summary = overlay.summary_combat
+    out = dict(legacy_row)
+    out.update(
+        {
+            'display_wave': overlay.display_wave,
+            'attack_wave': overlay.effective_attack_wave,
+            'health_wave': overlay.effective_health_wave,
+            'boss_attack': overlay.enemy_attack,
+            'boss_health': overlay.enemy_health,
+            'wall_hp': overlay.final_wall_hp,
+            'wall_regen': overlay.final_wall_regen,
+            'tower_damage_per_second': None,
+            'effective_damage_reduction_pct_used': overlay.damage_reduction_pct,
+            'boss_ttk_seconds_used': summary.ttk_seconds,
+            'boss_hits_taken': summary.boss_hits_taken,
+            'boss_total_damage_taken': summary.total_damage_taken,
+            'boss_survival_margin_hp': summary.survival_margin_hp,
+            'wall_pool_hp_used': summary.wall_pool_hp,
+            'wall_regen_gained_hp': summary.wall_regen_gained_hp,
+            'survives_boss': summary.survives,
+            'fail_reason': summary.fail_reason,
+            'phase2a_source': BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT,
+            'summary_lane_id': overlay.summary_lane_id,
+            'operator_handle_id': overlay.operator_handle.handle_id,
+            'lane_handle_ids': dict(overlay.operator_handle.lane_handle_ids),
+        }
+    )
+    return out
+
+
+def _phase2a_summary_from_operator_rows(
+    operator_rows: list[dict[str, object]],
+    *,
+    legacy_summary: dict[str, object],
+) -> dict[str, object]:
+    surviving_waves = [
+        int(row.get('display_wave') or 0)
+        for row in operator_rows
+        if bool(row.get('survives_boss'))
+    ]
+    failed_waves = [
+        int(row.get('display_wave') or 0)
+        for row in operator_rows
+        if not bool(row.get('survives_boss'))
+    ]
+    max_surviving = max(surviving_waves) if surviving_waves else 0
+    first_failed = min(failed_waves) if failed_waves else 0
+    terminal = int(operator_rows[-1].get('display_wave') or 0) if operator_rows else 0
+    return {
+        'max_wave': max_surviving,
+        'max_surviving_wave': max_surviving,
+        'first_failed_wave': first_failed,
+        'row_count': len(operator_rows),
+        'terminal_display_wave': terminal,
+        'survives_through_end': bool(operator_rows) and first_failed == 0,
+        'result_consistent_with_rows': True,
+        'legacy_reference_max_wave': int(legacy_summary.get('max_wave') or 0),
+    }
+
+
+def _phase2a_skip_fraction_for_effective_wave(*, display_wave: int, effective_wave: int) -> float:
+    display = max(0, int(display_wave))
+    effective = max(0, int(effective_wave))
+    if effective > display:
+        raise ValueError(
+            f"Phase 2A cannot map effective wave {effective} above display wave {display}; "
+            "legacy/replacement wave semantics are ambiguous."
+        )
+    if display == 0:
+        return 0.0
+    suppressed = display - effective
+    if suppressed <= 0:
+        return 0.0
+    return min(1.0, (suppressed + 0.5) / display)
+
+
+def _required_boss_wave_row_int(row: dict[str, object], key: str) -> int:
+    value = _required_boss_wave_row_float(row, key)
+    integer = int(value)
+    if abs(value - integer) > 1e-9:
+        raise ValueError(f"Phase 2A Boss Waves row field {key!r} must be an integer-compatible value, got {value!r}")
+    return integer
+
+
+def _required_boss_wave_row_float(row: dict[str, object], key: str) -> float:
+    value = _optional_boss_wave_row_float(row, key)
+    if value is None:
+        raise ValueError(f"Phase 2A Boss Waves replacement source requires legacy product row field {key!r}")
+    return value
+
+
+def _optional_boss_wave_row_float(row: dict[str, object], key: str) -> float | None:
+    raw_value = row.get(key)
+    if raw_value in (None, ''):
+        return None
+    try:
+        return float(raw_value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Phase 2A Boss Waves row field {key!r} must be numeric, got {raw_value!r}") from exc
+
+
+def _optional_runtime_float(payload: dict[str, float], key: str) -> float | None:
+    raw_value = payload.get(key)
+    if raw_value in (None, ''):
+        return None
+    try:
+        return float(raw_value)
+    except (TypeError, ValueError) as exc:
+        raise ValueError(f"Phase 2A Boss Waves runtime input {key!r} must be numeric, got {raw_value!r}") from exc
 
 
 

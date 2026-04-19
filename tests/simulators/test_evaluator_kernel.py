@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from dataclasses import replace
+
 import pytest
 
 
@@ -56,14 +58,16 @@ def test_run_plan_compiles_identity_dependency_order_and_table1_registry():
         track_max_levels={"Damage": 1},
         workshop_levels={"Damage": 0},
         perk_counts={"perk_a": 1},
-        perk_contributions={"damage_multiplier": 1.2},
+        perk_contributions={"perk_a:wall_hp_flat": 50.0, "perk_a:wall_regen_multiplier": 1.25},
         survivability_contributors=_contributors(),
+        death_wave_health_multiplier=2.5,
     )
     plan = compile_run_plan(inputs)
     table = build_common_trajectory(plan)
 
     assert plan.plan_id == compile_run_plan(inputs).plan_id
     assert plan.plan_version == "boss_waves.run_plan.v1"
+    assert plan.death_wave_health_multiplier == 2.5
     assert plan.dependency_order == (
         "checkpoint_grid",
         "wave_progression",
@@ -74,7 +78,7 @@ def test_run_plan_compiles_identity_dependency_order_and_table1_registry():
         "survivability_contributors",
     )
     registry_ids = {spec.column_id for spec in TABLE1_COLUMN_REGISTRY}
-    assert {"wave_progression", "free_upgrade_state", "compiled_perk_state", "survivability_contributors"} <= registry_ids
+    assert {"wave_progression", "free_upgrade_state", "compiled_perk_state", "survivability_contributors", "death_wave_health_multiplier"} <= registry_ids
     first = table.rows[0]
     assert [row.display_wave for row in table.rows] == [10, 20]
     assert first.wave_progression.attack_wave == 5
@@ -83,8 +87,16 @@ def test_run_plan_compiles_identity_dependency_order_and_table1_registry():
     assert first.unallocated_free_upgrades_last_step["attack"] == 9
     assert first.workshop_levels["Damage"] == 1
     assert first.compiled_perk_state.counts == {"perk_a": 1}
-    assert first.compiled_perk_state.contributions == {"damage_multiplier": 1.2}
+    assert first.compiled_perk_state.contributions == {"perk_a:wall_hp_flat": 50.0, "perk_a:wall_regen_multiplier": 1.25}
     assert first.survivability_contributors.base_wall_hp == 100.0
+    assert first.survivability_contributors.wall_hp_primitives == {
+        "base_wall_hp": 100.0,
+        "workshop_wall_hp": 200.0,
+        "lab_wall_hp": 50.0,
+        "enhancement_wall_hp": 25.0,
+        "module_flat_wall_hp": 25.0,
+    }
+    assert first.death_wave_health_multiplier == 2.5
 
 
 def test_table2_registry_derived_survivability_lanes_and_operator_handles():
@@ -107,7 +119,33 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
             health_skip_chance=0.0,
             tier_column="Tier 1",
             perk_counts={"standard_damage": 1, "tradeoff_enemy_damage": 1},
+            perk_contributions={
+                "standard_damage:wall_hp_flat": 50.0,
+                "standard_damage:wall_regen_flat": 2.0,
+                "tradeoff_enemy_damage:wall_hp_flat": 999.0,
+                "tradeoff_enemy_damage:wall_regen_multiplier": 99.0,
+            },
             survivability_contributors=_contributors(),
+            death_wave_health_multiplier=3.0,
+        )
+    )
+    baseline_table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=1,
+            end_wave=10,
+            boss_interval_waves=10,
+            attack_skip_chance=0.0,
+            health_skip_chance=0.0,
+            tier_column="Tier 1",
+            perk_counts={"standard_damage": 1, "tradeoff_enemy_damage": 1},
+            perk_contributions={
+                "standard_damage:wall_hp_flat": 50.0,
+                "standard_damage:wall_regen_flat": 2.0,
+                "tradeoff_enemy_damage:wall_hp_flat": 999.0,
+                "tradeoff_enemy_damage:wall_regen_multiplier": 99.0,
+            },
+            survivability_contributors=_contributors(),
+            death_wave_health_multiplier=1.0,
         )
     )
     table2 = build_scenario_overlay_table(
@@ -130,13 +168,25 @@ def test_table2_registry_derived_survivability_lanes_and_operator_handles():
     )
 
     row = table2.rows[0]
+    baseline_row = build_scenario_overlay_table(
+        baseline_table1,
+        scenario=ScenarioOverlayInputs(
+            scenario_key="t1-baseline",
+            tier_column="Tier 1",
+            tournament_perks_enabled=False,
+            removed_perk_ids=("tradeoff_enemy_damage",),
+        ),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    ).rows[0]
     registry_ids = {spec.column_id for spec in TABLE2_COLUMN_REGISTRY}
-    assert {"final_wall_hp", "final_wall_regen", "lane_evaluations", "summary_lane_id", "summary_combat"} <= registry_ids
+    assert {"active_perk_contributions", "final_wall_hp", "final_wall_regen", "lane_evaluations", "summary_lane_id", "summary_combat"} <= registry_ids
     assert row.effective_attack_skip_chance == 0.5
     assert row.effective_attack_wave == 5
-    assert row.final_wall_hp == pytest.approx((100 + 200 + 50 + 25 + 25) * 2.0 * 1.5)
-    assert row.final_wall_regen == pytest.approx((10 + 5 + 5) * 3.0 * 2.0)
+    assert row.final_wall_hp == pytest.approx((100 + 200 + 50 + 25 + 25 + 50) * 2.0 * 1.5)
+    assert row.final_wall_regen == pytest.approx((10 + 5 + 5 + 2) * 3.0 * 2.0)
     assert row.active_perk_counts == {"standard_damage": 1}
+    assert row.active_perk_contributions == {"standard_damage:wall_hp_flat": 50.0, "standard_damage:wall_regen_flat": 2.0}
+    assert row.enemy_health == pytest.approx(baseline_row.enemy_health * 3.0)
     assert LANE_ORDER == ("avg", "min", "max")
     assert [lane.lane_id for lane in row.lane_evaluations] == ["avg", "min", "max"]
     assert row.summary_lane_id == SUMMARY_LANE_ID == "avg"
@@ -185,6 +235,10 @@ def test_scenario_overlay_fails_closed_on_ambiguous_survivability_perks_and_lane
 
     with pytest.raises(ValueError, match="base_wall_hp"):
         compile_run_plan(CommonTrajectoryInputs(start_wave=1, end_wave=10, survivability_contributors=_contributors(base_wall_hp=-1.0)))
+    with pytest.raises(ValueError, match="source_policy"):
+        compile_run_plan(CommonTrajectoryInputs(start_wave=1, end_wave=10, survivability_contributors=_contributors(source_policy="unsupported")))
+    with pytest.raises(ValueError, match="unsupported perk contribution"):
+        compile_run_plan(CommonTrajectoryInputs(start_wave=1, end_wave=10, perk_contributions={"perk_a:generic_multiplier": 1.2}, survivability_contributors=_contributors()))
 
     table1 = build_common_trajectory(
         CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", perk_counts={"known_perk": 1}, survivability_contributors=_contributors())
@@ -228,3 +282,56 @@ def test_scenario_overlay_recomputes_effective_waves_from_table1_start_baseline(
 
     assert table2.rows[0].effective_attack_wave == 9
     assert table2.rows[0].effective_health_wave == 10
+
+
+def test_registry_validation_rejects_missing_fields_and_bad_key_contracts():
+    from qe.run_plan import (
+        ColumnFormulaSpec,
+        CommonTrajectoryInputs,
+        TABLE1_COLUMN_REGISTRY,
+        build_common_trajectory,
+        validate_table1_registry,
+    )
+    from simulators.evaluator_kernel import (
+        ScenarioOverlayInputs,
+        ScenarioOverlayTable,
+        TABLE2_COLUMN_REGISTRY,
+        build_scenario_overlay_table,
+        validate_table2_registry,
+    )
+
+    table1 = build_common_trajectory(CommonTrajectoryInputs(start_wave=1, end_wave=10, tier_column="Tier 1", survivability_contributors=_contributors()))
+    bad_table1_registry = tuple(
+        replace(spec, recurrence_type="decorative_only") if spec.column_id == "wave_progression" else spec
+        for spec in TABLE1_COLUMN_REGISTRY
+    )
+    with pytest.raises(ValueError, match="recurrence_type"):
+        validate_table1_registry(replace(table1, column_registry=bad_table1_registry))
+    with pytest.raises(ValueError, match="missing registered columns"):
+        validate_table1_registry(
+            replace(
+                table1,
+                column_registry=TABLE1_COLUMN_REGISTRY
+                + (ColumnFormulaSpec("unemitted_required_field", "qe", "float", (), "identity", "compile_once", "plan_static"),),
+            )
+        )
+
+    table2 = build_scenario_overlay_table(
+        table1,
+        scenario=ScenarioOverlayInputs("registry", "Tier 1"),
+        combat=_combat(plasma_cannon_effect_pct=100.0),
+    )
+    bad_table2_registry = tuple(
+        replace(spec, dependencies=("table1.survivability_contributors",)) if spec.column_id == "final_wall_hp" else spec
+        for spec in TABLE2_COLUMN_REGISTRY
+    )
+    with pytest.raises(ValueError, match="dependencies"):
+        validate_table2_registry(replace(table2, column_registry=bad_table2_registry))
+    with pytest.raises(ValueError, match="missing registered columns"):
+        validate_table2_registry(
+            replace(
+                table2,
+                column_registry=TABLE2_COLUMN_REGISTRY
+                + (ColumnFormulaSpec("unemitted_overlay_field", "simulators", "float", (), "identity", "per_overlay_row", "row_static"),),
+            )
+        )

@@ -9,7 +9,14 @@ from typing import Any, Mapping
 
 CATEGORY_IDS: tuple[str, str, str] = ("attack", "defense", "utility")
 RUN_PLAN_VERSION = "boss_waves.run_plan.v1"
-
+PERK_CONTRIBUTION_EFFECT_IDS: frozenset[str] = frozenset(
+    {
+        "wall_hp_flat",
+        "wall_hp_multiplier",
+        "wall_regen_flat",
+        "wall_regen_multiplier",
+    }
+)
 
 @dataclass(frozen=True)
 class ColumnFormulaSpec:
@@ -32,6 +39,14 @@ TABLE1_COLUMN_REGISTRY: tuple[ColumnFormulaSpec, ...] = (
     ColumnFormulaSpec("survivability_contributors", "qe", "SurvivabilityContributorBundle", ("survivability_policy",), "contributor_bundle", "compile_once", "plan_static"),
     ColumnFormulaSpec("death_wave_health_multiplier", "qe", "float", ("survivability_policy",), "pass_through", "compile_once", "plan_static"),
 )
+TABLE1_REQUIRED_COLUMN_IDS: frozenset[str] = frozenset(spec.column_id for spec in TABLE1_COLUMN_REGISTRY)
+TABLE1_KEY_CONTRACTS: Mapping[str, tuple[tuple[str, ...], str]] = {
+    "wave_progression": (("recurrence_policy",), "stateful_recurrence"),
+    "free_upgrade_state": (("recurrence_policy",), "stateful_recurrence"),
+    "compiled_perk_state": (("perk_policy",), "checkpoint_lookup"),
+    "survivability_contributors": (("survivability_policy",), "contributor_bundle"),
+    "death_wave_health_multiplier": (("survivability_policy",), "pass_through"),
+}
 
 
 @dataclass(frozen=True)
@@ -96,6 +111,26 @@ class SurvivabilityContributorBundle:
     timed_dr_by_lane: Mapping[str, float] = field(default_factory=dict)
     source_policy: str = "explicit_staged_contributors_v1"
 
+    @property
+    def wall_hp_primitives(self) -> Mapping[str, float]:
+        return {
+            "base_wall_hp": float(self.base_wall_hp),
+            "workshop_wall_hp": float(self.workshop_wall_hp),
+            "lab_wall_hp": float(self.lab_wall_hp),
+            "enhancement_wall_hp": float(self.enhancement_wall_hp),
+            "module_flat_wall_hp": float(self.module_flat_wall_hp),
+        }
+
+    @property
+    def wall_regen_primitives(self) -> Mapping[str, float]:
+        return {
+            "base_wall_regen": float(self.base_wall_regen),
+            "workshop_wall_regen": float(self.workshop_wall_regen),
+            "lab_wall_regen": float(self.lab_wall_regen),
+            "enhancement_wall_regen": float(self.enhancement_wall_regen),
+            "module_flat_wall_regen": float(self.module_flat_wall_regen),
+        }
+
 
 @dataclass(frozen=True)
 class CompiledPerkState:
@@ -115,6 +150,7 @@ class RunPlan:
     perk_policy: PerkPolicyConfig
     dependency_policy: DependencyPolicyConfig
     survivability_contributors: SurvivabilityContributorBundle
+    death_wave_health_multiplier: float
     dependency_order: tuple[str, ...]
     table1_registry: tuple[ColumnFormulaSpec, ...]
 
@@ -192,6 +228,9 @@ class CommonTrajectoryTable:
 def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
     contributors = inputs.survivability_contributors or SurvivabilityContributorBundle(base_wall_hp=0.0)
     _validate_survivability_contributors(contributors)
+    death_wave_health_multiplier = float(inputs.death_wave_health_multiplier)
+    if death_wave_health_multiplier < 0.0:
+        raise ValueError("death_wave_health_multiplier cannot be negative")
     scope = RunScopeConfig(int(inputs.start_wave), int(inputs.end_wave), str(inputs.tier_column))
     checkpoint_policy = CheckpointPolicyConfig(max(1, int(inputs.boss_interval_waves)), max(1, int(inputs.checkpoint_every_bosses)))
     recurrence_policy = RecurrencePolicyConfig(
@@ -206,6 +245,7 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
         perk_counts={str(k): int(v) for k, v in inputs.perk_counts.items()},
         perk_contributions={str(k): float(v) for k, v in inputs.perk_contributions.items()},
     )
+    _validate_perk_policy(perk_policy)
     dependency_policy = DependencyPolicyConfig()
     payload = {
         "plan_version": RUN_PLAN_VERSION,
@@ -215,6 +255,7 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
         "perk_policy": perk_policy,
         "dependency_policy": dependency_policy,
         "survivability_contributors": contributors,
+        "death_wave_health_multiplier": death_wave_health_multiplier,
         "table1_registry": TABLE1_COLUMN_REGISTRY,
     }
     plan_id = "runplan:" + hashlib.sha256(
@@ -229,6 +270,7 @@ def compile_run_plan(inputs: CommonTrajectoryInputs) -> RunPlan:
         perk_policy=perk_policy,
         dependency_policy=dependency_policy,
         survivability_contributors=contributors,
+        death_wave_health_multiplier=death_wave_health_multiplier,
         dependency_order=dependency_policy.dependency_order,
         table1_registry=TABLE1_COLUMN_REGISTRY,
     )
@@ -360,7 +402,7 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
             workshop_levels=dict(workshop_levels),
             compiled_perk_state=compiled_perk_state,
             survivability_contributors=plan.survivability_contributors,
-            death_wave_health_multiplier=1.0,
+            death_wave_health_multiplier=plan.death_wave_health_multiplier,
             common_inputs={
                 "plan_id": plan.plan_id,
                 "start_progression_wave": max(0, plan.scope.start_wave - 1),
@@ -378,14 +420,21 @@ def build_common_trajectory(inputs: CommonTrajectoryInputs | RunPlan) -> CommonT
 
 
 def validate_table1_registry(table: CommonTrajectoryTable) -> None:
-    registry_ids = frozenset(spec.column_id for spec in table.column_registry)
+    registry = _registry_by_id(table.column_registry)
+    missing_required = sorted(TABLE1_REQUIRED_COLUMN_IDS - frozenset(registry))
+    if missing_required:
+        raise ValueError(f"Table 1 registry missing required columns: {missing_required!r}")
+    _validate_registry_contracts(registry, TABLE1_KEY_CONTRACTS, "Table 1")
+    registry_ids = frozenset(registry)
     for row in table.rows:
         missing = [column_id for column_id in registry_ids if not hasattr(row, column_id)]
         if missing:
             raise ValueError(f"Table 1 row missing registered columns: {missing!r}")
+        _validate_table1_row_contract(row)
 
 
 def _compile_perk_state(perk_policy: PerkPolicyConfig) -> CompiledPerkState:
+    _validate_perk_policy(perk_policy)
     payload = {
         "counts": dict(sorted((str(k), int(v)) for k, v in perk_policy.perk_counts.items())),
         "contributions": dict(sorted((str(k), float(v)) for k, v in perk_policy.perk_contributions.items())),
@@ -395,7 +444,27 @@ def _compile_perk_state(perk_policy: PerkPolicyConfig) -> CompiledPerkState:
     return CompiledPerkState(payload["counts"], payload["contributions"], perk_policy.perk_source, identity)
 
 
+def _validate_perk_policy(perk_policy: PerkPolicyConfig) -> None:
+    if str(perk_policy.perk_source) != "explicit_staged_perk_policy":
+        raise ValueError("perk policy source must be explicit_staged_perk_policy")
+    for perk_id, count in perk_policy.perk_counts.items():
+        if int(count) < 0:
+            raise ValueError(f"perk count for {perk_id!r} cannot be negative")
+    for contribution_id, value in perk_policy.perk_contributions.items():
+        effect_id = _perk_contribution_effect_id(str(contribution_id))
+        if effect_id not in PERK_CONTRIBUTION_EFFECT_IDS:
+            raise ValueError(f"unsupported perk contribution effect {effect_id!r}")
+        if effect_id.endswith("_multiplier") and float(value) < 0.0:
+            raise ValueError(f"perk contribution {contribution_id!r} multiplier cannot be negative")
+
+
+def _perk_contribution_effect_id(contribution_id: str) -> str:
+    return str(contribution_id).split(":", 1)[1] if ":" in str(contribution_id) else str(contribution_id)
+
+
 def _validate_survivability_contributors(contributors: SurvivabilityContributorBundle) -> None:
+    if contributors.source_policy != "explicit_staged_contributors_v1":
+        raise ValueError("survivability contributors source_policy must be explicit_staged_contributors_v1")
     for key, value in _stable_json_value(contributors).items():
         if key in {"timed_dr_by_lane", "source_policy"}:
             continue
@@ -406,6 +475,50 @@ def _validate_survivability_contributors(contributors: SurvivabilityContributorB
             raise ValueError(f"unknown timed DR lane {lane!r}")
         if not 0.0 <= float(value) <= 1.0:
             raise ValueError(f"timed DR lane {lane!r} must be a fraction")
+
+
+def _registry_by_id(registry: tuple[ColumnFormulaSpec, ...]) -> dict[str, ColumnFormulaSpec]:
+    out: dict[str, ColumnFormulaSpec] = {}
+    for spec in registry:
+        if spec.column_id in out:
+            raise ValueError(f"duplicate registry column {spec.column_id!r}")
+        for field_name in ("column_id", "owner_layer", "dtype", "recurrence_type", "evaluation_policy", "cache_policy"):
+            if not str(getattr(spec, field_name)):
+                raise ValueError(f"registry column {spec.column_id!r} has empty {field_name}")
+        out[spec.column_id] = spec
+    return out
+
+
+def _validate_registry_contracts(
+    registry: Mapping[str, ColumnFormulaSpec],
+    contracts: Mapping[str, tuple[tuple[str, ...], str]],
+    label: str,
+) -> None:
+    for column_id, (dependencies, recurrence_type) in contracts.items():
+        spec = registry.get(column_id)
+        if spec is None:
+            raise ValueError(f"{label} registry missing key contract column {column_id!r}")
+        if tuple(spec.dependencies) != tuple(dependencies):
+            raise ValueError(f"{label} registry column {column_id!r} dependencies changed from {dependencies!r}")
+        if spec.recurrence_type != recurrence_type:
+            raise ValueError(f"{label} registry column {column_id!r} recurrence_type must be {recurrence_type!r}")
+
+
+def _validate_table1_row_contract(row: CommonTrajectoryRow) -> None:
+    if not isinstance(row.row_key, str) or not row.row_key:
+        raise ValueError("Table 1 row_key must be a non-empty string")
+    if not isinstance(row.display_wave, int):
+        raise ValueError("Table 1 display_wave must be int")
+    if not isinstance(row.wave_progression, WaveProgressionRecurrence):
+        raise ValueError("Table 1 wave_progression must be WaveProgressionRecurrence")
+    if not isinstance(row.free_upgrade_state, FreeUpgradeRecurrence):
+        raise ValueError("Table 1 free_upgrade_state must be FreeUpgradeRecurrence")
+    if not isinstance(row.compiled_perk_state, CompiledPerkState):
+        raise ValueError("Table 1 compiled_perk_state must be CompiledPerkState")
+    if not isinstance(row.survivability_contributors, SurvivabilityContributorBundle):
+        raise ValueError("Table 1 survivability_contributors must be SurvivabilityContributorBundle")
+    if float(row.death_wave_health_multiplier) < 0.0:
+        raise ValueError("Table 1 death_wave_health_multiplier cannot be negative")
 
 
 def _first_boss_wave_at_or_after(start_wave: int, boss_interval_waves: int) -> int:
