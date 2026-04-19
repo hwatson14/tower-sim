@@ -1,12 +1,12 @@
-artifact: boss_waves_phase2a_field_map
+artifact: boss_waves_cutover_field_map
 schema_version: 1
 scope:
-  phase: Phase 2A
+  phase: Phase 2B
   surfaces:
-    table: in_scope
-    summary: in_scope
-    export: out_of_scope_uses_legacy_compatible_download_rows
-    diagnostics: out_of_scope_uses_legacy_compatible_diagnostics
+    table: switched_in_phase2a
+    summary: switched_in_phase2a
+    export: in_scope_for_phase2b
+    diagnostics: in_scope_for_phase2b
   derivation_basis: actual_current_product_consumption_in_app_streamlit_inspector
 source_selection_owner: app.pipeline.build_boss_wave_payload
 renderer_policy: app.streamlit_inspector consumes selected payload fields only
@@ -205,7 +205,107 @@ summary_fields:
     required_for: [summary]
     cutover_behavior: switch_now
 payload_split:
-  operator_rows: replacement-backed selected rows for Phase 2A table rendering
+  operator_rows: replacement-backed selected rows for table rendering
   rows: selected rows retained as backward-compatible table alias
-  download_rows: legacy-compatible rows for CSV/export during Phase 2A
-  diagnostics: legacy-compatible diagnostics during Phase 2A
+  download_rows: replacement-backed selected rows for CSV/export during Phase 2B
+  diagnostics: replacement-backed selected diagnostics during Phase 2B
+  legacy_shadow: read-only legacy summary/download_rows/diagnostics retained for rollback and shadow evidence
+export_fields:
+  derivation_basis: current product exports download_rows through pandas.DataFrame(...).to_csv(index=False)
+  source: download_rows
+  replacement_source: replacement-backed operator row dictionaries
+  cutover_behavior: switch_now_phase2b
+  row_policy:
+    comparability: transformed
+    normalization: csv_header_and_value_serialization_from_selected_download_rows
+    required_for: [export]
+    note: Phase 2B intentionally exports the selected replacement row contract rather than the legacy row contract.
+diagnostics_fields:
+  derivation_basis: current product constructs the Boss-wave diagnostics expander and summary captions from payload.diagnostics plus payload.summary
+  source: diagnostics
+  replacement_source: app.pipeline replacement diagnostics payload
+  cutover_behavior: switch_now_phase2b
+  consumed_fields:
+    - consumer_input: diagnostics.preset_name
+      normalization: string
+      required_for: [diagnostics, summary]
+    - consumer_input: diagnostics.mode_id
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.tier_number
+      normalization: integer
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.tier_column
+      normalization: string
+      required_for: [summary, diagnostics]
+    - consumer_input: diagnostics.league
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.tournament_wave
+      normalization: integer_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.perks_enabled
+      normalization: boolean
+      required_for: [caption, diagnostics]
+    - consumer_input: diagnostics.context_status
+      normalization: string
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.context_error
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.context_error_message
+      normalization: string_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.actual_boss_interval_waves
+      normalization: integer_or_null
+      required_for: [summary, caption, diagnostics]
+    - consumer_input: diagnostics.checkpoint_every_bosses
+      normalization: integer
+      required_for: [caption, diagnostics]
+    - consumer_input: diagnostics.checkpoint_stride_waves
+      normalization: integer_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.requested_start_wave
+      normalization: integer
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.first_checkpoint_wave
+      normalization: integer_or_null
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.state_mode
+      normalization: string
+      required_for: [caption, diagnostics]
+    - consumer_input: diagnostics.checkpoint_mode
+      normalization: string
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.stop_on_failure
+      normalization: boolean
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.scenario_runtime_inputs
+      normalization: mapping
+      required_for: [execution_details, diagnostics]
+    - consumer_input: diagnostics.execution_mode
+      normalization: string
+      required_for: [summary, diagnostics]
+    - consumer_input: diagnostics.checkpoint_resolution_mode
+      normalization: string
+      required_for: [diagnostics]
+    - consumer_input: diagnostics.qe_resolution_count
+      normalization: integer
+      required_for: [execution_details]
+    - consumer_input: diagnostics.timing_recompute_count
+      normalization: integer
+      required_for: [execution_details]
+    - consumer_input: diagnostics.snapshot_reuse_count
+      normalization: integer
+      required_for: [execution_details]
+    - consumer_input: diagnostics.qe_dirty_reresolve_count
+      normalization: integer
+      required_for: [execution_details]
+    - consumer_input: diagnostics.delta_fallback_count
+      normalization: integer
+      required_for: [execution_details]
+  replacement_only_fields:
+    - diagnostics.source_selection
+    - diagnostics.replacement_model
+    - diagnostics.replacement_outputs
+    - diagnostics.legacy_shadow_available

@@ -400,7 +400,7 @@ def _phase2a_fake_legacy_row(display_wave: int) -> dict[str, object]:
     }
 
 
-def test_build_boss_wave_payload_phase2a_switches_table_and_summary_but_keeps_export_and_diagnostics_legacy(monkeypatch):
+def test_build_boss_wave_payload_phase2b_switches_table_summary_export_and_diagnostics(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
@@ -437,22 +437,32 @@ def test_build_boss_wave_payload_phase2a_switches_table_and_summary_but_keeps_ex
     contract = payload.get('contract') or {}
     source_selection = payload.get('source_selection') or {}
     assert contract.get('simulator_owner') == 'simulators.evaluator_kernel.evaluate_overlay_row'
-    assert contract.get('operator_table_source') == 'phase2a_replacement'
-    assert contract.get('summary_source') == 'phase2a_replacement'
-    assert contract.get('csv_export_source') == 'legacy_compatible_rows'
-    assert contract.get('diagnostics_source') == 'legacy_compatible_diagnostics'
+    assert contract.get('operator_table_source') == 'phase2b_replacement'
+    assert contract.get('summary_source') == 'phase2b_replacement'
+    assert contract.get('csv_export_source') == 'phase2b_replacement'
+    assert contract.get('diagnostics_source') == 'phase2b_replacement'
     assert source_selection.get('rollback_source') == 'legacy'
     assert source_selection.get('rollback_available') is True
+    assert source_selection.get('csv_export_source') == 'phase2b_replacement'
+    assert source_selection.get('diagnostics_source') == 'phase2b_replacement'
 
     operator_rows = payload.get('operator_rows') or []
     assert payload.get('rows') == operator_rows
-    assert operator_rows[0]['phase2a_source'] == 'phase2a_replacement'
+    assert operator_rows[0]['replacement_source'] == 'phase2b_replacement'
     assert operator_rows[0]['tower_damage_per_second'] is None
     assert operator_rows[0]['summary_lane_id'] == 'avg'
     assert set(operator_rows[0]['lane_handle_ids']) == {'avg', 'min', 'max'}
-    assert payload.get('download_rows') == legacy_rows
-    assert payload.get('download', {}).get('row_source') == 'legacy_compatible'
-    assert (payload.get('diagnostics') or {}).get('execution_mode') == 'table_sweep'
+    assert payload.get('download_rows') == operator_rows
+    assert payload.get('legacy_shadow', {}).get('download_rows') == legacy_rows
+    assert payload.get('download', {}).get('row_source') == 'phase2b_replacement'
+    diagnostics = payload.get('diagnostics') or {}
+    assert diagnostics.get('execution_mode') == 'staged_replacement_phase2b'
+    assert diagnostics.get('checkpoint_resolution_mode') == 'replacement_table1_table2_overlay'
+    assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'phase2b_replacement'
+    assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_event_only'
+    assert diagnostics.get('replacement_model', {}).get('continuous_tower_dps_included') is False
+    assert diagnostics.get('replacement_outputs', {}).get('download_row_count') == 2
+    assert diagnostics.get('legacy_shadow_available') is True
 
     summary = payload.get('summary') or {}
     assert summary['max_surviving_wave'] == 18
@@ -581,8 +591,11 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     diagnostics = payload.get('diagnostics') or {}
     assert diagnostics['actual_boss_interval_waves'] == 9
     assert diagnostics['checkpoint_every_bosses'] == 1
-    assert diagnostics['checkpoint_resolution_mode'] == 'every_n_bosses'
-    assert diagnostics['qe_dirty_reresolve_count'] > 0
+    assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
+    assert diagnostics['execution_mode'] == 'staged_replacement_phase2b'
+    assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_event_only'
+    assert diagnostics['legacy_shadow_available'] is True
+    assert (payload.get('legacy_shadow') or {}).get('diagnostics', {}).get('qe_dirty_reresolve_count', 0) > 0
     assert diagnostics['delta_fallback_count'] == 0
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9

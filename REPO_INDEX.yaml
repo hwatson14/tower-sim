@@ -128,7 +128,7 @@ app:
   app/boss_waves_phase2a_field_map.yaml:
     status: active_artifact
     layer: app/
-    note: Phase 2A Boss Waves table/summary field map derived from current product consumption
+    note: Boss Waves cutover field map derived from current product consumption; covers Phase 2A table/summary and Phase 2B export/diagnostics
 
   app/display.py:
     status: active_candidate
