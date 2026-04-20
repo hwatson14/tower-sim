@@ -1,22 +1,25 @@
 artifact: boss_waves_cutover_field_map
 schema_version: 1
 scope:
-  phase: Phase 2A replacement-input independence
+  phase: Phase 2B replacement source cutover
   surfaces:
     table: replacement_sourced
     summary: replacement_sourced
-    export: legacy_compatible_pending_phase2b
-    diagnostics: legacy_compatible_pending_phase2b
+    export: replacement_sourced
+    diagnostics: replacement_sourced
   derivation_basis: actual_current_product_consumption_in_app_streamlit_inspector_plus_qe_replacement_input_surfaces
 source_selection_owner: app.pipeline.build_boss_wave_payload
 renderer_policy: app.streamlit_inspector consumes selected payload fields only
+active_replacement_source_id: replacement
+backward_compatible_aliases:
+  - phase2a_replacement
 replacement_input_sources:
   owner: app.pipeline assembles inputs only
   mechanics_owner: [qe.run_plan, simulators.evaluator_kernel]
   primitive_resolution_owner: qe.routing.resolve_checkpoint_surfaces
   table1_builder: qe.run_plan.build_common_trajectory
   table2_builder: simulators.evaluator_kernel.build_scenario_overlay_table
-  legacy_row_engine_dependency_for_table_summary: none
+  legacy_row_engine_dependency_for_default_product_surfaces: none
 operator_table_fields:
   - product_field: Wave
     consumer_input: display_wave
@@ -214,24 +217,48 @@ summary_fields:
 payload_split:
   operator_rows: replacement-backed selected rows for table rendering
   rows: selected rows retained as backward-compatible table alias
-  download_rows: legacy-compatible rows retained for CSV/export until Phase 2B
-  diagnostics: legacy-compatible diagnostics retained until Phase 2B, with replacement source-selection notes
-  legacy_shadow: read-only legacy summary/download_rows/diagnostics retained for rollback and shadow evidence
+  download_rows: replacement-owned export rows for CSV/download
+  diagnostics: replacement-owned diagnostics for the active replacement path
+  legacy_shadow: not materialized by default; legacy remains available through boss_wave_source=legacy for rollback/reference
 export_fields:
   derivation_basis: current product exports download_rows through pandas.DataFrame(...).to_csv(index=False)
   source: download_rows
-  replacement_source: not_switched_in_phase2a
-  cutover_behavior: stay_legacy_for_now
+  replacement_source: app.pipeline.BOSS_WAVE_PHASE2B_EXPORT_FIELDS projected from replacement operator rows
+  cutover_behavior: switch_now
   row_policy:
-    comparability: legacy_compatible
-    normalization: csv_header_and_value_serialization_from_legacy_download_rows
+    comparability: transformed
+    normalization: csv_header_order_matches_BOSS_WAVE_PHASE2B_EXPORT_FIELDS
     required_for: [export]
-    note: Phase 2A does not switch CSV/export; Phase 2B must define its own export field map before changing this source.
+    note: Phase 2B exports an explicit replacement row surface; legacy rows remain available only through explicit rollback/shadow requests.
+  replacement_columns:
+    - {consumer_input: display_wave, legacy_source: legacy rows.display_wave, replacement_source: download_rows.display_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: attack_wave, legacy_source: legacy rows.attack_wave, replacement_source: download_rows.attack_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: health_wave, legacy_source: legacy rows.health_wave, replacement_source: download_rows.health_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_attack, legacy_source: legacy rows.boss_attack, replacement_source: download_rows.boss_attack, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_health, legacy_source: legacy rows.boss_health, replacement_source: download_rows.boss_health, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_hp, legacy_source: legacy rows.wall_hp, replacement_source: download_rows.wall_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_regen, legacy_source: legacy rows.wall_regen, replacement_source: download_rows.wall_regen, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: tower_damage_per_second, legacy_source: legacy rows.tower_damage_per_second, replacement_source: download_rows.tower_damage_per_second, comparability: intentional_semantic_difference, normalization: null_for_v21_event_only_ttk, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: effective_damage_reduction_pct_used, legacy_source: legacy rows.effective_damage_reduction_pct_used, replacement_source: download_rows.effective_damage_reduction_pct_used, comparability: transformed, normalization: percent_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_ttk_seconds_used, legacy_source: legacy rows.boss_ttk_seconds_used, replacement_source: download_rows.boss_ttk_seconds_used, comparability: intentional_semantic_difference, normalization: seconds_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_contact_time_seconds_used, legacy_source: legacy rows.boss_contact_time_seconds_used, replacement_source: download_rows.boss_contact_time_seconds_used, comparability: equivalent, normalization: seconds_float_or_null, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_hit_interval_seconds_used, legacy_source: legacy rows.boss_hit_interval_seconds_used, replacement_source: download_rows.boss_hit_interval_seconds_used, comparability: equivalent, normalization: seconds_float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: incoming_damage_multiplier_used, legacy_source: legacy rows.incoming_damage_multiplier_used, replacement_source: download_rows.incoming_damage_multiplier_used, comparability: equivalent, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_hits_taken, legacy_source: legacy rows.boss_hits_taken, replacement_source: download_rows.boss_hits_taken, comparability: transformed, normalization: integer, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_total_damage_taken, legacy_source: legacy rows.boss_total_damage_taken, replacement_source: download_rows.boss_total_damage_taken, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: boss_survival_margin_hp, legacy_source: legacy rows.boss_survival_margin_hp, replacement_source: download_rows.boss_survival_margin_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_pool_hp_used, legacy_source: legacy rows.wall_pool_hp_used, replacement_source: download_rows.wall_pool_hp_used, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: wall_regen_gained_hp, legacy_source: legacy rows.wall_regen_gained_hp, replacement_source: download_rows.wall_regen_gained_hp, comparability: transformed, normalization: float, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: survives_boss, legacy_source: legacy rows.survives_boss, replacement_source: download_rows.survives_boss, comparability: transformed, normalization: boolean, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: fail_reason, legacy_source: none, replacement_source: download_rows.fail_reason, comparability: not_comparable, normalization: string_or_null, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: replacement_source, legacy_source: none, replacement_source: download_rows.replacement_source, comparability: not_comparable, normalization: string, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: summary_lane_id, legacy_source: none, replacement_source: download_rows.summary_lane_id, comparability: not_comparable, normalization: string, required_surface: export, cutover_behavior: switch_now}
+    - {consumer_input: operator_handle_id, legacy_source: none, replacement_source: download_rows.operator_handle_id, comparability: not_comparable, normalization: string, required_surface: export, cutover_behavior: switch_now}
 diagnostics_fields:
   derivation_basis: current product constructs the Boss-wave diagnostics expander and summary captions from payload.diagnostics plus payload.summary
   source: diagnostics
-  replacement_source: legacy-compatible diagnostics with source-selection and replacement-model notes
-  cutover_behavior: stay_legacy_for_now
+  replacement_source: app.pipeline._build_phase2b_replacement_diagnostics
+  cutover_behavior: switch_now
   consumed_fields:
     - consumer_input: diagnostics.preset_name
       normalization: string
@@ -316,3 +343,4 @@ diagnostics_fields:
     - diagnostics.replacement_model
     - diagnostics.replacement_outputs
     - diagnostics.legacy_shadow_available
+    - diagnostics.legacy_shadow_materialized

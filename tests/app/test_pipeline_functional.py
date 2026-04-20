@@ -425,7 +425,7 @@ def _phase2a_fake_legacy_row(display_wave: int) -> dict[str, object]:
     }
 
 
-def test_build_boss_wave_payload_phase2a_replacement_inputs_drive_table_and_summary(monkeypatch):
+def test_build_boss_wave_payload_phase2b_replacement_inputs_drive_table_summary_export_and_diagnostics(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
@@ -441,6 +441,16 @@ def test_build_boss_wave_payload_phase2a_replacement_inputs_drive_table_and_summ
     }
     _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, rows=legacy_rows, summary=legacy_summary)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
+    monkeypatch.setattr(
+        pipeline_mod,
+        'build_start_of_run_state',
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('default replacement must not build legacy start state')),
+    )
+    monkeypatch.setattr(
+        pipeline_mod,
+        'build_boss_wave_table_payload',
+        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('default replacement must not call legacy row engine')),
+    )
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
     payload = pipeline_mod.build_boss_wave_payload(
@@ -463,33 +473,39 @@ def test_build_boss_wave_payload_phase2a_replacement_inputs_drive_table_and_summ
     contract = payload.get('contract') or {}
     source_selection = payload.get('source_selection') or {}
     assert contract.get('simulator_owner') == 'simulators.evaluator_kernel.evaluate_overlay_row'
-    assert contract.get('operator_table_source') == 'phase2a_replacement'
-    assert contract.get('summary_source') == 'phase2a_replacement'
-    assert contract.get('csv_export_source') == 'legacy'
-    assert contract.get('diagnostics_source') == 'legacy'
+    assert contract.get('operator_table_source') == 'replacement'
+    assert contract.get('summary_source') == 'replacement'
+    assert contract.get('csv_export_source') == 'replacement'
+    assert contract.get('diagnostics_source') == 'replacement'
     assert source_selection.get('rollback_source') == 'legacy'
     assert source_selection.get('rollback_available') is True
-    assert source_selection.get('csv_export_source') == 'legacy'
-    assert source_selection.get('diagnostics_source') == 'legacy'
+    assert source_selection.get('active_source') == 'replacement'
+    assert source_selection.get('csv_export_source') == 'replacement'
+    assert source_selection.get('diagnostics_source') == 'replacement'
 
     operator_rows = payload.get('operator_rows') or []
     assert payload.get('rows') == operator_rows
-    assert operator_rows[0]['replacement_source'] == 'phase2a_replacement'
+    assert operator_rows[0]['replacement_source'] == 'replacement'
     assert operator_rows[0]['tower_damage_per_second'] is None
     assert operator_rows[0]['summary_lane_id'] == 'avg'
     assert set(operator_rows[0]['lane_handle_ids']) == {'avg', 'min', 'max'}
     assert operator_rows[0]['boss_health'] != legacy_rows[0]['boss_health']
-    assert payload.get('download_rows') == legacy_rows
-    assert payload.get('legacy_shadow', {}).get('download_rows') == legacy_rows
-    assert payload.get('download', {}).get('row_source') == 'legacy'
+    assert payload.get('download_rows') != legacy_rows
+    assert payload.get('download_rows')[0]['replacement_source'] == 'replacement'
+    assert payload.get('download_rows')[0]['operator_handle_id'] == operator_rows[0]['operator_handle_id']
+    assert payload.get('legacy_shadow', {}).get('materialized') is False
+    assert payload.get('download', {}).get('row_source') == 'replacement'
     diagnostics = payload.get('diagnostics') or {}
-    assert diagnostics.get('execution_mode') == 'staged_replacement_phase2a'
+    assert diagnostics.get('execution_mode') == 'staged_replacement_phase2b'
     assert diagnostics.get('checkpoint_resolution_mode') == 'replacement_table1_table2_overlay'
-    assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'legacy'
+    assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'replacement'
     assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_event_only'
     assert diagnostics.get('replacement_model', {}).get('continuous_tower_dps_included') is False
+    assert diagnostics.get('replacement_model', {}).get('contract_version') == 'boss_waves_replacement_phase2b_v1'
     assert diagnostics.get('replacement_model', {}).get('table1_source_basis') == 'app_pipeline_qe_checkpoint_surfaces_to_run_plan'
     assert diagnostics.get('legacy_shadow_available') is True
+    assert diagnostics.get('legacy_shadow_materialized') is False
+    assert diagnostics.get('replacement_outputs', {}).get('download_row_count') == len(payload.get('download_rows') or [])
 
     summary = payload.get('summary') or {}
     assert summary['max_surviving_wave'] == 27
@@ -549,9 +565,11 @@ def test_build_boss_wave_payload_phase2a_rollback_restores_legacy_table_and_summ
     }
     assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
     assert payload.get('source_selection', {}).get('active_source') == 'legacy'
+    assert payload.get('download', {}).get('row_source') == 'legacy'
+    assert (payload.get('diagnostics') or {}).get('execution_mode') == 'table_sweep'
 
 
-def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_field(monkeypatch):
+def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_input_primitive(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
@@ -575,6 +593,51 @@ def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_field
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
     with pytest.raises(ValueError, match="requires QE surface 'state::wall.regen'"):
+        pipeline_mod.build_boss_wave_payload(
+            request,
+            preset_name='Farming',
+            tier_number=14,
+            end_wave=30,
+            boss_wave_step=1,
+            stop_on_failure=True,
+            scenario_runtime_inputs={
+                'orb_boss_hit_pct': 2.5,
+                'orb_boss_hits_per_second': 5.0,
+                'electron_hits_per_second': 5.0,
+                'boss_contact_time_seconds': 1.0,
+                'effective_damage_reduction_pct': 90.0,
+                'incoming_damage_multiplier': 1.0,
+            },
+        )
+
+
+def test_build_boss_wave_payload_phase2b_fails_closed_on_missing_export_mapping(monkeypatch):
+    from app import pipeline as pipeline_mod
+    from app.models import PipelineRunRequest
+
+    _install_fake_boss_wave_pipeline_dependencies(
+        monkeypatch,
+        pipeline_mod,
+        rows=[_phase2a_fake_legacy_row(9)],
+        summary={
+            'max_wave': 9,
+            'max_surviving_wave': 9,
+            'first_failed_wave': 0,
+            'row_count': 1,
+            'terminal_display_wave': 9,
+            'survives_through_end': True,
+            'result_consistent_with_rows': True,
+        },
+    )
+    _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
+    monkeypatch.setattr(
+        pipeline_mod,
+        'BOSS_WAVE_PHASE2B_EXPORT_FIELDS',
+        (*pipeline_mod.BOSS_WAVE_PHASE2B_EXPORT_FIELDS, 'unmapped_export_field'),
+    )
+
+    request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
+    with pytest.raises(ValueError, match='missing required replacement fields'):
         pipeline_mod.build_boss_wave_payload(
             request,
             preset_name='Farming',
@@ -620,10 +683,10 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['actual_boss_interval_waves'] == 9
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
-    assert diagnostics['execution_mode'] == 'staged_replacement_phase2a'
+    assert diagnostics['execution_mode'] == 'staged_replacement_phase2b'
     assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_event_only'
     assert diagnostics['legacy_shadow_available'] is True
-    assert (payload.get('legacy_shadow') or {}).get('diagnostics', {}).get('qe_dirty_reresolve_count', 0) > 0
+    assert diagnostics['legacy_shadow_materialized'] is False
     assert diagnostics['delta_fallback_count'] == 0
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9

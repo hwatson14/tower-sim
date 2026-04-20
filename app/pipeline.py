@@ -82,11 +82,36 @@ from input.state_types import ScenarioRuntimeInputs
 from qe.models import BoundStatInputs, bind_state_identity
 
 BOSS_WAVE_SOURCE_LEGACY = 'legacy'
+BOSS_WAVE_SOURCE_REPLACEMENT = 'replacement'
 BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT = 'phase2a_replacement'
-BOSS_WAVE_SOURCE_PHASE2B_REPLACEMENT = 'phase2b_replacement'
-BOSS_WAVE_REPLACEMENT_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT})
+BOSS_WAVE_REPLACEMENT_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_REPLACEMENT, BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT})
 BOSS_WAVE_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_LEGACY, *BOSS_WAVE_REPLACEMENT_SOURCE_IDS})
 BOSS_WAVE_PHASE2A_FIELD_MAP_PATH = ROOT / 'app' / 'boss_waves_phase2a_field_map.yaml'
+BOSS_WAVE_PHASE2B_EXPORT_FIELDS: tuple[str, ...] = (
+    'display_wave',
+    'attack_wave',
+    'health_wave',
+    'boss_attack',
+    'boss_health',
+    'wall_hp',
+    'wall_regen',
+    'tower_damage_per_second',
+    'effective_damage_reduction_pct_used',
+    'boss_ttk_seconds_used',
+    'boss_contact_time_seconds_used',
+    'boss_hit_interval_seconds_used',
+    'incoming_damage_multiplier_used',
+    'boss_hits_taken',
+    'boss_total_damage_taken',
+    'boss_survival_margin_hp',
+    'wall_pool_hp_used',
+    'wall_regen_gained_hp',
+    'survives_boss',
+    'fail_reason',
+    'replacement_source',
+    'summary_lane_id',
+    'operator_handle_id',
+)
 BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
     'state::tower.enemy_attack_level_skip_pct',
     'state::tower.enemy_health_level_skip_pct',
@@ -122,9 +147,11 @@ def build_boss_wave_table_payload(*args, **kwargs):
 
 
 def _normalize_boss_wave_source(source_id: str | None) -> str:
-    normalized = str(source_id or BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT).strip()
+    normalized = str(source_id or BOSS_WAVE_SOURCE_REPLACEMENT).strip()
     if normalized not in BOSS_WAVE_SOURCE_IDS:
         raise ValueError(f"unsupported Boss Waves source {source_id!r}; expected one of {sorted(BOSS_WAVE_SOURCE_IDS)!r}")
+    if normalized == BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT:
+        return BOSS_WAVE_SOURCE_REPLACEMENT
     return normalized
 
 
@@ -339,7 +366,7 @@ def build_boss_wave_payload(
     boss_wave_step: int,
     stop_on_failure: bool,
     scenario_runtime_inputs: dict[str, float],
-    boss_wave_source: str = BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT,
+    boss_wave_source: str = BOSS_WAVE_SOURCE_REPLACEMENT,
 ) -> dict[str, object]:
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
     source_id = _normalize_boss_wave_source(boss_wave_source)
@@ -469,17 +496,9 @@ def build_boss_wave_payload(
         csv_export_source = BOSS_WAVE_SOURCE_LEGACY
         diagnostics_source = BOSS_WAVE_SOURCE_LEGACY
     else:
-        legacy_export_payload = _build_legacy_boss_wave_payload(
-            account_state=account_state,
-            preset_name=preset_name,
-            config=config,
-            perk_counts=perk_counts,
-            stop_on_failure=bool(stop_on_failure),
-            scenario_runtime_inputs=scenario_runtime_inputs,
-        )
-        rows = list(legacy_export_payload.get('rows') or [])
-        summary = dict(legacy_export_payload.get('summary') or {})
-        execution_diagnostics = dict(legacy_export_payload.get('diagnostics') or {})
+        rows = []
+        summary = {}
+        execution_diagnostics = {}
         operator_rows, selected_summary = _build_phase2a_replacement_operator_table_and_summary(
             active_source=source_id,
             config=config,
@@ -489,8 +508,8 @@ def build_boss_wave_payload(
             scenario_runtime_inputs=scenario_runtime_inputs,
             stop_on_failure=bool(stop_on_failure),
         )
-        download_rows = rows
-        selected_diagnostics = _build_phase2a_replacement_diagnostics(
+        download_rows = _build_phase2b_replacement_download_rows(operator_rows)
+        selected_diagnostics = _build_phase2b_replacement_diagnostics(
             active_source=source_id,
             preset_name=preset_name,
             config=config,
@@ -499,16 +518,17 @@ def build_boss_wave_payload(
             perk_timeline_final_wave=int(perk_timeline_diag.get('final_wave') or 0),
             scenario_runtime_inputs=scenario_runtime_inputs,
             operator_rows=operator_rows,
+            download_rows=download_rows,
             summary=selected_summary,
-            legacy_diagnostics=execution_diagnostics,
+            stop_on_failure=bool(stop_on_failure),
         )
         active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
         tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
-        survivability_semantics = 'staged_replacement_phase2a_operator_table_and_summary'
-        cutover_scope = 'operator_table_summary_only'
-        phase2b_scope = 'csv_export_and_diagnostics_pending'
-        csv_export_source = BOSS_WAVE_SOURCE_LEGACY
-        diagnostics_source = BOSS_WAVE_SOURCE_LEGACY
+        survivability_semantics = 'staged_replacement_phase2a_phase2b_product_surfaces'
+        cutover_scope = 'operator_table_summary_complete'
+        phase2b_scope = 'csv_export_and_diagnostics_complete'
+        csv_export_source = source_id
+        diagnostics_source = source_id
     return {
         'artifact': 'boss_wave_dashboard_payload',
         'schema_version': 1,
@@ -563,6 +583,8 @@ def build_boss_wave_payload(
             diagnostics_source=diagnostics_source,
         ),
         'legacy_shadow': {
+            'materialized': source_id == BOSS_WAVE_SOURCE_LEGACY,
+            'source': BOSS_WAVE_SOURCE_LEGACY,
             'summary': summary,
             'download_rows': rows,
             'diagnostics': execution_diagnostics,
@@ -824,7 +846,17 @@ def _phase2a_summary_from_operator_rows(
     }
 
 
-def _build_phase2a_replacement_diagnostics(
+def _build_phase2b_replacement_download_rows(operator_rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    out: list[dict[str, object]] = []
+    for index, row in enumerate(operator_rows):
+        missing = [field for field in BOSS_WAVE_PHASE2B_EXPORT_FIELDS if field not in row]
+        if missing:
+            raise ValueError(f"Boss Waves Phase 2B export row {index} missing required replacement fields: {missing!r}")
+        out.append({field: row.get(field) for field in BOSS_WAVE_PHASE2B_EXPORT_FIELDS})
+    return out
+
+
+def _build_phase2b_replacement_diagnostics(
     *,
     active_source: str,
     preset_name: str,
@@ -834,8 +866,9 @@ def _build_phase2a_replacement_diagnostics(
     perk_timeline_final_wave: int,
     scenario_runtime_inputs: dict[str, float],
     operator_rows: list[dict[str, object]],
+    download_rows: list[dict[str, object]],
     summary: dict[str, object],
-    legacy_diagnostics: dict[str, object],
+    stop_on_failure: bool,
 ) -> dict[str, object]:
     lane_order = ['avg', 'min', 'max']
     first_row = operator_rows[0] if operator_rows else {}
@@ -860,9 +893,9 @@ def _build_phase2a_replacement_diagnostics(
         'first_checkpoint_wave': int(operator_rows[0].get('display_wave') or 0) if operator_rows else None,
         'state_mode': config['state_mode'],
         'checkpoint_mode': 'actual_boss_cadence_with_sampling',
-        'stop_on_failure': bool(legacy_diagnostics.get('stop_on_failure')),
+        'stop_on_failure': bool(stop_on_failure),
         'scenario_runtime_inputs': dict(scenario_runtime_inputs),
-        'execution_mode': 'staged_replacement_phase2a',
+        'execution_mode': 'staged_replacement_phase2b',
         'checkpoint_resolution_mode': 'replacement_table1_table2_overlay',
         'qe_resolution_count': 0,
         'timing_recompute_count': 0,
@@ -872,13 +905,15 @@ def _build_phase2a_replacement_diagnostics(
         'source_selection': {
             'operator_table_source': active_source,
             'summary_source': active_source,
-            'csv_export_source': BOSS_WAVE_SOURCE_LEGACY,
-            'diagnostics_source': BOSS_WAVE_SOURCE_LEGACY,
+            'csv_export_source': active_source,
+            'diagnostics_source': active_source,
             'rollback_source': BOSS_WAVE_SOURCE_LEGACY,
+            'rollback_available': True,
         },
         'replacement_model': {
             'run_plan_owner': 'qe.run_plan',
             'combat_owner': 'simulators.evaluator_kernel',
+            'contract_version': 'boss_waves_replacement_phase2b_v1',
             'table1_source_basis': 'app_pipeline_qe_checkpoint_surfaces_to_run_plan',
             'table2_source_basis': 'replacement_scenario_overlay',
             'boss_ttk_contract': 'v21_event_only',
@@ -887,10 +922,15 @@ def _build_phase2a_replacement_diagnostics(
             'lane_order': lane_order,
             'summary_lane_id': 'avg',
             'field_map_artifact': str(BOSS_WAVE_PHASE2A_FIELD_MAP_PATH.relative_to(ROOT)),
+            'intentional_semantic_differences': {
+                'boss_ttk': 'replacement uses v21 event-only kill sources and excludes continuous tower/projectile DPS',
+            },
         },
         'replacement_outputs': {
             'operator_row_count': len(operator_rows),
-            'download_row_count': int(legacy_diagnostics.get('row_count') or 0),
+            'download_row_count': len(download_rows),
+            'export_field_count': len(BOSS_WAVE_PHASE2B_EXPORT_FIELDS),
+            'export_fields': list(BOSS_WAVE_PHASE2B_EXPORT_FIELDS),
             'operator_handle_count': sum(1 for row in operator_rows if row.get('operator_handle_id')),
             'first_operator_handle_id': first_row.get('operator_handle_id'),
             'first_lane_handle_ids': dict(first_row.get('lane_handle_ids') or {}),
@@ -898,7 +938,8 @@ def _build_phase2a_replacement_diagnostics(
             'first_failed_wave': int(summary.get('first_failed_wave') or 0),
         },
         'legacy_shadow_available': True,
-        'legacy_shadow_mode': 'read_only_reference_and_rollback',
+        'legacy_shadow_materialized': False,
+        'legacy_shadow_mode': 'available_via_explicit_legacy_source_for_reference_and_rollback',
     }
 
 
