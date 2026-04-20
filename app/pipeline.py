@@ -84,9 +84,22 @@ from qe.models import BoundStatInputs, bind_state_identity
 BOSS_WAVE_SOURCE_LEGACY = 'legacy'
 BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT = 'phase2a_replacement'
 BOSS_WAVE_SOURCE_PHASE2B_REPLACEMENT = 'phase2b_replacement'
-BOSS_WAVE_REPLACEMENT_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT, BOSS_WAVE_SOURCE_PHASE2B_REPLACEMENT})
+BOSS_WAVE_REPLACEMENT_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT})
 BOSS_WAVE_SOURCE_IDS = frozenset({BOSS_WAVE_SOURCE_LEGACY, *BOSS_WAVE_REPLACEMENT_SOURCE_IDS})
 BOSS_WAVE_PHASE2A_FIELD_MAP_PATH = ROOT / 'app' / 'boss_waves_phase2a_field_map.yaml'
+BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS: tuple[str, ...] = (
+    'state::tower.enemy_attack_level_skip_pct',
+    'state::tower.enemy_health_level_skip_pct',
+    'state::tower.free_attack_upgrade_chance_pct',
+    'state::tower.free_defense_upgrade_chance_pct',
+    'state::tower.free_utility_upgrade_chance_pct',
+    'state::wall.hp',
+    'state::wall.regen',
+    'state::wall.fortification_multiplier',
+    'state::tower.defense_pct',
+    'state::tower.thorns_damage_pct',
+    'state::cards.plasma_cannon.effect_pct',
+)
 
 
 def _load_json_config(path: Path) -> dict:
@@ -109,7 +122,7 @@ def build_boss_wave_table_payload(*args, **kwargs):
 
 
 def _normalize_boss_wave_source(source_id: str | None) -> str:
-    normalized = str(source_id or BOSS_WAVE_SOURCE_PHASE2B_REPLACEMENT).strip()
+    normalized = str(source_id or BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT).strip()
     if normalized not in BOSS_WAVE_SOURCE_IDS:
         raise ValueError(f"unsupported Boss Waves source {source_id!r}; expected one of {sorted(BOSS_WAVE_SOURCE_IDS)!r}")
     return normalized
@@ -326,11 +339,9 @@ def build_boss_wave_payload(
     boss_wave_step: int,
     stop_on_failure: bool,
     scenario_runtime_inputs: dict[str, float],
-    boss_wave_source: str = BOSS_WAVE_SOURCE_PHASE2B_REPLACEMENT,
+    boss_wave_source: str = BOSS_WAVE_SOURCE_PHASE2A_REPLACEMENT,
 ) -> dict[str, object]:
-    from simulators.contracts import PerkState
     from simulators.perk_timeline_generator import PerkTimelinePolicy, generate_timeline_from_policy, perk_state_at_wave
-    from simulators.run_executor import RunToMaxConfig
     source_id = _normalize_boss_wave_source(boss_wave_source)
     bundle = load_inputs(ids_path=request.ids, manual_inputs_path=request.manual_inputs)
     account_state = build_runtime_state(bundle.ids_raw, loadout_config=bundle.loadout_config, perk_config=bundle.perk_config)
@@ -408,42 +419,38 @@ def build_boss_wave_payload(
             'operator_rows': [],
             'download_rows': [],
         }
-    initial_state = build_start_of_run_state(
-        account_state,
-        preset_name=preset_name,
-        perk_state=PerkState(
-            wave=0,
-            counts=perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {},
-            dirty=False,
-        ),
-    )
-    config = RunToMaxConfig(
-        execution_mode='table_sweep',
-        preset_name=preset_name,
-        mode_id=str(resolved_context.get('mode_id') or 'farming'),
-        tier_number=int(resolved_context.get('tier_number') or tier_number),
-        tier_column=str(resolved_context.get('tier_column') or f'Tier {int(tier_number)}'),
-        league=resolved_context.get('league'),
-        tournament_wave=int(resolved_context.get('tournament_wave') or 0),
-        start_wave=int(resolved_context.get('requested_start_wave') or 1),
-        end_wave=int(end_wave),
-        boss_interval_waves=int(resolved_context.get('actual_boss_interval_waves') or 10),
-        checkpoint_every_bosses=int(resolved_context.get('checkpoint_every_bosses') or 1),
-        perks_enabled=bool(resolved_context.get('perks_enabled')),
-        state_mode='start_of_run',
-        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
-        perk_timeline=tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
-    )
-    boss_wave_run = build_boss_wave_table_payload(
-        account_state=account_state,
-        initial_projected_state=initial_state,
-        config=config,
-        stop_on_failure=bool(stop_on_failure),
-    )
-    rows = list(boss_wave_run.get('rows') or [])
-    summary = dict(boss_wave_run.get('summary') or {})
-    execution_diagnostics = dict(boss_wave_run.get('diagnostics') or {})
+    config = {
+        'execution_mode': 'table_sweep',
+        'preset_name': preset_name,
+        'mode_id': str(resolved_context.get('mode_id') or 'farming'),
+        'tier_number': int(resolved_context.get('tier_number') or tier_number),
+        'tier_column': str(resolved_context.get('tier_column') or f'Tier {int(tier_number)}'),
+        'league': resolved_context.get('league'),
+        'tournament_wave': int(resolved_context.get('tournament_wave') or 0),
+        'start_wave': int(resolved_context.get('requested_start_wave') or 1),
+        'end_wave': int(end_wave),
+        'boss_interval_waves': int(resolved_context.get('actual_boss_interval_waves') or 10),
+        'checkpoint_every_bosses': int(resolved_context.get('checkpoint_every_bosses') or 1),
+        'perks_enabled': bool(resolved_context.get('perks_enabled')),
+        'state_mode': 'start_of_run',
+        'perk_timeline': tuple(dict(row or {}) for row in perk_timeline) if bool(resolved_context.get('perks_enabled')) else (),
+    }
+    perk_counts = perk_state_at_wave(perk_timeline, 0) if bool(resolved_context.get('perks_enabled', True)) else {}
+    rows: list[dict[str, object]]
+    summary: dict[str, object]
+    execution_diagnostics: dict[str, object]
     if source_id == BOSS_WAVE_SOURCE_LEGACY:
+        boss_wave_run = _build_legacy_boss_wave_payload(
+            account_state=account_state,
+            preset_name=preset_name,
+            config=config,
+            perk_counts=perk_counts,
+            stop_on_failure=bool(stop_on_failure),
+            scenario_runtime_inputs=scenario_runtime_inputs,
+        )
+        rows = list(boss_wave_run.get('rows') or [])
+        summary = dict(boss_wave_run.get('summary') or {})
+        execution_diagnostics = dict(boss_wave_run.get('diagnostics') or {})
         operator_rows = rows
         selected_summary = summary
         download_rows = rows
@@ -458,16 +465,32 @@ def build_boss_wave_payload(
         tower_damage_mode = 'continuous_runtime_dps_proxy'
         survivability_semantics = 'bounded_runtime_assumption_model'
         cutover_scope = 'legacy_rollback'
+        phase2b_scope = 'not_applicable_legacy_source'
+        csv_export_source = BOSS_WAVE_SOURCE_LEGACY
+        diagnostics_source = BOSS_WAVE_SOURCE_LEGACY
     else:
-        operator_rows, selected_summary = _build_phase2a_replacement_operator_table_and_summary(
-            active_source=source_id,
-            legacy_rows=rows,
-            legacy_summary=summary,
+        legacy_export_payload = _build_legacy_boss_wave_payload(
+            account_state=account_state,
+            preset_name=preset_name,
             config=config,
+            perk_counts=perk_counts,
+            stop_on_failure=bool(stop_on_failure),
             scenario_runtime_inputs=scenario_runtime_inputs,
         )
-        download_rows = _build_phase2b_replacement_download_rows(operator_rows)
-        selected_diagnostics = _build_phase2b_replacement_diagnostics(
+        rows = list(legacy_export_payload.get('rows') or [])
+        summary = dict(legacy_export_payload.get('summary') or {})
+        execution_diagnostics = dict(legacy_export_payload.get('diagnostics') or {})
+        operator_rows, selected_summary = _build_phase2a_replacement_operator_table_and_summary(
+            active_source=source_id,
+            config=config,
+            account_state=account_state,
+            preset_name=preset_name,
+            perk_counts=perk_counts,
+            scenario_runtime_inputs=scenario_runtime_inputs,
+            stop_on_failure=bool(stop_on_failure),
+        )
+        download_rows = rows
+        selected_diagnostics = _build_phase2a_replacement_diagnostics(
             active_source=source_id,
             preset_name=preset_name,
             config=config,
@@ -482,7 +505,10 @@ def build_boss_wave_payload(
         active_owner = 'simulators.evaluator_kernel.evaluate_overlay_row'
         tower_damage_mode = 'v21_event_only_replacement_for_operator_table'
         survivability_semantics = 'staged_replacement_phase2a_operator_table_and_summary'
-        cutover_scope = 'operator_table_summary_export_diagnostics'
+        cutover_scope = 'operator_table_summary_only'
+        phase2b_scope = 'csv_export_and_diagnostics_pending'
+        csv_export_source = BOSS_WAVE_SOURCE_LEGACY
+        diagnostics_source = BOSS_WAVE_SOURCE_LEGACY
     return {
         'artifact': 'boss_wave_dashboard_payload',
         'schema_version': 1,
@@ -499,12 +525,12 @@ def build_boss_wave_payload(
             'enemy_skip_mode': 'runtime_wave_progression',
             'tower_damage_mode': tower_damage_mode,
             'survivability_semantics': survivability_semantics,
-            'phase2a_scope': 'operator_table_and_summary_complete',
-            'phase2b_scope': cutover_scope,
+            'phase2a_scope': cutover_scope,
+            'phase2b_scope': phase2b_scope,
             'operator_table_source': source_id,
             'summary_source': source_id,
-            'csv_export_source': source_id,
-            'diagnostics_source': source_id,
+            'csv_export_source': csv_export_source,
+            'diagnostics_source': diagnostics_source,
             'legacy_export_owner': 'simulators.run_executor.build_boss_wave_table_payload',
             'phase2a_field_map_artifact': str(BOSS_WAVE_PHASE2A_FIELD_MAP_PATH.relative_to(ROOT)),
         },
@@ -513,8 +539,8 @@ def build_boss_wave_payload(
         'download_rows': download_rows,
         'summary': {
             'preset_name': preset_name,
-            'tier_column': config.tier_column,
-            'state_mode': config.state_mode,
+            'tier_column': config['tier_column'],
+            'state_mode': config['state_mode'],
             'max_wave': int(selected_summary.get('max_wave') or 0),
             'max_surviving_wave': int(selected_summary.get('max_surviving_wave') or 0),
             'first_failed_wave': int(selected_summary.get('first_failed_wave') or 0),
@@ -527,9 +553,15 @@ def build_boss_wave_payload(
         'download': {
             'format': 'csv',
             'file_name': f'{preset_name.lower()}_tier_{int(tier_number)}_boss_waves.csv',
-            'row_source': source_id,
+            'row_source': csv_export_source,
         },
-        'source_selection': _boss_wave_source_selection_payload(source_id, active_source=source_id, rollback_available=True),
+        'source_selection': _boss_wave_source_selection_payload(
+            source_id,
+            active_source=source_id,
+            rollback_available=True,
+            csv_export_source=csv_export_source,
+            diagnostics_source=diagnostics_source,
+        ),
         'legacy_shadow': {
             'summary': summary,
             'download_rows': rows,
@@ -538,136 +570,235 @@ def build_boss_wave_payload(
     }
 
 
+def _build_legacy_boss_wave_payload(
+    *,
+    account_state,
+    preset_name: str,
+    config: dict[str, object],
+    perk_counts: dict[str, int],
+    stop_on_failure: bool,
+    scenario_runtime_inputs: dict[str, float],
+) -> dict[str, object]:
+    from simulators.contracts import PerkState
+    from simulators.run_executor import RunToMaxConfig
+
+    initial_state = build_start_of_run_state(
+        account_state,
+        preset_name=preset_name,
+        perk_state=PerkState(
+            wave=0,
+            counts=dict(perk_counts),
+            dirty=False,
+        ),
+    )
+    legacy_config = RunToMaxConfig(
+        execution_mode=str(config['execution_mode']),
+        preset_name=str(config['preset_name']),
+        mode_id=str(config['mode_id']),
+        tier_number=int(config['tier_number']),
+        tier_column=str(config['tier_column']),
+        league=config.get('league'),
+        tournament_wave=int(config.get('tournament_wave') or 0),
+        start_wave=int(config['start_wave']),
+        end_wave=int(config['end_wave']),
+        boss_interval_waves=int(config['boss_interval_waves']),
+        checkpoint_every_bosses=int(config['checkpoint_every_bosses']),
+        perks_enabled=bool(config['perks_enabled']),
+        state_mode=str(config['state_mode']),
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+        perk_timeline=tuple(dict(row or {}) for row in (config.get('perk_timeline') or ())),
+    )
+    return build_boss_wave_table_payload(
+        account_state=account_state,
+        initial_projected_state=initial_state,
+        config=legacy_config,
+        stop_on_failure=bool(stop_on_failure),
+    )
+
+
 def _build_phase2a_replacement_operator_table_and_summary(
     *,
     active_source: str,
-    legacy_rows: list[dict[str, object]],
-    legacy_summary: dict[str, object],
-    config,
+    config: dict[str, object],
+    account_state,
+    preset_name: str,
+    perk_counts: dict[str, int],
     scenario_runtime_inputs: dict[str, float],
+    stop_on_failure: bool,
 ) -> tuple[list[dict[str, object]], dict[str, object]]:
     from qe.run_plan import (
-        CommonTrajectoryRow,
-        CompiledPerkState,
-        FreeUpgradeRecurrence,
+        CommonTrajectoryInputs,
         SurvivabilityContributorBundle,
-        WaveProgressionRecurrence,
+        build_common_trajectory,
     )
     from simulators.evaluator_kernel import (
         CombatInputs,
         ScenarioOverlayInputs,
         ScenarioSurvivabilityTransforms,
-        evaluate_overlay_row,
+        build_scenario_overlay_table,
     )
 
-    operator_rows: list[dict[str, object]] = []
-    for index, legacy_row in enumerate(legacy_rows):
-        display_wave = _required_boss_wave_row_int(legacy_row, 'display_wave')
-        attack_wave = _required_boss_wave_row_int(legacy_row, 'attack_wave')
-        health_wave = _required_boss_wave_row_int(legacy_row, 'health_wave')
-        wall_hp = _required_boss_wave_row_float(legacy_row, 'wall_hp')
-        wall_regen = _required_boss_wave_row_float(legacy_row, 'wall_regen')
-        wall_fortification = _required_boss_wave_row_float(legacy_row, 'wall_fortification_multiplier')
-        tower_defense_pct = _optional_boss_wave_row_float(legacy_row, 'effective_damage_reduction_pct_used')
-        if tower_defense_pct is None:
-            tower_defense_pct = _optional_boss_wave_row_float(legacy_row, 'tower_defense_pct') or 0.0
-        incoming_mult = _optional_boss_wave_row_float(legacy_row, 'incoming_damage_multiplier_used')
-        if incoming_mult is None:
-            incoming_mult = float(scenario_runtime_inputs.get('incoming_damage_multiplier', 1.0) or 1.0)
-        attack_skip = _phase2a_skip_fraction_for_effective_wave(display_wave=display_wave, effective_wave=attack_wave)
-        health_skip = _phase2a_skip_fraction_for_effective_wave(display_wave=display_wave, effective_wave=health_wave)
-        row = CommonTrajectoryRow(
-            row_key=f'phase2a:table1:{index}:{display_wave}',
-            display_wave=display_wave,
-            checkpoint_index=index,
-            wave_progression=WaveProgressionRecurrence(display_wave=display_wave, attack_wave=display_wave, health_wave=display_wave),
-            free_upgrade_state=FreeUpgradeRecurrence(),
-            generated_free_upgrades_last_step={},
-            allocated_free_upgrades_last_step={},
-            unallocated_free_upgrades_last_step={},
-            workshop_levels={},
-            compiled_perk_state=CompiledPerkState(
-                counts={},
-                contributions={},
-                source_policy='phase2a_app_cutover_legacy_resolved_product_inputs',
-                dependency_identity=f'phase2a:{config.preset_name}:{config.tier_column}',
-            ),
-            survivability_contributors=SurvivabilityContributorBundle(
-                base_wall_hp=wall_hp,
-                base_wall_regen=wall_regen,
-                wall_fortification_multiplier=wall_fortification,
-                tower_defense_pct=tower_defense_pct,
-                timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
-            ),
-            death_wave_health_multiplier=1.0,
-            common_inputs={
-                'start_progression_wave': 0,
-                'attack_skip_chance': attack_skip,
-                'health_skip_chance': health_skip,
-                'phase2a_source_row': 'legacy_live_product_row',
+    primitives = _resolve_boss_wave_replacement_primitives(
+        account_state=account_state,
+        preset_name=preset_name,
+        perks_enabled=bool(config['perks_enabled']),
+        scenario_runtime_inputs=scenario_runtime_inputs,
+    )
+    runtime_inputs = ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs)
+    effective_dr_pct = _optional_runtime_float(scenario_runtime_inputs, 'effective_damage_reduction_pct')
+    tower_defense_pct = float(effective_dr_pct if effective_dr_pct is not None else primitives['tower_defense_pct'])
+    death_wave_health_multiplier = float(scenario_runtime_inputs.get('death_wave_health_multiplier', 1.0) or 1.0)
+    survivability = SurvivabilityContributorBundle(
+        base_wall_hp=float(primitives['wall_hp']),
+        base_wall_regen=float(primitives['wall_regen']),
+        wall_fortification_multiplier=float(primitives['wall_fortification_multiplier']),
+        tower_defense_pct=tower_defense_pct,
+        timed_dr_by_lane={'min': 0.0, 'avg': 0.0, 'max': 0.0},
+        source_policy='explicit_staged_contributors_v1',
+    )
+    table1 = build_common_trajectory(
+        CommonTrajectoryInputs(
+            start_wave=int(config['start_wave']),
+            end_wave=int(config['end_wave']),
+            boss_interval_waves=int(config['boss_interval_waves']),
+            checkpoint_every_bosses=int(config['checkpoint_every_bosses']),
+            tier_column=str(config['tier_column']),
+            attack_skip_chance=float(primitives['attack_skip_chance']),
+            health_skip_chance=float(primitives['health_skip_chance']),
+            free_upgrade_chance_by_category={
+                'attack': float(primitives['free_attack_upgrade_chance']),
+                'defense': float(primitives['free_defense_upgrade_chance']),
+                'utility': float(primitives['free_utility_upgrade_chance']),
             },
+            perk_counts=dict(perk_counts),
+            perk_contributions={},
+            survivability_contributors=survivability,
+            death_wave_health_multiplier=death_wave_health_multiplier,
         )
-        scenario = ScenarioOverlayInputs(
-            scenario_key='phase2a_operator_table',
-            tier_column=str(config.tier_column),
-            tournament_perks_enabled=True,
-            survivability_transforms=ScenarioSurvivabilityTransforms(
-                incoming_damage_multiplier=incoming_mult,
-            ),
-        )
-        boss_contact_time_seconds = _optional_boss_wave_row_float(legacy_row, 'boss_contact_time_seconds_used')
-        if boss_contact_time_seconds is None:
-            boss_contact_time_seconds = _optional_runtime_float(scenario_runtime_inputs, 'boss_contact_time_seconds')
-        combat = CombatInputs(
-            plasma_cannon_effect_pct=_optional_boss_wave_row_float(legacy_row, 'plasma_cannon_effect_pct') or 0.0,
-            tower_thorns_damage_pct=_optional_boss_wave_row_float(legacy_row, 'tower_thorns_damage_pct') or 0.0,
-            orb_boss_hit_pct=float(scenario_runtime_inputs.get('orb_boss_hit_pct', 0.0) or 0.0),
-            orb_boss_hits_per_second=float(scenario_runtime_inputs.get('orb_boss_hits_per_second', 0.0) or 0.0),
-            electron_hits_per_second=float(scenario_runtime_inputs.get('electron_hits_per_second', 0.0) or 0.0),
-            boss_contact_time_seconds=boss_contact_time_seconds,
-            boss_hit_interval_seconds=_optional_boss_wave_row_float(legacy_row, 'boss_hit_interval_seconds_used') or 2.0,
-        )
-        overlay = evaluate_overlay_row(row, scenario=scenario, combat=combat)
-        operator_rows.append(_phase2a_operator_row_from_overlay(legacy_row=legacy_row, overlay=overlay, active_source=active_source))
-    return operator_rows, _phase2a_summary_from_operator_rows(operator_rows, legacy_summary=legacy_summary)
-
-
-def _phase2a_operator_row_from_overlay(*, legacy_row: dict[str, object], overlay, active_source: str) -> dict[str, object]:
-    summary = overlay.summary_combat
-    out = dict(legacy_row)
-    out.update(
-        {
-            'display_wave': overlay.display_wave,
-            'attack_wave': overlay.effective_attack_wave,
-            'health_wave': overlay.effective_health_wave,
-            'boss_attack': overlay.enemy_attack,
-            'boss_health': overlay.enemy_health,
-            'wall_hp': overlay.final_wall_hp,
-            'wall_regen': overlay.final_wall_regen,
-            'tower_damage_per_second': None,
-            'effective_damage_reduction_pct_used': overlay.damage_reduction_pct,
-            'boss_ttk_seconds_used': summary.ttk_seconds,
-            'boss_hits_taken': summary.boss_hits_taken,
-            'boss_total_damage_taken': summary.total_damage_taken,
-            'boss_survival_margin_hp': summary.survival_margin_hp,
-            'wall_pool_hp_used': summary.wall_pool_hp,
-            'wall_regen_gained_hp': summary.wall_regen_gained_hp,
-            'survives_boss': summary.survives,
-            'fail_reason': summary.fail_reason,
-            'phase2a_source': active_source,
-            'replacement_source': active_source,
-            'summary_lane_id': overlay.summary_lane_id,
-            'operator_handle_id': overlay.operator_handle.handle_id,
-            'lane_handle_ids': dict(overlay.operator_handle.lane_handle_ids),
-        }
     )
-    return out
+    skip_delta = -max(0.0, float(getattr(runtime_inputs, 'enemy_level_skip_reduction_pp') or 0.0)) / 100.0
+    incoming_mult = float(getattr(runtime_inputs, 'incoming_damage_multiplier') or 1.0)
+    scenario = ScenarioOverlayInputs(
+        scenario_key='phase2a_operator_table',
+        tier_column=str(config['tier_column']),
+        tournament_perks_enabled=bool(config['perks_enabled']),
+        attack_skip_chance_delta=skip_delta,
+        health_skip_chance_delta=skip_delta,
+        survivability_transforms=ScenarioSurvivabilityTransforms(
+            incoming_damage_multiplier=incoming_mult,
+        ),
+    )
+    combat = CombatInputs(
+        plasma_cannon_effect_pct=float(primitives['plasma_cannon_effect_pct']),
+        tower_thorns_damage_pct=float(primitives['tower_thorns_damage_pct']),
+        orb_boss_hit_pct=float(getattr(runtime_inputs, 'orb_boss_hit_pct') or 0.0),
+        orb_boss_hits_per_second=float(getattr(runtime_inputs, 'orb_boss_hits_per_second') or 0.0),
+        electron_hits_per_second=float(getattr(runtime_inputs, 'electron_hits_per_second') or 0.0),
+        boss_contact_time_seconds=getattr(runtime_inputs, 'boss_contact_time_seconds'),
+        boss_hit_interval_seconds=float(getattr(runtime_inputs, 'boss_hit_interval_seconds') or 2.0),
+    )
+    table2 = build_scenario_overlay_table(table1, scenario=scenario, combat=combat)
+    operator_rows: list[dict[str, object]] = []
+    for overlay in table2.rows:
+        operator_rows.append(
+            _phase2a_operator_row_from_overlay(
+                overlay=overlay,
+                active_source=active_source,
+                combat=combat,
+                incoming_damage_multiplier=incoming_mult,
+            )
+        )
+        if bool(stop_on_failure) and not bool(operator_rows[-1].get('survives_boss')):
+            break
+    return operator_rows, _phase2a_summary_from_operator_rows(operator_rows)
+
+
+def _resolve_boss_wave_replacement_primitives(
+    *,
+    account_state,
+    preset_name: str,
+    perks_enabled: bool,
+    scenario_runtime_inputs: dict[str, float],
+) -> dict[str, float]:
+    response = resolve_checkpoint_surfaces(
+        account_state,
+        requested_surface_ids=BOSS_WAVE_REPLACEMENT_PRIMITIVE_SURFACE_IDS,
+        preset_name=preset_name,
+        state_mode='start_of_run',
+        perks_enabled=bool(perks_enabled),
+        scenario_runtime_inputs=ScenarioRuntimeInputs.from_mapping(scenario_runtime_inputs),
+    )
+    statbook = query_response_to_statbook(response, notes='Boss Waves Phase 2A replacement primitive resolution.')
+    return {
+        'attack_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_attack_level_skip_pct'),
+        'health_skip_chance': _required_statbook_fraction(statbook, 'state::tower.enemy_health_level_skip_pct'),
+        'free_attack_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_attack_upgrade_chance_pct'),
+        'free_defense_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_defense_upgrade_chance_pct'),
+        'free_utility_upgrade_chance': _required_statbook_fraction(statbook, 'state::tower.free_utility_upgrade_chance_pct'),
+        'wall_hp': _required_statbook_float(statbook, 'state::wall.hp'),
+        'wall_regen': _required_statbook_float(statbook, 'state::wall.regen'),
+        'wall_fortification_multiplier': _required_statbook_float(statbook, 'state::wall.fortification_multiplier'),
+        'tower_defense_pct': _required_statbook_float(statbook, 'state::tower.defense_pct'),
+        'tower_thorns_damage_pct': _required_statbook_float(statbook, 'state::tower.thorns_damage_pct'),
+        'plasma_cannon_effect_pct': _required_statbook_float(statbook, 'state::cards.plasma_cannon.effect_pct'),
+    }
+
+
+def _required_statbook_float(statbook, surface_id: str) -> float:
+    row = (getattr(statbook, 'rows', {}) or {}).get(surface_id)
+    if row is None:
+        raise ValueError(f"Boss Waves replacement input requires QE surface {surface_id!r}")
+    if str(getattr(row, 'status', '') or '').strip() != 'resolved':
+        raise ValueError(f"Boss Waves replacement input requires resolved QE surface {surface_id!r}")
+    value = getattr(row, 'final_value', None)
+    if value is None:
+        raise ValueError(f"Boss Waves replacement input requires non-null QE surface {surface_id!r}")
+    return float(value)
+
+
+def _required_statbook_fraction(statbook, surface_id: str) -> float:
+    return max(0.0, min(1.0, _required_statbook_float(statbook, surface_id) / 100.0))
+
+
+def _phase2a_operator_row_from_overlay(
+    *,
+    overlay,
+    active_source: str,
+    combat,
+    incoming_damage_multiplier: float,
+) -> dict[str, object]:
+    summary = overlay.summary_combat
+    return {
+        'display_wave': overlay.display_wave,
+        'attack_wave': overlay.effective_attack_wave,
+        'health_wave': overlay.effective_health_wave,
+        'boss_attack': overlay.enemy_attack,
+        'boss_health': overlay.enemy_health,
+        'wall_hp': overlay.final_wall_hp,
+        'wall_regen': overlay.final_wall_regen,
+        'tower_damage_per_second': None,
+        'effective_damage_reduction_pct_used': overlay.damage_reduction_pct,
+        'boss_ttk_seconds_used': summary.ttk_seconds,
+        'boss_contact_time_seconds_used': combat.boss_contact_time_seconds,
+        'boss_hit_interval_seconds_used': combat.boss_hit_interval_seconds,
+        'incoming_damage_multiplier_used': incoming_damage_multiplier,
+        'boss_hits_taken': summary.boss_hits_taken,
+        'boss_total_damage_taken': summary.total_damage_taken,
+        'boss_survival_margin_hp': summary.survival_margin_hp,
+        'wall_pool_hp_used': summary.wall_pool_hp,
+        'wall_regen_gained_hp': summary.wall_regen_gained_hp,
+        'survives_boss': summary.survives,
+        'fail_reason': summary.fail_reason,
+        'phase2a_source': active_source,
+        'replacement_source': active_source,
+        'summary_lane_id': overlay.summary_lane_id,
+        'operator_handle_id': overlay.operator_handle.handle_id,
+        'lane_handle_ids': dict(overlay.operator_handle.lane_handle_ids),
+    }
 
 
 def _phase2a_summary_from_operator_rows(
     operator_rows: list[dict[str, object]],
-    *,
-    legacy_summary: dict[str, object],
 ) -> dict[str, object]:
     surviving_waves = [
         int(row.get('display_wave') or 0)
@@ -690,19 +821,14 @@ def _phase2a_summary_from_operator_rows(
         'terminal_display_wave': terminal,
         'survives_through_end': bool(operator_rows) and first_failed == 0,
         'result_consistent_with_rows': True,
-        'legacy_reference_max_wave': int(legacy_summary.get('max_wave') or 0),
     }
 
 
-def _build_phase2b_replacement_download_rows(operator_rows: list[dict[str, object]]) -> list[dict[str, object]]:
-    return [dict(row) for row in operator_rows]
-
-
-def _build_phase2b_replacement_diagnostics(
+def _build_phase2a_replacement_diagnostics(
     *,
     active_source: str,
     preset_name: str,
-    config,
+    config: dict[str, object],
     resolved_context: dict[str, object],
     perk_timeline_rows: int,
     perk_timeline_final_wave: int,
@@ -715,28 +841,28 @@ def _build_phase2b_replacement_diagnostics(
     first_row = operator_rows[0] if operator_rows else {}
     return {
         'preset_name': preset_name,
-        'mode_id': config.mode_id,
-        'tier_number': int(config.tier_number),
-        'tier_column': config.tier_column,
-        'league': config.league,
-        'tournament_wave': int(config.tournament_wave or 0) or None,
-        'perks_enabled': bool(config.perks_enabled),
-        'perk_timeline_enabled': bool(config.perks_enabled),
+        'mode_id': config['mode_id'],
+        'tier_number': int(config['tier_number']),
+        'tier_column': config['tier_column'],
+        'league': config.get('league'),
+        'tournament_wave': int(config.get('tournament_wave') or 0) or None,
+        'perks_enabled': bool(config['perks_enabled']),
+        'perk_timeline_enabled': bool(config['perks_enabled']),
         'perk_timeline_rows': int(perk_timeline_rows),
         'perk_timeline_final_wave': int(perk_timeline_final_wave),
         'context_status': 'resolved',
         'context_error': None,
         'context_error_message': None,
-        'actual_boss_interval_waves': int(config.boss_interval_waves),
-        'checkpoint_every_bosses': int(config.checkpoint_every_bosses),
-        'checkpoint_stride_waves': int(config.boss_interval_waves) * int(config.checkpoint_every_bosses),
-        'requested_start_wave': int(config.start_wave),
+        'actual_boss_interval_waves': int(config['boss_interval_waves']),
+        'checkpoint_every_bosses': int(config['checkpoint_every_bosses']),
+        'checkpoint_stride_waves': int(config['boss_interval_waves']) * int(config['checkpoint_every_bosses']),
+        'requested_start_wave': int(config['start_wave']),
         'first_checkpoint_wave': int(operator_rows[0].get('display_wave') or 0) if operator_rows else None,
-        'state_mode': config.state_mode,
+        'state_mode': config['state_mode'],
         'checkpoint_mode': 'actual_boss_cadence_with_sampling',
         'stop_on_failure': bool(legacy_diagnostics.get('stop_on_failure')),
         'scenario_runtime_inputs': dict(scenario_runtime_inputs),
-        'execution_mode': 'staged_replacement_phase2b',
+        'execution_mode': 'staged_replacement_phase2a',
         'checkpoint_resolution_mode': 'replacement_table1_table2_overlay',
         'qe_resolution_count': 0,
         'timing_recompute_count': 0,
@@ -746,14 +872,14 @@ def _build_phase2b_replacement_diagnostics(
         'source_selection': {
             'operator_table_source': active_source,
             'summary_source': active_source,
-            'csv_export_source': active_source,
-            'diagnostics_source': active_source,
+            'csv_export_source': BOSS_WAVE_SOURCE_LEGACY,
+            'diagnostics_source': BOSS_WAVE_SOURCE_LEGACY,
             'rollback_source': BOSS_WAVE_SOURCE_LEGACY,
         },
         'replacement_model': {
             'run_plan_owner': 'qe.run_plan',
             'combat_owner': 'simulators.evaluator_kernel',
-            'table1_source_basis': 'app_pipeline_phase2b_adapter_from_live_product_rows',
+            'table1_source_basis': 'app_pipeline_qe_checkpoint_surfaces_to_run_plan',
             'table2_source_basis': 'replacement_scenario_overlay',
             'boss_ttk_contract': 'v21_event_only',
             'boss_kill_sources': ['plasma_cannon', 'orbs', 'electrons', 'thorns_contact'],
@@ -764,7 +890,7 @@ def _build_phase2b_replacement_diagnostics(
         },
         'replacement_outputs': {
             'operator_row_count': len(operator_rows),
-            'download_row_count': len(operator_rows),
+            'download_row_count': int(legacy_diagnostics.get('row_count') or 0),
             'operator_handle_count': sum(1 for row in operator_rows if row.get('operator_handle_id')),
             'first_operator_handle_id': first_row.get('operator_handle_id'),
             'first_lane_handle_ids': dict(first_row.get('lane_handle_ids') or {}),

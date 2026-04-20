@@ -121,19 +121,19 @@ This tranche is not about:
 14. COMPLETE: run bounded parity/shadow validation between the sanctioned live Boss Waves path and the staged replacement path; result was **parity sufficient for cutover planning**, with no production replacement-path fixes required during parity
 15. COMPLETE: define the Boss Waves cutover plan, including split cutover phases, required field-map artifact, acceptance gates, operational rollback, and temporary legacy disposition
 16. COMPLETE: implement Phase 2A Boss Waves cutover for operator table and summary only, with an actual product-consumption-derived field map, centralized `app.pipeline` source-selection/rollback seam, replacement-backed operator rows, legacy-compatible download rows, legacy-compatible diagnostics, and app-level tests
-17. COMPLETE: implement Phase 2B Boss Waves cutover for CSV/export and diagnostics only, using replacement-backed `download_rows`, replacement-owned diagnostics, field-map coverage for export/diagnostics, and retained legacy shadow payloads for rollback/reference
-18. NEXT: stabilize replacement-primary Boss Waves and do not start legacy removal until all active consumers are proven off legacy row-engine-only outputs
+17. COMPLETE: harden Phase 2A Boss Waves replacement-input independence so replacement-backed operator rows and summary are assembled from direct app inputs, `qe.run_plan`, and `simulators.evaluator_kernel` rather than legacy Boss Waves row-engine rows or summary
+18. NEXT: Phase 2B CSV/export and diagnostics source switch remains pending; do not start legacy removal until all active consumers are proven off legacy row-engine-only outputs
 
 ### Current blockers inside the active program
 
-1. Boss Waves Phase 2A and Phase 2B are implemented; this is not approval for legacy removal or broader app/product work.
-2. Legacy Boss Waves payloads remain available only as rollback/shadow/reference support until a separate legacy disposition tranche proves no active consumer depends on them.
+1. Boss Waves Phase 2A table and summary sourcing is implemented and replacement-input independent; Phase 2B CSV/export and diagnostics sourcing remains pending.
+2. Legacy Boss Waves payloads remain available as rollback/shadow/reference support and as the Phase 2A legacy-compatible download/diagnostics source until Phase 2B explicitly switches those surfaces.
 3. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
 4. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
 ### Boss Waves cutover plan
 
-This plan is governance for staged Boss Waves cutover. Phase 2A and Phase 2B are now implemented. It does not authorize legacy removal, UI-local truth, or compatibility shims.
+This plan is governance for staged Boss Waves cutover. Phase 2A table/summary cutover is implemented; Phase 2B CSV/export and diagnostics cutover remains pending. It does not authorize legacy removal, UI-local truth, or compatibility shims.
 
 #### Cutover scope map
 
@@ -141,8 +141,8 @@ This plan is governance for staged Boss Waves cutover. Phase 2A and Phase 2B are
 |---|---|---|---|
 | Operator table source | `app.pipeline.build_boss_wave_payload(...)` consuming `simulators.run_executor.build_boss_wave_table_payload(...)` rows | staged Table 2 rows from `simulators.evaluator_kernel.build_scenario_overlay_table(...)`, rendered through operator-row handles | switch in Phase 2A only after the field map proves all table fields are equivalent, transformed, or explicitly absent |
 | Summary source | legacy payload `summary` from `build_boss_wave_table_payload(...)` | replacement summary derived from explicit `avg` summary lane and replacement overlay rows | switch with operator table in Phase 2A |
-| CSV/export source | legacy product rows and product formatting | replacement operator rows plus field-map-governed export columns | switched in Phase 2B; legacy rows retained under `legacy_shadow.download_rows` |
-| Diagnostics source | legacy payload `diagnostics` including legacy runtime owners, delta counts, and continuous-DPS model markers | replacement diagnostics covering source selection, replacement model, v21 TTK model, lane policy, replacement outputs, and rollback/shadow state | switched in Phase 2B; legacy diagnostics retained under `legacy_shadow.diagnostics` |
+| CSV/export source | legacy product rows and product formatting | replacement operator rows plus field-map-governed export columns | stays legacy-compatible in Phase 2A; switch only in a future Phase 2B tranche |
+| Diagnostics source | legacy payload `diagnostics` including legacy runtime owners, delta counts, and continuous-DPS model markers | replacement diagnostics covering source selection, replacement model, v21 TTK model, lane policy, replacement outputs, and rollback/shadow state | stays legacy-compatible in Phase 2A; switch only in a future Phase 2B tranche |
 | Fixture/testing ownership | legacy `tests/simulators/test_run_executor.py`, app pipeline contract tests, staged `tests/simulators/test_evaluator_kernel.py`, and shadow parity tests | staged-kernel tests plus explicit app-level cutover tests and parity/shadow regression tests | maintain both until legacy demotion/removal is separately approved |
 | Legacy comparison / shadow mode | bounded read-only shadow validation against sanctioned live seam | future shadow mode should compare product-facing fields through the field map, not invent a second engine | keep during 2A/2B stabilization |
 | Rollback switch / fallback path | legacy Boss Waves product path remains available | app-level Boss Waves source selection can return to legacy | must be operational and tested before any product source switch |
@@ -182,8 +182,9 @@ The field map must cover at minimum: `display_wave`, effective attack wave, effe
    - Do not remove legacy code.
 
 4. **Phase 2B - CSV/export and diagnostics source switch**
-   - Switched CSV/export fields through the field map.
-   - Switched diagnostics to replacement-owned diagnostics while preserving legacy/shadow diagnostics to support rollback decisions.
+   - Pending.
+   - Switch CSV/export fields through a Phase 2B field map.
+   - Switch diagnostics to replacement-owned diagnostics while preserving legacy/shadow diagnostics to support rollback decisions.
 
 5. **Phase 3 - Stabilization and monitoring**
    - Run replacement primary and legacy shadow where feasible.
@@ -249,7 +250,7 @@ The v49 current-stage program is complete only when all of the following are tru
 - Streamlit can operate the sanctioned max-wave simulator path with explicit runtime controls
 - current-scope simulator tests and touched contract tests pass
 - Boss Waves staged kernel exists as compiled RunPlan plus Table 1 common trajectory and Table 2 scenario overlay/v21 combat outputs, with explicit registries, derived wall HP/regen from staged contributors, avg/min/max lanes, explicit avg summary-lane policy, operator-table handles, and no hot-path dependency on the legacy row-engine
-- Boss Waves Phase 2A and 2B have switched table, summary, CSV/export, and diagnostics through a field-map-backed, rollback-tested `app.pipeline` seam while keeping legacy as rollback/shadow/reference only
+- Boss Waves Phase 2A has switched table and summary through a field-map-backed, rollback-tested, replacement-input-independent `app.pipeline` seam while keeping CSV/export and diagnostics legacy-compatible until Phase 2B
 - performance claims for the active product path are evidenced honestly
 - stale root governance no longer misstates the active program
 - `BURNDOWN.yaml` task statuses match this file

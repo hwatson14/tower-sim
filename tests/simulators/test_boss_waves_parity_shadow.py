@@ -160,8 +160,8 @@ def test_live_boss_waves_product_seam_exposes_shadow_validation_subset_read_only
     assert contract.get("simulator_owner") == "simulators.evaluator_kernel.evaluate_overlay_row"
     assert contract.get("legacy_export_owner") == "simulators.run_executor.build_boss_wave_table_payload"
     assert rows, "live Boss Waves seam must expose selected operator row data"
-    assert download_rows == rows, "Phase 2B export rows must use the selected replacement rows"
-    assert legacy_shadow_rows, "Phase 2B must keep legacy rows available for shadow/rollback validation"
+    assert download_rows == legacy_shadow_rows, "Phase 2A export rows must remain legacy-compatible"
+    assert legacy_shadow_rows, "Phase 2A must keep legacy rows available for shadow/rollback validation"
     first = rows[0]
     for field in (
         "display_wave",
@@ -175,7 +175,7 @@ def test_live_boss_waves_product_seam_exposes_shadow_validation_subset_read_only
         "survives_boss",
     ):
         assert field in first
-    assert first.get("replacement_source") == "phase2b_replacement"
+    assert first.get("replacement_source") == "phase2a_replacement"
     assert "fail_reason" in first
     assert "lane_evaluations" not in first
 

@@ -5,7 +5,7 @@ status:
   baseline: prior hardening and maintenance stabilization are complete, but the active program is now the v49 Streamlit-first canonical stat and max-wave simulator scope
   active_tranche: v49_streamlit_stat_and_simulator_program
   active_tranche_name: V49 Streamlit-first canonical stat and simulator program
-  overall_state: boss_waves_phase2a_phase2b_cutover_complete_legacy_disposition_pending
+  overall_state: boss_waves_phase2a_replacement_input_independent_phase2b_pending
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A and Phase 2B cutover is implemented; legacy disposition remains pending
+  - Boss Waves Phase 2A table/summary cutover is replacement-input independent; Phase 2B export/diagnostics cutover and legacy disposition remain pending
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip
@@ -270,13 +270,14 @@ v49_program:
       parity_result: parity_sufficient_for_cutover_planning
       cutover_planning: complete
       phase2a_operator_summary_cutover: complete
-      app_cutover_started: phase2a_and_phase2b
-      phase2b_export_diagnostics_cutover: complete
+      app_cutover_started: phase2a_only
+      phase2a_replacement_input_independence: complete
+      phase2b_export_diagnostics_cutover: pending
       legacy_removal_started: false
     cutover_plan:
-      field_map_required_before_cutover: complete_for_table_summary_export_diagnostics
-      rollback_seam_required_before_cutover: complete_for_phase2a_and_phase2b
-      app_level_cutover_tests_required_before_cutover: complete_for_phase2a_and_phase2b
+      field_map_required_before_cutover: complete_for_phase2a_table_summary
+      rollback_seam_required_before_cutover: complete_for_phase2a
+      app_level_cutover_tests_required_before_cutover: complete_for_phase2a
       phases:
       - id: phase_0
         name: Planning freeze
@@ -307,7 +308,7 @@ v49_program:
         - v21 event-only TTK and avg/min/max lane policy preserved
       - id: phase_2b
         name: CSV/export and diagnostics source switch
-        status: complete
+        status: pending
         gates:
         - export field map implemented
         - diagnostics field map implemented

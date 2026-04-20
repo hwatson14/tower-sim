@@ -1,15 +1,22 @@
 artifact: boss_waves_cutover_field_map
 schema_version: 1
 scope:
-  phase: Phase 2B
+  phase: Phase 2A replacement-input independence
   surfaces:
-    table: switched_in_phase2a
-    summary: switched_in_phase2a
-    export: in_scope_for_phase2b
-    diagnostics: in_scope_for_phase2b
-  derivation_basis: actual_current_product_consumption_in_app_streamlit_inspector
+    table: replacement_sourced
+    summary: replacement_sourced
+    export: legacy_compatible_pending_phase2b
+    diagnostics: legacy_compatible_pending_phase2b
+  derivation_basis: actual_current_product_consumption_in_app_streamlit_inspector_plus_qe_replacement_input_surfaces
 source_selection_owner: app.pipeline.build_boss_wave_payload
 renderer_policy: app.streamlit_inspector consumes selected payload fields only
+replacement_input_sources:
+  owner: app.pipeline assembles inputs only
+  mechanics_owner: [qe.run_plan, simulators.evaluator_kernel]
+  primitive_resolution_owner: qe.routing.resolve_checkpoint_surfaces
+  table1_builder: qe.run_plan.build_common_trajectory
+  table2_builder: simulators.evaluator_kernel.build_scenario_overlay_table
+  legacy_row_engine_dependency_for_table_summary: none
 operator_table_fields:
   - product_field: Wave
     consumer_input: display_wave
@@ -207,24 +214,24 @@ summary_fields:
 payload_split:
   operator_rows: replacement-backed selected rows for table rendering
   rows: selected rows retained as backward-compatible table alias
-  download_rows: replacement-backed selected rows for CSV/export during Phase 2B
-  diagnostics: replacement-backed selected diagnostics during Phase 2B
+  download_rows: legacy-compatible rows retained for CSV/export until Phase 2B
+  diagnostics: legacy-compatible diagnostics retained until Phase 2B, with replacement source-selection notes
   legacy_shadow: read-only legacy summary/download_rows/diagnostics retained for rollback and shadow evidence
 export_fields:
   derivation_basis: current product exports download_rows through pandas.DataFrame(...).to_csv(index=False)
   source: download_rows
-  replacement_source: replacement-backed operator row dictionaries
-  cutover_behavior: switch_now_phase2b
+  replacement_source: not_switched_in_phase2a
+  cutover_behavior: stay_legacy_for_now
   row_policy:
-    comparability: transformed
-    normalization: csv_header_and_value_serialization_from_selected_download_rows
+    comparability: legacy_compatible
+    normalization: csv_header_and_value_serialization_from_legacy_download_rows
     required_for: [export]
-    note: Phase 2B intentionally exports the selected replacement row contract rather than the legacy row contract.
+    note: Phase 2A does not switch CSV/export; Phase 2B must define its own export field map before changing this source.
 diagnostics_fields:
   derivation_basis: current product constructs the Boss-wave diagnostics expander and summary captions from payload.diagnostics plus payload.summary
   source: diagnostics
-  replacement_source: app.pipeline replacement diagnostics payload
-  cutover_behavior: switch_now_phase2b
+  replacement_source: legacy-compatible diagnostics with source-selection and replacement-model notes
+  cutover_behavior: stay_legacy_for_now
   consumed_fields:
     - consumer_input: diagnostics.preset_name
       normalization: string
