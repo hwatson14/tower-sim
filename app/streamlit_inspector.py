@@ -1653,6 +1653,15 @@ def _render_inputs(active_artifacts, active_out_dir: Path) -> None:
             st.info('No lineage rows available for this snapshot.')
 
 
+def _require_boss_wave_payload_rows(boss_payload: dict, field_name: str) -> list[dict]:
+    rows = boss_payload.get(field_name)
+    if not isinstance(rows, list):
+        raise ValueError(f"Boss Waves payload contract error: {field_name!r} must be present as a list")
+    if any(not isinstance(row, dict) for row in rows):
+        raise ValueError(f"Boss Waves payload contract error: {field_name!r} rows must be mappings")
+    return rows
+
+
 def _render_boss_waves(request: PipelineRunRequest) -> None:
     st.subheader('Boss Waves')
     control_cols = st.columns(4)
@@ -1688,12 +1697,12 @@ def _render_boss_waves(request: PipelineRunRequest) -> None:
             'incoming_damage_multiplier': incoming_damage_multiplier,
         },
     )
-    operator_rows = boss_payload.get('operator_rows')
-    if operator_rows is None:
-        operator_rows = boss_payload.get('rows') or []
-    download_rows = boss_payload.get('download_rows')
-    if download_rows is None:
-        download_rows = boss_payload.get('rows') or []
+    try:
+        operator_rows = _require_boss_wave_payload_rows(boss_payload, 'operator_rows')
+        download_rows = _require_boss_wave_payload_rows(boss_payload, 'download_rows')
+    except ValueError as exc:
+        st.error(str(exc))
+        return
     frame = pd.DataFrame(operator_rows)
     download_frame = pd.DataFrame(download_rows)
     if not frame.empty and 'changed_workshop_tracks_last_step' in frame.columns:

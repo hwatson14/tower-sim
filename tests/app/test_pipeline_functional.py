@@ -560,7 +560,15 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
     assert diagnostics['execution_mode'] == 'staged_replacement'
+    assert diagnostics['source_selection']['operator_table_source'] == 'replacement'
+    assert diagnostics['source_selection']['summary_source'] == 'replacement'
+    assert diagnostics['source_selection']['csv_export_source'] == 'replacement'
+    assert diagnostics['source_selection']['diagnostics_source'] == 'replacement'
+    assert payload['source_selection']['active_source'] == 'replacement'
     assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_event_only'
+    assert diagnostics['replacement_model']['contract_version'] == 'boss_waves_replacement_v1'
+    assert diagnostics['replacement_model']['lane_order'] == ['avg', 'min', 'max']
+    assert diagnostics['replacement_model']['summary_lane_id'] == 'avg'
     assert 'legacy_shadow_available' not in diagnostics
     assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
@@ -587,8 +595,10 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert ledger['primitives']['state::wall.hp']['semantic_meaning'].startswith('QE wall HP surface currently carries wall-health ratio contributors')
     assert ledger['primitives']['state::wall.hp']['fortification_transform'] == 'not_used_as_final_wall_pool'
     assert ledger['primitives']['state::wall.hp']['classification'] == 'transformed'
+    assert ledger['primitives']['state::wall.hp']['boss_waves_semantic_decision'] == 'transformed_primitive_not_final_display_value'
     assert ledger['primitives']['state::wall.hp']['tower_hp'] == pytest.approx(canonical['state::tower.hp'])
     assert ledger['primitives']['state::wall.regen']['classification'] == 'transformed'
+    assert ledger['primitives']['state::wall.regen']['boss_waves_semantic_decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
     assert ledger['primitives']['state::wall.regen']['exact_value'] == pytest.approx(canonical['state::wall.regen'])
     assert ledger['primitives']['state::wall.regen']['row_input_value'] == pytest.approx(expected_wall_regen)
     assert ledger['primitives']['state::tower.regen']['exact_value'] == pytest.approx(canonical['state::tower.regen'])
@@ -608,6 +618,9 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert regen_check['tower_regen'] == pytest.approx(canonical['state::tower.regen'])
     assert regen_check['wall_regen_percent_points'] == pytest.approx(canonical['state::wall.regen'])
     assert regen_check['reconstructed_displayed_wall_regen'] == pytest.approx(expected_wall_regen)
+    semantic_contract = ledger['boss_waves_wall_surface_semantic_contract']
+    assert semantic_contract['state::wall.hp']['decision'] == 'transformed_primitive_not_final_display_value'
+    assert semantic_contract['state::wall.regen']['decision'] == 'transformed_percent_points_primitive_not_final_hp_per_second'
     assert diagnostics['replacement_display_derivation']['wall_pool'].startswith('operator_rows.wall_pool_hp_used')
     assert diagnostics['replacement_model']['death_wave_health_multiplier_applies_to'] == 'enemy_health_only_not_wall_hp_or_wall_regen'
     first_row = (payload.get('rows') or [{}])[0]
@@ -615,9 +628,16 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     rows = payload.get('rows') or []
     assert rows[0]['wall_hp'] > fort_check['row_input_wall_hp']
     assert rows[-1]['wall_hp'] > rows[0]['wall_hp']
+    assert rows[0]['wall_hp'] == pytest.approx(17810673737511.15)
     assert rows[0]['wall_pool_hp_used'] == pytest.approx(185231006870115.94)
     assert rows[0]['wall_pool_hp_used'] == pytest.approx(rows[0]['wall_hp'] * primitives['wall_fortification_multiplier'])
     assert rows[0]['wall_regen'] == pytest.approx(5814158246443.825)
+    assert rows[0]['summary_lane_id'] == 'avg'
+    assert rows[0]['lane_handle_ids'] == {
+        'avg': 'boss:boss_waves_replacement_product:9:avg',
+        'min': 'boss:boss_waves_replacement_product:9:min',
+        'max': 'boss:boss_waves_replacement_product:9:max',
+    }
     assert 'effective_damage_reduction_pct_used' in first_row
     assert 'boss_contact_time_seconds_used' in first_row
     assert 'boss_hit_interval_seconds_used' in first_row

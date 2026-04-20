@@ -125,16 +125,18 @@ This tranche is not about:
 18. COMPLETE: implement Phase 2B Boss Waves CSV/export and diagnostics source switch using replacement-owned export rows and replacement-owned active diagnostics
 19. COMPLETE: excise Boss Waves product-path legacy rollback/shadow branches and inventory remaining `simulators.run_executor.py` consumers
 20. COMPLETE: repair Boss Waves replacement stat evolution with an explicit primitive/display split: QE `state::wall.hp` carries wall-health ratio contributors and Boss Waves derives pre-fort Wall HP from QE `state::tower.hp` times wall-health ratio times non-fort wall-health multipliers before Table 2 applies fortification exactly once, QE `state::wall.regen` is a start-of-run wall-regen percent-points primitive combined with QE `state::tower.regen` for displayed Wall Regen, Table 1 re-derives row-owned wall HP / wall regen contributors from evolving workshop/perk state, and the operator table displays transformed final Wall Pool / Wall Regen rows; Death Wave remains outside wall HP / wall regen derivation
-21. NEXT: broader max-waves legacy disposition planning; do not delete `simulators.run_executor.py` until every remaining active consumer is classified and retired or replaced
+21. COMPLETE: close Boss Waves wall-surface semantics and recertify the corrected live replacement path: `state::wall.hp` is final only as a transformed primitive input for row-derived pre-fort Wall HP / fortified Wall Pool, `state::wall.regen` is final only as a transformed percent-points primitive for displayed Wall Regen HP/sec, parity/shadow validation now includes the post-survivability-fix large-wall-surface case, and Streamlit no longer silently falls back from missing `operator_rows` / `download_rows` to `rows`
+22. NEXT: broader max-waves legacy disposition planning; do not delete `simulators.run_executor.py` until every remaining active consumer is classified and retired or replaced
 
 ### Current blockers inside the active program
 
 1. Boss Waves table, summary, CSV/export, and active diagnostics are now replacement-owned by default through `app.pipeline`.
 2. Boss Waves product payloads no longer expose legacy rollback/shadow/reference behavior; legacy Boss Waves comparison support is test/reference-only.
 3. Boss Waves replacement stat evolution is repaired for the live product path: exact start-of-run tower HP / wall-health ratio contributors / wall regen percent-points / tower regen / fortification / defense / thorns / Plasma Cannon primitives are QE-sourced as inputs only, final operator-row Wall Pool / Wall Regen are transformed staged outputs, row-facing wall HP / wall regen are re-derived from Table 1 workshop/perk state where owned primitives exist, fortification is applied exactly once for Wall Pool, wall HP is derived as tower HP times wall-health ratio times non-fort wall-health multipliers, wall regen is derived as tower regen times wall regen percent-points divided by 100, and Death Wave is enemy-health-only.
-4. Broader `simulators.run_executor.py` deletion remains blocked by active test/reference consumers and broader max-waves legacy tests.
-5. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
-6. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
+4. Boss Waves-local wall-surface semantics are closed for the product path: `state::wall.hp` and `state::wall.regen` remain QE primitive surfaces, not final displayed product fields; the final displayed fields are `operator_rows.wall_hp`, `operator_rows.wall_pool_hp_used`, and `operator_rows.wall_regen`, with diagnostics and the field map carrying the primitive/display contract.
+5. Broader `simulators.run_executor.py` deletion remains blocked by active test/reference consumers and broader max-waves legacy tests.
+6. The repaired Stats contract must remain workshop-led: no reintroduction of Canonical Overview as a primary panel and no resolved-section-heavy default workflow.
+7. Delta fallback remains guarded by live-path tests and is not a sanctioned default; do not weaken that gate while resuming performance work.
 
 ### Boss Waves cutover plan
 

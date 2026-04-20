@@ -339,6 +339,10 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "Checkpoint every N bosses" in boss_block
     assert "st.toggle('Stop on first failed boss', value=True)" in boss_block
     assert "display_frame = _build_boss_wave_operator_frame(frame)" in boss_block
+    assert "_require_boss_wave_payload_rows(boss_payload, 'operator_rows')" in boss_block
+    assert "_require_boss_wave_payload_rows(boss_payload, 'download_rows')" in boss_block
+    assert "boss_payload.get('rows') or []" not in boss_block
+    assert "st.error(str(exc))" in boss_block
     assert "payload_summary = dict(boss_payload.get('summary') or {})" in boss_block
     assert "visible wall regen contribution" in boss_block
 
@@ -356,6 +360,18 @@ def test_boss_waves_render_uses_published_summary_and_execution_contract() -> No
     assert "Boss Waves is a bounded runtime estimate" in boss_block
     assert "Boss-wave raw rows (debug)" in boss_block
     assert "st.download_button(" in boss_block
+
+
+def test_boss_waves_renderer_payload_contract_fails_closed_without_selected_rows() -> None:
+    from app.streamlit_inspector import _require_boss_wave_payload_rows
+
+    assert _require_boss_wave_payload_rows({'operator_rows': []}, 'operator_rows') == []
+    with pytest.raises(ValueError, match="operator_rows"):
+        _require_boss_wave_payload_rows({'rows': [{'display_wave': 9}]}, 'operator_rows')
+    with pytest.raises(ValueError, match="download_rows"):
+        _require_boss_wave_payload_rows({'download_rows': {'display_wave': 9}}, 'download_rows')
+    with pytest.raises(ValueError, match="download_rows"):
+        _require_boss_wave_payload_rows({'download_rows': [object()]}, 'download_rows')
 
 
 def test_inputs_dashboard_production_render_avoids_native_streamlit_tables() -> None:

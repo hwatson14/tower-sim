@@ -70,8 +70,8 @@ FIELD_POLICIES: tuple[FieldPolicy, ...] = (
     FieldPolicy("effective_health_wave", "int legacy health_wave vs replacement effective_health_wave", "exact", "mismatch is a replacement effective-wave bug unless fixture cannot express legacy skip"),
     FieldPolicy("enemy_attack", "float legacy boss_attack vs replacement enemy_attack", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement enemy-table/scenario-overlay bug"),
     FieldPolicy("enemy_health", "float legacy boss_health vs replacement enemy_health", "abs<=1e-6 or rel<=1e-9 when Death Wave multiplier is 1", "Death Wave-scaled rows are not directly comparable because legacy has no fixture input for that multiplier"),
-    FieldPolicy("final_wall_hp", "float legacy wall_hp vs replacement final_wall_hp", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug when fixture uses shared primitives"),
-    FieldPolicy("final_wall_regen", "float legacy wall_regen vs replacement final_wall_regen", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug when fixture uses shared primitives"),
+    FieldPolicy("final_wall_hp", "float legacy wall_hp vs replacement final_wall_hp", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug only when the fixture supplies already-final shared wall surfaces; QE primitive-to-display differences are classified outside this parity seam"),
+    FieldPolicy("final_wall_regen", "float legacy wall_regen vs replacement final_wall_regen", "abs<=1e-6 or rel<=1e-9", "mismatch is a replacement staged survivability bug only when the fixture supplies already-final shared wall surfaces; QE primitive-to-display differences are classified outside this parity seam"),
     FieldPolicy("boss_ttk", "float legacy boss_ttk_seconds_used vs replacement summary ttk", "ledger only", "not directly comparable by default because live legacy contract includes continuous_runtime_dps_proxy while replacement v21 forbids it"),
     FieldPolicy("summary_lane_result", "legacy canonical row result vs replacement explicit avg lane", "ledger only", "not directly comparable because legacy has no avg/min/max lane model"),
     FieldPolicy("survives", "bool legacy survives_boss vs replacement avg survives", "exact", "mismatch is an unresolved semantic difference unless tied to a known non-comparable TTK/Death Wave input", exact=True),
@@ -85,6 +85,20 @@ FIXTURES: tuple[Fixture, ...] = (
     Fixture(
         fixture_id="baseline_non_tournament",
         purpose="Baseline non-tournament case with shared wall, enemy, skip, and event-only-compatible combat inputs.",
+    ),
+    Fixture(
+        fixture_id="corrected_survivability_large_values",
+        purpose="Post-survivability-fix large final wall surfaces; parity refresh proves the harness does not collapse replacement wall formulas back toward legacy primitive-sized values.",
+        end_wave=45,
+        wall_hp=17_810_673_737_511.15,
+        wall_regen=5_814_158_246_443.825,
+        wall_fortification_multiplier=10.4,
+        defense_pct=90.0,
+        plasma_cannon_effect_pct=100.0,
+        orb_boss_hit_pct=2.5,
+        orb_boss_hits_per_second=5.0,
+        electron_hits_per_second=5.0,
+        boss_contact_time_seconds=1.0,
     ),
     Fixture(
         fixture_id="tournament_perk_mask",
@@ -193,6 +207,19 @@ def test_boss_waves_replacement_shadow_parity_fixture_matrix():
         item["field_id"] == "boss_ttk" and item["classification"] == "not directly comparable"
         for entry in ledger
         for item in entry["field_results"]
+    )
+    corrected = next(entry for entry in ledger if entry["fixture_id"] == "corrected_survivability_large_values")
+    assert any(
+        item["field_id"] == "final_wall_hp" and item["classification"] == "match"
+        for item in corrected["field_results"]
+    )
+    assert any(
+        item["field_id"] == "final_wall_regen" and item["classification"] == "match"
+        for item in corrected["field_results"]
+    )
+    assert any(
+        item["field_id"] == "boss_ttk" and item["classification"] == "not directly comparable"
+        for item in corrected["field_results"]
     )
 
     replacement_bugs = [

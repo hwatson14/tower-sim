@@ -9,7 +9,7 @@ status:
   confidence:
     high_signal_suites_green: true
     full_suite_recertified_here: true
-    full_suite_latest_result: passed_399
+    full_suite_latest_result: passed_416
     shipped_baseline_differed_before_repair: true
 verified_baseline:
   high_signal_test_command: pytest -q tests/shared/test_import_boundaries.py tests/qe/test_compiler_routing_policy_split.py tests/simulators/test_run_executor.py tests/app/test_main_path_smoke.py tests/app/test_pipeline_functional.py
@@ -138,7 +138,7 @@ v49_program:
   - remove duplicate authority, stale residue, and bloat where they undermine truth, speed, or blind maintainability
   known_blockers:
   - the v49 interactive performance target remains open
-  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness is repaired with an explicit primitive/display split; legacy disposition remains pending
+  - Boss Waves Phase 2A table/summary and Phase 2B export/diagnostics cutover are replacement-owned by default; stat evolution correctness and Boss Waves-local wall-surface semantics are closed with an explicit primitive/display split; legacy disposition remains pending
   shipped_vs_rebuilt_truth:
     latest_shipped_extract_audit_2026_04_15:
       source: tower-sim-src(9).zip
@@ -275,7 +275,11 @@ v49_program:
       phase2b_export_diagnostics_cutover: complete
       boss_waves_product_legacy_excision: complete
       stat_evolution_correctness: complete
+      semantic_closure_recertification: complete
+      payload_contract_tightened: operator_rows_and_download_rows_required_no_rows_fallback
+      parity_refresh_after_survivability_fix: complete
       survivability_row_derivation: wall_hp_derived_from_qe_tower_hp_times_wall_health_ratio_and_nonfort_multipliers_table2_applies_fortification_once_wall_regen_derived_from_tower_regen_times_wall_regen_percent_points
+      wall_surface_semantic_contract: state_wall_hp_and_state_wall_regen_are_transformed_primitives_not_final_product_display_fields
       death_wave_survivability_policy: enemy_health_only_not_wall_hp_or_wall_regen
       run_executor_consumer_inventory: complete
       legacy_removal_started: false
@@ -341,6 +345,14 @@ v49_program:
         - Table 1 rows carry re-derived survivability contributor bundles from evolving workshop and perk state
         - Table 2 finalizes row-facing wall HP and wall regen from staged contributors and scenario transforms
         - Death Wave multiplier does not feed wall HP or wall regen derivation
+      - id: semantic_closure_recertification
+        name: Boss Waves semantic closure, recertification, and payload contract tightening
+        status: complete
+        gates:
+        - live product path uses replacement payload with v21_event_only TTK, avg/min/max lane order, and avg summary lane
+        - state::wall.hp and state::wall.regen are documented as transformed primitives rather than final displayed values
+        - parity matrix includes post-survivability-fix large wall surfaces and classifies non-comparable TTK/lane differences instead of forcing equivalence
+        - Streamlit requires operator_rows and download_rows and does not silently substitute rows
       - id: phase_4
         name: Legacy demotion or removal planning
         status: pending

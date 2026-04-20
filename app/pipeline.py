@@ -785,6 +785,9 @@ def _boss_wave_primitive_semantics_ledger(
                 'row_evolution': 'Table 1 starts from derived pre-fort wall HP and evolves by owned Wall Health workshop state',
                 'owner_layer': 'QE publishes tower_hp and wall-health contributors; app assembles primitive bundle; run_plan derives and row-rederives; evaluator applies fortification once',
                 'classification': 'transformed',
+                'boss_waves_semantic_decision': 'transformed_primitive_not_final_display_value',
+                'boss_waves_final_display_field': 'operator_rows.wall_hp for pre-fort HP and operator_rows.wall_pool_hp_used for fortified Wall Pool',
+                'repo_wide_rename_or_split': 'defer_followup_if_needed; Boss Waves contract is explicit and does not treat state::wall.hp as final displayed Wall Pool',
                 'row_input_value': float(row_input_wall_hp),
                 'tower_hp': float(primitives['tower_hp']),
                 'wall_hp_percent_points': float(primitives['wall_hp_percent_points']),
@@ -802,6 +805,9 @@ def _boss_wave_primitive_semantics_ledger(
                 'row_evolution': 'Table 1 can rederive if an owned wall-regen workshop primitive changes',
                 'owner_layer': 'QE publishes tower_regen and wall_regen percent primitive; app assembles primitive bundle; run_plan row-rederives; evaluator applies scenario wall_regen transforms',
                 'classification': 'transformed',
+                'boss_waves_semantic_decision': 'transformed_percent_points_primitive_not_final_hp_per_second',
+                'boss_waves_final_display_field': 'operator_rows.wall_regen',
+                'repo_wide_rename_or_split': 'defer_followup_if_needed; Boss Waves contract is explicit and does not treat state::wall.regen as final displayed HP/sec',
                 'row_input_value': float(row_input_wall_regen),
             },
             'state::tower.regen': {
@@ -886,6 +892,18 @@ def _boss_wave_primitive_semantics_ledger(
             'displayed_wall_regen': float(row_input_wall_regen),
             'reconstructed_displayed_wall_regen': float(primitives['tower_regen']) * (float(primitives['wall_regen_percent_points']) / 100.0),
             'policy': 'displayed Wall Regen = resolved tower regen HP/sec * QE wall regen percent-points primitive / 100',
+        },
+        'boss_waves_wall_surface_semantic_contract': {
+            'state::wall.hp': {
+                'decision': 'transformed_primitive_not_final_display_value',
+                'product_value': 'operator_rows.wall_hp is pre-fort row-derived HP; operator_rows.wall_pool_hp_used is fortified Wall Pool',
+                'fortification_policy': 'state::wall.fortification_multiplier is applied exactly once by evaluator TTD to produce Wall Pool',
+            },
+            'state::wall.regen': {
+                'decision': 'transformed_percent_points_primitive_not_final_hp_per_second',
+                'product_value': 'operator_rows.wall_regen is tower_regen * state::wall.regen / 100 after owned row/scenario transforms',
+                'fortification_policy': 'not fortification-scaled',
+            },
         },
     }
 
