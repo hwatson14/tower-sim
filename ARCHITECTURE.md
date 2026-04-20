@@ -283,6 +283,8 @@ Locked-foundation rules:
 - Simulator hot paths must use explicit requested-surface QE seams.
 - The Boss Waves replacement kernel consumes `qe.run_plan` compiled RunPlan/common-trajectory rows and explicit staged survivability contributor bundles plus scenario transforms; it must not call the legacy Boss Waves row-engine as its runtime authority.
 - Boss Waves replacement combat uses the v21 event-only boss TTK/TTD contract for this tranche; continuous additive tower/projectile DPS proxy logic is forbidden in `simulators/evaluator_kernel.py`.
+- Boss Waves product payloads are replacement-owned through `app.pipeline`; product behavior must not expose legacy rollback/shadow/reference branches or call `simulators.run_executor.py`.
+- `simulators/run_executor.py` remains a broader max-waves legacy/reference surface until its remaining consumers are separately retired or replaced; do not delete it solely because Boss Waves product behavior is replacement-only.
 - Ordinary row/checkpoint execution must not call `ProgressionRecalcBridge.recompute()`.
 - Simulator hot paths must not import `qe.stat_resolution` or broad report/compat resolver paths.
 - Simulator hot paths must not depend on `app.pipeline` orchestration helpers.

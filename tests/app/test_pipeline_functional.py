@@ -214,69 +214,8 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
-    monkeypatch.setattr(
-        pipeline_mod,
-        'load_inputs',
-        lambda ids_path=None, manual_inputs_path=None: type(
-            'Bundle',
-            (),
-            {'ids_raw': {}, 'loadout_config': {}, 'perk_config': {}, 'perk_policy': {}},
-        )(),
-    )
-    monkeypatch.setattr(
-        pipeline_mod,
-        'build_runtime_state',
-        lambda ids_raw, loadout_config=None, perk_config=None: type('State', (), {'player_meta': {}})(),
-    )
-    monkeypatch.setattr(pipeline_mod, 'build_start_of_run_state', lambda account_state, preset_name, perk_state: {'state': 'start'})
-
-    def _fake_build_boss_wave_table_payload(*, account_state, initial_projected_state, config, stop_on_failure):
-        assert stop_on_failure is True
-        assert config.mode_id == 'farming'
-        assert config.tier_number == 14
-        assert config.tier_column == 'Tier 14'
-        assert config.boss_interval_waves == 9
-        assert config.checkpoint_every_bosses == 1
-        return {
-            'rows': [
-                {'display_wave': 9, 'survives_boss': True},
-                {'display_wave': 18, 'survives_boss': True},
-                {'display_wave': 27, 'survives_boss': False},
-            ],
-            'summary': {
-                'max_wave': 18,
-                'max_surviving_wave': 18,
-                'first_failed_wave': 27,
-                'row_count': 3,
-                'terminal_display_wave': 27,
-                'survives_through_end': False,
-                'result_consistent_with_rows': True,
-            },
-            'diagnostics': {
-                'execution_mode': 'table_sweep',
-                'mode_id': 'farming',
-                'tier_number': 14,
-                'tier_column': 'Tier 14',
-                'actual_boss_interval_waves': 9,
-                'checkpoint_every_bosses': 1,
-                'checkpoint_stride_waves': 9,
-                'requested_start_wave': 1,
-                'first_checkpoint_wave': 9,
-                'state_mode': 'start_of_run',
-                'checkpoint_mode': 'actual_boss_cadence_with_sampling',
-                'checkpoint_resolution_mode': 'every_n_bosses',
-                'stop_on_failure': True,
-                'perks_enabled': True,
-                'scenario_runtime_inputs': {'orb_boss_hit_pct': 2.5},
-                'qe_resolution_count': 2,
-                'timing_recompute_count': 2,
-                'snapshot_reuse_count': 0,
-                'qe_dirty_reresolve_count': 1,
-                'delta_fallback_count': 0,
-            },
-        }
-
-    monkeypatch.setattr(pipeline_mod, 'build_boss_wave_table_payload', _fake_build_boss_wave_table_payload)
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
+    _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
     payload = pipeline_mod.build_boss_wave_payload(
@@ -294,20 +233,19 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
             'effective_damage_reduction_pct': 90.0,
             'incoming_damage_multiplier': 1.0,
         },
-        boss_wave_source='legacy',
     )
 
     assert payload.get('artifact') == 'boss_wave_dashboard_payload'
     assert payload.get('schema_version') == 1
-    assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
-    assert payload.get('source_selection', {}).get('active_source') == 'legacy'
+    assert payload.get('contract', {}).get('simulator_owner') == 'simulators.evaluator_kernel.evaluate_overlay_row'
+    assert payload.get('source_selection', {}).get('active_source') == 'replacement'
     assert payload.get('contract', {}).get('perk_timeline_mode') == 'runtime_policy_projection'
     assert payload.get('contract', {}).get('checkpoint_mode') == 'actual_boss_cadence_with_sampling'
     assert payload.get('download', {}).get('format') == 'csv'
     summary = payload.get('summary') or {}
-    assert summary['max_wave'] == 18
-    assert summary['max_surviving_wave'] == 18
-    assert summary['first_failed_wave'] == 27
+    assert summary['max_wave'] == 27
+    assert summary['max_surviving_wave'] == 27
+    assert summary['first_failed_wave'] == 0
     assert summary['result_consistent_with_rows'] is True
     diagnostics = payload.get('diagnostics') or {}
     assert diagnostics['preset_name'] == 'Farming'
@@ -317,14 +255,14 @@ def test_build_boss_wave_payload_publishes_summary_and_runtime_assumptions(monke
     assert diagnostics['actual_boss_interval_waves'] == 9
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_mode'] == 'actual_boss_cadence_with_sampling'
-    assert diagnostics['checkpoint_resolution_mode'] == 'every_n_bosses'
-    assert diagnostics['execution_mode'] == 'table_sweep'
+    assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
+    assert diagnostics['execution_mode'] == 'staged_replacement'
     assert diagnostics['stop_on_failure'] is True
     assert diagnostics['perk_timeline_rows'] >= 0
     assert diagnostics['scenario_runtime_inputs']['orb_boss_hit_pct'] == 2.5
 
 
-def _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, *, rows, summary):
+def _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod):
     monkeypatch.setattr(
         pipeline_mod,
         'load_inputs',
@@ -339,37 +277,6 @@ def _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, *, 
         'build_runtime_state',
         lambda ids_raw, loadout_config=None, perk_config=None: type('State', (), {'player_meta': {}})(),
     )
-    monkeypatch.setattr(pipeline_mod, 'build_start_of_run_state', lambda account_state, preset_name, perk_state: {'state': 'start'})
-
-    def _fake_build_boss_wave_table_payload(*, account_state, initial_projected_state, config, stop_on_failure):
-        return {
-            'rows': rows,
-            'summary': summary,
-            'diagnostics': {
-                'execution_mode': 'table_sweep',
-                'mode_id': 'farming',
-                'tier_number': 14,
-                'tier_column': 'Tier 14',
-                'actual_boss_interval_waves': 9,
-                'checkpoint_every_bosses': 1,
-                'checkpoint_stride_waves': 9,
-                'requested_start_wave': 1,
-                'first_checkpoint_wave': 9,
-                'state_mode': 'start_of_run',
-                'checkpoint_mode': 'actual_boss_cadence_with_sampling',
-                'checkpoint_resolution_mode': 'every_n_bosses',
-                'stop_on_failure': bool(stop_on_failure),
-                'perks_enabled': True,
-                'scenario_runtime_inputs': {'orb_boss_hit_pct': 2.5},
-                'qe_resolution_count': 2,
-                'timing_recompute_count': 2,
-                'snapshot_reuse_count': 0,
-                'qe_dirty_reresolve_count': 1,
-                'delta_fallback_count': 0,
-            },
-        }
-
-    monkeypatch.setattr(pipeline_mod, 'build_boss_wave_table_payload', _fake_build_boss_wave_table_payload)
 
 
 def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *, omit_surface: str | None = None):
@@ -397,60 +304,12 @@ def _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, *,
     monkeypatch.setattr(pipeline_mod, 'query_response_to_statbook', lambda *args, **kwargs: SimpleNamespace(rows=rows))
 
 
-def _phase2a_fake_legacy_row(display_wave: int) -> dict[str, object]:
-    return {
-        'display_wave': display_wave,
-        'attack_wave': display_wave,
-        'health_wave': display_wave,
-        'boss_attack': 10.0,
-        'boss_health': 100.0,
-        'wall_hp': 1000.0,
-        'wall_regen': 25.0,
-        'wall_fortification_multiplier': 2.0,
-        'tower_defense_pct': 90.0,
-        'tower_thorns_damage_pct': 99.0,
-        'tower_damage_per_second': 12345.0,
-        'plasma_cannon_effect_pct': 100.0,
-        'effective_damage_reduction_pct_used': 90.0,
-        'boss_contact_time_seconds_used': 1.0,
-        'boss_hit_interval_seconds_used': 2.0,
-        'incoming_damage_multiplier_used': 1.0,
-        'boss_ttk_seconds_used': 7.5,
-        'wall_pool_hp_used': 2000.0,
-        'wall_regen_gained_hp': 187.5,
-        'boss_hits_taken': 4,
-        'boss_total_damage_taken': 10.0,
-        'boss_survival_margin_hp': 2177.5,
-        'survives_boss': True,
-    }
-
-
-def test_build_boss_wave_payload_phase2b_replacement_inputs_drive_table_summary_export_and_diagnostics(monkeypatch):
+def test_build_boss_wave_payload_replacement_inputs_drive_table_summary_export_and_diagnostics(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
-    legacy_rows = [_phase2a_fake_legacy_row(9), _phase2a_fake_legacy_row(18)]
-    legacy_summary = {
-        'max_wave': 9,
-        'max_surviving_wave': 9,
-        'first_failed_wave': 18,
-        'row_count': 2,
-        'terminal_display_wave': 18,
-        'survives_through_end': False,
-        'result_consistent_with_rows': True,
-    }
-    _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, rows=legacy_rows, summary=legacy_summary)
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
-    monkeypatch.setattr(
-        pipeline_mod,
-        'build_start_of_run_state',
-        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('default replacement must not build legacy start state')),
-    )
-    monkeypatch.setattr(
-        pipeline_mod,
-        'build_boss_wave_table_payload',
-        lambda *args, **kwargs: (_ for _ in ()).throw(AssertionError('default replacement must not call legacy row engine')),
-    )
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
     payload = pipeline_mod.build_boss_wave_payload(
@@ -477,11 +336,13 @@ def test_build_boss_wave_payload_phase2b_replacement_inputs_drive_table_summary_
     assert contract.get('summary_source') == 'replacement'
     assert contract.get('csv_export_source') == 'replacement'
     assert contract.get('diagnostics_source') == 'replacement'
-    assert source_selection.get('rollback_source') == 'legacy'
-    assert source_selection.get('rollback_available') is True
+    assert 'rollback_source' not in source_selection
+    assert 'rollback_available' not in source_selection
     assert source_selection.get('active_source') == 'replacement'
     assert source_selection.get('csv_export_source') == 'replacement'
     assert source_selection.get('diagnostics_source') == 'replacement'
+    assert not hasattr(pipeline_mod, 'build_start_of_run_state')
+    assert not hasattr(pipeline_mod, 'build_boss_wave_table_payload')
 
     operator_rows = payload.get('operator_rows') or []
     assert payload.get('rows') == operator_rows
@@ -489,22 +350,21 @@ def test_build_boss_wave_payload_phase2b_replacement_inputs_drive_table_summary_
     assert operator_rows[0]['tower_damage_per_second'] is None
     assert operator_rows[0]['summary_lane_id'] == 'avg'
     assert set(operator_rows[0]['lane_handle_ids']) == {'avg', 'min', 'max'}
-    assert operator_rows[0]['boss_health'] != legacy_rows[0]['boss_health']
-    assert payload.get('download_rows') != legacy_rows
+    assert 'legacy_export_owner' not in contract
+    assert 'legacy_shadow' not in payload
     assert payload.get('download_rows')[0]['replacement_source'] == 'replacement'
     assert payload.get('download_rows')[0]['operator_handle_id'] == operator_rows[0]['operator_handle_id']
-    assert payload.get('legacy_shadow', {}).get('materialized') is False
     assert payload.get('download', {}).get('row_source') == 'replacement'
     diagnostics = payload.get('diagnostics') or {}
-    assert diagnostics.get('execution_mode') == 'staged_replacement_phase2b'
+    assert diagnostics.get('execution_mode') == 'staged_replacement'
     assert diagnostics.get('checkpoint_resolution_mode') == 'replacement_table1_table2_overlay'
     assert diagnostics.get('source_selection', {}).get('diagnostics_source') == 'replacement'
     assert diagnostics.get('replacement_model', {}).get('boss_ttk_contract') == 'v21_event_only'
     assert diagnostics.get('replacement_model', {}).get('continuous_tower_dps_included') is False
-    assert diagnostics.get('replacement_model', {}).get('contract_version') == 'boss_waves_replacement_phase2b_v1'
+    assert diagnostics.get('replacement_model', {}).get('contract_version') == 'boss_waves_replacement_v1'
     assert diagnostics.get('replacement_model', {}).get('table1_source_basis') == 'app_pipeline_qe_checkpoint_surfaces_to_run_plan'
-    assert diagnostics.get('legacy_shadow_available') is True
-    assert diagnostics.get('legacy_shadow_materialized') is False
+    assert 'legacy_shadow_available' not in diagnostics
+    assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics.get('replacement_outputs', {}).get('download_row_count') == len(payload.get('download_rows') or [])
 
     summary = payload.get('summary') or {}
@@ -513,82 +373,29 @@ def test_build_boss_wave_payload_phase2b_replacement_inputs_drive_table_summary_
     assert summary['survives_through_end'] is True
 
 
-def test_build_boss_wave_payload_phase2a_rollback_restores_legacy_table_and_summary(monkeypatch):
+def test_build_boss_wave_payload_rejects_legacy_source_after_excision():
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
-
-    legacy_rows = [_phase2a_fake_legacy_row(9)]
-    legacy_summary = {
-        'max_wave': 9,
-        'max_surviving_wave': 9,
-        'first_failed_wave': 0,
-        'row_count': 1,
-        'terminal_display_wave': 9,
-        'survives_through_end': True,
-        'result_consistent_with_rows': True,
-    }
-    _install_fake_boss_wave_pipeline_dependencies(monkeypatch, pipeline_mod, rows=legacy_rows, summary=legacy_summary)
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
-    payload = pipeline_mod.build_boss_wave_payload(
-        request,
-        preset_name='Farming',
-        tier_number=14,
-        end_wave=30,
-        boss_wave_step=1,
-        stop_on_failure=True,
-        scenario_runtime_inputs={
-            'orb_boss_hit_pct': 2.5,
-            'orb_boss_hits_per_second': 5.0,
-            'electron_hits_per_second': 5.0,
-            'boss_contact_time_seconds': 1.0,
-            'effective_damage_reduction_pct': 90.0,
-            'incoming_damage_multiplier': 1.0,
-        },
-        boss_wave_source='legacy',
-    )
-
-    assert payload.get('rows') == legacy_rows
-    assert payload.get('operator_rows') == legacy_rows
-    assert payload.get('download_rows') == legacy_rows
-    assert payload.get('summary') == {
-        'preset_name': 'Farming',
-        'tier_column': 'Tier 14',
-        'state_mode': 'start_of_run',
-        'max_wave': 9,
-        'max_surviving_wave': 9,
-        'first_failed_wave': 0,
-        'row_count': 1,
-        'terminal_display_wave': 9,
-        'survives_through_end': True,
-        'result_consistent_with_rows': True,
-    }
-    assert payload.get('contract', {}).get('simulator_owner') == 'simulators.run_executor.build_boss_wave_table_payload'
-    assert payload.get('source_selection', {}).get('active_source') == 'legacy'
-    assert payload.get('download', {}).get('row_source') == 'legacy'
-    assert (payload.get('diagnostics') or {}).get('execution_mode') == 'table_sweep'
+    with pytest.raises(ValueError, match='replacement-only'):
+        pipeline_mod.build_boss_wave_payload(
+            request,
+            preset_name='Farming',
+            tier_number=14,
+            end_wave=30,
+            boss_wave_step=1,
+            stop_on_failure=True,
+            scenario_runtime_inputs={},
+            boss_wave_source='legacy',
+        )
 
 
-def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_input_primitive(monkeypatch):
+def test_build_boss_wave_payload_fails_closed_on_unmapped_required_input_primitive(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
-    row = _phase2a_fake_legacy_row(9)
-    row.pop('wall_regen')
-    _install_fake_boss_wave_pipeline_dependencies(
-        monkeypatch,
-        pipeline_mod,
-        rows=[row],
-        summary={
-            'max_wave': 9,
-            'max_surviving_wave': 9,
-            'first_failed_wave': 0,
-            'row_count': 1,
-            'terminal_display_wave': 9,
-            'survives_through_end': True,
-            'result_consistent_with_rows': True,
-        },
-    )
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod, omit_surface='state::wall.regen')
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
@@ -611,29 +418,16 @@ def test_build_boss_wave_payload_phase2a_fails_closed_on_unmapped_required_input
         )
 
 
-def test_build_boss_wave_payload_phase2b_fails_closed_on_missing_export_mapping(monkeypatch):
+def test_build_boss_wave_payload_fails_closed_on_missing_export_mapping(monkeypatch):
     from app import pipeline as pipeline_mod
     from app.models import PipelineRunRequest
 
-    _install_fake_boss_wave_pipeline_dependencies(
-        monkeypatch,
-        pipeline_mod,
-        rows=[_phase2a_fake_legacy_row(9)],
-        summary={
-            'max_wave': 9,
-            'max_surviving_wave': 9,
-            'first_failed_wave': 0,
-            'row_count': 1,
-            'terminal_display_wave': 9,
-            'survives_through_end': True,
-            'result_consistent_with_rows': True,
-        },
-    )
+    _install_fake_boss_wave_app_dependencies(monkeypatch, pipeline_mod)
     _install_fake_boss_wave_replacement_primitives(monkeypatch, pipeline_mod)
     monkeypatch.setattr(
         pipeline_mod,
-        'BOSS_WAVE_PHASE2B_EXPORT_FIELDS',
-        (*pipeline_mod.BOSS_WAVE_PHASE2B_EXPORT_FIELDS, 'unmapped_export_field'),
+        'BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS',
+        (*pipeline_mod.BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS, 'unmapped_export_field'),
     )
 
     request = PipelineRunRequest(ids=ROOT / 'input' / 'imports' / 'ids.csv', out=ROOT / 'out')
@@ -683,10 +477,10 @@ def test_build_boss_wave_payload_live_path_avoids_delta_fallback():
     assert diagnostics['actual_boss_interval_waves'] == 9
     assert diagnostics['checkpoint_every_bosses'] == 1
     assert diagnostics['checkpoint_resolution_mode'] == 'replacement_table1_table2_overlay'
-    assert diagnostics['execution_mode'] == 'staged_replacement_phase2b'
+    assert diagnostics['execution_mode'] == 'staged_replacement'
     assert diagnostics['replacement_model']['boss_ttk_contract'] == 'v21_event_only'
-    assert diagnostics['legacy_shadow_available'] is True
-    assert diagnostics['legacy_shadow_materialized'] is False
+    assert 'legacy_shadow_available' not in diagnostics
+    assert 'legacy_shadow_materialized' not in diagnostics
     assert diagnostics['delta_fallback_count'] == 0
     first_row = (payload.get('rows') or [{}])[0]
     assert first_row.get('display_wave') == 9

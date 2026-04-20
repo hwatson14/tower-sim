@@ -128,7 +128,7 @@ app:
   app/boss_waves_phase2a_field_map.yaml:
     status: active_artifact
     layer: app/
-    note: Boss Waves cutover field map derived from current product consumption; covers replacement-sourced Phase 2A table/summary and Phase 2B export/diagnostics, with legacy retained for explicit rollback/shadow
+    note: Boss Waves product field map derived from current product consumption; covers replacement-sourced table, summary, export, and diagnostics; legacy is no longer exposed by the product payload
 
   app/display.py:
     status: active_candidate
@@ -371,6 +371,7 @@ simulators:
   simulators/run_executor.py:
     status: active_candidate
     layer: simulators/
+    note: broader max-waves legacy/reference executor; no longer consumed by the Boss Waves product path, but retained until remaining test/reference and broader legacy consumers are retired or replaced
 
   simulators/runtime_consumer_executor.py:
     status: active_candidate

@@ -132,7 +132,7 @@ FIXTURES: tuple[Fixture, ...] = (
 )
 
 
-def test_live_boss_waves_product_seam_exposes_shadow_validation_subset_read_only():
+def test_live_boss_waves_product_seam_is_replacement_only():
     from app.models import PipelineRunRequest
     from app.pipeline import build_boss_wave_payload
 
@@ -155,14 +155,13 @@ def test_live_boss_waves_product_seam_exposes_shadow_validation_subset_read_only
 
     rows = list(payload.get("rows") or [])
     download_rows = list(payload.get("download_rows") or [])
-    legacy_shadow = payload.get("legacy_shadow") or {}
     contract = payload.get("contract", {}) or {}
     assert contract.get("simulator_owner") == "simulators.evaluator_kernel.evaluate_overlay_row"
-    assert contract.get("legacy_export_owner") == "simulators.run_executor.build_boss_wave_table_payload"
+    assert "legacy_export_owner" not in contract
     assert rows, "live Boss Waves seam must expose selected operator row data"
-    assert download_rows, "Phase 2B export rows must be replacement-owned by default"
-    assert download_rows != rows or set(download_rows[0]) != set(rows[0]), "Phase 2B must keep an explicit export row surface"
-    assert legacy_shadow.get("materialized") is False, "Default replacement path must not materialize legacy rows"
+    assert download_rows, "Boss Waves export rows must be replacement-owned by default"
+    assert download_rows != rows or set(download_rows[0]) != set(rows[0]), "Boss Waves must keep an explicit export row surface"
+    assert "legacy_shadow" not in payload
     first = rows[0]
     for field in (
         "display_wave",

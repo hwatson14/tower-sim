@@ -1,7 +1,7 @@
 artifact: boss_waves_cutover_field_map
 schema_version: 1
 scope:
-  phase: Phase 2B replacement source cutover
+  phase: replacement-owned Boss Waves product path
   surfaces:
     table: replacement_sourced
     summary: replacement_sourced
@@ -11,8 +11,7 @@ scope:
 source_selection_owner: app.pipeline.build_boss_wave_payload
 renderer_policy: app.streamlit_inspector consumes selected payload fields only
 active_replacement_source_id: replacement
-backward_compatible_aliases:
-  - phase2a_replacement
+backward_compatible_aliases: []
 replacement_input_sources:
   owner: app.pipeline assembles inputs only
   mechanics_owner: [qe.run_plan, simulators.evaluator_kernel]
@@ -68,7 +67,7 @@ operator_table_fields:
     comparability: not_comparable
     normalization: null_display_dash
     required_for: [table]
-    cutover_behavior: not_exposed_in_phase2a_v21_event_only_ttk
+    cutover_behavior: not_exposed_in_replacement_v21_event_only_ttk
   - product_field: Wall Pool
     consumer_input: wall_pool_hp_used
     legacy_source: legacy rows.wall_pool_hp_used
@@ -193,19 +192,19 @@ summary_fields:
   - product_field: Boss cadence
     consumer_input: diagnostics.actual_boss_interval_waves
     legacy_source: legacy diagnostics.actual_boss_interval_waves
-    replacement_source: legacy-compatible diagnostics
+    replacement_source: diagnostics.actual_boss_interval_waves
     comparability: equivalent
     normalization: integer_zero_as_dash
     required_for: [summary]
-    cutover_behavior: stay_legacy_for_now
+    cutover_behavior: switch_now
   - product_field: Execution mode
     consumer_input: diagnostics.execution_mode
     legacy_source: legacy diagnostics.execution_mode
-    replacement_source: legacy-compatible diagnostics
+    replacement_source: diagnostics.execution_mode
     comparability: equivalent
     normalization: string_dash_if_empty
     required_for: [summary]
-    cutover_behavior: stay_legacy_for_now
+    cutover_behavior: switch_now
   - product_field: Row/result agreement
     consumer_input: summary.result_consistent_with_rows
     legacy_source: legacy summary.result_consistent_with_rows
@@ -219,17 +218,16 @@ payload_split:
   rows: selected rows retained as backward-compatible table alias
   download_rows: replacement-owned export rows for CSV/download
   diagnostics: replacement-owned diagnostics for the active replacement path
-  legacy_shadow: not materialized by default; legacy remains available through boss_wave_source=legacy for rollback/reference
 export_fields:
   derivation_basis: current product exports download_rows through pandas.DataFrame(...).to_csv(index=False)
   source: download_rows
-  replacement_source: app.pipeline.BOSS_WAVE_PHASE2B_EXPORT_FIELDS projected from replacement operator rows
+  replacement_source: app.pipeline.BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS projected from replacement operator rows
   cutover_behavior: switch_now
   row_policy:
     comparability: transformed
-    normalization: csv_header_order_matches_BOSS_WAVE_PHASE2B_EXPORT_FIELDS
+    normalization: csv_header_order_matches_BOSS_WAVE_REPLACEMENT_EXPORT_FIELDS
     required_for: [export]
-    note: Phase 2B exports an explicit replacement row surface; legacy rows remain available only through explicit rollback/shadow requests.
+    note: Boss Waves product exports an explicit replacement row surface; legacy rows are not exposed by the product payload.
   replacement_columns:
     - {consumer_input: display_wave, legacy_source: legacy rows.display_wave, replacement_source: download_rows.display_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
     - {consumer_input: attack_wave, legacy_source: legacy rows.attack_wave, replacement_source: download_rows.attack_wave, comparability: equivalent, normalization: integer, required_surface: export, cutover_behavior: switch_now}
@@ -257,7 +255,7 @@ export_fields:
 diagnostics_fields:
   derivation_basis: current product constructs the Boss-wave diagnostics expander and summary captions from payload.diagnostics plus payload.summary
   source: diagnostics
-  replacement_source: app.pipeline._build_phase2b_replacement_diagnostics
+  replacement_source: app.pipeline._build_replacement_diagnostics
   cutover_behavior: switch_now
   consumed_fields:
     - consumer_input: diagnostics.preset_name
@@ -342,5 +340,3 @@ diagnostics_fields:
     - diagnostics.source_selection
     - diagnostics.replacement_model
     - diagnostics.replacement_outputs
-    - diagnostics.legacy_shadow_available
-    - diagnostics.legacy_shadow_materialized
